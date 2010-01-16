@@ -1,0 +1,37 @@
+.easypage_navigation	{
+	background-color: #FFFFAA;
+}
+.easypage_navigation_message	{
+	background-color: #FFFFAA;
+}
+.easypage_navigation_controls	{
+	background-color: #FFFFAA;
+}
+.easypage_navigation_link	{
+	cursor: pointer;
+	padding: 2px;
+	margin: 2px;
+	background-color: #333333;
+	color: #FFFFFF;
+}
+
+.easypage_table_control	{
+	background-color: #FFDDFF;
+	padding: 2px;
+	align: right;
+}
+
+.easypage_table_control_delete	{
+	cursor: pointer;
+	padding: 2px;
+	margin: 2px;
+	background-color: #333333;
+	color: #FFFFFF;
+}
+.easypage_table_control_insert	{
+	cursor: pointer;
+	padding: 2px;
+	margin: 2px;
+	background-color: #333333;
+	color: #FFFFFF;
+}
