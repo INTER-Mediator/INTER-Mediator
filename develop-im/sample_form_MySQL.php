@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>INTER-Mediator - Sample</title>
+<title>INTER-Mediator - Sample - Form Style/MySQL</title>
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <link href="sample.css" rel="stylesheet" type="text/css" />
 <?php 
@@ -16,42 +16,40 @@
 	InitializePage(
 		array(	
 			array(	
-				'name' 	=> 'person', 
-				'key' 	=> 'id',
-				'query'	=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ) */),
-				'sort'	=> array( array( 'field'=>'id', 'direction'=>'ASC' ),),
+				'records' 	=> '1', 
+				'name' 		=> 'person', 
+				'key' 		=> 'id',
+				'query'		=> array(),
+				'sort'		=> array( array( 'field'=>'id', 'direction'=>'ASC' ),),
 			),
 			array(	
-				'name' 			=> 'contact', 
-				'key' 			=> 'id',
-				'foreign-key' 	=> 'person_id',
+				'name' 				=> 'contact', 
+				'key' 				=> 'id',
+				'foreign-key' 		=> 'person_id',
+				'repeat-control'	=> 'insert delete',
 			),
 			array(	
-				'name' 			=> 'history', 
-				'key' 			=> 'id',
-				'foreign-key'	=> 'person_id',
+				'name' 				=> 'history', 
+				'key' 				=> 'id',
+				'foreign-key'		=> 'person_id',
+				'repeat-control'	=> 'delete',
 			),
 			array(	
 				'name' 			=> 'postalcode', 
-				'query'	=> array( array( 'field'=>'f9', 'value'=>'"%落合%"', 'operator'=>'LIKE' ) ),
+				'query'	=> array( array( 'field'=>'f9', 'operation'=>'LIKE', 'value'=>'%落合%' ) ),
 				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
 			),
 		),
 		array(
-			'skip' => 1,
 			'formatter' => array(
-				array( 'field' => 'contact@datetime', 	'converter-class' =>'FMDateTime' ),
-				array( 'field' => 'contact@startdate',	'converter-class' =>'FMDateTime' ),
-				array( 'field' => 'contact@enddate', 	'converter-class' =>'FMDateTime' ),
+				array( 'field' => 'contact@datetime', 	'converter-class' =>'MySQLDateTime' ),
+				array( 'field' => 'history@startdate',	'converter-class' =>'MySQLDateTime' ),
+				array( 'field' => 'history@enddate', 	'converter-class' =>'MySQLDateTime' ),
 			),
-			'repeat-control' => array( 'contact' ),
 		),
-//		null,
 		array(	'db-class' 	=> 'MySQL',
 				'db' 		=> 'test_db',
-/*				'user' 		=> 'web',
-				'password'	=> 'password'
-*/		), 
+		), 
 		true		// debug
 	);
 ?>
@@ -88,7 +86,7 @@
 	</tr>
 	<tr>
 		<td>check</td>
-		<td><input type="checkbox" name="check" value="1" /></td>
+		<td><input type="checkbox" name="checking" value="1" /></td>
 	</tr>
 	<tr>
 		<td>location</td>
@@ -99,18 +97,17 @@
 			<input type="radio" name="location" value="204" />Space
 		</td>
 	</tr>
-	<tr>
-		<td>memo</td>
-		<td><textarea name="memo"></textarea></td>
-	</tr>
 </table>
 <table border="1">
 <tr>
-	<th>person_id</th><th>datetime</th><th>summary</th>
+	<th>id/person_id</th><th>datetime</th><th>summary</th>
 	<th>important</th><th>way</th><th>kind</th><th>description</th>
 </tr>
 <tr>
-	<td><div title="contact@person_id"></div></td>
+	<td>
+		<input type="text" name="contact@id" size="2"/>
+		<input type="text" name="contact@person_id" size="2"/>
+	</td>
 	<td><input type="text" name="contact@datetime"/></td>
 	<td><input type="text" name="contact@summary"/></td>
 	<td><input type="checkbox" name="contact@important" value="1"/></td>

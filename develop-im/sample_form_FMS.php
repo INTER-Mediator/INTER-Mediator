@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>INTER-Mediator - Sample</title>
+<title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <link href="sample.css" rel="stylesheet" type="text/css" />
 <?php 
@@ -16,6 +16,7 @@
 	InitializePage(
 		array(	
 			array(	
+				'records'	=>	1,
 				'name' 	=> 'person_layout', 
 				'key' 	=> 'id',
 				'query'	=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ) */),
@@ -25,26 +26,26 @@
 				'name' 			=> 'contact_to', 
 				'key' 			=> 'id',
 				'foreign-key' 	=> 'person_id',
+				'repeat-control'	=> 'insert delete',
 			),
 			array(	
 				'name' 			=> 'history_to', 
 				'key' 			=> 'id',
 				'foreign-key'	=> 'person_id',
+				'repeat-control'	=> 'insert',
 			),
 			array(	
 				'name' 			=> 'postalcode', 
-				'query'	=> array( array( 'field'=>'f9', 'value'=>'落合', 'operator'=>'cn' ) ),
+				'query'	=> array( array( 'field'=>'f9', 'value'=>'落合', 'operation'=>'cn' ) ),
 				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
 			),
 		),
 		array(
-			'skip' => 1,
 			'formatter' => array(
-				array( 'field' => 'contact@datetime', 	'converter-class' =>'FMDateTime' ),
-				array( 'field' => 'contact@startdate',	'converter-class' =>'FMDateTime' ),
-				array( 'field' => 'contact@enddate', 	'converter-class' =>'FMDateTime' ),
+				array( 'field' => 'contact_to@datetime', 	'converter-class' =>'FMDateTime' ),
+				array( 'field' => 'history_to@startdate',	'converter-class' =>'FMDateTime' ),
+				array( 'field' => 'history_to@enddate', 	'converter-class' =>'FMDateTime' ),
 			),
-			'repeat-control' => array( 'contact_to' ),
 		),
 		array(	'db-class' 	=> 'FileMaker_FX',
 				'db' 		=> 'TestDB',

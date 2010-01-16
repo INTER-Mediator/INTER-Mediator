@@ -64,7 +64,12 @@ class DB_FileMaker_FX extends DB_Base	{
 					$oneRecordArray = array();
 					foreach( $oneRecord as $field=>$dataArray )	{
 						if ( count( $dataArray ) == 1 )	{
-							$oneRecordArray[$field] = $this->formatterFromDB( $field, $dataArray[0] );
+							if ( $this->skip == 1 && $tableName == $this->mainTableName )	{
+								$oneRecordArray[$field] = $this->formatterFromDB( $field, $dataArray[0] );
+							} else {
+								$oneRecordArray[$field] = $this->formatterFromDB( 
+											"$tableName{$this->separator}$field", $dataArray[0] );
+							}
 						}
 					}
 					$returnArray[] = $oneRecordArray;
@@ -103,6 +108,10 @@ class DB_FileMaker_FX extends DB_Base	{
 		}
 	}
 	
+	function unifyCRLF( $str )	{
+		return str_replace( "\n", "\r", str_replace( "\r\n", "\r", $str ));
+	}
+	
 	function setToDB( $tableName, $data )	{
 		$tableInfo = $this->getTableInfo( $tableName );
 		$keyFieldName = $tableInfo['key'];
@@ -127,9 +136,12 @@ class DB_FileMaker_FX extends DB_Base	{
 				$this->fx->SetRecordID( $recId );
 				foreach ( $data as $field=>$value )
 					if ( $field != $keyFieldName){
-						$convVal = str_replace( "\n", "\r", str_replace( "\r\n", "\r", (is_array( $value )) ? implode( "\r", $value ) : $value ));
-						$this->fx->AddDBParam( $field, $this->formatterToDB(
-							($this->mainTableName==$tableName)?$field:"{$tableName}{$this->separator}{$field}", $convVal ));
+						$filedInForm = $field;
+						if ( $this->skip != 1 || $tableName != $this->mainTableName )	{
+							$filedInForm = "{$tableName}{$this->separator}{$field}";
+						}
+						$convVal = $this->unifyCRLF( (is_array( $value )) ? implode( "\r", $value ) : $value );
+						$this->fx->AddDBParam( $field, $this->formatterToDB( $filedInForm, $convVal ));
 					}
 				$result = $this->fx->FMEdit();
 				if( $result['errorCode'] > 0 )	{
@@ -152,9 +164,12 @@ class DB_FileMaker_FX extends DB_Base	{
 		$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
 		foreach ( $data as $field=>$value )	{
 			if ( $field != $keyFieldName){
-				$convVal = str_replace( "\n", "\r", str_replace( "\r\n", "\r", (is_array( $value )) ? implode( "\r", $value ) : $value ));
-				$this->fx->AddDBParam( $field, $this->formatterToDB(
-					($this->mainTableName==$tableName)?$field:"{$tableName}{$this->separator}{$field}", $convVal ));
+				$filedInForm = $field;
+				if ( $this->skip != 1 || $tableName != $this->mainTableName )	{
+					$filedInForm = "{$tableName}{$this->separator}{$field}";
+				}
+				$convVal = $this->unifyCRLF( (is_array( $value )) ? implode( "\r", $value ) : $value );
+				$this->fx->AddDBParam( $field, $this->formatterToDB( $filedInForm, $convVal ));
 			}
 		}
 		$result = $this->fx->FMNew();

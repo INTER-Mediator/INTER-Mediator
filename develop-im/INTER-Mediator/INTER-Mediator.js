@@ -1,1 +1,611 @@
-function saveRecord(){var g="";var b="";var k=["input","select","textarea"];for(var c=0;c<k.length;c++){var a=document.getElementsByTagName(k[c]);for(var d=0;d<a.length;d++){if(a[d].getAttribute("name")!=null){var f=true;if(c==0&&a[d].getAttribute("type")=="checkbox"){g=a[d].checked?a[d].value:""}else{if(c==0&&a[d].getAttribute("type")=="radio"){f=a[d].checked;g=a[d].checked?a[d].getAttribute("value"):""}else{g=a[d].value}}if(f){b+="&"+encodeURIComponent(a[d].getAttribute("name"))+"="+encodeURIComponent(g)}}}}var h=0;for(var e in deleteRecords){for(var d=0;d<deleteRecords[e].length;d++){b+="&__easypage__delete_table_"+h+"="+encodeURIComponent(e);b+="&__easypage__delete_key_"+h+"="+encodeURIComponent(deleteRecords[e][d]);h++;if(isDebug){debugOut("Delete Table:",e,deleteRecords[e][d])}}}var h=0;for(var e in insertRecords){for(var d=0;d<insertRecords[e].length;d++){b+="&__easypage__insert_table_"+h+"="+encodeURIComponent(e);b+="&__easypage__insert_id_"+h+"="+encodeURIComponent(insertRecords[e][d]);h++;if(isDebug){debugOut("Insert Table:",e,insertRecords[e][d])}}}if(b==""){document.getElementById("__easypage_navigation_message").innerHTML=getMessageString(106);return}b=getDBAccessInfo()+b;myRequest=new XMLHttpRequest();myRequest.open("post",getSaveURL(),true,getAccessUser(),getAccessPassword());myRequest.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");myRequest.onreadystatechange=finishXMLHttpRequest;myRequest.send(b)}var myRequest;function finishXMLHttpRequest(){if(myRequest.readyState==4){var d=myRequest.responseXML;var h=childNodeValueNoError(d,"message");if(h.length>0){document.getElementById("__easypage_navigation_message").innerHTML=getMessageString(h)}if(d!=null&&d.getElementsByTagName("error")!=null){var a=d.getElementsByTagName("error");for(var c=0;c<a.length;c++){var f=nodeValueNoError(a[c]);if(f!=""){errorOut(f)}}}if(d!=null&&d.getElementsByTagName("debug-message")!=null){var a=d.getElementsByTagName("debug-message");for(var c=0;c<a.length;c++){var f=nodeValueNoError(a[c]);if(f!=""){debugOut(f)}}}if(d!=null&&d.getElementsByTagName("generated")!=null){var a=d.getElementsByTagName("generated");for(var c=0;c<a.length;c++){var b=childNodeValueNoError(a[c],"element-id");var e=childNodeValueNoError(a[c],"value");var g=document.getElementById(b);if(g.tagName=="DIV"){g.innerHTML=e}else{g.value=e}if(isDebug){debugOut("Set the new generated id:",b,e)}}}deleteRecords=new Array();insertRecords=new Array();modifiedIds=new Array()}else{document.getElementById("__easypage_navigation_message").innerHTML=getMessageString(104)+"readyState="+myRequest.readyState}}function childNodeValueNoError(e,a){if(e==null){return""}var f="";var c=e.getElementsByTagName(a);if(!navigator.appName.match(/Explorer/)){for(var d=0;d<c.length;d++){f+=c[d].textContent}}else{for(var d=0;d<c.length;d++){for(var b=0;b<c[d].childNodes.length;b++){if(c[d].childNodes[b].nodeValue!=null){f+=c[d].childNodes[b].nodeValue}}}}return f}function nodeValueNoError(b){if(b==null){return""}var c="";if(!navigator.appName.match(/Explorer/)){c=b.textContent}else{for(var a=0;a<b.childNodes.length;a++){if(b.childNodes[a].nodeValue!=null){c+=b.childNodes[a].nodeValue}}}return c}function debugMode(a){isDebug=a}var isDebug=false;var isEdited=false;var fieldIdList=new Array();var tableTemplates=new Array();var deleteRecords=new Array();var insertRecords=new Array();var modifiedIds=new Array();var addedRowIds=new Array();function modifiedField(b){for(var a=0;a<modifiedIds.length;a++){if(modifiedIds[a]==b){return}}modifiedIds.push(b)}function doAtTheFinishing(){if(modifiedIds.length!=0){return getMessageString(105)}}var serial=987001;function doAtTheStarting(){fieldIdList=new Array();var f;var l=["input","select","textarea","div"];for(var c=0;c<l.length;c++){var a=document.getElementsByTagName(l[c]);for(var e=0;e<a.length;e++){var d=(c==3)?a[e].getAttribute("title"):a[e].getAttribute("name");if(d){if(a[e].getAttribute("id")!=null&&a[e].getAttribute("id")!=""){f=a[e].getAttribute("id")}else{f=new String(++serial);a[e].setAttribute("id",f)}fieldIdList[d]=f;addEvent(a[e],"change",new Function("modifiedField("+f+")"));addEvent(a[e],"keydown",new Function("modifiedField("+f+")"));var b=d.indexOf(separator);if(b>0){var g=d.substr(0,b);if(!tableTemplates[g]){for(var h=a[e];h.tagName!="TR";h=h.parentNode){}tableTemplates[g]={parent:h.parentNode,template:h.cloneNode(true),"delete":h};addedRowIds[g]=new Array();if(isDebug){debugOut("Recognized Repeat Table: "+g)}}}}}}if(isDebug){var k="fieldIdList = ";for(var e in fieldIdList){k+="["+e+":"+fieldIdList[e]+"] "}debugOut(k)}initializeWithDBValues();for(var e in tableTemplates){tableTemplates[e]["parent"].removeChild(tableTemplates[e]["delete"])}}function deleteRecord(){}function newRecord(){if(modifiedIds.length!=0){if(!confirm(getMessageString(105))){return}}for(var c in fieldIdList){var d=document.getElementById(fieldIdList[c]);if(d){if(d.tagName=="DIV"){d.innerHTML=""}else{d.value=""}}}for(var a in addedRowIds){for(var b=0;b<addedRowIds[a].length;b++){var d=document.getElementById(addedRowIds[a][b]);if(d){d.parentNode.removeChild(d)}}}mainTableName=getMainTableName();insertRecords=new Array();insertRecords[mainTableName]=new Array(fieldIdList[getKeyFieldName()])}function checkKeyFieldMainTable(b){if(!fieldIdList[b]||document.getElementById(fieldIdList[b]).tagName=="DIV"){var c=null;for(var a in fieldIdList){if(a.indexOf(separator)<0){c=document.getElementById(fieldIdList[a]);if(c!=null){break}}}if(c==null){c=document.getElementsByTagName("BODY")[0]}var d=document.createElement("input");d.setAttribute("type","hidden");d.setAttribute("name",b);d.setAttribute("id","easypage_main_table_key_field");c.parentNode.appendChild(d);fieldIdList[b]="easypage_main_table_key_field";if(isDebug){debugOut("Add the key field:"+b+" to the main table.")}}}function deleteLineFromRepeatTable(b,a,d){if(!deleteRecords[b]){deleteRecords[b]=new Array()}deleteRecords[b].push(idValue(d));var c=document.getElementById(a);c.parentNode.removeChild(c)}function addLineToRepeatTable(a){var c=new Array();c[a+separator+getForeignKeyFieldName(a)]=fieldValue(getKeyFieldName(getMainTableName()));var b=addToRepeat(a,c);if(!insertRecords[a]){insertRecords[a]=new Array()}insertRecords[a].push(b);debugOut("Called addLineToRepeatTable:",getForeignKeyFieldName(a),fieldValue(getKeyFieldName(getMainTableName())),b)}function fieldValue(a){var b=document.getElementById(fieldIdList[a]);if(!b){return""}if(b.tagName=="DIV"){return b.innerHTML}return b.value}function idValue(b){var a=document.getElementById(b);if(!a){return""}if(a.tagName=="DIV"){return a.innerHTML}return a.value}function setClassAttributeToNode(b,a){if(b==null){return}if(!navigator.appName.match(/Explorer/)){b.setAttribute("class",a)}else{b.setAttribute("className",a)}}function getClassAttributeFromNode(a){if(a==null){return""}var b="";if(!navigator.appName.match(/Explorer/)){b=a.getAttribute("class")}else{b=a.getAttribute("className")}return b}function addRepeatTableControl(b){if(tableTemplates[b]){var c=tableTemplates[b]["parent"];var f=tableTemplates[b]["template"];var g=document.createElement("TD");setClassAttributeToNode(g,"easypage_table_control");f.appendChild(g);var a=document.createElement("span");setClassAttributeToNode(a,"easypage_table_control_delete");a.appendChild(document.createTextNode(getMessageString(5)));g.appendChild(a);var e=c.parentNode.createTFoot();c.parentNode.insertBefore(e,c);var d=document.createElement("TR");e.appendChild(d);g=document.createElement("TD");g.setAttribute("colSpan",f.getElementsByTagName("TD").length+1);g.setAttribute("align","right");setClassAttributeToNode(g,"easypage_table_control");d.appendChild(g);a=document.createElement("span");setClassAttributeToNode(a,"easypage_table_control_insert");addEvent(a,"click",new Function("addLineToRepeatTable('"+b+"');"));a.appendChild(document.createTextNode(getMessageString(4)));g.appendChild(a)}else{errorOut("The table-control option has irrelevant table name")}if(isDebug){debugOut("Call function addRepeatTableControl: table="+b)}}function checkKeyFieldRepeatTable(o,p,d){msg="";var h=tableTemplates[o]["template"];if(h==null){return}var a=o+separator+p;var j=o+separator+d;var b=document.getElementsByTagName("DIV");var e=false,c=false;for(var g=0;g<b.length;g++){var f=b[g].getAttribute("title");if(f){if(f==a){e=true}if(f==j){c=true}}}if(p!=""&&(!fieldIdList[a]||e)){var l="easypage_repeat_table_key_field_"+o;var k=tableTemplates[o]["template"].getElementsByTagName("TD")[0];var m=document.createElement("input");m.setAttribute("type","hidden");m.setAttribute("name",a);m.setAttribute("id",l);k.appendChild(m);fieldIdList[a]=l;msg+="/ Add the key field:"+p+" to table:"+o}if(d!=""&&(!fieldIdList[j]||c)){var l="easypage_repeat_table_foreign_key_field_"+o;var k=tableTemplates[o]["template"].getElementsByTagName("TD")[0];var m=document.createElement("input");m.setAttribute("type","hidden");m.setAttribute("name",j);m.setAttribute("id",l);k.appendChild(m);fieldIdList[a]=l;msg+="/ Add the forreign key field:"+p+" to table:"+o}if(isDebug){debugOut("Call function checkKeyFieldRepeatTable: table="+o+", key="+p+", foreign key="+d+msg)}}var n=0;function addToRepeat(q,k){var c=q+separator+getKeyFieldName(q);var b;var l=tableTemplates[q]["template"].cloneNode(true);l.setAttribute("id",(++serial));var o=serial;var r=["input","select","textarea","div"];var d=new Array();var p=new Array();for(var g=0;g<r.length;g++){var a=l.getElementsByTagName(r[g]);for(var h=0;h<a.length;h++){var f=(g==3)?a[h].getAttribute("title"):a[h].getAttribute("name");if(f){a[h].setAttribute((g==3)?"title":"name",f+separator+n);a[h].setAttribute("id",(++serial));if(f==c){b=serial}if(k[f]){if(a[h].tagName=="DIV"){a[h].innerHTML=k[f]}else{if(a[h].tagName=="SELECT"){a[h].value=k[f]}else{if(a[h].tagName=="INPUT"&&a[h].getAttribute("type")=="checkbox"){a[h].checked=(k[f]!="")}else{if(a[h].tagName=="INPUT"&&a[h].getAttribute("type")=="radio"){p[serial]=a[h].value;if(a[h].value==k[f]){d[serial]=true}else{}}else{if(a[h].tagName=="TEXTAREA"){getNewLineAlternative();a[h].value=k[f].split(getNewLineAlternative()).join("\n")}else{a[h].value=k[f]}}}}}addEvent(a[h],"change",new Function("modifiedField("+serial+");"));addEvent(a[h],"keydown",new Function("modifiedField("+serial+");"))}}}}tableTemplates[q]["parent"].appendChild(l);addedRowIds[q].push(o);a=l.getElementsByTagName("SPAN");for(var h=0;h<a.length;h++){if(getClassAttributeFromNode(a[h]).indexOf("easypage_table_control_delete")>=0){addEvent(a[h],"click",new Function("deleteLineFromRepeatTable('"+q+"','"+o+"','"+b+"')"))}}for(var m in d){document.getElementById(m).checked=true}for(var m in p){document.getElementById(m).value=p[m]}n++;return b}function setValue(e,c){var a=fieldIdList[e];var d=document.getElementById(a);if(d==null){return}if(d.tagName=="DIV"){d.innerHTML=c}else{if(d.tagName=="SELECT"){d.value=c}else{if(d.tagName=="INPUT"&&d.getAttribute("type")=="checkbox"){d.checked=(c!="")}else{if(d.tagName=="INPUT"&&d.getAttribute("type")=="radio"){for(var b=a;b>987000;b--){d=document.getElementById(b);if(d.tagName!="INPUT"||d.getAttribute("type")!="radio"){break}if(d.value==c){d.checked=true;break}}}else{if(d.tagName=="TEXTAREA"){d.value=c.split(getNewLineAlternative()).join("\n")}else{d.value=c}}}}}}function addEvent(c,a,b){if(c.addEventListener){c.addEventListener(a,b,false)}else{if(c.attachEvent){c.attachEvent("on"+a,b)}}}function showNoRecordMessage(){errorOut(getMessageString(101))}function appendCredit(){var a=document.getElementsByTagName("body")[0];var d=document.createElement("div");a.appendChild(d);d.style.backgroundColor="#F6F7FF";d.style.height="2px";d=document.createElement("div");a.appendChild(d);d.style.backgroundColor="#EBF1FF";d.style.height="2px";d=document.createElement("div");a.appendChild(d);d.style.backgroundColor="#E1EAFF";d.style.height="2px";d=document.createElement("div");a.appendChild(d);d.setAttribute("align","right");d.style.backgroundColor="#D7E4FF";d.style.padding="2px";var b=document.createElement("span");d.appendChild(b);d.style.color="#666666";d.style.fontSize="7pt";var c=document.createElement("a");c.appendChild(document.createTextNode("INTER-Mediator"));c.setAttribute("href","http://msyk.net/im");c.setAttribute("target","_href");b.appendChild(document.createTextNode("Generated by "));b.appendChild(c);b.appendChild(document.createTextNode(" rel.2010-01-12"))}function errorOut(d){var b=document.getElementById("easypage_error_panel_4873643897897");if(b==null){b=document.createElement("div");b.setAttribute("id","easypage_error_panel_4873643897897");b.style.backgroundColor="#FFDDDD";var c=document.createElement("h3");c.appendChild(document.createTextNode("Error Info"));c.appendChild(document.createElement("hr"));b.appendChild(c);var a=document.getElementsByTagName("body")[0];a.insertBefore(b,a.firstChild)}b.appendChild(document.createTextNode(d));b.appendChild(document.createElement("hr"))}function debugOut(g){var c=document.getElementById("easypage_debug_panel_4873643897897");if(c==null){c=document.createElement("div");c.setAttribute("id","easypage_debug_panel_4873643897897");c.style.backgroundColor="#DDDDDD";var h=document.createElement("button");h.setAttribute("title","clear");addEvent(h,"click",function(){var i=document.getElementById("easypage_debug_panel_4873643897897");i.parentNode.removeChild(i)});var e=document.createTextNode("clear");h.appendChild(e);var f=document.createElement("h3");f.appendChild(document.createTextNode("Debug Info"));f.appendChild(h);f.appendChild(document.createElement("hr"));c.appendChild(f);var a=document.getElementsByTagName("body")[0];a.insertBefore(c,a.firstChild)}var d=new Array();for(var b=0;b<debugOut.arguments.length;b++){d.push(new String(debugOut.arguments[b]))}c.appendChild(document.createTextNode(d.join(", ")));c.appendChild(document.createElement("hr"))};
+/*
+ * INTER-Mediator
+ * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * 
+ * This project started at the end of 2009.
+ * 
+ */
+
+var isDebug = false;
+var isEdited = false;
+var fieldIdList = new Array();
+var tableTemplates = new Array();
+var deleteRecords = new Array();
+var insertRecords = new Array();
+var modifiedIds = new Array();
+var addedRowIds = new Array();
+var serial = 987001;
+var myRequest = null;
+
+function saveRecord()	{
+	if ( myRequest != null)	{
+		alert(getMessageString(109));
+		return;
+	}
+	var elmStr = '';
+	var postData = '';
+	var tags = ['input', 'select', 'textarea'];
+	for( var j=0 ; j < tags.length ; j++ )	{
+		var elements = document.getElementsByTagName( tags[j] );
+		for ( var i=0 ; i < elements.length ; i++ )	{
+			if ( elements[i].getAttribute('name') != null )	{
+				var isInclude = true;
+				if( j == 0 && elements[i].getAttribute('type') == 'checkbox' ) {
+					elmStr = elements[i].checked ? elements[i].value : '';
+				} else if( j == 0 && elements[i].getAttribute('type') == 'radio' ) {
+					isInclude = elements[i].checked;
+					elmStr = elements[i].checked ? elements[i].getAttribute('value') : '';
+//					if (isDebug) {	debugOut('Radio Button:'+elements[i].getAttribute('name')+'='+elements[i].checked+'/'+elements[i].value); }
+				} else {
+					elmStr = elements[i].value;
+				}
+				if (isInclude)	{
+//					if (isDebug) {	debugOut('Post data:'+elements[i].getAttribute('name')+'='+encodeURIComponent(elmStr)); }
+					postData += '&' + encodeURIComponent(elements[i].getAttribute('name')) 
+										+ '=' + encodeURIComponent(elmStr);
+				}
+			}
+		}
+	}
+	var seq = 0;
+	for(var aTable in deleteRecords)	{
+		for(var i=0; i<deleteRecords[aTable].length; i++)	{
+			postData += '&' + "__easypage__delete_table_" + seq + "=" + encodeURIComponent(aTable);
+			postData += '&' + "__easypage__delete_key_" + seq + "=" + encodeURIComponent(deleteRecords[aTable][i]);
+			seq++;
+			if (isDebug) {	debugOut('Delete Table:',aTable,deleteRecords[aTable][i]); }
+		}
+	}
+
+	var seq = 0;
+	for(var aTable in insertRecords)	{
+		for(var i=0; i<insertRecords[aTable].length; i++)	{
+			postData += '&' + "__easypage__insert_table_" + seq + "=" + encodeURIComponent(aTable);
+			postData += '&' + "__easypage__insert_id_" + seq + "=" + encodeURIComponent(insertRecords[aTable][i]);
+			seq++;
+			if (isDebug) {	debugOut('Insert Table:',aTable,insertRecords[aTable][i]); }
+		}
+	}
+	if ( postData == '' )	{
+		document.getElementById('__easypage_navigation_message').innerHTML = getMessageString(106);
+		return;
+	}
+	postData = getDataSourceParams() + getOptionParams() + getDatabaseParams() + postData;
+	myRequest = new XMLHttpRequest();
+	myRequest.open("post", getSaveURL(), true, getAccessUser(), getAccessPassword() );
+	myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+	myRequest.onreadystatechange = finishXMLHttpRequest;
+	myRequest.send( postData. substr( 1 ));
+}
+
+function finishXMLHttpRequest( )	{
+	if ( myRequest.readyState == 4 )	{
+		var res = myRequest.responseXML;
+		var str = childNodeValueNoError( res, 'message');
+		if (str.length > 0)
+			document.getElementById('__easypage_navigation_message').innerHTML = getMessageString(str);
+		if ( res != null && res.getElementsByTagName( 'error' ) != null )	{
+			var nodes = res.getElementsByTagName( 'error' );
+			for( var i=0 ; i<nodes.length ; i++){
+				var errorMsg = nodeValueNoError( nodes[i] );
+				if ( errorMsg != '' )	errorOut(errorMsg);
+			}
+		}
+		if ( res != null && res.getElementsByTagName( 'debug-message' ) != null )	{
+			var nodes = res.getElementsByTagName( 'debug-message' );
+			for( var i=0 ; i<nodes.length ; i++){
+				var errorMsg = nodeValueNoError( nodes[i] );
+				if ( errorMsg != '' )	debugOut(errorMsg);
+			}
+		}
+		if ( res != null && res.getElementsByTagName( 'generated' ) != null )	{
+			var nodes = res.getElementsByTagName( 'generated' );
+			for( var i=0 ; i<nodes.length ; i++){
+				var targetId = childNodeValueNoError( nodes[i], 'element-id');
+				var targetVal = childNodeValueNoError( nodes[i], 'value');
+				var target = document.getElementById(targetId);
+				if ( target.tagName == 'DIV' )	{
+					target.innerHTML = targetVal;
+				} else {
+					target.value = targetVal;
+				}
+				if( isDebug )	debugOut( 'Set the new generated id:',targetId,targetVal);
+			}
+		}
+		deleteRecords = new Array();
+		insertRecords = new Array();
+		modifiedIds = new Array();
+		myRequest = null;
+	} else {
+		document.getElementById('__easypage_navigation_message').innerHTML 
+			= getMessageString(104)+'readyState='+myRequest.readyState;
+	}
+}
+
+function childNodeValueNoError( node, tag )	{
+	if (node == null)	return '';
+	var str = '';
+	var cNode = node.getElementsByTagName(tag);
+	if ( ! navigator.appName.match(/Explorer/))	{
+		for ( var i=0 ; i<cNode.length ; i++)	{
+			str += cNode[i].textContent;
+		}
+	} else {
+		for ( var i=0 ; i<cNode.length ; i++)	{
+			for ( var j=0 ; j<cNode[i].childNodes.length ; j++)	{
+				if ( cNode[i].childNodes[j].nodeValue != null )
+					str += cNode[i].childNodes[j].nodeValue;
+			}
+		}
+	}
+	return str;
+}
+function nodeValueNoError( node )	{
+	if (node == null)	return '';
+	var str = '';
+	if ( ! navigator.appName.match(/Explorer/))	{
+		str = node.textContent;
+	} else {
+		for ( var i=0 ; i<node.childNodes.length ; i++)	{
+			if ( node.childNodes[i].nodeValue != null )
+				str += node.childNodes[i].nodeValue;
+		}
+	}
+	return str;
+}
+
+function debugMode( bool ){
+	isDebug = bool;
+}
+
+function modifiedField(id)	{
+	for ( var i =0 ; i < modifiedIds.length ; i++ )	{
+		if ( modifiedIds[i] == id )	{
+			return;
+		}
+	}
+	modifiedIds.push(id);
+}
+
+function doAtTheFinishing()	{
+	var modRecords = modifiedIds.length;
+	for( var i in deleteRecords )	modRecords += deleteRecords[i].length;
+	for( var i in insertRecords )	modRecords += insertRecords[i].length;
+	if( modRecords != 0 )
+		return getMessageString(105);
+}
+
+
+function doAtTheStarting(){
+	fieldIdList = new Array();
+	var idAttr;
+	var tags = ['input', 'select', 'textarea','div'];
+	for( var j=0 ; j < tags.length ; j++ )	{
+		var elements = document.getElementsByTagName( tags[j] );
+		for ( var i=0 ; i < elements.length ; i++ )	{
+			var nameAttr = (j==3) ? elements[i].getAttribute('title') : elements[i].getAttribute('name');
+			if ( nameAttr )	{
+				if ( elements[i].getAttribute('id') != null && elements[i].getAttribute('id') != '' )	{
+					idAttr =  elements[i].getAttribute('id');
+				} else	{
+					idAttr = new String(++serial);
+					elements[i].setAttribute('id',idAttr);
+				}
+				fieldIdList[nameAttr] = idAttr;
+				addEvent( elements[i], 'change', new Function('modifiedField('+idAttr+')'));
+				addEvent( elements[i], 'keydown', new Function('modifiedField('+idAttr+')'));
+				
+				var sp = nameAttr.indexOf(separator);
+				if( sp > 0 )	{
+					var tbName = nameAttr.substr( 0, sp );
+					if ( ! tableTemplates[tbName] )	{
+						for( var target = elements[i]; target.tagName != 'TR' ; target = target.parentNode );
+						tableTemplates[tbName] = {'parent':target.parentNode,'template':target.cloneNode(true),'editable':false};
+						addedRowIds[tbName] = new Array();
+						target.parentNode.removeChild( target );
+						if (isDebug) debugOut("Recognized Repeat Table",tbName);
+					}
+					if ( j < 3 )	{
+						tableTemplates[tbName]['editable'] = true;
+					}	
+				}
+			}
+		}
+	}
+	if (isDebug) {
+		var str = 'fieldIdList = ';
+		for( var i in fieldIdList)	str += '[' + i + ':' + fieldIdList[i] + '] ';
+		debugOut(str);
+	}
+	initializeWithDBValues();
+}
+
+function deleteRecord()	{
+	
+}
+
+function newRecord()	{
+	if( modifiedIds.length != 0 )
+		if ( ! confirm( getMessageString(105) ) )
+			return;
+
+	for ( var attrName in fieldIdList )	{
+		var target = document.getElementById(fieldIdList[ attrName ]);
+		if ( target )	{
+			if( target.tagName == 'DIV' )	{
+				target.innerHTML = '';
+			} else {
+				target.value = '';
+			}
+		}
+	}
+	for ( var tbName in addedRowIds )	{
+		for ( var i = 0 ; i < addedRowIds[tbName].length ; i++ ){
+			var target = document.getElementById(addedRowIds[tbName][i]);
+			if (target)	{
+				target.parentNode.removeChild(target);
+			}
+		}
+	}
+	mainTableName = getMainTableName();
+	insertRecords = new Array();
+	insertRecords[mainTableName] = new Array( fieldIdList[getKeyFieldName(mainTableName)] );
+}
+
+function checkKeyFieldMainTable( key )	{
+	if ( ! fieldIdList[key] || document.getElementById(fieldIdList[key]).tagName == 'DIV' )	{
+		var target = null;
+		for( var i in fieldIdList )	{
+			if ( i.indexOf(separator) < 0 )	{
+				target = document.getElementById(fieldIdList[i]);
+				if ( target != null )	break;
+			}
+		}
+		if (target == null)	target = document.getElementsByTagName('BODY')[0];
+		var elm = document.createElement('input');
+		elm.setAttribute('type', 'hidden');
+		elm.setAttribute('name', key);
+		elm.setAttribute('id', 'easypage_main_table_key_field');
+		target.parentNode.appendChild( elm );
+		fieldIdList[key] = 'easypage_main_table_key_field';
+		if (isDebug) debugOut("Add the key field:"+key+" to the main table.");
+	}
+}
+
+function deleteLineFromRepeatTable( tableName, trId, keyId )	{
+	if( idValue( keyId ) == '' )	{
+		errorOut(getMessageString(108));
+	}
+	debugOut( 'deleteLineFromRepeatTable', tableName, trId, keyId, idValue( keyId ));
+	if ( ! deleteRecords[tableName] )
+		deleteRecords[tableName] = new Array();
+	deleteRecords[tableName].push( idValue( keyId ));
+	var tr = document.getElementById(trId);
+	tr.parentNode.removeChild(tr);
+}
+function addLineToRepeatTable( tableName )	{
+	var data = new Array();
+	data[tableName + separator + getForeignKeyFieldName(tableName)] = fieldValue(getKeyFieldName(getMainTableName()));
+	var keyFieldId = addToRepeat( tableName, data );
+	if ( ! insertRecords[tableName] )
+		insertRecords[tableName] = new Array();
+	insertRecords[tableName].push( keyFieldId );
+	debugOut( 'Called addLineToRepeatTable:', getForeignKeyFieldName(tableName), fieldValue(getKeyFieldName(getMainTableName())), keyFieldId);
+	
+}
+
+function fieldValue(fName)	{
+	var target = document.getElementById(fieldIdList[fName]);
+	if ( ! target )	return '';
+	if ( target.tagName == 'DIV')	return target.innerHTML;
+	return target.value;
+}
+
+function idValue(id)	{
+	var target = document.getElementById(id);
+	if ( ! target )	return '';
+	if ( target.tagName == 'DIV')	return target.innerHTML;
+	return target.value;
+}
+
+function setClassAttributeToNode( node, className )	{
+	if (node == null)	return ;
+	if ( ! navigator.appName.match(/Explorer/))	{
+		node.setAttribute( 'class', className );
+	} else {
+		node.setAttribute( 'className', className );
+	}
+}
+
+function getClassAttributeFromNode( node )	{
+	if (node == null)	return '';
+	var str = '';
+	if ( ! navigator.appName.match(/Explorer/))	{
+		str = node.getAttribute( 'class' );
+	} else {
+		str = node.getAttribute( 'className' );
+	}
+	return str;
+}
+
+function addRepeatTableControl( tableName, setting )	{
+	if (tableTemplates[tableName] )	{
+		var tbody = tableTemplates[tableName]['parent'];
+		var trLine = tableTemplates[tableName]['template'];
+		
+		if ( setting.match(/delete/) ){
+			var td = document.createElement('TD');
+			setClassAttributeToNode( td, 'easypage_table_control' );
+			trLine.appendChild( td );
+			var aElm = document.createElement('span');
+			setClassAttributeToNode( aElm, 'easypage_table_control_delete' );
+			aElm.appendChild( document.createTextNode(getMessageString(5)));
+			td.appendChild( aElm );
+		}
+		
+		if ( setting.match(/insert/) ){
+			var tfoot = tbody.parentNode.createTFoot();
+			tbody.parentNode.insertBefore( tfoot, tbody );
+			var tr = document.createElement('TR');
+			tfoot.appendChild( tr );
+			td = document.createElement('TD');
+			td.setAttribute( 'colSpan', trLine.getElementsByTagName('TD').length + 1 );
+			td.setAttribute( 'align', 'right' );
+			setClassAttributeToNode( td, 'easypage_table_control' );
+			tr.appendChild( td );
+			aElm = document.createElement('span');
+			setClassAttributeToNode( aElm, 'easypage_table_control_insert' );
+			addEvent( aElm, 'click', new Function("addLineToRepeatTable('"+tableName+"');") );
+			aElm.appendChild( document.createTextNode(getMessageString(4)));
+			td.appendChild( aElm );
+		}
+	} else {
+		errorOut( 'The table-control option has irrelevant table name' );
+	}
+	if (isDebug) debugOut("Call function addRepeatTableControl: table="+tableName );
+}
+function checkKeyFieldRepeatTable( tableName, key, fkey )	{
+	msg = '';
+	if ( ! tableTemplates[tableName]['editable'] )	return;
+	var tdTemplate = tableTemplates[tableName]['template'];
+	if ( tdTemplate == null )	return;
+	
+	var keyFullName = tableName + separator + key;
+	var fKeyFullName = tableName + separator + fkey;
+	var divNodes = document.getElementsByTagName( 'DIV' );
+	var isDivKey = false, isDivFKey = false;
+	for ( var i = 0 ; i < divNodes.length ; i++ )	{
+		var nameAttr = divNodes[i].getAttribute( 'title' );
+		if ( nameAttr )	{
+			if( nameAttr == keyFullName)	isDivKey = true;
+			if( nameAttr == fKeyFullName)	isDivFKey = true;
+		}
+	}
+	if ( key != '' && ( ! fieldIdList[keyFullName]  || isDivKey ) )	{
+		var newIdAttr = 'easypage_repeat_table_key_field_' + tableName;
+		var target = tableTemplates[tableName]['template'].getElementsByTagName('TD')[0];
+		var elm = document.createElement('input');
+		elm.setAttribute('type', 'hidden');
+		elm.setAttribute('name', keyFullName);
+		elm.setAttribute('id', newIdAttr);
+		target.appendChild( elm );
+		fieldIdList[keyFullName] = newIdAttr;
+		msg += "/ Add the key field:"+key+" to table:"+tableName;
+	}
+	if ( fkey != '' && ( ! fieldIdList[fKeyFullName]  || isDivFKey ) )	{
+		var newIdAttr = 'easypage_repeat_table_foreign_key_field_' + tableName;
+		var target = tableTemplates[tableName]['template'].getElementsByTagName('TD')[0];
+		var elm = document.createElement('input');
+		elm.setAttribute('type', 'hidden');
+		elm.setAttribute('name', fKeyFullName);
+		elm.setAttribute('id', newIdAttr);
+		target.appendChild( elm );
+		fieldIdList[keyFullName] = newIdAttr;
+		msg += "/ Add the forreign key field:"+key+" to table:"+tableName;
+	}
+	if (isDebug) debugOut("Call function checkKeyFieldRepeatTable: table="+tableName+", key="+key+", foreign key="+fkey + msg);
+}
+
+var n = 0;
+function addToRepeat( table, data )	{
+	var keyFieldName = table + separator + getKeyFieldName(table);
+	if( data[keyFieldName] == '' )	{
+		errorOut(getMessageString(107));
+	}
+	var keyFieldId;
+	var cloned = tableTemplates[table]['template'].cloneNode(true);
+	cloned.setAttribute( 'id', (++serial));
+	var trId = serial;
+	var tags = ['input', 'select', 'textarea','div'];
+	var postCheck = new Array();
+	var checkValues = new Array();
+	for( var j=0 ; j < tags.length ; j++ )	{
+		var elements = cloned.getElementsByTagName( tags[j] );
+		for ( var i=0 ; i < elements.length ; i++ )	{
+			var nameAttr = (j==3) ? elements[i].getAttribute('title') : elements[i].getAttribute('name');
+			if ( nameAttr )	{
+				elements[i].setAttribute( (j==3)?'title':'name', nameAttr+separator+n);
+				elements[i].setAttribute( 'id', (++serial));
+				if ( nameAttr == keyFieldName && elements[i].tagName != 'DIV' )	keyFieldId = serial;
+				if( data[nameAttr] )	{
+					if ( elements[i].tagName == 'DIV' )	{
+						elements[i].innerHTML = data[nameAttr];
+					}
+					else if ( elements[i].tagName == 'SELECT' )	{
+						elements[i].value = data[nameAttr];
+					}
+					else if ( elements[i].tagName == 'INPUT' && elements[i].getAttribute('type') == 'checkbox' )	{
+						elements[i].checked = (data[nameAttr]!='');
+					}
+					else if ( elements[i].tagName == 'INPUT' && elements[i].getAttribute('type') == 'radio' )	{
+						checkValues[serial] = elements[i].value;
+						if (elements[i].value == data[nameAttr])	{
+							postCheck[serial] = true;
+						} else {}
+					}
+					else if ( elements[i].tagName == 'TEXTAREA' )	{
+						var val = data[nameAttr].split( getNewLineAlternative()).join( "\n" );
+						val = val.split( getTagOpenAlternative()).join( "<" );
+						val = val.split( getTagCloseAlternative()).join( ">" );
+						elements[i].value = val;
+					}
+					else	{
+						var val = data[nameAttr].split( getTagOpenAlternative()).join( "<" );
+						val = val.split( getTagCloseAlternative()).join( ">" );
+						elements[i].value = val;
+					}
+					addEvent( elements[i], 'change', new Function('modifiedField('+serial+');'))
+					addEvent( elements[i], 'keydown', new Function('modifiedField('+serial+');'))
+//					debugOut( 'addToRepeat', nameAttr, data[nameAttr], keyFieldName);
+				}
+			}
+		}
+	}
+	tableTemplates[table]['parent'].appendChild(cloned);
+	addedRowIds[table].push(trId);
+	
+	elements = cloned.getElementsByTagName( 'SPAN' );
+	for ( var i=0 ; i < elements.length ; i++ )	{
+		if ( getClassAttributeFromNode( elements[i] ).indexOf('easypage_table_control_delete') >= 0 )	{
+			addEvent( elements[i], 'click', new Function("deleteLineFromRepeatTable('" + table + "','" + trId + "','" + keyFieldId + "')"));
+		}
+	}
+
+	for( var e in postCheck )	{
+		document.getElementById(e).checked = true;
+	}
+	for( var e in checkValues )	{
+		document.getElementById(e).value = checkValues[e];
+	}
+	n++;
+	return keyFieldId;
+}
+
+function setValue(field,value)	{
+	var elmId = fieldIdList[field];
+	var target = document.getElementById(elmId);
+	if (target == null)	return;
+	if ( target.tagName == 'DIV' )
+		target.innerHTML = value;
+	else if ( target.tagName == 'SELECT' )	{
+		target.value = value;
+	}
+	else if ( target.tagName == 'INPUT' && target.getAttribute('type') == 'checkbox' )	{
+		target.checked = (value!='');
+	}
+	else if ( target.tagName == 'INPUT' && target.getAttribute('type') == 'radio' )	{
+		for ( var i=elmId ; i>987000 ; i--)		{
+			target = document.getElementById(i);
+			if ( target.tagName != 'INPUT' || target.getAttribute('type') != 'radio')
+				break;
+			if( target.value == value )	{
+				target.checked=true;
+				break;
+			}
+		}
+	}
+	else if ( target.tagName == 'TEXTAREA' )	{
+		var val = value.split( getNewLineAlternative()).join( "\n" );
+		val = val.split( getTagOpenAlternative()).join( "<" );
+		val = val.split( getTagCloseAlternative()).join( ">" );
+		target.value = val;
+	}
+	else	{
+		var val = value.split( getTagOpenAlternative()).join( "<" );
+		val = val.split( getTagCloseAlternative()).join( ">" );
+		target.value = val;
+	}
+}
+
+function addEvent(node, evt, func)	{
+	if ( node.addEventListener )	{
+		node.addEventListener(evt,func,false);
+	} else if ( node.attachEvent )	{
+		node.attachEvent('on'+evt,func);
+	}
+}
+
+function showNoRecordMessage()	{
+	errorOut(getMessageString(101))
+}
+
+function appendCredit()	{
+	var body = document.getElementsByTagName('body')[0];
+	var cNode = document.createElement('div');
+	body.appendChild( cNode );
+	cNode.style.backgroundColor = '#F6F7FF';
+	cNode.style.height = '2px';
+	
+	cNode = document.createElement('div');
+	body.appendChild( cNode );
+	cNode.style.backgroundColor = '#EBF1FF';
+	cNode.style.height = '2px';
+	
+	cNode = document.createElement('div');
+	body.appendChild( cNode );
+	cNode.style.backgroundColor = '#E1EAFF';
+	cNode.style.height = '2px';
+	
+	cNode = document.createElement('div');
+	body.appendChild( cNode );
+	cNode.setAttribute( 'align', 'right' );
+	cNode.style.backgroundColor = '#D7E4FF';
+	cNode.style.padding = '2px';
+	var spNode = document.createElement('span');
+	cNode.appendChild( spNode );
+	cNode.style.color = '#666666';
+	cNode.style.fontSize = '7pt';
+	var aNode = document.createElement('a');
+	aNode.appendChild( document.createTextNode( 'INTER-Mediator' ));
+	aNode.setAttribute( 'href', 'http://msyk.net/im' );
+	aNode.setAttribute( 'target', '_href' );
+	spNode.appendChild( document.createTextNode( 'Generated by ' ) );
+	spNode.appendChild( aNode );
+	spNode.appendChild( document.createTextNode( ' rel.@@@@@@@@' ) );
+}
+
+function errorOut(str)	{
+	var debugNode = document.getElementById('easypage_error_panel_4873643897897');
+	if ( debugNode == null )	{
+		debugNode = document.createElement('div');
+		debugNode.setAttribute( 'id', 'easypage_error_panel_4873643897897' );
+		debugNode.style.backgroundColor = '#FFDDDD';
+		var title = document.createElement('h3');
+		title.appendChild(document.createTextNode('Error Info from INTER-Mediator'));
+		title.appendChild(document.createElement('hr'));
+		debugNode.appendChild( title );
+		var body = document.getElementsByTagName('body')[0];
+		body.insertBefore( debugNode, body.firstChild );
+	}
+	debugNode.appendChild(document.createTextNode(str));
+	debugNode.appendChild(document.createElement('hr'));
+}
+
+function debugOut(str)	{
+	var debugNode = document.getElementById('easypage_debug_panel_4873643897897');
+	if ( debugNode == null )	{
+		debugNode = document.createElement('div');
+		debugNode.setAttribute( 'id', 'easypage_debug_panel_4873643897897' );
+		debugNode.style.backgroundColor = '#DDDDDD';
+		var clearButton = document.createElement('button');
+		clearButton.setAttribute( 'title','clear' );
+		addEvent( clearButton, 'click', 
+			function(){
+				var target = document.getElementById('easypage_debug_panel_4873643897897');
+				target.parentNode.removeChild(target);
+		});
+		var tNode = document.createTextNode('clear');
+		clearButton.appendChild(tNode)
+		var title = document.createElement('h3');
+		title.appendChild(document.createTextNode('Debug Info from INTER-Mediator'));
+		title.appendChild(clearButton);
+		title.appendChild(document.createElement('hr'));
+		debugNode.appendChild( title );
+		var body = document.getElementsByTagName('body')[0];
+		body.insertBefore( debugNode, body.firstChild );
+	}
+	var message = new Array();
+	for ( var i = 0 ; i < debugOut.arguments.length ; i++ )	message.push( new String(debugOut.arguments[i]) );
+	debugNode.appendChild(document.createTextNode(message.join(', ')));
+	debugNode.appendChild(document.createElement('hr'));
+}

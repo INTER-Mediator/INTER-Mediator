@@ -17,8 +17,8 @@ class DB_MySQL extends DB_Base	{
 	}
 	
 	function getFromDB( $tableName )	{
-		if ( isset ( $sqlResult[$tableName] ))	{
-			return $sqlResult[$tableName];
+		if ( isset ( $this->sqlResult[$tableName] ))	{
+			return $this->sqlResult[$tableName];
 		}
 		$tableInfo = $this->getTableInfo( $tableName );
 		
@@ -30,20 +30,46 @@ class DB_MySQL extends DB_Base	{
 		}
 		mysql_select_db( $this->dbSpec['db'] );
 		
-		$queryClause = array();
-		if ( isset( $tableInfo['foreign-key'] ) )	{
-			$queryClause[] = "{$tableInfo['foreign-key']} = {$this->mainTalbeKeyValue}";
-		}
-		if ( isset( $tableInfo['query'] ))	{
-			foreach( $tableInfo['query'] as $condition )	{
-				if ( isset( $condition['operator'] ))	{
-					$queryClause[] = "{$condition['field']} {$condition['operator']} {$condition['value']}";
-				} else {
-					$queryClause[] = "{$condition['field']} = {$condition['value']}";
+		$queryClause = '';
+		if ( isset( $tableInfo['query'][0] ))	{
+			if ( $tableInfo['query'][0]['field'] == '__clause__' )	{
+				$queryClause = "{$tableInfo['query'][0]['value']}";
+			} else {
+				$queryClauseArray = array();
+				$chanckCount = 0;
+				$insideOp = ' AND ';	$outsiceOp = ' OR ';
+				foreach( $tableInfo['query'] as $condition )	{
+					if ( $condition['field'] == '__operation__' )	{
+						$chanckCount++;
+						if ( $condition['operation'] == 'ex' )	{
+							$insideOp = ' OR ';	$outsiceOp = ' AND ';
+						}
+					} else {
+						if ( isset( $condition['value'] ))	{
+							$escedVal = addslashes( $condition['value'] );
+							if ( isset( $condition['operation'] ))	{
+								$queryClauseArray[$chanckCount][] = "{$condition['field']} {$condition['operation']} '{$escedVal}'";
+							} else {
+								$queryClauseArray[$chanckCount][] = "{$condition['field']} = '{$escedVal}'";
+							}
+						} else {
+							$queryClauseArray[$chanckCount][] = "{$condition['field']} {$condition['operation']}";
+						}
+					}
 				}
+				foreach( $queryClauseArray as $oneTerm )	{
+					$queryClause[] = '(' . implode( $insideOp, $oneTerm ) . ')';
+				}
+				$queryClause =  implode( $outsiceOp, $queryClause );
 			}
 		}
-		$queryClause = ( count( $queryClause ) > 0 ) ? ('WHERE ' . implode( ',', $queryClause)) : '';
+		
+		if ( isset( $tableInfo['foreign-key'] ) )	{
+			$queryClause = (($queryClause!='')?"({$queryClause}) AND ":'') . "{$tableInfo['foreign-key']} = {$this->mainTalbeKeyValue}";
+		}
+		if ( $queryClause != '' )	{
+			$queryClause = "WHERE {$queryClause}";
+		}
 		
 		$sortClause = array();
 		if ( isset( $tableInfo['sort'] ))	{
@@ -57,16 +83,17 @@ class DB_MySQL extends DB_Base	{
 		}
 		$sortClause = ( count( $sortClause ) > 0 )	? ('ORDER BY ' . implode( ',', $sortClause)) : '';
 		
-		$sql = "SELECT count(*) FROM {$tableName} {$queryClause} {$sortClause}";
-		if ( $this->isDebug )	$this->debugMessage[] = $sql;
-		$result = mysql_query($sql);
-		if (!$result) {
-			$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
-			return array();
+		if ($tableName == $this->mainTableName) 	{
+			$sql = "SELECT count(*) FROM {$tableName} {$queryClause} {$sortClause}";
+			if ( $this->isDebug )	$this->debugMessage[] = $sql;
+			$result = mysql_query($sql);
+			if (!$result) {
+				$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
+				return array();
+			}
+			$row = mysql_fetch_row($result);
+			$this->mainTableCount = $row[0];
 		}
-		$row = mysql_fetch_row($result);
-		$this->mainTableCount = $row[0];
-		
 		if ($tableName == $this->mainTableName) 	{
 			$sql = "SELECT * FROM {$tableName} {$queryClause} {$sortClause} LIMIT {$this->skip} OFFSET {$this->start}";
 		} else {
@@ -78,25 +105,30 @@ class DB_MySQL extends DB_Base	{
 			$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
 			return array();
 		}
+		$this->sqlResult[$tableName] = array();
 		while( $row = mysql_fetch_array($result, MYSQL_ASSOC) )	{
 			$rowArray = array();
 			foreach( $row as $field => $val )	{
-				$rowArray[ $field ] = $val;
+				$filedInForm = $field;
+				if ( $this->skip != 1 || $tableName != $this->mainTableName )	{
+					$filedInForm = "{$tableName}{$this->separator}{$field}";
+				}
+				$rowArray[$field] = $this->formatterFromDB( $filedInForm, $val );
 			}
-			$sqlResult[$tableName][] = $rowArray;
+			$this->sqlResult[$tableName][] = $rowArray;
 			if ( $this->mainTableName == $tableName )	{
 				$this->mainTalbeKeyValue = $rowArray[$tableInfo['key']];
 			}
 		}
 		mysql_free_result($result);
-		return $sqlResult[$tableName];
+		return $this->sqlResult[$tableName];
 	}
 	
 	function setToDB( $tableName, $data )	{
 		$tableInfo = $this->getTableInfo( $tableName );
 		$keyFieldName = $tableInfo['key'];
 		if ( ! $tableInfo['key'] || ! isset( $data[$keyFieldName] ))	{
-			$this->errorMessage[] = 'Error: Can\'t get the key field value';
+			$this->errorMessage[] = "Error: Can't get the key field value : table={$tableName}, key={$keyFieldName}";
 			return false;
 		}
 		
@@ -111,9 +143,12 @@ class DB_MySQL extends DB_Base	{
 		$setCaluse = array();
 		foreach ( $data as $field=>$value )	{
 			if ( $field != $keyFieldName){
+				$filedInForm = $field;
+				if ( $this->skip == 1 && $tableName == $this->mainTableName )	{
+					$filedInForm = "{$tableName}{$this->separator}{$field}";
+				}
 				$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
-				$convVal = $this->formatterToDB(
-					($this->mainTableName==$tableName)?$field:"{$tableName}{$this->separator}{$field}", $convVal );
+				$convVal = addcslashes( $this->formatterToDB( $filedInForm, $convVal ), "\'\"\\");
 				$setCaluse[] = "{$field}='{$convVal}'";
 			}
 		}
@@ -133,62 +168,85 @@ class DB_MySQL extends DB_Base	{
 	}
 	
 	function newToDB( $tableName, $data, &$keyValue )	{
-		$returnStr = '';
 		$tableInfo = $this->getTableInfo( $tableName );
 		$keyFieldName = $tableInfo['key'];
-
-		$this->fx->setCharacterEncoding( 'UTF-8' );
-		$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-		$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
+		
+		require( 'params.php' );
+		$this->link = mysql_connect( $mysql_connect, $this->dbSpec['user'], $this->dbSpec['password'] );
+		if ( ! $this->link ) {
+			$this->errorMessage[] = 'MySQL Connect Error: ' . mysql_error();
+			return false;
+		}
+		mysql_select_db( $this->dbSpec['db'] );
+		
+		$setCaluse = array();
 		foreach ( $data as $field=>$value )	{
 			if ( $field != $keyFieldName){
-				$convVal = str_replace( "\n", "\r", str_replace( "\r\n", "\r", (is_array( $value )) ? implode( "\r", $value ) : $value ));
-				$this->fx->AddDBParam( $field, $this->formatterToDB(
-					($this->mainTableName==$tableName)?$field:"{$tableName}{$this->separator}{$field}", $convVal ));
+				$filedInForm = $field;
+				if ( $this->skip == 1 && $tableName == $this->mainTableName )	{
+					$filedInForm = "{$tableName}{$this->separator}{$field}";
+				}
+				$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
+				$convVal = addcslashes( $this->formatterToDB( $filedInForm, $convVal ), "\'\"\\");
+				$setCaluse[] = "{$field}='{$convVal}'";
 			}
 		}
-		$result = $this->fx->FMNew();
-		if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
-		if( $result['errorCode'] > 0 && $result['errorCode'] != 401 )
-			$returnStr .= "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";
-					
-		foreach( $result['data'] as $row )	{
-			$keyValue = $row[$keyFieldName][0];
+		if ( count( $setCaluse ) < 1 )	{
+			$this->errorMessage[] = 'No data to update.';
+			return false;
 		}
-		return $returnStr;
+		$setCaluse = implode( ',', $setCaluse );
+		$sql = "INSERT {$tableName} SET {$setCaluse}";
+		if ( $this->isDebug )	$this->debugMessage[] = $sql;
+		$result = mysql_query($sql);
+		if (!$result) {
+			$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
+			return false;
+		}
+		$keyValue = mysql_insert_id();
+		return true;
 	}
 	
 	function deleteFromDB( $tableName, $data )	{
-		$returnStr = '';
+		$tableInfo = $this->getTableInfo( $tableName );
+		$keyFieldName = $tableInfo['key'];
+		if ( ! $tableInfo['key'] || ! isset( $data[$keyFieldName] ))	{
+			$this->errorMessage[] = 'Error: Can\'t get the key field value';
+			return false;
+		}
+		if ( $data[$keyFieldName] == '' )	{
+			$this->errorMessage[] = 'Error: Should specify valid key value.';
+			return false;
+		}
 		
-		$this->fx->setCharacterEncoding( 'UTF-8' );
-		$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-		$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
-		foreach( $data as $field=>$val )	{
-			$this->fx->AddDBParam( $field, $val, 'eq' );
+		require( 'params.php' );
+		$this->link = mysql_connect( $mysql_connect, $this->dbSpec['user'], $this->dbSpec['password'] );
+		if ( ! $this->link ) {
+			$this->errorMessage[] = 'MySQL Connect Error: ' . mysql_error();
+			return false;
 		}
-		$result = $this->fxResult = $this->fx->FMFind();
-		if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
-		if( $result['errorCode'] > 0 )
-			$returnStr .= "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
-			
-		$recId = 0;
-		if ( $result[ 'foundCount' ] != 0 )	{
-			foreach( $result['data'] as $key=>$row )	{
-				$recId =  substr( $key, 0, strpos( $key, '.' ) );
-				
-				$this->fx->setCharacterEncoding( 'UTF-8' );
-				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-				$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
-				$this->fx->SetRecordID( $recId );
-				$result = $this->fx->FMDelete();
-				if( $result['errorCode'] > 0 )
-					$returnStr .= "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";
-				if ( $this->isDebug )	$debugMessage[] = $result['URL'];
-				break;
-			}
+		mysql_select_db( $this->dbSpec['db'] );
+		
+		$whereClause = array();
+		foreach ( $data as $field=>$value )	{
+			$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
+			$convVal = $this->formatterToDB(
+				($this->mainTableName==$tableName)?$field:"{$tableName}{$this->separator}{$field}", $convVal );
+			$whereClause[] = "{$field}='{$convVal}'";
 		}
-		return $returnStr;
+		if ( count( $whereClause ) < 1 )	{
+			$this->errorMessage[] = 'Don\'t delete with no ciriteria.';
+			return false;
+		}
+		$whereClause = implode( ',', $whereClause );
+		$sql = "DELETE FROM {$tableName} WHERE {$whereClause}";
+		if ( $this->isDebug )	$this->debugMessage[] = $sql;
+		$result = mysql_query($sql);
+		if (!$result) {
+			$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
+			return false;
+		}
+		return true;
 	}
 }
 ?>

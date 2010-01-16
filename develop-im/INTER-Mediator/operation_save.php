@@ -9,50 +9,38 @@
 
 header('Content-Type: text/xml');
 
-if ( isset( $_POST['__easypage__debug']))	$debug = true;	else $debug = false;
+$realPrefix = '__imparameters__';
+$returnArray = array();
+foreach( $_POST as $key=>$val )	{
+	if ( strpos( $key, $realPrefix ) === 0 )	{
+		$keyAr = explode( '_', substr( $key, strlen( $realPrefix ) ));
+		$tableName = array_shift( $keyAr );
+		$escVal = addslashes( $val );
+		eval( "\${$tableName}['". implode( "']['",  $keyAr) . "']='{$escVal}';" );
+	}
+}
+
+if ( isset( $options['debug'] ))	$debug = true;	else $debug = false;
+$separator = $options['separator'];
+$mainTalbeName =$datasrc[0]['name'];
 
 require_once( 'params.php' );
-if ( isset( $_POST["__easypage__db-class"] )) $dbAccessClass = $_POST["__easypage__db-class"];
-if ( isset( $_POST["__easypage__db-class"] )) 
-	$dbspec['db'] = $_POST["__easypage__db-name"];	
-else 
-	$dbspec['db'] = $dbName;
-require_once("{$dbAccessClass}.php");
-
-$separator = $_POST['__easypage__separator'];
-$mainTalbeName =$_POST["__easypage__table_name_0"];
-$datasrc = array();
-for( $i=0; $i < 5000 ; $i++ )	{
-	if ( ! isset($_POST["__easypage__table_name_{$i}"])) break;
-	$datasrc[$i]['name'] = $_POST["__easypage__table_name_{$i}"];
-	if( isset( $_POST["__easypage__table_key_{$i}"] ) )
-		$datasrc[$i]['key'] = $_POST["__easypage__table_key_{$i}"];
-	if( isset( $_POST["__easypage__table_foreign-key_{$i}"] ) )
-		$datasrc[$i]['foreign-key'] = $_POST["__easypage__table_foreign-key_{$i}"];
-}
-$formatter = array();
-for( $i=0; $i < 5000 ; $i++ )	{
-	if ( ! isset($_POST["__easypage__formatter_field_{$i}"])) break;
-	$currentFmt = array();
-	$currentFmt['field'] = $_POST["__easypage__formatter_field_{$i}"];
-	$currentFmt['converter-class'] = $_POST["__easypage__formatter_class_{$i}"];
-	if ( isset( $_POST["__easypage__parameter_class_{$i}"] ))
-		$currentFmt['parameter'] = $_POST["__easypage__parameter_class_{$i}"];
-	$formatter[] = $currentFmt;
-}
-
-
-$dbspec['user'] = $dbUser;
-$dbspec['password'] = $dbPassword;
-
-eval( "\$dbInstance = new {$dbAccessClass}();" );
-$dbInstance->setSeparator( $separator );
+if ( ! isset( $dbspec['db-class'] )) 	$dbspec['db-class'] = $dbAccessClass;
+if ( ! isset( $dbspec['db'] )) 			$dbspec['db'] = $dbName;
+if ( ! isset( $dbspec['user'] )) 		$dbspec['user'] = $dbUser;
+if ( ! isset( $dbspec['password'] )) 	$dbspec['password'] = $dbPassword;
+if ( strpos( $dbspec['db-class'], 'DB_' ) !== 0 )	$dbspec['db-class'] = "DB_{$dbspec['db-class']}";
+require_once("{$dbspec['db-class']}.php");
+eval( "\$dbInstance = new {$dbspec['db-class']}();" );
+if ( $debug )	$dbInstance->setDebugMode();
+$dbInstance->setSeparator( $options[ 'separator' ] );
 $dbInstance->setDBSpec( $dbspec );
 $dbInstance->setDataSource( $datasrc );
-if ( isset($formatter))	$dbInstance->setFormatter( $formatter );
+if ( isset( $options[ 'formatter' ] ))	$dbInstance->setFormatter( $options[ 'formatter' ] );
+
+// $dbInstance->setDebugMessage( var_export( $datasrc, true ));
 
 $errorCheck = true;
-//if ( $debug )	$errorCheck[] = var_export( $_POST, true );
 
 for( $i=0; $i < 5000 ; $i++ )	{
 	if ( ! isset($_POST["__easypage__delete_table_{$i}"])) break;
@@ -62,7 +50,6 @@ for( $i=0; $i < 5000 ; $i++ )	{
 		if( $datasrc[$tableNum]['name'] == $tableName)	{
 			$keyField = $datasrc[$tableNum]['key'];
 			$errorCheck = $errorCheck && $dbInstance->deleteFromDB( $tableName, array($keyField=>$val) );
-//			if ( $debug )	$errorCheck[] = 'Delete from '.$tableName. ', '. $keyField . '=' . $val;
 		}
 	}
 }
@@ -74,15 +61,14 @@ for( $i=0; $i < 5000 ; $i++ )	{
 	$id = $_POST["__easypage__insert_id_{$i}"];
 	for ( $tableNum = 0 ; $tableNum < count($datasrc) ; $tableNum++ )	{
 		if( $datasrc[$tableNum]['name'] == $tableName)	{
-			$insertIds[$tableNum][] = $id;
+			$insertIds[$tableName][] = $id;
 		}
 	}
-//	echo "insertIds[{$tableName},{$id}]";
 }
 
 $tableData = array();
 foreach( $_POST as $key=>$val )	{
-	if ( strpos( $key, '__easypage__' ) !== 0 )	{
+	if ( strpos( $key, '__easypage__' ) !== 0 && strpos( $key, '__imparameters__' ) !== 0 )	{
 		if ( substr_count( $key, $separator ) == 2 )	{
 			$comp = explode( $separator, $key );
 			$tableData[$comp[0]][$comp[2]][$comp[1]] = $val;
@@ -92,8 +78,7 @@ foreach( $_POST as $key=>$val )	{
 	}
 }
 
-//$errorCheck[] = var_export($insertIds, true);
-//$errorCheck[] = var_export($tableData, true);
+// $dbInstance->setDebugMessage( var_export( $tableData, true ));
 
 $newKeyValueArray = array();
 
@@ -149,7 +134,6 @@ foreach( $dbInstance->getErrorMessages() as $aError )	{
 	$eNode->appendChild( $doc->createTextNode( $aError ) );
 	$emNode->appendChild( $eNode );
 }
-
 $emNode = $doc->createElement( 'debug-messages' );
 $rootNode->appendChild( $emNode );
 foreach( $dbInstance->getDebugMessages() as $aError )	{
@@ -168,6 +152,7 @@ foreach($newKeyValueArray as $key=>$val)	{
 	$pair->appendChild( $value );
 	$keyNode->appendChild( $pair );
 }
+
 echo $doc->saveXML();
 
 ?>

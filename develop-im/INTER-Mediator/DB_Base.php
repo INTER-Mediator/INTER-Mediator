@@ -25,6 +25,14 @@ class DB_Base	{
 	function __construct()	{
 	}
 	
+	function setDebugMessage( $str )		{
+		$this->debugMessage[] = $str;
+	}
+	
+	function setErrorMessage( $str )		{
+		$this->errorMessage[] = $str;
+	}
+	
 	function getDebugMessages()				{
 		return $this->debugMessage;
 	}
@@ -47,10 +55,7 @@ class DB_Base	{
 	
 	function setDataSource( $src )			{	
 		$this->dataSource = $src;
-		foreach ( $this->dataSource as $ar )	{
-			$this->mainTableName = $ar['name'];
-			break;
-		}
+		$this->mainTableName = $src[0]['name'];
 	}
 	
 	function setCreteria( $criteria )		{	
@@ -107,7 +112,9 @@ class DB_Base	{
 		return $data;
 	}
 	
-	function getMainTableCount()	{	return $this->mainTableCount;	}
+	function getMainTableCount()	{	
+		return $this->mainTableCount;
+	}
 
 	function getFromDB( $tableName )	{	}
 	

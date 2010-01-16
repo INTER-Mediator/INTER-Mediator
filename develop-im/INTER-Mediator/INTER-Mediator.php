@@ -9,6 +9,10 @@
  */
 mb_internal_encoding('UTF-8');
 
+define ( 'ALTERNATIVE_NEXTLINE', '__easypage__linefeed__');
+define ( 'ALTERNATIVE_TAGOPEN', '__easypage__tagopen__');
+define ( 'ALTERNATIVE_TAGCLOSE', '__easypage__tagclose__');
+
 $currentDir = dirname(__FILE__);
 $lang = strtolower( $_SERVER['HTTP_ACCEPT_LANGUAGE'] );
 if ( strpos( $lang, ',' ) !== false )	{
@@ -38,11 +42,12 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	
 	require_once( 'params.php' );
 	if( ! isset( $dbspec['db-class'] )) $dbspec['db-class'] = $dbAccessClass;
-	if( ! isset( $dbspec['db'] )) $dbspec['db'] = $dbName;
-	if( ! isset( $dbspec['user'] )) $dbspec['user'] = $dbUser;
+	if( ! isset( $dbspec['db'] )) 		$dbspec['db'] = $dbName;
+	if( ! isset( $dbspec['user'] )) 	$dbspec['user'] = $dbUser;
 	if( ! isset( $dbspec['password'] )) $dbspec['password'] = $dbPassword;
 	
-	$separator = isset($options['separator'])?$options['separator']:'@';
+	$options['separator'] = isset($options['separator'])?$options['separator']:'@';
+	if( $debug )	$options['debug'] = $debug;
 	
 	if ( strpos( $dbspec['db-class'], 'DB_' ) !== 0 )
 		$dbspec['db-class'] = 'DB_' . $dbspec['db-class'];
@@ -50,66 +55,26 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	
 	eval( "\$dbInstance = new {$dbspec['db-class']}();" );
 	if ( $debug )	$dbInstance->setDebugMode();
-	$dbInstance->setSeparator( $separator );
+	$dbInstance->setSeparator( $options['separator'] );
 	$dbInstance->setDBSpec( $dbspec );
 	$dbInstance->setDataSource( $datasrc );
-	$groupSize = isset($options['skip']) ? $options['skip'] : 1;
+	$groupSize = isset( $datasrc[0]['records'] ) ? $datasrc[0]['records'] : 1;
 	$currentPage = isset($_GET['p']) ? $_GET['p'] : 0;
 	$dbInstance->setStartSkip( $currentPage * $groupSize , $groupSize );
 	if ( isset($options['formatter']))	$dbInstance->setFormatter( $options['formatter'] );
 	
 	echo '<script type="text/javascript" language="JavaScript">', $LF;
 	echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
-	echo "{$LF}{$LF}var separator='{$separator}';{$LF}";
+	echo "{$LF}{$LF}var separator='{$options['separator']}';{$LF}";
 	if ( $debug )	echo 'debugMode(true);', $LF;
 	
-	$isFirst = true;
-	$allTable = array();
-	foreach( $datasrc as $ar )	{
-		if ( $isFirst )	{
-			$mainTableName = $ar['name'];
-			$isFirst = false;
-		}
-		$oneTable = array();
-		foreach( $ar as $attrName => $attrValue )	{
-			if ( ! is_array( $attrValue ))	{
-				$oneTable[] = "'$attrName':'$attrValue'";
-			}
-		}
-		$oneTableArray = '{' . implode( ',', $oneTable ) . '}';
-		$allTable[] = "'{$ar['name']}':$oneTableArray";
-	}
-	echo 'function getDataSourceInfo(){return {',implode( ',',$allTable),'};}',$LF;
+	echo "function getDataSourceParams(){return '", arrayToQuery( $datasrc, '__imparameters__datasrc' ), "';}{$LF}";
+	echo "function getOptionParams(){return '", arrayToQuery( $options, '__imparameters__options' ), "';}{$LF}";
+	echo "function getDatabaseParams(){return '", arrayToQuery( $dbspec, '__imparameters__dbspec' ), "';}{$LF}";
 	
+	$mainTableName = $datasrc[0]['name'];
 	$tableData = $dbInstance->getFromDB( $mainTableName );
-	
-	echo 'function getDBAccessInfo(){',$LF;
-	$infoStr = "__easypage__separator=" . urlencode($separator)
-		. "&__easypage__debug=" . $debug
-		. "&__easypage__db-class=" . urlencode($dbspec['db-class'])
-		. "&__easypage__db-name=" . urlencode($dbspec['db']);
-	$cnt = 0;
-	foreach( $datasrc as $ar )	{
-		$infoStr .= "&__easypage__table_name_{$cnt}=" . urlencode($ar['name']);
-		if ( isset( $ar['key'] ))
-			$infoStr .= "&__easypage__table_key_{$cnt}=" . urlencode($ar['key']);
-		if ( isset( $ar['foreign-key'] ))
-			$infoStr .= "&__easypage__table_foreign-key_{$cnt}=" . urlencode($ar['foreign-key']);
-		$cnt++;
-	}
-	$cnt = 0;
-	if( isset( $options['formatter'] ))	{
-		foreach( $options['formatter'] as $oneItem )	{
-			$infoStr .= "&__easypage__formatter_field_{$cnt}=" . urlencode($oneItem['field'])
-					 . "&__easypage__formatter_class_{$cnt}=" . urlencode($oneItem['converter-class']);
-			if ( isset( $oneItem['parameter'] ))
-				$infoStr .= "&__easypage__parameter_field_{$cnt}=" . urlencode($oneItem['parameter']);
-			$cnt++;
-		}
-	}
-	echo "return '{$infoStr}';$LF";
-	echo '}',$LF;
-	
+
 	echo "function getSaveURL(){return '{$relPath}operation_save.php';}$LF";
 	
 	echo "function getMainTableName(){return '{$mainTableName}';}$LF";
@@ -134,10 +99,15 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	echo 'function getAccessPassword(){';
 	echo "return '", /* isset($_SERVER['PHP_AUTH_PW'])?$_SERVER['PHP_AUTH_PW']: */'', "';}$LF";
 	
-	$replaceNewLine = '__easypage__linefeed__';
+	$replaceNewLine = ALTERNATIVE_NEXTLINE;
 	echo "function getNewLineAlternative(){return '{$replaceNewLine}';}{$LF}";
+	$replaceTagOpen = ALTERNATIVE_TAGOPEN;
+	echo "function getTagOpenAlternative(){return '{$replaceTagOpen}';}{$LF}";
+	$replaceTagClose = ALTERNATIVE_TAGCLOSE;
+	echo "function getTagCloseAlternative(){return '{$replaceTagClose}';}{$LF}";
+	
 	echo 'function initializeWithDBValues(){',$LF;
-	echo "checkKeyFieldMainTable('{$datasrc[0]['key']}')$LF";
+	echo "checkKeyFieldMainTable('{$datasrc[0]['key']}');$LF";
 	if ( count( $tableData ) == 0 )	{
 		echo "showNoRecordMessage();$LF";
 	} else {
@@ -145,8 +115,7 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 		if ( $groupSize == 1 )	{
 			foreach( $tableData as $row )	{
 				foreach( $row as $field=>$value )	{
-					$escVal = addslashes(str_replace("\n", $replaceNewLine, str_replace("\r", 
-									$replaceNewLine, str_replace("\r\n", $replaceNewLine, $value))));
+					$escVal = valueForJSInsert( $value );
 					echo "setValue('{$field}','{$escVal}');$LF";
 				}
 			}
@@ -157,15 +126,15 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 				$keyField = isset($ar['key']) ? $ar['key'] : '';
 				$foreignKey = isset($ar['foreign-key']) ? $ar['foreign-key'] : '';
 				echo "checkKeyFieldRepeatTable('{$ar['name']}','{$keyField}','{$foreignKey}');$LF";
-				if( isset($options['repeat-control']) && array_search( $ar['name'], $options['repeat-control']) !== false )	{
-					echo "addRepeatTableControl('{$ar['name']}');$LF";
+				if( isset( $ar['repeat-control'] ))	{
+					echo "addRepeatTableControl('{$ar['name']}','{$ar['repeat-control']}');$LF";
 				}
 				$tableData = $dbInstance->getFromDB($ar['name']);
 				foreach( $tableData as $row )	{
 					$valueList = array();
 					foreach( $row as $field=>$value )	{
-						$escVal = addslashes(str_replace("\n", $replaceNewLine, str_replace("\r", $replaceNewLine, str_replace("\r\n", $replaceNewLine, $value))));
-						$valueList[] = "'{$ar['name']}{$separator}{$field}':'{$escVal}'";
+						$escVal = valueForJSInsert( $value );
+						$valueList[] = "'{$ar['name']}{$options['separator']}{$field}':'{$escVal}'";
 					}
 					echo "addToRepeat('{$ar['name']}',{" . implode(',', $valueList) . "});{$LF}";
 				}
@@ -218,6 +187,28 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	echo "function pageNaviEnd(){window.location='{$uri}?p={$lastPage}';}{$LF}";
 
 	echo '</script>', $LF;
+}
+
+function valueForJSInsert( $str )	{
+	return	addslashes(
+			str_replace(">", ALTERNATIVE_TAGCLOSE,
+			str_replace("<", ALTERNATIVE_TAGOPEN,
+			str_replace("\n", ALTERNATIVE_NEXTLINE, 
+			str_replace("\r", ALTERNATIVE_NEXTLINE, 
+			str_replace("\r\n", ALTERNATIVE_NEXTLINE, $str))))));
+}
+
+function arrayToQuery( $ar, $prefix )	{
+	if( is_array( $ar ))	{
+		$items = array();
+		foreach( $ar as $key=>$value )	{
+			$items[] = arrayToQuery( $value, "{$prefix}_{$key}" );
+		}
+		$returnStr = implode( '', $items );
+	} else {
+		$returnStr = "&{$prefix}=" . urlencode( $ar );
+	}
+	return $returnStr;
 }
 
 function GenerateConsole( $consoleDef = null )	{

@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>INTER-Mediator - Sample</title>
+<title>INTER-Mediator - Sample - List Style/FileMaker Server</title>
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <link href="sample.css" rel="stylesheet" type="text/css" />
 <?php 
@@ -15,24 +15,15 @@
 	require_once( 'INTER-Mediator/INTER-Mediator.php' );
 	InitializePage(
 		array(
-			array(	'name'	=> 'postalcode',	
-						'key' 	=> 'id',
-// Sample for FileMaker Server
-						'query'	=> array( array( 'field'=>'f8', 'value'=>'渋谷区', 'operator'=>'eq' ) ),
-						'sort'	=> array( array( 'field'=>'f3', 'direction'=>'descend' ),),
-// Sample for MySQL
-/*						'query'	=> array( array( 'field'=>'f8', 'operator'=>'=', 'value'=>'"渋谷区"' ) ),
-						'sort'	=> array( array( 'field'=>'f3', 'direction'=>'DESC' ),),
-*/			),
+			array(
+				'records'	=>	16,
+				'name'	=> 'postalcode',	
+				'key' 	=> 'id',
+				'query'	=> array( array( 'field'=>'f8', 'value'=>'渋谷区', 'operation'=>'eq' ) ),
+				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'descend' ),),
+			),
 		),
-		array(
-			'skip' => 13,
-		),
-		array(
-			'db-class' 	=> 'FileMaker_FX',
-			'db' 		=> 'TestDB',
-		), 
-		true		// debug
+		null, null, true
 	);
 	?>
 <script type="text/javascript"></script>
