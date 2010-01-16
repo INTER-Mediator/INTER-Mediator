@@ -1,10 +1,11 @@
 <?php 
 /*
- * INTER-Mediator
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- * This project started at the end of 2009.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
  * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
  */
 
 $dbAccessClass = 'FileMaker_FX';

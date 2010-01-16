@@ -1,13 +1,19 @@
 <?php 
 /*
- * INTER-Mediator
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- * This project started at the end of 2009.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
  * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
  */
+
 require_once( 'DB_Base.php' );
-require_once( 'FX/FX.php' );
+include_once( 'FX/FX.php' );
+
+if ( ( $erInfo = error_get_last()) != null )	{
+	echo 'INTER-Mediator Error: Data Access Class "FileMaker_FX" requires FX.php on any right directory.';
+}
 
 class DB_FileMaker_FX extends DB_Base	{
 	
