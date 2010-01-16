@@ -3,9 +3,42 @@ by Masayuki Nii
 msyk@msyk.net
 
 http://msyk.net/im
+Change Log will be supplied by English only.
 
+=================================
+To Do:
+- Sources should be published on any repository. I will do it on github.
+- Multiple data converter for a field.
+- The data converter class for number formatting should be debugged more.
+- Support to place INTER-Mediator folder out side of the folder of the page file.
+- Validation support.
+- Deleting a record of the main table. (Already available to delete in the repeated table.)
+- Search function.
+- Event trigger.
+- Auto configuration of the selection.
+- Using A-element and IMG-element.
+- Built-in Authentication framework.
+- Browser check and showing suitable message when it's not compatible.
+- Multiple values within one field. (It may be required FileMaker especially.)
+- Fulfilling documentation, including tutorials.
+- Proper error recoveries and messages.
+- OR search in FileMaker Server.
+- Script or pre/post query.
+- Setting any values to global fields in FileMaker Server.
+- Diffrent table name for each operation.
+- Translating to English from Japanese Documents.
+=================================
+
+2010/1/16
 - MySQL Support.
+- XSS Security problem was fixed (Thanks to Mr.Atsushi Matsuo).
 - Bug fix of Data Converter Class processing.
+- Changed the parameter of InitializePage function, 'skip' -> 'records' in first parameter's first parameter.
+- Changed the parameter of InitializePage function, 'repeat-control' -> 'repeat-control' in each element of first parameter. The value of this key should contain strings 'delete' and/or 'insert'.
+- Bug fix: Inserting and deleting a record of repeat table wasn't cause of the alert when move to other record or page without saving.
+- Bgu fix: Tried to save in spite of no editable fields for a record.
+- Rearranged sample files. To access samples just open the file 'index.html'.
+- IE8 will work fine, I strongly hope so. I started to check IE8 too.
 
 2010/1/12
 - When you clicked "Save", you saw the dialog box showing the posing data. This is just a signature of my debugging and it's not a feature. This is maintenance release to avoid the futile dialog box.
