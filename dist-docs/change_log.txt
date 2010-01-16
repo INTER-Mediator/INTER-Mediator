@@ -1,0 +1,51 @@
+INTER-Mediator Change Log
+by Masayuki Nii
+msyk@msyk.net
+
+http://msyk.net/im
+
+- MySQL Support.
+- Bug fix of Data Converter Class processing.
+
+2010/1/12
+- When you clicked "Save", you saw the dialog box showing the posing data. This is just a signature of my debugging and it's not a feature. This is maintenance release to avoid the futile dialog box.
+- Just started to support MySQL, however it is just working with 'select' sql statement. Please wait for full supporting.
+- Sample file name is changed to "sample_form_FMS.php". Of course, FMS means FileMaker Server.
+- The new sample file "sample_form_MySQL.php" is for MySQL database.
+
+2010/1/11
+- Changed the specification of the InitializePage function's parameter.
+- Support out-of master/detail relations table, that is it can show independent tables on the page.
+- DataConverter_FMDateTime.php will work for the acceptable language from the web request.
+- Passing through the parameter to Data Converter Class.
+- Added Data Converter Classes for formatting numbers and currencies.
+- Show the debug information from Data Access Classes.
+- Check with web authentication. Basic and Digest is working on INTER-Mediator. Checked by Mac OS X Server Leopard. Of course, it works fine!
+- Japanese documents are getting better, English documents is still limited.
+
+2010/1/9
+- Changed the parameter to specify the database, table, field and so on.
+- Supported the paging navigation on a web browser to show the part of a lot of data.
+- Prepared the listing page sample, it shows Japanese postal code list with the paging navigation.
+- Can handle the next line in a TEXTAREA element.
+- Can handle the single-quote in any text data.
+- Reorganized some filenames and their contents for making their function clearly.
+- Web site was started to write on.
+
+2010/1/5
+- Checked multiple browsers, IE7, Firefox3, Safari4
+
+2010/1/3
+- The name was changed to 'INTER-Mediator'.
+- Can store any data on a web browser to database.
+- Can insert and delete any lines in a table.
+- Create new record.
+- Support multi-language message.
+- Can specify criteria and sort orders.
+- Appears the credit at the bottom of the generated page.
+
+2009/12/30 First limited release
+- Show the data from database to a web browser.
+- Just available for a single Form with some repeated table.
+- Initially this framework was called 'EasyPage'.
+- Supporting FX.php, and then FileMaker Server.
