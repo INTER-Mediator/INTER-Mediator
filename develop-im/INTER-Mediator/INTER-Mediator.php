@@ -11,10 +11,6 @@
 
 mb_internal_encoding('UTF-8');
 
-define ( 'ALTERNATIVE_NEXTLINE', '__easypage__linefeed__');
-define ( 'ALTERNATIVE_TAGOPEN', '__easypage__tagopen__');
-define ( 'ALTERNATIVE_TAGCLOSE', '__easypage__tagclose__');
-
 $currentDir = dirname(__FILE__);
 $lang = strtolower( $_SERVER['HTTP_ACCEPT_LANGUAGE'] );
 if ( strpos( $lang, ',' ) !== false )	{
@@ -101,13 +97,6 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	echo 'function getAccessPassword(){';
 	echo "return '", /* isset($_SERVER['PHP_AUTH_PW'])?$_SERVER['PHP_AUTH_PW']: */'', "';}$LF";
 	
-	$replaceNewLine = ALTERNATIVE_NEXTLINE;
-	echo "function getNewLineAlternative(){return '{$replaceNewLine}';}{$LF}";
-	$replaceTagOpen = ALTERNATIVE_TAGOPEN;
-	echo "function getTagOpenAlternative(){return '{$replaceTagOpen}';}{$LF}";
-	$replaceTagClose = ALTERNATIVE_TAGCLOSE;
-	echo "function getTagCloseAlternative(){return '{$replaceTagClose}';}{$LF}";
-	
 	echo 'function initializeWithDBValues(){',$LF;
 	echo "checkKeyFieldMainTable('{$datasrc[0]['key']}');$LF";
 	if ( count( $tableData ) == 0 )	{
@@ -191,13 +180,16 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	echo '</script>', $LF;
 }
 
+// Contributed by Atsushi Matsuo at Jan 17, 2010
 function valueForJSInsert( $str )	{
-	return	addslashes(
-			str_replace(">", ALTERNATIVE_TAGCLOSE,
-			str_replace("<", ALTERNATIVE_TAGOPEN,
-			str_replace("\n", ALTERNATIVE_NEXTLINE, 
-			str_replace("\r", ALTERNATIVE_NEXTLINE, 
-			str_replace("\r\n", ALTERNATIVE_NEXTLINE, $str))))));
+	return	str_replace("'", "\\'",
+			str_replace('"', '\\"',
+			str_replace("/", "\\/",
+			str_replace(">", "\\x3e",
+			str_replace("<", "\\x3c",
+			str_replace("\n", "\\n",
+			str_replace("\r", "\\r",
+			str_replace("\\", "\\\\", $str))))))));
 }
 
 function arrayToQuery( $ar, $prefix )	{

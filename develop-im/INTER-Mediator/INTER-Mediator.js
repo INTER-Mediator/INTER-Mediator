@@ -445,15 +445,10 @@ function addToRepeat( table, data )	{
 						} else {}
 					}
 					else if ( elements[i].tagName == 'TEXTAREA' )	{
-						var val = data[nameAttr].split( getNewLineAlternative()).join( "\n" );
-						val = val.split( getTagOpenAlternative()).join( "<" );
-						val = val.split( getTagCloseAlternative()).join( ">" );
-						elements[i].value = val;
+						elements[i].value = data[nameAttr];
 					}
 					else	{
-						var val = data[nameAttr].split( getTagOpenAlternative()).join( "<" );
-						val = val.split( getTagCloseAlternative()).join( ">" );
-						elements[i].value = val;
+						elements[i].value = data[nameAttr];
 					}
 					addEvent( elements[i], 'change', new Function('modifiedField('+serial+');'))
 					addEvent( elements[i], 'keydown', new Function('modifiedField('+serial+');'))
@@ -506,15 +501,10 @@ function setValue(field,value)	{
 		}
 	}
 	else if ( target.tagName == 'TEXTAREA' )	{
-		var val = value.split( getNewLineAlternative()).join( "\n" );
-		val = val.split( getTagOpenAlternative()).join( "<" );
-		val = val.split( getTagCloseAlternative()).join( ">" );
-		target.value = val;
+		target.value = value;
 	}
 	else	{
-		var val = value.split( getTagOpenAlternative()).join( "<" );
-		val = val.split( getTagCloseAlternative()).join( ">" );
-		target.value = val;
+		target.value = value;
 	}
 }
 
