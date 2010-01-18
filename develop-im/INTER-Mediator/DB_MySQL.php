@@ -25,7 +25,11 @@ class DB_MySQL extends DB_Base	{
 		$tableInfo = $this->getTableInfo( $tableName );
 		
 		require( 'params.php' );
+		$currentEr = error_reporting();
+		error_reporting( 0 );
+			// Suppress any error/warning messages to avoid to break JS codes in case of MySQL client error.
 		$this->link = mysql_connect( $mysql_connect, $this->dbSpec['user'], $this->dbSpec['password'] );
+		error_reporting( $currentEr );
 		if ( ! $this->link ) {
 			$this->errorMessage[] = 'MySQL Connect Error: ' . mysql_error();
 			return array();
