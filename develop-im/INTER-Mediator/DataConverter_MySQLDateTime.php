@@ -9,6 +9,8 @@
  */
 
 class DataConverter_MySQLDateTime	{
+
+	var $tz = 'Asia/Tokyo';		// Should be custimizable.
 	
 	function __construct()	{
 		$lstr = strtolower( $_SERVER['HTTP_ACCEPT_LANGUAGE'] );
@@ -32,6 +34,7 @@ class DataConverter_MySQLDateTime	{
 		else
 			$loc = "$lstr[0]_" . strtoupper($lstr[1]);
 		setlocale( LC_TIME, $loc );
+		date_default_timezone_set( $this->tz );
 	}
 
 	function converterFromDBtoUser( $str )	{
@@ -42,14 +45,14 @@ class DataConverter_MySQLDateTime	{
 		if ( ( $sp !== FALSE ) && ( $slash == 2 ) && ( $colon == 2 ) )	{
 			$sep = explode( ' ', $str );
 			$comp = explode( '-', $sep[0] );
-			$dtObj = new DateTime( $comp[0] . '-' . $comp[1] . '-' . $comp[2] . ' ' . $sep[1] );
+			$dtObj = new DateTime( $comp[0] . '-' . $comp[1] . '-' . $comp[2] . ' ' . $sep[1], new DateTimeZone( $this->tz ) );
 			$fmt = '%x %T';
 		} elseif ( ( $sp === FALSE ) && ( $slash == 2 ) && ( $colon == 0 ) )	{
 			$comp = explode( '-', $str );
-			$dtObj = new DateTime( $comp[0] . '-' . $comp[1] . '-' . $comp[2] );
+			$dtObj = new DateTime( $comp[0] . '-' . $comp[1] . '-' . $comp[2], new DateTimeZone( $this->tz ) );
 			$fmt = '%x';
 		} elseif ( ( $sp === FALSE ) && ( $slash == 0 ) && ( $colon == 2 ) )	{
-			$dtObj = new DateTime( $str );
+			$dtObj = new DateTime( $str, new DateTimeZone( $this->tz ) );
 			$fmt = '%T';
 		}
 		if ( $dtObj === false )	{	return $str;	}

@@ -14,9 +14,9 @@ Enter password:
 */
 SET NAMES 'utf8';
 
-DROP USER 'web'@'localhost';
-CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
-GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO  'web';
+#### The following 3 lines are required once that you execute this at the first time.
+#CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
+#GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO  'web';
 
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db
@@ -92,6 +92,72 @@ CREATE TABLE postalcode	(
 CREATE UNIQUE INDEX postalcode_id ON postalcode (id);
 CREATE INDEX postalcode_f3 ON postalcode (f3);
 CREATE INDEX postalcode_f8 ON postalcode (f8);
+
+CREATE TABLE invoice (
+	id		INT  AUTO_INCREMENT,
+	issued	DATE,
+	title		VARCHAR(30),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+
+CREATE TABLE item (
+	id			INT  AUTO_INCREMENT,
+	invoice_id	INT,
+	category_id	INT,
+	product_id	INT,
+	qty			INT,
+	unitprice		FLOAT(10.2),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+
+CREATE TABLE product (
+	id			INT  AUTO_INCREMENT,
+	category_id	INT,
+	unitprice		FLOAT(10.2),
+	name		VARCHAR(20),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;	
+
+CREATE VIEW item_display AS
+	SELECT item.id, item.invoice_id, item.product_id, item.category_id, product. name, item.qty,
+		IF(item.unitprice is null, product.unitprice, item.unitprice) AS unitprice_use, IF(item.unitprice is null, qty * product.unitprice, qty * item.unitprice) AS amount
+		FROM item, product WHERE item.product_id=product.id;
+
+INSERT product SET name="Apple",id=1,category_id=1,unitprice=340;
+INSERT product SET name="Orange",id=2,category_id=1,unitprice=1540;
+INSERT product SET name="Melon",id=3,category_id=1,unitprice=3840;
+INSERT product SET name="Tomato",id=4,category_id=2,unitprice=2440;
+INSERT product SET name="Onion",id=5,category_id=2,unitprice=21340;
+
+INSERT invoice SET id=1,issued="2010-2-4",title='Invoice';
+INSERT invoice SET id=2,issued="2010-2-6",title='Invoice';
+INSERT invoice SET id=3,issued="2010-2-14",title='Invoice';
+
+INSERT item SET invoice_id=1,product_id=1,qty=12;
+INSERT item SET invoice_id=1,product_id=2,qty=12,unitprice=1340;
+INSERT item SET invoice_id=1,product_id=3,qty=12;
+INSERT item SET invoice_id=2,product_id=4,qty=12;
+INSERT item SET invoice_id=2,product_id=5,qty=12;
+INSERT item SET invoice_id=3,product_id=3,qty=12;
+
+# mysql> select * from item_display;
+# +----+------------+------------+-------------+--------+------+---------------+--------+
+# | id | invoice_id | product_id | category_id | name   | qty  | unitprice_use | amount |
+# +----+------------+------------+-------------+--------+------+---------------+--------+
+# |  1 |          1 |          1 |        NULL | Apple  |   12 |           340 |   4080 |
+# |  2 |          1 |          2 |        NULL | Orange |   12 |          1340 |  16080 |
+# |  3 |          1 |          3 |        NULL | Melon  |   12 |          3840 |  46080 |
+# |  6 |          3 |          3 |        NULL | Melon  |   12 |          3840 |  46080 |
+# |  4 |          2 |          4 |        NULL | Tomato |   12 |          2440 |  29280 |
+# |  5 |          2 |          5 |        NULL | Onion  |   12 |         21340 | 256080 |
+# +----+------------+------------+-------------+--------+------+---------------+--------+
+# 6 rows in set (0.00 sec)
 
 /*
 The following is the postalcode for Tokyo Pref at Jan 2009.
