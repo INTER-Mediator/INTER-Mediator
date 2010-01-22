@@ -6,34 +6,55 @@ http://msyk.net/im
 Change Log will be supplied by English only.
 
 =================================
-To Do:
+To Do, or Milestone
+
+Ver.0.6
 - Multiple data converter for a field.
 - The data converter class for number formatting should be debugged more.
 - Support to place INTER-Mediator folder out side of the folder of the page file.
-- Validation support.
 - Deleting a record of the main table. (Already available to delete in the repeated table.)
-- Search function.
-- Event trigger.
-- Auto configuration of the selection.
-- Using A-element and IMG-element.
-- Built-in Authentication framework.
-- Browser check and showing suitable message when it's not compatible.
-- Multiple values within one field. (It may be required FileMaker especially.)
-- Fulfilling documentation, including tutorials.
-- Proper error recoveries and messages.
-- OR search in FileMaker Server.
 - Script or pre/post query.
 - Setting any values to global fields in FileMaker Server.
-- Different table name for each operation.
+- Diffrent table name for each operation.
+
+Ver.0.7
+- Validation support.
+- Event trigger.
+- Using A-element and IMG-element.
+- Browser check and showing suitable message when it's not compatible.
+
+Ver.0.8
+- Search function.
+
+Ver.0.9
+- Auto configuration of the selection.
+
+Ver.1.0 will be wrapped up of above.
+
+Ver.1.x
+- Built-in Authentication framework.
+- Multiple values within one field. (It may be required FileMaker especially.)
+- Optimistic Locking
+
+Ver.2.0
+- Full AJAX operations.
+
+Mostly Slogan: or Should be done:
+- Fulfilling documentation, including tutorials.
+- Proper error recoveries and messages.
 - Translating to English from Japanese Documents.
 =================================
 
 
-Ver.0.5 (2010/1/xx) 
+Ver.0.5 (2010/1/xx)  ==Next Release Candidate==
 - Release with version number. I think current one is more than 0.1 but less than 1.0. So the number is going to start from 0.5.
 - Open the GitHub repository.
 - Add the license notice to all sources.
 - If FX.php isn't copied to any valid directory when using FileMaker Server, browser shows the message to let it know.
+- Logo is created.
+- JavaScript savvy string conversion in PHP (Thanks to Mr.Atsushi Matsuo, again).
+- If MySQL doesn't respond, the error will be reported from the data access class.
+- OR search in FileMaker Server.
 
 2010/1/16
 - MySQL Support.

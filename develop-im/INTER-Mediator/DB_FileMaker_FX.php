@@ -42,10 +42,14 @@ class DB_FileMaker_FX extends DB_Base	{
 				}
 				if ( isset( $tableInfo['query'] ))	{
 					foreach( $tableInfo['query'] as $condition )	{
-						if ( isset( $condition['operator'] ))	{
-							$this->fx->AddDBParam( $condition['field'], $condition['value'], $condition['operator'] );
+						if ( $condition['field'] == '__operation__' && $condition['operation'] == 'or' )	{
+							$this->fx->SetLogicalOR();
 						} else {
-							$this->fx->AddDBParam( $condition['field'], $condition['value'] );
+							if ( isset( $condition['operator'] ))	{
+								$this->fx->AddDBParam( $condition['field'], $condition['value'], $condition['operator'] );
+							} else {
+								$this->fx->AddDBParam( $condition['field'], $condition['value'] );
+							}
 						}
 					}
 				}

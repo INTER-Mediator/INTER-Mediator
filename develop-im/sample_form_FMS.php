@@ -20,7 +20,8 @@
 				'records'	=>	1,
 				'name' 	=> 'person_layout', 
 				'key' 	=> 'id',
-				'query'	=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ) */),
+				'query'	=> array( 
+					array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' )),
 				'sort'	=> array( array( 'field'=>'id', 'direction'=>'ascend' ),),
 			),
 			array(	
