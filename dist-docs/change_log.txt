@@ -6,7 +6,7 @@ http://msyk.net/im
 Change Log will be supplied by English only.
 
 =================================
-To Do, or Milestone
+To Do, or Milestone (Could be moved mainly behind)
 
 Ver.0.6
 - Multiple data converter for a field.
@@ -15,7 +15,11 @@ Ver.0.6
 - Deleting a record of the main table. (Already available to delete in the repeated table.)
 - Script or pre/post query.
 - Setting any values to global fields in FileMaker Server.
-- Diffrent table name for each operation.
+- Different table name for each operation.
+- Adjustment of navigation bar after new record is created.
+- AUTO-SAVE feature and option.
+- Call-back JS function before/after saving or deleting.
+
 
 Ver.0.7
 - Validation support.

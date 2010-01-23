@@ -125,7 +125,7 @@ CREATE TABLE product (
 		ENGINE=InnoDB;	
 
 CREATE VIEW item_display AS
-	SELECT item.id, item.invoice_id, item.product_id, item.category_id, product. name, item.qty,
+	SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty,
 		IF(item.unitprice is null, product.unitprice, item.unitprice) AS unitprice_use, IF(item.unitprice is null, qty * product.unitprice, qty * item.unitprice) AS amount
 		FROM item, product WHERE item.product_id=product.id;
 
