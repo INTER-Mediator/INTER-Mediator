@@ -9,11 +9,12 @@
  */
 
 require_once( 'DataConverter_NumberBase.php' );
-class DataConverter_FMDateTime extends DataConverter_NumberBase	{
+
+class DataConverter_Currency extends DataConverter_NumberBase	{
 	
 	var $d = null;
 	
-	function __construct( $digits )	{
+	function __construct( $digits = 0 )	{
 		parent::__construct();
 		$this->d = $digits;
 	}

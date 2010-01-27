@@ -10,33 +10,11 @@
  */
 
 mb_internal_encoding('UTF-8');
+require_once( 'operation_common.php' );
 
-$currentDir = dirname(__FILE__);
-$lang = strtolower( $_SERVER['HTTP_ACCEPT_LANGUAGE'] );
-if ( strpos( $lang, ',' ) !== false )	{
-	$lang = substr( $lang, 0, strpos( $lang, ',' ));
-}
-$candClassName = 'MessageStrings_'.$lang;
-if ( ! file_exists( $currentDir . DIRECTORY_SEPARATOR . $candClassName . '.php'))	{
-	if ( strpos( $lang, '-') !== false )	{
-		$lang = substr( $lang, 0, strpos( $lang, '-' ));
-		$candClassName = 'MessageStrings_'.$lang;
-		if ( ! file_exists( $currentDir . DIRECTORY_SEPARATOR . $candClassName . '.php'))	{
-			$candClassName = 'MessageStrings';
-		}
-	}
-}
-require_once( $candClassName . '.php' );
-	
 function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false )	{
-	
 	$LF = "\n";
-
-	$caller = dirname( $_SERVER['SCRIPT_FILENAME'] );
-	$relPath = '';
-	for ($myself = dirname(__FILE__);$myself!=$caller || strlen($myself)>strlen($caller);$myself = dirname($myself))	{
-		$relPath = basename( $myself ) . '/' . $relPath;
-	}
+	$relPath = getRelativePath();
 	
 	require_once( 'params.php' );
 	if( ! isset( $dbspec['db-class'] )) $dbspec['db-class'] = $dbAccessClass;
@@ -69,11 +47,14 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	echo "function getDataSourceParams(){return '", arrayToQuery( $datasrc, '__imparameters__datasrc' ), "';}{$LF}";
 	echo "function getOptionParams(){return '", arrayToQuery( $options, '__imparameters__options' ), "';}{$LF}";
 	echo "function getDatabaseParams(){return '", arrayToQuery( $dbspec, '__imparameters__dbspec' ), "';}{$LF}";
+
+	echo "function getTrrigerParams(){return ", arrayToJS( $options['trriger'], '' ), ";}{$LF}";
+	echo "function getvalidationParams(){return ", arrayToJS( $options['validation'], '' ), ";}{$LF}";
 	
 	$mainTableName = $datasrc[0]['name'];
 	$tableData = $dbInstance->getFromDB( $mainTableName );
 
-	echo "function getSaveURL(){return '{$relPath}operation_save.php';}$LF";
+	echo "function getSaveURL(){return '{$relPath}/operation_save.php';}$LF";
 	
 	echo "function getMainTableName(){return '{$mainTableName}';}$LF";
 
@@ -152,7 +133,7 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 
 	echo '}',$LF;	// End of function initializeWithDBValues
 
-	global $messages;
+	$messages = getErrorMessageClass();
 	echo 'function getMessageString(n){',$LF;
 	echo 'switch(n){',$LF;
 	foreach( $messages as $n=>$msg )	{
@@ -180,35 +161,11 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	echo '</script>', $LF;
 }
 
-// Contributed by Atsushi Matsuo at Jan 17, 2010
-function valueForJSInsert( $str )	{
-	return	str_replace("'", "\\'",
-			str_replace('"', '\\"',
-			str_replace("/", "\\/",
-			str_replace(">", "\\x3e",
-			str_replace("<", "\\x3c",
-			str_replace("\n", "\\n",
-			str_replace("\r", "\\r",
-			str_replace("\\", "\\\\", $str))))))));
-}
-
-function arrayToQuery( $ar, $prefix )	{
-	if( is_array( $ar ))	{
-		$items = array();
-		foreach( $ar as $key=>$value )	{
-			$items[] = arrayToQuery( $value, "{$prefix}_{$key}" );
-		}
-		$returnStr = implode( '', $items );
-	} else {
-		$returnStr = "&{$prefix}=" . urlencode( $ar );
-	}
-	return $returnStr;
-}
-
 function GenerateConsole( $consoleDef = null )	{
 	$defAll = 'pos nav new delete save';
 	if ( $consoleDef == null )	$consoleDef = $defAll;
-	global $messages;
+	$messages = getErrorMessageClass();
+
 	global $recPosition;
 	$q = '"';
 	echo "<table width={$q}100%{$q} class={$q}easypage_navigation{$q}>";

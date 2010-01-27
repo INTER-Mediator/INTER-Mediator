@@ -119,7 +119,7 @@ function finishXMLHttpRequest( )	{
 		myRequest = null;
 	} else {
 		document.getElementById('__easypage_navigation_message').innerHTML 
-			= getMessageString(104)+'readyState='+myRequest.readyState;
+			= getMessageString(104)+'readyState='+myRequest.readyState+"/"+myRequest.responseText;
 	}
 }
 
@@ -180,11 +180,11 @@ function doAtTheFinishing()	{
 function doAtTheStarting(){
 	fieldIdList = new Array();
 	var idAttr;
-	var tags = ['input', 'select', 'textarea','div'];
+	var tags = ['input', 'select', 'textarea', 'div', 'a', 'img'];
 	for( var j=0 ; j < tags.length ; j++ )	{
 		var elements = document.getElementsByTagName( tags[j] );
 		for ( var i=0 ; i < elements.length ; i++ )	{
-			var nameAttr = (j==3) ? elements[i].getAttribute('title') : elements[i].getAttribute('name');
+			var nameAttr = (j>2) ? elements[i].getAttribute('title') : elements[i].getAttribute('name');
 			if ( nameAttr )	{
 				if ( elements[i].getAttribute('id') != null && elements[i].getAttribute('id') != '' )	{
 					idAttr =  elements[i].getAttribute('id');
@@ -201,7 +201,7 @@ function doAtTheStarting(){
 					var tbName = nameAttr.substr( 0, sp );
 					if ( ! tableTemplates[tbName] )	{
 						for( var target = elements[i]; target.tagName != 'TR' ; target = target.parentNode );
-						tableTemplates[tbName] = {'parent':target.parentNode,'template':target.cloneNode(true),'editable':false};
+						tableTemplates[tbName] = {'parent':target.parentNode, 'template':target.cloneNode(true), 'editable':false};
 						addedRowIds[tbName] = new Array();
 						target.parentNode.removeChild( target );
 						if (isDebug) debugOut("Recognized Repeat Table",tbName);
@@ -284,15 +284,17 @@ function deleteLineFromRepeatTable( tableName, trId, keyId )	{
 	var tr = document.getElementById(trId);
 	tr.parentNode.removeChild(tr);
 }
+
 function addLineToRepeatTable( tableName )	{
 	var data = new Array();
-	data[tableName + separator + getForeignKeyFieldName(tableName)] = fieldValue(getKeyFieldName(getMainTableName()));
+	data[tableName + separator + getForeignKeyFieldName(tableName)] 
+		= fieldValue(getKeyFieldName(getMainTableName()));
 	var keyFieldId = addToRepeat( tableName, data );
 	if ( ! insertRecords[tableName] )
 		insertRecords[tableName] = new Array();
 	insertRecords[tableName].push( keyFieldId );
-	debugOut( 'Called addLineToRepeatTable:', getForeignKeyFieldName(tableName), fieldValue(getKeyFieldName(getMainTableName())), keyFieldId);
-	
+	debugOut( 'Called addLineToRepeatTable:', getForeignKeyFieldName(tableName), 
+					fieldValue(getKeyFieldName(getMainTableName())), keyFieldId);
 }
 
 function fieldValue(fName)	{
@@ -409,6 +411,7 @@ function checkKeyFieldRepeatTable( tableName, key, fkey )	{
 
 var n = 0;
 function addToRepeat( table, data )	{
+	var trrigers = getTrrigerParams();
 	var keyFieldName = table + separator + getKeyFieldName(table);
 	if( data[keyFieldName] == '' )	{
 		errorOut(getMessageString(107));
@@ -423,9 +426,9 @@ function addToRepeat( table, data )	{
 	for( var j=0 ; j < tags.length ; j++ )	{
 		var elements = cloned.getElementsByTagName( tags[j] );
 		for ( var i=0 ; i < elements.length ; i++ )	{
-			var nameAttr = (j==3) ? elements[i].getAttribute('title') : elements[i].getAttribute('name');
+			var nameAttr = (j>2) ? elements[i].getAttribute('title') : elements[i].getAttribute('name');
 			if ( nameAttr )	{
-				elements[i].setAttribute( (j==3)?'title':'name', nameAttr+separator+n);
+				elements[i].setAttribute( (j>2)?'title':'name', nameAttr+separator+n);
 				elements[i].setAttribute( 'id', (++serial));
 				if ( nameAttr == keyFieldName && elements[i].tagName != 'DIV' )	keyFieldId = serial;
 				if( data[nameAttr] )	{
@@ -447,13 +450,26 @@ function addToRepeat( table, data )	{
 					else if ( elements[i].tagName == 'TEXTAREA' )	{
 						elements[i].value = data[nameAttr];
 					}
+					else if ( elements[i].tagName == 'A' )	{
+						elements[i].setAttribute( 'href', data[nameAttr] );
+					}
+					else if ( elements[i].tagName == 'IMG' )	{
+						elements[i].setAttribute( 'src', data[nameAttr] );
+					}
 					else	{
 						elements[i].value = data[nameAttr];
 					}
-					addEvent( elements[i], 'change', new Function('modifiedField('+serial+');'))
-					addEvent( elements[i], 'keydown', new Function('modifiedField('+serial+');'))
-//					debugOut( 'addToRepeat', nameAttr, data[nameAttr], keyFieldName);
 				}
+				addEvent( elements[i], 'change', new Function('modifiedField('+serial+');'));
+				addEvent( elements[i], 'keydown', new Function('modifiedField('+serial+');'));
+				for ( var ix in trrigers )	{
+					if ( trrigers[ix]['field'] == nameAttr )	{
+						addEvent( elements[i], trrigers[ix]['event'], 
+							new Function(trrigers[ix]['function']+'(this);'));
+//						debugOut( 'addEvent', nameAttr, trrigers[ix]['function']);
+					}
+				}
+//				debugOut( 'addToRepeat', nameAttr, data[nameAttr], keyFieldName);
 			}
 		}
 	}
@@ -463,7 +479,8 @@ function addToRepeat( table, data )	{
 	elements = cloned.getElementsByTagName( 'SPAN' );
 	for ( var i=0 ; i < elements.length ; i++ )	{
 		if ( getClassAttributeFromNode( elements[i] ).indexOf('easypage_table_control_delete') >= 0 )	{
-			addEvent( elements[i], 'click', new Function("deleteLineFromRepeatTable('" + table + "','" + trId + "','" + keyFieldId + "')"));
+			addEvent( elements[i], 'click', 
+				new Function("deleteLineFromRepeatTable('" + table + "','" + trId + "','" + keyFieldId + "')"));
 		}
 	}
 
@@ -478,6 +495,7 @@ function addToRepeat( table, data )	{
 }
 
 function setValue(field,value)	{
+	var trrigers = getTrrigerParams();
 	var elmId = fieldIdList[field];
 	var target = document.getElementById(elmId);
 	if (target == null)	return;
@@ -503,8 +521,22 @@ function setValue(field,value)	{
 	else if ( target.tagName == 'TEXTAREA' )	{
 		target.value = value;
 	}
+	else if ( target.tagName == 'A' )	{
+		target.setAttribute( 'href', data[nameAttr] );
+	}
+	else if ( target.tagName == 'IMG' )	{
+		target.setAttribute( 'src', data[nameAttr] );
+	}
 	else	{
 		target.value = value;
+	}
+	addEvent( target, 'change', new Function('modifiedField('+serial+');'));
+	addEvent( target, 'keydown', new Function('modifiedField('+serial+');'));
+	for ( var ix in trrigers )	{
+		if ( trrigers[ix]['field'] == field )	{
+			addEvent( target, trrigers[ix]['event'], 
+							new Function(trrigers[ix]['function']+'(this);'));
+		}
 	}
 }
 
@@ -516,8 +548,87 @@ function addEvent(node, evt, func)	{
 	}
 }
 
+function getNameAttributeForAllTags( node )	{
+	var tag = node.tagName;
+	if 			( tag == 'INPUT' )	{	return node.getAttribute('name');	}
+	else if	( tag == 'TEXTAREA' ){	return node.getAttribute('name');	}
+	else if	( tag == 'SELECT' )	{	return node.getAttribute('name');	}
+	else if	( tag == 'DIV' )		{	return node.getAttribute('title');	}
+	else if	( tag == 'A' )		{	return node.getAttribute('title');	}
+	else if	( tag == 'IMG' )		{	return node.getAttribute('title');	}
+	return null;
+}
+
 function showNoRecordMessage()	{
 	errorOut(getMessageString(101))
+}
+
+function getElementNodeByName( nameAttr, originNode )	{
+	var field = getNameAttributeForAllTags( originNode );
+	var comps = field.split( separator );
+	var targetName = nameAttr;
+	if ( comps.length > 2 )	{
+		targetName = nameAttr+separator+comps[2];
+	}
+	var tags = ['input', 'select', 'textarea', 'div', 'a', 'img'];
+	for( var j=0 ; j < tags.length ; j++ )	{
+		var elements = document.getElementsByTagName( tags[j] );
+		for ( var i=0 ; i < elements.length ; i++ )	{
+			var nAttr = (j>2) ? elements[i].getAttribute('title') : elements[i].getAttribute('name');
+			if ( nAttr )	{
+				if ( targetName == nAttr )	{
+					return elements[i];
+				}
+			}
+		}
+	}
+	return null;
+}
+
+function getElementNodesByName( nameAttr )	{
+	var nodes = new Array();
+	var tags = ['input', 'select', 'textarea', 'div', 'a', 'img'];
+	for( var j=0 ; j < tags.length ; j++ )	{
+		var elements = document.getElementsByTagName( tags[j] );
+		for ( var i=0 ; i < elements.length ; i++ )	{
+			var nAttr = (j>2) ? elements[i].getAttribute('title') : elements[i].getAttribute('name');
+			if ( nAttr )	{
+				if ( nAttr.indexOf( nameAttr ) == 0 )	{
+					nodes.push( elements[i] );
+				}
+			}
+		}
+	}
+	return nodes;
+}
+
+function toNumber( str )	{
+	var s = '';
+	for ( var i = 0 ; i < str.length ; i++ )	{
+		var c = str.charAt(i);
+		if ( (c >= '0' && c<= '9') || c == '-' || c == '.' )		s += c;
+	}
+	return new Number(s);
+}
+
+function numberFormat( str )	{
+	var s = new Array();
+	var n = new Number( str );
+	var sign = '';
+	if ( n < 0 )	{
+		sign = '-';
+		n = -n;
+	}
+	var f = n - Math.floor(n);
+	if ( f == 0 )		f = '';
+	for( n = Math.floor(n); n > 0 ; n = Math.floor( n/1000 ))	{
+		if ( n > 1000 )	{
+			s.push(('000' + (n % 1000).toString()).substr(-3));
+		} else {
+			s.push(n);
+		}
+	}
+	return sign + s.reverse().join(',') + f;
 }
 
 function appendCredit()	{

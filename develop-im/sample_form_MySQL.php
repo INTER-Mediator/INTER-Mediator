@@ -47,6 +47,9 @@
 				array( 'field' => 'history@startdate',	'converter-class' =>'MySQLDateTime' ),
 				array( 'field' => 'history@enddate', 	'converter-class' =>'MySQLDateTime' ),
 			),
+			'trriger' => array(
+				array( 'field' => 'contact@datetime', 	'event' => 'MySQLDateTime', 'function' => 'test' ),
+			),
 		),
 		array(	'db-class' 	=> 'MySQL',
 				'db' 		=> 'test_db',

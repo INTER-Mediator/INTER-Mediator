@@ -18,25 +18,29 @@
 		array(	
 			array(	
 				'records' 	=> '1', 
-				'name' 		=> 'invoice', 
+				'name' 	=> 'invoice', 
 				'key' 		=> 'id',
-				'query'		=> array(),
+				'query'	=> array(),
 				'sort'		=> array( array( 'field'=>'id', 'direction'=>'ASC' ),),
 			),
 			array(	
-				'name' 				=> 'item',
+				'name' 			=> 'item',
 				'view'				=> 'item_display',
 				'key' 				=> 'id',
-				'foreign-key' 		=> 'invoice_id',
+				'foreign-key' 	=> 'invoice_id',
 				'repeat-control'	=> 'insert delete',
 			),
 		),
 		array(
+			'formatter' => array(
+				array( 'field' => 'item@amount', 	'converter-class' =>'Number' ),
+			),
 			'trriger' => array(
-				array( 'field' => 'contact@datetime', 	'event' =>'change',	'action' => 'modifyField' ),
+				array( 'field' => 'item@qty', 	'event' =>'change',	'function' => 'modLine' ),
+				array( 'field' => 'item@unitprice', 	'event' =>'change',	'function' => 'modLine' ),
 			),
 			'validation' => array(
-				array( 'field' => 'contact@datetime', 	'rule' =>'change',	'option' => '' ),
+				array( 'field' => 'item@qty', 	'rule' =>'require',	'option' => '' ),
 			),
 		),
 		array(	'db-class' 	=> 'MySQL',
@@ -46,11 +50,31 @@
 	);
 ?>
 <script type="text/javascript">
-function modifyField(target)	{
+function modLine(target)	{
+	var aNode = getElementNodeByName('item@amount', target);
+	var qNode = getElementNodeByName('item@qty', target);
+	var uNode = getElementNodeByName('item@unitprice', target);
+	var mNode = getElementNodeByName('item@unitprice_master', target);
+	var uPrice = mNode.innerHTML;
+	if ( uNode.value > 0 )
+		uPrice = uNode.value;
+	aNode.innerHTML = numberFormat( uPrice * (qNode.value) );
+	calcTotal();
+}
+function calcTotal()	{
+	var nodes = getElementNodesByName( 'item@amount' );
+	var s = 0;
+	for ( var i in nodes )
+		s += toNumber( nodes[i].innerHTML );
+	document.getElementById('total').innerHTML = numberFormat( s );
+}
+function pageOnLoad()	{
+	doAtTheStarting();
+	calcTotal();
 }
 </script>
 </head>
-<body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">
+<body onload="pageOnLoad();" onbeforeunload="return doAtTheFinishing();">
 <?php GenerateConsole(); ?>
 <table border="1">
 	<tr>
@@ -62,29 +86,35 @@ function modifyField(target)	{
 		<td><input type="text" name="issued" value="" /></td>
 	</tr>
 	<tr>
-		<td>address</td>
+		<td>title</td>
 		<td><input type="text" name="title" value="" /></td>
 	</tr>
 </table>
 <table border="1">
 <tr>
 	<th>id's</th><th>product</th><th>qty</th>
-	<th>important</th><th>way</th><th>kind</th><th>description</th>
+	<th>unitprice (master)</th><th>amount</th>
 </tr>
 <tr>
 	<td>
-		<input type="text" name="contact@id" size="2"/>
-		<input type="text" name="contact@invoice_id" size="2"/>
-		<input type="text" name="contact@category_id" size="2"/>
+		<input type="text" name="item@id" size="2"/>
+		<input type="text" name="item@invoice_id" size="2"/>
+		<input type="text" name="item@category_id" size="2"/>
 	</td>
 	<td>
-		<input type="text" name="item_display@product_id" size="2"/>
-		<input type="text" name="item_display@name"/>
+		<input type="text" name="item@product_id" size="2"/>
+		<div style="display:inline;" title="item@name"></div>
 	</td>
-	<td><input type="text" name="qty"/></td>
-	<td><input type="text" name="unitprice"/><div title="unitprice"/></td>
-	<td><div name="amount"/></td>
+	<td><input type="text" name="item@qty"/ size="5"></td>
+	<td>
+		<input type="text" name="item@unitprice" size="8"/>
+		(<div style="display:inline;" title="item@unitprice_master"></div>)
+	</td>
+	<td><div align="right" title="item@amount"></div></td>
 </tr>
+</table>
+<table border="1">
+<tr><td>Total:</td><td><div id="total"></div></td></tr>
 </table>
 </body>
 </html>

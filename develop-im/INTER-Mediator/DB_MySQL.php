@@ -89,8 +89,9 @@ class DB_MySQL extends DB_Base	{
 		}
 		$sortClause = ( count( $sortClause ) > 0 )	? ('ORDER BY ' . implode( ',', $sortClause)) : '';
 		
+		$viewOrTableName = isset($tableInfo['view'])?$tableInfo['view']:$tableName;
 		if ($tableName == $this->mainTableName) 	{
-			$sql = "SELECT count(*) FROM {$tableName} {$queryClause} {$sortClause}";
+			$sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause} {$sortClause}";
 			if ( $this->isDebug )	$this->debugMessage[] = $sql;
 			$result = mysql_query($sql);
 			if (!$result) {
@@ -101,9 +102,9 @@ class DB_MySQL extends DB_Base	{
 			$this->mainTableCount = $row[0];
 		}
 		if ($tableName == $this->mainTableName) 	{
-			$sql = "SELECT * FROM {$tableName} {$queryClause} {$sortClause} LIMIT {$this->skip} OFFSET {$this->start}";
+			$sql = "SELECT * FROM {$viewOrTableName} {$queryClause} {$sortClause} LIMIT {$this->skip} OFFSET {$this->start}";
 		} else {
-			$sql = "SELECT * FROM {$tableName} {$queryClause} {$sortClause}";
+			$sql = "SELECT * FROM {$viewOrTableName} {$queryClause} {$sortClause}";
 		}
 		if ( $this->isDebug )	$this->debugMessage[] = $sql;
 		$result = mysql_query($sql);

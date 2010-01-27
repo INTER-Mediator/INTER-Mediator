@@ -124,10 +124,7 @@ CREATE TABLE product (
 		COLLATE utf8_unicode_ci
 		ENGINE=InnoDB;	
 
-CREATE VIEW item_display AS
-	SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty,
-		IF(item.unitprice is null, product.unitprice, item.unitprice) AS unitprice_use, IF(item.unitprice is null, qty * product.unitprice, qty * item.unitprice) AS amount
-		FROM item, product WHERE item.product_id=product.id;
+CREATE VIEW item_display AS SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty, item.unitprice, product.unitprice as unitprice_master, IF(item.unitprice is null, qty * product.unitprice, qty * item.unitprice) AS amount FROM item, product WHERE item.product_id=product.id;
 
 INSERT product SET name="Apple",id=1,category_id=1,unitprice=340;
 INSERT product SET name="Orange",id=2,category_id=1,unitprice=1540;
@@ -147,16 +144,16 @@ INSERT item SET invoice_id=2,product_id=5,qty=12;
 INSERT item SET invoice_id=3,product_id=3,qty=12;
 
 # mysql> select * from item_display;
-# +----+------------+------------+-------------+--------+------+---------------+--------+
-# | id | invoice_id | product_id | category_id | name   | qty  | unitprice_use | amount |
-# +----+------------+------------+-------------+--------+------+---------------+--------+
-# |  1 |          1 |          1 |        NULL | Apple  |   12 |           340 |   4080 |
-# |  2 |          1 |          2 |        NULL | Orange |   12 |          1340 |  16080 |
-# |  3 |          1 |          3 |        NULL | Melon  |   12 |          3840 |  46080 |
-# |  6 |          3 |          3 |        NULL | Melon  |   12 |          3840 |  46080 |
-# |  4 |          2 |          4 |        NULL | Tomato |   12 |          2440 |  29280 |
-# |  5 |          2 |          5 |        NULL | Onion  |   12 |         21340 | 256080 |
-# +----+------------+------------+-------------+--------+------+---------------+--------+
+# +----+------------+------------+-------------+--------+------+-----------+------------------+--------+
+# | id | invoice_id | product_id | category_id | name   | qty  | unitprice | unitprice_master | amount |
+# +----+------------+------------+-------------+--------+------+-----------+------------------+--------+
+# |  1 |          1 |          1 |        NULL | Apple  |   12 |      NULL |              340 |   4080 |
+# |  2 |          1 |          2 |        NULL | Orange |   12 |      1340 |             1540 |  16080 |
+# |  3 |          1 |          3 |        NULL | Melon  |   12 |      NULL |             3840 |  46080 |
+# |  6 |          3 |          3 |        NULL | Melon  |   12 |      NULL |             3840 |  46080 |
+# |  4 |          2 |          4 |        NULL | Tomato |   12 |      NULL |             2440 |  29280 |
+# |  5 |          2 |          5 |        NULL | Onion  |   12 |      NULL |            21340 | 256080 |
+# +----+------------+------------+-------------+--------+------+-----------+------------------+--------+
 # 6 rows in set (0.00 sec)
 
 /*

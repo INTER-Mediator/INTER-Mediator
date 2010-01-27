@@ -7,8 +7,13 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
+class MessageStrings_ja	{
 
-$messages = array(
+function getMessages()	{
+	return $this->messages;
+}
+
+var $messages = array(
 	1	=>	'保存',
 	2	=>	'新規レコード',
 	3	=>	'レコード削除',
@@ -30,4 +35,5 @@ $messages = array(
 	108	=>	'キーフィールドの値がないため、このレコードの削除や変更結果の保存ができません。',
 	109	=>	'直前の保存作業がまだ終わっていません。',
 	);
+}
 ?>

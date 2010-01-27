@@ -8,7 +8,13 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-$messages = array(
+class MessageStrings	{
+
+function getMessages()	{
+	return $this->messages;
+}
+
+var $messages = array(
 	1	=>	'Save',
 	2	=>	'New Record',
 	3	=>	'Delete Record',
@@ -32,4 +38,5 @@ $messages = array(
 	108	=>	'You\'ve deleted a record howerver it has empty key field. You can\'t delete or save it.',
 	109	=>	'The saving task hasn\'t finished.',
 	);
+}
 ?>
