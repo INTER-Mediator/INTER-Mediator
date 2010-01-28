@@ -33,15 +33,16 @@
 		),
 		array(
 			'formatter' => array(
-				array( 'field' => 'item@amount', 	'converter-class' =>'Number' ),
+				array( 'field' => 'item@amount', 	'converter-class' =>'Number', 'parameter' => '0' ),
 			),
 			'trriger' => array(
 				array( 'field' => 'item@qty', 	'event' =>'change',	'function' => 'modLine' ),
 				array( 'field' => 'item@unitprice', 	'event' =>'change',	'function' => 'modLine' ),
 			),
-			'validation' => array(
-				array( 'field' => 'item@qty', 	'rule' =>'require',	'option' => '' ),
-			),
+//			'validation' => array(
+//				array( 'field' => 'item@qty', 	'rule' =>'require' /*, 'option' => '数量' */ ),
+//				array( 'field' => 'title', 	'rule' =>'mail' /*, 'option' => '数量' */ ),
+//			),
 		),
 		array(	'db-class' 	=> 'MySQL',
 				'db' 		=> 'test_db',
@@ -70,6 +71,12 @@ function calcTotal()	{
 }
 function pageOnLoad()	{
 	doAtTheStarting();
+	calcTotal();
+}
+function afterFieldModified()	{
+	calcTotal();
+}
+function afterTableRowDelete()	{
 	calcTotal();
 }
 </script>

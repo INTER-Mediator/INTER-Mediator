@@ -23,36 +23,70 @@ function saveRecord()	{
 		alert(getMessageString(109));
 		return;
 	}
+
+	var valids = getvalidationParams();
 	var elmStr = '';
 	var postData = '';
 	var tags = ['input', 'select', 'textarea'];
+	var isValid = true;
 	for( var j=0 ; j < tags.length ; j++ )	{
 		var elements = document.getElementsByTagName( tags[j] );
 		for ( var i=0 ; i < elements.length ; i++ )	{
-			if ( elements[i].getAttribute('name') != null )	{
+			var nameAttr = elements[i].getAttribute('name');
+			if ( nameAttr != null )	{
+				var validChkName = nameAttr;
+				var splitNameAttr = nameAttr.split( separator );
+				if ( splitNameAttr.length > 2 )	{
+					validChkName = splitNameAttr[0]+separator+splitNameAttr[1];
+				}
+
+				for( var k in valids )	{
+					if ( valids[k]['field'] == validChkName )	{
+						if 			( valids[k]['rule'] == 'require' )	{
+							if ( elements[i].value == '' )	{
+								var fName = (valids[k]['option'])?valids[k]['option']:validChkName;
+								errorOut( getMessageString(110), fName );
+								isValid = false;
+							}
+						} else if	( valids[k]['rule'] == 'mail' )	{
+							if ( ! elements[i].value.match(/[\w\d_-]+@[\w\d_-]+\.[\w\d._-]+/) )	{
+								var fName = (valids[k]['option'])?valids[k]['option']:validChkName;
+								errorOut( getMessageString(111), fName );
+								isValid = false;
+							}
+						}
+					}
+				}
+
 				var isInclude = true;
 				if( j == 0 && elements[i].getAttribute('type') == 'checkbox' ) {
 					elmStr = elements[i].checked ? elements[i].value : '';
 				} else if( j == 0 && elements[i].getAttribute('type') == 'radio' ) {
 					isInclude = elements[i].checked;
 					elmStr = elements[i].checked ? elements[i].getAttribute('value') : '';
-//					if (isDebug) {	debugOut('Radio Button:'+elements[i].getAttribute('name')+'='+elements[i].checked+'/'+elements[i].value); }
 				} else {
 					elmStr = elements[i].value;
 				}
 				if (isInclude)	{
-//					if (isDebug) {	debugOut('Post data:'+elements[i].getAttribute('name')+'='+encodeURIComponent(elmStr)); }
-					postData += '&' + encodeURIComponent(elements[i].getAttribute('name')) 
-										+ '=' + encodeURIComponent(elmStr);
+					postData += '&' + encodeURIComponent(nameAttr) 
+								+ '=' + encodeURIComponent(elmStr);
 				}
 			}
 		}
 	}
+	if ( ! isValid )	return;
+
+	if ( typeof beforeSave == 'function' )	{
+		if ( beforeSave() == false )	return;
+	}
+
 	var seq = 0;
 	for(var aTable in deleteRecords)	{
 		for(var i=0; i<deleteRecords[aTable].length; i++)	{
-			postData += '&' + "__easypage__delete_table_" + seq + "=" + encodeURIComponent(aTable);
-			postData += '&' + "__easypage__delete_key_" + seq + "=" + encodeURIComponent(deleteRecords[aTable][i]);
+			postData += '&' + "__easypage__delete_table_" + seq 
+						+ "=" + encodeURIComponent(aTable);
+			postData += '&' + "__easypage__delete_key_" + seq 
+						+ "=" + encodeURIComponent(deleteRecords[aTable][i]);
 			seq++;
 			if (isDebug) {	debugOut('Delete Table:',aTable,deleteRecords[aTable][i]); }
 		}
@@ -61,8 +95,10 @@ function saveRecord()	{
 	var seq = 0;
 	for(var aTable in insertRecords)	{
 		for(var i=0; i<insertRecords[aTable].length; i++)	{
-			postData += '&' + "__easypage__insert_table_" + seq + "=" + encodeURIComponent(aTable);
-			postData += '&' + "__easypage__insert_id_" + seq + "=" + encodeURIComponent(insertRecords[aTable][i]);
+			postData += '&' + "__easypage__insert_table_" + seq 
+						+ "=" + encodeURIComponent(aTable);
+			postData += '&' + "__easypage__insert_id_" + seq + "=" 
+						+ encodeURIComponent(insertRecords[aTable][i]);
 			seq++;
 			if (isDebug) {	debugOut('Insert Table:',aTable,insertRecords[aTable][i]); }
 		}
@@ -117,6 +153,11 @@ function finishXMLHttpRequest( )	{
 		insertRecords = new Array();
 		modifiedIds = new Array();
 		myRequest = null;
+
+		if ( typeof afterSaveComplete == 'function' )	{
+			if ( afterSaveComplete() == false )	return;
+		}
+
 	} else {
 		document.getElementById('__easypage_navigation_message').innerHTML 
 			= getMessageString(104)+'readyState='+myRequest.readyState+"/"+myRequest.responseText;
@@ -166,6 +207,10 @@ function modifiedField(id)	{
 		}
 	}
 	modifiedIds.push(id);
+
+	if ( typeof afterFieldModified == 'function' )	{
+		if ( afterFieldModified() == false )	return;
+	}
 }
 
 function doAtTheFinishing()	{
@@ -223,12 +268,23 @@ function doAtTheStarting(){
 
 function deleteRecord()	{
 	
+	if ( typeof beforeDeleteRecord == 'function' )	{
+		if ( beforeDeleteRecord() == false )	return;
+	}
+
+	if ( typeof afterDeleteRecord == 'function' )	{
+		if ( afterDeleteRecord() == false )	return;
+	}
 }
 
 function newRecord()	{
 	if( modifiedIds.length != 0 )
 		if ( ! confirm( getMessageString(105) ) )
 			return;
+
+	if ( typeof beforeNewRecord == 'function' )	{
+		if ( beforeNewRecord() == false )	return;
+	}
 
 	for ( var attrName in fieldIdList )	{
 		var target = document.getElementById(fieldIdList[ attrName ]);
@@ -251,6 +307,10 @@ function newRecord()	{
 	mainTableName = getMainTableName();
 	insertRecords = new Array();
 	insertRecords[mainTableName] = new Array( fieldIdList[getKeyFieldName(mainTableName)] );
+
+	if ( typeof afterNewRecord == 'function' )	{
+		if ( afterNewRecord() == false )	return;
+	}
 }
 
 function checkKeyFieldMainTable( key )	{
@@ -278,14 +338,27 @@ function deleteLineFromRepeatTable( tableName, trId, keyId )	{
 		errorOut(getMessageString(108));
 	}
 	debugOut( 'deleteLineFromRepeatTable', tableName, trId, keyId, idValue( keyId ));
+
+	if ( typeof beforeTableRowDelete == 'function' )	{
+		if ( beforeTableRowDelete() == false )	return;
+	}
+
 	if ( ! deleteRecords[tableName] )
 		deleteRecords[tableName] = new Array();
 	deleteRecords[tableName].push( idValue( keyId ));
 	var tr = document.getElementById(trId);
 	tr.parentNode.removeChild(tr);
+
+	if ( typeof afterTableRowDelete == 'function' )	{
+		if ( afterTableRowDelete() == false )	return;
+	}
 }
 
 function addLineToRepeatTable( tableName )	{
+	if ( typeof beforeTableRowInsert == 'function' )	{
+		if ( beforeTableRowInsert() == false )	return;
+	}
+
 	var data = new Array();
 	data[tableName + separator + getForeignKeyFieldName(tableName)] 
 		= fieldValue(getKeyFieldName(getMainTableName()));
@@ -293,6 +366,11 @@ function addLineToRepeatTable( tableName )	{
 	if ( ! insertRecords[tableName] )
 		insertRecords[tableName] = new Array();
 	insertRecords[tableName].push( keyFieldId );
+
+	if ( typeof afterTableRowInsert == 'function' )	{
+		if ( afterTableRowInsert() == false )	return;
+	}
+
 	debugOut( 'Called addLineToRepeatTable:', getForeignKeyFieldName(tableName), 
 					fieldValue(getKeyFieldName(getMainTableName())), keyFieldId);
 }
@@ -666,7 +744,11 @@ function appendCredit()	{
 	spNode.appendChild( document.createTextNode( ' Ver.@@@@2@@@@(@@@@1@@@@)' ) );
 }
 
-function errorOut(str)	{
+function errorOut(str, msg1, msg2, msg3 )	{
+	if ( msg1 != null )	str = str.replace( '@1@', msg1 );
+	if ( msg2 != null )	str = str.replace( '@2@', msg2 );
+	if ( msg3 != null )	str = str.replace( '@3@', msg3 );
+
 	var debugNode = document.getElementById('easypage_error_panel_4873643897897');
 	if ( debugNode == null )	{
 		debugNode = document.createElement('div');

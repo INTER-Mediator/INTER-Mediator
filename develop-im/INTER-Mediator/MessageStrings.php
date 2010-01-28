@@ -37,6 +37,8 @@ var $messages = array(
 	107	=>	'The data of key field in a repeated table is empty. You can\'t delete or edit this record.',
 	108	=>	'You\'ve deleted a record howerver it has empty key field. You can\'t delete or save it.',
 	109	=>	'The saving task hasn\'t finished.',
+	110	=>	'The field @1@ shouldn\'t be blank.',
+	111	=>	'The field @1@ should be an email address.',
 	);
 }
 ?>

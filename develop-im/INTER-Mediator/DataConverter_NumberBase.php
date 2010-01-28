@@ -10,25 +10,25 @@
 
 require_once( 'operation_common.php' );
 
-class DataConverter_NumberBase	{
-	
+class DataConverter_NumberBase {
+
 	var $decimalMark = null;
 	var $thSepMark = null;
 	var $currencyMark = null;
 	var $useMbstring;
 	
-	function __construct()	{
+	function __construct()  {
 		$this->useMbstring = setLocaleAsBrowser( LC_ALL );
 		$locInfo = localeconv();
 		$this->decimalMark = $locInfo[ 'mon_decimal_point' ];
 		$this->thSepMark = $locInfo[ 'mon_thousands_sep' ];
 		$this->currencyMark = $locInfo[ 'currency_symbol' ];
 	}
-	
-	function converterFromUserToDB( $str )	{
+
+	function converterFromUserToDB( $str )  {
 		$comp = explode( $this->decimalMark, $str );
 		$intPart = intval( str_replace( $this->thSepMark, '', $comp[0] ));
-		if ( isset( $comp[1] ))	{
+		if ( isset( $comp[1] )) {
 			$decimalPart = intval( str_replace( $this->thSepMark, '', $comp[1] ));
 			return floatval( strval( $intPart ) . '.' . strval( $decimalPart ));
 		} else {

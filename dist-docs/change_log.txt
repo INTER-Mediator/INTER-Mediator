@@ -10,20 +10,13 @@ To Do, or Milestone (Could be moved mainly behind)
 
 Ver.0.6
 - Multiple data converter for a field.
-- The data converter class for number formatting should be debugged more.
-- Support to place INTER-Mediator folder out side of the folder of the page file.
 - Deleting a record of the main table. (Already available to delete in the repeated table.)
 - Script or pre/post query.
 - Setting any values to global fields in FileMaker Server.
-- Different table name for each operation.
 - Adjustment of navigation bar after new record is created.
 - AUTO-SAVE feature and option.
-- Call-back JS function before/after saving or deleting.
-
 
 Ver.0.7
-- Validation support.
-- Event trigger.
 - Using A-element and IMG-element.
 - Browser check and showing suitable message when it's not compatible.
 
@@ -59,6 +52,13 @@ Ver.0.5 (2010/1/xx)  ==Next Release Candidate==
 - JavaScript savvy string conversion in PHP (Thanks to Mr.Atsushi Matsuo, again).
 - If MySQL doesn't respond, the error will be reported from the data access class.
 - OR search in FileMaker Server.
+- The data converter class for number formatting should be debugged more.
+- Support to place INTER-Mediator folder out side of the folder of the page file.
+- Different table name for each operation. (MySQL only)
+- Call-back JS function before/after saving or deleting.
+- Validation support.
+- Event trigger.
+- New sample 'invoice'.
 
 2010/1/16
 - MySQL Support.
