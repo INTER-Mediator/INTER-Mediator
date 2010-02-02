@@ -88,7 +88,7 @@ class DB_Base	{
 				if( ! isset( $this->formatter[$oneItem['field']]) )	{
 					require_once("DataConverter_{$oneItem['converter-class']}.php");
 					$parameter = isset($oneItem['parameter']) ? $oneItem['parameter'] : '';
-					eval( "\$cvInstance = new DataConverter_{$oneItem['converter-class']}({$parameter});" );
+					eval( "\$cvInstance = new DataConverter_{$oneItem['converter-class']}('{$parameter}');" );
 					$this->formatter[$oneItem['field']] = $cvInstance;
 				}
 			}

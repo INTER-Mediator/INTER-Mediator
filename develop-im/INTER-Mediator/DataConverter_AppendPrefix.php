@@ -17,7 +17,7 @@ class DataConverter_AppendPrefix	{
 	}
 	
 	function converterFromDBtoUser( $str )	{
-		return $this->appendStr + $str;
+		return $this->appendStr . $str;
 	}
 
 	function converterFromUserToDB( $str )	{

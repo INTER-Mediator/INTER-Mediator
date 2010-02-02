@@ -17,7 +17,7 @@ class DataConverter_AppendSuffix	{
 	}
 	
 	function converterFromDBtoUser( $str )	{
-		return $str + $this->appendStr;
+		return $str . $this->appendStr;
 	}
 
 	function converterFromUserToDB( $str )	{

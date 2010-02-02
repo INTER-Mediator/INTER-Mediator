@@ -25,6 +25,15 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	$options['separator'] = isset($options['separator'])?$options['separator']:'@';
 	if( $debug )	$options['debug'] = $debug;
 	
+	foreach( $_GET as $key => $val )	{
+		if ( $key != 'p' )	{
+			$datasrc[0]['query'][] = array( 'field'=>$key, 'value'=>$val, 'operator'=>'eq' );
+		}
+	}
+	foreach( $_POST as $key => $val )	{
+		$datasrc[0]['query'][] = array( 'field'=>$key, 'value'=>$val, 'operator'=>'eq' );
+	}
+	
 	if ( strpos( $dbspec['db-class'], 'DB_' ) !== 0 )
 		$dbspec['db-class'] = 'DB_' . $dbspec['db-class'];
 	require_once("{$dbspec['db-class']}.php");

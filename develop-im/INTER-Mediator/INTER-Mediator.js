@@ -498,7 +498,7 @@ function addToRepeat( table, data )	{
 	var cloned = tableTemplates[table]['template'].cloneNode(true);
 	cloned.setAttribute( 'id', (++serial));
 	var trId = serial;
-	var tags = ['input', 'select', 'textarea','div'];
+	var tags = ['input', 'select', 'textarea', 'div', 'a', 'img'];
 	var postCheck = new Array();
 	var checkValues = new Array();
 	for( var j=0 ; j < tags.length ; j++ )	{

@@ -14,8 +14,13 @@ class DataConverter_FMDateTime	{
 	var $useMbstring;
 	var $fmtNum;
 
-	function __construct( $format = 1 )	{
-		$this->fmtNum = $format;
+	/**
+	 * 
+	 * @param integer $format 
+	 * @return unknown_type
+	 */
+	function __construct( $format = '' )	{
+		$this->fmt = $format;
 		$this->useMbstring = setLocaleAsBrowser( LC_TIME );
 	}
 
@@ -38,7 +43,7 @@ class DataConverter_FMDateTime	{
 			$fmt = '%T';
 		}
 		if ( $dtObj === false )	{	return $str;	}
-		return strftime( $fmt, $dtObj->format('U') );
+		return strftime( ($this->fmt=='')?$fmt:$this->fmt, $dtObj->format('U') );
 	}
 
 	function converterFromUserToDB( $str )	{
