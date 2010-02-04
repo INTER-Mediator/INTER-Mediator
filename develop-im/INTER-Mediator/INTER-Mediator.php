@@ -25,15 +25,6 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	$options['separator'] = isset($options['separator'])?$options['separator']:'@';
 	if( $debug )	$options['debug'] = $debug;
 	
-	foreach( $_GET as $key => $val )	{
-		if ( $key != 'p' )	{
-			$datasrc[0]['query'][] = array( 'field'=>$key, 'value'=>$val, 'operator'=>'eq' );
-		}
-	}
-	foreach( $_POST as $key => $val )	{
-		$datasrc[0]['query'][] = array( 'field'=>$key, 'value'=>$val, 'operator'=>'eq' );
-	}
-	
 	if ( strpos( $dbspec['db-class'], 'DB_' ) !== 0 )
 		$dbspec['db-class'] = 'DB_' . $dbspec['db-class'];
 	require_once("{$dbspec['db-class']}.php");
@@ -47,6 +38,19 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	$currentPage = isset($_GET['p']) ? $_GET['p'] : 0;
 	$dbInstance->setStartSkip( $currentPage * $groupSize , $groupSize );
 	if ( isset($options['formatter']))	$dbInstance->setFormatter( $options['formatter'] );
+
+	if ( isset($options['accept-get']) )	{
+		foreach( $_GET as $key => $val )	{
+			if ( $key != 'p' )	{
+				$dbInstance->setExtraCriteria( $key, $val );
+			}
+		}
+	}
+	if ( isset($options['accept-post']) )	{
+		foreach( $_POST as $key => $val )	{
+			$dbInstance->setExtraCriteria( $key, $val );
+		}
+	}
 	
 	echo '<script type="text/javascript" language="JavaScript">', $LF;
 	echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
@@ -57,8 +61,12 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	echo "function getOptionParams(){return '", arrayToQuery( $options, '__imparameters__options' ), "';}{$LF}";
 	echo "function getDatabaseParams(){return '", arrayToQuery( $dbspec, '__imparameters__dbspec' ), "';}{$LF}";
 
-	echo "function getTrrigerParams(){return ", arrayToJS( $options['trriger'], '' ), ";}{$LF}";
-	echo "function getvalidationParams(){return ", arrayToJS( $options['validation'], '' ), ";}{$LF}";
+	echo "function getTrrigerParams(){return ", 
+			isset($options['trigger']) ? arrayToJS( $options['trigger'], '' ) : 'null', 
+			";}{$LF}";
+	echo "function getvalidationParams(){return ", 
+			isset($options['validation']) ? arrayToJS( $options['validation'], '' ) : 'null', 
+			";}{$LF}";
 	
 	$mainTableName = $datasrc[0]['name'];
 	$tableData = $dbInstance->getFromDB( $mainTableName );
@@ -155,13 +163,15 @@ function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false
 	$qMarkPos = strpos( $uri, '?' );
 	if ( $qMarkPos !== false )
 		$uri = substr( $uri, 0, $qMarkPos );
-	global $recPosition;
+	global $recPosition, $isFirstPage, $isLastPage;
 	$recPosition['current'] = $currentPage * $groupSize;
 	$recPosition['size'] = $groupSize;
 	$recPosition['end'] = $dbInstance->getMainTableCount();
 	$lastPage = ceil($recPosition['end'] / $recPosition['size'])-1;
 	$prevPage = max( 0, $currentPage - 1 );
 	$nextPage = min( $lastPage, $currentPage + 1 );
+	$isFirstPage = ($prevPage == $currentPage);
+	$isLastPage = ($nextPage == $currentPage);
 	echo "function pageNaviTop(){window.location='{$uri}?p=0';}{$LF}";
 	echo "function pageNaviPrev(){window.location='{$uri}?p={$prevPage}';}{$LF}";
 	echo "function pageNaviNext(){window.location='{$uri}?p={$nextPage}';}{$LF}";
@@ -175,7 +185,7 @@ function GenerateConsole( $consoleDef = null )	{
 	if ( $consoleDef == null )	$consoleDef = $defAll;
 	$messages = getErrorMessageClass();
 
-	global $recPosition;
+	global $recPosition, $isFirstPage, $isLastPage;
 	$q = '"';
 	echo "<table width={$q}100%{$q} class={$q}easypage_navigation{$q}>";
 	echo "<tr><td><div class={$q}easypage_navigation_message{$q} id={$q}__easypage_navigation_message{$q}></div></td>";
@@ -192,10 +202,20 @@ function GenerateConsole( $consoleDef = null )	{
 		echo "&nbsp;<span class={$q}easypage_navigation_info{$q}>{$info}</span>";
 	}
 	if ( strpos( $consoleDef, 'nav' ) !== false )	{
-		echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}pageNaviTop();{$q}>{$messages[6]}</span>";
-		echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}pageNaviPrev();{$q}>{$messages[7]}</span>";
-		echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}pageNaviNext();{$q}>{$messages[8]}</span>";
-		echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}pageNaviEnd();{$q}>{$messages[9]}</span>";
+		if ( $isFirstPage )	{
+			echo "&nbsp;<span class={$q}easypage_navigation_dimmed{$q}>{$messages[6]}</span>";
+			echo "&nbsp;<span class={$q}easypage_navigation_dimmed{$q}>{$messages[7]}</span>";
+		} else {
+			echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}pageNaviTop();{$q}>{$messages[6]}</span>";
+			echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}pageNaviPrev();{$q}>{$messages[7]}</span>";
+		}
+		if ( $isLastPage )	{
+			echo "&nbsp;<span class={$q}easypage_navigation_dimmed{$q}>{$messages[8]}</span>";
+			echo "&nbsp;<span class={$q}easypage_navigation_dimmed{$q}>{$messages[9]}</span>";
+		} else {
+			echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}pageNaviNext();{$q}>{$messages[8]}</span>";
+			echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}pageNaviEnd();{$q}>{$messages[9]}</span>";
+		}
 	}
 	if ( strpos( $consoleDef, 'new' ) !== false )	{
 		echo "&nbsp;<span class={$q}easypage_navigation_link{$q} onclick={$q}newRecord();{$q}>{$messages[2]}</span>";

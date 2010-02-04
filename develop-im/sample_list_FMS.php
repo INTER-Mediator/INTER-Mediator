@@ -20,7 +20,7 @@
 				'records'	=>	16,
 				'name'	=> 'postalcode',	
 				'key' 	=> 'id',
-				'query'	=> array( array( 'field'=>'f8', 'value'=>'渋谷区', 'operation'=>'eq' ) ),
+				'query'	=> array( array( 'field'=>'f8', 'value'=>'渋谷区', 'operator'=>'eq' ) ),
 				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'descend' ),),
 			),
 		),

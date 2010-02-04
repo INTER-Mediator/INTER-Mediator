@@ -37,7 +37,7 @@
 			),
 			array(	
 				'name' 			=> 'postalcode', 
-				'query'	=> array( array( 'field'=>'f9', 'operation'=>'LIKE', 'value'=>'%落合%' ) ),
+				'query'	=> array( array( 'field'=>'f9', 'operator'=>'LIKE', 'value'=>'%落合%' ) ),
 				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
 			),
 		),
@@ -47,7 +47,7 @@
 				array( 'field' => 'history@startdate',	'converter-class' =>'MySQLDateTime' ),
 				array( 'field' => 'history@enddate', 	'converter-class' =>'MySQLDateTime' ),
 			),
-			'trriger' => array(
+			'trigger' => array(
 				array( 'field' => 'contact@datetime', 	'event' => 'MySQLDateTime', 'function' => 'test' ),
 			),
 		),

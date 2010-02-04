@@ -36,7 +36,7 @@
 				array( 'field' => 'item@amount', 	'converter-class' =>'Number', 'parameter' => '0' ),
 				array( 'field' => 'issued', 	'converter-class' =>'FMDateTime', 'parameter' => '%Y年%b月%e日(%a)' ),
 				),
-			'trriger' => array(
+			'trigger' => array(
 				array( 'field' => 'item@qty', 	'event' =>'change',	'function' => 'modLine' ),
 				array( 'field' => 'item@unitprice', 	'event' =>'change',	'function' => 'modLine' ),
 			),

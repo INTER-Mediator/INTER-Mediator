@@ -9,6 +9,7 @@
  */
 
 require_once( 'DB_Base.php' );
+
 $currentEr = error_reporting();
 error_reporting( 0 );
 include_once( 'FX/FX.php' );
@@ -40,9 +41,14 @@ class DB_FileMaker_FX extends DB_Base	{
 				} else {
 					$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1000000 );
 				}
+				if ( $this->isMainTable( $tableName ) )	{
+					foreach( $this->extraCriteria as $field=>$value )	{
+						$this->fx->AddDBParam( $field, $value, 'eq' );
+					}
+				}
 				if ( isset( $tableInfo['query'] ))	{
 					foreach( $tableInfo['query'] as $condition )	{
-						if ( $condition['field'] == '__operation__' && $condition['operation'] == 'or' )	{
+						if ( $condition['field'] == '__operation__' && $condition['operator'] == 'or' )	{
 							$this->fx->SetLogicalOR();
 						} else {
 							if ( isset( $condition['operator'] ))	{
@@ -62,10 +68,30 @@ class DB_FileMaker_FX extends DB_Base	{
 						}
 					}
 				}
+				if ( isset( $tableInfo['global'] ))	{
+					foreach( $tableInfo['global'] as $condition )	{
+						if ( $condition['db-operation'] == 'load' )	{
+							$this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+						}
+					}
+				}
+				if ( isset( $tableInfo['script'] ))	{
+					foreach( $tableInfo['script'] as $condition )	{
+						if ( $condition['db-operation'] == 'load' )	{
+							if ( $condition['situation'] == 'pre' )	{
+								$this->fx->PerformFMScriptPrefind( $condition['definition'] );
+							} else if ( $condition['situation'] == 'presort' )	{
+								$this->fx->PerformFMScriptPresort( $condition['definition'] );
+							} else if ( $condition['situation'] == 'post' )	{
+								$this->fx->PerformFMScript( $condition['definition'] );
+							}
+						}
+					}
+				}
 				$this->fxResult[$tableName] = $this->fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
 				if ( $this->isDebug )	$this->debugMessage[] = $this->fxResult[$tableName]['URL'];
 				if( $this->fxResult[$tableName]['errorCode'] > 0 )	{
-					$this->errorMessage[] = "FX reports error at find action: code={$this->fxResult[$tableName]['errorCode']}, url={$this->fxResult[$tableName]['URL']}<hr>";
+					$this->errorMessage[] = "FX reports error at find action: code={$this->fxResult[$tableName]['errorCode']}, url={$this->fxResult[$tableName]['URL']}";
 					return false;
 				}
 				if ( $tableName == $this->mainTableName && isset($this->fxResult[$tableName]['foundCount']))
@@ -156,6 +182,26 @@ class DB_FileMaker_FX extends DB_Base	{
 						$convVal = $this->unifyCRLF( (is_array( $value )) ? implode( "\r", $value ) : $value );
 						$this->fx->AddDBParam( $field, $this->formatterToDB( $filedInForm, $convVal ));
 					}
+				if ( isset( $tableInfo['global'] ))	{
+					foreach( $tableInfo['global'] as $condition )	{
+						if ( $condition['db-operation'] == 'update' )	{
+							$this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+						}
+					}
+				}
+				if ( isset( $tableInfo['script'] ))	{
+					foreach( $tableInfo['script'] as $condition )	{
+						if ( $condition['db-operation'] == 'update' )	{
+							if ( $condition['situation'] == 'pre' )	{
+								$this->fx->PerformFMScriptPrefind( $condition['definition'] );
+							} else if ( $condition['situation'] == 'presort' )	{
+								$this->fx->PerformFMScriptPresort( $condition['definition'] );
+							} else if ( $condition['situation'] == 'post' )	{
+								$this->fx->PerformFMScript( $condition['definition'] );
+							}
+						}
+					}
+				}
 				$result = $this->fx->FMEdit();
 				if( $result['errorCode'] > 0 )	{
 					$this->errorMessage[] = "FX reports error at edit action: table={$tableName}, code={$result['errorCode']}, url={$result['URL']}<hr>";
@@ -183,6 +229,26 @@ class DB_FileMaker_FX extends DB_Base	{
 				}
 				$convVal = $this->unifyCRLF( (is_array( $value )) ? implode( "\r", $value ) : $value );
 				$this->fx->AddDBParam( $field, $this->formatterToDB( $filedInForm, $convVal ));
+			}
+		}
+		if ( isset( $tableInfo['global'] ))	{
+			foreach( $tableInfo['global'] as $condition )	{
+				if ( $condition['db-operation'] == 'new' )	{
+					$this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+				}
+			}
+		}
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'new' )	{
+					if ( $condition['situation'] == 'pre' )	{
+						$this->fx->PerformFMScriptPrefind( $condition['definition'] );
+					} else if ( $condition['situation'] == 'presort' )	{
+						$this->fx->PerformFMScriptPresort( $condition['definition'] );
+					} else if ( $condition['situation'] == 'post' )	{
+						$this->fx->PerformFMScript( $condition['definition'] );
+					}
+				}
 			}
 		}
 		$result = $this->fx->FMNew();
@@ -219,6 +285,26 @@ class DB_FileMaker_FX extends DB_Base	{
 				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
 				$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
 				$this->fx->SetRecordID( $recId );
+				if ( isset( $tableInfo['global'] ))	{
+					foreach( $tableInfo['global'] as $condition )	{
+						if ( $condition['db-operation'] == 'delete' )	{
+							$this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+						}
+					}
+				}
+				if ( isset( $tableInfo['script'] ))	{
+					foreach( $tableInfo['script'] as $condition )	{
+						if ( $condition['db-operation'] == 'delete' )	{
+							if ( $condition['situation'] == 'pre' )	{
+								$this->fx->PerformFMScriptPrefind( $condition['definition'] );
+							} else if ( $condition['situation'] == 'presort' )	{
+								$this->fx->PerformFMScriptPresort( $condition['definition'] );
+							} else if ( $condition['situation'] == 'post' )	{
+								$this->fx->PerformFMScript( $condition['definition'] );
+							}
+						}
+					}
+				}
 				$result = $this->fx->FMDelete();
 				if( $result['errorCode'] > 0 )	{
 					$this->errorMessage[] = "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";

@@ -37,8 +37,8 @@
 				'repeat-control'	=> 'insert',
 			),
 			array(	
-				'name' 			=> 'postalcode', 
-				'query'	=> array( array( 'field'=>'f9', 'value'=>'落合', 'operation'=>'cn' ) ),
+				'name' 	=> 'postalcode', 
+				'query'	=> array( array( 'field'=>'f9', 'value'=>'落合', 'operator'=>'cn' ) ),
 				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
 			),
 		),
@@ -49,9 +49,7 @@
 				array( 'field' => 'history_to@enddate', 	'converter-class' =>'FMDateTime' ),
 			),
 		),
-		array(	'db-class' 	=> 'FileMaker_FX',
-				'db' 		=> 'TestDB',
-		), 
+		array(	'db-class' => 'FileMaker_FX', 'db' => 'TestDB',), 
 		true		// debug
 	);
 ?>

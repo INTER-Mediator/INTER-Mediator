@@ -20,7 +20,6 @@
 				'records' 	=> '1', 
 				'name' 	=> 'invoice', 
 				'key' 		=> 'id',
-				'query'	=> array(),
 				'sort'		=> array( array( 'field'=>'id', 'direction'=>'ASC' ),),
 			),
 			array(	
@@ -35,18 +34,12 @@
 			'formatter' => array(
 				array( 'field' => 'item@amount', 	'converter-class' =>'Number', 'parameter' => '0' ),
 			),
-			'trriger' => array(
+			'trigger' => array(
 				array( 'field' => 'item@qty', 	'event' =>'change',	'function' => 'modLine' ),
 				array( 'field' => 'item@unitprice', 	'event' =>'change',	'function' => 'modLine' ),
 			),
-//			'validation' => array(
-//				array( 'field' => 'item@qty', 	'rule' =>'require' /*, 'option' => '数量' */ ),
-//				array( 'field' => 'title', 	'rule' =>'mail' /*, 'option' => '数量' */ ),
-//			),
 		),
-		array(	'db-class' 	=> 'MySQL',
-				'db' 		=> 'test_db',
-		), 
+		array(	'db-class' => 'MySQL', 'db' => 'test_db', ), 
 		true		// debug
 	);
 ?>

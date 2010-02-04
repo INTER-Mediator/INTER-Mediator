@@ -15,10 +15,10 @@ class DataConverter_MySQLDateTime	{
 	var $tz = 'Asia/Tokyo';		// Should be custimizable.
 
 	var $useMbstring;
-	var $fmtNum;
+	var $fmt;
 
-	function __construct( $format = 1 )	{
-		$this->fmtNum = $format;
+	function __construct( $format = '' )	{
+		$this->fmt = $format;
 		$this->useMbstring = setLocaleAsBrowser( LC_TIME );
 		date_default_timezone_set( $this->tz );
 	}
@@ -44,7 +44,7 @@ class DataConverter_MySQLDateTime	{
 			$fmt = '%T';
 		}
 		if ( $dtObj === false )	{	return $str;	}
-		return strftime( $fmt, $dtObj->format('U') );
+		return strftime( ($this->fmt=='')?$fmt:$this->fmt, $dtObj->format('U') );
 	}
 
 	function converterFromUserToDB( $str )	{

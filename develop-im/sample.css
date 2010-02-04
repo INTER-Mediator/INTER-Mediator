@@ -24,6 +24,13 @@
 	color: #FFFFFF;
 }
 
+.easypage_navigation_dimmed	{
+	padding: 2px;
+	margin: 2px;
+	background-color: #333333;
+	color: #555555;
+}
+
 .easypage_table_control	{
 	background-color: #FFDDFF;
 	padding: 2px;

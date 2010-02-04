@@ -12,6 +12,7 @@ class DB_Base	{
 	
 	var $dbSpec = null;
 	var $dataSource = null;
+	var $extraCriteria = array();
 	var $mainTableName = null;
 	var $mainTableCount = 0;
 	var $mainTalbeKeyValue = null;
@@ -59,6 +60,11 @@ class DB_Base	{
 		$this->mainTableName = $src[0]['name'];
 	}
 	
+	function isMainTable( $tableName )			{	
+		if( $this->mainTableName == $tableName )	return TRUE;
+		return FALSE;
+	}
+	
 	function setCreteria( $criteria )		{	
 		$this->criteria = $criteria;	
 	}
@@ -79,6 +85,10 @@ class DB_Base	{
 			}
 		}
 		return array();
+	}
+
+	function setExtraCriteria( $field, $value )	{
+		$this->extraCriteria[$field] = $value;
 	}
 	
 	function setFormatter( $fmt )		{

@@ -11,17 +11,17 @@ To Do, or Milestone (Could be moved mainly behind)
 Ver.0.6
 - Multiple data converter for a field.
 - Deleting a record of the main table. (Already available to delete in the repeated table.)
-- Script or pre/post query.
-- Setting any values to global fields in FileMaker Server.
 - Adjustment of navigation bar after new record is created.
 - AUTO-SAVE feature and option.
+- Making sure about scripts and globals.
+- Store NULL for empty string.
 
 Ver.0.7
-- Using A-element and IMG-element.
 - Browser check and showing suitable message when it's not compatible.
 
 Ver.0.8
 - Search function.
+- Keep criterias in session.
 
 Ver.0.9
 - Auto configuration of the selection.
@@ -32,6 +32,7 @@ Ver.1.x
 - Built-in Authentication framework.
 - Multiple values within one field. (It may be required FileMaker especially.)
 - Optimistic Locking
+- PDO Support
 
 Ver.2.0
 - Full AJAX operations.
@@ -43,7 +44,7 @@ Mostly Slogan: or Should be done:
 =================================
 
 
-Ver.0.5 (2010/1/xx)  ==Next Release Candidate==
+Ver.0.5 (2010/2/4)  ==Next Release Candidate==
 - Release with version number. I think current one is more than 0.1 but less than 1.0. So the number is going to start from 0.5.
 - Open the GitHub repository.
 - Add the license notice to all sources.
@@ -52,13 +53,17 @@ Ver.0.5 (2010/1/xx)  ==Next Release Candidate==
 - JavaScript savvy string conversion in PHP (Thanks to Mr.Atsushi Matsuo, again).
 - If MySQL doesn't respond, the error will be reported from the data access class.
 - OR search in FileMaker Server.
-- The data converter class for number formatting should be debugged more.
+- The data converter class for number formatting and appending strings before/after the data from database.
 - Support to place INTER-Mediator folder out side of the folder of the page file.
-- Different table name for each operation. (MySQL only)
+- Different table name for loading operation, you could use any view to get tha data from database. (MySQL only)
 - Call-back JS function before/after saving or deleting.
 - Validation support.
 - Event trigger.
 - New sample 'invoice'.
+- Using A-element and IMG-element. Both should have TITLE attribute for indicating table and field. HREF attribute for A element and SRC attribute for IMG element are inserted the data from database.
+- Script or pre/post query. [NOT fully debugged!]
+- Setting any values to global fields in FileMaker Server. [NOT fully debugged!]
+- Navigation bar recognizes at the top and end of pages.
 
 2010/1/16
 - MySQL Support.

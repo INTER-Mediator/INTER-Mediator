@@ -489,7 +489,7 @@ function checkKeyFieldRepeatTable( tableName, key, fkey )	{
 
 var n = 0;
 function addToRepeat( table, data )	{
-	var trrigers = getTrrigerParams();
+	var triggers = getTrrigerParams();
 	var keyFieldName = table + separator + getKeyFieldName(table);
 	if( data[keyFieldName] == '' )	{
 		errorOut(getMessageString(107));
@@ -540,11 +540,11 @@ function addToRepeat( table, data )	{
 				}
 				addEvent( elements[i], 'change', new Function('modifiedField('+serial+');'));
 				addEvent( elements[i], 'keydown', new Function('modifiedField('+serial+');'));
-				for ( var ix in trrigers )	{
-					if ( trrigers[ix]['field'] == nameAttr )	{
-						addEvent( elements[i], trrigers[ix]['event'], 
-							new Function(trrigers[ix]['function']+'(this);'));
-//						debugOut( 'addEvent', nameAttr, trrigers[ix]['function']);
+				for ( var ix in triggers )	{
+					if ( triggers[ix]['field'] == nameAttr )	{
+						addEvent( elements[i], triggers[ix]['event'], 
+							new Function(triggers[ix]['function']+'(this);'));
+//						debugOut( 'addEvent', nameAttr, triggers[ix]['function']);
 					}
 				}
 //				debugOut( 'addToRepeat', nameAttr, data[nameAttr], keyFieldName);
@@ -573,7 +573,7 @@ function addToRepeat( table, data )	{
 }
 
 function setValue(field,value)	{
-	var trrigers = getTrrigerParams();
+	var triggers = getTrrigerParams();
 	var elmId = fieldIdList[field];
 	var target = document.getElementById(elmId);
 	if (target == null)	return;
@@ -610,10 +610,10 @@ function setValue(field,value)	{
 	}
 	addEvent( target, 'change', new Function('modifiedField('+serial+');'));
 	addEvent( target, 'keydown', new Function('modifiedField('+serial+');'));
-	for ( var ix in trrigers )	{
-		if ( trrigers[ix]['field'] == field )	{
-			addEvent( target, trrigers[ix]['event'], 
-							new Function(trrigers[ix]['function']+'(this);'));
+	for ( var ix in triggers )	{
+		if ( triggers[ix]['field'] == field )	{
+			addEvent( target, triggers[ix]['event'], 
+							new Function(triggers[ix]['function']+'(this);'));
 		}
 	}
 }

@@ -18,23 +18,19 @@
 		array(	
 			array(	
 				'records' 	=> '1', 
-				'name' 		=> 'product', 
+				'name' 	=> 'product', 
 				'key' 		=> 'id',
-				'query'		=> array( array( 'field'=>'name', 'value'=>'*', 'operator'=>'cn' )),
-				'sort'		=> array( array( 'field'=>'name', 'direction'=>'ascend' ),),
 			),
 		),
-		array(
-			'accept-get' => true,
-		),
-		null, 
+		array( 'accept-get' => true, ),
+		array( 'db-class' => 'MySQL', 'db' => 'test_db', ), 
 		true		// debug
 	);
 ?>
 </head>
 <body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">
 <?php GenerateConsole('save'); ?>
-<p><a href="sample_products_FMS.php">back</a></p>
+<p><a href="sample_products_MySQL.php">back</a></p>
 <table border="1">
 <tr><th>id</th><td><input type="text" name="id" size="30"/></td></tr>
 <tr><th>name</th><td><input type="text" name="name" size="30"/></td></tr>

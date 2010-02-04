@@ -36,30 +36,60 @@ class DB_MySQL extends DB_Base	{
 		}
 		mysql_select_db( $this->dbSpec['db'] );
 		
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'load' )	{
+					if ( $condition['situation'] == 'pre' )	{
+						$sql = $condition['definition'];
+						if ( $this->isDebug )	$this->debugMessage[] = $sql;
+						$result = mysql_query($sql);
+						if (!$result) {
+							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
+						}
+						mysql_free_result($result);
+					}
+				}
+			}
+		}
+
 		$queryClause = '';
 		if ( isset( $tableInfo['query'][0] ))	{
 			if ( $tableInfo['query'][0]['field'] == '__clause__' )	{
 				$queryClause = "{$tableInfo['query'][0]['value']}";
+				if ( $this->isMainTable( $tableName ) )	{
+					foreach( $this->extraCriteria as $field=>$value )	{
+						$escedField = addslashes( $field );
+						$escedVal = addslashes( $value );
+						$queryClause .= "AND ({$escedField} = '{$escedVal}')";
+					}
+				}
 			} else {
 				$queryClauseArray = array();
 				$chanckCount = 0;
+				if ( $this->isMainTable( $tableName ) )	{
+					foreach( $this->extraCriteria as $field=>$value )	{
+						$escedField = addslashes( $field );
+						$escedVal = addslashes( $value );
+						$queryClauseArray[$chanckCount][] = "{$escedField} = '{$escedVal}'";
+					}
+				}
 				$insideOp = ' AND ';	$outsiceOp = ' OR ';
 				foreach( $tableInfo['query'] as $condition )	{
 					if ( $condition['field'] == '__operation__' )	{
 						$chanckCount++;
-						if ( $condition['operation'] == 'ex' )	{
+						if ( $condition['operator'] == 'ex' )	{
 							$insideOp = ' OR ';	$outsiceOp = ' AND ';
 						}
 					} else {
 						if ( isset( $condition['value'] ))	{
 							$escedVal = addslashes( $condition['value'] );
-							if ( isset( $condition['operation'] ))	{
-								$queryClauseArray[$chanckCount][] = "{$condition['field']} {$condition['operation']} '{$escedVal}'";
+							if ( isset( $condition['operator'] ))	{
+								$queryClauseArray[$chanckCount][] = "{$condition['field']} {$condition['operator']} '{$escedVal}'";
 							} else {
 								$queryClauseArray[$chanckCount][] = "{$condition['field']} = '{$escedVal}'";
 							}
 						} else {
-							$queryClauseArray[$chanckCount][] = "{$condition['field']} {$condition['operation']}";
+							$queryClauseArray[$chanckCount][] = "{$condition['field']} {$condition['operator']}";
 						}
 					}
 				}
@@ -67,6 +97,15 @@ class DB_MySQL extends DB_Base	{
 					$queryClause[] = '(' . implode( $insideOp, $oneTerm ) . ')';
 				}
 				$queryClause =  implode( $outsiceOp, $queryClause );
+			}
+		} else {
+			if ($this->isMainTable( $tableName ) )	{
+				foreach( $this->extraCriteria as $field=>$value )	{
+					$escedField = addslashes( $field );
+					$escedVal = addslashes( $value );
+					$queryClause[] = "({$escedField} = '{$escedVal}')";
+				}
+				$queryClause =  implode( ' AND ', $queryClause );
 			}
 		}
 		
@@ -128,6 +167,23 @@ class DB_MySQL extends DB_Base	{
 			}
 		}
 		mysql_free_result($result);
+
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'load' )	{
+					if ( $condition['situation'] == 'post' )	{
+						$sql = $condition['definition'];
+						if ( $this->isDebug )	$this->debugMessage[] = $sql;
+						$result = mysql_query($sql);
+						if (!$result) {
+							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
+						}
+						mysql_free_result($result);
+					}
+				}
+			}
+		}
+
 		return $this->sqlResult[$tableName];
 	}
 	
@@ -147,6 +203,22 @@ class DB_MySQL extends DB_Base	{
 		}
 		mysql_select_db( $this->dbSpec['db'] );
 		
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'update' )	{
+					if ( $condition['situation'] == 'pre' )	{
+						$sql = $condition['definition'];
+						if ( $this->isDebug )	$this->debugMessage[] = $sql;
+						$result = mysql_query($sql);
+						if (!$result) {
+							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
+						}
+						mysql_free_result($result);
+					}
+				}
+			}
+		}
+
 		$setCaluse = array();
 		foreach ( $data as $field=>$value )	{
 			if ( $field != $keyFieldName){
@@ -171,6 +243,24 @@ class DB_MySQL extends DB_Base	{
 			$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
 			return false;
 		}
+		mysql_free_result($result);
+
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'update' )	{
+					if ( $condition['situation'] == 'post' )	{
+						$sql = $condition['definition'];
+						if ( $this->isDebug )	$this->debugMessage[] = $sql;
+						$result = mysql_query($sql);
+						if (!$result) {
+							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
+						}
+						mysql_free_result($result);
+					}
+				}
+			}
+		}
+
 		return true;
 	}
 	
@@ -186,6 +276,22 @@ class DB_MySQL extends DB_Base	{
 		}
 		mysql_select_db( $this->dbSpec['db'] );
 		
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'new' )	{
+					if ( $condition['situation'] == 'pre' )	{
+						$sql = $condition['definition'];
+						if ( $this->isDebug )	$this->debugMessage[] = $sql;
+						$result = mysql_query($sql);
+						if (!$result) {
+							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
+						}
+						mysql_free_result($result);
+					}
+				}
+			}
+		}
+
 		$setCaluse = array();
 		foreach ( $data as $field=>$value )	{
 			if ( $field != $keyFieldName){
@@ -211,6 +317,24 @@ class DB_MySQL extends DB_Base	{
 			return false;
 		}
 		$keyValue = mysql_insert_id();
+		mysql_free_result($result);
+
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'new' )	{
+					if ( $condition['situation'] == 'post' )	{
+						$sql = $condition['definition'];
+						if ( $this->isDebug )	$this->debugMessage[] = $sql;
+						$result = mysql_query($sql);
+						if (!$result) {
+							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
+						}
+						mysql_free_result($result);
+					}
+				}
+			}
+		}
+
 		return true;
 	}
 	
@@ -234,6 +358,22 @@ class DB_MySQL extends DB_Base	{
 		}
 		mysql_select_db( $this->dbSpec['db'] );
 		
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'delete' )	{
+					if ( $condition['situation'] == 'pre' )	{
+						$sql = $condition['definition'];
+						if ( $this->isDebug )	$this->debugMessage[] = $sql;
+						$result = mysql_query($sql);
+						if (!$result) {
+							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
+						}
+						mysql_free_result($result);
+					}
+				}
+			}
+		}
+
 		$whereClause = array();
 		foreach ( $data as $field=>$value )	{
 			$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
@@ -253,6 +393,24 @@ class DB_MySQL extends DB_Base	{
 			$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
 			return false;
 		}
+		mysql_free_result($result);
+
+		if ( isset( $tableInfo['script'] ))	{
+			foreach( $tableInfo['script'] as $condition )	{
+				if ( $condition['db-operation'] == 'delete' )	{
+					if ( $condition['situation'] == 'post' )	{
+						$sql = $condition['definition'];
+						if ( $this->isDebug )	$this->debugMessage[] = $sql;
+						$result = mysql_query($sql);
+						if (!$result) {
+							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
+						}
+						mysql_free_result($result);
+					}
+				}
+			}
+		}
+
 		return true;
 	}
 }
