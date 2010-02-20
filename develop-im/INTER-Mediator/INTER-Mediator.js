@@ -7,6 +7,225 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
+//Next Generation gets start
+
+/**
+ *  Seeking nodes and if a node is an enclosure, proceed repeating.
+ */
+function seekNodes( node )	{
+	var enclosure = null;
+	var nType = node.nodeType;
+	if ( nType == 1 )	{	// Work for an element
+		if ( isLinkedElement( node ) && ! isEnclosure( node ))	{	//Linked element and not an enclosure
+			enclosure = getEnclosure( node );	//Get the enclosure element
+		} else {
+			var childs = node.childNodes;	//Check all child nodes.
+			for ( var i = 0 ; i < childs.length ; i++ )	{
+				var checkingEncl = seekNodes( childs[i] );	//Recuresive call
+				if ( checkingEncl != null )	{	//This means linked element of inside of enclosure
+					if ( checkingEncl == childs[i] )	{	//If the current node is an enclosure
+						expandEnclosure( childs[i] );		//Expand the enclosure
+						enclosure = null;						//Out side of enclosure
+					} else {
+						return checkingEncl;					//Show inside of enclosure
+					}
+				}
+			}
+		}
+	}
+	return enclosure;
+}
+
+/**
+ *  Detect the enclosure of the argument node.
+ */
+function getEnclosure( node )	{
+	var detectedRepeater = null;
+	var currentNode = node;
+	while ( currentNode != null )	{
+		if ( isRepeater( currentNode ) )	{
+			detectedRepeater = currentNode;
+		} else if ( isRepeaterOfEnclosure( detectedRepeater, currentNode ) )	{
+			return currentNode;
+		}
+		currentNode = currentNode.parentNode;
+	}
+	return null;
+}
+
+/**
+ *  Check the pair of nodes in argument is valid for repater/enclosure.
+ */
+function isRepeaterOfEnclosure( repeater, enclosure )	{
+	if ( repeater == null || enclosure == null )
+		return false;
+	var repeaterTag = repeater.tagName;
+	var enclosureTag = enclosure.tagName;
+	if (		( repeaterTag == 'TR' 		&& enclosureTag == 'TBODY' )
+			||	( repeaterTag == 'OPTION' 	&& enclosureTag == 'SELECT' )
+			||	( repeaterTag == 'LI' 		&& enclosureTag == 'OL' )
+			||	( repeaterTag == 'LI' 		&& enclosureTag == 'UL' ))
+		return true;
+	else if ( repeaterTag == 'DIV' 		&& enclosureTag == 'DIV' )	{
+		var repeaterClass = getClassAttributeFromNode( repeater );
+		var enclosureClass = getClassAttributeFromNode( repeater );
+		if ( repeaterClass != null && enclosureClass != null
+				&& repeaterClass.indexOf('_im_repeater')>=0 
+				&& enclosureClass.indexOf('_im_enclosure')>=0 )	{
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ *  Cheking the argument is the Linked Element or not.
+ */
+function isLinkedElement( node )	{
+	// IE: If the node doesn't have a title attribute, getAttribute doesn't return null. So it requrired check if it's empty string.
+	if ( node.getAttribute( 'TITLE' ) != null && node.getAttribute( 'TITLE' ).length > 0 )	{
+		return true
+	} else {
+		return false;
+	}
+}
+
+/**
+ *  Get the repeater tag from the enclosure tag.
+ */
+function repeaterTagFromEncTag( tag )	{
+	if ( tag == 'TBODY' )		return 'TR';
+	else if ( tag == 'SELECT' )	return 'OPTION';
+	else if ( tag == 'UL' )		return 'LI';
+	else if ( tag == 'OL' )		return 'LI';
+	else if ( tag == 'DIV' )		return 'DIV';
+	return null;
+}
+
+/**
+ *  Check the argument node is an enclosure or not
+ */
+function isEnclosure( node )	{
+	if ( node == null || node.nodeType != 1 )
+		return false;
+	var tagName = node.tagName;
+	var className = getClassAttributeFromNode( node );
+	if (		( tagName == 'TBODY' ) || ( tagName == 'UL' ) || ( tagName == 'OL' ) 
+			||	( tagName == 'SELECT' ) || ( tagName == 'DIV' && className == '_im_repeater' ))	
+		return true;
+	else
+		return false;
+}
+
+/**
+ *  Check the argument node is an repeater or not
+ */
+function isRepeater( node )	{
+	if ( node.nodeType != 1 )
+		return false;
+	var tagName = node.tagName;
+	var className = getClassAttributeFromNode( node );
+	if (		( tagName == 'TR' ) || ( tagName == 'LI' ) || ( tagName == 'OPTION' ) 
+			||	( tagName == 'DIV' && className == '_im_enclosure' ))
+		return true;
+	else
+		return false;
+}
+
+/**
+ *  Expanding an enclosure. 
+ */
+function expandEnclosure( node )	{
+	var encNodeTag = node.tagName;
+	var repNodeTag = repeaterTagFromEncTag( encNodeTag );
+	var repeaters = new Array();	//Collecting repeaters to this array.
+	var childs = node.childNodes;	//Check all child node of the enclosure.
+	for ( var i = 0 ; i < childs.length ; i++ )	{
+		if ( childs[i].nodeType == 1 && childs[i].tagName == repNodeTag )	{	//If the element is a repeater.
+			repeaters.push( childs[i] );		//Record it to the array.
+		}
+	}
+	linkedNodes = new Array();		//Collecting linked elements to this array.
+	for ( var i = 0 ; i < repeaters.length ; i++ )	{
+		var inDocNode = repeaters[i];
+		repeaters[i] = repeaters[i].cloneNode(true);
+		inDocNode.parentNode.removeChild( inDocNode );
+		seekLinkedElement( repeaters[i] );
+	}
+	var currentLinkedNodes = linkedNodes;
+
+	// Do Load
+	q = '';
+	for ( var j = 0 ; j < linkedNodes.length ; j++ )	q += linkedNodes[j].getAttribute('TITLE') + "#";
+	messages.push("expandEnclosure:"+q);
+
+	for ( var j = 0 ; j < 3 ; j++ )	{
+		for ( var i = 0 ; i < repeaters.length ; i++ )	{
+			for ( var k = 0 ; k < linkedNodes.length ; k++ )	{
+				if ( linkedNodes[k].tagName == "INPUT" )
+					linkedNodes[k].value = "TEST";
+			}
+			var newNode = repeaters[i].cloneNode(true);
+			seekNodes(newNode);
+			node.appendChild( newNode );
+		}
+	}
+}
+
+var linkedNodes;
+
+function seekLinkedElement( node )	{
+	var enclosure = null;
+	var nType = node.nodeType;
+	if ( nType == 1 )	{
+		if ( isLinkedElement( node ) )	{
+			var currentEnclosure = getEnclosure( node );
+			if ( currentEnclosure == null )	{
+				linkedNodes.push( node );
+				return null;
+			} else {
+				return currentEnclosure;
+			}
+		} else {
+			var childs = node.childNodes;
+			for ( var i = 0 ; i < childs.length ; i++ )	{
+				var detectedEnclosure = seekLinkedElement( childs[i] );
+				if ( detectedEnclosure != null )	{
+					if ( detectedEnclosure == childs[i] )	{
+messages.push("seekLinkedElement:Inside"+detectedEnclosure.tagName);
+						return null;
+					} else {
+						return detectedEnclosure;
+					}
+				}
+			}
+		}
+	}
+	return null;
+}
+
+function setClassAttributeToNode( node, className )	{
+	if (node == null)	return ;
+	if ( ! navigator.appName.match(/Explorer/))	{
+		node.setAttribute( 'class', className );
+	} else {
+		node.setAttribute( 'className', className );
+	}
+}
+
+function getClassAttributeFromNode( node )	{
+	if (node == null)	return '';
+	var str = '';
+	if ( ! navigator.appName.match(/Explorer/))	{
+		str = node.getAttribute( 'class' );
+	} else {
+		str = node.getAttribute( 'className' );
+	}
+	return str;
+}
+
+///////////////////////
+
 var isDebug = false;
 var isEdited = false;
 var fieldIdList = new Array();
@@ -387,26 +606,6 @@ function idValue(id)	{
 	if ( ! target )	return '';
 	if ( target.tagName == 'DIV')	return target.innerHTML;
 	return target.value;
-}
-
-function setClassAttributeToNode( node, className )	{
-	if (node == null)	return ;
-	if ( ! navigator.appName.match(/Explorer/))	{
-		node.setAttribute( 'class', className );
-	} else {
-		node.setAttribute( 'className', className );
-	}
-}
-
-function getClassAttributeFromNode( node )	{
-	if (node == null)	return '';
-	var str = '';
-	if ( ! navigator.appName.match(/Explorer/))	{
-		str = node.getAttribute( 'class' );
-	} else {
-		str = node.getAttribute( 'className' );
-	}
-	return str;
 }
 
 function addRepeatTableControl( tableName, setting )	{

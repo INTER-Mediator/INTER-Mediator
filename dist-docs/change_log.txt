@@ -15,9 +15,12 @@ Ver.0.6
 - AUTO-SAVE feature and option.
 - Making sure about scripts and globals.
 - Store NULL for empty string.
+- Multiple rows for a record, with separating TBODY and THEAD sections.
+- Repeated records expands to ul/ol/li and option elements.
 
 Ver.0.7
 - Browser check and showing suitable message when it's not compatible.
+- Insert data into ANY attributes of an element.
 
 Ver.0.8
 - Search function.
@@ -25,6 +28,7 @@ Ver.0.8
 
 Ver.0.9
 - Auto configuration of the selection.
+- Link/unlink to another record with selection.
 
 Ver.1.0 will be wrapped up of above.
 
@@ -43,8 +47,9 @@ Mostly Slogan: or Should be done:
 - Translating to English from Japanese Documents.
 =================================
 
+Ver.0.5.1 ==Next Release Candidate==
 
-Ver.0.5 (2010/2/4)  ==Next Release Candidate==
+Ver.0.5 (2010/2/4)  
 - Release with version number. I think current one is more than 0.1 but less than 1.0. So the number is going to start from 0.5.
 - Open the GitHub repository.
 - Add the license notice to all sources.
