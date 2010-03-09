@@ -8,8 +8,7 @@
 var messages = new Array();
 
 function test()	{
-var bodyNode = document.getElementsByTagName( 'BODY' )[0];
-seekNodes( bodyNode );
+var im = new INTERMediator( );
 for ( var i = 0 ; i < messages.length ; i++ )	debugOut( messages[i] );
 }
 </script>

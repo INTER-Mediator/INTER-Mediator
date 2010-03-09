@@ -9,6 +9,17 @@
 
 //Next Generation gets start
 
+function INTERMediator(  )	{
+
+var titleAsLinkInfo = true;
+var classAsLinkInfo = false;
+var elmNumbering = new Array();
+var currentLevel = 0;
+var separator = '@';
+var defDevider = '|';
+var linkedNodes;
+
+seekNodes( document.getElementsByTagName( 'BODY' )[0] );
 /**
  *  Seeking nodes and if a node is an enclosure, proceed repeating.
  */
@@ -17,6 +28,7 @@ function seekNodes( node )	{
 	var nType = node.nodeType;
 	if ( nType == 1 )	{	// Work for an element
 		if ( isLinkedElement( node ) && ! isEnclosure( node ))	{	//Linked element and not an enclosure
+	messages.push("seekNodes:link and not enc; "+node.tagName);
 			enclosure = getEnclosure( node );	//Get the enclosure element
 		} else {
 			var childs = node.childNodes;	//Check all child nodes.
@@ -82,9 +94,45 @@ function isRepeaterOfEnclosure( repeater, enclosure )	{
  *  Cheking the argument is the Linked Element or not.
  */
 function isLinkedElement( node )	{
-	// IE: If the node doesn't have a title attribute, getAttribute doesn't return null. So it requrired check if it's empty string.
-	if ( node.getAttribute( 'TITLE' ) != null && node.getAttribute( 'TITLE' ).length > 0 )	{
-		return true
+	if ( titleAsLinkInfo )	{
+		if ( node.getAttribute( 'TITLE' ) != null && node.getAttribute( 'TITLE' ).length > 0 )	{
+						// IE: If the node doesn't have a title attribute, getAttribute doesn't return null.
+						//     So it requrired check if it's empty string.
+			return true
+		}
+	}
+	if ( classAsLinkInfo )	{
+		var classInfo = getClassAttributeFromNode( node );
+		if ( classInfo != null && classInfo.length > 0 )	{
+			return true
+		}
+	}
+	return false;
+}
+
+/**
+ *  Get the table name / field name information from node as the array of definitions.
+ */
+function getLinkedElementInfo( node )	{
+	if ( isLinkedElement( node ) )	{
+		if ( titleAsLinkInfo )	{
+			var defs = node.getAttribute( 'TITLE' ).split( defDevider );
+		}
+		if ( classAsLinkInfo )	{
+			var defs = getClassAttributeFromNode( node ).split( defDevider );
+		}
+		return defs;
+	} else {
+		return false;
+	}
+}
+
+/**
+ *  Get the first table name from the linked element.
+ */
+function getFirstTableFromLinkedElement( node )	{
+	if ( isLinkedElement( node ) )	{
+		return getLinkedElementInfo( node )[0].split( separator)[0];
 	} else {
 		return false;
 	}
@@ -94,7 +142,7 @@ function isLinkedElement( node )	{
  *  Get the repeater tag from the enclosure tag.
  */
 function repeaterTagFromEncTag( tag )	{
-	if ( tag == 'TBODY' )		return 'TR';
+	if 		 ( tag == 'TBODY' )	return 'TR';
 	else if ( tag == 'SELECT' )	return 'OPTION';
 	else if ( tag == 'UL' )		return 'LI';
 	else if ( tag == 'OL' )		return 'LI';
@@ -136,6 +184,14 @@ function isRepeater( node )	{
  *  Expanding an enclosure. 
  */
 function expandEnclosure( node )	{
+	currentLevel++;
+	elmNumbering[currentLevel]++;
+	var nodeId = 'E';
+	for ( var i = 1 ; i <= currentLevel ; i++ )	{
+		nodeId += '-' + elmNumbering[i];
+	}
+	node.setAttribute( 'id', nodeId );
+
 	var encNodeTag = node.tagName;
 	var repNodeTag = repeaterTagFromEncTag( encNodeTag );
 	var repeaters = new Array();	//Collecting repeaters to this array.
@@ -153,6 +209,7 @@ function expandEnclosure( node )	{
 		seekLinkedElement( repeaters[i] );
 	}
 	var currentLinkedNodes = linkedNodes;
+//	var tableName = getFirstTableFromLinkedElement( currentLinkedNodes[0] );
 
 	// Do Load
 	q = '';
@@ -170,9 +227,8 @@ function expandEnclosure( node )	{
 			node.appendChild( newNode );
 		}
 	}
+	currentLevel--;
 }
-
-var linkedNodes;
 
 function seekLinkedElement( node )	{
 	var enclosure = null;
@@ -222,6 +278,8 @@ function getClassAttributeFromNode( node )	{
 		str = node.getAttribute( 'className' );
 	}
 	return str;
+}
+// End of the prototype of INTERMediator class.
 }
 
 ///////////////////////
