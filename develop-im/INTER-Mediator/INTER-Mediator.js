@@ -12,14 +12,21 @@
 function INTERMediator(  )	{
 
 var titleAsLinkInfo = true;
-var classAsLinkInfo = false;
+var classAsLinkInfo = true;
 var elmNumbering = new Array();
 var currentLevel = 0;
 var separator = '@';
 var defDevider = '|';
 var linkedNodes;
 
+var messages = new Array();
+
 seekNodes( document.getElementsByTagName( 'BODY' )[0] );
+
+this.showMessages = function()	{
+	for ( var i = 0 ; i < messages.length ; i++ )
+		debugOut( messages[i] );
+}
 /**
  *  Seeking nodes and if a node is an enclosure, proceed repeating.
  */
@@ -28,7 +35,6 @@ function seekNodes( node )	{
 	var nType = node.nodeType;
 	if ( nType == 1 )	{	// Work for an element
 		if ( isLinkedElement( node ) && ! isEnclosure( node ))	{	//Linked element and not an enclosure
-	messages.push("seekNodes:link and not enc; "+node.tagName);
 			enclosure = getEnclosure( node );	//Get the enclosure element
 		} else {
 			var childs = node.childNodes;	//Check all child nodes.
@@ -73,17 +79,17 @@ function isRepeaterOfEnclosure( repeater, enclosure )	{
 		return false;
 	var repeaterTag = repeater.tagName;
 	var enclosureTag = enclosure.tagName;
-	if (		( repeaterTag == 'TR' 		&& enclosureTag == 'TBODY' )
-			||	( repeaterTag == 'OPTION' 	&& enclosureTag == 'SELECT' )
-			||	( repeaterTag == 'LI' 		&& enclosureTag == 'OL' )
-			||	( repeaterTag == 'LI' 		&& enclosureTag == 'UL' ))
+	if (    ( repeaterTag == 'TR' 		&& enclosureTag == 'TBODY' )
+	     || ( repeaterTag == 'OPTION' 	&& enclosureTag == 'SELECT' )
+	     || ( repeaterTag == 'LI' 		&& enclosureTag == 'OL' )
+	     || ( repeaterTag == 'LI' 		&& enclosureTag == 'UL' ))
 		return true;
 	else if ( repeaterTag == 'DIV' 		&& enclosureTag == 'DIV' )	{
 		var repeaterClass = getClassAttributeFromNode( repeater );
 		var enclosureClass = getClassAttributeFromNode( repeater );
-		if ( repeaterClass != null && enclosureClass != null
-				&& repeaterClass.indexOf('_im_repeater')>=0 
-				&& enclosureClass.indexOf('_im_enclosure')>=0 )	{
+		if (    repeaterClass != null && enclosureClass != null
+		     && repeaterClass.indexOf('_im_repeater')>=0 
+		     && enclosureClass.indexOf('_im_enclosure')>=0 )	{
 			return true;
 		}
 	}
@@ -103,8 +109,34 @@ function isLinkedElement( node )	{
 	}
 	if ( classAsLinkInfo )	{
 		var classInfo = getClassAttributeFromNode( node );
-		if ( classInfo != null && classInfo.length > 0 )	{
+		if ( classInfo != null )	{
+			var matched = classInfo.match( /IM\[.*\]/ );
+			if ( matched != null )	{
+				return true
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ *  Cheking the argument is the Linked Element or not.
+ */
+function isLinkedElement( node )	{
+	if ( titleAsLinkInfo )	{
+		if ( node.getAttribute( 'TITLE' ) != null && node.getAttribute( 'TITLE' ).length > 0 )	{
+						// IE: If the node doesn't have a title attribute, getAttribute doesn't return null.
+						//     So it requrired check if it's empty string.
 			return true
+		}
+	}
+	if ( classAsLinkInfo )	{
+		var classInfo = getClassAttributeFromNode( node );
+		if ( classInfo != null )	{
+			var matched = classInfo.match( /IM\[.*\]/ );
+			if ( matched != null )	{
+				return true
+			}
 		}
 	}
 	return false;
@@ -115,11 +147,24 @@ function isLinkedElement( node )	{
  */
 function getLinkedElementInfo( node )	{
 	if ( isLinkedElement( node ) )	{
+		var defs = new Array();
 		if ( titleAsLinkInfo )	{
-			var defs = node.getAttribute( 'TITLE' ).split( defDevider );
+			if ( node.getAttribute( 'TITLE' ) != null )	{
+				var eachDefs = node.getAttribute( 'TITLE' ).split( defDevider );
+				for( var i = 0; i < eachDefs.length; i++ )	{
+					defs.push( eachDefs[i] );
+				}
+			}
 		}
 		if ( classAsLinkInfo )	{
-			var defs = getClassAttributeFromNode( node ).split( defDevider );
+			var classAttr = getClassAttributeFromNode( node );
+			if ( classAttr != null && classAttr.length > 0 )	{
+				var matched = classAttr.match( /IM\[(.*)\]/ );
+				var eachDefs = matched[1].split( defDevider );
+				for( var i = 0; i < eachDefs.length; i++ )	{
+					defs.push( eachDefs[i] );
+				}
+			}
 		}
 		return defs;
 	} else {
@@ -211,10 +256,65 @@ function expandEnclosure( node )	{
 	var currentLinkedNodes = linkedNodes;
 //	var tableName = getFirstTableFromLinkedElement( currentLinkedNodes[0] );
 
-	// Do Load
-	q = '';
-	for ( var j = 0 ; j < linkedNodes.length ; j++ )	q += linkedNodes[j].getAttribute('TITLE') + "#";
-	messages.push("expandEnclosure:"+q);
+	// Collecting linked elements in array
+	var linkDefs = new Array();
+	for ( var j = 0 ; j < linkedNodes.length ; j++ )	{
+		var nodeDefs = getLinkedElementInfo( linkedNodes[j] );
+		if ( nodeDefs != null )	{
+			for ( var k = 0 ; k < nodeDefs.length ; k++ )	{
+				linkDefs.push( nodeDefs[k] );
+			}
+		}
+	}
+
+	var linkDefsHash = new Array();		// For collected linked elements with hash array.
+	var tableVote = new Array();		// counting each table name in linked elements.
+	var hasEditable = false;				// Containing ditable elements or not.
+	for ( var j = 0 ; j < linkDefs.length; j++ )	{
+		var tag = linkDefs[j].tagName;
+		if ( tag == 'INPUT' || tag == 'TEXTAREA' || tag == 'SELECT' )	{
+			hasEditable = true;
+		}
+		var comps = linkDefs[j].split( separator );
+		var tableName = '', fieldName = '', targetName = '';
+		if ( comps.length == 3 )	{
+			tableName = comps[0];
+			fieldName = comps[1];
+			targetName = comps[2];
+		} else if ( comps.length == 2 )	{
+			tableName = comps[0];
+			fieldName = comps[1];
+		} else	{
+			fieldName = linkDefs[j];
+		}
+		linkDefsHash.push({'table': tableName, 'field': fieldName, 'target': targetName });
+		if ( tableName != '' )	{
+			if ( tableVote[tableName] == null )	{
+				tableVote[tableName] = 1;
+			} else {
+				++tableVote[tableName];
+			}
+		}
+	}
+	var maxVoted = -1, maxTableName = '';	// Which is the maximum voted table name.
+	for ( var i in tableVote )	{
+		if ( maxVoted < tableVote[i] )	{
+			maxVoted < tableVote[i];
+			maxTableName = i;
+		}
+	}
+	var fieldList = new Array();	// Create field list for database fetch.
+	for ( var i = 0 ; i < linkDefsHash.length; i++ )	{
+		if( linkDefsHash[i].table == maxTableName || linkDefsHash[i].table == '' )	{
+			fieldList.push( linkDefsHash[i].field );
+		}
+	}
+//--------- just for testing
+	var q = '';
+	for ( var j = 0 ; j < linkDefsHash.length; j++ )	{
+		q += "{table: "+linkDefsHash[j].table+", field: "+linkDefsHash[j].field+", target: "+linkDefsHash[j].target+" }";
+	}
+	messages.push("Within Repeater: "+q+" / Max Voted Table="+maxTableName);
 
 	for ( var j = 0 ; j < 3 ; j++ )	{
 		for ( var i = 0 ; i < repeaters.length ; i++ )	{
@@ -227,6 +327,8 @@ function expandEnclosure( node )	{
 			node.appendChild( newNode );
 		}
 	}
+//---------------------------
+
 	currentLevel--;
 }
 
@@ -248,7 +350,6 @@ function seekLinkedElement( node )	{
 				var detectedEnclosure = seekLinkedElement( childs[i] );
 				if ( detectedEnclosure != null )	{
 					if ( detectedEnclosure == childs[i] )	{
-messages.push("seekLinkedElement:Inside"+detectedEnclosure.tagName);
 						return null;
 					} else {
 						return detectedEnclosure;

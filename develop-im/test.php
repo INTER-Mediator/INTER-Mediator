@@ -5,15 +5,13 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <script src="INTER-Mediator/INTER-Mediator.js"></script>
 <script type="text/javascript">
-var messages = new Array();
-
 function test()	{
 var im = new INTERMediator( );
-for ( var i = 0 ; i < messages.length ; i++ )	debugOut( messages[i] );
+im.showMessages();
 }
 </script>
 </head>
-<body class="a b c d">
+<body>
 <input type="button" onclick="test();" value="TEST">
 <table border="1">
 	<tbody>
@@ -34,7 +32,7 @@ for ( var i = 0 ; i < messages.length ; i++ )	debugOut( messages[i] );
 		<td><input type="text" title="mail" value="" /></td>
 	</tr>
 	<tr>
-		<td>category</td>
+		<td class="a b c d">category</td>
 		<td>
 			<select title="category">
 				<option value="101">Family</option>
@@ -72,7 +70,7 @@ for ( var i = 0 ; i < messages.length ; i++ )	debugOut( messages[i] );
 			<tbody>
 			<tr>
 				<td><div title="contact_to@person_id"></div></td>
-				<td><input type="text" title="contact_to@datetime"/></td>
+				<td><input type="text" title="contact_to@datetime|contact_to@datetime@value"/></td>
 				<td><input type="text" title="contact_to@summary"/></td>
 				<td><input type="checkbox" title="contact_to@important" value="1"/></td>
 				<td>
@@ -82,7 +80,7 @@ for ( var i = 0 ; i < messages.length ; i++ )	debugOut( messages[i] );
 				</td>
 				<td>
 					<select title="contact@kind">
-						<option title="contact_kind@id" value="401">xxx</option>
+						<option class="IM[contact_kind@id|contact_kind@name] contactkind" value="401">xxx</option>
 					</select>
 				</td>
 				<td><textarea title="contact_to@description"></textarea></td>
