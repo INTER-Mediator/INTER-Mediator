@@ -21,12 +21,17 @@ var linkedNodes;
 
 var messages = new Array();
 
-seekNodes( document.getElementsByTagName( 'BODY' )[0] );
 
 this.showMessages = function()	{
-	for ( var i = 0 ; i < messages.length ; i++ )
+	seekNodes( document.getElementsByTagName( 'BODY' )[0] );
+	for ( var i = 0 ; i < messages.length ; i++ )	{
 		debugOut( messages[i] );
-}
+	}
+};
+
+this.setSeparator = function( $c )	{	separator = $c;		};
+this.setDefDevider = function( $c )	{	defDevider = $c;	};
+
 /**
  *  Seeking nodes and if a node is an enclosure, proceed repeating.
  */
@@ -104,7 +109,7 @@ function isLinkedElement( node )	{
 		if ( node.getAttribute( 'TITLE' ) != null && node.getAttribute( 'TITLE' ).length > 0 )	{
 						// IE: If the node doesn't have a title attribute, getAttribute doesn't return null.
 						//     So it requrired check if it's empty string.
-			return true
+			return true;
 		}
 	}
 	if ( classAsLinkInfo )	{
@@ -112,7 +117,7 @@ function isLinkedElement( node )	{
 		if ( classInfo != null )	{
 			var matched = classInfo.match( /IM\[.*\]/ );
 			if ( matched != null )	{
-				return true
+				return true;
 			}
 		}
 	}
@@ -127,7 +132,7 @@ function isLinkedElement( node )	{
 		if ( node.getAttribute( 'TITLE' ) != null && node.getAttribute( 'TITLE' ).length > 0 )	{
 						// IE: If the node doesn't have a title attribute, getAttribute doesn't return null.
 						//     So it requrired check if it's empty string.
-			return true
+			return true;
 		}
 	}
 	if ( classAsLinkInfo )	{
@@ -135,7 +140,7 @@ function isLinkedElement( node )	{
 		if ( classInfo != null )	{
 			var matched = classInfo.match( /IM\[.*\]/ );
 			if ( matched != null )	{
-				return true
+				return true;
 			}
 		}
 	}
@@ -309,7 +314,19 @@ function expandEnclosure( node )	{
 			fieldList.push( linkDefsHash[i].field );
 		}
 	}
-//--------- just for testing
+	var ds = IM_getDataSources();
+	var targetKey = '';
+	for( var key in ds)	{
+		if (( maxTableName == '' ) || ( ds[key]['name'] == maxTableName ))	{
+			targetKey = key;
+			break;
+		}
+	}
+	if ( targetKey != ''){
+		var targetRecords = db_query( ds[targetKey]['name'], fieldList, ds[targetKey]['query'], ds[targetKey]['sort']);
+	}
+	
+	//--------- just for testing
 	var q = '';
 	for ( var j = 0 ; j < linkDefsHash.length; j++ )	{
 		q += "{table: "+linkDefsHash[j].table+", field: "+linkDefsHash[j].field+", target: "+linkDefsHash[j].target+" }";
@@ -330,6 +347,9 @@ function expandEnclosure( node )	{
 //---------------------------
 
 	currentLevel--;
+}
+
+function db_query( $table, $fields, $conditions, $sorts )	{
 }
 
 function seekLinkedElement( node )	{
@@ -996,7 +1016,7 @@ function getNameAttributeForAllTags( node )	{
 }
 
 function showNoRecordMessage()	{
-	errorOut(getMessageString(101))
+	errorOut(getMessageString(101));
 }
 
 function getElementNodeByName( nameAttr, originNode )	{
@@ -1137,7 +1157,7 @@ function debugOut(str)	{
 				target.parentNode.removeChild(target);
 		});
 		var tNode = document.createTextNode('clear');
-		clearButton.appendChild(tNode)
+		clearButton.appendChild(tNode);
 		var title = document.createElement('h3');
 		title.appendChild(document.createTextNode('Debug Info from INTER-Mediator'));
 		title.appendChild(clearButton);

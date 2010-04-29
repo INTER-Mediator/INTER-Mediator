@@ -12,6 +12,40 @@
 mb_internal_encoding('UTF-8');
 require_once( 'operation_common.php' );
 
+function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
+	$LF = "\n";	$q = '"';
+	if ( ! isset( $_GET['access'] ) )	{
+		header( 'Content-Type: text/javascript' );
+		echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
+
+//		echo "{$LF}{$LF}var separator='{$options['separator']}';{$LF}";
+//		if ( $debug )	echo 'debugMode(true);', $LF;
+		
+		echo "function IM_getEntryPath(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}{$LF}"; 
+		echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
+		echo "function IM_getDataSources(){return ", arrayToJS( $datasrc, '' ), ";}{$LF}";
+		echo "function IM_getOptions(){return ", arrayToJS( $options, '' ), ";}{$LF}";
+		echo "function IM_getDatabases(){return ", arrayToJS( $dbspec, '' ), ";}{$LF}";
+	
+		echo "function IM_getDataSourceParams(){return {$q}", 
+			arrayToQuery( $datasrc, '__imparameters__datasrc' ), "{$q};}{$LF}";
+		echo "function IM_getOptionParams(){return {$q}", 
+			arrayToQuery( $options, '__imparameters__options' ), "{$q};}{$LF}";
+		echo "function IM_getDatabaseParams(){return {$q}", 
+			arrayToQuery( $dbspec, '__imparameters__dbspec' ), "{$q};}{$LF}";
+	} else {
+		$dbClassName = "DB_{$dbspec['db-class']}";
+		require_once("{$dbClassName}.php");
+		eval( "\$dbInstance = new {$dbClassName}();" );
+		switch( $_GET['access'] )	{
+			case 'select':	$dbInstance->getFromDB();		break;
+			case 'update':	$dbInstance->setToDB();			break;
+			case 'insert':	$dbInstance->newToDB();			break;
+			case 'delete':	$dbInstance->deleteFromDB();	break;
+		}
+	}
+}
+
 function InitializePage( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 	$LF = "\n";
 	$relPath = getRelativePath();

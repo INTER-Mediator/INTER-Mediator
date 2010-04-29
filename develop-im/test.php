@@ -1,9 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-<script src="INTER-Mediator/INTER-Mediator.js"></script>
+<script src="Sample1.php"></script>
 <script type="text/javascript">
 function test()	{
 var im = new INTERMediator( );
