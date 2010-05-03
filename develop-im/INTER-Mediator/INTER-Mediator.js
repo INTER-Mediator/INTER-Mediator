@@ -314,16 +314,16 @@ function expandEnclosure( node )	{
 			fieldList.push( linkDefsHash[i].field );
 		}
 	}
-	var ds = IM_getDataSources();
+	var ds = IM_getDataSources();	// Get DataSource parameters
 	var targetKey = '';
-	for( var key in ds)	{
+	for( var key in ds)	{	//	Search this table from DataSource
 		if (( maxTableName == '' ) || ( ds[key]['name'] == maxTableName ))	{
 			targetKey = key;
 			break;
 		}
 	}
 	if ( targetKey != ''){
-		var targetRecords = db_query( ds[targetKey]['name'], fieldList, ds[targetKey]['query'], ds[targetKey]['sort']);
+		var targetRecords = db_query( ds[targetKey], fieldList );
 	}
 	
 	//--------- just for testing
@@ -349,7 +349,31 @@ function expandEnclosure( node )	{
 	currentLevel--;
 }
 
-function db_query( $table, $fields, $conditions, $sorts )	{
+function db_query( detaSource, fields )	{
+	// Create string for the parameter.
+	var params = "?table=" + encodeURI( detaSource['name'] );
+	params = "&records=" + encodeURI( detaSource['records'] );
+	var arCount = fields.length;
+	for( var i = 0 ; i < arCount ; i++ )	{
+		params += "&field_" + i + "=" + encodeURI( fields[i] );	
+	}
+	if ( detaSource['query'] != null )	{
+		for( var i in detaSource['query'] )	{
+			for ( var key in detaSource['query'][i] )	{
+				params += "&cond_" + i + "_" + key + "=" + encodeURI( detaSource['query'][i][key] );
+			}
+		}
+	}
+	if ( detaSource['sort'] != null )	{
+		for( var i in detaSource['sort'] )	{
+			for ( var key in detaSource['sort'][i] )	{
+				params += "&sort_" + i + "_" + key + "=" + encodeURI( detaSource['sort'][i][key] );
+			}
+		}
+	}
+	messages.push(params);
+
+	var appPath = IM_getEntryPath();
 }
 
 function seekLinkedElement( node )	{

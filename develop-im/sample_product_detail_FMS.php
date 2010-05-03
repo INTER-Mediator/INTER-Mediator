@@ -28,7 +28,7 @@
 			'accept-get' => true,
 		),
 		null, 
-		true		// debug
+		false		// debug
 	);
 ?>
 </head>

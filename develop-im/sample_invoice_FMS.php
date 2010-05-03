@@ -46,7 +46,7 @@
 //			),
 		),
 		null, 
-		true		// debug
+		false		// debug
 	);
 ?>
 <script type="text/javascript">

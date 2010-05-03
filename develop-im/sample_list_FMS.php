@@ -24,7 +24,7 @@
 				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'descend' ),),
 			),
 		),
-		null, null, true
+		null, null, false
 	);
 	?>
 <script type="text/javascript"></script>

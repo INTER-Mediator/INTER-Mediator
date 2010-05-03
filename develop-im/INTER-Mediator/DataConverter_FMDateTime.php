@@ -11,6 +11,8 @@ require_once( 'operation_common.php' );
 
 class DataConverter_FMDateTime	{
 	
+	var $tz = 'Asia/Tokyo';		// Should be custimizable.
+
 	var $useMbstring;
 	var $fmtNum;
 
@@ -22,6 +24,7 @@ class DataConverter_FMDateTime	{
 	function __construct( $format = '' )	{
 		$this->fmt = $format;
 		$this->useMbstring = setLocaleAsBrowser( LC_TIME );
+		date_default_timezone_set( $this->tz );
 	}
 
 	function converterFromDBtoUser( $str )	{

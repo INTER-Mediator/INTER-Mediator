@@ -32,7 +32,7 @@
 			),
 		),
 		null, 
-		true		// debug
+		false		// debug
 	);
 ?>
 </head>

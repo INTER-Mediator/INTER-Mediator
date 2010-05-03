@@ -20,8 +20,7 @@
 				'records'	=>	1,
 				'name' 	=> 'person_layout', 
 				'key' 	=> 'id',
-				'query'	=> array( 
-					array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' )),
+				'query'	=> array( ),
 				'sort'	=> array( array( 'field'=>'id', 'direction'=>'ascend' ),),
 			),
 			array(	
@@ -50,7 +49,7 @@
 			),
 		),
 		array(	'db-class' => 'FileMaker_FX', 'db' => 'TestDB',), 
-		true		// debug
+		false		// debug
 	);
 ?>
 <script type="text/javascript"></script>
