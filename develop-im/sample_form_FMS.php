@@ -49,7 +49,7 @@
 			),
 		),
 		array(	'db-class' => 'FileMaker_FX', 'db' => 'TestDB',), 
-		false		// debug
+		true		// debug
 	);
 ?>
 <script type="text/javascript"></script>
@@ -117,7 +117,7 @@
 		<input type="radio" name="contact_to@way" value="303" />Another
 	</td>
 	<td>
-		<select name="contact@kind">
+		<select name="contact_to@kind">
 			<option value="401">Talk</option>
 			<option value="402">Meet</option>
 			<option value="403">Email</option>

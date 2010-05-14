@@ -31,12 +31,12 @@ class DB_FileMaker_FX extends DB_Base	{
 	
 	function getFromDB( $tableName )	{
 		$tableInfo = $this->getTableInfo( $tableName );
-		if ( ! isset( $tableInfo['foreign-key'] ) )	{
+//		if ( ! isset( $tableInfo['foreign-key'] ) )	{
 			if ( ! isset( $this->fxResult[$tableName] ) )	{
 				$this->fx->setCharacterEncoding( 'UTF-8' );
 				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
 				if ($tableName == $this->mainTableName) 	{
-					$this->fx->setDBData( $this->dbSpec['db'], $tableName, $this->skip );
+					$this->fx->setDBData( $this->dbSpec['db'], $tableName, $tableInfo['records'] );
 					$this->fx->FMSkipRecords( $this->start );
 				} else {
 					$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1000000 );
@@ -58,6 +58,9 @@ class DB_FileMaker_FX extends DB_Base	{
 							}
 						}
 					}
+				}
+				if ( $this->parentKeyValue != null )	{
+					$this->fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
 				}
 				if ( isset( $tableInfo['sort'] ))	{
 					foreach( $tableInfo['sort'] as $condition )	{
@@ -89,10 +92,14 @@ class DB_FileMaker_FX extends DB_Base	{
 					}
 				}
 				$this->fxResult[$tableName] = $this->fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
-				if ( $this->isDebug )	$this->debugMessage[] = $this->fxResult[$tableName]['URL'];
-				if( $this->fxResult[$tableName]['errorCode'] > 0 )	{
-					$this->errorMessage[] = "FX reports error at find action: code={$this->fxResult[$tableName]['errorCode']}, url={$this->fxResult[$tableName]['URL']}";
+				if( $this->fxResult[$tableName]['errorCode'] != 0 )	{
+					$this->errorMessage[] = "FX reports error at find action: "
+						. "code={$this->fxResult[$tableName]['errorCode']}, "
+						. "url={$this->fxResult[$tableName]['URL']}";
 					return false;
+				}
+				if ( $this->isDebug )	{
+					$this->debugMessage[] = $this->fxResult[$tableName]['URL'];
 				}
 				if ( $tableName == $this->mainTableName && isset($this->fxResult[$tableName]['foundCount']))
 					$this->mainTableCount = $this->fxResult[$tableName]['foundCount'];
@@ -103,49 +110,53 @@ class DB_FileMaker_FX extends DB_Base	{
 					$oneRecordArray = array();
 					foreach( $oneRecord as $field=>$dataArray )	{
 						if ( count( $dataArray ) == 1 )	{
-							if ( $this->skip == 1 && $tableName == $this->mainTableName )	{
-								$oneRecordArray[$field] = $this->formatterFromDB( $field, $dataArray[0] );
-							} else {
+						//	if ( $this->skip == 1 && $tableName == $this->mainTableName )	{
+						//		$oneRecordArray[$field] = $this->formatterFromDB( $field, $dataArray[0] );
+						//	} else {
 								$oneRecordArray[$field] = $this->formatterFromDB( 
 											"$tableName{$this->separator}$field", $dataArray[0] );
-							}
+						//	}
 						}
 					}
 					$returnArray[] = $oneRecordArray;
 				}
 			}
 			return $returnArray;
-		} else {
+/*		} else {
 			$fieldsArray = array();	$repeatCount = 0;
-			foreach( $this->fxResult[$this->mainTableName]['data'] as $oneRecord )	{
-				foreach( $oneRecord as $field=>$dataArray )	{
-					if ( strpos($field, $tableName) === 0 )	{
-						$pos = strpos( $field, '::');
-						if ( $pos !== FALSE )	{
-							$fieldsArray[] = $field;
-							$repeatCount = max( $repeatCount, count($dataArray) );
+			if ( isset( $this->fxResult[$this->mainTableName]['data'] ))	{
+				foreach( $this->fxResult[$this->mainTableName]['data'] as $oneRecord )	{
+					foreach( $oneRecord as $field=>$dataArray )	{
+						if ( strpos($field, $tableName) === 0 )	{
+							$pos = strpos( $field, '::');
+							if ( $pos !== FALSE )	{
+								$fieldsArray[] = $field;
+								$repeatCount = max( $repeatCount, count($dataArray) );
+							}
 						}
 					}
+					break;
 				}
-				break;
 			}
 			$returnArray = array();
 			$counter = 0;
-			foreach( $this->fxResult[$this->mainTableName]['data'] as $oneRecord )	{
-				for( $i=0; $i<$repeatCount; $i++ )	{
-					$oneRecordArray = array();
-					foreach( $fieldsArray as $oneField )	{
-						$pos = strpos( $oneField, '::');
-						$fieldName = substr($oneField, $pos+2, strlen($oneField));
-						$oneRecordArray[$fieldName] 
-							= $this->formatterFromDB( "$tableName{$this->separator}$fieldName", $oneRecord[$oneField][$i] );
+			if ( isset( $this->fxResult[$this->mainTableName]['data'] ))	{
+				foreach( $this->fxResult[$this->mainTableName]['data'] as $oneRecord )	{
+					for( $i=0; $i<$repeatCount; $i++ )	{
+						$oneRecordArray = array();
+						foreach( $fieldsArray as $oneField )	{
+							$pos = strpos( $oneField, '::');
+							$fieldName = substr($oneField, $pos+2, strlen($oneField));
+							$oneRecordArray[$fieldName] 
+								= $this->formatterFromDB( "$tableName{$this->separator}$fieldName", $oneRecord[$oneField][$i] );
+						}
+						$returnArray[] = $oneRecordArray;
 					}
-					$returnArray[] = $oneRecordArray;
 				}
 			}
 			return $returnArray;
 		}
-	}
+*/	}
 	
 	function unifyCRLF( $str )	{
 		return str_replace( "\n", "\r", str_replace( "\r\n", "\r", $str ));

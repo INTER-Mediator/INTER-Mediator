@@ -12,10 +12,10 @@ require_once ( 'INTER-Mediator/INTER-Mediator.php');
 $tableDefs 
 	= array(	
 		array(	
-			'records'	=>	1,
+			'records'	=>	2,
 			'name' 	=> 'person_layout', 
 			'key' 	=> 'id',
-			'query'	=> array( array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),),
+			'query'	=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/ ),
 			'sort'	=> array( array( 'field'=>'id', 'direction'=>'ascend' ),),
 		),
 		array(	

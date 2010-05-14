@@ -37,12 +37,38 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		$dbClassName = "DB_{$dbspec['db-class']}";
 		require_once("{$dbClassName}.php");
 		eval( "\$dbInstance = new {$dbClassName}();" );
-		switch( $_GET['access'] )	{
-			case 'select':	$dbInstance->getFromDB();		break;
-			case 'update':	$dbInstance->setToDB();			break;
-			case 'insert':	$dbInstance->newToDB();			break;
-			case 'delete':	$dbInstance->deleteFromDB();	break;
+
+		include( 'params.php' );
+		if ( isset( $dbUser ))	{
+			$dbspec['user'] = $dbUser;
 		}
+		if ( isset( $dbPassword ))	{
+			$dbspec['password'] = $dbPassword;
+		}
+
+		$dbInstance->setDBSpec( $dbspec );
+		if ( $debug )	$dbInstance->setDebugMode();
+		$dbInstance->setSeparator( isset( $options['separator'] ) ? $options['separator'] : '@' );
+		$dbInstance->setDataSource( $datasrc );
+		$dbInstance->setStartSkip( 0, isset($dbspec['records']) ? $dbspec['records'] : 1 );
+		$dbInstance->setFormatter( $options['formatter'] );
+		if ( isset( $_GET['parent_keyval'] ) && strlen( $_GET['parent_keyval'] ) > 0 )	{
+			$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
+		}
+		switch( $_GET['access'] )	{
+			case 'select':	$result = $dbInstance->getFromDB( $_GET['table'] );		break;
+			case 'update':	$result = $dbInstance->setToDB();			break;
+			case 'insert':	$result = $dbInstance->newToDB();			break;
+			case 'delete':	$result = $dbInstance->deleteFromDB();	break;
+		}
+		$returnData = array();
+		foreach( $dbInstance->getErrorMessages() as $oneError )	{
+			$returnData[] = "DebugOut('{$oneError}');";
+		}
+		foreach( $dbInstance->getErrorMessages() as $oneError )	{
+			$returnData[] = "DebugOut('{$oneError}');";
+		}
+		echo implode( '', $returnData ) . 'var dbresult=' . arrayToJS( $result, '' ) . ';';
 	}
 }
 

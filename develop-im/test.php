@@ -14,14 +14,9 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 <script src="Sample1.php"></script>
 <script type="text/javascript">
-function test()	{
-var im = new INTERMediator( );
-im.showMessages();
-}
 </script>
 </head>
-<body>
-<input type="button" onclick="test();" value="TEST">
+<body onload="new INTERMediator()">
 <table border="1">
 	<tbody>
 	<tr>
@@ -88,7 +83,7 @@ im.showMessages();
 					<input type="radio" title="contact_to@way" value="303" />Another
 				</td>
 				<td>
-					<select title="contact@kind">
+					<select title="contact_to@kind">
 						<option class="IM[contact_kind@id|contact_kind@name] contactkind" value="401">xxx</option>
 					</select>
 				</td>
@@ -101,7 +96,7 @@ im.showMessages();
 	<tr>
 		<td colspan="2">
 			<ul>
-				<li><input type="text" title="history_to@startdate" /></li>
+				<li><hr><input type="text" title="history_to@startdate" /></li>
 				<li><input type="text" title="history_to@enddate" /></li>
 				<li><input type="text" title="history_to@description" /></li>
 			</ul>
@@ -112,18 +107,22 @@ im.showMessages();
 
 <p>The following table is out of the above master-detail relation.</p>
 <table border="1">
+	<thead>
 	<tr>
 		<th>郵便番号</th>
 		<th>都道府県</th>
 		<th>市区町村</th>
 		<th>町域名</th>
 	</tr>
+	</thead>
+	<tbody>
 	<tr>
 		<td><div title="postalcode@f3"></div></td>
 		<td><div title="postalcode@f7"></div></td>
 		<td><div title="postalcode@f8"></div></td>
 		<td><div title="postalcode@f9"></div></td>
 	</tr>
+	</tbody>
 </table>
 </body>
 </html>

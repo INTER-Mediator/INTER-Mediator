@@ -18,24 +18,22 @@ var currentLevel = 0;
 var separator = '@';
 var defDevider = '|';
 var linkedNodes;
-
 var messages = new Array();
 
-
-this.showMessages = function()	{
-	seekNodes( document.getElementsByTagName( 'BODY' )[0] );
+	debugOut( 'INTERMediator Start' );
+	seekNodes( document.getElementsByTagName( 'BODY' )[0], '', '' );
 	for ( var i = 0 ; i < messages.length ; i++ )	{
 		debugOut( messages[i] );
 	}
-};
 
-this.setSeparator = function( $c )	{	separator = $c;		};
-this.setDefDevider = function( $c )	{	defDevider = $c;	};
+
+this.setSeparator = function( c )	{	separator = c;		};
+this.setDefDevider = function( c )	{	defDevider = c;	};
 
 /**
  *  Seeking nodes and if a node is an enclosure, proceed repeating.
  */
-function seekNodes( node )	{
+function seekNodes( node, parentTable, parentKeyVal )	{
 	var enclosure = null;
 	var nType = node.nodeType;
 	if ( nType == 1 )	{	// Work for an element
@@ -44,10 +42,10 @@ function seekNodes( node )	{
 		} else {
 			var childs = node.childNodes;	//Check all child nodes.
 			for ( var i = 0 ; i < childs.length ; i++ )	{
-				var checkingEncl = seekNodes( childs[i] );	//Recuresive call
+				var checkingEncl = seekNodes( childs[i], parentTable, parentKeyVal );	//Recuresive call
 				if ( checkingEncl != null )	{	//This means linked element of inside of enclosure
 					if ( checkingEncl == childs[i] )	{	//If the current node is an enclosure
-						expandEnclosure( childs[i] );		//Expand the enclosure
+						expandEnclosure( childs[i], parentTable, parentKeyVal );	//Expand the enclosure
 						enclosure = null;						//Out side of enclosure
 					} else {
 						return checkingEncl;					//Show inside of enclosure
@@ -233,9 +231,13 @@ function isRepeater( node )	{
 /**
  *  Expanding an enclosure. 
  */
-function expandEnclosure( node )	{
+function expandEnclosure( node, parentTable, parentKeyVal )	{
 	currentLevel++;
 	elmNumbering[currentLevel]++;
+
+messages.push( 'Node Expand:' + node.tagName + ' / Level:' + currentLevel 
+	+ ' / Parent Table:' + parentTable + ' / Parent Key Value:' + parentKeyVal );
+
 	var nodeId = 'E';
 	for ( var i = 1 ; i <= currentLevel ; i++ )	{
 		nodeId += '-' + elmNumbering[i];
@@ -274,30 +276,19 @@ function expandEnclosure( node )	{
 
 	var linkDefsHash = new Array();		// For collected linked elements with hash array.
 	var tableVote = new Array();		// counting each table name in linked elements.
-	var hasEditable = false;				// Containing ditable elements or not.
+	var hasEditable = false;				// Containing editable elements or not.
 	for ( var j = 0 ; j < linkDefs.length; j++ )	{
 		var tag = linkDefs[j].tagName;
 		if ( tag == 'INPUT' || tag == 'TEXTAREA' || tag == 'SELECT' )	{
 			hasEditable = true;
 		}
-		var comps = linkDefs[j].split( separator );
-		var tableName = '', fieldName = '', targetName = '';
-		if ( comps.length == 3 )	{
-			tableName = comps[0];
-			fieldName = comps[1];
-			targetName = comps[2];
-		} else if ( comps.length == 2 )	{
-			tableName = comps[0];
-			fieldName = comps[1];
-		} else	{
-			fieldName = linkDefs[j];
-		}
-		linkDefsHash.push({'table': tableName, 'field': fieldName, 'target': targetName });
-		if ( tableName != '' )	{
-			if ( tableVote[tableName] == null )	{
-				tableVote[tableName] = 1;
+		var nodeInfoArray = getNodeInfoArray( linkDefs[j] );
+		linkDefsHash.push( nodeInfoArray );
+		if ( nodeInfoArray['table'] != '' )	{
+			if ( tableVote[nodeInfoArray['table']] == null )	{
+				tableVote[nodeInfoArray['table']] = 1;
 			} else {
-				++tableVote[tableName];
+				++tableVote[nodeInfoArray['table']];
 			}
 		}
 	}
@@ -323,10 +314,35 @@ function expandEnclosure( node )	{
 		}
 	}
 	if ( targetKey != ''){
-		var targetRecords = db_query( ds[targetKey], fieldList );
+		var targetRecords = db_query( ds[targetKey], fieldList, parentTable, parentKeyVal );
+		for( var ix in targetRecords )	{
+			for ( var k = 0 ; k < currentLinkedNodes.length ; k++ )	{
+				var nodeTag = currentLinkedNodes[k].tagName;
+				var linkInfoArray = getLinkedElementInfo( currentLinkedNodes[k] );
+				for ( var j = 0 ; j < linkInfoArray.length ;j++ )	{
+					var nInfo = getNodeInfoArray( linkInfoArray[j] );
+					var curVal = targetRecords[ix][nInfo['field']];
+					if ( nodeTag == "INPUT" )	{
+						currentLinkedNodes[k].value = curVal;
+					} else if ( nodeTag == "SELECT" )	{
+						//
+					} else 	{
+						currentLinkedNodes[k].innerHTML = curVal;
+					}
+				}
+			}
+			for ( var i = 0 ; i < repeaters.length ; i++ )	{
+				var newNode = repeaters[i].cloneNode(true);
+				node.appendChild( newNode );
+				seekNodes( newNode, ds[targetKey]['name'], targetRecords[ix][ds[targetKey]['key']] );
+			}
+		}
+	} else {
+		messages.push("Cant determine the Table Name: "+linkDefsHash.toString());
 	}
 	
 	//--------- just for testing
+/*
 	var q = '';
 	for ( var j = 0 ; j < linkDefsHash.length; j++ )	{
 		q += "{table: "+linkDefsHash[j].table+", field: "+linkDefsHash[j].field+", target: "+linkDefsHash[j].target+" }";
@@ -345,35 +361,53 @@ function expandEnclosure( node )	{
 		}
 	}
 //---------------------------
-
+*/
 	currentLevel--;
 }
 
-function db_query( detaSource, fields )	{
+function getNodeInfoArray( nodeInfo )	{
+	var comps = nodeInfo.split( separator );
+	var tableName = '', fieldName = '', targetName = '';
+	if ( comps.length == 3 )	{
+		tableName = comps[0];
+		fieldName = comps[1];
+		targetName = comps[2];
+	} else if ( comps.length == 2 )	{
+		tableName = comps[0];
+		fieldName = comps[1];
+	} else	{
+		fieldName = nodeInfo;
+	}
+	return {'table': tableName, 'field': fieldName, 'target': targetName };
+}
+
+function db_query( detaSource, fields, parentTable, parentKeyVal )	{
 	// Create string for the parameter.
-	var params = "?table=" + encodeURI( detaSource['name'] );
-	params = "&records=" + encodeURI( detaSource['records'] );
+	var params = "?access=select&table=" + encodeURI( detaSource['name'] );
+	params += "&records=" + encodeURI( (detaSource['records']!=null) ? detaSource['records'] : 10000000 );
 	var arCount = fields.length;
 	for( var i = 0 ; i < arCount ; i++ )	{
 		params += "&field_" + i + "=" + encodeURI( fields[i] );	
 	}
-	if ( detaSource['query'] != null )	{
-		for( var i in detaSource['query'] )	{
-			for ( var key in detaSource['query'][i] )	{
-				params += "&cond_" + i + "_" + key + "=" + encodeURI( detaSource['query'][i][key] );
-			}
-		}
+	if ( parentTable.length > 0 )	{
+		params += "&parent_table=" + encodeURI( parentTable );
 	}
-	if ( detaSource['sort'] != null )	{
-		for( var i in detaSource['sort'] )	{
-			for ( var key in detaSource['sort'][i] )	{
-				params += "&sort_" + i + "_" + key + "=" + encodeURI( detaSource['sort'][i][key] );
-			}
-		}
+	if ( parentKeyVal.length > 0 )	{
+		params += "&parent_keyval=" + encodeURI( parentKeyVal );
 	}
-	messages.push(params);
-
 	var appPath = IM_getEntryPath();
+	
+	messages.push("Expand Table="+params);
+
+
+	myRequest = new XMLHttpRequest();
+	myRequest.open( 'GET', appPath + params, false );
+//	myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+	myRequest.send( null );
+	messages.push("DB Response: "+myRequest.responseText);
+	var dbresult = '';
+	eval( myRequest.responseText );
+	return dbresult;
 }
 
 function seekLinkedElement( node )	{
@@ -423,6 +457,10 @@ function getClassAttributeFromNode( node )	{
 		str = node.getAttribute( 'className' );
 	}
 	return str;
+}
+
+function arrayToString( ar )	{
+	
 }
 // End of the prototype of INTERMediator class.
 }

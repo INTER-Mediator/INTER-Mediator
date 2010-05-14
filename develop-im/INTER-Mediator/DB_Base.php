@@ -23,10 +23,15 @@ class DB_Base	{
 	var $errorMessage = array();
 	var $debugMessage = array();
 	var $isDebug = false;
+	var $parentKeyValue = null;
 	
 	function __construct()	{
 	}
 	
+	function setParentKeyValue( $val )	{
+		$this->parentKeyValue = $val;
+	}
+
 	function setDebugMessage( $str )		{
 		$this->debugMessage[] = $str;
 	}
