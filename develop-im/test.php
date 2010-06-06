@@ -78,13 +78,13 @@
 				<td><input type="text" title="contact_to@summary"/></td>
 				<td><input type="checkbox" title="contact_to@important" value="1"/></td>
 				<td>
-					<input type="radio" title="contact_to@way" value="301" />Direct
-					<input type="radio" title="contact_to@way" value="302" />Phone
-					<input type="radio" title="contact_to@way" value="303" />Another
+					<select title="contact_to@way">
+						<option class="IM[contact_way@id@value|contact_way@name] contactway" value=""></option>
+					</select>
 				</td>
 				<td>
 					<select title="contact_to@kind">
-						<option class="IM[contact_kind@id|contact_kind@name] contactkind" value="401">xxx</option>
+						<option class="IM[cor_way_kind@kind_id|cor_way_kind@contact_kind::name] contactkind" value=""></option>
 					</select>
 				</td>
 				<td><textarea title="contact_to@description"></textarea></td>

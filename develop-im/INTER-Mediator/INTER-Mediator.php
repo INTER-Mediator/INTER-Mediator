@@ -52,8 +52,10 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		$dbInstance->setDataSource( $datasrc );
 		$dbInstance->setStartSkip( 0, isset($dbspec['records']) ? $dbspec['records'] : 1 );
 		$dbInstance->setFormatter( $options['formatter'] );
-		if ( isset( $_GET['parent_keyval'] ) && strlen( $_GET['parent_keyval'] ) > 0 )	{
-			$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
+		if ( isset( $_GET['parent_keyval'] ) /* && strlen( $_GET['parent_keyval'] ) > 0 */)	{
+		//	if ( isset( $datasrc[$_GET['table']]['foreign-key'] ))	{
+				$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
+		//	}
 		}
 		switch( $_GET['access'] )	{
 			case 'select':	$result = $dbInstance->getFromDB( $_GET['table'] );		break;
@@ -63,10 +65,10 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		}
 		$returnData = array();
 		foreach( $dbInstance->getErrorMessages() as $oneError )	{
-			$returnData[] = "DebugOut('{$oneError}');";
+			$returnData[] = "messages.push('{$oneError}');";
 		}
 		foreach( $dbInstance->getErrorMessages() as $oneError )	{
-			$returnData[] = "DebugOut('{$oneError}');";
+			$returnData[] = "messages.push('{$oneError}');";
 		}
 		echo implode( '', $returnData ) . 'var dbresult=' . arrayToJS( $result, '' ) . ';';
 	}

@@ -11,24 +11,25 @@ require_once ( 'INTER-Mediator/INTER-Mediator.php');
 
 $tableDefs 
 	= array(	
-		array(	
-			'records'	=>	2,
-			'name' 	=> 'person_layout', 
-			'key' 	=> 'id',
-			'query'	=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/ ),
-			'sort'	=> array( array( 'field'=>'id', 'direction'=>'ascend' ),),
-		),
-		array(	
-			'name' 			=> 'contact_to', 
-			'key' 			=> 'id',
-			'foreign-key' 	=> 'person_id',
-			'repeat-control'	=> 'insert delete',
-		),
+		array(	'records'	=>	2,
+				'name' 	=> 'person_layout', 
+				'key' 		=> 'id',
+				'query'	=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/ ),
+				'sort'		=> array( array( 'field'=>'id', 'direction'=>'ascend' ),),),
+		array(	'name'			=> 'contact_to',
+				'key'			=> 'id',
+				'foreign-key' => 'person_id',
+				'join-field' 	=> 'id'),
+		array(	'name' => 'contact_way', 'key' => 'id',),
+		array(	'name' 		=> 'cor_way_kind', 
+				'key' 			=> 'id',
+				'foreign-key' => 'way_id',
+				'join-field' 	=> 'kind'),
 		array(	
 			'name' 			=> 'history_to', 
 			'key' 			=> 'id',
 			'foreign-key'	=> 'person_id',
-			'repeat-control'	=> 'insert',
+			'repeat-control'	=> 'insert','join-field' 	=> 'id'
 		),
 		array(	
 			'name' 	=> 'postalcode', 

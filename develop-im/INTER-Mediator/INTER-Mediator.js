@@ -13,7 +13,6 @@ function INTERMediator(  )	{
 
 var titleAsLinkInfo = true;
 var classAsLinkInfo = true;
-var elmNumbering = new Array();
 var currentLevel = 0;
 var separator = '@';
 var defDevider = '|';
@@ -21,7 +20,7 @@ var linkedNodes;
 var messages = new Array();
 
 	debugOut( 'INTERMediator Start' );
-	seekNodes( document.getElementsByTagName( 'BODY' )[0], '', '' );
+	seekEnclosureNode( document.getElementsByTagName( 'BODY' )[0], '', '' );
 	for ( var i = 0 ; i < messages.length ; i++ )	{
 		debugOut( messages[i] );
 	}
@@ -33,28 +32,140 @@ this.setDefDevider = function( c )	{	defDevider = c;	};
 /**
  *  Seeking nodes and if a node is an enclosure, proceed repeating.
  */
-function seekNodes( node, parentTable, parentKeyVal )	{
+function seekEnclosureNode( node, currentRecord )	{
 	var enclosure = null;
 	var nType = node.nodeType;
 	if ( nType == 1 )	{	// Work for an element
-		if ( isLinkedElement( node ) && ! isEnclosure( node ))	{	//Linked element and not an enclosure
-			enclosure = getEnclosure( node );	//Get the enclosure element
+		if ( isEnclosure( node, false ))	{	//Linked element and an enclosure
+			expandEnclosure( node, currentRecord );	//Expand the enclosure
 		} else {
 			var childs = node.childNodes;	//Check all child nodes.
 			for ( var i = 0 ; i < childs.length ; i++ )	{
-				var checkingEncl = seekNodes( childs[i], parentTable, parentKeyVal );	//Recuresive call
-				if ( checkingEncl != null )	{	//This means linked element of inside of enclosure
-					if ( checkingEncl == childs[i] )	{	//If the current node is an enclosure
-						expandEnclosure( childs[i], parentTable, parentKeyVal );	//Expand the enclosure
-						enclosure = null;						//Out side of enclosure
-					} else {
-						return checkingEncl;					//Show inside of enclosure
-					}
-				}
+				var checkingEncl = seekEnclosureNode( childs[i], currentRecord );	//Recuresive call
 			}
 		}
 	}
 	return enclosure;
+}
+
+/**
+ *  Expanding an enclosure. 
+ */
+function expandEnclosure( node, currentRecord )	{
+	currentLevel++;
+
+	var encNodeTag = node.tagName;
+	var repNodeTag = repeaterTagFromEncTag( encNodeTag );
+	var repeaters = new Array();	//Collecting repeaters to this array.
+	var childs = node.childNodes;	//Check all child node of the enclosure.
+	for ( var i = 0 ; i < childs.length ; i++ )	{
+		if ( childs[i].nodeType == 1 && childs[i].tagName == repNodeTag )	{	//If the element is a repeater.
+			repeaters.push( childs[i] );		//Record it to the array.
+		}
+	}
+	linkedNodes = new Array();		//Collecting linked elements to this array.
+	for ( var i = 0 ; i < repeaters.length ; i++ )	{
+		var inDocNode = repeaters[i];
+		repeaters[i] = repeaters[i].cloneNode(true);
+		inDocNode.parentNode.removeChild( inDocNode );
+		seekLinkedElement( repeaters[i] );
+	}
+	var currentLinkedNodes = linkedNodes;	// Store in the local variable
+
+	// Collecting linked elements in array
+	var linkDefs = new Array();
+	for ( var j = 0 ; j < linkedNodes.length ; j++ )	{
+		var nodeDefs = getLinkedElementInfo( linkedNodes[j] );
+		if ( nodeDefs != null )	{
+			for ( var k = 0 ; k < nodeDefs.length ; k++ )	{
+				linkDefs.push( nodeDefs[k] );
+			}
+		}
+	}
+
+	var linkDefsHash = new Array();		// For collected linked elements with hash array.
+	var tableVote = new Array();		// counting each table name in linked elements.
+	var hasEditable = false;				// Containing editable elements or not.
+	for ( var j = 0 ; j < linkDefs.length; j++ )	{
+		var tag = linkDefs[j].tagName;
+		if ( tag == 'INPUT' || tag == 'TEXTAREA' || tag == 'SELECT' )	{
+			hasEditable = true;
+		}
+		var nodeInfoArray = getNodeInfoArray( linkDefs[j] );
+		linkDefsHash.push( nodeInfoArray );
+
+		if ( nodeInfoArray['table'] != '' )	{
+			if ( tableVote[nodeInfoArray['table']] == null )	{
+				tableVote[nodeInfoArray['table']] = 1;
+			} else {
+				++tableVote[nodeInfoArray['table']];
+			}
+		}
+	}
+	var maxVoted = -1, maxTableName = '';	// Which is the maximum voted table name.
+	for ( var i in tableVote )	{
+		if ( maxVoted < tableVote[i] )	{
+			maxVoted < tableVote[i];
+			maxTableName = i;
+		}
+	}
+
+	var fieldList = new Array();	// Create field list for database fetch.
+	for ( var i = 0 ; i < linkDefsHash.length; i++ )	{
+		if( linkDefsHash[i].table == maxTableName || linkDefsHash[i].table == '' )	{
+			fieldList.push( linkDefsHash[i].field );
+		}
+	}
+	var ds = IM_getDataSources();	// Get DataSource parameters
+	var targetKey = '';
+	for( var key in ds)	{	//	Search this table from DataSource
+		if (( maxTableName == '' ) || ( ds[key]['name'] == maxTableName ))	{
+			targetKey = key;
+			break;
+		}
+	}
+	if ( targetKey != ''){
+		var foreignValue = (currentRecord[ds[targetKey]['join-field']]!=null)?currentRecord[ds[targetKey]['join-field']]:'';
+		var targetRecords = db_query( ds[targetKey], fieldList, foreignValue );
+			// Access database and get records
+		var linkedElmCounter = 1;
+		var currentEncNumber = currentLevel;
+		var postSetFields = new Array();
+		for( var ix in targetRecords )	{	// for each record
+			for ( var k = 0 ; k < currentLinkedNodes.length ; k++ )	{	// for each linked element
+				var idValue = 'IM'+currentEncNumber+'-'+linkedElmCounter;
+				currentLinkedNodes[k].setAttribute('id', idValue );
+				linkedElmCounter++;
+
+				var nodeTag = currentLinkedNodes[k].tagName;	// get the tag name of the element
+				var linkInfoArray = getLinkedElementInfo( currentLinkedNodes[k] );	// info array for it
+
+				for ( var j = 0 ; j < linkInfoArray.length ;j++ )	{	// for each info
+					var nInfo = getNodeInfoArray( linkInfoArray[j] );	
+					var curVal = targetRecords[ix][nInfo['field']];
+
+					if ( nodeTag == "INPUT" )	{
+						currentLinkedNodes[k].value = curVal;
+					} else if ( nodeTag == "SELECT" )	{
+						postSetFields.push( {'id':idValue, 'value':curVal} );
+					} else 	{
+						currentLinkedNodes[k].innerHTML = curVal;
+					}
+				}
+			}
+			for ( var i = 0 ; i < repeaters.length ; i++ )	{
+				var newNode = repeaters[i].cloneNode(true);
+				node.appendChild( newNode );
+				seekEnclosureNode( newNode, targetRecords[ix] );
+			}
+			for ( var i = 0 ; i < postSetFields.length ; i++ )	{
+				document.getElementById( postSetFields[i]['id'] ).value = postSetFields[i]['value'];
+			}
+		}
+	} else {
+		messages.push("Cant determine the Table Name: "+linkDefsHash.toString());
+	}
+//	currentLevel--;
 }
 
 /**
@@ -87,13 +198,23 @@ function isRepeaterOfEnclosure( repeater, enclosure )	{
 	     || ( repeaterTag == 'LI' 		&& enclosureTag == 'OL' )
 	     || ( repeaterTag == 'LI' 		&& enclosureTag == 'UL' ))
 		return true;
-	else if ( repeaterTag == 'DIV' 		&& enclosureTag == 'DIV' )	{
-		var repeaterClass = getClassAttributeFromNode( repeater );
-		var enclosureClass = getClassAttributeFromNode( repeater );
-		if (    repeaterClass != null && enclosureClass != null
-		     && repeaterClass.indexOf('_im_repeater')>=0 
+	else if ( enclosureTag == 'DIV' )	{
+		var enclosureClass = getClassAttributeFromNode( enclosure );
+		if (    enclosureClass != null
 		     && enclosureClass.indexOf('_im_enclosure')>=0 )	{
-			return true;
+			var repeaterClass = getClassAttributeFromNode( repeater );
+			if(		repeaterTag == 'DIV' 
+				&&	repeaterClass != null
+		     	&&	repeaterClass.indexOf('_im_repeater')>=0 )	{
+				return true;
+			} else if ( repeaterTag == 'INPUT' )	{
+				var repeaterType = repeater.getAttribute( 'type' );
+				if(		repeaterType!= null
+		     		&&	(	repeaterType.indexOf('radio')>=0 
+						||	repeaterType.indexOf('check')>=0 ))	{
+					return true;
+				}
+			}
 		}
 	}
 	return false;
@@ -103,10 +224,11 @@ function isRepeaterOfEnclosure( repeater, enclosure )	{
  *  Cheking the argument is the Linked Element or not.
  */
 function isLinkedElement( node )	{
+	if ( node != null )	{
 	if ( titleAsLinkInfo )	{
 		if ( node.getAttribute( 'TITLE' ) != null && node.getAttribute( 'TITLE' ).length > 0 )	{
-						// IE: If the node doesn't have a title attribute, getAttribute doesn't return null.
-						//     So it requrired check if it's empty string.
+				// IE: If the node doesn't have a title attribute, getAttribute doesn't return null.
+				//     So it requrired check if it's empty string.
 			return true;
 		}
 	}
@@ -119,29 +241,7 @@ function isLinkedElement( node )	{
 			}
 		}
 	}
-	return false;
 }
-
-/**
- *  Cheking the argument is the Linked Element or not.
- */
-function isLinkedElement( node )	{
-	if ( titleAsLinkInfo )	{
-		if ( node.getAttribute( 'TITLE' ) != null && node.getAttribute( 'TITLE' ).length > 0 )	{
-						// IE: If the node doesn't have a title attribute, getAttribute doesn't return null.
-						//     So it requrired check if it's empty string.
-			return true;
-		}
-	}
-	if ( classAsLinkInfo )	{
-		var classInfo = getClassAttributeFromNode( node );
-		if ( classInfo != null )	{
-			var matched = classInfo.match( /IM\[.*\]/ );
-			if ( matched != null )	{
-				return true;
-			}
-		}
-	}
 	return false;
 }
 
@@ -201,169 +301,68 @@ function repeaterTagFromEncTag( tag )	{
 /**
  *  Check the argument node is an enclosure or not
  */
-function isEnclosure( node )	{
+function isEnclosure( node, nodeOnly )	{
+
 	if ( node == null || node.nodeType != 1 )
 		return false;
 	var tagName = node.tagName;
 	var className = getClassAttributeFromNode( node );
 	if (		( tagName == 'TBODY' ) || ( tagName == 'UL' ) || ( tagName == 'OL' ) 
-			||	( tagName == 'SELECT' ) || ( tagName == 'DIV' && className == '_im_repeater' ))	
-		return true;
-	else
-		return false;
+			||	( tagName == 'SELECT' ) || ( tagName == 'DIV' && className == '_im_repeater' )){
+		if ( nodeOnly )	{	
+			return true;
+		} else {
+			var countChild = node.childNodes.length;
+			for ( var k = 0 ; k < countChild ; k++ )	{
+				if ( isRepeater( node.childNodes[k] , false ) )	{
+					return true;
+				}
+			}
+		}
+	} 
+	return false;
 }
 
 /**
  *  Check the argument node is an repeater or not
  */
-function isRepeater( node )	{
+function isRepeater( node, nodeOnly )	{
 	if ( node.nodeType != 1 )
 		return false;
 	var tagName = node.tagName;
 	var className = getClassAttributeFromNode( node );
-	if (		( tagName == 'TR' ) || ( tagName == 'LI' ) || ( tagName == 'OPTION' ) 
-			||	( tagName == 'DIV' && className == '_im_enclosure' ))
-		return true;
-	else
+	if (		( tagName == 'TR' ) || ( tagName == 'LI' ) || ( tagName == 'OPTION' )
+			||	( tagName == 'DIV' && className == '_im_enclosure' ))	{
+		if ( nodeOnly )	{	
+			return true;
+		} else {
+			return searchLinkedElement( node );
+		}
+	} else	{
 		return false;
+	}
 }
 
-/**
- *  Expanding an enclosure. 
- */
-function expandEnclosure( node, parentTable, parentKeyVal )	{
-	currentLevel++;
-	elmNumbering[currentLevel]++;
-
-messages.push( 'Node Expand:' + node.tagName + ' / Level:' + currentLevel 
-	+ ' / Parent Table:' + parentTable + ' / Parent Key Value:' + parentKeyVal );
-
-	var nodeId = 'E';
-	for ( var i = 1 ; i <= currentLevel ; i++ )	{
-		nodeId += '-' + elmNumbering[i];
+function searchLinkedElement( node )	{
+	if ( isLinkedElement( node ) )	{
+		return true;
 	}
-	node.setAttribute( 'id', nodeId );
-
-	var encNodeTag = node.tagName;
-	var repNodeTag = repeaterTagFromEncTag( encNodeTag );
-	var repeaters = new Array();	//Collecting repeaters to this array.
-	var childs = node.childNodes;	//Check all child node of the enclosure.
-	for ( var i = 0 ; i < childs.length ; i++ )	{
-		if ( childs[i].nodeType == 1 && childs[i].tagName == repNodeTag )	{	//If the element is a repeater.
-			repeaters.push( childs[i] );		//Record it to the array.
-		}
-	}
-	linkedNodes = new Array();		//Collecting linked elements to this array.
-	for ( var i = 0 ; i < repeaters.length ; i++ )	{
-		var inDocNode = repeaters[i];
-		repeaters[i] = repeaters[i].cloneNode(true);
-		inDocNode.parentNode.removeChild( inDocNode );
-		seekLinkedElement( repeaters[i] );
-	}
-	var currentLinkedNodes = linkedNodes;
-//	var tableName = getFirstTableFromLinkedElement( currentLinkedNodes[0] );
-
-	// Collecting linked elements in array
-	var linkDefs = new Array();
-	for ( var j = 0 ; j < linkedNodes.length ; j++ )	{
-		var nodeDefs = getLinkedElementInfo( linkedNodes[j] );
-		if ( nodeDefs != null )	{
-			for ( var k = 0 ; k < nodeDefs.length ; k++ )	{
-				linkDefs.push( nodeDefs[k] );
-			}
-		}
-	}
-
-	var linkDefsHash = new Array();		// For collected linked elements with hash array.
-	var tableVote = new Array();		// counting each table name in linked elements.
-	var hasEditable = false;				// Containing editable elements or not.
-	for ( var j = 0 ; j < linkDefs.length; j++ )	{
-		var tag = linkDefs[j].tagName;
-		if ( tag == 'INPUT' || tag == 'TEXTAREA' || tag == 'SELECT' )	{
-			hasEditable = true;
-		}
-		var nodeInfoArray = getNodeInfoArray( linkDefs[j] );
-		linkDefsHash.push( nodeInfoArray );
-		if ( nodeInfoArray['table'] != '' )	{
-			if ( tableVote[nodeInfoArray['table']] == null )	{
-				tableVote[nodeInfoArray['table']] = 1;
+	var countChild = node.childNodes.length;
+	for ( var k = 0 ; k < countChild ; k++ )	{
+		var nType = node.childNodes[k].nodeType;
+		if ( nType == 1 )	{	// Work for an element
+			if ( isLinkedElement( node.childNodes[k] ) )	{
+				return true;
 			} else {
-				++tableVote[nodeInfoArray['table']];
-			}
-		}
-	}
-	var maxVoted = -1, maxTableName = '';	// Which is the maximum voted table name.
-	for ( var i in tableVote )	{
-		if ( maxVoted < tableVote[i] )	{
-			maxVoted < tableVote[i];
-			maxTableName = i;
-		}
-	}
-	var fieldList = new Array();	// Create field list for database fetch.
-	for ( var i = 0 ; i < linkDefsHash.length; i++ )	{
-		if( linkDefsHash[i].table == maxTableName || linkDefsHash[i].table == '' )	{
-			fieldList.push( linkDefsHash[i].field );
-		}
-	}
-	var ds = IM_getDataSources();	// Get DataSource parameters
-	var targetKey = '';
-	for( var key in ds)	{	//	Search this table from DataSource
-		if (( maxTableName == '' ) || ( ds[key]['name'] == maxTableName ))	{
-			targetKey = key;
-			break;
-		}
-	}
-	if ( targetKey != ''){
-		var targetRecords = db_query( ds[targetKey], fieldList, parentTable, parentKeyVal );
-		for( var ix in targetRecords )	{
-			for ( var k = 0 ; k < currentLinkedNodes.length ; k++ )	{
-				var nodeTag = currentLinkedNodes[k].tagName;
-				var linkInfoArray = getLinkedElementInfo( currentLinkedNodes[k] );
-				for ( var j = 0 ; j < linkInfoArray.length ;j++ )	{
-					var nInfo = getNodeInfoArray( linkInfoArray[j] );
-					var curVal = targetRecords[ix][nInfo['field']];
-					if ( nodeTag == "INPUT" )	{
-						currentLinkedNodes[k].value = curVal;
-					} else if ( nodeTag == "SELECT" )	{
-						//
-					} else 	{
-						currentLinkedNodes[k].innerHTML = curVal;
-					}
+				if( searchLinkedElement( node.childNodes[k] ))	{
+					return true;
 				}
 			}
-			for ( var i = 0 ; i < repeaters.length ; i++ )	{
-				var newNode = repeaters[i].cloneNode(true);
-				node.appendChild( newNode );
-				seekNodes( newNode, ds[targetKey]['name'], targetRecords[ix][ds[targetKey]['key']] );
-			}
-		}
-	} else {
-		messages.push("Cant determine the Table Name: "+linkDefsHash.toString());
-	}
-	
-	//--------- just for testing
-/*
-	var q = '';
-	for ( var j = 0 ; j < linkDefsHash.length; j++ )	{
-		q += "{table: "+linkDefsHash[j].table+", field: "+linkDefsHash[j].field+", target: "+linkDefsHash[j].target+" }";
-	}
-	messages.push("Within Repeater: "+q+" / Max Voted Table="+maxTableName);
-
-	for ( var j = 0 ; j < 3 ; j++ )	{
-		for ( var i = 0 ; i < repeaters.length ; i++ )	{
-			for ( var k = 0 ; k < linkedNodes.length ; k++ )	{
-				if ( linkedNodes[k].tagName == "INPUT" )
-					linkedNodes[k].value = "TEST";
-			}
-			var newNode = repeaters[i].cloneNode(true);
-			seekNodes(newNode);
-			node.appendChild( newNode );
 		}
 	}
-//---------------------------
-*/
-	currentLevel--;
+	return false;
 }
+
 
 function getNodeInfoArray( nodeInfo )	{
 	var comps = nodeInfo.split( separator );
@@ -381,7 +380,7 @@ function getNodeInfoArray( nodeInfo )	{
 	return {'table': tableName, 'field': fieldName, 'target': targetName };
 }
 
-function db_query( detaSource, fields, parentTable, parentKeyVal )	{
+function db_query( detaSource, fields, parentKeyVal )	{
 	// Create string for the parameter.
 	var params = "?access=select&table=" + encodeURI( detaSource['name'] );
 	params += "&records=" + encodeURI( (detaSource['records']!=null) ? detaSource['records'] : 10000000 );
@@ -389,10 +388,7 @@ function db_query( detaSource, fields, parentTable, parentKeyVal )	{
 	for( var i = 0 ; i < arCount ; i++ )	{
 		params += "&field_" + i + "=" + encodeURI( fields[i] );	
 	}
-	if ( parentTable.length > 0 )	{
-		params += "&parent_table=" + encodeURI( parentTable );
-	}
-	if ( parentKeyVal.length > 0 )	{
+	if ( parentKeyVal != null )	{
 		params += "&parent_keyval=" + encodeURI( parentKeyVal );
 	}
 	var appPath = IM_getEntryPath();
@@ -410,6 +406,9 @@ function db_query( detaSource, fields, parentTable, parentKeyVal )	{
 	return dbresult;
 }
 
+/*
+if repeater is linked node too, it could be missed  5/21 2010 msyk
+*/
 function seekLinkedElement( node )	{
 	var enclosure = null;
 	var nType = node.nodeType;

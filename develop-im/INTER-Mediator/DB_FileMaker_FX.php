@@ -59,7 +59,7 @@ class DB_FileMaker_FX extends DB_Base	{
 						}
 					}
 				}
-				if ( $this->parentKeyValue != null )	{
+				if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
 					$this->fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
 				}
 				if ( isset( $tableInfo['sort'] ))	{
