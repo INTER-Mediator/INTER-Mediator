@@ -37,8 +37,8 @@ do
 	fi
 done
 
-java -jar ../yuicompressor-2.4.2.jar -o temp.js develop-im/INTER-Mediator/INTER-Mediator.js
-mv -f temp.js develop-im/INTER-Mediator/INTER-Mediator.js
+#java -jar ../yuicompressor-2.4.2.jar -o temp.js develop-im/INTER-Mediator/INTER-Mediator.js
+#mv -f temp.js develop-im/INTER-Mediator/INTER-Mediator.js
 
 rm -rf develop-im/INTER-Mediator/FX
 zip -r INTER-Mediator-${version}.zip *.txt TestDB.fp7 develop-im

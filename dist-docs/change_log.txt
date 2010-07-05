@@ -5,6 +5,18 @@ msyk@msyk.net
 http://msyk.net/im
 Change Log will be supplied by English only.
 
+Ver.0.6 (2010/7/6)
+- This is not a practical version, this is EXPERIMENTAL version. Ver.0.6.x will be made for showing the progression.
+- You can check the following files:
+
+TestDB.fp7 with FileMaker Server and FX.php
+develop-im/sample_form_FMS.html
+develop-im/sample_form_FMS_include.php
+INTER-Mediator/*
+
+
+=================================
+The following milestone was canceled and started to restructure. (2010/7/5)
 =================================
 To Do, or Milestone (Could be moved mainly behind)
 
