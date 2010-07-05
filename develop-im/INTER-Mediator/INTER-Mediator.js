@@ -11,22 +11,37 @@
 
 function INTERMediator(  )	{
 
-var titleAsLinkInfo = true;
-var classAsLinkInfo = true;
-var currentLevel = 0;
-var separator = '@';
-var defDevider = '|';
-var linkedNodes;
-var messages = new Array();
+	var titleAsLinkInfo = true;
+	var classAsLinkInfo = true;
+	var currentLevel = 0;
+	var separator = '@';
+	var defDevider = '|';
+	var linkedNodes;
+	var messages = new Array();
+	var currentEncNumber = 1;
+	var postSetFields = new Array();
 
-	debugOut( 'INTERMediator Start' );
+	debugOut( 'INTERMediator Start' );	// Just starting message
+
+	// Root node is BODY tag.
 	seekEnclosureNode( document.getElementsByTagName( 'BODY' )[0], '', '' );
+	// After work to set up popup menus.
+	for ( var i = 0 ; i < postSetFields.length ; i++ )	{
+		document.getElementById( postSetFields[i]['id'] ).value = postSetFields[i]['value'];
+	}
+	// Show messages
 	for ( var i = 0 ; i < messages.length ; i++ )	{
 		debugOut( messages[i] );
 	}
 
-
+/**
+ * 
+ */
 this.setSeparator = function( c )	{	separator = c;		};
+
+/**
+ * 
+ */
 this.setDefDevider = function( c )	{	defDevider = c;	};
 
 /**
@@ -53,6 +68,8 @@ function seekEnclosureNode( node, currentRecord )	{
  */
 function expandEnclosure( node, currentRecord )	{
 	currentLevel++;
+	currentEncNumber++;
+	var thisEncNumber = currentEncNumber;
 
 	var encNodeTag = node.tagName;
 	var repNodeTag = repeaterTagFromEncTag( encNodeTag );
@@ -125,31 +142,61 @@ function expandEnclosure( node, currentRecord )	{
 		}
 	}
 	if ( targetKey != ''){
-		var foreignValue = (currentRecord[ds[targetKey]['join-field']]!=null)?currentRecord[ds[targetKey]['join-field']]:'';
+		var foreignValue = (currentRecord[ds[targetKey]['join-field']]!=null)
+								?currentRecord[ds[targetKey]['join-field']]:'';
 		var targetRecords = db_query( ds[targetKey], fieldList, foreignValue );
 			// Access database and get records
 		var linkedElmCounter = 1;
-		var currentEncNumber = currentLevel;
-		var postSetFields = new Array();
+		var RecordCounter = 0;
+	//	var currentEncNumber = currentLevel;
 		for( var ix in targetRecords )	{	// for each record
+			RecordCounter++;
 			for ( var k = 0 ; k < currentLinkedNodes.length ; k++ )	{	// for each linked element
-				var idValue = 'IM'+currentEncNumber+'-'+linkedElmCounter;
+				var idValue = 'IM'+thisEncNumber+'-'+linkedElmCounter;
 				currentLinkedNodes[k].setAttribute('id', idValue );
 				linkedElmCounter++;
 
 				var nodeTag = currentLinkedNodes[k].tagName;	// get the tag name of the element
+				var typeAttr = currentLinkedNodes[k].getAttribute( 'type' );	// type attribute
 				var linkInfoArray = getLinkedElementInfo( currentLinkedNodes[k] );	// info array for it
+				
+				// set the name attribute of radio button should be different for each group
+				if ( typeAttr == 'radio' )	{	// set the value to radio button
+					var nameAttr = currentLinkedNodes[k].getAttribute( 'name' );
+					if ( nameAttr )	{
+						currentLinkedNodes[k].setAttribute( 'name', nameAttr + '-' + RecordCounter );
+					} else {
+						currentLinkedNodes[k].setAttribute( 'name', 'IM-R-' + RecordCounter );
+					}
+				}
 
 				for ( var j = 0 ; j < linkInfoArray.length ;j++ )	{	// for each info
+						// Multiple replacement definitions for one node is prohibited.
 					var nInfo = getNodeInfoArray( linkInfoArray[j] );	
 					var curVal = targetRecords[ix][nInfo['field']];
-
-					if ( nodeTag == "INPUT" )	{
-						currentLinkedNodes[k].value = curVal;
-					} else if ( nodeTag == "SELECT" )	{
-						postSetFields.push( {'id':idValue, 'value':curVal} );
-					} else 	{
-						currentLinkedNodes[k].innerHTML = curVal;
+					var curTarget = nInfo['target'];
+					if ( curTarget != null && curTarget.length>0)	{
+						currentLinkedNodes[k].setAttribute( curTarget, curVal );
+					} else {	// if the 'target' is not specified.
+						if ( nodeTag == "INPUT" )	{
+							if ( typeAttr == 'checkbox' )	{	// set the value to checkbox
+								var valueAttr = currentLinkedNodes[k].getAttribute( 'value' );
+								if ( valueAttr == curVal )	{
+									currentLinkedNodes[k].checked = true;
+								}
+							} else if ( typeAttr == 'radio' )	{	// set the value to radio button
+								var valueAttr = currentLinkedNodes[k].getAttribute( 'value' );
+								if ( valueAttr == curVal )	{
+									currentLinkedNodes[k].checked = true;
+								}
+							} else {	// this node must be text field
+								currentLinkedNodes[k].value = curVal;
+							}
+						} else if ( nodeTag == "SELECT" )	{
+							postSetFields.push( {'id':idValue, 'value':curVal} );
+						} else {	// include option tag node
+							currentLinkedNodes[k].innerHTML = curVal;
+						}
 					}
 				}
 			}
@@ -157,9 +204,6 @@ function expandEnclosure( node, currentRecord )	{
 				var newNode = repeaters[i].cloneNode(true);
 				node.appendChild( newNode );
 				seekEnclosureNode( newNode, targetRecords[ix] );
-			}
-			for ( var i = 0 ; i < postSetFields.length ; i++ )	{
-				document.getElementById( postSetFields[i]['id'] ).value = postSetFields[i]['value'];
 			}
 		}
 	} else {

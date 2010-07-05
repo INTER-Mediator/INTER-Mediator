@@ -24,13 +24,12 @@ $tableDefs
 		array(	'name' 		=> 'cor_way_kind', 
 				'key' 			=> 'id',
 				'foreign-key' => 'way_id',
-				'join-field' 	=> 'kind'),
-		array(	
-			'name' 			=> 'history_to', 
-			'key' 			=> 'id',
-			'foreign-key'	=> 'person_id',
-			'repeat-control'	=> 'insert','join-field' 	=> 'id'
-		),
+				'join-field' 	=> 'way'),
+		array(	'name' 			=> 'history_to', 
+				'key' 			=> 'id',
+				'foreign-key'	=> 'person_id',
+				'repeat-control'	=> 'insert',
+				'join-field' 	=> 'id',	),
 		array(	
 			'name' 	=> 'postalcode', 
 			'query'	=> array( array( 'field'=>'f9', 'value'=>'落合', 'operator'=>'cn' ) ),
