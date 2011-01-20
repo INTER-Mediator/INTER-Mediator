@@ -65,10 +65,10 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		}
 		$returnData = array();
 		foreach( $dbInstance->getErrorMessages() as $oneError )	{
-			$returnData[] = "messages.push('{$oneError}');";
+			$returnData[] = "messages.push({$q}" . addslashes( $oneError ) . "{$q});";
 		}
-		foreach( $dbInstance->getErrorMessages() as $oneError )	{
-			$returnData[] = "messages.push('{$oneError}');";
+		foreach( $dbInstance->getDebugMessages() as $oneError )	{
+			$returnData[] = "messages.push({$q}" . addslashes( $oneError ) . "{$q});";
 		}
 		echo implode( '', $returnData ) . 'var dbresult=' . arrayToJS( $result, '' ) . ';';
 	}

@@ -1,6 +1,6 @@
 /*
  * INTER-Mediator
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
  * 
  * This project started at the end of 2009.
  * 
@@ -14,7 +14,7 @@ Enter password:
 */
 SET NAMES 'utf8';
 
-#### The following 3 lines are required once that you execute this at the first time.
+#### The following 2 lines are required once that you execute this at the first time.
 #CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
 #GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO  'web';
 
@@ -49,8 +49,8 @@ CREATE TABLE contact	(
 	datetime		DATETIME,
 	summary		VARCHAR(50),
 	important	INT,
-	kind			INT,
 	way 			INT,
+	kind			INT,
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8,
 		COLLATE utf8_unicode_ci
@@ -58,10 +58,73 @@ CREATE TABLE contact	(
 CREATE UNIQUE INDEX contact_id ON contact (id);
 CREATE INDEX contact_person_id ON contact (person_id);
 
-INSERT contact SET person_id=1,datetime='2009-12-1 15:23:00',summary='Telephone';
-INSERT contact SET person_id=1,datetime='2009-12-2 15:23:00',summary='Meeting';
-INSERT contact SET person_id=1,datetime='2009-12-3 15:23:00',summary='Mail';
-INSERT contact SET person_id=2,datetime='2009-12-4 15:23:00',summary='Calling';
+INSERT contact SET person_id=1,datetime='2009-12-1 15:23:00',summary='Telephone',way=4,kind=4;
+INSERT contact SET person_id=1,datetime='2009-12-2 15:23:00',summary='Meeting',important=1,way=4,kind=7;
+INSERT contact SET person_id=1,datetime='2009-12-3 15:23:00',summary='Mail',way=5,kind=8;
+INSERT contact SET person_id=2,datetime='2009-12-4 15:23:00',summary='Calling',way=6,kind=12;
+INSERT contact SET person_id=2,datetime='2009-12-1 15:23:00',summary='Telephone',way=4,kind=4;
+INSERT contact SET person_id=3,datetime='2009-12-2 15:23:00',summary='Meeting',important=1,way=4,kind=7;
+INSERT contact SET person_id=3,datetime='2009-12-3 15:23:00',summary='Mail',way=5,kind=8;
+
+CREATE TABLE contact_way	(
+	id		INT  AUTO_INCREMENT,
+	name	VARCHAR(50),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+CREATE UNIQUE INDEX contact_way_id ON contact_way (id);
+
+INSERT contact_way SET id=4,name='Direct';
+INSERT contact_way SET id=5,name='Indirect';
+INSERT contact_way SET id=6,name='Others';
+
+CREATE TABLE contact_kind	(
+	id		INT  AUTO_INCREMENT,
+	name	VARCHAR(50),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+CREATE UNIQUE INDEX contact_kind_id ON contact_kind (id);
+
+INSERT contact_kind SET id=4,name='Talk';
+INSERT contact_kind SET id=5,name='Meet';
+INSERT contact_kind SET id=6,name='Calling';
+INSERT contact_kind SET id=7,name='Meeting';
+INSERT contact_kind SET id=8,name='Mail';
+INSERT contact_kind SET id=9,name='Email';
+INSERT contact_kind SET id=10,name='See on Web';
+INSERT contact_kind SET id=11,name='See on Chat';
+INSERT contact_kind SET id=12,name='Twitter';
+INSERT contact_kind SET id=13,name='Conference';
+
+CREATE TABLE cor_way_kind	(
+	id		INT  AUTO_INCREMENT,
+	way_id	INT,
+	kind_id	INT,
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+CREATE INDEX cor_way_id ON cor_way_kind (way_id);
+CREATE INDEX cor_kind_id ON cor_way_kind (way_id);
+
+CREATE VIEW cor_way_kindname AS SELECT cor_way_kind.*,contact_kind.name as name_kind
+FROM cor_way_kind, contact_kind
+WHERE cor_way_kind.kind_id = contact_kind.id;
+
+INSERT cor_way_kind SET way_id=4,kind_id=4;
+INSERT cor_way_kind SET way_id=4,kind_id=5;
+INSERT cor_way_kind SET way_id=5,kind_id=6;
+INSERT cor_way_kind SET way_id=4,kind_id=7;
+INSERT cor_way_kind SET way_id=5,kind_id=8;
+INSERT cor_way_kind SET way_id=5,kind_id=9;
+INSERT cor_way_kind SET way_id=6,kind_id=10;
+INSERT cor_way_kind SET way_id=5,kind_id=11;
+INSERT cor_way_kind SET way_id=6,kind_id=12;
+INSERT cor_way_kind SET way_id=5,kind_id=12;
+INSERT cor_way_kind SET way_id=6,kind_id=13;
 
 CREATE TABLE history	(
 	id			INT  AUTO_INCREMENT,

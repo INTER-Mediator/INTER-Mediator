@@ -126,7 +126,8 @@ function expandEnclosure( node, currentRecord )	{
 			maxTableName = i;
 		}
 	}
-
+//	messages.push("maxTableName ="+maxTableName);
+	
 	var fieldList = new Array();	// Create field list for database fetch.
 	for ( var i = 0 ; i < linkDefsHash.length; i++ )	{
 		if( linkDefsHash[i].table == maxTableName || linkDefsHash[i].table == '' )	{
@@ -141,6 +142,8 @@ function expandEnclosure( node, currentRecord )	{
 			break;
 		}
 	}
+//	messages.push("targetKey ="+targetKey);
+
 	if ( targetKey != ''){
 		var foreignValue = (currentRecord[ds[targetKey]['join-field']]!=null)
 								?currentRecord[ds[targetKey]['join-field']]:'';
@@ -175,6 +178,7 @@ function expandEnclosure( node, currentRecord )	{
 					var nInfo = getNodeInfoArray( linkInfoArray[j] );	
 					var curVal = targetRecords[ix][nInfo['field']];
 					var curTarget = nInfo['target'];
+			//		messages.push("curTarget ="+curTarget+"/curVal ="+curVal);
 					if ( curTarget != null && curTarget.length>0)	{
 						currentLinkedNodes[k].setAttribute( curTarget, curVal );
 					} else {	// if the 'target' is not specified.
@@ -439,14 +443,17 @@ function db_query( detaSource, fields, parentKeyVal )	{
 	
 	messages.push("Expand Table="+params);
 
-
 	myRequest = new XMLHttpRequest();
-	myRequest.open( 'GET', appPath + params, false );
-//	myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
-	myRequest.send( null );
-	messages.push("DB Response: "+myRequest.responseText);
-	var dbresult = '';
-	eval( myRequest.responseText );
+	try	{
+		myRequest.open( 'GET', appPath + params, false );
+	//	myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded; charset=UTF-8');
+		myRequest.send( null );
+		messages.push("DB Response: "+myRequest.responseText);
+		var dbresult = '';
+		eval( myRequest.responseText );
+	} catch (e)	{
+		messages.push("ERROR in db_query="+e+"/"+myRequest.responseText);
+	}
 	return dbresult;
 }
 

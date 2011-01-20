@@ -12,6 +12,14 @@ $dbAccessClass = 'FileMaker_FX';
 $dbName = 'TestDB';
 $dbUser = 'web';
 $dbPassword = 'password';
+/*
+$dbAccessClass = 'MySQL';
+$dbName = 'test_db';
+$dbUser = 'web';
+$dbPassword = 'password';
+*/
+
+$mysql_connect = 'localhost';
 
 $browserCompatibility = array(
 							'Explorer'=>array('7+'),
@@ -23,6 +31,5 @@ $fx_port = '80';
 $fx_dataType = 'FMPro7';
 $fx_urlType = 'HTTP';
 
-$mysql_connect = 'localhost';
 
 ?>

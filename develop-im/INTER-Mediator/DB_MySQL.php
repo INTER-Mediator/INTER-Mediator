@@ -109,8 +109,11 @@ class DB_MySQL extends DB_Base	{
 			}
 		}
 		
+		$viewOrTableName = isset($tableInfo['view'])?$tableInfo['view']:$tableName;
+		
 		if ( isset( $tableInfo['foreign-key'] ) )	{
-			$queryClause = (($queryClause!='')?"({$queryClause}) AND ":'') . "{$tableInfo['foreign-key']} = {$this->mainTalbeKeyValue}";
+			$queryClause = (($queryClause!='')?"({$queryClause}) AND ":'') 
+				. "{$tableInfo['foreign-key']} = {$this->parentKeyValue}";
 		}
 		if ( $queryClause != '' )	{
 			$queryClause = "WHERE {$queryClause}";
@@ -128,7 +131,6 @@ class DB_MySQL extends DB_Base	{
 		}
 		$sortClause = ( count( $sortClause ) > 0 )	? ('ORDER BY ' . implode( ',', $sortClause)) : '';
 		
-		$viewOrTableName = isset($tableInfo['view'])?$tableInfo['view']:$tableName;
 		if ($tableName == $this->mainTableName) 	{
 			$sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause} {$sortClause}";
 			if ( $this->isDebug )	$this->debugMessage[] = $sql;

@@ -36,7 +36,7 @@ $tableDefs
 			'sort'	=> array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
 		),
 	);
-	
+
 $optionDefs
 	= array(
 		'formatter' => array(
