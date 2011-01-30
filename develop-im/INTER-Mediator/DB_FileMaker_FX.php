@@ -29,24 +29,31 @@ class DB_FileMaker_FX extends DB_Base	{
 		$this->fx = new FX( $fx_server, $fx_port, $fx_dataType, $fx_urlType );
 	}
 	
-	function getFromDB( $tableName )	{
-		$tableInfo = $this->getTableInfo( $tableName );
-//		if ( ! isset( $tableInfo['foreign-key'] ) )	{
+	function getFromDB( )	{
+		$tableName = $this->tableName;
+		$tableInfo = $this->getDataSourceTargetArray();
+		//		if ( ! isset( $tableInfo['foreign-key'] ) )	{
 			if ( ! isset( $this->fxResult[$tableName] ) )	{
 				$this->fx->setCharacterEncoding( 'UTF-8' );
 				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-				if ($tableName == $this->mainTableName) 	{
-					$this->fx->setDBData( $this->dbSpec['db'], $tableName, $tableInfo['records'] );
-					$this->fx->FMSkipRecords( $this->start );
-				} else {
-					$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1000000 );
+				
+				$limitParam = 100000000;
+				if ( isset($tableInfo['records']) )	{
+					$limitParam = $tableInfo['records'];
 				}
-				if ( $this->isMainTable( $tableName ) )	{
+				if ( $this->recordCount > 0 )	{
+					$limitParam = $this->recordCount;
+				}
+				
+				$this->fx->setDBData( $this->dbSpec['db'], $tableName, $limitParam );
+				$this->fx->FMSkipRecords( $this->start );
+
+				/*	if ( $this->isMainTable( $tableName ) )	{
 					foreach( $this->extraCriteria as $field=>$value )	{
 						$this->fx->AddDBParam( $field, $value, 'eq' );
 					}
 				}
-				if ( isset( $tableInfo['query'] ))	{
+			*/	if ( isset( $tableInfo['query'] ))	{
 					foreach( $tableInfo['query'] as $condition )	{
 						if ( $condition['field'] == '__operation__' && $condition['operator'] == 'or' )	{
 							$this->fx->SetLogicalOR();
@@ -58,6 +65,9 @@ class DB_FileMaker_FX extends DB_Base	{
 							}
 						}
 					}
+				}
+				foreach ( $this->extraCriteria as $field=>$value )	{
+					$this->fx->AddDBParam( $field, $value, 'eq' );
 				}
 				if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
 					$this->fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
@@ -162,13 +172,17 @@ class DB_FileMaker_FX extends DB_Base	{
 		return str_replace( "\n", "\r", str_replace( "\r\n", "\r", $str ));
 	}
 	
-	function setToDB( $tableName, $data )	{
-		$tableInfo = $this->getTableInfo( $tableName );
+	function setToDB( )	{
+		$tableName = $this->tableName;
+		$tableInfo = $this->getDataSourceTargetArray();
 		$keyFieldName = $tableInfo['key'];
 		$this->fx->setCharacterEncoding( 'UTF-8' );
 		$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
 		$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
-		$this->fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
+	//	$this->fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
+		foreach ( $this->extraCriteria as $field=>$value )	{
+			$this->fx->AddDBParam( $field, $value, 'eq' );
+		}
 		$result = $this->fxResult = $this->fx->FMFind();
 		if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
 		if( $result['errorCode'] > 0 )	{
@@ -176,7 +190,7 @@ class DB_FileMaker_FX extends DB_Base	{
 			return false;
 		}
 		$recId = 0;
-		if ( $result[ 'foundCount' ] != 0 )	{
+		if ( $result[ 'foundCount' ] == 1 )	{
 			foreach( $result['data'] as $key=>$row )	{
 				$recId =  substr( $key, 0, strpos( $key, '.' ) );
 				
@@ -184,15 +198,18 @@ class DB_FileMaker_FX extends DB_Base	{
 				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
 				$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
 				$this->fx->SetRecordID( $recId );
-				foreach ( $data as $field=>$value )
-					if ( $field != $keyFieldName){
-						$filedInForm = $field;
-						if ( $this->skip != 1 || $tableName != $this->mainTableName )	{
-							$filedInForm = "{$tableName}{$this->separator}{$field}";
-						}
-						$convVal = $this->unifyCRLF( (is_array( $value )) ? implode( "\r", $value ) : $value );
-						$this->fx->AddDBParam( $field, $this->formatterToDB( $filedInForm, $convVal ));
-					}
+				$counter = 0;
+				foreach ( $this->fieldsRequired as $field )	{
+					$value = $this->fieldsValues[$counter];
+					$counter++;
+					$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
+					$convVal = $this->formatterToDB( $field, $convVal );
+					$this->fx->AddDBParam( $field, $convVal );
+				}
+				if ( $counter < 1 )	{
+					$this->errorMessage[] = 'No data to update.';
+					return false;
+				}
 				if ( isset( $tableInfo['global'] ))	{
 					foreach( $tableInfo['global'] as $condition )	{
 						if ( $condition['db-operation'] == 'update' )	{
@@ -221,6 +238,8 @@ class DB_FileMaker_FX extends DB_Base	{
 				if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
 				break;
 			}
+		} else {
+			
 		}
 		return true;
 	}

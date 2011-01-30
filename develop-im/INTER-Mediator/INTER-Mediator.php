@@ -34,10 +34,6 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		echo "function IM_getDatabaseParams(){return {$q}", 
 			arrayToQuery( $dbspec, '__imparameters__dbspec' ), "{$q};}{$LF}";
 	} else {
-		$dbClassName = "DB_{$dbspec['db-class']}";
-		require_once("{$dbClassName}.php");
-		eval( "\$dbInstance = new {$dbClassName}();" );
-
 		include( 'params.php' );
 		if ( isset( $dbUser ))	{
 			$dbspec['user'] = $dbUser;
@@ -45,30 +41,58 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		if ( isset( $dbPassword ))	{
 			$dbspec['password'] = $dbPassword;
 		}
-
-		$dbInstance->setDBSpec( $dbspec );
+		
+		$fieldsRequired = array();
+		for ( $i=0 ; $i< 1000 ; $i++ )	{
+			if ( isset( $_GET["field_{$i}"] ))	{
+				$fieldsRequired[] = $_GET["field_{$i}"];
+			} else {
+				break;
+			}
+		}
+		$valuesRequired = array();
+		for ( $i=0 ; $i< 1000 ; $i++ )	{
+			if ( isset( $_GET["value_{$i}"] ))	{
+				$valuesRequired[] = $_GET["value_{$i}"];
+			} else {
+				break;
+			}
+		}
+		
+		$dbClassName = "DB_{$dbspec['db-class']}";
+		require_once("{$dbClassName}.php");
+		eval( "\$dbInstance = new {$dbClassName}();" );
 		if ( $debug )	$dbInstance->setDebugMode();
+		$dbInstance->setDBSpec( $dbspec );
 		$dbInstance->setSeparator( isset( $options['separator'] ) ? $options['separator'] : '@' );
 		$dbInstance->setDataSource( $datasrc );
-		$dbInstance->setStartSkip( 0, isset($dbspec['records']) ? $dbspec['records'] : 1 );
+//		$dbInstance->setStartSkip( 0, isset($dbspec['records']) ? $dbspec['records'] : 1 );
 		$dbInstance->setFormatter( $options['formatter'] );
-		if ( isset( $_GET['parent_keyval'] ) /* && strlen( $_GET['parent_keyval'] ) > 0 */)	{
-		//	if ( isset( $datasrc[$_GET['table']]['foreign-key'] ))	{
-				$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
-		//	}
+		$dbInstance->setTargetTable( $_GET['table'] );
+		if ( isset($_GET['records']))	{
+			$dbInstance->setRecordCount( $_GET['records'] );
+		}
+		if ( isset($_GET['ext_cond']))	{
+			$items = explode('=', $_GET['ext_cond']);
+			$dbInstance->setExtraCriteria( $items[0], $items[1] );
+		}
+		$dbInstance->setTargetFields( $fieldsRequired );
+		$dbInstance->setValues( $valuesRequired );
+		if ( isset( $_GET['parent_keyval'] ))	{
+			$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
 		}
 		switch( $_GET['access'] )	{
-			case 'select':	$result = $dbInstance->getFromDB( $_GET['table'] );		break;
-			case 'update':	$result = $dbInstance->setToDB();			break;
-			case 'insert':	$result = $dbInstance->newToDB();			break;
+			case 'select':	$result = $dbInstance->getFromDB();		break;
+			case 'update':	$result = $dbInstance->setToDB();		break;
+			case 'insert':	$result = $dbInstance->newToDB();		break;
 			case 'delete':	$result = $dbInstance->deleteFromDB();	break;
 		}
 		$returnData = array();
 		foreach( $dbInstance->getErrorMessages() as $oneError )	{
-			$returnData[] = "messages.push({$q}" . addslashes( $oneError ) . "{$q});";
+			$returnData[] = "INTERMediator.messages.push({$q}" . addslashes( $oneError ) . "{$q});";
 		}
 		foreach( $dbInstance->getDebugMessages() as $oneError )	{
-			$returnData[] = "messages.push({$q}" . addslashes( $oneError ) . "{$q});";
+			$returnData[] = "INTERMediator.messages.push({$q}" . addslashes( $oneError ) . "{$q});";
 		}
 		echo implode( '', $returnData ) . 'var dbresult=' . arrayToJS( $result, '' ) . ';';
 	}
