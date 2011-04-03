@@ -100,11 +100,10 @@ class DB_Base	{
 		$this->sortOrder = $sortorder;	
 	}
 	
-/*	function setStartSkip( $st, $sk )		{	
+	function setStart( $st )		{
 		$this->start = $st;
-		$this->skip = $sk;	
 	}
-*/
+
 	function setRecordCount( $sk )		{	
 		$this->recordCount = $sk;	
 	}
@@ -119,8 +118,8 @@ class DB_Base	{
 		return array();
 	}
 */
-	function setExtraCriteria( $field, $value )	{
-		$this->extraCriteria[$field] = $value;
+	function setExtraCriteria( $field, $operator, $value )	{
+		$this->extraCriteria[] = array( 'field'=>$field, 'operator'=>$operator, 'value'=>$value);
 	}
 	
 	function setFormatter( $fmt )		{
@@ -201,12 +200,15 @@ class DB_Base	{
 						if ( isset( $condition['value'] ))	{
 							$escedVal = $this->link->quote( $condition['value'] );
 							if ( isset( $condition['operator'] ))	{
-								$queryClauseArray[$chanckCount][] = "{$condition['field']} {$condition['operator']} {$escedVal}";
+								$queryClauseArray[$chanckCount][]
+                                        = "{$condition['field']} {$condition['operator']} {$escedVal}";
 							} else {
-								$queryClauseArray[$chanckCount][] = "{$condition['field']} = {$escedVal}";
+								$queryClauseArray[$chanckCount][]
+                                        = "{$condition['field']} = {$escedVal}";
 							}
 						} else {
-							$queryClauseArray[$chanckCount][] = "{$condition['field']} {$condition['operator']}";
+							$queryClauseArray[$chanckCount][]
+                                    = "{$condition['field']} {$condition['operator']}";
 						}
 						$chanckCount++;
 					}
@@ -218,10 +220,12 @@ class DB_Base	{
 			}
 		} 
 		$queryClauseArray = array();
-		foreach( $this->extraCriteria as $field=>$value )	{
-			$escedVal = $this->link->quote( $value );
-			$queryClauseArray[] = "($field = {$value})";
-		}
+		foreach( $this->extraCriteria as $criteria )	{
+            $field = $criteria['field'];
+            $operator = $criteria['operator'];
+            $escedVal = $this->link->quote( $criteria['value'] );
+            $queryClauseArray[] = "({$field} {$operator} {$escedVal})";
+ 		}
 		if ( count($queryClauseArray) > 0 )	{
 			if ( $queryClause != '' )	{
 				$queryClauseArray[] = $queryClause;

@@ -69,13 +69,22 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 //		$dbInstance->setStartSkip( 0, isset($dbspec['records']) ? $dbspec['records'] : 1 );
 		$dbInstance->setFormatter( $options['formatter'] );
 		$dbInstance->setTargetTable( $_GET['table'] );
-		if ( isset($_GET['records']))	{
-			$dbInstance->setRecordCount( $_GET['records'] );
-		}
-		if ( isset($_GET['ext_cond']))	{
-			$items = explode('=', $_GET['ext_cond']);
-			$dbInstance->setExtraCriteria( $items[0], $items[1] );
-		}
+        if ( isset($_GET['start']))	{
+            $dbInstance->setStart( $_GET['start'] );
+        }
+        if ( isset($_GET['records']))	{
+            $dbInstance->setRecordCount( $_GET['records'] );
+        }
+        for ( $count = 0 ; $count < 10000 ; $count++ )  {
+            if ( isset($_GET["ext_cond{$count}field"]))	{
+                $dbInstance->setExtraCriteria(
+                    $_GET["ext_cond{$count}field"],
+                    $_GET["ext_cond{$count}operator"],
+                    $_GET["ext_cond{$count}value"] );
+            } else {
+                break;
+            }
+        }
 		$dbInstance->setTargetFields( $fieldsRequired );
 		$dbInstance->setValues( $valuesRequired );
 		if ( isset( $_GET['parent_keyval'] ))	{
@@ -94,7 +103,9 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		foreach( $dbInstance->getDebugMessages() as $oneError )	{
 			$returnData[] = "INTERMediator.messages.push({$q}" . addslashes( $oneError ) . "{$q});";
 		}
-		echo implode( '', $returnData ) . 'var dbresult=' . arrayToJS( $result, '' ) . ';';
+		echo implode( '', $returnData )
+             . 'var dbresult=' . arrayToJS( $result, '' ) . ';'
+             . 'var resultCount=' . $dbInstance->mainTableCount . ';';
 	}
 }
 

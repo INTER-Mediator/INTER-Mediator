@@ -32,7 +32,6 @@ class DB_FileMaker_FX extends DB_Base	{
 	function getFromDB( )	{
 		$tableName = $this->tableName;
 		$tableInfo = $this->getDataSourceTargetArray();
-		//		if ( ! isset( $tableInfo['foreign-key'] ) )	{
 			if ( ! isset( $this->fxResult[$tableName] ) )	{
 				$this->fx->setCharacterEncoding( 'UTF-8' );
 				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
@@ -66,8 +65,9 @@ class DB_FileMaker_FX extends DB_Base	{
 						}
 					}
 				}
-				foreach ( $this->extraCriteria as $field=>$value )	{
-					$this->fx->AddDBParam( $field, $value, 'eq' );
+				foreach ( $this->extraCriteria as $value )	{
+                    $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
+					$this->fx->AddDBParam( $value['field'], $value['value'], $op );
 				}
 				if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
 					$this->fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
@@ -111,7 +111,7 @@ class DB_FileMaker_FX extends DB_Base	{
 				if ( $this->isDebug )	{
 					$this->debugMessage[] = $this->fxResult[$tableName]['URL'];
 				}
-				if ( $tableName == $this->mainTableName && isset($this->fxResult[$tableName]['foundCount']))
+				if ( $tableName == $this->tableName && isset($this->fxResult[$tableName]['foundCount']))
 					$this->mainTableCount = $this->fxResult[$tableName]['foundCount'];
 			}
 			$returnArray = array();
@@ -180,9 +180,10 @@ class DB_FileMaker_FX extends DB_Base	{
 		$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
 		$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
 	//	$this->fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
-		foreach ( $this->extraCriteria as $field=>$value )	{
-			$this->fx->AddDBParam( $field, $value, 'eq' );
-		}
+		foreach ( $this->extraCriteria as $value )	{
+            $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
+            $this->fx->AddDBParam( $value['field'], $value['value'], $op );
+        }
 		$result = $this->fxResult = $this->fx->FMFind();
 		if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
 		if( $result['errorCode'] > 0 )	{

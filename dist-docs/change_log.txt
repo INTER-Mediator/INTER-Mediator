@@ -5,6 +5,49 @@ msyk@msyk.net
 http://msyk.net/im
 Change Log will be supplied by English only.
 
+=================================
+To Do, that is left-over.
+=================================
+
+- Insert and delete records.
+- Create new record.
+- Add code on JavaScript level.
+
+- Multiple data converter for a field.
+- Adjustment of navigation bar after new record is created.
+- Store NULL for empty string.
+- Browser check and showing suitable message when it's not compatible.
+- Auto configuration of the selection.
+- Link/unlink to another record with selection.
+- Built-in Authentication framework.
+- Multiple values within one field. (It may be required FileMaker especially.)
+- Full AJAX operations.
+
+Mostly Slogan: or Should be done:
+- Fulfilling documentation, including tutorials.
+- Proper error recoveries and messages.
+- Translating to English from Japanese Documents.
+
+=================================
+
+Ver.0.6.3 === will be next release
+
+Ver.0.6.2
+- Remove old (Ver.0.5) sources.
+- Listing and Navigation is working. See the sample "sample_search_MySQL.html".
+- Temporary criteria is supported.
+- Credit is added at the end of the page.
+
+Ver.0.6.1 (2011/1/30)
+- Support update db from web browser with optimistic locking.
+When you update the data of any field, IM automatically update it.
+If the value of the field is modified by anyone, the alert will be shown.
+You can choose cancel or overwrite.
+- Sample for MySQL but DB class uses PDO
+develop-im/sample_form_MySQL.html
+develop-im/sample_form_MySQL_include.php
+- PDO Support (MySQL DB class isn't maintained.)
+
 Ver.0.6 (2010/7/6)
 - This is not a practical version, this is EXPERIMENTAL version. Ver.0.6.x will be made for showing the progression.
 - You can check the following files:
@@ -13,53 +56,6 @@ TestDB.fp7 with FileMaker Server and FX.php
 develop-im/sample_form_FMS.html
 develop-im/sample_form_FMS_include.php
 INTER-Mediator/*
-
-
-=================================
-The following milestone was canceled and started to restructure. (2010/7/5)
-=================================
-To Do, or Milestone (Could be moved mainly behind)
-
-Ver.0.6
-- Multiple data converter for a field.
-- Deleting a record of the main table. (Already available to delete in the repeated table.)
-- Adjustment of navigation bar after new record is created.
-- AUTO-SAVE feature and option.
-- Making sure about scripts and globals.
-- Store NULL for empty string.
-- Multiple rows for a record, with separating TBODY and THEAD sections.
-- Repeated records expands to ul/ol/li and option elements.
-
-Ver.0.7
-- Browser check and showing suitable message when it's not compatible.
-- Insert data into ANY attributes of an element.
-
-Ver.0.8
-- Search function.
-- Keep criterias in session.
-
-Ver.0.9
-- Auto configuration of the selection.
-- Link/unlink to another record with selection.
-
-Ver.1.0 will be wrapped up of above.
-
-Ver.1.x
-- Built-in Authentication framework.
-- Multiple values within one field. (It may be required FileMaker especially.)
-- Optimistic Locking
-- PDO Support
-
-Ver.2.0
-- Full AJAX operations.
-
-Mostly Slogan: or Should be done:
-- Fulfilling documentation, including tutorials.
-- Proper error recoveries and messages.
-- Translating to English from Japanese Documents.
-=================================
-
-Ver.0.5.1 ==Next Release Candidate==
 
 Ver.0.5 (2010/2/4)  
 - Release with version number. I think current one is more than 0.1 but less than 1.0. So the number is going to start from 0.5.

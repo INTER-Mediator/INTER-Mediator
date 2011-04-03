@@ -54,20 +54,22 @@ class DB_PDO extends DB_Base	{
 		if ( $queryClause != '' )	{
 			$queryClause = "WHERE {$queryClause}";
 		}
-		$sortClause = $this->getSortClause();;
+		$sortClause = $this->getSortClause();
 		if ( $sortClause != '' )	{
 			$sortClause = "ORDER BY {$sortClause}";
 		}	
-	/*	$sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause} {$sortClause}";
+
+        // Count all records matched with the condtions
+		$sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause}";
 		if ( $this->isDebug )	$this->debugMessage[] = $sql;
 		$result = $this->link->query($sql);
 		if ( $result === false ) {
 			$this->errorMessage[] = 'Query Error: Code=' . $this->link->errorCode()
 											. ' Info=' . $this->link->errorInfo();
 		}
-		$row = mysql_fetch_row($result);
-		$this->mainTableCount = $row[0];
-*/
+		$this->mainTableCount = $result->fetchColumn(0);
+
+        // Create SQL
 		$limitParam = 100000000;
 		if ( isset($tableInfo['records']) )	{
 			$limitParam = $tableInfo['records'];
@@ -75,9 +77,15 @@ class DB_PDO extends DB_Base	{
 		if ( $this->recordCount > 0 )	{
 			$limitParam = $this->recordCount;
 		}
+        $skipParam = 0;
+        if ( isset($tableInfo['paging']) and $tableInfo['paging'] == true ) {
+            $skipParam = $this->start;
+        }
 		$sql = "SELECT * FROM {$viewOrTableName} {$queryClause} {$sortClause} "
-				. " LIMIT {$limitParam} OFFSET {$this->start}";
+				. " LIMIT {$limitParam} OFFSET {$skipParam}";
 		if ( $this->isDebug )	$this->debugMessage[] = $sql;
+
+        // Query
 		$result = $this->link->query($sql);
 		if ( $result === false ) {
 			$this->errorMessage[] = 'Query Error: Code=' . $this->link->errorCode()

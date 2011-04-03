@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
+
+<html>
+<head>
+    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="sample.css" />
+    <script type="text/javascript" src="sample_search_FMS_include.php"></script>
+    <script type="text/javascript">
+        function doSearchFromTown()  {
+            var param = {field:'f9',operator:'cn',value:document.getElementById('place').value};
+            INTERMediator.addtionalCondition["postalcode"] = param;
+            INTERMediator.startFrom = 0;
+            INTERMediator.construct(true);
+        }
+        function doSearchFromZipcode()  {
+            var param = {field:'f3',operator:'eq',value:document.getElementById('zipcode').value+'*'};
+            INTERMediator.addtionalCondition["postalcode"] = param;
+            INTERMediator.startFrom = 0;
+            INTERMediator.construct(true);
+        }
+    </script>
+</head>
+<body>
+<div>
+    地名(Place Name):
+    <input type="text" id="place" value="落合" onkeydown="if(event.keyCode==13){doSearchFromTown()}"/>
+    <button onclick="doSearchFromTown()">
+        Search
+    </button>
+    検索は住所の「町域名」に一部分でも含まれる文字列を検索します。
+</div>
+<div>
+    郵便番号(Zipcode):
+    <input type="text" id="zipcode" value="123" onkeydown="if(event.keyCode==13){doSearchFromZipcode()}" />
+    <button onclick="doSearchFromZipcode()">
+        search
+    </button>
+    郵便番号を前方一致で検索します。
+</div>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table border="1" id="resultTable">
+	<thead>
+	<tr>
+		<th>郵便番号</th>
+		<th>都道府県</th>
+		<th>市区町村</th>
+		<th>町域名</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><div title="postalcode@f3"></div></td>
+		<td><div title="postalcode@f7"></div></td>
+		<td><div title="postalcode@f8"></div></td>
+		<td><div title="postalcode@f9"></div></td>
+	</tr>
+	</tbody>
+</table>
+
+</body>
+</html>

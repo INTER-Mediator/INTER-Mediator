@@ -11,14 +11,8 @@ require_once ( 'INTER-Mediator/INTER-Mediator.php');
 
 $tableDefs 
 	= array(	
-		array(	
-			'name' 	=> 'postalcode', 
-			'records'	=>	1000000,
-			'key' 		=> 'id',
-			'query'	=> array( array( 'field'=>'f9', 'operator'=>'Like', 'value'=>'%落合%' ) ),
-			'sort'	=> array( array( 'field'=>'f3', 'direction'=>'asc' ),),
-		),
-		array(	'records'	=>	2,
+		array(	'records'	=>	1,
+                'paging'    =>  true,
 				'name' 		=> 'person', 
 				'key' 		=> 'id',
 				'query'		=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/ ),

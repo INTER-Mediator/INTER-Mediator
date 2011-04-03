@@ -11,7 +11,8 @@ require_once ( 'INTER-Mediator/INTER-Mediator.php');
 
 $tableDefs 
 	= array(	
-		array(	'records'	=>	2,
+		array(	'records'	=>	1,
+                'paging'    =>  true,
 				'name' 	=> 'person_layout', 
 				'key' 		=> 'id',
 				'query'	=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/ ),
@@ -30,11 +31,6 @@ $tableDefs
 				'foreign-key'	=> 'person_id',
 				'repeat-control'	=> 'insert',
 				'join-field' 	=> 'id',	),
-		array(	
-			'name' 	=> 'postalcode', 
-			'query'	=> array( array( 'field'=>'f9', 'value'=>'落合', 'operator'=>'cn' ) ),
-			'sort'	=> array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
-		),
 	);
 
 $optionDefs

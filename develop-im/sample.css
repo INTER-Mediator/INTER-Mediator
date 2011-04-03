@@ -7,47 +7,31 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-.easypage_navigation	{
-	background-color: #FFFFAA;
-}
-.easypage_navigation_message	{
-	background-color: #FFFFAA;
-}
-.easypage_navigation_controls	{
-	background-color: #FFFFAA;
-}
-.easypage_navigation_link	{
-	cursor: pointer;
-	padding: 2px;
-	margin: 2px;
-	background-color: #333333;
-	color: #FFFFFF;
+.IM_NAV_panel   {
+    background-color: #CCCCCC;
+    padding: 4px;
+    margin: 4px 0 4px 0;
 }
 
-.easypage_navigation_dimmed	{
-	padding: 2px;
-	margin: 2px;
-	background-color: #333333;
-	color: #555555;
+span.IM_NAV_info    {
+    font-size: 9pt;
+    color: #333333;
 }
 
-.easypage_table_control	{
-	background-color: #FFDDFF;
-	padding: 2px;
-	align: right;
+span.IM_NAV_button  {
+    padding: 0 4px 0 4px;
+    margin: 0 6px 0 6px;
+    border-radius: 3px;
+    background-color: #000000;
+    color: yellow;
+    cursor: pointer;
 }
 
-.easypage_table_control_delete	{
-	cursor: pointer;
-	padding: 2px;
-	margin: 2px;
-	background-color: #333333;
-	color: #FFFFFF;
+span.IM_NAV_disabled    {
+    background-color: #666666;
+    color: #333333;
 }
-.easypage_table_control_insert	{
-	cursor: pointer;
-	padding: 2px;
-	margin: 2px;
-	background-color: #333333;
-	color: #FFFFFF;
+
+div.IM_CREDIT   {
+    
 }
