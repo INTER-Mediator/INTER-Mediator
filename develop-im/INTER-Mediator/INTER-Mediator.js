@@ -10,7 +10,7 @@
 // Cleaning-up by http://jsbeautifier.org/
 // Next Generation gets start
 var INTERMediator = {
-    debugMode: false,
+    debugMode: true,
 	separator: '@',
 	// This must be refered as 'INTERMediator.separator'. Don't use 'this.separator'
 	defDevider: '|',
@@ -40,7 +40,6 @@ var INTERMediator = {
         for (var i = 0; i < INTERMediator.messages.length; i++) {
             INTERMediator.debugOut(INTERMediator.messages[i]);
         }
-
         INTERMediator.messages = [];
     },
 
@@ -161,7 +160,7 @@ var INTERMediator = {
 				}
 			}
 		}
-	//	INTERMediator.flushMessage();
+		INTERMediator.flushMessage();
 	},
 
     /*
@@ -347,7 +346,9 @@ var INTERMediator = {
         navigationSetup();
         appendCredit();
 
-        doAfterConstruct();
+        if ( doAfterConstruct != null ) {
+            doAfterConstruct();
+        }
 
         // Show messages
     	INTERMediator.flushMessage();
@@ -356,6 +357,8 @@ var INTERMediator = {
          * Seeking nodes and if a node is an enclosure, proceed repeating.
          */
         function seekEnclosureNode(node, currentRecord, currentTable) {
+        //    INTERMediator.messages.push("seekEnclosureNode =" + node.tagName
+        //            +"/currentRecord="+objectToString(currentRecord));
             var enclosure = null;
             var nType = node.nodeType;
             if (nType == 1) { // Work for an element
@@ -369,22 +372,12 @@ var INTERMediator = {
                             currentAfter:targetNode.nextSibling};
                         firstEnclosure = false;
                     }
-                    if (enclosure = expandEnclosure(node, currentRecord, currentTable))	{
-                        // Expand the enclosure
-                        // expanded with foreign-value
-                    //	INTERMediator.messages.push("expanded with foreign-value =" + node.tagName
-                    //			+"/currentRecord="+objectToString(currentRecord));
-                    }
+                    enclosure = expandEnclosure(node, currentRecord, currentTable);
                 } else {
                     var childs = node.childNodes; // Check all child nodes.
                     for (var i = 0; i < childs.length; i++) {
                         if ( childs[i].nodeType == 1 )	{
                             var checkingEncl = seekEnclosureNode(childs[i], currentRecord, currentTable);
-                    //	    INTERMediator.messages.push("seekEnclosureNode returned =" + childs[i].tagName
-                    //            +"/chekingEncl="+checkingEncl
-                    //            +"/node type="+childs[i].nodeType
-                    //            +"/currentRecord="+objectToString(currentRecord)
-                    //            );
                         }
                     }
                 }
@@ -397,8 +390,8 @@ var INTERMediator = {
          */
 
         function expandEnclosure(node, currentRecord, currentTable) {
-        	//INTERMediator.messages.push("expandEnclosure =" + node.tagName
-        	//		+"/currentRecord="+objectToString(currentRecord));
+        //	INTERMediator.messages.push("expandEnclosure =" + node.tagName
+        //            +"/currentRecord="+objectToString(currentRecord));
 
             currentLevel++;
             currentEncNumber++;
@@ -406,20 +399,25 @@ var INTERMediator = {
 
             var encNodeTag = node.tagName;
             var repNodeTag = repeaterTagFromEncTag(encNodeTag);
+            var repeatersOriginal = new Array(); // Collecting repeaters to this array.
             var repeaters = new Array(); // Collecting repeaters to this array.
             var childs = node.childNodes; // Check all child node of the enclosure.
             for (var i = 0; i < childs.length; i++) {
                 if (childs[i].nodeType == 1 && childs[i].tagName == repNodeTag) {
                     // If the element is a repeater.
-                    repeaters.push(childs[i]); // Record it to the array.
+                    repeatersOriginal.push(childs[i]); // Record it to the array.
                 }
+            }
+            for (var i = 0; i < repeatersOriginal.length; i++) {
+                var inDocNode = repeatersOriginal[i];
+                var parentOfRep = repeatersOriginal[i].parentNode;
+                var cloneNode = repeatersOriginal[i].cloneNode(true);
+                repeaters.push(cloneNode);
+                parentOfRep.removeChild(inDocNode);
             }
             linkedNodes = new Array(); // Collecting linked elements to this array.
             for (var i = 0; i < repeaters.length; i++) {
-                var inDocNode = repeaters[i];
-                repeaters[i] = repeaters[i].cloneNode(true);
-                inDocNode.parentNode.removeChild(inDocNode);
-                seekLinkedElement(repeaters[i]);
+                 seekLinkedElement(repeaters[i]);
             }
             var currentLinkedNodes = linkedNodes; // Store in the local variable
             // Collecting linked elements in array
@@ -481,28 +479,34 @@ var INTERMediator = {
             }
             // INTERMediator.messages.push("targetKey ="+targetKey);
             if (targetKey != '') {
-                //	ds[targetKey]['repeat-control'];
                 var foreignValue = '';
                 var foreignField = '';
                 if  (currentRecord[ds[targetKey]['join-field']] != null) {
                     foreignValue = currentRecord[ds[targetKey]['join-field']];
                     foreignField = ds[targetKey]['join-field'];
                     INTERMediator.keyFieldObject.push({node:node,table:currentTable,field:foreignField});
-                /*	INTERMediator.messages.push("seekEnclosureNode: " + objectToString(currentRecord)
-                            + "/foreignValue=" + foreignValue
-                            + "/foreignField=" + foreignField
-                            + "/targetTable=" + currentTable
-                            + "/node=" + node.tagName
-                            );*/
                 }
                 var targetRecords = INTERMediator.db_query(ds[targetKey], fieldList, foreignValue, null);
                 // Access database and get records
                 var linkedElmCounter = 1;
                 var RecordCounter = 0;
                 var eventLisnerPostAdding = new Array();
+
                 // var currentEncNumber = currentLevel;
                 for (var ix in targetRecords) { // for each record
                     RecordCounter++;
+
+                    repeaters = new Array();
+                    for (var i = 0; i < repeatersOriginal.length; i++) {
+                        var cloneNode = repeatersOriginal[i].cloneNode(true);
+                        repeaters.push(cloneNode);
+                    }
+                    linkedNodes = new Array(); // Collecting linked elements to this array.
+                    for (var i = 0; i < repeaters.length; i++) {
+                         seekLinkedElement(repeaters[i]);
+                    }
+                    var currentLinkedNodes = linkedNodes; // Store in the local variable
+
                     var keyingValue = ds[targetKey]['key'] + "=" + targetRecords[ix][ds[targetKey]['key']];
                     for (var k = 0; k < currentLinkedNodes.length; k++) {
                         // for each linked element
@@ -556,7 +560,12 @@ var INTERMediator = {
                                 if ( curTarget == 'innerHTML')  {
                                     currentLinkedNodes[k].innerHTML = curVal;
                                 } else if ( curTarget == 'textNode')  {
-                                    currentLinkedNodes[k].appendChild(document.createTextNode(curVal));
+                                    var textNode = document.createTextNode(curVal);
+                                    currentLinkedNodes[k].appendChild(textNode);
+                                } else if ( curTarget.indexOf('style.') == 0 )  {
+                                    var styleName = curTarget.substring( 6, curTarget.length );
+                                    var statement = "currentLinkedNodes[k].style."+styleName+"='"+curVal+"';";
+                                    eval( statement );
                                 } else {
                                     currentLinkedNodes[k].setAttribute(curTarget, curVal);
                                 }
@@ -592,7 +601,8 @@ var INTERMediator = {
                                     if ( INTERMediator.defalutTargetInnerHTML ) {
                                         currentLinkedNodes[k].innerHTML = curVal;
                                     } else  {
-                                        currentLinkedNodes[k].appendChild(document.createTextNode(curVal));
+                                        var textNode = document.createTextNode(curVal);
+                                        currentLinkedNodes[k].appendChild(textNode);
                                     }
                                 }
                             }
@@ -606,10 +616,14 @@ var INTERMediator = {
                     // Event listener should add after adding node to document.
                     for (var i = 0; i < eventLisnerPostAdding.length; i++) {
                         var theNode = document.getElementById(eventLisnerPostAdding[i]['id']);
-                        if (theNode.addEventListener) {
-                            theNode.addEventListener(eventLisnerPostAdding[i]['event'], eventLisnerPostAdding[i]['todo'],false);
-                        } else if (currentLinkedNodes[k].attachEvent) {
-                            theNode.attachEvent('on' + eventLisnerPostAdding[i]['evnet'], eventLisnerPostAdding[i]['todo']);
+                        if ( theNode == null )  {
+                            INTERMediator.messages.push("eventLisnerPostAdding null id=" + eventLisnerPostAdding[i]['id']);
+                        } else {
+                            if (theNode.addEventListener) {
+                                theNode.addEventListener(eventLisnerPostAdding[i]['event'], eventLisnerPostAdding[i]['todo'],false);
+                            } else if (currentLinkedNodes[k].attachEvent) {
+                                theNode.attachEvent('on' + eventLisnerPostAdding[i]['evnet'], eventLisnerPostAdding[i]['todo']);
+                            }
                         }
                     }
                 }

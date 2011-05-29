@@ -29,11 +29,21 @@ do
 	fi
 done
 
+cp -r "${curpath}"/develop-im/images develop-im/
+
 mkdir develop-im/INTER-Mediator
 for FILE in `ls "${curpath}"/develop-im/INTER-Mediator`
 do
 	if [ -f "${curpath}"/develop-im/INTER-Mediator/"${FILE}" ]; then 
 	sed -f "${curpath}"/sedrule "${curpath}"/develop-im/INTER-Mediator/"${FILE}" > develop-im/INTER-Mediator/"${FILE}"
+	fi
+done
+
+mkdir develop-im/WebSite
+for FILE in `ls "${curpath}"/develop-im/WebSite`
+do
+	if [ -f "${curpath}"/develop-im/WebSite/"${FILE}" ]; then
+	sed -f "${curpath}"/sedrule "${curpath}"/develop-im/WebSite/"${FILE}" > develop-im/WebSite/"${FILE}"
 	fi
 done
 

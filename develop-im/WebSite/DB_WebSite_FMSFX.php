@@ -45,6 +45,7 @@ class DB_WebSite_FMSFX extends DB_FileMaker_FX	{
                     }
                 }
                 if ( count( $selectedRecords ) == 0 )   {
+                    $selectedRecords = array();
                     $priorLang = 'en';
                     foreach( $returnValue as $record )  {
                         if ( $record['Language'] == $priorLang )    {
@@ -52,6 +53,7 @@ class DB_WebSite_FMSFX extends DB_FileMaker_FX	{
                         }
                     }
                     if ( count( $selectedRecords ) == 0 )   {
+                        $selectedRecords = array();
                         $maxLang = 'en';
                         $maxLangCount = -1;
                         foreach( $lang as $language=>$count )   {

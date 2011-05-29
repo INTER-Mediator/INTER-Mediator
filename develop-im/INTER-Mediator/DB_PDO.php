@@ -28,7 +28,7 @@ class DB_PDO extends DB_Base	{
 									$this->getDbSpecPassword(),
 									is_array($this->getDbSpecOption())?$this->getDbSpecOption():array());
 		} catch( PDOException $ex )	{
-			$this->errorMessage[] = 'Connectopm Error: ' . $ex->getMessage();
+			$this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
 			return array();
 		}
 		if ( isset( $tableInfo['script'] ))	{
@@ -124,12 +124,12 @@ class DB_PDO extends DB_Base	{
 	
 	function setToDB( )	{
 		try {
-			$this->link = new PDO( 	$this->dbSpec['dsn'], 
-									$this->dbSpec['user'], 
-									$this->dbSpec['password'],
-									isset($this->dbSpec['options']) ? $this->dbSpec['options'] : array());
+			$this->link = new PDO( 	$this->getDbSpecDSN(),
+									$this->getDbSpecUser(),
+									$this->getDbSpecPassword(),
+									is_array($this->getDbSpecOption())?$this->getDbSpecOption():array());
 		} catch( PDOException $ex )	{
-			$this->errorMessage[] = 'Connectopm Error: ' . $ex->getMessage();
+			$this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
 			return false;
 		}
 		if ( isset( $tableInfo['script'] ))	{
