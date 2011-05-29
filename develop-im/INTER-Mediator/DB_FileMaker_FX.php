@@ -21,164 +21,127 @@ error_reporting( $currentEr );
 
 class DB_FileMaker_FX extends DB_Base	{
 	
-	var $fxResult = array();
 	var $fx = null;
 	
 	function __construct()	{
-		require( 'params.php' );
-		$this->fx = new FX( $fx_server, $fx_port, $fx_dataType, $fx_urlType );
 	}
 	
 	function getFromDB( )	{
-		$tableName = $this->tableName;
+        $this->fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
 		$tableInfo = $this->getDataSourceTargetArray();
-			if ( ! isset( $this->fxResult[$tableName] ) )	{
-				$this->fx->setCharacterEncoding( 'UTF-8' );
-				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-				
-				$limitParam = 100000000;
-				if ( isset($tableInfo['records']) )	{
-					$limitParam = $tableInfo['records'];
-				}
-				if ( $this->recordCount > 0 )	{
-					$limitParam = $this->recordCount;
-				}
-				
-				$this->fx->setDBData( $this->dbSpec['db'], $tableName, $limitParam );
-				$this->fx->FMSkipRecords( $this->start );
+        $this->fx->setCharacterEncoding( 'UTF-8' );
+        $this->fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
 
-				/*	if ( $this->isMainTable( $tableName ) )	{
-					foreach( $this->extraCriteria as $field=>$value )	{
-						$this->fx->AddDBParam( $field, $value, 'eq' );
-					}
-				}
-			*/	if ( isset( $tableInfo['query'] ))	{
-					foreach( $tableInfo['query'] as $condition )	{
-						if ( $condition['field'] == '__operation__' && $condition['operator'] == 'or' )	{
-							$this->fx->SetLogicalOR();
-						} else {
-							if ( isset( $condition['operator'] ))	{
-								$this->fx->AddDBParam( $condition['field'], $condition['value'], $condition['operator'] );
-							} else {
-								$this->fx->AddDBParam( $condition['field'], $condition['value'] );
-							}
-						}
-					}
-				}
-				foreach ( $this->extraCriteria as $value )	{
-                    $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-					$this->fx->AddDBParam( $value['field'], $value['value'], $op );
-				}
-				if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
-					$this->fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
-				}
-				if ( isset( $tableInfo['sort'] ))	{
-					foreach( $tableInfo['sort'] as $condition )	{
-						if ( isset( $condition['direction'] ))	{
-							$this->fx->AddSortParam( $condition['field'], $condition['direction'] );
-						} else {
-							$this->fx->AddSortParam( $condition['field'] );
-						}
-					}
-				}
-				if ( isset( $tableInfo['global'] ))	{
-					foreach( $tableInfo['global'] as $condition )	{
-						if ( $condition['db-operation'] == 'load' )	{
-							$this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
-						}
-					}
-				}
-				if ( isset( $tableInfo['script'] ))	{
-					foreach( $tableInfo['script'] as $condition )	{
-						if ( $condition['db-operation'] == 'load' )	{
-							if ( $condition['situation'] == 'pre' )	{
-								$this->fx->PerformFMScriptPrefind( $condition['definition'] );
-							} else if ( $condition['situation'] == 'presort' )	{
-								$this->fx->PerformFMScriptPresort( $condition['definition'] );
-							} else if ( $condition['situation'] == 'post' )	{
-								$this->fx->PerformFMScript( $condition['definition'] );
-							}
-						}
-					}
-				}
-				$this->fxResult[$tableName] = $this->fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
-				if( $this->fxResult[$tableName]['errorCode'] != 0 )	{
-					$this->errorMessage[] = "FX reports error at find action: "
-						. "code={$this->fxResult[$tableName]['errorCode']}, "
-						. "url={$this->fxResult[$tableName]['URL']}";
-					return false;
-				}
-				if ( $this->isDebug )	{
-					$this->debugMessage[] = $this->fxResult[$tableName]['URL'];
-				}
-				if ( $tableName == $this->tableName && isset($this->fxResult[$tableName]['foundCount']))
-					$this->mainTableCount = $this->fxResult[$tableName]['foundCount'];
-			}
-			$returnArray = array();
-			if ( isset($this->fxResult[$tableName]['data'] ))	{
-				foreach( $this->fxResult[$tableName]['data'] as $oneRecord )	{
-					$oneRecordArray = array();
-					foreach( $oneRecord as $field=>$dataArray )	{
-						if ( count( $dataArray ) == 1 )	{
-						//	if ( $this->skip == 1 && $tableName == $this->mainTableName )	{
-						//		$oneRecordArray[$field] = $this->formatterFromDB( $field, $dataArray[0] );
-						//	} else {
-								$oneRecordArray[$field] = $this->formatterFromDB( 
-											"$tableName{$this->separator}$field", $dataArray[0] );
-						//	}
-						}
-					}
-					$returnArray[] = $oneRecordArray;
-				}
-			}
-			return $returnArray;
-/*		} else {
-			$fieldsArray = array();	$repeatCount = 0;
-			if ( isset( $this->fxResult[$this->mainTableName]['data'] ))	{
-				foreach( $this->fxResult[$this->mainTableName]['data'] as $oneRecord )	{
-					foreach( $oneRecord as $field=>$dataArray )	{
-						if ( strpos($field, $tableName) === 0 )	{
-							$pos = strpos( $field, '::');
-							if ( $pos !== FALSE )	{
-								$fieldsArray[] = $field;
-								$repeatCount = max( $repeatCount, count($dataArray) );
-							}
-						}
-					}
-					break;
-				}
-			}
-			$returnArray = array();
-			$counter = 0;
-			if ( isset( $this->fxResult[$this->mainTableName]['data'] ))	{
-				foreach( $this->fxResult[$this->mainTableName]['data'] as $oneRecord )	{
-					for( $i=0; $i<$repeatCount; $i++ )	{
-						$oneRecordArray = array();
-						foreach( $fieldsArray as $oneField )	{
-							$pos = strpos( $oneField, '::');
-							$fieldName = substr($oneField, $pos+2, strlen($oneField));
-							$oneRecordArray[$fieldName] 
-								= $this->formatterFromDB( "$tableName{$this->separator}$fieldName", $oneRecord[$oneField][$i] );
-						}
-						$returnArray[] = $oneRecordArray;
-					}
-				}
-			}
-			return $returnArray;
-		}
-*/	}
+        $limitParam = 100000000;
+        if ( isset($tableInfo['records']) )	{
+            $limitParam = $tableInfo['records'];
+        }
+        if ( $this->recordCount > 0 )	{
+            $limitParam = $this->recordCount;
+        }
+
+        $this->fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, $limitParam );
+        $this->fx->FMSkipRecords( $this->start );
+
+        /*	if ( $this->isMainTable( $tableName ) )	{
+            foreach( $this->extraCriteria as $field=>$value )	{
+                $this->fx->AddDBParam( $field, $value, 'eq' );
+            }
+        }
+    */	if ( isset( $tableInfo['query'] ))	{
+            foreach( $tableInfo['query'] as $condition )	{
+                if ( $condition['field'] == '__operation__' && $condition['operator'] == 'or' )	{
+                    $this->fx->SetLogicalOR();
+                } else {
+                    if ( isset( $condition['operator'] ))	{
+                        $this->fx->AddDBParam( $condition['field'], $condition['value'], $condition['operator'] );
+                    } else {
+                        $this->fx->AddDBParam( $condition['field'], $condition['value'] );
+                    }
+                }
+            }
+        }
+        foreach ( $this->extraCriteria as $value )	{
+            $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
+            $this->fx->AddDBParam( $value['field'], $value['value'], $op );
+        }
+        if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
+            $this->fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
+        }
+        if ( isset( $tableInfo['sort'] ))	{
+            foreach( $tableInfo['sort'] as $condition )	{
+                if ( isset( $condition['direction'] ))	{
+                    $this->fx->AddSortParam( $condition['field'], $condition['direction'] );
+                } else {
+                    $this->fx->AddSortParam( $condition['field'] );
+                }
+            }
+        }
+        if ( isset( $tableInfo['global'] ))	{
+            foreach( $tableInfo['global'] as $condition )	{
+                if ( $condition['db-operation'] == 'load' )	{
+                    $this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+                }
+            }
+        }
+        if ( isset( $tableInfo['script'] ))	{
+            foreach( $tableInfo['script'] as $condition )	{
+                if ( $condition['db-operation'] == 'load' )	{
+                    if ( $condition['situation'] == 'pre' )	{
+                        $this->fx->PerformFMScriptPrefind( $condition['definition'] );
+                    } else if ( $condition['situation'] == 'presort' )	{
+                        $this->fx->PerformFMScriptPresort( $condition['definition'] );
+                    } else if ( $condition['situation'] == 'post' )	{
+                        $this->fx->PerformFMScript( $condition['definition'] );
+                    }
+                }
+            }
+        }
+        $fxResult = $this->fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
+        if( $fxResult['errorCode'] != 0 )	{
+            $this->errorMessage[] = "FX reports error at find action: "
+                . "code={$fxResult['errorCode']}, url={$fxResult['URL']}";
+            return '';
+        }
+        $this->setDebugMessage( $fxResult['URL'] );
+        //$this->setDebugMessage( arrayToJS( $fxResult['data'], '' ));
+        $this->mainTableCount = $fxResult['foundCount'];
+
+        $returnArray = array();
+        if ( isset( $fxResult['data'] ))	{
+            foreach( $fxResult['data'] as $oneRecord )	{
+                $oneRecordArray = array();
+                foreach( $oneRecord as $field=>$dataArray )	{
+                    if ( count( $dataArray ) == 1 )	{
+                        $oneRecordArray[$field] = $this->formatterFromDB(
+                            "{$this->tableName}{$this->separator}$field", $dataArray[0] );
+                    }
+                }
+                $returnArray[] = $oneRecordArray;
+            }
+        }
+        return $returnArray;
+    }
 	
 	function unifyCRLF( $str )	{
 		return str_replace( "\n", "\r", str_replace( "\r\n", "\r", $str ));
 	}
 	
 	function setToDB( )	{
-		$tableName = $this->tableName;
+        $this->fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
 		$tableInfo = $this->getDataSourceTargetArray();
 		$keyFieldName = $tableInfo['key'];
 		$this->fx->setCharacterEncoding( 'UTF-8' );
-		$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-		$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
+		$this->fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
+		$this->fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
 	//	$this->fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
 		foreach ( $this->extraCriteria as $value )	{
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
@@ -197,7 +160,7 @@ class DB_FileMaker_FX extends DB_Base	{
 				
 				$this->fx->setCharacterEncoding( 'UTF-8' );
 				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-				$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
+				$this->fx->setDBData( $this->dbSpec['db'], $this->tableName, 1 );
 				$this->fx->SetRecordID( $recId );
 				$counter = 0;
 				foreach ( $this->fieldsRequired as $field )	{
@@ -233,7 +196,7 @@ class DB_FileMaker_FX extends DB_Base	{
 				}
 				$result = $this->fx->FMEdit();
 				if( $result['errorCode'] > 0 )	{
-					$this->errorMessage[] = "FX reports error at edit action: table={$tableName}, code={$result['errorCode']}, url={$result['URL']}<hr>";
+					$this->errorMessage[] = "FX reports error at edit action: table={$this->tableName}, code={$result['errorCode']}, url={$result['URL']}<hr>";
 					return false;
 				}
 				if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];

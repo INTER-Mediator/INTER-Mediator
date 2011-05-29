@@ -8,28 +8,32 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-$dbAccessClass = 'FileMaker_FX';
-$dbName = 'TestDB';
+/* DB_FileMaker_FX awares below:
+ */
+$dbServer = '127.0.0.1';
+$dbPort = '80';
 $dbUser = 'web';
 $dbPassword = 'password';
-/*
-$dbAccessClass = 'MySQL';
-$dbName = 'test_db';
+$dbDataType = 'FMPro7';
+$dbDatabase = 'TestDB';
+$dbProtocol = 'HTTP';
+
+/* DB_PDO awares below:
+ */
+$dbDSN ='';
+$dbOption = array();
 $dbUser = 'web';
 $dbPassword = 'password';
-*/
 
-$mysql_connect = 'localhost';
-
+/* Browser Compatibility Check: (Not implemented)
+ */
 $browserCompatibility = array(
-							'Explorer'=>array('7+'),
-							'FireFox'=>array('2+'),
-							'Safari'=>array('3+'),		);
+    'Explorer'=>array('7+'),
+    'FireFox'=>array('2+'),
+    'Safari'=>array('3+'),
+    'Chrome'=>array('3+'),
+);
 
-$fx_server = '127.0.0.1';
-$fx_port = '80';
-$fx_dataType = 'FMPro7';
-$fx_urlType = 'HTTP';
 
 
 ?>

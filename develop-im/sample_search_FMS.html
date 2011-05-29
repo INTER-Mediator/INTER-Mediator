@@ -24,7 +24,7 @@
             INTERMediator.construct(true);
         }
         function doSearchFromZipcode()  {
-            var param = {field:'f3',operator:'eq',value:document.getElementById('zipcode').value+'*'};
+            var param = {field:'f3',operator:'bw',value:document.getElementById('zipcode').value};
             INTERMediator.addtionalCondition["postalcode"] = param;
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);

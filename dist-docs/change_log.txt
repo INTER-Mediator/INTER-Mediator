@@ -12,16 +12,12 @@ To Do, that is left-over.
 - Insert and delete records.
 - Create new record.
 - Add code on JavaScript level.
+- Objective handling for the data in database.
 
-- Multiple data converter for a field.
-- Adjustment of navigation bar after new record is created.
 - Store NULL for empty string.
 - Browser check and showing suitable message when it's not compatible.
-- Auto configuration of the selection.
-- Link/unlink to another record with selection.
 - Built-in Authentication framework.
 - Multiple values within one field. (It may be required FileMaker especially.)
-- Full AJAX operations.
 
 Mostly Slogan: or Should be done:
 - Fulfilling documentation, including tutorials.
@@ -31,8 +27,15 @@ Mostly Slogan: or Should be done:
 =================================
 
 Ver.0.6.3 === will be next release
+- Bug fix for class names for div elements
+- Web Site Sample, it's using for REAL INTER-Mediator site!
+- TABLE@FIELD@TARGET is general format of the insertion specification.
+  TARGET is usually the name of attributes.
+  You can specify "innerHTML" and "textNode" for TARGET parameter.
+- INTERMediator.defalutTargetInnerHTML property is introduced. When you don't specify TARGET,
+  uses innerHTML if the property is false, otherwise creates a text node.
 
-Ver.0.6.2
+Ver.0.6.2 (2011/4/4)
 - Remove old (Ver.0.5) sources.
 - Listing and Navigation is working. See the sample "sample_search_MySQL.html".
 - Temporary criteria is supported.

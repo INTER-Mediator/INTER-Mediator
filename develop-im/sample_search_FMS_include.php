@@ -23,9 +23,15 @@ $tableDefs
 $optionDefs = array();
 
 $dbDefs = array(
-            'db-class' => 'FileMaker_FX',
-            'db' => 'TestDB'
-        );
+    'db-class' => 'FileMaker_FX',
+    'database' => 'TestDB',
+    'user' => 'web',
+    'password' => 'password',
+    'server' => '127.0.0.1',
+    'port' => '80',
+    'protocol' => 'HTTP',
+    'datatype' => 'FMPro7'
+);
 
 IM_Entry( $tableDefs, $optionDefs, $dbDefs, true );
 

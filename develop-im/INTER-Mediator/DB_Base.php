@@ -9,13 +9,22 @@
  */
 
 class DB_Base	{
-	
-	var $dbSpec = null;
+
+    var $dbSpecServer = null;
+    var $dbSpecPort = null;
+    var $dbSpecUser = null;
+    var $dbSpecPassword = null;
+    var $dbSpecDatabase = null;
+    var $dbSpecDataType = null;
+    var $dbSpecProtocol = null;
+    var $dbSpecDSN = null;
+    var $dbSpecOption = null;
+
 	var $dataSource = null;
 	var $extraCriteria = array();
 	var $tableName = null;
 	var $mainTableCount = 0;
-	var $mainTalbeKeyValue = null;
+//	var $mainTalbeKeyValue = null;
 	var $fieldsRequired = null;
 	var $fieldsValues = null;
 	var $formatter = null;
@@ -35,7 +44,9 @@ class DB_Base	{
 	}
 
 	function setDebugMessage( $str )		{
-		$this->debugMessage[] = $str;
+        if ( $this->isDebug )   {
+    		$this->debugMessage[] = $str;
+        }
 	}
 	
 	function setErrorMessage( $str )		{
@@ -49,11 +60,62 @@ class DB_Base	{
 	function getErrorMessages()				{
 		return $this->errorMessage;
 	}
-	
-	function setDBSpec( $dbspec )			{	
-		$this->dbSpec = $dbspec;
-	}
-	
+
+    function setDbSpecServer($str)   {
+        $this->dbSpecServer = $str;
+    }
+    function getDbSpecServer()   {
+        return $this->dbSpecServer;
+    }
+    function setDbSpecPort($str) {
+        $this->dbSpecPort = $str;
+    }
+    function getDbSpecPort() {
+        return $this->dbSpecPort;
+    }
+    function setDbSpecUser($str) {
+        $this->dbSpecUser = $str;
+    }
+    function getDbSpecUser() {
+        return $this->dbSpecUser;
+    }
+    function setDbSpecPassword($str) {
+        $this->dbSpecPassword = $str;
+    }
+    function getDbSpecPassword() {
+        return $this->dbSpecPassword;
+    }
+    function setDbSpecDataType($str) {
+        $this->dbSpecDataType = $str;
+    }
+    function getDbSpecDataType() {
+        return $this->dbSpecDataType;
+    }
+    function setDbSpecDatabase($str) {
+        $this->dbSpecDatabase = $str;
+    }
+    function getDbSpecDatabase() {
+        return $this->dbSpecDatabase;
+    }
+    function setDbSpecProtocol($str) {
+        $this->dbSpecProtocol = $str;
+    }
+    function getDbSpecProtocol() {
+        return $this->dbSpecProtocol;
+    }
+    function setDbSpecDSN($str) {
+        $this->dbSpecDSN = $str;
+    }
+    function getDbSpecDSN() {
+        return $this->dbSpecDSN;
+    }
+    function setDbSpecOption($str)  {
+        $this->dbSpecOption = $str;
+    }
+    function getDbSpecOption()  {
+        return $this->dbSpecOption;
+    }
+
 	function setDebugMode()	{
 		$this->isDebug = true;
 	}
@@ -172,7 +234,10 @@ class DB_Base	{
 		}
 		return implode( ',', $sortClause);
 	}
-	
+
+    /*
+     * Generate SQL style WHERE clause.
+     */
 	function getWhereClause()	{
 		$tableInfo = $this->getDataSourceTargetArray();
 		$queryClause = '';

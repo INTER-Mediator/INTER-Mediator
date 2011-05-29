@@ -23,10 +23,10 @@ class DB_PDO extends DB_Base	{
 		$tableInfo = $this->getDataSourceTargetArray();
 		
 		try {
-			$this->link = new PDO( 	$this->dbSpec['dsn'], 
-									$this->dbSpec['user'], 
-									$this->dbSpec['password'],
-									isset($this->dbSpec['options']) ? $this->dbSpec['options'] : array());
+			$this->link = new PDO( 	$this->getDbSpecDSN(),
+									$this->getDbSpecUser(),
+									$this->getDbSpecPassword(),
+									is_array($this->getDbSpecOption())?$this->getDbSpecOption():array());
 		} catch( PDOException $ex )	{
 			$this->errorMessage[] = 'Connectopm Error: ' . $ex->getMessage();
 			return array();
@@ -66,6 +66,7 @@ class DB_PDO extends DB_Base	{
 		if ( $result === false ) {
 			$this->errorMessage[] = 'Query Error: Code=' . $this->link->errorCode()
 											. ' Info=' . $this->link->errorInfo();
+            return array();
 		}
 		$this->mainTableCount = $result->fetchColumn(0);
 
@@ -96,10 +97,8 @@ class DB_PDO extends DB_Base	{
 		foreach( $result->fetchAll( PDO::FETCH_ASSOC ) as $row )	{
 			$rowArray = array();
 			foreach( $row as $field => $val )	{
-				$filedInForm = $field;
-				if ( $this->skip != 1 || $tableName != $this->tableName )	{
-					$filedInForm = "{$tableName}{$this->separator}{$field}";
-				}
+			//	$filedInForm = $field;
+				$filedInForm = "{$tableName}{$this->separator}{$field}";
 				$rowArray[$field] = $this->formatterFromDB( $filedInForm, $val );
 			}
 			$this->sqlResult[] = $rowArray;
@@ -202,7 +201,9 @@ class DB_PDO extends DB_Base	{
 	}
 	
 	function newToDB( $tableName, $data, &$keyValue )	{
-		$tableInfo = $this->getTableInfo( $tableName );
+        $tableName = $this->tableName;
+        $tableInfo = $this->getDataSourceTargetArray();
+
 		$keyFieldName = $tableInfo['key'];
 		
 		require( 'params.php' );
@@ -276,7 +277,9 @@ class DB_PDO extends DB_Base	{
 	}
 	
 	function deleteFromDB( )	{
-		$tableInfo = $this->getTableInfo( $tableName );
+        $tableName = $this->tableName;
+        $tableInfo = $this->getDataSourceTargetArray();
+
 		$keyFieldName = $tableInfo['key'];
 		if ( ! $tableInfo['key'] || ! isset( $data[$keyFieldName] ))	{
 			$this->errorMessage[] = 'Error: Can\'t get the key field value';
