@@ -26,7 +26,15 @@ Mostly Slogan: or Should be done:
 
 =================================
 
-Ver.0.6.3 === will be next release
+Ver.0.6.5 === will be next release
+
+Ver.0.6.4 (2011/5/30)
+- Bug fix for expandable for the linked node within the linked node.
+- Bug fix for editing after second records.
+- Bug fix for textNode style insertion.
+- IM[table@field@style.STYLENAME] supported.
+
+Ver.0.6.3 (2011/5/29)
 - Bug fix for class names for div elements
 - Web Site Sample, it's using for REAL INTER-Mediator site!
 - TABLE@FIELD@TARGET is general format of the insertion specification.

@@ -109,10 +109,10 @@ var INTERMediator = {
 			var currentVal = INTERMediator.db_query({
 				records: 1,
 				name: objectSpec['table']
-			}, [objectSpec['field']], null, objectSpec['keying']);
+			}, [objectSpec['field']], null, objectSpec['keying'], false);
 			if (currentVal[0] == null || currentVal[0][objectSpec['field']] == null) {
 				// ERROR
-				alert("No information to update:");
+				alert("No information to update: field="+objectSpec['field']);
 				INTERMediator.flushMessage();
 				return;
 			}
@@ -172,7 +172,7 @@ var INTERMediator = {
         parentKeyVal:
         extraCondition: "field,operator,value"
      */
-	db_query: function (detaSource, fields, parentKeyVal, extraCondition) {
+	db_query: function (detaSource, fields, parentKeyVal, extraCondition, useOffset) {
 		// Create string for the parameter.
 		var params = "?access=select&table=" + encodeURI(detaSource['name']);
 		params += "&records=" + encodeURI((detaSource['records'] != null) ? detaSource['records'] : 10000000);
@@ -183,7 +183,7 @@ var INTERMediator = {
         if (parentKeyVal != null) {
             params += "&parent_keyval=" + encodeURI(parentKeyVal);
         }
-        if (INTERMediator.startFrom != null) {
+        if ( useOffset && INTERMediator.startFrom != null ) {
             params += "&start=" + encodeURI(INTERMediator.startFrom);
         }
         var extCount = 0;
@@ -215,9 +215,7 @@ var INTERMediator = {
 			// myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded;
 			// charset=UTF-8');
 			myRequest.send(null);
-		//	INTERMediator.messages.push("DB Response: " + myRequest.responseText);
-		//	var dbresult = '';
-         //   var resultCount = 0;
+			INTERMediator.messages.push("DB Response: " + myRequest.responseText);
 			eval(myRequest.responseText);
             if (( detaSource['paging'] != null) && ( detaSource['paging'] == true ))  {
                 INTERMediator.pagedSize = detaSource['records'];
@@ -285,7 +283,6 @@ var INTERMediator = {
      */
     construct: function (fromStart, doAfterConstruct) {
 
-        INTERMediator.updateRequredObject = {};
         INTERMediator.keyFieldObject = [];
         INTERMediator.messages = [];
 
@@ -316,6 +313,7 @@ var INTERMediator = {
             firstEnclosure = false;
             INTERMediator.rootEnclosure = null;
             INTERMediator.startFrom = 0;
+            INTERMediator.updateRequredObject = {};
         }
 
         // Root node is BODY tag.
@@ -371,6 +369,7 @@ var INTERMediator = {
                             currentRoot:targetNode,
                             currentAfter:targetNode.nextSibling};
                         firstEnclosure = false;
+                        INTERMediator.updateRequredObject = {};
                     }
                     enclosure = expandEnclosure(node, currentRecord, currentTable);
                 } else {
@@ -486,7 +485,7 @@ var INTERMediator = {
                     foreignField = ds[targetKey]['join-field'];
                     INTERMediator.keyFieldObject.push({node:node,table:currentTable,field:foreignField});
                 }
-                var targetRecords = INTERMediator.db_query(ds[targetKey], fieldList, foreignValue, null);
+                var targetRecords = INTERMediator.db_query(ds[targetKey], fieldList, foreignValue, null, true);
                 // Access database and get records
                 var linkedElmCounter = 1;
                 var RecordCounter = 0;
@@ -555,7 +554,7 @@ var INTERMediator = {
                                 foreignvalue: foreignValue
                             };
 
-                            INTERMediator.messages.push("curTarget ="+curTarget+", curVal ="+curVal);
+                        //    INTERMediator.messages.push("curTarget ="+curTarget+", curVal ="+curVal);
                             if (curTarget != null && curTarget.length > 0) {
                                 if ( curTarget == 'innerHTML')  {
                                     currentLinkedNodes[k].innerHTML = curVal;
@@ -906,10 +905,6 @@ var INTERMediator = {
             };
         }
 
-/*
- * if repeater is linked node too, it could be missed 5/21 2010 msyk
- */
-
         function seekLinkedElement(node) {
             var enclosure = null;
             var nType = node.nodeType;
@@ -918,20 +913,18 @@ var INTERMediator = {
                     var currentEnclosure = getEnclosure(node);
                     if (currentEnclosure == null) {
                         linkedNodes.push(node);
-                        return null;
                     } else {
                         return currentEnclosure;
                     }
-                } else {
-                    var childs = node.childNodes;
-                    for (var i = 0; i < childs.length; i++) {
-                        var detectedEnclosure = seekLinkedElement(childs[i]);
-                        if (detectedEnclosure != null) {
-                            if (detectedEnclosure == childs[i]) {
-                                return null;
-                            } else {
-                                return detectedEnclosure;
-                            }
+                }
+                var childs = node.childNodes;
+                for (var i = 0; i < childs.length; i++) {
+                    var detectedEnclosure = seekLinkedElement(childs[i]);
+                    if (detectedEnclosure != null) {
+                        if (detectedEnclosure == childs[i]) {
+                            return null;
+                        } else {
+                            return detectedEnclosure;
                         }
                     }
                 }
