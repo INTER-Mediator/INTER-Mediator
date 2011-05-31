@@ -9,24 +9,37 @@ Change Log will be supplied by English only.
 To Do, that is left-over.
 =================================
 
+Ver.0.7.X
 - Insert and delete records.
 - Create new record.
 - Add code on JavaScript level.
-- Objective handling for the data in database.
-
-- Store NULL for empty string.
 - Browser check and showing suitable message when it's not compatible.
-- Built-in Authentication framework.
+
+Ver.0.8.X
+- Objective handling for the data in database.
+- Store NULL for empty string.
 - Multiple values within one field. (It may be required FileMaker especially.)
+
+Ver.0.9.X
+- Built-in Authentication framework.
 
 Mostly Slogan: or Should be done:
 - Fulfilling documentation, including tutorials.
 - Proper error recoveries and messages.
 - Translating to English from Japanese Documents.
 
+Known Issues for Browsers:
+Internet Explorer 7 (only)
+- Checkbox and Radio Button doesn't work. Oops!
+- The next line in TEXTAREA is not work properly. They are ignored.
+
 =================================
 
-Ver.0.6.5 === will be next release
+Ver.0.6.6 === will be next release
+
+Ver.0.6.5 (2011/5/31)
+- Fixed the issue with Internet Explorer 7/8. Version detection was wrong.
+  Although I've fixed, IE7 can't handle the checkbox/radio button correctly.
 
 Ver.0.6.4 (2011/5/30)
 - Bug fix for expandable for the linked node within the linked node.

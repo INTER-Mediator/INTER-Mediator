@@ -8,12 +8,15 @@ read version
 
 dt=`date "+%Y-%m-%d"`
 
-cat << EOF > sedrule
+curpath=`dirname "$0"`
+echo "Working Directory is:", ${curpath}
+cd "${curpath}"
+
+cat << EOF > "${curpath}"/sedrule
 s/@@@@1@@@@/${dt}/
 s/@@@@2@@@@/${version}/
 EOF
 
-curpath=`pwd`
 rm -r ../temp
 mkdir ../temp
 cd ../temp

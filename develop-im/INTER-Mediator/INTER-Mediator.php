@@ -31,6 +31,8 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 	$LF = "\n";	$q = '"';
 	if ( ! isset( $_GET['access'] ) )	{
 		header( 'Content-Type: text/javascript' );
+        header( 'Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0' );
+        header( 'Expires: 0' );
 		echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
 
 //		echo "{$LF}{$LF}var separator='{$options['separator']}';{$LF}";

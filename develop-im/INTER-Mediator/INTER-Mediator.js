@@ -10,7 +10,11 @@
 // Cleaning-up by http://jsbeautifier.org/
 // Next Generation gets start
 var INTERMediator = {
-    debugMode: true,
+    /*
+        Properties
+     */
+    debugMode: false,
+    // Show the debug messages at the top of the page.
 	separator: '@',
 	// This must be refered as 'INTERMediator.separator'. Don't use 'this.separator'
 	defDevider: '|',
@@ -23,7 +27,7 @@ var INTERMediator = {
     navigationLavel: null,
     // Navigation is controlled by this parameter.
     startFrom: 0,
-    // Start from this number of record for "skipping" table
+    // Start from this number of record for "skipping" records.
     pagedSize: 0,
     pagedAllCount: 0,
 	updateRequredObject: null,
@@ -64,7 +68,7 @@ var INTERMediator = {
         debugNode.appendChild(document.createElement('hr'));
     },
 
-    debugOut: function debugOut(str) {
+    debugOut: function(str) {
         if (INTERMediator.debugMode)    {
             var debugNode = document.getElementById('easypage_debug_panel_4873643897897');
             if (debugNode == null) {
@@ -73,7 +77,7 @@ var INTERMediator = {
                 debugNode.style.backgroundColor = '#DDDDDD';
                 var clearButton = document.createElement('button');
                 clearButton.setAttribute('title', 'clear');
-                addEvent(clearButton, 'click', function () {
+                INTERMediator.addEvent(clearButton, 'click', function () {
                     var target = document.getElementById('easypage_debug_panel_4873643897897');
                     target.parentNode.removeChild(target);
                 });
@@ -87,9 +91,7 @@ var INTERMediator = {
                 var body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-            var message = new Array();
-            for (var i = 0; i < debugOut.arguments.length; i++) message.push(new String(debugOut.arguments[i]));
-            debugNode.appendChild(document.createTextNode(message.join(', ')));
+            debugNode.appendChild(document.createTextNode(str));
             debugNode.appendChild(document.createElement('hr'));
         }
     },
@@ -204,7 +206,8 @@ var INTERMediator = {
                 extCount++;
             }
         }
-
+        params += "&randkey" + Math.random();    // For ie...
+            // IE uses caches as the result in spite of several headers. So URL should be randomly.
 		var appPath = IM_getEntryPath();
 
 		INTERMediator.messages.push("Expand Table=" + appPath + params);
@@ -293,7 +296,24 @@ var INTERMediator = {
         var currentEncNumber = 1;
         var postSetFields = new Array();
         var firstEnclosure = true;
+        var isIE = false;
+        var ieVersion = -1;
 
+        // Detect Internet Explorer and its version.
+        var ua = navigator.userAgent;
+        var msiePos = ua.indexOf('MSIE');
+        if ( msiePos >= 0 ) {
+            isIE = true;
+            for( var i = msiePos+4 ; i < ua.length ; i++ )    {
+                var c = ua.charAt(i);
+                if ( c != ' ' && c != '.' && (c < '0' || c > '9') )   {
+                    ieVersion = INTERMediator.toNumber( ua.substring( msiePos+4, i ));
+                    break;
+                }
+            }
+        }
+
+        // Initialize the page to the loaded one.
         if ( fromStart )    {
             firstEnclosure = true;
             // Restoring original HTML Document from backup data.
@@ -489,7 +509,7 @@ var INTERMediator = {
                 // Access database and get records
                 var linkedElmCounter = 1;
                 var RecordCounter = 0;
-                var eventLisnerPostAdding = new Array();
+                var eventListenerPostAdding = new Array();
 
                 // var currentEncNumber = currentLevel;
                 for (var ix in targetRecords) { // for each record
@@ -529,11 +549,13 @@ var INTERMediator = {
                             }
                         }
 
-                        eventLisnerPostAdding.push({
-                            'id': idValue,
-                            'event': 'change',
-                            'todo': new Function('INTERMediator.valueChange("' + idValue + '")')
-                        });
+                        if ( nodeTag == 'INPUT' || nodeTag == 'SELECT' ||nodeTag == 'TEXTAREA' )   {
+                            eventListenerPostAdding.push({
+                                'id': idValue,
+                                'event': 'change',
+                                'todo': new Function('INTERMediator.valueChange("' + idValue + '")')
+                            });
+                        }
 
                         for (var j = 0; j < linkInfoArray.length; j++) {
                             // for each info Multiple replacement definitions
@@ -544,15 +566,17 @@ var INTERMediator = {
                             // INTERMediator.messages.push("curTarget ="+curTarget+"/curVal ="+curVal);
                             //    if ( curVal != null )	{
                             // Store the key field value and current value for update
-                            INTERMediator.updateRequredObject[idValue] = {
-                                targetattribute: curTarget,
-                                initialvalue: curVal,
-                                table: ds[targetKey]['name'],
-                                field: nInfo['field'],
-                                keying: keyingValue,
-                                foreignfield: foreignField,
-                                foreignvalue: foreignValue
-                            };
+                            if ( nodeTag == 'INPUT' || nodeTag == 'SELECT' ||nodeTag == 'TEXTAREA' )   {
+                                INTERMediator.updateRequredObject[idValue] = {
+                                    targetattribute: curTarget,
+                                    initialvalue: curVal,
+                                    table: ds[targetKey]['name'],
+                                    field: nInfo['field'],
+                                    keying: keyingValue,
+                                    foreignfield: foreignField,
+                                    foreignvalue: foreignValue
+                                };
+                            }
 
                         //    INTERMediator.messages.push("curTarget ="+curTarget+", curVal ="+curVal);
                             if (curTarget != null && curTarget.length > 0) {
@@ -570,21 +594,14 @@ var INTERMediator = {
                                 }
                             } else { // if the 'target' is not specified.
                                 if (nodeTag == "INPUT") {
-                                    if (typeAttr == 'checkbox') { // set the value
-                                        // to checkbox
-                                        var valueAttr = currentLinkedNodes[k].getAttribute('value');
+                                    if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
+                                        var valueAttr = currentLinkedNodes[k].value;
                                         if (valueAttr == curVal) {
-                                            currentLinkedNodes[k].checked = true;
-                                        } else {
-                                            currentLinkedNodes[k].checked = false;
-                                        }
-                                    } else if (typeAttr == 'radio') { // set the
-                                        // value to
-                                        // radio
-                                        // button
-                                        var valueAttr = currentLinkedNodes[k].getAttribute('value');
-                                        if (valueAttr == curVal) {
-                                            currentLinkedNodes[k].checked = true;
+                                            if ( isIE ) {
+                                                currentLinkedNodes[k].setAttribute('checked','checked');
+                                            } else {
+                                                currentLinkedNodes[k].checked = true;
+                                            }
                                         } else {
                                             currentLinkedNodes[k].checked = false;
                                         }
@@ -613,23 +630,23 @@ var INTERMediator = {
                         seekEnclosureNode(newNode, targetRecords[ix], ds[targetKey]['name']);
                     }
                     // Event listener should add after adding node to document.
-                    for (var i = 0; i < eventLisnerPostAdding.length; i++) {
-                        var theNode = document.getElementById(eventLisnerPostAdding[i]['id']);
+                    for (var i = 0; i < eventListenerPostAdding.length; i++) {
+                        var theNode = document.getElementById(eventListenerPostAdding[i]['id']);
                         if ( theNode == null )  {
-                            INTERMediator.messages.push("eventLisnerPostAdding null id=" + eventLisnerPostAdding[i]['id']);
+                            INTERMediator.messages.push("eventListenerPostAdding null id="
+                                    + eventListenerPostAdding[i]['id']);
                         } else {
-                            if (theNode.addEventListener) {
-                                theNode.addEventListener(eventLisnerPostAdding[i]['event'], eventLisnerPostAdding[i]['todo'],false);
-                            } else if (currentLinkedNodes[k].attachEvent) {
-                                theNode.attachEvent('on' + eventLisnerPostAdding[i]['evnet'], eventLisnerPostAdding[i]['todo']);
-                            }
+                            INTERMediator.addEvent( theNode,
+                                    eventListenerPostAdding[i]['event'],
+                                    eventListenerPostAdding[i]['todo']);
                         }
                     }
                 }
             } else {
-                INTERMediator.messages.push("Cant determine the Table Name: " + linkDefsHash.toString());
+                INTERMediator.messages.push("Cant determine the Table Name: " +
+                        INTERMediator.objectToString(linkDefsHash));
             }
-            // currentLevel--;
+            currentLevel--;
             return foreignValue != '';
         }
 
@@ -934,20 +951,20 @@ var INTERMediator = {
 
         function setClassAttributeToNode(node, className) {
             if (node == null) return;
-            if (!navigator.appName.match(/Explorer/)) {
-                node.setAttribute('class', className);
-            } else {
+            if ( isIE && ieVersion < 8 ) {
                 node.setAttribute('className', className);
+            } else {
+                node.setAttribute('class', className);
             }
         }
 
         function getClassAttributeFromNode(node) {
             if (node == null) return '';
             var str = '';
-            if (!navigator.appName.match(/Explorer/)) {
-                str = node.getAttribute('class');
-            } else {
+            if ( isIE && ieVersion < 8 ) {
                 str = node.getAttribute('className');
+            } else {
+                str = node.getAttribute('class');
             }
             return str;
         }
@@ -987,7 +1004,7 @@ var INTERMediator = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(navLabel==null?'<<':navLabel[0]));
                 node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : "") );
-                addEvent(node,'click',function(){
+                INTERMediator.addEvent(node,'click',function(){
                     INTERMediator.startFrom = 0;
                     INTERMediator.construct(true);
                 });
@@ -997,7 +1014,7 @@ var INTERMediator = {
                 node.appendChild(document.createTextNode(navLabel==null?'<':navLabel[1]));
                 node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
                 var prevPageCount = ( start - pageSize > 0 ) ? start - pageSize : 0;
-                addEvent(node,'click',function(){
+                INTERMediator.addEvent(node,'click',function(){
                     INTERMediator.startFrom = prevPageCount;
                     INTERMediator.construct(true);
                 });
@@ -1008,7 +1025,7 @@ var INTERMediator = {
                 node.setAttribute('class', 'IM_NAV_button' + (start+pageSize >= allCount ? disableClass : ""));
                 var nextPageCount = ( start + pageSize < allCount ) ? start + pageSize :
                         ((allCount - pageSize > 0) ? start : 0);
-                addEvent(node,'click',function(){
+                INTERMediator.addEvent(node,'click',function(){
                     INTERMediator.startFrom = nextPageCount;
                     INTERMediator.construct(true);
                 });
@@ -1018,7 +1035,7 @@ var INTERMediator = {
                 node.appendChild(document.createTextNode(navLabel==null?'>>':navLabel[3]));
                 node.setAttribute('class', 'IM_NAV_button' + (start+pageSize >= allCount ? disableClass : ""));
                 var endPageCount = allCount - pageSize;
-                addEvent(node,'click',function(){
+                INTERMediator.addEvent(node,'click',function(){
                     INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
                     INTERMediator.construct(true);
                 });
@@ -1062,65 +1079,67 @@ var INTERMediator = {
                 spNode.appendChild(document.createTextNode(' Ver.@@@@2@@@@(@@@@1@@@@)'));
             }
         }
+    },
+
+    addEvent: function (node, evt, func) {
+        if (node.addEventListener) {
+            node.addEventListener(evt, func, false);
+        } else if (node.attachEvent) {
+            node.attachEvent('on' + evt, func);
+        }
+    },
+
+    toNumber: function (str) {
+        var s = '';
+        for (var i = 0; i < str.length; i++) {
+            var c = str.charAt(i);
+            if ((c >= '0' && c <= '9') || c == '-' || c == '.') s += c;
+        }
+        return new Number(s);
+    },
+
+    numberFormat: function (str) {
+        var s = new Array();
+        var n = new Number(str);
+        var sign = '';
+        if (n < 0) {
+            sign = '-';
+            n = -n;
+        }
+        var f = n - Math.floor(n);
+        if (f == 0) f = '';
+        for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
+            if (n > 1000) {
+                s.push(('000' + (n % 1000).toString()).substr(-3));
+            } else {
+                s.push(n);
+            }
+        }
+        return sign + s.reverse().join(',') + f;
+    },
+
+    objectToString: function (obj)	{
+        if ( obj == null ){
+            return "**NULL**";
+        }
+        if ( typeof obj == 'object' )	{
+            var str = '';
+            if ( obj.constractor === Array )	{
+                for ( var i =0 ; i < obj.length ; i++ )	{
+                    str += INTERMediator.objectToString(obj[i])+", ";
+                }
+                return "["+str+"]";
+            } else {
+                for ( var key in obj )	{
+                    str += key+":"+INTERMediator.objectToString(obj[key])+", ";
+                }
+                return "{"+str+"}"
+            }
+        }
+        else {
+            return obj;
+        }
     }
+
 }
 
-function addEvent(node, evt, func) {
-	if (node.addEventListener) {
-		node.addEventListener(evt, func, false);
-	} else if (node.attachEvent) {
-		node.attachEvent('on' + evt, func);
-	}
-}
-
-function toNumber(str) {
-	var s = '';
-	for (var i = 0; i < str.length; i++) {
-		var c = str.charAt(i);
-		if ((c >= '0' && c <= '9') || c == '-' || c == '.') s += c;
-	}
-	return new Number(s);
-}
-
-function numberFormat(str) {
-	var s = new Array();
-	var n = new Number(str);
-	var sign = '';
-	if (n < 0) {
-		sign = '-';
-		n = -n;
-	}
-	var f = n - Math.floor(n);
-	if (f == 0) f = '';
-	for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
-		if (n > 1000) {
-			s.push(('000' + (n % 1000).toString()).substr(-3));
-		} else {
-			s.push(n);
-		}
-	}
-	return sign + s.reverse().join(',') + f;
-}
-
-function objectToString(obj)	{
-	if ( obj == null ){
-		return "**NULL**";
-	}
-	if ( typeof obj == 'object' )	{
-		var str = '';
-		if ( obj.constractor === Array )	{
-			for ( var i =0 ; i < obj.length ; i++ )	{
-				str += objectToString(obj[i])+", ";
-			}
-			return "["+str+"]";
-		} else {
-			for ( var key in obj )	{
-				str += key+":"+objectToString(obj[key])+", ";
-			}
-			return "{"+str+"}"
-		}
-	}
-	else {
-		return obj;
-	}
-}
