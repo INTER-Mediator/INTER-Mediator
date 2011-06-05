@@ -11,8 +11,8 @@
 
 mb_internal_encoding('UTF-8');
 date_default_timezone_set('Asia/Tokyo');
-require_once( 'operation_common.php' );
 
+require_once( 'operation_common.php' );
 /*
  * GET
  * ?access=select
@@ -34,23 +34,10 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
         header( 'Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0' );
         header( 'Expires: 0' );
 		echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
-
-//		echo "{$LF}{$LF}var separator='{$options['separator']}';{$LF}";
-//		if ( $debug )	echo 'debugMode(true);', $LF;
-		
-		echo "function IM_getEntryPath(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}{$LF}"; 
+		echo "function IM_getEntryPath(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}{$LF}";
 		echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
 		echo "function IM_getDataSources(){return ", arrayToJS( $datasrc, '' ), ";}{$LF}";
 		echo "function IM_getOptions(){return ", arrayToJS( $options, '' ), ";}{$LF}";
-	//	echo "function IM_getDatabases(){return ", arrayToJS( $dbspec, '' ), ";}{$LF}";
-	/*
-		echo "function IM_getDataSourceParams(){return {$q}", 
-			arrayToQuery( $datasrc, '__imparameters__datasrc' ), "{$q};}{$LF}";
-		echo "function IM_getOptionParams(){return {$q}", 
-			arrayToQuery( $options, '__imparameters__options' ), "{$q};}{$LF}";
-		echo "function IM_getDatabaseParams(){return {$q}", 
-			arrayToQuery( $dbspec, '__imparameters__dbspec' ), "{$q};}{$LF}";
-	 */
 	} else {
 		$fieldsRequired = array();
 		for ( $i=0 ; $i< 1000 ; $i++ )	{
@@ -75,7 +62,6 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		if ( $debug )	{
             $dbInstance->setDebugMode();
         }
-
         include( 'params.php' );
         $dbInstance->setDbSpecServer(
             isset( $dbspec['server'] ) ? $dbspec['server'] :
@@ -136,6 +122,7 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
                 break;
             }
         }
+
 		$dbInstance->setTargetFields( $fieldsRequired );
 		$dbInstance->setValues( $valuesRequired );
 		if ( isset( $_GET['parent_keyval'] ))	{
@@ -149,14 +136,25 @@ function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
 		}
 		$returnData = array();
 		foreach( $dbInstance->getErrorMessages() as $oneError )	{
-			$returnData[] = "INTERMediator.messages.push({$q}" . addslashes( $oneError ) . "{$q});";
+			$returnData[] = "INTERMediator.errorMessages.push({$q}" . addslashes( $oneError ) . "{$q});";
 		}
 		foreach( $dbInstance->getDebugMessages() as $oneError )	{
-			$returnData[] = "INTERMediator.messages.push({$q}" . addslashes( $oneError ) . "{$q});";
+			$returnData[] = "INTERMediator.debugMessages.push({$q}" . addslashes( $oneError ) . "{$q});";
 		}
-		echo implode( '', $returnData )
-             . 'var dbresult=' . arrayToJS( $result, '' ) . ';'
-             . 'var resultCount=' . $dbInstance->mainTableCount . ';';
+        switch( $_GET['access'] )	{
+            case 'select':
+                echo implode( '', $returnData ),
+                    'var dbresult=' . arrayToJS( $result, '' ), ';',
+                    'var resultCount=', $dbInstance->mainTableCount, ';';
+                break;
+            case 'insert':
+                echo implode( '', $returnData ), 'var newRecordKeyValue=', $result, ';';
+                break;
+            default:
+                echo implode( '', $returnData );
+                break;
+        }
+
 	}
 }
 ?>

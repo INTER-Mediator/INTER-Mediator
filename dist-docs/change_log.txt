@@ -10,10 +10,9 @@ To Do, that is left-over.
 =================================
 
 Ver.0.7.X
-- Insert and delete records.
-- Create new record.
 - Add code on JavaScript level.
 - Browser check and showing suitable message when it's not compatible.
+- Multi-Language Messages.
 
 Ver.0.8.X
 - Objective handling for the data in database.
@@ -35,7 +34,11 @@ Internet Explorer 7 (only)
 
 =================================
 
-Ver.0.6.6 === will be next release
+Ver.0.7.1 === will be next release
+
+Ver.0.7.0 (2011/6/5)
+- Update the component with related field without reloading the page.
+- Insert and Delete buttons are supported.
 
 Ver.0.6.5 (2011/5/31)
 - Fixed the issue with Internet Explorer 7/8. Version detection was wrong.

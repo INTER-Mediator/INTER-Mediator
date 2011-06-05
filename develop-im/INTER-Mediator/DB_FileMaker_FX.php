@@ -21,21 +21,18 @@ error_reporting( $currentEr );
 
 class DB_FileMaker_FX extends DB_Base	{
 	
-	var $fx = null;
-	
 	function __construct()	{
 	}
 	
 	function getFromDB( )	{
-        $this->fx = new FX(
+        $fx = new FX(
             $this->getDbSpecServer(),
             $this->getDbSpecPort(),
             $this->getDbSpecDataType(),
             $this->getDbSpecProtocol());
 		$tableInfo = $this->getDataSourceTargetArray();
-        $this->fx->setCharacterEncoding( 'UTF-8' );
-        $this->fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
-
+        $fx->setCharacterEncoding( 'UTF-8' );
+        $fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
         $limitParam = 100000000;
         if ( isset($tableInfo['records']) )	{
             $limitParam = $tableInfo['records'];
@@ -44,47 +41,46 @@ class DB_FileMaker_FX extends DB_Base	{
             $limitParam = $this->recordCount;
         }
 
-        $this->fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, $limitParam );
-        $this->fx->FMSkipRecords( $this->start );
-
-        /*	if ( $this->isMainTable( $tableName ) )	{
-            foreach( $this->extraCriteria as $field=>$value )	{
-                $this->fx->AddDBParam( $field, $value, 'eq' );
-            }
+        $fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, $limitParam );
+        $skipParam = 0;
+        if ( isset($tableInfo['paging']) and $tableInfo['paging'] == true ) {
+            $skipParam = $this->start;
         }
-    */	if ( isset( $tableInfo['query'] ))	{
+        $fx->FMSkipRecords( $skipParam );
+
+       	if ( isset( $tableInfo['query'] ))	{
             foreach( $tableInfo['query'] as $condition )	{
                 if ( $condition['field'] == '__operation__' && $condition['operator'] == 'or' )	{
-                    $this->fx->SetLogicalOR();
+                    $fx->SetLogicalOR();
                 } else {
                     if ( isset( $condition['operator'] ))	{
-                        $this->fx->AddDBParam( $condition['field'], $condition['value'], $condition['operator'] );
+                        $fx->AddDBParam( $condition['field'], $condition['value'], $condition['operator'] );
                     } else {
-                        $this->fx->AddDBParam( $condition['field'], $condition['value'] );
+                        $fx->AddDBParam( $condition['field'], $condition['value'] );
                     }
                 }
             }
         }
         foreach ( $this->extraCriteria as $value )	{
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-            $this->fx->AddDBParam( $value['field'], $value['value'], $op );
+            $fx->AddDBParam( $value['field'], $value['value'], $op );
         }
         if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
-            $this->fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
+            $fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
         }
         if ( isset( $tableInfo['sort'] ))	{
             foreach( $tableInfo['sort'] as $condition )	{
                 if ( isset( $condition['direction'] ))	{
-                    $this->fx->AddSortParam( $condition['field'], $condition['direction'] );
+                    $fx->AddSortParam( $condition['field'], $condition['direction'] );
                 } else {
-                    $this->fx->AddSortParam( $condition['field'] );
+                    $fx->AddSortParam( $condition['field'] );
                 }
             }
         }
         if ( isset( $tableInfo['global'] ))	{
             foreach( $tableInfo['global'] as $condition )	{
                 if ( $condition['db-operation'] == 'load' )	{
-                    $this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+                    $fx->SetFMGlobal( $condition['field'], $condition['value'] );
                 }
             }
         }
@@ -92,17 +88,17 @@ class DB_FileMaker_FX extends DB_Base	{
             foreach( $tableInfo['script'] as $condition )	{
                 if ( $condition['db-operation'] == 'load' )	{
                     if ( $condition['situation'] == 'pre' )	{
-                        $this->fx->PerformFMScriptPrefind( $condition['definition'] );
+                        $fx->PerformFMScriptPrefind( $condition['definition'] );
                     } else if ( $condition['situation'] == 'presort' )	{
-                        $this->fx->PerformFMScriptPresort( $condition['definition'] );
+                        $fx->PerformFMScriptPresort( $condition['definition'] );
                     } else if ( $condition['situation'] == 'post' )	{
-                        $this->fx->PerformFMScript( $condition['definition'] );
+                        $fx->PerformFMScript( $condition['definition'] );
                     }
                 }
             }
         }
-        $fxResult = $this->fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
-        if( $fxResult['errorCode'] != 0 )	{
+        $fxResult = $fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
+        if( $fxResult['errorCode'] != 0 && $fxResult['errorCode'] != 401 )	{
             $this->errorMessage[] = "FX reports error at find action: "
                 . "code={$fxResult['errorCode']}, url={$fxResult['URL']}";
             return '';
@@ -132,43 +128,41 @@ class DB_FileMaker_FX extends DB_Base	{
 	}
 	
 	function setToDB( )	{
-        $this->fx = new FX(
+        $fx = new FX(
             $this->getDbSpecServer(),
             $this->getDbSpecPort(),
             $this->getDbSpecDataType(),
             $this->getDbSpecProtocol());
 		$tableInfo = $this->getDataSourceTargetArray();
-		$keyFieldName = $tableInfo['key'];
-		$this->fx->setCharacterEncoding( 'UTF-8' );
-		$this->fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
-		$this->fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
-	//	$this->fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
+		$fx->setCharacterEncoding( 'UTF-8' );
+		$fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
+		$fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+	//	$fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
 		foreach ( $this->extraCriteria as $value )	{
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-            $this->fx->AddDBParam( $value['field'], $value['value'], $op );
+            $fx->AddDBParam( $value['field'], $value['value'], $op );
         }
-		$result = $this->fxResult = $this->fx->FMFind();
+		$result = $fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
 		if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
 		if( $result['errorCode'] > 0 )	{
 			$this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
 			return false;
 		}
-		$recId = 0;
 		if ( $result[ 'foundCount' ] == 1 )	{
 			foreach( $result['data'] as $key=>$row )	{
 				$recId =  substr( $key, 0, strpos( $key, '.' ) );
 				
-				$this->fx->setCharacterEncoding( 'UTF-8' );
-				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-				$this->fx->setDBData( $this->dbSpec['db'], $this->tableName, 1 );
-				$this->fx->SetRecordID( $recId );
+				$fx->setCharacterEncoding( 'UTF-8' );
+				$fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
+        		$fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+				$fx->SetRecordID( $recId );
 				$counter = 0;
 				foreach ( $this->fieldsRequired as $field )	{
 					$value = $this->fieldsValues[$counter];
 					$counter++;
 					$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
 					$convVal = $this->formatterToDB( $field, $convVal );
-					$this->fx->AddDBParam( $field, $convVal );
+					$fx->AddDBParam( $field, $this->unifyCRLF( $convVal ));
 				}
 				if ( $counter < 1 )	{
 					$this->errorMessage[] = 'No data to update.';
@@ -177,7 +171,7 @@ class DB_FileMaker_FX extends DB_Base	{
 				if ( isset( $tableInfo['global'] ))	{
 					foreach( $tableInfo['global'] as $condition )	{
 						if ( $condition['db-operation'] == 'update' )	{
-							$this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+							$fx->SetFMGlobal( $condition['field'], $condition['value'] );
 						}
 					}
 				}
@@ -185,16 +179,16 @@ class DB_FileMaker_FX extends DB_Base	{
 					foreach( $tableInfo['script'] as $condition )	{
 						if ( $condition['db-operation'] == 'update' )	{
 							if ( $condition['situation'] == 'pre' )	{
-								$this->fx->PerformFMScriptPrefind( $condition['definition'] );
+								$fx->PerformFMScriptPrefind( $condition['definition'] );
 							} else if ( $condition['situation'] == 'presort' )	{
-								$this->fx->PerformFMScriptPresort( $condition['definition'] );
+								$fx->PerformFMScriptPresort( $condition['definition'] );
 							} else if ( $condition['situation'] == 'post' )	{
-								$this->fx->PerformFMScript( $condition['definition'] );
+								$fx->PerformFMScript( $condition['definition'] );
 							}
 						}
 					}
 				}
-				$result = $this->fx->FMEdit();
+				$result = $fx->DoFxAction( FX_ACTION_EDIT, TRUE, TRUE, 'full' );
 				if( $result['errorCode'] > 0 )	{
 					$this->errorMessage[] = "FX reports error at edit action: table={$this->tableName}, code={$result['errorCode']}, url={$result['URL']}<hr>";
 					return false;
@@ -208,27 +202,32 @@ class DB_FileMaker_FX extends DB_Base	{
 		return true;
 	}
 	
-	function newToDB( $tableName, $data, &$keyValue )	{
-		$tableInfo = $this->getTableInfo( $tableName );
+	function newToDB( )	{
+		$tableInfo = $this->getDataSourceTargetArray();
 		$keyFieldName = $tableInfo['key'];
 
-		$this->fx->setCharacterEncoding( 'UTF-8' );
-		$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-		$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
-		foreach ( $data as $field=>$value )	{
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding( 'UTF-8' );
+        $fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
+        $fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+        $countFields = count( $this->fieldsRequired );
+		for ( $i = 0 ; $i < $countFields ; $i++ )	{
+            $field = $this->fieldsRequired[$i];
+            $value = $this->fieldsValues[$i];
 			if ( $field != $keyFieldName){
-				$filedInForm = $field;
-				if ( $this->skip != 1 || $tableName != $this->mainTableName )	{
-					$filedInForm = "{$tableName}{$this->separator}{$field}";
-				}
+				$filedInForm = "{$this->tableNam}{$this->separator}{$field}";
 				$convVal = $this->unifyCRLF( (is_array( $value )) ? implode( "\r", $value ) : $value );
-				$this->fx->AddDBParam( $field, $this->formatterToDB( $filedInForm, $convVal ));
+				$fx->AddDBParam( $field, $this->formatterToDB( $filedInForm, $convVal ));
 			}
 		}
 		if ( isset( $tableInfo['global'] ))	{
 			foreach( $tableInfo['global'] as $condition )	{
 				if ( $condition['db-operation'] == 'new' )	{
-					$this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+					$fx->SetFMGlobal( $condition['field'], $condition['value'] );
 				}
 			}
 		}
@@ -236,17 +235,19 @@ class DB_FileMaker_FX extends DB_Base	{
 			foreach( $tableInfo['script'] as $condition )	{
 				if ( $condition['db-operation'] == 'new' )	{
 					if ( $condition['situation'] == 'pre' )	{
-						$this->fx->PerformFMScriptPrefind( $condition['definition'] );
+						$fx->PerformFMScriptPrefind( $condition['definition'] );
 					} else if ( $condition['situation'] == 'presort' )	{
-						$this->fx->PerformFMScriptPresort( $condition['definition'] );
+						$fx->PerformFMScriptPresort( $condition['definition'] );
 					} else if ( $condition['situation'] == 'post' )	{
-						$this->fx->PerformFMScript( $condition['definition'] );
+						$fx->PerformFMScript( $condition['definition'] );
 					}
 				}
 			}
 		}
-		$result = $this->fx->FMNew();
-		if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
+		$result = $fx->DoFxAction( FX_ACTION_NEW, TRUE, TRUE, 'full' );
+		if ( $this->isDebug )	{
+            $this->debugMessage[] = $result['URL'];
+        }
 		if( $result['errorCode'] > 0 && $result['errorCode'] != 401 )	{
 			$this->errorMessage[] = "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";
 			return false;
@@ -254,35 +255,45 @@ class DB_FileMaker_FX extends DB_Base	{
 		foreach( $result['data'] as $row )	{
 			$keyValue = $row[$keyFieldName][0];
 		}
-		return true;
+		return $keyValue;
 	}
 	
-	function deleteFromDB( $tableName, $data )	{
-		$this->fx->setCharacterEncoding( 'UTF-8' );
-		$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-		$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
-		foreach( $data as $field=>$val )	{
-			$this->fx->AddDBParam( $field, $val, 'eq' );
+	function deleteFromDB( )	{
+        $tableInfo = $this->getDataSourceTargetArray();;
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding( 'UTF-8' );
+        $fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
+        $fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+        $countFields = count( $this->fieldsRequired );
+        for ( $i = 0 ; $i < $countFields ; $i++ )	{
+            $field = $this->fieldsRequired[$i];
+            $value = $this->fieldsValues[$i];
+			$fx->AddDBParam( $field, $value, 'eq' );
 		}
-		$result = $this->fxResult = $this->fx->FMFind();
-		if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
+		$result = $this->fxResult = $fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
+		if ( $this->isDebug )	{
+            $this->debugMessage[] = $result['URL'];
+        }
 		if( $result['errorCode'] > 0 )	{
 			$this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
 			return false;
 		}
-		$recId = 0;
 		if ( $result[ 'foundCount' ] != 0 )	{
 			foreach( $result['data'] as $key=>$row )	{
 				$recId =  substr( $key, 0, strpos( $key, '.' ) );
 				
-				$this->fx->setCharacterEncoding( 'UTF-8' );
-				$this->fx->setDBUserPass( $this->dbSpec['user'], $this->dbSpec['password'] );
-				$this->fx->setDBData( $this->dbSpec['db'], $tableName, 1 );
-				$this->fx->SetRecordID( $recId );
+				$fx->setCharacterEncoding( 'UTF-8' );
+                $fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
+                $fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+				$fx->SetRecordID( $recId );
 				if ( isset( $tableInfo['global'] ))	{
 					foreach( $tableInfo['global'] as $condition )	{
 						if ( $condition['db-operation'] == 'delete' )	{
-							$this->fx->SetFMGlobal( $condition['field'], $condition['value'] );
+							$fx->SetFMGlobal( $condition['field'], $condition['value'] );
 						}
 					}
 				}
@@ -290,21 +301,23 @@ class DB_FileMaker_FX extends DB_Base	{
 					foreach( $tableInfo['script'] as $condition )	{
 						if ( $condition['db-operation'] == 'delete' )	{
 							if ( $condition['situation'] == 'pre' )	{
-								$this->fx->PerformFMScriptPrefind( $condition['definition'] );
+								$fx->PerformFMScriptPrefind( $condition['definition'] );
 							} else if ( $condition['situation'] == 'presort' )	{
-								$this->fx->PerformFMScriptPresort( $condition['definition'] );
+								$fx->PerformFMScriptPresort( $condition['definition'] );
 							} else if ( $condition['situation'] == 'post' )	{
-								$this->fx->PerformFMScript( $condition['definition'] );
+								$fx->PerformFMScript( $condition['definition'] );
 							}
 						}
 					}
 				}
-				$result = $this->fx->FMDelete();
+				$result = $fx->DoFxAction( FX_ACTION_DELETE, TRUE, TRUE, 'full' );
 				if( $result['errorCode'] > 0 )	{
 					$this->errorMessage[] = "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";
 					return false;
 				}
-				if ( $this->isDebug )	$debugMessage[] = $result['URL'];
+				if ( $this->isDebug )	{
+                    $this->debugMessage[] = $result['URL'];
+                }
 				break;
 			}
 		}

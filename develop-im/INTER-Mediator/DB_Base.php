@@ -138,14 +138,8 @@ class DB_Base	{
 	
 	function setDataSource( $src )			{	
 		$this->dataSource = $src;
-	//	$this->tableName = $src[0]['name'];
 	}
 	
-/*	function isMainTable( $tableName )			{	
-		if( $this->tableName == $tableName )	return TRUE;
-		return FALSE;
-	}
-*/	
 	function getDataSourceTargetArray()	{
 		foreach( $this->dataSource as $record )	{
 			if ( $record['name'] == $this->tableName )	{
@@ -169,17 +163,7 @@ class DB_Base	{
 	function setRecordCount( $sk )		{	
 		$this->recordCount = $sk;	
 	}
-/*	
-	function getTableInfo( $tableName )	{
-		for ( $tableNum = 0 ; $tableNum < count($this->dataSource) ; $tableNum++ )	{
-			if( $this->dataSource[$tableNum]['name'] == $tableName)	{
-				return $this->dataSource[$tableNum];
-				break;
-			}
-		}
-		return array();
-	}
-*/
+
 	function setExtraCriteria( $field, $operator, $value )	{
 		$this->extraCriteria[] = array( 'field'=>$field, 'operator'=>$operator, 'value'=>$value);
 	}
@@ -287,7 +271,7 @@ class DB_Base	{
 		$queryClauseArray = array();
 		foreach( $this->extraCriteria as $criteria )	{
             $field = $criteria['field'];
-            $operator = $criteria['operator'];
+            $operator = isset($criteria['operator'])? $criteria['operator'] :'=';
             $escedVal = $this->link->quote( $criteria['value'] );
             $queryClauseArray[] = "({$field} {$operator} {$escedVal})";
  		}
@@ -306,7 +290,7 @@ class DB_Base	{
 
 	// The following methods should be implemented in the inherited class.
 	function getFromDB( )	{	}
-	function countOnDB( )	{	}
+//	function countOnDB( )	{	}
 	function setToDB( $tableName, $data )	{	}
 	function newToDB( $tableName, $data, &$keyValue )	{	}
 	function deleteFromDB( $tableName, $data )	{	}

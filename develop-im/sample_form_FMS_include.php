@@ -15,10 +15,12 @@ $tableDefs
                 'paging'    =>  true,
 				'name' 	=> 'person_layout', 
 				'key' 		=> 'id',
+                'repeat-control'	=> 'delete insert',
 				'query'	=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/ ),
 				'sort'		=> array( array( 'field'=>'id', 'direction'=>'ascend' ),),),
 		array(	'name'			=> 'contact_to',
 				'key'			=> 'id',
+                'repeat-control'	=> 'delete insert',
 				'foreign-key' => 'person_id',
 				'join-field' 	=> 'id'),
 		array(	'name' => 'contact_way', 'key' => 'id',),
@@ -29,7 +31,7 @@ $tableDefs
 		array(	'name' 			=> 'history_to', 
 				'key' 			=> 'id',
 				'foreign-key'	=> 'person_id',
-				'repeat-control'	=> 'insert',
+				'repeat-control'	=> 'delete insert',
 				'join-field' 	=> 'id',	),
 	);
 

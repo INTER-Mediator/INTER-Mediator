@@ -17,6 +17,7 @@ $tableDefs
 				'key' 		=> 'id',
 				'query'		=> array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/ ),
 				'sort'		=> array( array( 'field'=>'id', 'direction'=>'asc' ),),
+            'repeat-control'	=> 'insert delete',
 		),
 		array(	'name'			=> 'contact',
 				'key'			=> 'id',
@@ -33,7 +34,7 @@ $tableDefs
 		array(	'name' 			=> 'history', 
 				'key' 			=> 'id',
 				'foreign-key'	=> 'person_id',
-				'repeat-control'	=> 'insert',
+				'repeat-control'	=> 'insert delete',
 				'join-field' 	=> 'id',	),
 	);
 	

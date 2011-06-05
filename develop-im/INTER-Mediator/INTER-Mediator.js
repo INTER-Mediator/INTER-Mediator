@@ -30,46 +30,72 @@ var INTERMediator = {
     // Start from this number of record for "skipping" records.
     pagedSize: 0,
     pagedAllCount: 0,
+    currentEncNumber: 0,
+    // Rembering Objects
 	updateRequredObject: null,
+    /*
+    {id-value:                  // For the node of this id attribute.
+        {targetattribute:,      // about target
+        initialvalue:,          // The value from database.
+        table:person,           // about target table
+        field:id,               // about target field
+        keying:id=1,            // The key field specifier to identify this record.
+        foreignfield:,          // foreign field name
+        foreignvalue:, }        // foreign field value
+     */
 	keyFieldObject: null,
-	messages: null,
+    /*
+     {node:xxx,         // The node to depend another node
+     original:xxx       // Copy of childs
+     table:xxx,
+     field:xxx,
+     fieldvalue:xxxx,
+     target:xxxx}       // Related (depending) node's id attribute value.
+      */
     rootEnclosure: null,
     // Storing to retrieve the page to initial condtion.
     // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
+    errorMessages: [],
+    debugMessages: [],
+
 
     //=================================
     // Message for Programmers
     //=================================
     flushMessage: function () {
-        for (var i = 0; i < INTERMediator.messages.length; i++) {
-            INTERMediator.debugOut(INTERMediator.messages[i]);
+        for (var i = 0; i < INTERMediator.errorMessages.length; i++) {
+            errorOut(INTERMediator.errorMessages[i]);
         }
-        INTERMediator.messages = [];
-    },
-
-    errorOut: function (str, msg1, msg2, msg3) {
-        if (msg1 != null) str = str.replace('@1@', msg1);
-        if (msg2 != null) str = str.replace('@2@', msg2);
-        if (msg3 != null) str = str.replace('@3@', msg3);
-
-        var debugNode = document.getElementById('easypage_error_panel_4873643897897');
-        if (debugNode == null) {
-            debugNode = document.createElement('div');
-            debugNode.setAttribute('id', 'easypage_error_panel_4873643897897');
-            debugNode.style.backgroundColor = '#FFDDDD';
-            var title = document.createElement('h3');
-            title.appendChild(document.createTextNode('Error Info from INTER-Mediator'));
-            title.appendChild(document.createElement('hr'));
-            debugNode.appendChild(title);
-            var body = document.getElementsByTagName('body')[0];
-            body.insertBefore(debugNode, body.firstChild);
+        if (INTERMediator.debugMode) {
+            for (var i = 0; i < INTERMediator.debugMessages.length; i++) {
+                debugOut(INTERMediator.debugMessages[i]);
+            }
         }
-        debugNode.appendChild(document.createTextNode(str));
-        debugNode.appendChild(document.createElement('hr'));
-    },
+        INTERMediator.errorMessages = [];
+        INTERMediator.debugMessages = [];
 
-    debugOut: function(str) {
-        if (INTERMediator.debugMode)    {
+        function errorOut (str, msg1, msg2, msg3) {
+            if (msg1 != null) str = str.replace('@1@', msg1);
+            if (msg2 != null) str = str.replace('@2@', msg2);
+            if (msg3 != null) str = str.replace('@3@', msg3);
+
+            var debugNode = document.getElementById('easypage_error_panel_4873643897897');
+            if (debugNode == null) {
+                debugNode = document.createElement('div');
+                debugNode.setAttribute('id', 'easypage_error_panel_4873643897897');
+                debugNode.style.backgroundColor = '#FFDDDD';
+                var title = document.createElement('h3');
+                title.appendChild(document.createTextNode('Error Info from INTER-Mediator'));
+                title.appendChild(document.createElement('hr'));
+                debugNode.appendChild(title);
+                var body = document.getElementsByTagName('body')[0];
+                body.insertBefore(debugNode, body.firstChild);
+            }
+            debugNode.appendChild(document.createTextNode(str));
+            debugNode.appendChild(document.createElement('hr'));
+        }
+
+        function debugOut(str) {
             var debugNode = document.getElementById('easypage_debug_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
@@ -96,6 +122,7 @@ var INTERMediator = {
         }
     },
 
+
     //=================================
     // Database Access
     //=================================
@@ -107,6 +134,7 @@ var INTERMediator = {
 		var newValue = null;
 		var changedObj = document.getElementById(idValue);
 		if (changedObj != null) {
+            // Check the current value of the field
 			var objectSpec = INTERMediator.updateRequredObject[idValue];
 			var currentVal = INTERMediator.db_query({
 				records: 1,
@@ -120,9 +148,9 @@ var INTERMediator = {
 			}
 			currentVal = currentVal[0][objectSpec['field']];
 			if (objectSpec['initialvalue'] != currentVal) {
-				// ERROR
-				answer = confirm("Other people might be updated. Initially="+objectSpec['initialvalue']
-						+"/Current="+currentVal
+				// The value of database and the field is diffrent. Others must be changed this field.
+				answer = confirm("Other people might be updated. Initially="
+                        +objectSpec['initialvalue']+"/Current="+currentVal
 						+"You can overwrite with your data if you select OK.");
 				if (!answer) {
 					INTERMediator.flushMessage();
@@ -156,14 +184,71 @@ var INTERMediator = {
 				objectSpec['initialvalue'] = newValue;
 				for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
 					if (INTERMediator.keyFieldObject[i]['target'] == idValue)	{
-						location.reload();
-					//	alert(INTERMediator.keyFieldObject[i]['table']+"/"+INTERMediator.keyFieldObject[i]['field']);
+                        INTERMediator.keyFieldObject[i]['fieldvalue'] = newValue;
+                        INTERMediator.construct( false, null, i );
 					}
 				}
 			}
 		}
 		INTERMediator.flushMessage();
 	},
+
+    deleteButton: function( tableName, keyField, keyValue, removeNodes )    {
+        var recordSet = {};
+        recordSet[keyField] = keyValue;
+        INTERMediator.db_delete( tableName, recordSet );
+        for( var key in removeNodes )   {
+            var removeNode = document.getElementById(removeNodes[key]);
+            removeNode.parentNode.removeChild(removeNode);
+        }
+        INTERMediator.flushMessage();
+    },
+
+    insertButton: function( tableName, keyField, keyValue, updateNodes, removeNodes )    {
+        var recordSet = {};
+        recordSet[keyField] = keyValue;
+        INTERMediator.db_createRecord( tableName, recordSet );
+        for( var key in removeNodes )   {
+            var removeNode = document.getElementById(removeNodes[key]);
+            removeNode.parentNode.removeChild(removeNode);
+        }
+        for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
+            if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodes)	{
+                INTERMediator.keyFieldObject[i]['fieldvalue'] = keyValue;
+                INTERMediator.construct( false, null, i );
+                break;
+            }
+        }
+        INTERMediator.flushMessage();
+    },
+
+    insertRecordFromNavi: function(tableName, keyField) {
+        var newId = INTERMediator.db_createRecord(tableName, null);
+        if ( newId > -1 )   {
+            var restore = INTERMediator.addtionalCondition;
+            INTERMediator.startFrom = 0;
+            var fieldObj = {field: keyField, value:newId};
+            INTERMediator.addtionalCondition = {};
+            INTERMediator.addtionalCondition[tableName] = fieldObj;
+            INTERMediator.construct(true, null);
+            INTERMediator.addtionalCondition = restore;
+        }
+        INTERMediator.flushMessage();
+    },
+
+    deleteRecordFromNavi: function(tableName, keyField, keyValue) {
+        var fieldsValues = {};
+        fieldsValues[keyField] = keyValue;
+        INTERMediator.db_delete( tableName, fieldsValues );
+        if ( INTERMediator.pagedAllCount - INTERMediator.startFrom < 2 )    {
+            INTERMediator.startFrom--;
+            if ( INTERMediator.startFrom < 0 )  {
+                INTERMediator.startFrom = 0;
+            }
+        }
+        INTERMediator.construct(true, null);
+        INTERMediator.flushMessage();
+    },
 
     /*
     db_query
@@ -175,6 +260,7 @@ var INTERMediator = {
         extraCondition: "field,operator,value"
      */
 	db_query: function (detaSource, fields, parentKeyVal, extraCondition, useOffset) {
+
 		// Create string for the parameter.
 		var params = "?access=select&table=" + encodeURI(detaSource['name']);
 		params += "&records=" + encodeURI((detaSource['records'] != null) ? detaSource['records'] : 10000000);
@@ -201,7 +287,9 @@ var INTERMediator = {
             if ( detaSource['name'] == oneItem )    {
                 var criteraObject = INTERMediator.addtionalCondition[oneItem];
                 params += "&ext_cond" + extCount + "field=" + encodeURI(criteraObject["field"]);
-                params += "&ext_cond" + extCount + "operator=" + encodeURI(criteraObject["operator"]);
+                if ( criteraObject["operator"] != null )    {
+                    params += "&ext_cond" + extCount + "operator=" + encodeURI(criteraObject["operator"]);
+                }
                 params += "&ext_cond" + extCount + "value=" + encodeURI(criteraObject["value"]);
                 extCount++;
             }
@@ -210,15 +298,12 @@ var INTERMediator = {
             // IE uses caches as the result in spite of several headers. So URL should be randomly.
 		var appPath = IM_getEntryPath();
 
-		INTERMediator.messages.push("Expand Table=" + appPath + params);
-
+        INTERMediator.debugMessages.push( "Access: " + appPath + params );
+        var dbresult = '';
 		myRequest = new XMLHttpRequest();
 		try {
 			myRequest.open('GET', appPath + params, false);
-			// myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded;
-			// charset=UTF-8');
 			myRequest.send(null);
-			INTERMediator.messages.push("DB Response: " + myRequest.responseText);
 			eval(myRequest.responseText);
             if (( detaSource['paging'] != null) && ( detaSource['paging'] == true ))  {
                 INTERMediator.pagedSize = detaSource['records'];
@@ -226,7 +311,7 @@ var INTERMediator = {
             }
 
 		} catch (e) {
-			INTERMediator.messages.push("ERROR in db_query=" + e + "/" + myRequest.responseText);
+			INTERMediator.errorMessages.push("ERROR in db_query=" + e + "/" + myRequest.responseText);
 		}
 		return dbresult;
 	},
@@ -253,7 +338,7 @@ var INTERMediator = {
 		params += "&value_0=" + encodeURI(newValue);
 		var appPath = IM_getEntryPath();
 
-		INTERMediator.messages.push("Update Request=" + appPath + params);
+		INTERMediator.debugMessages.push("Update Request=" + appPath + params);
 
 		myRequest = new XMLHttpRequest();
 		try {
@@ -264,17 +349,55 @@ var INTERMediator = {
 			var dbresult = '';
 			eval(myRequest.responseText);
 		} catch (e) {
-			INTERMediator.messages.push("ERROR in db_update=" + e + "/" + myRequest.responseText);
+			INTERMediator.errorMessages.push("ERROR in db_update=" + e + "/" + myRequest.responseText);
 		}
 		return dbresult;
 	},
 
-    db_delete: function()   {
-        
+    db_delete: function( tableName, fieldsValues )   {
+        var params = "?access=delete&table=" + encodeURI(tableName);
+        var count = 0;
+        for ( var oneField in fieldsValues )    {
+            params += "&field_" + count + "=" + encodeURI(oneField);
+            params += "&value_" + count + "=" + encodeURI(fieldsValues[oneField]);
+            count++;
+        }
+        var appPath = IM_getEntryPath();
+        INTERMediator.debugMessages.push( "Delete Request: " + appPath + params );
+        myRequest = new XMLHttpRequest();
+        try {
+            myRequest.open('GET', appPath + params, false);
+            myRequest.send(null);
+            var dbresult = '';
+            eval(myRequest.responseText);
+        } catch (e) {
+            INTERMediator.errorMessages.push("ERROR in db_deleteRecord=" + e + "/" + myRequest.responseText);
+        }
+        INTERMediator.flushMessage();
     },
 
-    db_createRecord: function() {
+    db_createRecord: function( tableName, fieldsValues ) {
+        var params = "?access=insert&table=" + encodeURI(tableName);
+        var count = 0;
+        for ( var oneField in fieldsValues )    {
+            params += "&field_" + count + "=" + encodeURI(oneField);
+            params += "&value_" + count + "=" + encodeURI(fieldsValues[oneField]);
+            count++;
+        }
+        var appPath = IM_getEntryPath();
 
+        var newRecordKeyValue = '';
+        INTERMediator.debugMessages.push("Update Request=" + appPath + params);
+        myRequest = new XMLHttpRequest();
+        try {
+            myRequest.open('GET', appPath + params, false);
+            myRequest.send(null);
+            eval(myRequest.responseText);
+        } catch (e) {
+            INTERMediator.errorMessages.push("ERROR in db_createRecord=" + e + "/" + myRequest.responseText);
+        }
+        INTERMediator.flushMessage();
+        return newRecordKeyValue;
     },
 
     //=================================
@@ -283,38 +406,74 @@ var INTERMediator = {
     /**
      * Construct the Web Page with DB Data
      * You should call here when you show the page.
+     *
+     * parameter: fromStart: true=construct page, false=construct partially
+     *            doAfterConstruct: as shown.
      */
-    construct: function (fromStart, doAfterConstruct) {
-
-        INTERMediator.keyFieldObject = [];
-        INTERMediator.messages = [];
+    construct: function (fromStart, doAfterConstruct, numberOfKeyFieldObject) {
 
         var titleAsLinkInfo = true;
         var classAsLinkInfo = true;
         var currentLevel = 0;
         var linkedNodes;
-        var currentEncNumber = 1;
         var postSetFields = new Array();
         var firstEnclosure = true;
         var isIE = false;
         var ieVersion = -1;
+        var buttonIdNum = 1;
+        var deleteInsertOnNavi = [];
 
-        // Detect Internet Explorer and its version.
-        var ua = navigator.userAgent;
-        var msiePos = ua.indexOf('MSIE');
-        if ( msiePos >= 0 ) {
-            isIE = true;
-            for( var i = msiePos+4 ; i < ua.length ; i++ )    {
-                var c = ua.charAt(i);
-                if ( c != ' ' && c != '.' && (c < '0' || c > '9') )   {
-                    ieVersion = INTERMediator.toNumber( ua.substring( msiePos+4, i ));
-                    break;
-                }
+        if ( fromStart )    {
+            pageConstruct( doAfterConstruct );
+        } else {
+            partialConstruct( numberOfKeyFieldObject );
+        }
+        INTERMediator.flushMessage();   // Show messages
+
+        /*
+
+         */
+        function partialConstruct( i )   {
+            // Create parent table essentials.
+            var updateTable = INTERMediator.keyFieldObject[i]['table'];
+            var updateField = INTERMediator.keyFieldObject[i]['field'];
+            var updateValue = INTERMediator.keyFieldObject[i]['fieldvalue'];
+            var updateRecord = {};
+            updateRecord[updateField] = updateValue;
+            // Recreate nodes.
+            var updateNode = INTERMediator.keyFieldObject[i]['node'];
+            while (updateNode.firstChild) {
+                updateNode.removeChild(updateNode.firstChild);
             }
+            var originalNodes = INTERMediator.keyFieldObject[i]['original'];
+            for ( var i = 0 ; i < originalNodes.length;  i++ )  {
+                updateNode.appendChild(originalNodes[i]);
+            }
+            expandEnclosure(updateNode, updateRecord, updateTable);
         }
 
-        // Initialize the page to the loaded one.
-        if ( fromStart )    {
+        /*
+        
+         */
+        function pageConstruct( doAfterConstruct )    {
+            INTERMediator.keyFieldObject = [];
+            INTERMediator.currentEncNumber = 1;
+
+            // Detect Internet Explorer and its version.
+            var ua = navigator.userAgent;
+            var msiePos = ua.indexOf('MSIE');
+            if ( msiePos >= 0 ) {
+                isIE = true;
+                for( var i = msiePos+4 ; i < ua.length ; i++ )    {
+                    var c = ua.charAt(i);
+                    if ( c != ' ' && c != '.' && (c < '0' || c > '9') )   {
+                        ieVersion = INTERMediator.toNumber( ua.substring( msiePos+4, i ));
+                        break;
+                    }
+                }
+            }
+
+            // Initialize the page to the loaded one.
             firstEnclosure = true;
             // Restoring original HTML Document from backup data.
             if ( INTERMediator.rootEnclosure != null )  {
@@ -329,47 +488,39 @@ var INTERMediator = {
                 }
                 firstEnclosure = false;
             }
-        } else {
-            firstEnclosure = false;
-            INTERMediator.rootEnclosure = null;
-            INTERMediator.startFrom = 0;
-            INTERMediator.updateRequredObject = {};
-        }
+            // Root node is BODY tag.
+            var bodyNode = document.getElementsByTagName('BODY')[0];
+            seekEnclosureNode(bodyNode, '');
 
-        // Root node is BODY tag.
-        var bodyNode = document.getElementsByTagName('BODY')[0];
-        seekEnclosureNode(bodyNode, '');
-
-        // After work to set up popup menus.
-        for (var i = 0; i < postSetFields.length; i++) {
-            document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
-        }
-
-        for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
-            var currentNode = INTERMediator.keyFieldObject[i];
-            var currentID = currentNode['node'].getAttribute('id');
-            var enclosure;
-            if ( currentID != null && currentID.match(/IM[0-9]+-[0-9]+/) )	{
-                enclosure = getParentRepeater( currentNode['node'] );
-            } else {
-                enclosure = getParentRepeater(getParentEnclosure( currentNode['node'] ));
+            // After work to set up popup menus.
+            for (var i = 0; i < postSetFields.length; i++) {
+                document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
-            var targetNode = getEnclosedNode( enclosure, currentNode['table'], currentNode['field']);
-            if ( targetNode )	{
-                currentNode['target'] = targetNode.getAttribute('id');
-            //	debugOut("####"+targetNode.getAttribute('id'));
+
+            for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
+                var currentNode = INTERMediator.keyFieldObject[i];
+                var currentID = currentNode['node'].getAttribute('id');
+                var enclosure;
+                if ( currentID != null && currentID.match(/IM[0-9]+-[0-9]+/) )	{
+                    enclosure = getParentRepeater( currentNode['node'] );
+                } else {
+                    enclosure = getParentRepeater(getParentEnclosure( currentNode['node'] ));
+                }
+                if ( targetNode )   {
+                    var targetNode = getEnclosedNode( enclosure, currentNode['table'], currentNode['field'] );
+                    if ( targetNode )	{
+                        currentNode['target'] = targetNode.getAttribute('id');
+                    }
+                }
+            }
+
+            navigationSetup();
+            appendCredit();
+
+            if ( doAfterConstruct != null ) {
+                doAfterConstruct();
             }
         }
-
-        navigationSetup();
-        appendCredit();
-
-        if ( doAfterConstruct != null ) {
-            doAfterConstruct();
-        }
-
-        // Show messages
-    	INTERMediator.flushMessage();
 
         /**
          * Seeking nodes and if a node is an enclosure, proceed repeating.
@@ -381,7 +532,7 @@ var INTERMediator = {
             var nType = node.nodeType;
             if (nType == 1) { // Work for an element
                 if (isEnclosure(node, false)) { // Linked element and an enclosure
-                    if ( firstEnclosure )   {
+                    if ( firstEnclosure && INTERMediator.rootEnclosure == null)   {
                         var targetNode =  ( node.tagName == "TBODY" ) ? node.parentNode : node;
                         INTERMediator.rootEnclosure = {
                             node:targetNode.cloneNode(true),
@@ -409,29 +560,37 @@ var INTERMediator = {
          */
 
         function expandEnclosure(node, currentRecord, currentTable) {
-        //	INTERMediator.messages.push("expandEnclosure =" + node.tagName
-        //            +"/currentRecord="+objectToString(currentRecord));
-
             currentLevel++;
-            currentEncNumber++;
-            var thisEncNumber = currentEncNumber;
+            INTERMediator.currentEncNumber++;
+
+            var linkedElmCounter = 0;
+            if ( node.getAttribute('id') == null )  {
+                var idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+                node.setAttribute('id', idValue);
+                linkedElmCounter++;
+            }
 
             var encNodeTag = node.tagName;
             var repNodeTag = repeaterTagFromEncTag(encNodeTag);
-            var repeatersOriginal = new Array(); // Collecting repeaters to this array.
+            var repeatersOriginal = []; // Collecting repeaters to this array.
             var repeaters = new Array(); // Collecting repeaters to this array.
-            var childs = node.childNodes; // Check all child node of the enclosure.
-            for (var i = 0; i < childs.length; i++) {
-                if (childs[i].nodeType == 1 && childs[i].tagName == repNodeTag) {
+            var children = node.childNodes; // Check all child node of the enclosure.
+
+            for (var i = 0; i < children.length; i++) {
+                if (children[i].nodeType == 1 && children[i].tagName == repNodeTag) {
                     // If the element is a repeater.
-                    repeatersOriginal.push(childs[i]); // Record it to the array.
+                    repeatersOriginal.push(children[i]); // Record it to the array.
                 }
             }
+
             for (var i = 0; i < repeatersOriginal.length; i++) {
                 var inDocNode = repeatersOriginal[i];
                 var parentOfRep = repeatersOriginal[i].parentNode;
                 var cloneNode = repeatersOriginal[i].cloneNode(true);
                 repeaters.push(cloneNode);
+                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+                cloneNode.setAttribute('id', idValue);
+                linkedElmCounter++;
                 parentOfRep.removeChild(inDocNode);
             }
             linkedNodes = new Array(); // Collecting linked elements to this array.
@@ -464,7 +623,6 @@ var INTERMediator = {
                 var nodeInfoArray = getNodeInfoArray(linkDefs[j]);
                 linkDefsHash.push(nodeInfoArray);
 
-                //     INTERMediator.messages.push("node table ="+nodeInfoArray['table']);
                 if (nodeInfoArray['table'] != '') {
                     if (tableVote[nodeInfoArray['table']] == null) {
                         tableVote[nodeInfoArray['table']] = 1;
@@ -481,7 +639,7 @@ var INTERMediator = {
                     maxTableName = i;
                 }
             }
-            INTERMediator.messages.push("maxTableName =" + maxTableName);
+        //    INTERMediator.debugMessages.push("maxTableName =" + maxTableName);
             var fieldList = new Array(); // Create field list for database fetch.
             for (var i = 0; i < linkDefsHash.length; i++) {
                 if (linkDefsHash[i].table == maxTableName || linkDefsHash[i].table == '') {
@@ -496,18 +654,29 @@ var INTERMediator = {
                     break;
                 }
             }
-            // INTERMediator.messages.push("targetKey ="+targetKey);
             if (targetKey != '') {
                 var foreignValue = '';
                 var foreignField = '';
-                if  (currentRecord[ds[targetKey]['join-field']] != null) {
+                var keyFieldObjectRequired = (currentRecord[ds[targetKey]['join-field']] != null);
+                keyFieldObjectRequired = true;
+                if  ( keyFieldObjectRequired ) {
                     foreignValue = currentRecord[ds[targetKey]['join-field']];
                     foreignField = ds[targetKey]['join-field'];
-                    INTERMediator.keyFieldObject.push({node:node,table:currentTable,field:foreignField});
+                    var thisKeyFieldObject = {
+                        node:node,
+                        table:currentTable,
+                        field:foreignField,
+                        fieldvalue:foreignValue,
+                        parent: node.parentNode,
+                        original:[]
+                    };
+                    for (var i = 0; i < repeatersOriginal.length; i++) {
+                        thisKeyFieldObject.original.push(repeatersOriginal[i].cloneNode(true));
+                    }
+                    INTERMediator.keyFieldObject.push( thisKeyFieldObject );
                 }
                 var targetRecords = INTERMediator.db_query(ds[targetKey], fieldList, foreignValue, null, true);
                 // Access database and get records
-                var linkedElmCounter = 1;
                 var RecordCounter = 0;
                 var eventListenerPostAdding = new Array();
 
@@ -515,24 +684,35 @@ var INTERMediator = {
                 for (var ix in targetRecords) { // for each record
                     RecordCounter++;
 
-                    repeaters = new Array();
+                    var shouldDeleteNodes = [];
+                    repeaters = [];
                     for (var i = 0; i < repeatersOriginal.length; i++) {
-                        var cloneNode = repeatersOriginal[i].cloneNode(true);
-                        repeaters.push(cloneNode);
+                        var clonedNode = repeatersOriginal[i].cloneNode(true);
+                        repeaters.push( clonedNode );
                     }
-                    linkedNodes = new Array(); // Collecting linked elements to this array.
+                    linkedNodes = [];
                     for (var i = 0; i < repeaters.length; i++) {
-                         seekLinkedElement(repeaters[i]);
+                        seekLinkedElement(repeaters[i]);
+                        if ( repeaters[i].getAttribute('id') == null )    {
+                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+                            repeaters[i].setAttribute('id', idValue);
+                            linkedElmCounter++;
+                        }
+                        shouldDeleteNodes.push(repeaters[i].getAttribute('id'));
                     }
                     var currentLinkedNodes = linkedNodes; // Store in the local variable
 
-                    var keyingValue = ds[targetKey]['key'] + "=" + targetRecords[ix][ds[targetKey]['key']];
+                    var keyField = ds[targetKey]['key'];
+                    var keyValue = targetRecords[ix][ds[targetKey]['key']];
+                    var keyingValue = keyField + "=" + keyValue;
+
                     for (var k = 0; k < currentLinkedNodes.length; k++) {
                         // for each linked element
-                        var idValue = 'IM' + thisEncNumber + '-' + linkedElmCounter;
-                        currentLinkedNodes[k].setAttribute('id', idValue);
-                        linkedElmCounter++;
-
+                        if ( currentLinkedNodes[k].getAttribute('id') == null ) {
+                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+                            currentLinkedNodes[k].setAttribute('id', idValue);
+                            linkedElmCounter++;
+                        }
                         var nodeTag = currentLinkedNodes[k].tagName;
                         // get the tag name of the element
                         var typeAttr = currentLinkedNodes[k].getAttribute('type');
@@ -578,7 +758,6 @@ var INTERMediator = {
                                 };
                             }
 
-                        //    INTERMediator.messages.push("curTarget ="+curTarget+", curVal ="+curVal);
                             if (curTarget != null && curTarget.length > 0) {
                                 if ( curTarget == 'innerHTML')  {
                                     currentLinkedNodes[k].innerHTML = curVal;
@@ -624,26 +803,132 @@ var INTERMediator = {
                             }
                         }
                     }
+
+                    if (    ds[targetKey]['repeat-control'] != null
+                         && ds[targetKey]['repeat-control'].match(/delete/i) )  {
+                        if ( ds[targetKey]['foreign-key'] != null ) {
+                            var buttonNode = document.createElement('BUTTON');
+                            buttonNode.appendChild(document.createTextNode('Delete'));
+                            var thisId = 'IM_Button_'+buttonIdNum;
+                            buttonNode.setAttribute( 'id', thisId );
+                            eventListenerPostAdding.push({
+                                    'id': thisId,
+                                    'event': 'click',
+                                    'todo': new Function( "INTERMediator.deleteButton("
+                                                + "'" + ds[targetKey]['name']+ "',"
+                                                + "'" + keyField+ "',"
+                                                + "'" + keyValue+ "',"
+                                                + INTERMediator.objectToString( shouldDeleteNodes )
+                                                + ");")});
+                            buttonIdNum++;
+                            var endOfRepeaters = repeaters[repeaters.length-1];
+                            switch ( encNodeTag )   {
+                                case 'TBODY':
+                                        var tdNodes = endOfRepeaters.getElementsByTagName('TD');
+                                        var tdNode = tdNodes[ tdNodes.length -1 ];
+                                        tdNode.appendChild( buttonNode );
+                                        break;
+                                case 'UL':
+                                case 'OL':
+                                        endOfRepeaters.appendChild( buttonNode );
+                                        break;
+                                case 'DIV':
+                                        if ( repNodeTag == "DIV" )  {
+                                            endOfRepeaters.appendChild( buttonNode );
+                                        }
+                                        break;
+                            }
+                        } else {
+                            deleteInsertOnNavi.push({
+                                kind: 'DELETE',
+                                table: ds[targetKey]['name'],
+                                key : keyField,
+                                value: keyValue
+                            });
+                        }
+                    }
+
                     for (var i = 0; i < repeaters.length; i++) {
                         var newNode = repeaters[i].cloneNode(true);
                         node.appendChild(newNode);
+                        if ( newNode.getAttribute('id') == null )  {
+                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+                            newNode.setAttribute('id', idValue);
+                            linkedElmCounter++;
+                        }
                         seekEnclosureNode(newNode, targetRecords[ix], ds[targetKey]['name']);
                     }
+
                     // Event listener should add after adding node to document.
                     for (var i = 0; i < eventListenerPostAdding.length; i++) {
                         var theNode = document.getElementById(eventListenerPostAdding[i]['id']);
-                        if ( theNode == null )  {
-                            INTERMediator.messages.push("eventListenerPostAdding null id="
-                                    + eventListenerPostAdding[i]['id']);
-                        } else {
+                        if ( theNode != null )  {
                             INTERMediator.addEvent( theNode,
                                     eventListenerPostAdding[i]['event'],
                                     eventListenerPostAdding[i]['todo']);
                         }
                     }
                 }
+
+                if (   ds[targetKey]['repeat-control'] != null
+                    && ds[targetKey]['repeat-control'].match(/insert/i) )  {
+                    if ( foreignValue != null ) {
+                        var buttonNode = document.createElement('BUTTON');
+                        buttonNode.appendChild(document.createTextNode('Insert'));
+                        var shouldRemove = [];
+                        switch ( encNodeTag )   {
+                            case 'TBODY':
+                                    var enclosedNode = node.parentNode;
+                                    var footNode = enclosedNode.getElementsByTagName('TFOOT')[0];
+                                    if ( footNode == null )  {
+                                        footNode = document.createElement('TFOOT');
+                                        enclosedNode.appendChild(footNode);
+                                    }
+                                    var trNode = document.createElement('TR');
+                                    var tdNode = document.createElement('TD');
+                                    if ( trNode.getAttribute('id') == null )  {
+                                        idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+                                        trNode.setAttribute('id', idValue);
+                                        linkedElmCounter++;
+                                    }
+                                    footNode.appendChild( trNode );
+                                    trNode.appendChild( tdNode );
+                                    tdNode.appendChild( buttonNode );
+                                    shouldRemove = [trNode.getAttribute('id')];
+                                    break;
+                            case 'UL':
+                            case 'OL':
+                                var liNode = document.createElement('LI');
+                                liNode.appendChild( buttonNode )
+                                node.appendChild( liNode );
+                                break;
+                            case 'DIV':
+                                    if ( repNodeTag == "DIV" )  {
+                                        var divNode = document.createElement('DIV');
+                                        divNode.appendChild( buttonNode )
+                                        node.appendChild( liNode );
+                                    }
+                                    break;
+                        }
+                        INTERMediator.addEvent( buttonNode, 'click',
+                                new Function( "INTERMediator.insertButton("
+                                    + "'" + ds[targetKey]['name']+ "',"
+                                    + "'" + ds[targetKey]['foreign-key']+ "',"
+                                    + "'" + foreignValue+ "',"
+                                    + "'" + node.getAttribute('id') + "',"
+                                    + (shouldRemove==null ? 'null' : INTERMediator.objectToString( shouldRemove ))
+                                    + ");"));
+                    } else {
+                        deleteInsertOnNavi.push({
+                            kind: 'INSERT',
+                            table: ds[targetKey]['name'],
+                            key : ds[targetKey]['key']
+                        });
+                    }
+                }
+
             } else {
-                INTERMediator.messages.push("Cant determine the Table Name: " +
+                INTERMediator.errorMessages.push("Cant determine the Table Name: " +
                         INTERMediator.objectToString(linkDefsHash));
             }
             currentLevel--;
@@ -984,9 +1269,16 @@ var INTERMediator = {
                     navigation.removeChild(insideNav[i]);
                 }
                 navigation.innerHTML = '';
-
                 navigation.setAttribute('class', 'IM_NAV_panel');
                 var navLabel = INTERMediator.navigationLavel;
+
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(navLabel==null?'Refresh':navLabel[1]));
+                node.setAttribute('class', 'IM_NAV_button');
+                INTERMediator.addEvent(node,'click',function(){
+                    location.reload();
+                });
 
                 var start = Number(INTERMediator.startFrom);
                 var pageSize = Number(INTERMediator.pagedSize);
@@ -995,8 +1287,10 @@ var INTERMediator = {
                 var node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode( (navLabel==null?"Record #":navLabel[4])
-                        + (start+1) + (navLabel==null?"〜":navLabel[5])
-                        + Math.min(start+pageSize,allCount) + (navLabel==null?" / ":navLabel[6])
+                        + (start+1)
+                        + ((Math.min(start+pageSize,allCount)-start > 2)
+                            ? ((navLabel==null?"〜":navLabel[5]) + Math.min(start+pageSize,allCount)) : '' )
+                        + (navLabel==null?" / ":navLabel[6])
                         + (allCount) + (navLabel==null?"":navLabel[7])));
                 node.setAttribute('class', 'IM_NAV_info');
 
@@ -1039,6 +1333,33 @@ var INTERMediator = {
                     INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
                     INTERMediator.construct(true);
                 });
+
+                for( var i = 0 ; i < deleteInsertOnNavi.length ; i++ )  {
+                    switch ( deleteInsertOnNavi[i]['kind'] )    {
+                        case 'INSERT':
+                            node = document.createElement('SPAN');
+                            navigation.appendChild(node);
+                            node.appendChild(document.createTextNode('Insert: '+deleteInsertOnNavi[i]['table']));
+                            node.setAttribute('class', 'IM_NAV_button');
+                            INTERMediator.addEvent( node, 'click',
+                                    new Function("INTERMediator.insertRecordFromNavi("
+                                            + "'" + deleteInsertOnNavi[i]['table'] + "',"
+                                            + "'" + deleteInsertOnNavi[i]['key'] + "'" + ");"));
+                        break;
+                        case 'DELETE':
+                            node = document.createElement('SPAN');
+                            navigation.appendChild(node);
+                            node.appendChild(document.createTextNode('Delete: '+deleteInsertOnNavi[i]['table']));
+                            node.setAttribute('class', 'IM_NAV_button');
+                            INTERMediator.addEvent( node, 'click',
+                                    new Function("INTERMediator.deleteRecordFromNavi("
+                                            + "'" + deleteInsertOnNavi[i]['table'] + "',"
+                                            + "'" + deleteInsertOnNavi[i]['key'] + "',"
+                                            + "'" + deleteInsertOnNavi[i]['value'] + "'"
+                                            + ");"));
+                        break;
+                    }
+                }
             }
         }
 
@@ -1120,7 +1441,7 @@ var INTERMediator = {
 
     objectToString: function (obj)	{
         if ( obj == null ){
-            return "**NULL**";
+            return "'**NULL**'";
         }
         if ( typeof obj == 'object' )	{
             var str = '';
@@ -1131,13 +1452,13 @@ var INTERMediator = {
                 return "["+str+"]";
             } else {
                 for ( var key in obj )	{
-                    str += key+":"+INTERMediator.objectToString(obj[key])+", ";
+                    str += "'" + key+"':"+INTERMediator.objectToString(obj[key])+", ";
                 }
                 return "{"+str+"}"
             }
         }
         else {
-            return obj;
+            return "'" + obj + "'";
         }
     }
 

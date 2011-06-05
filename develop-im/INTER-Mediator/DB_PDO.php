@@ -17,6 +17,11 @@ class DB_PDO extends DB_Base	{
 	
 	function __construct()	{
 	}
+
+    function errorMessageStore( $str )    {
+        $errorInfo = var_export($this->link->errorInfo(),true);
+		$this->errorMessage[] = "Query Error: [{$str}] Code={$this->link->errorCode()} Info = {$errorInfo}";
+    }
 	
 	function getFromDB(  )	{
 		$tableName = $this->tableName;
@@ -39,9 +44,7 @@ class DB_PDO extends DB_Base	{
 						if ( $this->isDebug )	$this->debugMessage[] = $sql;
 						$result = $this->link->query($sql);
 						if ( $result === false ) {
-							$this->errorMessage[] = 'Query Error: Code=' 
-													. $this->link->errorCode()
-													. ' Info=' . $this->link->errorInfo();
+                            $this->errorMessageStore( 'Pre-script:'+$sql );
 						}
 					}
 				}
@@ -64,8 +67,7 @@ class DB_PDO extends DB_Base	{
 		if ( $this->isDebug )	$this->debugMessage[] = $sql;
 		$result = $this->link->query($sql);
 		if ( $result === false ) {
-			$this->errorMessage[] = 'Query Error: Code=' . $this->link->errorCode()
-											. ' Info=' . $this->link->errorInfo();
+			$this->errorMessageStore( 'Select:'+$sql );
             return array();
 		}
 		$this->mainTableCount = $result->fetchColumn(0);
@@ -89,8 +91,7 @@ class DB_PDO extends DB_Base	{
         // Query
 		$result = $this->link->query($sql);
 		if ( $result === false ) {
-			$this->errorMessage[] = 'Query Error: Code=' . $this->link->errorCode()
-									. ' Info=' . var_export($this->link->errorInfo(), true);
+			$this->errorMessageStore( 'Select:'+$sql );
 			return array();
 		}
 		$this->sqlResult = array();
@@ -112,8 +113,7 @@ class DB_PDO extends DB_Base	{
 						if ( $this->isDebug )	$this->debugMessage[] = $sql;
 						$result = $this->link->query($sql);
 						if ( $result === false ) {
-							$this->errorMessage[] = 'Query Error: Code=' . $this->link->errorCode()
-															. ' Info=' . $this->link->errorInfo();
+							$this->errorMessageStore( 'Post-script:'+$sql );;
 						}
 					}
 				}
@@ -134,19 +134,16 @@ class DB_PDO extends DB_Base	{
 		}
 		if ( isset( $tableInfo['script'] ))	{
 			foreach( $tableInfo['script'] as $condition )	{
-				if ( $condition['db-operation'] == 'update' )	{
-					if ( $condition['situation'] == 'pre' )	{
-						$sql = $condition['definition'];
-						if ( $this->isDebug )	$this->debugMessage[] = $sql;
-						$result = $this->link->query($sql);
-						if (!$result) {
-							$this->errorMessage[] 
-								= 'Query Error: Code=' . $this->link->errorCode()
-									. ' Info=' . $this->link->errorInfo()
-									. ' ';
-							return false;
-						}
-					}
+				if ( $condition['db-operation'] == 'update' && $condition['situation'] == 'pre' )	{
+                    $sql = $condition['definition'];
+                    if ( $this->isDebug )	{
+                        $this->debugMessage[] = $sql;
+                    }
+                    $result = $this->link->query($sql);
+                    if (!$result) {
+                        $this->errorMessageStore( 'Pre-script:'+$sql );
+                        return false;
+                    }
 				}
 			}
 		}
@@ -171,27 +168,24 @@ class DB_PDO extends DB_Base	{
 			$queryClause = "WHERE {$queryClause}";
 		}
 		$sql = "UPDATE {$this->tableName} SET {$setCaluse} {$queryClause}";
-		if ( $this->isDebug )	$this->debugMessage[] = $sql;
+		if ( $this->isDebug )	{
+            $this->debugMessage[] = $sql;
+        }
 		$result = $this->link->query($sql);
 		if ( $result === false ) {
-			$this->errorMessage[] = 'Query Error: SQL =' . $sql
-											. ' Code=' . $this->link->errorCode()
-											. ' Info=' . var_export($this->link->errorInfo(),true);
+			$this->errorMessageStore( 'Update:'+$sql );
 			return false;
 		}
 
 		if ( isset( $tableInfo['script'] ))	{
 			foreach( $tableInfo['script'] as $condition )	{
-				if ( $condition['db-operation'] == 'update' )	{
-					if ( $condition['situation'] == 'post' )	{
-						$sql = $condition['definition'];
-						if ( $this->isDebug )	$this->debugMessage[] = $sql;
-						$result = $this->link->query($sql);
-						if (!$result) {
-							$this->errorMessage[] = 'Query Error: Code=' . $this->link->errorCode()
-															. ' Info=' . $this->link->errorInfo();
-							return false;
-						}
+				if ( $condition['db-operation'] == 'update' && $condition['situation'] == 'post' )	{
+                    $sql = $condition['definition'];
+                    if ( $this->isDebug )	$this->debugMessage[] = $sql;
+                    $result = $this->link->query($sql);
+                    if (!$result) {
+                        $this->errorMessageStore( 'Post-script:'+$sql );
+                        return false;
 					}
 				}
 			}
@@ -200,153 +194,145 @@ class DB_PDO extends DB_Base	{
 		return true;
 	}
 	
-	function newToDB( $tableName, $data, &$keyValue )	{
+	function newToDB( )	{
         $tableName = $this->tableName;
         $tableInfo = $this->getDataSourceTargetArray();
 
-		$keyFieldName = $tableInfo['key'];
-		
-		require( 'params.php' );
-		$this->link = mysql_connect( $mysql_connect, $this->dbSpec['user'], $this->dbSpec['password'] );
-		if ( ! $this->link ) {
-			$this->errorMessage[] = 'MySQL Connect Error: ' . mysql_error();
-			return false;
-		}
-		mysql_select_db( $this->dbSpec['db'] );
-		
+        try {
+            $this->link = new PDO( 	$this->getDbSpecDSN(),
+                                    $this->getDbSpecUser(),
+                                    $this->getDbSpecPassword(),
+                                    is_array($this->getDbSpecOption())?$this->getDbSpecOption():array());
+        } catch( PDOException $ex )	{
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+
 		if ( isset( $tableInfo['script'] ))	{
 			foreach( $tableInfo['script'] as $condition )	{
-				if ( $condition['db-operation'] == 'new' )	{
-					if ( $condition['situation'] == 'pre' )	{
-						$sql = $condition['definition'];
-						if ( $this->isDebug )	$this->debugMessage[] = $sql;
-						$result = mysql_query($sql);
-						if (!$result) {
-							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
-						}
-						mysql_free_result($result);
-					}
+				if ( $condition['db-operation'] == 'new' && $condition['situation'] == 'pre' )	{
+                    $sql = $condition['definition'];
+                    if ( $this->isDebug )	{
+                        $this->debugMessage[] = $sql;
+                    }
+                    $result = $this->link->query($sql);
+                    if (!$result) {
+                        $this->errorMessageStore( 'Pre-script:'+$sql );
+                        return false;
+                    }
 				}
 			}
 		}
 
 		$setCaluse = array();
-		foreach ( $data as $field=>$value )	{
-			if ( $field != $keyFieldName){
-				$filedInForm = $field;
-				if ( $this->skip == 1 && $tableName == $this->tableName )	{
-					$filedInForm = "{$tableName}{$this->separator}{$field}";
-				}
-				$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
-				$convVal = addcslashes( $this->formatterToDB( $filedInForm, $convVal ), "\'\"\\");
-				$setCaluse[] = "{$field}='{$convVal}'";
-			}
+        $countFields = count( $this->fieldsRequired );
+		for ( $i = 0 ; $i < $countFields ; $i++ )	{
+            $field = $this->fieldsRequired[$i];
+            $value = $this->fieldsValues[$i];
+            $filedInForm = "{$tableName}{$this->separator}{$field}";
+            $convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
+            $convVal = $this->link->quote( $this->formatterToDB( $filedInForm, $convVal ));
+            $setCaluse[] = "{$field}={$convVal}";
 		}
-		if ( count( $setCaluse ) < 1 )	{
-			$this->errorMessage[] = 'No data to update.';
-			return false;
-		}
-		$setCaluse = implode( ',', $setCaluse );
+		$setCaluse = (count( $setCaluse ) == 0) ? "{$tableInfo['key']}=DEFAULT"
+                : implode( ',', $setCaluse );
 		$sql = "INSERT {$tableName} SET {$setCaluse}";
-		if ( $this->isDebug )	$this->debugMessage[] = $sql;
-		$result = mysql_query($sql);
-		if (!$result) {
-			$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
-			return false;
-		}
-		$keyValue = mysql_insert_id();
-		mysql_free_result($result);
-
+		if ( $this->isDebug )	{
+            $this->debugMessage[] = $sql;
+        }
+		$result = $this->link->query($sql);
+        if ( $result === false ) {
+            $this->errorMessageStore( 'Insert:'+$sql );
+            return false;
+        }
+        $lastKeyValue = $this->link->lastInsertId ( $tableInfo['key'] );
+        
 		if ( isset( $tableInfo['script'] ))	{
 			foreach( $tableInfo['script'] as $condition )	{
-				if ( $condition['db-operation'] == 'new' )	{
-					if ( $condition['situation'] == 'post' )	{
-						$sql = $condition['definition'];
-						if ( $this->isDebug )	$this->debugMessage[] = $sql;
-						$result = mysql_query($sql);
-						if (!$result) {
-							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
-						}
-						mysql_free_result($result);
-					}
+				if ( $condition['db-operation'] == 'new' && $condition['situation'] == 'post' )	{
+                    $sql = $condition['definition'];
+                    if ( $this->isDebug )	{
+                        $this->debugMessage[] = $sql;
+                    }
+                    $result = $this->link->query($sql);
+                    if (!$result) {
+                        $this->errorMessageStore( 'Post-script:'+$sql );
+                        return false;
+ 					}
 				}
 			}
 		}
 
-		return true;
+		return $lastKeyValue;
 	}
 	
 	function deleteFromDB( )	{
         $tableName = $this->tableName;
         $tableInfo = $this->getDataSourceTargetArray();
 
-		$keyFieldName = $tableInfo['key'];
-		if ( ! $tableInfo['key'] || ! isset( $data[$keyFieldName] ))	{
-			$this->errorMessage[] = 'Error: Can\'t get the key field value';
-			return false;
-		}
-		if ( $data[$keyFieldName] == '' )	{
-			$this->errorMessage[] = 'Error: Should specify valid key value.';
-			return false;
-		}
-		
-		require( 'params.php' );
-		$this->link = mysql_connect( $mysql_connect, $this->dbSpec['user'], $this->dbSpec['password'] );
-		if ( ! $this->link ) {
-			$this->errorMessage[] = 'MySQL Connect Error: ' . mysql_error();
-			return false;
-		}
-		mysql_select_db( $this->dbSpec['db'] );
-		
+        try {
+            $this->link = new PDO( 	$this->getDbSpecDSN(),
+                                    $this->getDbSpecUser(),
+                                    $this->getDbSpecPassword(),
+                                    is_array($this->getDbSpecOption())?$this->getDbSpecOption():array());
+        } catch( PDOException $ex )	{
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+
 		if ( isset( $tableInfo['script'] ))	{
 			foreach( $tableInfo['script'] as $condition )	{
-				if ( $condition['db-operation'] == 'delete' )	{
-					if ( $condition['situation'] == 'pre' )	{
-						$sql = $condition['definition'];
-						if ( $this->isDebug )	$this->debugMessage[] = $sql;
-						$result = mysql_query($sql);
-						if (!$result) {
-							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
-						}
-						mysql_free_result($result);
-					}
+				if ( $condition['db-operation'] == 'delete' && $condition['situation'] == 'pre' )	{
+                    $sql = $condition['definition'];
+                    if ( $this->isDebug )	{
+                        $this->debugMessage[] = $sql;
+                    }
+                    $result = $this->link->query($sql);
+                    if (!$result) {
+                        $this->errorMessageStore( 'Pre-script:'+$sql );
+                        return false;
+                    }
 				}
 			}
 		}
 
 		$whereClause = array();
-		foreach ( $data as $field=>$value )	{
-			$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
-			$convVal = $this->formatterToDB(
-				($this->tableName==$tableName)?$field:"{$tableName}{$this->separator}{$field}", $convVal );
-			$whereClause[] = "{$field}='{$convVal}'";
+        $countFields = count( $this->fieldsRequired );
+		for ( $i = 0 ; $i < $countFields ; $i++ )	{
+            $field = $this->fieldsRequired[$i];
+            $value = $this->fieldsValues[$i];
+            $filedInForm = "{$tableName}{$this->separator}{$field}";
+            $convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
+            $convVal = $this->link->quote( $this->formatterToDB( $filedInForm, $convVal ));
+            $whereClause[] = "{$field}={$convVal}";
 		}
 		if ( count( $whereClause ) < 1 )	{
-			$this->errorMessage[] = 'Don\'t delete with no ciriteria.';
+			$this->errorMessageStore( 'Don\'t delete with no ciriteria.' );
 			return false;
 		}
 		$whereClause = implode( ',', $whereClause );
 		$sql = "DELETE FROM {$tableName} WHERE {$whereClause}";
-		if ( $this->isDebug )	$this->debugMessage[] = $sql;
-		$result = mysql_query($sql);
+		if ( $this->isDebug )	{
+            $this->debugMessage[] = $sql;
+        }
+		$result = $this->link->query($sql);
 		if (!$result) {
-			$this->errorMessage[] = 'MySQL Query Error: ' . mysql_error();
+			$this->errorMessageStore( 'Delete Error:'+$sql );
 			return false;
 		}
-		mysql_free_result($result);
 
 		if ( isset( $tableInfo['script'] ))	{
 			foreach( $tableInfo['script'] as $condition )	{
-				if ( $condition['db-operation'] == 'delete' )	{
-					if ( $condition['situation'] == 'post' )	{
-						$sql = $condition['definition'];
-						if ( $this->isDebug )	$this->debugMessage[] = $sql;
-						$result = mysql_query($sql);
-						if (!$result) {
-							$this->errorMessage[] = 'MySQL Query Error at pre-script: ' . mysql_error();
-						}
-						mysql_free_result($result);
-					}
+				if ( $condition['db-operation'] == 'delete' &&  $condition['situation'] == 'post' )	{
+                    $sql = $condition['definition'];
+                    if ( $this->isDebug )	{
+                        $this->debugMessage[] = $sql;
+                    }
+                    $result = $this->link->query($sql);
+                    if (!$result) {
+                        $this->errorMessageStore( 'Post-script:'+$sql );
+                        return false;
+ 					}
 				}
 			}
 		}

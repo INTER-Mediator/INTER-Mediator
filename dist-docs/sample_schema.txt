@@ -49,7 +49,7 @@ CREATE TABLE contact	(
 	datetime		DATETIME,
 	summary		VARCHAR(50),
 	important	INT,
-	way 			INT,
+	way 			INT     default 4,
 	kind			INT,
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8,
