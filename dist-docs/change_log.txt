@@ -16,11 +16,15 @@ Ver.0.7.X
 
 Ver.0.8.X
 - Objective handling for the data in database.
+- Single query can retrieve main and related tables simultaneously.
+- Caching the result of queries.
 - Store NULL for empty string.
 - Multiple values within one field. (It may be required FileMaker especially.)
 
 Ver.0.9.X
 - Built-in Authentication framework.
+- HTML5's local database supporting.
+- Amazon Web Service supporting.
 
 Mostly Slogan: or Should be done:
 - Fulfilling documentation, including tutorials.
