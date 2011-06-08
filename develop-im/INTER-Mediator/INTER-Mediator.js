@@ -34,7 +34,7 @@ var INTERMediator = {
     // Rembering Objects
 	updateRequredObject: null,
     /*
-    {id-value:                  // For the node of this id attribute.
+    {   id-value:               // For the node of this id attribute.
         {targetattribute:,      // about target
         initialvalue:,          // The value from database.
         table:person,           // about target table
@@ -55,6 +55,7 @@ var INTERMediator = {
     rootEnclosure: null,
     // Storing to retrieve the page to initial condtion.
     // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
+    buildingBody: null,
     errorMessages: [],
     debugMessages: [],
 
@@ -63,22 +64,7 @@ var INTERMediator = {
     // Message for Programmers
     //=================================
     flushMessage: function () {
-        for (var i = 0; i < INTERMediator.errorMessages.length; i++) {
-            errorOut(INTERMediator.errorMessages[i]);
-        }
-        if (INTERMediator.debugMode) {
-            for (var i = 0; i < INTERMediator.debugMessages.length; i++) {
-                debugOut(INTERMediator.debugMessages[i]);
-            }
-        }
-        INTERMediator.errorMessages = [];
-        INTERMediator.debugMessages = [];
-
-        function errorOut (str, msg1, msg2, msg3) {
-            if (msg1 != null) str = str.replace('@1@', msg1);
-            if (msg2 != null) str = str.replace('@2@', msg2);
-            if (msg3 != null) str = str.replace('@3@', msg3);
-
+        if ( INTERMediator.errorMessages.length > 0 )   {
             var debugNode = document.getElementById('easypage_error_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
@@ -91,11 +77,12 @@ var INTERMediator = {
                 var body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-            debugNode.appendChild(document.createTextNode(str));
-            debugNode.appendChild(document.createElement('hr'));
+            for (var i = 0; i < INTERMediator.errorMessages.length; i++) {
+                debugNode.appendChild(document.createTextNode(INTERMediator.errorMessages[i]));
+                debugNode.appendChild(document.createElement('hr'));
+            }
         }
-
-        function debugOut(str) {
+        if (INTERMediator.debugMode && INTERMediator.debugMessages.length > 0 ) {
             var debugNode = document.getElementById('easypage_debug_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
@@ -117,14 +104,18 @@ var INTERMediator = {
                 var body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-            debugNode.appendChild(document.createTextNode(str));
-            debugNode.appendChild(document.createElement('hr'));
+
+            for (var i = 0; i < INTERMediator.debugMessages.length; i++) {
+                debugNode.appendChild(document.createTextNode(INTERMediator.debugMessages[i]));
+                debugNode.appendChild(document.createElement('hr'));
+            }
         }
+        INTERMediator.errorMessages = [];
+        INTERMediator.debugMessages = [];
     },
 
-
     //=================================
-    // Database Access
+    // User interactions
     //=================================
     /*
     valueChange
@@ -185,7 +176,7 @@ var INTERMediator = {
 				for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
 					if (INTERMediator.keyFieldObject[i]['target'] == idValue)	{
                         INTERMediator.keyFieldObject[i]['fieldvalue'] = newValue;
-                        INTERMediator.construct( false, null, i );
+                        INTERMediator.construct( false, i );
 					}
 				}
 			}
@@ -215,7 +206,7 @@ var INTERMediator = {
         for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
             if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodes)	{
                 INTERMediator.keyFieldObject[i]['fieldvalue'] = keyValue;
-                INTERMediator.construct( false, null, i );
+                INTERMediator.construct( false, i );
                 break;
             }
         }
@@ -230,7 +221,7 @@ var INTERMediator = {
             var fieldObj = {field: keyField, value:newId};
             INTERMediator.addtionalCondition = {};
             INTERMediator.addtionalCondition[tableName] = fieldObj;
-            INTERMediator.construct(true, null);
+            INTERMediator.construct(true);
             INTERMediator.addtionalCondition = restore;
         }
         INTERMediator.flushMessage();
@@ -246,10 +237,13 @@ var INTERMediator = {
                 INTERMediator.startFrom = 0;
             }
         }
-        INTERMediator.construct(true, null);
+        INTERMediator.construct(true);
         INTERMediator.flushMessage();
     },
 
+    //=================================
+    // Database Access
+    //=================================
     /*
     db_query
     Parameters:
@@ -410,21 +404,20 @@ var INTERMediator = {
      * parameter: fromStart: true=construct page, false=construct partially
      *            doAfterConstruct: as shown.
      */
-    construct: function (fromStart, doAfterConstruct, numberOfKeyFieldObject) {
+    construct: function ( fromStart, numberOfKeyFieldObject ) {
 
         var titleAsLinkInfo = true;
         var classAsLinkInfo = true;
         var currentLevel = 0;
         var linkedNodes;
         var postSetFields = new Array();
-        var firstEnclosure = true;
         var isIE = false;
         var ieVersion = -1;
         var buttonIdNum = 1;
         var deleteInsertOnNavi = [];
 
         if ( fromStart )    {
-            pageConstruct( doAfterConstruct );
+            pageConstruct( );
         } else {
             partialConstruct( numberOfKeyFieldObject );
         }
@@ -449,14 +442,39 @@ var INTERMediator = {
             for ( var i = 0 ; i < originalNodes.length;  i++ )  {
                 updateNode.appendChild(originalNodes[i]);
             }
+            var beforeKeyFieldObjectCount = INTERMediator.keyFieldObject.length;
             expandEnclosure(updateNode, updateRecord, updateTable);
+
+            for (var i = 0; i < postSetFields.length; i++) {
+                document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
+            }
+            for( var i = beforeKeyFieldObjectCount+1 ; i< INTERMediator.keyFieldObject.length; i++)	{
+                var currentNode = INTERMediator.keyFieldObject[i];
+                var currentID = currentNode['node'].getAttribute('id');
+                if ( currentNode['target'] == null )   {
+                    var enclosure;
+                    if ( currentID != null && currentID.match(/IM[0-9]+-[0-9]+/) )	{
+                        enclosure = getParentRepeater( currentNode['node'] );
+                    } else {
+                        enclosure = getParentRepeater( getParentEnclosure( currentNode['node'] ));
+                    }
+                    if ( enclosure != null )    {
+                        var targetNode = getEnclosedNode( enclosure, currentNode['table'], currentNode['field'] );
+                        if ( targetNode )	{
+                            currentNode['target'] = targetNode.getAttribute('id');
+                        }
+                    }
+                }
+            }
+
         }
 
         /*
         
          */
-        function pageConstruct( doAfterConstruct )    {
+        function pageConstruct( )    {
             INTERMediator.keyFieldObject = [];
+            INTERMediator.updateRequredObject = {};
             INTERMediator.currentEncNumber = 1;
 
             // Detect Internet Explorer and its version.
@@ -472,76 +490,50 @@ var INTERMediator = {
                     }
                 }
             }
-
-            // Initialize the page to the loaded one.
-            firstEnclosure = true;
             // Restoring original HTML Document from backup data.
-            if ( INTERMediator.rootEnclosure != null )  {
-                var parentOfRoot = INTERMediator.rootEnclosure['parent'];
-                parentOfRoot.removeChild( INTERMediator.rootEnclosure['currentRoot']);
-                var newNode = INTERMediator.rootEnclosure['node'].cloneNode(true);
-                INTERMediator.rootEnclosure['currentRoot'] = newNode;
-                if ( INTERMediator.rootEnclosure['currentAfter'] == null )    {
-                    parentOfRoot.appendChild(newNode);
-                } else {
-                    parentOfRoot.insertBefore( newNode, INTERMediator.rootEnclosure['currentAfter']);
-                }
-                firstEnclosure = false;
-            }
-            // Root node is BODY tag.
             var bodyNode = document.getElementsByTagName('BODY')[0];
-            seekEnclosureNode(bodyNode, '');
+            if ( INTERMediator.rootEnclosure == null )  {
+                INTERMediator.rootEnclosure = bodyNode.innerHTML;
+            } else {
+                bodyNode.innerHTML = INTERMediator.rootEnclosure;
+            }
+
+            seekEnclosureNode( bodyNode, '' );
 
             // After work to set up popup menus.
             for (var i = 0; i < postSetFields.length; i++) {
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
-
             for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
                 var currentNode = INTERMediator.keyFieldObject[i];
                 var currentID = currentNode['node'].getAttribute('id');
-                var enclosure;
-                if ( currentID != null && currentID.match(/IM[0-9]+-[0-9]+/) )	{
-                    enclosure = getParentRepeater( currentNode['node'] );
-                } else {
-                    enclosure = getParentRepeater(getParentEnclosure( currentNode['node'] ));
-                }
-                if ( targetNode )   {
-                    var targetNode = getEnclosedNode( enclosure, currentNode['table'], currentNode['field'] );
-                    if ( targetNode )	{
-                        currentNode['target'] = targetNode.getAttribute('id');
+                if ( currentNode['target'] == null )   {
+                    var enclosure;
+                    if ( currentID != null && currentID.match(/IM[0-9]+-[0-9]+/) )	{
+                        enclosure = getParentRepeater( currentNode['node'] );
+                    } else {
+                        enclosure = getParentRepeater( getParentEnclosure( currentNode['node'] ));
+                    }
+                    if ( enclosure != null )    {
+                        var targetNode = getEnclosedNode( enclosure, currentNode['table'], currentNode['field'] );
+                        if ( targetNode )	{
+                            currentNode['target'] = targetNode.getAttribute('id');
+                        }
                     }
                 }
             }
-
             navigationSetup();
             appendCredit();
-
-            if ( doAfterConstruct != null ) {
-                doAfterConstruct();
-            }
         }
 
         /**
          * Seeking nodes and if a node is an enclosure, proceed repeating.
          */
         function seekEnclosureNode(node, currentRecord, currentTable) {
-        //    INTERMediator.messages.push("seekEnclosureNode =" + node.tagName
-        //            +"/currentRecord="+objectToString(currentRecord));
             var enclosure = null;
             var nType = node.nodeType;
             if (nType == 1) { // Work for an element
                 if (isEnclosure(node, false)) { // Linked element and an enclosure
-                    if ( firstEnclosure && INTERMediator.rootEnclosure == null)   {
-                        var targetNode =  ( node.tagName == "TBODY" ) ? node.parentNode : node;
-                        INTERMediator.rootEnclosure = {
-                            node:targetNode.cloneNode(true),
-                            parent:targetNode.parentNode,
-                            currentRoot:targetNode,
-                            currentAfter:targetNode.nextSibling};
-                        firstEnclosure = false;
-                        INTERMediator.updateRequredObject = {};
-                    }
                     enclosure = expandEnclosure(node, currentRecord, currentTable);
                 } else {
                     var childs = node.childNodes; // Check all child nodes.
@@ -668,7 +660,8 @@ var INTERMediator = {
                         field:foreignField,
                         fieldvalue:foreignValue,
                         parent: node.parentNode,
-                        original:[]
+                        original:[],
+                        target:null
                     };
                     for (var i = 0; i < repeatersOriginal.length; i++) {
                         thisKeyFieldObject.original.push(repeatersOriginal[i].cloneNode(true));
@@ -1264,6 +1257,7 @@ var INTERMediator = {
         function navigationSetup() {
             var navigation = document.getElementById('IM_NAVIGATOR');
             if ( navigation != null )   {
+
                 var insideNav = navigation.childNodes;
                 for( var i=0 ; i<insideNav.length ; i++)    {
                     navigation.removeChild(insideNav[i]);
@@ -1365,25 +1359,25 @@ var INTERMediator = {
 
         function appendCredit() {
             if ( document.getElementById('IM_CREDIT') == null ) {
-                var body = document.getElementsByTagName('body')[0];
+                var bodyNode = document.getElementsByTagName('BODY')[0];
                 var cNode = document.createElement('div');
-                body.appendChild(cNode);
+                bodyNode.appendChild(cNode);
                 cNode.style.backgroundColor = '#F6F7FF';
                 cNode.style.height = '2px';
                 cNode.setAttribute( 'id', 'IM_CREDIT')
 
                 cNode = document.createElement('div');
-                body.appendChild(cNode);
+                bodyNode.appendChild(cNode);
                 cNode.style.backgroundColor = '#EBF1FF';
                 cNode.style.height = '2px';
 
                 cNode = document.createElement('div');
-                body.appendChild(cNode);
+                bodyNode.appendChild(cNode);
                 cNode.style.backgroundColor = '#E1EAFF';
                 cNode.style.height = '2px';
 
                 cNode = document.createElement('div');
-                body.appendChild(cNode);
+                bodyNode.appendChild(cNode);
                 cNode.setAttribute('align', 'right');
                 cNode.style.backgroundColor = '#D7E4FF';
                 cNode.style.padding = '2px';

@@ -39,6 +39,8 @@ Internet Explorer 7 (only)
 =================================
 
 Ver.0.7.1 === will be next release
+- Bug fix (multiple enclosures didn't retrieve when IM reconstructs the page)
+- Bug fix (didn't update the related components for just inserted record)
 
 Ver.0.7.0 (2011/6/5)
 - Update the component with related field without reloading the page.
