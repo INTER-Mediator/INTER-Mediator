@@ -13,26 +13,26 @@ var INTERMediator = {
     /*
         Properties
      */
-    debugMode: false,
+    debugMode: true,
     // Show the debug messages at the top of the page.
 	separator: '@',
-	// This must be refered as 'INTERMediator.separator'. Don't use 'this.separator'
-	defDevider: '|',
+	// This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
+	defDivider: '|',
 	// Same as the "separator".
-    addtionalCondition: [],
+    additionalCondition: [],
     // This array should be [{tableName: {field:xxx,operator:xxx,value:xxxx}}, ... ]
-    defalutTargetInnerHTML: false,
+    defaultTargetInnerHTML: false,
     // For general elements, if target isn't specified, the value will be set to innerHTML.
     // Otherwise, set as the text node.
-    navigationLavel: null,
+    navigationLabel: null,
     // Navigation is controlled by this parameter.
     startFrom: 0,
     // Start from this number of record for "skipping" records.
     pagedSize: 0,
     pagedAllCount: 0,
     currentEncNumber: 0,
-    // Rembering Objects
-	updateRequredObject: null,
+    // Remembering Objects
+	updateRequiredObject: null,
     /*
     {   id-value:               // For the node of this id attribute.
         {targetattribute:,      // about target
@@ -126,8 +126,8 @@ var INTERMediator = {
 		var changedObj = document.getElementById(idValue);
 		if (changedObj != null) {
             // Check the current value of the field
-			var objectSpec = INTERMediator.updateRequredObject[idValue];
-			var currentVal = INTERMediator.db_query({
+			var objectSpec = INTERMediator.updateRequiredObject[idValue];
+			var currentVal = IM_DBAdapter.db_query({
 				records: 1,
 				name: objectSpec['table']
 			}, [objectSpec['field']], null, objectSpec['keying'], false);
@@ -171,7 +171,7 @@ var INTERMediator = {
 				}
 			}
 			if (newValue != null) {
-				INTERMediator.db_update(objectSpec, newValue);
+				IM_DBAdapter.db_update(objectSpec, newValue);
 				objectSpec['initialvalue'] = newValue;
 				for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
 					if (INTERMediator.keyFieldObject[i]['target'] == idValue)	{
@@ -187,7 +187,7 @@ var INTERMediator = {
     deleteButton: function( tableName, keyField, keyValue, removeNodes )    {
         var recordSet = {};
         recordSet[keyField] = keyValue;
-        INTERMediator.db_delete( tableName, recordSet );
+        IM_DBAdapter.db_delete( tableName, recordSet );
         for( var key in removeNodes )   {
             var removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
@@ -198,7 +198,7 @@ var INTERMediator = {
     insertButton: function( tableName, keyField, keyValue, updateNodes, removeNodes )    {
         var recordSet = {};
         recordSet[keyField] = keyValue;
-        INTERMediator.db_createRecord( tableName, recordSet );
+        IM_DBAdapter.db_createRecord( tableName, recordSet );
         for( var key in removeNodes )   {
             var removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
@@ -214,15 +214,15 @@ var INTERMediator = {
     },
 
     insertRecordFromNavi: function(tableName, keyField) {
-        var newId = INTERMediator.db_createRecord(tableName, null);
+        var newId = IM_DBAdapter.db_createRecord(tableName, null);
         if ( newId > -1 )   {
-            var restore = INTERMediator.addtionalCondition;
+            var restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
             var fieldObj = {field: keyField, value:newId};
-            INTERMediator.addtionalCondition = {};
-            INTERMediator.addtionalCondition[tableName] = fieldObj;
+            INTERMediator.additionalCondition = {};
+            INTERMediator.additionalCondition[tableName] = fieldObj;
             INTERMediator.construct(true);
-            INTERMediator.addtionalCondition = restore;
+            INTERMediator.additionalCondition = restore;
         }
         INTERMediator.flushMessage();
     },
@@ -230,7 +230,7 @@ var INTERMediator = {
     deleteRecordFromNavi: function(tableName, keyField, keyValue) {
         var fieldsValues = {};
         fieldsValues[keyField] = keyValue;
-        INTERMediator.db_delete( tableName, fieldsValues );
+        IM_DBAdapter.db_delete( tableName, fieldsValues );
         if ( INTERMediator.pagedAllCount - INTERMediator.startFrom < 2 )    {
             INTERMediator.startFrom--;
             if ( INTERMediator.startFrom < 0 )  {
@@ -253,7 +253,7 @@ var INTERMediator = {
         parentKeyVal:
         extraCondition: "field,operator,value"
      */
-	db_query: function (detaSource, fields, parentKeyVal, extraCondition, useOffset) {
+/*	db_query: function (detaSource, fields, parentKeyVal, extraCondition, useOffset) {
 
 		// Create string for the parameter.
 		var params = "?access=select&table=" + encodeURI(detaSource['name']);
@@ -277,9 +277,9 @@ var INTERMediator = {
             params += "&ext_cond" + extCount + "value=" + encodeURI(compOfCond.join("="));
             extCount++;
 		}
-        for ( var oneItem in INTERMediator.addtionalCondition ) {
+        for ( var oneItem in INTERMediator.additionalCondition ) {
             if ( detaSource['name'] == oneItem )    {
-                var criteraObject = INTERMediator.addtionalCondition[oneItem];
+                var criteraObject = INTERMediator.additionalCondition[oneItem];
                 params += "&ext_cond" + extCount + "field=" + encodeURI(criteraObject["field"]);
                 if ( criteraObject["operator"] != null )    {
                     params += "&ext_cond" + extCount + "operator=" + encodeURI(criteraObject["operator"]);
@@ -316,7 +316,7 @@ var INTERMediator = {
         objectSpec[table]
         objectSpec[keying]
         newValue
-     */
+
 	db_update: function (objectSpec, newValue) {
 		var params = "?access=update&table=" + encodeURI(objectSpec['table']);
         var extCount = 0;
@@ -393,7 +393,7 @@ var INTERMediator = {
         INTERMediator.flushMessage();
         return newRecordKeyValue;
     },
-
+*/
     //=================================
     // Construct Page
     //=================================
@@ -474,7 +474,7 @@ var INTERMediator = {
          */
         function pageConstruct( )    {
             INTERMediator.keyFieldObject = [];
-            INTERMediator.updateRequredObject = {};
+            INTERMediator.updateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
 
             // Detect Internet Explorer and its version.
@@ -647,28 +647,23 @@ var INTERMediator = {
                 }
             }
             if (targetKey != '') {
-                var foreignValue = '';
-                var foreignField = '';
-                var keyFieldObjectRequired = (currentRecord[ds[targetKey]['join-field']] != null);
-                keyFieldObjectRequired = true;
-                if  ( keyFieldObjectRequired ) {
-                    foreignValue = currentRecord[ds[targetKey]['join-field']];
-                    foreignField = ds[targetKey]['join-field'];
-                    var thisKeyFieldObject = {
-                        node:node,
-                        table:currentTable,
-                        field:foreignField,
-                        fieldvalue:foreignValue,
-                        parent: node.parentNode,
-                        original:[],
-                        target:null
-                    };
-                    for (var i = 0; i < repeatersOriginal.length; i++) {
-                        thisKeyFieldObject.original.push(repeatersOriginal[i].cloneNode(true));
-                    }
-                    INTERMediator.keyFieldObject.push( thisKeyFieldObject );
+                var foreignValue = currentRecord[ds[targetKey]['join-field']];
+                var foreignField = ds[targetKey]['join-field'];
+                var thisKeyFieldObject = {
+                    node: node,
+                    table: currentTable,
+                    field: foreignField,
+                    fieldvalue: foreignValue,
+                    parent: node.parentNode,
+                    original: [],
+                    target: null
+                };
+                for (var i = 0; i < repeatersOriginal.length; i++) {
+                    thisKeyFieldObject.original.push(repeatersOriginal[i].cloneNode(true));
                 }
-                var targetRecords = INTERMediator.db_query(ds[targetKey], fieldList, foreignValue, null, true);
+                INTERMediator.keyFieldObject.push( thisKeyFieldObject );
+
+                var targetRecords = IM_DBAdapter.db_query(ds[targetKey], fieldList, foreignValue, null, true);
                 // Access database and get records
                 var RecordCounter = 0;
                 var eventListenerPostAdding = new Array();
@@ -740,7 +735,7 @@ var INTERMediator = {
                             //    if ( curVal != null )	{
                             // Store the key field value and current value for update
                             if ( nodeTag == 'INPUT' || nodeTag == 'SELECT' ||nodeTag == 'TEXTAREA' )   {
-                                INTERMediator.updateRequredObject[idValue] = {
+                                INTERMediator.updateRequiredObject[idValue] = {
                                     targetattribute: curTarget,
                                     initialvalue: curVal,
                                     table: ds[targetKey]['name'],
@@ -786,7 +781,7 @@ var INTERMediator = {
                                         'value': curVal
                                     });
                                 } else { // include option tag node
-                                    if ( INTERMediator.defalutTargetInnerHTML ) {
+                                    if ( INTERMediator.defaultTargetInnerHTML ) {
                                         currentLinkedNodes[k].innerHTML = curVal;
                                     } else  {
                                         var textNode = document.createTextNode(curVal);
@@ -1059,7 +1054,7 @@ var INTERMediator = {
                 var defs = new Array();
                 if (titleAsLinkInfo) {
                     if (node.getAttribute('TITLE') != null) {
-                        var eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDevider);
+                        var eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
                         for (var i = 0; i < eachDefs.length; i++) {
                             defs.push(eachDefs[i]);
                         }
@@ -1069,7 +1064,7 @@ var INTERMediator = {
                     var classAttr = getClassAttributeFromNode(node);
                     if (classAttr != null && classAttr.length > 0) {
                         var matched = classAttr.match(/IM\[([^\]]*)\]/);
-                        var eachDefs = matched[1].split(INTERMediator.defDevider);
+                        var eachDefs = matched[1].split(INTERMediator.defDivider);
                         for (var i = 0; i < eachDefs.length; i++) {
                             defs.push(eachDefs[i]);
                         }
@@ -1264,7 +1259,7 @@ var INTERMediator = {
                 }
                 navigation.innerHTML = '';
                 navigation.setAttribute('class', 'IM_NAV_panel');
-                var navLabel = INTERMediator.navigationLavel;
+                var navLabel = INTERMediator.navigationLabel;
 
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);

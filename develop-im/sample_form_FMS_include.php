@@ -9,7 +9,7 @@
  */
 require_once ( 'INTER-Mediator/INTER-Mediator.php');
 
-$tableDefs 
+$tableDefinitions
 	= array(	
 		array(	'records'	=>	1,
                 'paging'    =>  true,
@@ -35,7 +35,7 @@ $tableDefs
 				'join-field' 	=> 'id',	),
 	);
 
-$optionDefs
+$optionDefinitions
 	= array(
 		'formatter' => array(
 			array( 'field' => 'contact_to@datetime', 	'converter-class' =>'FMDateTime' ),
@@ -44,7 +44,7 @@ $optionDefs
 		)
 	);
 
-$dbDefs = array(
+$dbDefinitions = array(
     'db-class' => 'FileMaker_FX',
     'database' => 'TestDB',
     'user' => 'web',
@@ -54,6 +54,6 @@ $dbDefs = array(
     'protocol' => 'HTTP',
     'datatype' => 'FMPro7');
 
-IM_Entry( $tableDefs, $optionDefs, $dbDefs, true );
+IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
 
 ?>

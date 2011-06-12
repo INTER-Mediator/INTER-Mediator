@@ -13,6 +13,7 @@ Ver.0.7.X
 - Add code on JavaScript level.
 - Browser check and showing suitable message when it's not compatible.
 - Multi-Language Messages.
+- HTML5's local database supporting.
 
 Ver.0.8.X
 - Objective handling for the data in database.
@@ -23,7 +24,6 @@ Ver.0.8.X
 
 Ver.0.9.X
 - Built-in Authentication framework.
-- HTML5's local database supporting.
 - Amazon Web Service supporting.
 
 Mostly Slogan: or Should be done:
@@ -31,16 +31,25 @@ Mostly Slogan: or Should be done:
 - Proper error recoveries and messages.
 - Translating to English from Japanese Documents.
 
+=================================
 Known Issues for Browsers:
-Internet Explorer 7 (only)
+
+Internet Explorer 7
 - Checkbox and Radio Button doesn't work. Oops!
+- The next line in TEXTAREA is not work properly. They are ignored.
+
+Internet Explorer 9
 - The next line in TEXTAREA is not work properly. They are ignored.
 
 =================================
 
 Ver.0.7.1 === will be next release
+- Divided the JS source main program and database adapter
 - Bug fix (multiple enclosures didn't retrieve when IM reconstructs the page)
 - Bug fix (didn't update the related components for just inserted record)
+- Collected typos on properties.
+- All Samples are justified for the after Ver.0.6 style.
+- Correct typos (could be always...)
 
 Ver.0.7.0 (2011/6/5)
 - Update the component with related field without reloading the page.

@@ -15,7 +15,7 @@
  */
 
 function pageLoad(id)  {
-    INTERMediator.addtionalCondition["Contents"] = {field:'Article_id',operator:'eq',value:id};
+    INTERMediator.additionalCondition["Contents"] = {field:'Article_id',operator:'eq',value:id};
     INTERMediator.startFrom = 0;
     INTERMediator.construct( true );
     document.getElementById('nonsupportmessage').style.display = 'none';

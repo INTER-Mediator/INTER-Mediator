@@ -19,13 +19,13 @@
     <script type="text/javascript">
         function doSearchFromTown()  {
             var param = {field:'f9',operator:'LIKE',value:'%'+document.getElementById('place').value+'%'};
-            INTERMediator.addtionalCondition["postalcode"] = param;
+            INTERMediator.additionalCondition["postalcode"] = param;
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);
         }
         function doSearchFromZipcode()  {
             var param = {field:'f3',operator:'LIKE',value:document.getElementById('zipcode').value+'%'};
-            INTERMediator.addtionalCondition["postalcode"] = param;
+            INTERMediator.additionalCondition["postalcode"] = param;
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);
         }

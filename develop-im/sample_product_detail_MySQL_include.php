@@ -30,7 +30,7 @@
 </head>
 <body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">
 <?php GenerateConsole('save'); ?>
-<p><a href="sample_products_MySQL.php">back</a></p>
+<p><a href="sample_products_MySQL_include.php">back</a></p>
 <table border="1">
 <tr><th>id</th><td><input type="text" name="id" size="30"/></td></tr>
 <tr><th>name</th><td><input type="text" name="name" size="30"/></td></tr>

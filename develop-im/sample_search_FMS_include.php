@@ -9,7 +9,7 @@
  */
 require_once ( 'INTER-Mediator/INTER-Mediator.php');
 
-$tableDefs
+$tableDefinitions
 	= array(
 		array(
 			'name'  	=> 'postalcode',
@@ -20,9 +20,9 @@ $tableDefs
 		),
 	);
 
-$optionDefs = array();
+$optionDefinitions = array();
 
-$dbDefs = array(
+$dbDefinitions = array(
     'db-class' => 'FileMaker_FX',
     'database' => 'TestDB',
     'user' => 'web',
@@ -33,6 +33,6 @@ $dbDefs = array(
     'datatype' => 'FMPro7'
 );
 
-IM_Entry( $tableDefs, $optionDefs, $dbDefs, true );
+IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
 
 ?>

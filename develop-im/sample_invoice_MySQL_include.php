@@ -20,8 +20,7 @@
 				'records' 	=> '1', 
 				'name' 	=> 'invoice', 
 				'key' 		=> 'id',
-				'query'	=> array(),
-				'sort'		=> array( array( 'field'=>'id', 'direction'=>'ascend' ),),
+				'sort'		=> array( array( 'field'=>'id', 'direction'=>'ASC' ),),
 			),
 			array(	
 				'name' 			=> 'item',
@@ -34,19 +33,14 @@
 		array(
 			'formatter' => array(
 				array( 'field' => 'item@amount', 	'converter-class' =>'Number', 'parameter' => '0' ),
-				array( 'field' => 'issued', 	'converter-class' =>'FMDateTime', 'parameter' => '%Y年%b月%e日(%a)' ),
-				),
+			),
 			'trigger' => array(
 				array( 'field' => 'item@qty', 	'event' =>'change',	'function' => 'modLine' ),
 				array( 'field' => 'item@unitprice', 	'event' =>'change',	'function' => 'modLine' ),
 			),
-//			'validation' => array(
-//				array( 'field' => 'item@qty', 	'rule' =>'require' /*, 'option' => '数量' */ ),
-//				array( 'field' => 'title', 	'rule' =>'mail' /*, 'option' => '数量' */ ),
-//			),
 		),
-		null, 
-		false		// debug
+		array(	'db-class' => 'MySQL', 'db' => 'test_db', ), 
+		true		// debug
 	);
 ?>
 <script type="text/javascript">
@@ -88,8 +82,8 @@ function afterTableRowDelete()	{
 		<td><input type="text" name="id"/></td>
 	</tr>
 	<tr>
-		<td>date</td>
-		<td><div title="issued"></div></td>
+		<td>name</td>
+		<td><input type="text" name="issued" value="" /></td>
 	</tr>
 	<tr>
 		<td>title</td>

@@ -9,7 +9,7 @@
  */
 require_once ( 'INTER-Mediator/INTER-Mediator.php');
 
-$tableDefs 
+$tableDefinitions
 	= array(	
 		array(	'records'	=>	1,
                 'paging'    =>  true,
@@ -38,17 +38,17 @@ $tableDefs
 				'join-field' 	=> 'id',	),
 	);
 	
-$optionDefs
+$optionDefinitions
 	= array(
 		'formatter' => array(
 		)
 	);
 
-$dbDefs = array( 'db-class' => 'PDO', 
+$dbDefinitions = array( 'db-class' => 'PDO',
 				 'dsn'=>'mysql:host=localhost;dbname=test_db',
 			//	'options'=>array(1002 /*PDO::MYSQL_ATTR_INIT_COMMAND*/ =>'set names utf8') 
 			);
 
-IM_Entry( $tableDefs, $optionDefs, $dbDefs, true );
+IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
 
 ?>

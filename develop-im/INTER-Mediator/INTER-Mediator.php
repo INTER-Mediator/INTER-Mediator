@@ -16,7 +16,7 @@ require_once( 'operation_common.php' );
 /*
  * GET
  * ?access=select
- * table=<table name>
+ * &table=<table name>
  * &start=<record number to start>
  * &records=<how many records should it return>
  * &field_<N>=<field name>
@@ -27,13 +27,14 @@ require_once( 'operation_common.php' );
  * &parent_keyval=<value of the foreign key field>
  */
 
-function IM_Entry( $datasrc, $options = null, $dbspec = null, $debug=false )	{
+function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
 	$LF = "\n";	$q = '"';
 	if ( ! isset( $_GET['access'] ) )	{
 		header( 'Content-Type: text/javascript' );
         header( 'Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0' );
         header( 'Expires: 0' );
-		echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
+        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
+        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Adapter_DBServer.js');
 		echo "function IM_getEntryPath(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}{$LF}";
 		echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
 		echo "function IM_getDataSources(){return ", arrayToJS( $datasrc, '' ), ";}{$LF}";

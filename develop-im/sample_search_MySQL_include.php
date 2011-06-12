@@ -9,24 +9,23 @@
  */
 require_once ( 'INTER-Mediator/INTER-Mediator.php');
 
-$tableDefs
+$tableDefinitions
 	= array(
 		array(
 			'name'  	=> 'postalcode',
             'records'	=>	10,
             'paging'    =>  true,
-			'query'	    => array( ),
 			'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
 		),
 	);
 
-$optionDefs = array();
+$optionDefinitions = array();
 
-$dbDefs = array(
+$dbDefinitions = array(
             'db-class' => 'PDO',
             'dsn'=>'mysql:host=localhost;dbname=test_db'
         );
 
-IM_Entry( $tableDefs, $optionDefs, $dbDefs, true );
+IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
 
 ?>
