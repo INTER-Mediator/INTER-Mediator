@@ -10,7 +10,6 @@ To Do, that is left-over.
 =================================
 
 Ver.0.7.X
-- Add code on JavaScript level.
 - Browser check and showing suitable message when it's not compatible.
 - Multi-Language Messages.
 - HTML5's local database supporting.
@@ -20,6 +19,7 @@ Ver.0.8.X
 - Single query can retrieve main and related tables simultaneously.
 - Caching the result of queries.
 - Store NULL for empty string.
+- FileMaker's Find style database search.
 - Multiple values within one field. (It may be required FileMaker especially.)
 
 Ver.0.9.X
@@ -35,7 +35,7 @@ Mostly Slogan: or Should be done:
 Known Issues for Browsers:
 
 Internet Explorer 7
-- Checkbox and Radio Button doesn't work. Oops!
+- Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
 - The next line in TEXTAREA is not work properly. They are ignored.
 
 Internet Explorer 9
@@ -44,11 +44,13 @@ Internet Explorer 9
 =================================
 
 Ver.0.7.1 === will be next release
+- Supported to calculate with generated fields in a page file (refer to sample 'invoice').
+- Supported to specify values on record careated.
 - Divided the JS source main program and database adapter
 - Bug fix (multiple enclosures didn't retrieve when IM reconstructs the page)
 - Bug fix (didn't update the related components for just inserted record)
 - Collected typos on properties.
-- All Samples are justified for the after Ver.0.6 style.
+- All Samples are justified for the after Ver.0.6 style and separated with folders.
 - Correct typos (could be always...)
 
 Ver.0.7.0 (2011/6/5)

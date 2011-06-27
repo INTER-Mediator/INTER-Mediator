@@ -168,7 +168,7 @@ CREATE TABLE invoice (
 CREATE TABLE item (
 	id				INT  AUTO_INCREMENT,
 	invoice_id		INT,
-	category_id	INT,
+	category_id	    INT,
 	product_id		INT,
 	qty				INT,
 	unitprice		FLOAT(10.2),

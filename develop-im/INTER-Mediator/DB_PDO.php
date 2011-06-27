@@ -24,9 +24,9 @@ class DB_PDO extends DB_Base	{
     }
 	
 	function getFromDB(  )	{
-		$tableName = $this->tableName;
 		$tableInfo = $this->getDataSourceTargetArray();
-		
+        $tableName = $this->tableName;
+
 		try {
 			$this->link = new PDO( 	$this->getDbSpecDSN(),
 									$this->getDbSpecUser(),

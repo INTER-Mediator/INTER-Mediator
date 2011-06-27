@@ -7,7 +7,7 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-require_once ( 'INTER-Mediator/INTER-Mediator.php');
+require_once ('../INTER-Mediator/INTER-Mediator.php');
 
 $tableDefinitions
 	= array(
@@ -15,23 +15,16 @@ $tableDefinitions
 			'name'  	=> 'postalcode',
             'records'	=>	10,
             'paging'    =>  true,
-			'query'	    => array( ),
-			'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
+			'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
 		),
 	);
 
 $optionDefinitions = array();
 
 $dbDefinitions = array(
-    'db-class' => 'FileMaker_FX',
-    'database' => 'TestDB',
-    'user' => 'web',
-    'password' => 'password',
-    'server' => '127.0.0.1',
-    'port' => '80',
-    'protocol' => 'HTTP',
-    'datatype' => 'FMPro7'
-);
+            'db-class' => 'PDO',
+            'dsn'=>'mysql:host=localhost;dbname=test_db'
+        );
 
 IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
 

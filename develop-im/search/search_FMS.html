@@ -14,17 +14,17 @@
 <head>
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="sample.css" />
-    <script type="text/javascript" src="sample_search_MySQL_include.php"></script>
+    <link rel="stylesheet" type="text/css" href="../sample.css" />
+    <script type="text/javascript" src="include_FMS.php"></script>
     <script type="text/javascript">
         function doSearchFromTown()  {
-            var param = {field:'f9',operator:'LIKE',value:'%'+document.getElementById('place').value+'%'};
+            var param = {field:'f9',operator:'cn',value:document.getElementById('place').value};
             INTERMediator.additionalCondition["postalcode"] = param;
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);
         }
         function doSearchFromZipcode()  {
-            var param = {field:'f3',operator:'LIKE',value:document.getElementById('zipcode').value+'%'};
+            var param = {field:'f3',operator:'bw',value:document.getElementById('zipcode').value};
             INTERMediator.additionalCondition["postalcode"] = param;
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);

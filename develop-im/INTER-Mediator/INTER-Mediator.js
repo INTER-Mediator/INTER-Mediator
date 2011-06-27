@@ -9,6 +9,9 @@
 
 // Cleaning-up by http://jsbeautifier.org/
 // Next Generation gets start
+var INTERMediatorOnPage = {
+    
+}
 var INTERMediator = {
     /*
         Properties
@@ -31,6 +34,9 @@ var INTERMediator = {
     pagedSize: 0,
     pagedAllCount: 0,
     currentEncNumber: 0,
+    isIE: false,
+    ieVersion: -1,
+
     // Remembering Objects
 	updateRequiredObject: null,
     /*
@@ -44,8 +50,8 @@ var INTERMediator = {
         foreignvalue:, }        // foreign field value
      */
 	keyFieldObject: null,
-    /*
-     {node:xxx,         // The node to depend another node
+    /* inside of keyFieldObject
+     {node:xxx,         // The node information
      original:xxx       // Copy of childs
      table:xxx,
      field:xxx,
@@ -55,7 +61,6 @@ var INTERMediator = {
     rootEnclosure: null,
     // Storing to retrieve the page to initial condtion.
     // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
-    buildingBody: null,
     errorMessages: [],
     debugMessages: [],
 
@@ -196,8 +201,22 @@ var INTERMediator = {
     },
 
     insertButton: function( tableName, keyField, keyValue, updateNodes, removeNodes )    {
+        var ds = IM_getDataSources(); // Get DataSource parameters
+        var targetKey = '';
+        for (var key in ds) { // Search this table from DataSource
+            if (ds[key]['name'] == tableName) {
+                targetKey = key;
+                break;
+            }
+        }
+
         var recordSet = {};
         recordSet[keyField] = keyValue;
+        for (var index in ds[key]['default-values'])    {
+            for (var field in ds[key]['default-values'][index]) {
+                recordSet[ field ] = ds[key]['default-values'][index][field]
+            }
+        }
         IM_DBAdapter.db_createRecord( tableName, recordSet );
         for( var key in removeNodes )   {
             var removeNode = document.getElementById(removeNodes[key]);
@@ -214,7 +233,20 @@ var INTERMediator = {
     },
 
     insertRecordFromNavi: function(tableName, keyField) {
-        var newId = IM_DBAdapter.db_createRecord(tableName, null);
+        var ds = IM_getDataSources(); // Get DataSource parameters
+        var targetKey = '';
+        for (var key in ds) { // Search this table from DataSource
+            if (ds[key]['name'] == tableName) {
+                targetKey = key;
+                break;
+            }
+        }
+
+        var recordSet = {};
+        for (var index in ds[key]['default-values'])    {
+            recordSet[ ds[key]['default-values']['field'] ] = ds[key]['default-values'][index]['value'];
+        }
+        var newId = IM_DBAdapter.db_createRecord(tableName, recordSet);
         if ( newId > -1 )   {
             var restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
@@ -241,159 +273,171 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    //=================================
-    // Database Access
-    //=================================
     /*
-    db_query
-    Parameters:
-        dataSource[name]:
-        dataSource[records]:
-        fields:
-        parentKeyVal:
-        extraCondition: "field,operator,value"
+    Seek nodes from the repeater of "fromNode" parameter.
      */
-/*	db_query: function (detaSource, fields, parentKeyVal, extraCondition, useOffset) {
+    getNodeIdOfIMDefinition: function( imDefinition, fromNode )   {
+        var repeaterNode = INTERMediator.getParentRepeater( fromNode );
+        return seekNode( repeaterNode, imDefinition );
 
-		// Create string for the parameter.
-		var params = "?access=select&table=" + encodeURI(detaSource['name']);
-		params += "&records=" + encodeURI((detaSource['records'] != null) ? detaSource['records'] : 10000000);
-		var arCount = fields.length;
-		for (var i = 0; i < arCount; i++) {
-			params += "&field_" + i + "=" + encodeURI(fields[i]);
-		}
-        if (parentKeyVal != null) {
-            params += "&parent_keyval=" + encodeURI(parentKeyVal);
-        }
-        if ( useOffset && INTERMediator.startFrom != null ) {
-            params += "&start=" + encodeURI(INTERMediator.startFrom);
-        }
-        var extCount = 0;
-		if (extraCondition != null) {
-            var compOfCond = extraCondition.split("=");
-            params += "&ext_cond" + extCount + "field=" + encodeURI(compOfCond[0]);
-            params += "&ext_cond" + extCount + "operator=" + encodeURI("=");
-            compOfCond.shift();
-            params += "&ext_cond" + extCount + "value=" + encodeURI(compOfCond.join("="));
-            extCount++;
-		}
-        for ( var oneItem in INTERMediator.additionalCondition ) {
-            if ( detaSource['name'] == oneItem )    {
-                var criteraObject = INTERMediator.additionalCondition[oneItem];
-                params += "&ext_cond" + extCount + "field=" + encodeURI(criteraObject["field"]);
-                if ( criteraObject["operator"] != null )    {
-                    params += "&ext_cond" + extCount + "operator=" + encodeURI(criteraObject["operator"]);
+        function seekNode( node, imDefinition ) {
+            var children = node.childNodes;
+            if ( children == null || node.nodeType != 1 )  {
+                return null;
+            } else {
+                for(var i=0; i<children.length ; i++)    {
+                    if ( children[i].getAttribute != null )   {
+                        var thisClass = children[i].getAttribute('class');
+                        var thisTitle = children[i].getAttribute('title');
+                        if (( thisClass != null && thisClass.indexOf(imDefinition) > -1 )
+                            || ( thisTitle != null && thisTitle.indexOf(imDefinition) > -1 )){
+                            return children[i].getAttribute('id');
+                            break;
+                        } else {
+                            var returnValue = seekNode( children[i], imDefinition );
+                            if ( returnValue != null )  {
+                                return returnValue;
+                            }
+                        }
+                    }
                 }
-                params += "&ext_cond" + extCount + "value=" + encodeURI(criteraObject["value"]);
-                extCount++;
             }
+            return null;
         }
-        params += "&randkey" + Math.random();    // For ie...
-            // IE uses caches as the result in spite of several headers. So URL should be randomly.
-		var appPath = IM_getEntryPath();
-
-        INTERMediator.debugMessages.push( "Access: " + appPath + params );
-        var dbresult = '';
-		myRequest = new XMLHttpRequest();
-		try {
-			myRequest.open('GET', appPath + params, false);
-			myRequest.send(null);
-			eval(myRequest.responseText);
-            if (( detaSource['paging'] != null) && ( detaSource['paging'] == true ))  {
-                INTERMediator.pagedSize = detaSource['records'];
-                INTERMediator.pagedAllCount = resultCount;
-            }
-
-		} catch (e) {
-			INTERMediator.errorMessages.push("ERROR in db_query=" + e + "/" + myRequest.responseText);
-		}
-		return dbresult;
-	},
-
-    /*
-    db_update
-    Parameters:
-        objectSpec[table]
-        objectSpec[keying]
-        newValue
-
-	db_update: function (objectSpec, newValue) {
-		var params = "?access=update&table=" + encodeURI(objectSpec['table']);
-        var extCount = 0;
-		if ( objectSpec['keying'] != null ) {
-            var compOfCond = objectSpec['keying'].split("=");
-            params += "&ext_cond" + extCount + "field=" + encodeURI(compOfCond[0]);
-            params += "&ext_cond" + extCount + "operator=" + encodeURI("=");
-            compOfCond.shift();
-            params += "&ext_cond" + extCount + "value=" + encodeURI(compOfCond.join("="));
-            extCount++;
-        }
-		params += "&field_0=" + encodeURI(objectSpec['field']);
-		params += "&value_0=" + encodeURI(newValue);
-		var appPath = IM_getEntryPath();
-
-		INTERMediator.debugMessages.push("Update Request=" + appPath + params);
-
-		myRequest = new XMLHttpRequest();
-		try {
-			myRequest.open('GET', appPath + params, false);
-			// myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded;
-			// charset=UTF-8');
-			myRequest.send(null);
-			var dbresult = '';
-			eval(myRequest.responseText);
-		} catch (e) {
-			INTERMediator.errorMessages.push("ERROR in db_update=" + e + "/" + myRequest.responseText);
-		}
-		return dbresult;
-	},
-
-    db_delete: function( tableName, fieldsValues )   {
-        var params = "?access=delete&table=" + encodeURI(tableName);
-        var count = 0;
-        for ( var oneField in fieldsValues )    {
-            params += "&field_" + count + "=" + encodeURI(oneField);
-            params += "&value_" + count + "=" + encodeURI(fieldsValues[oneField]);
-            count++;
-        }
-        var appPath = IM_getEntryPath();
-        INTERMediator.debugMessages.push( "Delete Request: " + appPath + params );
-        myRequest = new XMLHttpRequest();
-        try {
-            myRequest.open('GET', appPath + params, false);
-            myRequest.send(null);
-            var dbresult = '';
-            eval(myRequest.responseText);
-        } catch (e) {
-            INTERMediator.errorMessages.push("ERROR in db_deleteRecord=" + e + "/" + myRequest.responseText);
-        }
-        INTERMediator.flushMessage();
     },
 
-    db_createRecord: function( tableName, fieldsValues ) {
-        var params = "?access=insert&table=" + encodeURI(tableName);
-        var count = 0;
-        for ( var oneField in fieldsValues )    {
-            params += "&field_" + count + "=" + encodeURI(oneField);
-            params += "&value_" + count + "=" + encodeURI(fieldsValues[oneField]);
-            count++;
+    getParentRepeater:    function (node) {
+        var currentNode = node;
+        while (currentNode != null) {
+            if (INTERMediator.isRepeater(currentNode,true)) {
+                return currentNode;
+            }
+            currentNode = currentNode.parentNode;
         }
-        var appPath = IM_getEntryPath();
-
-        var newRecordKeyValue = '';
-        INTERMediator.debugMessages.push("Update Request=" + appPath + params);
-        myRequest = new XMLHttpRequest();
-        try {
-            myRequest.open('GET', appPath + params, false);
-            myRequest.send(null);
-            eval(myRequest.responseText);
-        } catch (e) {
-            INTERMediator.errorMessages.push("ERROR in db_createRecord=" + e + "/" + myRequest.responseText);
-        }
-        INTERMediator.flushMessage();
-        return newRecordKeyValue;
+        return null;
     },
-*/
+
+    getParentEnclosure:    function (node) {
+         var currentNode = node;
+         while (currentNode != null) {
+             if (INTERMediator.isEnclosure(currentNode,true)) {
+                 return currentNode;
+             }
+             currentNode = currentNode.parentNode;
+         }
+         return null;
+     },
+
+    isEnclosure:    function (node, nodeOnly) {
+         if (node == null || node.nodeType != 1) return false;
+         var tagName = node.tagName;
+         var className = INTERMediator.getClassAttributeFromNode(node);
+         if (       (tagName == 'TBODY')
+                 || (tagName == 'UL')
+                 || (tagName == 'OL')
+                 || (tagName == 'SELECT')
+                 || (tagName == 'DIV'
+                     && className != null
+                     && className.indexOf('_im_enclosure') >= 0)) {
+             if (nodeOnly) {
+                 return true;
+             } else {
+                 var countChild = node.childNodes.length;
+                 for (var k = 0; k < countChild; k++) {
+                     if (INTERMediator.isRepeater(node.childNodes[k], false)) {
+                         return true;
+                     }
+                 }
+             }
+         }
+         return false;
+     },
+
+    isRepeater:    function (node, nodeOnly) {
+         if (node.nodeType != 1) return false;
+         var tagName = node.tagName;
+         var className = INTERMediator.getClassAttributeFromNode(node);
+         if (       (tagName == 'TR')
+                 || (tagName == 'LI')
+                 || (tagName == 'OPTION')
+                 || (tagName == 'DIV'
+                     && className != null
+                     && className.indexOf('_im_repeater') >= 0)) {
+             if (nodeOnly) {
+                 return true;
+             } else {
+                 return searchLinkedElement(node);
+             }
+         } else {
+             return false;
+         }
+
+        function searchLinkedElement(node) {
+            if (isLinkedElement(node)) {
+                return true;
+            }
+            var countChild = node.childNodes.length;
+            for (var k = 0; k < countChild; k++) {
+                var nType = node.childNodes[k].nodeType;
+                if (nType == 1) { // Work for an element
+                    if (isLinkedElement(node.childNodes[k])) {
+                        return true;
+                    } else if (searchLinkedElement(node.childNodes[k])) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    },
+        
+    getClassAttributeFromNode: function (node) {
+        if (node == null) return '';
+        var str = '';
+        if ( INTERMediator.isIE && INTERMediator.ieVersion < 8 ) {
+            str = node.getAttribute('className');
+        } else {
+            str = node.getAttribute('class');
+        }
+        return str;
+    },
+
+    getNodeIdsOFIMDefinition: function( imDefinition,  fromNode )    {
+        var enclosureNode = INTERMediator.getParentEnclosure( fromNode );
+        var nodeIds = [];
+        seekNode( enclosureNode, imDefinition );
+        return nodeIds;
+
+        function seekNode( node, imDefinition ) {
+            var children = node.childNodes;
+            if ( children == null || node.nodeType != 1 )  {
+                return null;
+            } else {
+                for(var i=0; i<children.length ; i++)    {
+                    if ( children[i].getAttribute != null )   {
+                        var thisClass = children[i].getAttribute('class');
+                        var thisTitle = children[i].getAttribute('title');
+                        if (( thisClass != null && thisClass.indexOf(imDefinition) > -1 )
+                            || ( thisTitle != null && thisTitle.indexOf(imDefinition) > -1 )){
+                            nodeIds.push( children[i].getAttribute('id') );
+                        }
+                        seekNode( children[i], imDefinition );
+                    }
+                }
+            }
+            return null;
+        }
+    },
+
+    updateNodeId: function( nodeId ) {
+        for( var i=0 ; i< INTERMediator.keyFieldObject.length; i++)	{
+            if (INTERMediator.keyFieldObject[i]['target'] == nodeId)	{
+                INTERMediator.construct( false, i );
+            }
+        }
+    },
+
+
     //=================================
     // Construct Page
     //=================================
@@ -411,8 +455,6 @@ var INTERMediator = {
         var currentLevel = 0;
         var linkedNodes;
         var postSetFields = new Array();
-        var isIE = false;
-        var ieVersion = -1;
         var buttonIdNum = 1;
         var deleteInsertOnNavi = [];
 
@@ -481,11 +523,11 @@ var INTERMediator = {
             var ua = navigator.userAgent;
             var msiePos = ua.indexOf('MSIE');
             if ( msiePos >= 0 ) {
-                isIE = true;
+                INTERMediator.isIE = true;
                 for( var i = msiePos+4 ; i < ua.length ; i++ )    {
                     var c = ua.charAt(i);
                     if ( c != ' ' && c != '.' && (c < '0' || c > '9') )   {
-                        ieVersion = INTERMediator.toNumber( ua.substring( msiePos+4, i ));
+                        INTERMediator.ieVersion = INTERMediator.toNumber( ua.substring( msiePos+4, i ));
                         break;
                     }
                 }
@@ -515,7 +557,9 @@ var INTERMediator = {
                         enclosure = getParentRepeater( getParentEnclosure( currentNode['node'] ));
                     }
                     if ( enclosure != null )    {
-                        var targetNode = getEnclosedNode( enclosure, currentNode['table'], currentNode['field'] );
+                        var targetNode = getEnclosedNode( enclosure,
+                                currentNode['table'],
+                                currentNode['field'] );
                         if ( targetNode )	{
                             currentNode['target'] = targetNode.getAttribute('id');
                         }
@@ -747,24 +791,41 @@ var INTERMediator = {
                             }
 
                             if (curTarget != null && curTarget.length > 0) {
-                                if ( curTarget == 'innerHTML')  {
-                                    currentLinkedNodes[k].innerHTML = curVal;
-                                } else if ( curTarget == 'textNode')  {
-                                    var textNode = document.createTextNode(curVal);
-                                    currentLinkedNodes[k].appendChild(textNode);
-                                } else if ( curTarget.indexOf('style.') == 0 )  {
-                                    var styleName = curTarget.substring( 6, curTarget.length );
-                                    var statement = "currentLinkedNodes[k].style."+styleName+"='"+curVal+"';";
-                                    eval( statement );
-                                } else {
-                                    currentLinkedNodes[k].setAttribute(curTarget, curVal);
+                                if ( curTarget.charAt(0) == '#' )   {   // Appending
+                                    curTarget = curTarget.substring( 1 );
+                                    if ( curTarget == 'innerHTML')  {
+                                        currentLinkedNodes[k].innerHTML += curVal;
+                                    } else if ( curTarget == 'textNode')  {
+                                        var textNode = document.createTextNode(curVal);
+                                        currentLinkedNodes[k].appendChild(textNode);
+                                    } else if ( curTarget.indexOf('style.') == 0 )  {
+                                        var styleName = curTarget.substring( 6, curTarget.length );
+                                        var statement = "currentLinkedNodes[k].style."+styleName+"='"+curVal+"';";
+                                        eval( statement );
+                                    } else {
+                                        var currentValue = currentLinkedNodes[k].getAttribute(curTarget);
+                                        currentLinkedNodes[k].setAttribute(curTarget, currentValue+curVal);
+                                    }
+                                } else {  // Setting
+                                    if ( curTarget == 'innerHTML')  {   // Setting
+                                        currentLinkedNodes[k].innerHTML = curVal;
+                                    } else if ( curTarget == 'textNode')  {
+                                        var textNode = document.createTextNode(curVal);
+                                        currentLinkedNodes[k].appendChild(textNode);
+                                    } else if ( curTarget.indexOf('style.') == 0 )  {
+                                        var styleName = curTarget.substring( 6, curTarget.length );
+                                        var statement = "currentLinkedNodes[k].style."+styleName+"='"+curVal+"';";
+                                        eval( statement );
+                                    } else {
+                                        currentLinkedNodes[k].setAttribute(curTarget, curVal);
+                                    }
                                 }
                             } else { // if the 'target' is not specified.
                                 if (nodeTag == "INPUT") {
                                     if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                                         var valueAttr = currentLinkedNodes[k].value;
                                         if (valueAttr == curVal) {
-                                            if ( isIE ) {
+                                            if ( INTERMediator.isIE ) {
                                                 currentLinkedNodes[k].setAttribute('checked','checked');
                                             } else {
                                                 currentLinkedNodes[k].checked = true;
@@ -858,8 +919,7 @@ var INTERMediator = {
                     }
                 }
 
-                if (   ds[targetKey]['repeat-control'] != null
-                    && ds[targetKey]['repeat-control'].match(/insert/i) )  {
+                if (   ds[targetKey]['repeat-control'] != null && ds[targetKey]['repeat-control'].match(/insert/i) )  {
                     if ( foreignValue != null ) {
                         var buttonNode = document.createElement('BUTTON');
                         buttonNode.appendChild(document.createTextNode('Insert'));
@@ -913,6 +973,10 @@ var INTERMediator = {
                             key : ds[targetKey]['key']
                         });
                     }
+                }
+
+                if ( INTERMediatorOnPage.expandingEnclosureFinish != null )  {
+                    INTERMediatorOnPage.expandingEnclosureFinish(ds[targetKey]['name'],node);
                 }
 
             } else {
@@ -1224,7 +1288,7 @@ var INTERMediator = {
 
         function setClassAttributeToNode(node, className) {
             if (node == null) return;
-            if ( isIE && ieVersion < 8 ) {
+            if ( INTERMediator.isIE && INTERMediator.ieVersion < 8 ) {
                 node.setAttribute('className', className);
             } else {
                 node.setAttribute('class', className);
@@ -1234,7 +1298,7 @@ var INTERMediator = {
         function getClassAttributeFromNode(node) {
             if (node == null) return '';
             var str = '';
-            if ( isIE && ieVersion < 8 ) {
+            if ( INTERMediator.isIE && INTERMediator.ieVersion < 8 ) {
                 str = node.getAttribute('className');
             } else {
                 str = node.getAttribute('class');

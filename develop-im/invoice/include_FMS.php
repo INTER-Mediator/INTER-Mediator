@@ -7,7 +7,7 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-	require_once( 'INTER-Mediator/INTER-Mediator.php' );
+	require_once('../INTER-Mediator/INTER-Mediator.php');
 	InitializePage(
 		array(	
 			array(	
