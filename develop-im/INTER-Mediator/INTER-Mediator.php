@@ -39,6 +39,7 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
 		echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
 		echo "function IM_getDataSources(){return ", arrayToJS( $datasrc, '' ), ";}{$LF}";
 		echo "function IM_getOptions(){return ", arrayToJS( $options, '' ), ";}{$LF}";
+        echo "INTERMediator.debug=", $debug ? "true" : "false", ";{$LF}";
 	} else {
 		$fieldsRequired = array();
 		for ( $i=0 ; $i< 1000 ; $i++ )	{

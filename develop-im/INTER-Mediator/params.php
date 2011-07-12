@@ -20,7 +20,7 @@ $dbProtocol = 'HTTP';
 
 /* DB_PDO awares below:
  */
-$dbDSN ='';
+$dbDSN ='mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;';
 $dbOption = array();
 $dbUser = 'web';
 $dbPassword = 'password';

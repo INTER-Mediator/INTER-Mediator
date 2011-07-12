@@ -42,10 +42,8 @@ $optionDefinitions = array(
         array( 'field' => 'item@unitprice', 'event' =>'change',	'function' => 'modLine' ),
     ),
 );
-$dbDefinitions = array(
-    'db-class' => 'PDO', 'dsn'=>'mysql:host=localhost;dbname=test_db'
-);
+$dbDefinitions = array(   'db-class' => 'PDO');
 
-IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
+IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, false );
 
 ?>

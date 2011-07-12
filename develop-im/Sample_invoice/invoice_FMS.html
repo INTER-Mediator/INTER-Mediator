@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <link href="../sample.css" rel="stylesheet" type="text/css" />
+    <script src="include_MySQL.php"></script>
+<script type="text/javascript">
+
+INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
+    if ( name == 'item' )   {
+        modLine(target);
+    }
+    if ( name == 'invoice' )   {
+        calcTotal( target );
+    }
+}
+
+function modLine(target)	{
+    var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@qty",target);
+    var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@unitprice",target);
+    var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice",target);
+    var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@amount",target);
+    var unitPrice = new Number( document.getElementById(unitPriceId).value > 0 ?
+                                document.getElementById(unitPriceId).value :
+                                document.getElementById(productPriceId).innerHTML );
+    var amountPrice = unitPrice * document.getElementById(qtyId).value;
+    document.getElementById(amountId).innerHTML = INTERMediatorLib.numberFormat(amountPrice);
+}
+
+function calcTotal( target )	{
+	var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition( 'item@amount', target );
+	var s = 0;
+	for ( var i in nodes )  {
+		s += INTERMediatorLib.toNumber( document.getElementById(nodes[i]).innerHTML );
+    }
+	document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat( s );
+}
+function afterFieldModified()	{
+	calcTotal();
+}
+function afterTableRowDelete()	{
+	calcTotal();
+}
+</script>
+</head>
+<body onload="INTERMediator.construct(true);calcTotal();">
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table border="1">
+    <tbody>
+	<tr>
+		<td>id</td>
+		<td><input type="text" class="IM[invoice@id]"/></td>
+	</tr>
+	<tr>
+		<td>name</td>
+		<td><input type="text" class="IM[invoice@issued]" value="" /></td>
+	</tr>
+	<tr>
+		<td>title</td>
+		<td><input type="text" class="IM[invoice@title]" value="" /></td>
+	</tr>
+    <tr>
+        <td colspan="2">
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>product</th><th>qty</th><th>unitprice (master)</th><th>amount</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <input type="text" class="IM[item@product_id]" size="2"
+                                    onchange="modLine(this);calcTotal(this)" />
+                            <div style="display:inline;" class="_im_enclosure">
+                                <div style="display:inline;" class="_im_repeater">
+                                    <span class="IM[product@name]"></span>
+                                </div>
+                            </div>
+                        </td>
+                        <td><input type="text" class="IM[item@qty]" size="5" style="text-align:right;"
+                                onchange="modLine(this);calcTotal(this)"/></td>
+                        <td>
+                            <input type="text" class="IM[item@unitprice]" size="8" style="text-align:right;"
+                                    onchange="modLine(this);calcTotal(this)" />
+                            <div style="display:inline;" class="_im_enclosure">
+                                <div style="display:inline;text-align:right;" class="_im_repeater">
+                                (<span class="IM[product@unitprice]"></span>)
+                                </div>
+                            </div>
+                        </td>
+                        <td align="right"><span align="right" class="IM[item@amount]"></span></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>Total:</td>
+        <td><span id="total"></span></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,1 +1,77 @@
-INTER-Mediator Demo Script:Masayuki Niimsyk@msyk.net2010/1/23These are demo materials for demonstrating INTER-Mediator's fundamental function.PHP files should be located as same directory as 'develop-im' folder.The demo detabase for MySQL with the distribution should be installed and working.The file params.php is same as distributed one.1. open demo1.html, show the source.2. change the extension to php, and add following source in the header seciton=================================<?php	require_once( '../develop-im/INTER-Mediator/INTER-Mediator.php' );	InitializePage(		array( array(	'records' 	=> '1', 'name' => 'person', 'key' 	=> 'id',),), 		null,		array( 'db-class' => 'MySQL', 'db' => 'test_db', )	);?></head><body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">=================================3. open demo1.php and proof that shows the contents of database.4. add following code in any body part.=================================<?php GenerateConsole(); ?>=================================5. demo2.html is listing samples.6. add codes below:=================================<?php 	require_once( '../develop-im/INTER-Mediator/INTER-Mediator.php' );	InitializePage(		array(			array(				'records'	=>	16,				'name'	=> 'postalcode',					'key' 	=> 'id',				'query'	=> array( array( 'field'=>'f8', 'operator'=>'=', 'value'=>'a’J‹æ' ) ),				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'DESC' ),),			),		),		null,		array( 'db-class' => 'MySQL', 'db' => 'test_db', )	);	?><script type="text/javascript"></script></head><body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();"><?php GenerateConsole( 'pos nav'); ?>=================================7. show the navigation.8. add debug paramter to InitilizePage function and monitor the SQL statement.9. Change the criteria parameter.10. Change the skip factor ('records' parameter).11. Move to the sample one-to-many style form page in the distribution. There are a lot of things must be explained. Go ahead!
+INTER-Mediator Demo Script:
+Masayuki Nii
+msyk@msyk.net
+2010/1/23
+
+
+******* This script should be rewritten for the architecture after 0.6 *********
+
+
+These are demo materials for demonstrating INTER-Mediator's fundamental function.
+
+PHP files should be located as same directory as 'develop-im' folder.
+The demo detabase for MySQL with the distribution should be installed and working.
+The file params.php is same as distributed one.
+
+1. open demo1.html, show the source.
+
+2. change the extension to php, and add following source in the header seciton
+=================================
+<?php
+	require_once( '../develop-im/INTER-Mediator/INTER-Mediator.php' );
+	InitializePage(
+		array( array(	'records' 	=> '1', 'name' => 'person', 'key' 	=> 'id',),), 
+		null,
+		array( 'db-class' => 'MySQL', 'db' => 'test_db', )
+	);
+?>
+</head>
+<body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">
+=================================
+
+3. open demo1.php and proof that shows the contents of database.
+
+4. add following code in any body part.
+=================================
+<?php GenerateConsole(); ?>
+=================================
+
+5. demo2.html is listing samples.
+
+6. add codes below:
+=================================
+<?php 
+	require_once( '../develop-im/INTER-Mediator/INTER-Mediator.php' );
+	InitializePage(
+		array(
+			array(
+				'records'	=>	16,
+				'name'	=> 'postalcode',	
+				'key' 	=> 'id',
+				'query'	=> array( array( 'field'=>'f8', 'operator'=>'=', 'value'=>'ï¿½aï¿½Jï¿½ï¿½' ) ),
+				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'DESC' ),),
+			),
+		),
+		null,
+		array( 'db-class' => 'MySQL', 'db' => 'test_db', )
+	);
+	?>
+<script type="text/javascript"></script>
+</head>
+<body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">
+<?php GenerateConsole( 'pos nav'); ?>
+=================================
+
+7. show the navigation.
+
+8. add debug paramter to InitilizePage function and monitor the SQL statement.
+
+9. Change the criteria parameter.
+
+10. Change the skip factor ('records' parameter).
+
+11. Move to the sample one-to-many style form page in the distribution. There are a lot of things must be explained. Go ahead!
+
+
+
+

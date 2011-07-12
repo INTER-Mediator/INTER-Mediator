@@ -154,7 +154,7 @@ var IM_DBAdapter = {
         var appPath = IM_getEntryPath();
 
         var newRecordKeyValue = '';
-        INTERMediator.debugMessages.push("Update Request=" + appPath + params);
+        INTERMediator.debugMessages.push("New Record Request=" + appPath + params);
         myRequest = new XMLHttpRequest();
         try {
             myRequest.open('GET', appPath + params, false);

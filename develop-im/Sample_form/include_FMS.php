@@ -44,16 +44,8 @@ $optionDefinitions
 		)
 	);
 
-$dbDefinitions = array(
-    'db-class' => 'FileMaker_FX',
-    'database' => 'TestDB',
-    'user' => 'web',
-    'password' => 'password',
-    'server' => '127.0.0.1',
-    'port' => '80',
-    'protocol' => 'HTTP',
-    'datatype' => 'FMPro7');
+$dbDefinitions = array('db-class' => 'FileMaker_FX');
 
-IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
+IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, false );
 
 ?>

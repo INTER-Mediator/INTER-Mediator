@@ -9,20 +9,16 @@
  */
 require_once('../INTER-Mediator/INTER-Mediator.php');
 
-$tableDefinitions = array(
-			array(	
-				'records' 	=> '1', 
-				'name' 	=> 'product', 
+IM_Entry(
+    array(
+		array(
+				'records' 	=> '1',
+				'name' 	=> 'product',
 				'key' 		=> 'id',
-			),
-		);
-$optionDefinitions = null;
-
-$dbDefinitions = array(
-    'db-class' => 'PDO',
-	'dsn'=>'mysql:host=localhost;dbname=test_db',
-);
-
-IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
+		),
+	),
+    null,
+    array('db-class' => 'PDO'),
+    false );
 
 ?>

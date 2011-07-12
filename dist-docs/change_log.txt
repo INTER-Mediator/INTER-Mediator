@@ -43,8 +43,11 @@ Internet Explorer 9
 
 =================================
 
-Ver.0.7.1 === will be next release
-- Supported to calculate with generated fields in a page file (refer to sample 'invoice').
+ver.0.7.2 === will be next release
+- All interface from HTML page exists in the INTERMediatorOnPage object.
+
+Ver.0.7.1 (2011/7/13)
+- Supported to calculate with generated fields in a page file (refer to sample named 'invoice').
 - Supported to specify values on record careated.
 - Divided the JS source main program and database adapter
 - Bug fix (multiple enclosures didn't retrieve when IM reconstructs the page)
@@ -52,6 +55,8 @@ Ver.0.7.1 === will be next release
 - Collected typos on properties.
 - All Samples are justified for the after Ver.0.6 style and separated with folders.
 - Correct typos (could be always...)
+- "demo2" of the demo-script is erased. It's the same as Sample_search.
+- On the JavaScript side, the INTERMediator object is divided to INTERMediatorOnPage, INTERMediatorLib and itself.
 
 Ver.0.7.0 (2011/6/5)
 - Update the component with related field without reloading the page.

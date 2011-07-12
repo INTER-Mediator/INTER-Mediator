@@ -44,11 +44,8 @@ $optionDefinitions
 		)
 	);
 
-$dbDefinitions = array( 'db-class' => 'PDO',
-				 'dsn'=>'mysql:host=localhost;dbname=test_db',
-			//	'options'=>array(1002 /*PDO::MYSQL_ATTR_INIT_COMMAND*/ =>'set names utf8') 
-			);
+$dbDefinitions = array( 'db-class' => 'PDO');
 
-IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
+IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, false );
 
 ?>
