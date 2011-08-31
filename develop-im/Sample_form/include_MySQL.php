@@ -40,12 +40,12 @@ $tableDefinitions
 	
 $optionDefinitions
 	= array(
-		'formatter' => array(
-		)
+		'formatter' => array(),
+        'aliases' => array('kindid'=>'cor_way_kindname@kind_id@value','kindname'=>'cor_way_kindname@name_kind@innerHTML',)
 	);
 
 $dbDefinitions = array( 'db-class' => 'PDO');
 
-IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, false );
+IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, true );
 
 ?>

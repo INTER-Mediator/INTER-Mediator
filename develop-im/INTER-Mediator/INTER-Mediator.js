@@ -170,7 +170,7 @@ var INTERMediatorLib = {
                 if (node.getAttribute('TITLE') != null) {
                     var eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
                     for (var i = 0; i < eachDefs.length; i++) {
-                        defs.push(eachDefs[i]);
+                        defs.push(resolveAlias(eachDefs[i]));
                     }
                 }
             }
@@ -180,13 +180,22 @@ var INTERMediatorLib = {
                     var matched = classAttr.match(/IM\[([^\]]*)\]/);
                     var eachDefs = matched[1].split(INTERMediator.defDivider);
                     for (var i = 0; i < eachDefs.length; i++) {
-                        defs.push(eachDefs[i]);
+                        defs.push(resolveAlias(eachDefs[i]));
                     }
                 }
             }
             return defs;
         }
         return false;
+
+        function resolveAlias(def)  {
+            var options = IM_getOptions();
+            var aliases = options['aliases'];
+            if ( aliases != null && aliases[def] != null ) {
+                return aliases[def];
+            }
+            return def;
+        }
     },
 
     /**
@@ -303,6 +312,28 @@ var INTERMediatorLib = {
         } else {
             return "'" + obj + "'";
         }
+    },
+
+    getTargetTableForRetrieve: function (element) {
+        if ( element['view'] != null )  {
+            return element['view'];
+        }
+        return element['name'];
+    },
+
+    getTargetTableForUpdate: function (element) {
+        if ( element['table'] != null )  {
+            return element['table'];
+        }
+        return element['name'];
+    },
+
+    getInsertedString: function (tmpStr, dataArray)    {
+        var resultStr = tmpStr;
+        for( var counter = 1 ; counter <= dataArray.length ; counter++ )   {
+            resultStr = resultStr.replace("@"+counter+"@", dataArray[counter-1]);
+        }
+        return resultStr;
     }
 }
 
@@ -380,7 +411,7 @@ var INTERMediator = {
 /*
         Properties
      */
-    debugMode: true,
+    debugMode: false,
     // Show the debug messages at the top of the page.
     separator: '@',
     // This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
@@ -511,9 +542,8 @@ var INTERMediator = {
             currentVal = currentVal[0][objectSpec['field']];
             if (objectSpec['initialvalue'] != currentVal) {
                 // The value of database and the field is diffrent. Others must be changed this field.
-                answer = confirm("Other people might be updated. Initially=" + objectSpec['initialvalue']
-                    + "/Current=" + currentVal + "You can overwrite with your data if you select OK.");
-                if (!answer) {
+                if ( ! confirm( INTERMediatorLib.getInsertedString(
+                        IM_getMessages()[1001],[objectSpec['initialvalue'],currentVal]))) {
                     INTERMediator.flushMessage();
                     return;
                 }
@@ -569,7 +599,7 @@ var INTERMediator = {
         var ds = IM_getDataSources(); // Get DataSource parameters
         var targetKey = '';
         for (var key in ds) { // Search this table from DataSource
-            if (ds[key]['name'] == tableName) {
+            if (INTERMediatorLib.getTargetTableForUpdate(ds[key]) == tableName) {
                 targetKey = key;
                 break;
             }
@@ -599,7 +629,7 @@ var INTERMediator = {
         var ds = IM_getDataSources(); // Get DataSource parameters
         var targetKey = '';
         for (var key in ds) { // Search this table from DataSource
-            if (ds[key]['name'] == tableName) {
+            if (INTERMediatorLib.getTargetTableForUpdate(ds[key]) == tableName) {
                 targetKey = key;
                 break;
             }
@@ -990,7 +1020,7 @@ var INTERMediator = {
                                 INTERMediator.updateRequiredObject[idValue] = {
                                     targetattribute: curTarget,
                                     initialvalue: curVal,
-                                    table: ds[targetKey]['name'],
+                                    table: INTERMediatorLib.getTargetTableForUpdate(ds[targetKey]),
                                     field: nInfo['field'],
                                     keying: keyingValue,
                                     foreignfield: foreignField,
@@ -1064,13 +1094,14 @@ var INTERMediator = {
                     if (ds[targetKey]['repeat-control'] != null && ds[targetKey]['repeat-control'].match(/delete/i)) {
                         if (ds[targetKey]['foreign-key'] != null) {
                             var buttonNode = document.createElement('BUTTON');
-                            buttonNode.appendChild(document.createTextNode('Delete'));
+                            buttonNode.appendChild(document.createTextNode(IM_getMessages()[6]));
                             var thisId = 'IM_Button_' + buttonIdNum;
                             buttonNode.setAttribute('id', thisId);
                             eventListenerPostAdding.push({
                                 'id': thisId,
                                 'event': 'click',
-                                'todo': new Function("INTERMediator.deleteButton(" + "'" + ds[targetKey]['name']
+                                'todo': new Function("INTERMediator.deleteButton(" + "'"
+                                    + INTERMediatorLib.getTargetTableForUpdate(ds[targetKey])
                                     + "'," + "'" + keyField + "'," + "'" + keyValue + "',"
                                     + INTERMediatorLib.objectToString(shouldDeleteNodes) + ");")
                             });
@@ -1095,7 +1126,7 @@ var INTERMediator = {
                         } else {
                             deleteInsertOnNavi.push({
                                 kind: 'DELETE',
-                                table: ds[targetKey]['name'],
+                                table: INTERMediatorLib.getTargetTableForUpdate(ds[targetKey]),
                                 key: keyField,
                                 value: keyValue
                             });
@@ -1126,7 +1157,7 @@ var INTERMediator = {
                 if (ds[targetKey]['repeat-control'] != null && ds[targetKey]['repeat-control'].match(/insert/i)) {
                     if (foreignValue != null) {
                         var buttonNode = document.createElement('BUTTON');
-                        buttonNode.appendChild(document.createTextNode('Insert'));
+                        buttonNode.appendChild(document.createTextNode(IM_getMessages()[5]));
                         var shouldRemove = [];
                         switch (encNodeTag) {
                         case 'TBODY':
@@ -1162,14 +1193,18 @@ var INTERMediator = {
                             }
                             break;
                         }
-                        INTERMediatorLib.addEvent(buttonNode, 'click', new Function("INTERMediator.insertButton("
-                            + "'" + ds[targetKey]['name'] + "'," + "'" + ds[targetKey]['foreign-key'] + "'," + "'"
-                            + foreignValue + "'," + "'" + node.getAttribute('id') + "',"
-                            + (shouldRemove == null ? 'null' : INTERMediatorLib.objectToString(shouldRemove)) + ");"));
+                        INTERMediatorLib.addEvent(
+                            buttonNode,
+                            'click',
+                            new Function("INTERMediator.insertButton("
+                                + "'" + INTERMediatorLib.getTargetTableForUpdate(ds[targetKey]) + "'," + "'"
+                                + ds[targetKey]['foreign-key'] + "'," + "'" + foreignValue + "'," + "'"
+                                + node.getAttribute('id') + "',"
+                                + (shouldRemove == null ? 'null' : INTERMediatorLib.objectToString(shouldRemove)) + ");"));
                     } else {
                         deleteInsertOnNavi.push({
                             kind: 'INSERT',
-                            table: ds[targetKey]['name'],
+                            table: INTERMediatorLib.getTargetTableForUpdate(ds[targetKey]),
                             key: ds[targetKey]['key']
                         });
                     }
@@ -1180,8 +1215,9 @@ var INTERMediator = {
                 }
 
             } else {
-                INTERMediator.errorMessages.push("Cant determine the Table Name: "
-                    + INTERMediatorLib.objectToString(linkDefsHash));
+                INTERMediator.errorMessages.push(
+                    INTERMediatorLib.getInsertedString(
+                        IM_getMessages()[1002], [INTERMediatorLib.objectToString(linkDefsHash)]));
             }
             currentLevel--;
             return foreignValue != '';
@@ -1233,7 +1269,7 @@ var INTERMediator = {
 
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
-                node.appendChild(document.createTextNode(navLabel == null ? 'Refresh' : navLabel[1]));
+                node.appendChild(document.createTextNode(navLabel == null ? IM_getMessages()[2] : navLabel[1]));
                 node.setAttribute('class', 'IM_NAV_button');
                 INTERMediatorLib.addEvent(node, 'click', function () {
                     location.reload();
@@ -1246,7 +1282,7 @@ var INTERMediator = {
                 var node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
-                    (navLabel == null ? "Record #" : navLabel[4]) + (start + 1)
+                    (navLabel == null ? IM_getMessages()[1] : navLabel[4]) + (start + 1)
                         + ((Math.min(start + pageSize, allCount) - start > 2) ? ((navLabel == null ? "〜" : navLabel[5])
                         + Math.min(start + pageSize, allCount)) : '')
                         + (navLabel == null ? " / " : navLabel[6]) + (allCount) + (navLabel == null ? "" : navLabel[7])));
@@ -1297,7 +1333,8 @@ var INTERMediator = {
                     case 'INSERT':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
-                        node.appendChild(document.createTextNode('Insert: ' + deleteInsertOnNavi[i]['table']));
+                        node.appendChild(
+                            document.createTextNode(IM_getMessages()[3] + ': ' + deleteInsertOnNavi[i]['table']));
                         node.setAttribute('class', 'IM_NAV_button');
                         INTERMediatorLib.addEvent(node, 'click',
                             new Function("INTERMediator.insertRecordFromNavi(" + "'" + deleteInsertOnNavi[i]['table']
@@ -1306,7 +1343,8 @@ var INTERMediator = {
                     case 'DELETE':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
-                        node.appendChild(document.createTextNode('Delete: ' + deleteInsertOnNavi[i]['table']));
+                        node.appendChild(
+                            document.createTextNode(IM_getMessages()[4] + ': ' + deleteInsertOnNavi[i]['table']));
                         node.setAttribute('class', 'IM_NAV_button');
                         INTERMediatorLib.addEvent(node, 'click',
                             new Function("INTERMediator.deleteRecordFromNavi(" + "'" + deleteInsertOnNavi[i]['table']

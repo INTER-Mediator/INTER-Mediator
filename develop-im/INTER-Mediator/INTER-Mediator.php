@@ -13,6 +13,8 @@ mb_internal_encoding('UTF-8');
 date_default_timezone_set('Asia/Tokyo');
 
 require_once( 'operation_common.php' );
+require_once( 'MessageStrings.php' );
+require_once( 'MessageStrings_ja.php' );
 /*
  * GET
  * ?access=select
@@ -29,19 +31,29 @@ require_once( 'operation_common.php' );
 
 function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
 	$LF = "\n";	$q = '"';
-	if ( ! isset( $_GET['access'] ) )	{
-		header( 'Content-Type: text/javascript' );
-        header( 'Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0' );
-        header( 'Expires: 0' );
-        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
+    
+    header( 'Content-Type: text/javascript' );
+    header( 'Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0' );
+    header( 'Expires: 0' );
+
+    if ( ! isset( $_GET['access'] ) )	{
+		echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Adapter_DBServer.js');
 		echo "function IM_getEntryPath(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}{$LF}";
 		echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
 		echo "function IM_getDataSources(){return ", arrayToJS( $datasrc, '' ), ";}{$LF}";
 		echo "function IM_getOptions(){return ", arrayToJS( $options, '' ), ";}{$LF}";
-        echo "INTERMediator.debug=", $debug ? "true" : "false", ";{$LF}";
+        $clientLang = explode( '-', $_SERVER["HTTP_ACCEPT_LANGUAGE"] );
+        $messageClass = "MessageStrings_{$clientLang[0]}";
+        if(class_exists($messageClass)){
+            $messageClass = new $messageClass();
+        } else {
+            $messageClass = new MessageStrings();
+        }
+        echo "function IM_getMessages(){return ", arrayToJS( $messageClass->getMessages(), '' ), ";}{$LF}";
+        echo "INTERMediator.debugMode=", $debug ? "true" : "false", ";{$LF}";
 	} else {
-		$fieldsRequired = array();
+       $fieldsRequired = array();
 		for ( $i=0 ; $i< 1000 ; $i++ )	{
 			if ( isset( $_GET["field_{$i}"] ))	{
 				$fieldsRequired[] = $_GET["field_{$i}"];
@@ -52,55 +64,45 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
 		$valuesRequired = array();
 		for ( $i=0 ; $i< 1000 ; $i++ )	{
 			if ( isset( $_GET["value_{$i}"] ))	{
-				$valuesRequired[] = $_GET["value_{$i}"];
+                if(get_magic_quotes_gpc())  {
+                    $valuesRequired[] = stripslashes($_GET["value_{$i}"]);
+                } else {
+                    $valuesRequired[] = $_GET["value_{$i}"];
+                }
 			} else {
 				break;
 			}
 		}
-		
-		$dbClassName = "DB_{$dbspec['db-class']}";
+
+        include( 'params.php' );
+
+        $dbClassName = isset( $dbspec['db-class'] ) ? $dbspec['db-class'] : (isset ( $dbClass ) ? $dbClass : '');
+		$dbClassName = "DB_{$dbClassName}";
 		require_once("{$dbClassName}.php");
 		eval( "\$dbInstance = new {$dbClassName}();" );
 		if ( $debug )	{
             $dbInstance->setDebugMode();
+
+
         }
-        include( 'params.php' );
         $dbInstance->setDbSpecServer(
-            isset( $dbspec['server'] ) ? $dbspec['server'] :
-                (isset ( $dbServer ) ? $dbServer : '')
-        );
+            isset( $dbspec['server'] ) ? $dbspec['server'] : (isset ( $dbServer ) ? $dbServer : ''));
         $dbInstance->setDbSpecPort(
-            isset( $dbspec['port'] ) ? $dbspec['port'] :
-                (isset ( $dbPort ) ? $dbPort : '')
-        );
+            isset( $dbspec['port'] ) ? $dbspec['port'] : (isset ( $dbPort ) ? $dbPort : ''));
         $dbInstance->setDbSpecUser(
-            isset( $dbspec['user'] ) ? $dbspec['user'] :
-                (isset ( $dbUser ) ? $dbUser : '')
-        );
+            isset( $dbspec['user'] ) ? $dbspec['user'] : (isset ( $dbUser ) ? $dbUser : ''));
         $dbInstance->setDbSpecPassword(
-            isset( $dbspec['password'] ) ? $dbspec['password'] :
-                (isset ( $dbPassword ) ? $dbPassword : '')
-        );
+            isset( $dbspec['password'] ) ? $dbspec['password'] : (isset ( $dbPassword ) ? $dbPassword : ''));
         $dbInstance->setDbSpecDataType(
-             isset( $dbspec['datatype'] ) ? $dbspec['datatype'] :
-                 (isset ( $dbDataType ) ? $dbDataType : '')
-        );
+             isset( $dbspec['datatype'] ) ? $dbspec['datatype'] : (isset ( $dbDataType ) ? $dbDataType : ''));
         $dbInstance->setDbSpecDatabase(
-             isset( $dbspec['database'] ) ? $dbspec['database'] :
-                 (isset ( $dbDatabase ) ? $dbDatabase : '')
-        );
+             isset( $dbspec['database'] ) ? $dbspec['database'] : (isset ( $dbDatabase ) ? $dbDatabase : ''));
         $dbInstance->setDbSpecProtocol(
-            isset( $dbspec['protocol'] ) ? $dbspec['protocol'] :
-                (isset ( $dbProtocol ) ? $dbProtocol : '')
-        );
+            isset( $dbspec['protocol'] ) ? $dbspec['protocol'] : (isset ( $dbProtocol ) ? $dbProtocol : ''));
         $dbInstance->setDbSpecOption(
-            isset( $dbspec['option'] ) ? $dbspec['option'] :
-                (isset ( $dbOption ) ? $dbOption : '')
-        );
+            isset( $dbspec['option'] ) ? $dbspec['option'] : (isset ( $dbOption ) ? $dbOption : ''));
         $dbInstance->setDbSpecDSN(
-            isset( $dbspec['dsn'] ) ? $dbspec['dsn'] :
-                (isset ( $dbDSN ) ? $dbDSN : '')
-        );
+            isset( $dbspec['dsn'] ) ? $dbspec['dsn'] : (isset ( $dbDSN ) ? $dbDSN : ''));
 
 		$dbInstance->setSeparator( isset( $options['separator'] ) ? $options['separator'] : '@' );
 		$dbInstance->setDataSource( $datasrc );

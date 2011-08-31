@@ -15,12 +15,12 @@ function getMessages()	{
 }
 
 var $messages = array(
-	1	=>	'Save',
-	2	=>	'New Record',
-	3	=>	'Delete Record',
-	4	=>	'Add Line',
-	5	=>	'Delete',
-	6	=>	'Top',
+	1	=>	'Record #',
+	2	=>	'Refresh',
+	3	=>	'Add Record',
+	4	=>	'Delete Record',
+	5	=>	'Insert',
+	6	=>	'Delete',
 	7	=>	'Prev',
 	8	=>	'Next',
 	9	=>	'End',
@@ -39,6 +39,8 @@ var $messages = array(
 	109	=>	'The saving task hasn\'t finished.',
 	110	=>	'The field @1@ shouldn\'t be blank.',
 	111	=>	'The field @1@ should be an email address.',
-	);
+    1001 => "Other people might be updated.\n\nInitially=@1@\nCurrent=@2@\n\nYou can overwrite with your data if you select OK.",
+	1002 => "Can't determine the Table Name: @1@",
+);
 }
 ?>

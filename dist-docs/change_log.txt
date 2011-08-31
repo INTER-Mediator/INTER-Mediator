@@ -11,8 +11,8 @@ To Do, that is left-over.
 
 Ver.0.7.X
 - Browser check and showing suitable message when it's not compatible.
-- Multi-Language Messages.
-- HTML5's local database supporting.
+- Re-engineering the API used on application
+- Correct IE issues for textarea element
 
 Ver.0.8.X
 - Objective handling for the data in database.
@@ -20,10 +20,12 @@ Ver.0.8.X
 - Caching the result of queries.
 - Store NULL for empty string.
 - FileMaker's Find style database search.
-- Multiple values within one field. (It may be required FileMaker especially.)
+- Multiple values within one field. (It may be required for FileMaker especially.)
+- key and Foreign-key can have multiple fields with operators
 
 Ver.0.9.X
 - Built-in Authentication framework.
+- HTML5's local database supporting.
 - Amazon Web Service supporting.
 
 Mostly Slogan: or Should be done:
@@ -43,12 +45,23 @@ Internet Explorer 9
 
 =================================
 
-ver.0.7.2 === will be next release
-- All interface from HTML page exists in the INTERMediatorOnPage object.
+Ver.0.7.4 === will be next release
 
-Ver.0.7.1 (2011/7/13)
+Ver.0.7.3 (2011/9/1)
+- All interface from HTML page exists in the INTERMediatorOnPage object.
+- INTERMediator.additionalConditions can have an array value for multiple criteria on on table.
+- The fourth parameter of IM_Entry function is passed to INTER-Mediator JavaScript layer,
+  so you can control the DebugMode property with IM_Entry function's parameter.
+- Alias for the definition IM[...].
+- Checks the magic quote and uses PHP's stripslashes function if magic quote is active.
+- A definition file's first parameter of IM_Entry function can have name/table/view keys.
+  The name key is required, table and view is using for update and retrieve.
+  The table and view keys are omitted, the name key's value will be used for db accessing.
+- Multi-Language Messages.
+
+Ver.0.7.2 (2011/7/14)
 - Supported to calculate with generated fields in a page file (refer to sample named 'invoice').
-- Supported to specify values on record careated.
+- Supported to specify values on record created.
 - Divided the JS source main program and database adapter
 - Bug fix (multiple enclosures didn't retrieve when IM reconstructs the page)
 - Bug fix (didn't update the related components for just inserted record)
@@ -57,6 +70,8 @@ Ver.0.7.1 (2011/7/13)
 - Correct typos (could be always...)
 - "demo2" of the demo-script is erased. It's the same as Sample_search.
 - On the JavaScript side, the INTERMediator object is divided to INTERMediatorOnPage, INTERMediatorLib and itself.
+
+Ver.0.7.1 is missing. When I released ver.0.7.2, I just jumped this version. Sorry....
 
 Ver.0.7.0 (2011/6/5)
 - Update the component with related field without reloading the page.

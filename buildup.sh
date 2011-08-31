@@ -8,7 +8,7 @@ read version
 
 dt=`date "+%Y-%m-%d"`
 
-curpath=`dirname "$0"`
+curpath=$(cd $(dirname "$0"); pwd)
 echo "Working Directory is:", ${curpath}
 cd "${curpath}"
 
@@ -25,30 +25,22 @@ cp "${curpath}"/dist-docs/*.txt .
 cp "${curpath}"/dist-docs/TestDB.fp7 .
 
 mkdir develop-im
-for FILE in `ls "${curpath}"/develop-im`
+for DIR in `ls "${curpath}"/develop-im`
 do
-	if [ -f "${curpath}"/develop-im/"${FILE}" ]; then 
-	sed -f "${curpath}"/sedrule "${curpath}"/develop-im/"${FILE}" > develop-im/"${FILE}"
-	fi
+    if [ -f "${curpath}/develop-im/${DIR}" ]; then
+        sed -f "${curpath}/sedrule" "${curpath}/develop-im/${DIR}" > "develop-im/${DIR}"
+    else
+        mkdir "develop-im/${DIR}"
+        for FILE in `ls "${curpath}/develop-im/${DIR}"`
+        do
+            if [ -f "${curpath}/develop-im/${DIR}/${FILE}" ]; then
+            sed -f "${curpath}/sedrule" "${curpath}/develop-im/${DIR}/${FILE}" > "develop-im/${DIR}/${FILE}"
+            fi
+        done
+    fi
 done
 
-cp -r "${curpath}"/develop-im/images develop-im/
-
-mkdir develop-im/INTER-Mediator
-for FILE in `ls "${curpath}"/develop-im/INTER-Mediator`
-do
-	if [ -f "${curpath}"/develop-im/INTER-Mediator/"${FILE}" ]; then 
-	sed -f "${curpath}"/sedrule "${curpath}"/develop-im/INTER-Mediator/"${FILE}" > develop-im/INTER-Mediator/"${FILE}"
-	fi
-done
-
-mkdir develop-im/WebSite
-for FILE in `ls "${curpath}"/develop-im/WebSite`
-do
-	if [ -f "${curpath}"/develop-im/WebSite/"${FILE}" ]; then
-	sed -f "${curpath}"/sedrule "${curpath}"/develop-im/WebSite/"${FILE}" > develop-im/WebSite/"${FILE}"
-	fi
-done
+cp -r "${curpath}"/develop-im/Sample_products/images develop-im/Sample_products/
 
 #java -jar ../yuicompressor-2.4.2.jar -o temp.js develop-im/INTER-Mediator/INTER-Mediator.js
 #mv -f temp.js develop-im/INTER-Mediator/INTER-Mediator.js

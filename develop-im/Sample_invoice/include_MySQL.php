@@ -18,7 +18,8 @@ $tableDefinitions = array(
         'repeat-control'=> 'insert delete',
     ),
     array(
-        'name' 			=> 'item',
+        'name' 			=> 'items',
+        'table' 		=> 'item',
         'view'          => 'item_display',
         'key' 			=> 'id',
         'foreign-key' 	=> 'invoice_id',

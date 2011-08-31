@@ -27,6 +27,7 @@
             var param = {field:'f3',operator:'LIKE',value:document.getElementById('zipcode').value+'%'};
             INTERMediator.additionalCondition["postalcode"] = param;
             INTERMediator.startFrom = 0;
+            INTERMediator.debugMode = false;
             INTERMediator.construct(true);
         }
     </script>
@@ -60,10 +61,10 @@
 	</thead>
 	<tbody>
 	<tr>
-		<td><div title="postalcode@f3"></div></td>
-		<td><div title="postalcode@f7"></div></td>
-		<td><div title="postalcode@f8"></div></td>
-		<td><div title="postalcode@f9"></div></td>
+		<td><div class="IM[postalcode@f3]"></div></td>
+		<td><div class="IM[postalcode@f7]"></div></td>
+		<td><div class="IM[postalcode@f8]"></div></td>
+		<td><div class="IM[postalcode@f9]"></div></td>
 	</tr>
 	</tbody>
 </table>

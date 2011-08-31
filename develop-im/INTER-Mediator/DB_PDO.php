@@ -149,13 +149,16 @@ class DB_PDO extends DB_Base	{
 		}
 
 		$setCaluse = array();
+        $setParameter = array();
 		$counter = 0;
 		foreach ( $this->fieldsRequired as $field )	{
 			$value = $this->fieldsValues[$counter];
 			$counter++;
 			$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
-			$convVal = $this->link->quote( $this->formatterToDB( $field, $convVal ));
-			$setCaluse[] = "{$field}={$convVal}";
+            $convVal = $this->formatterToDB( $field, $convVal );
+        //    $convVal = $this->link->quote( $this->formatterToDB( $field, $convVal ));
+        	$setCaluse[] = "{$field}=?";
+            $setParameter[] = $convVal;
 		}
 		if ( count( $setCaluse ) < 1 )	{
 			$this->errorMessage[] = 'No data to update.';
@@ -168,12 +171,14 @@ class DB_PDO extends DB_Base	{
 			$queryClause = "WHERE {$queryClause}";
 		}
 		$sql = "UPDATE {$this->tableName} SET {$setCaluse} {$queryClause}";
+        $prepSQL = $this->link->prepare( $sql );
 		if ( $this->isDebug )	{
-            $this->debugMessage[] = $sql;
+            $this->debugMessage[] = $prepSQL->queryString;
         }
-		$result = $this->link->query($sql);
+	//	$result = $this->link->query($sql);
+        $result = $prepSQL->execute( $setParameter );
 		if ( $result === false ) {
-			$this->errorMessageStore( 'Update:'+$sql );
+			$this->errorMessageStore( 'Update:'+$prepSQL->erroInfo );
 			return false;
 		}
 

@@ -53,12 +53,17 @@ var IM_DBAdapter = {
         for ( var oneItem in INTERMediator.additionalCondition ) {
             if ( detaSource['name'] == oneItem )    {
                 var criteraObject = INTERMediator.additionalCondition[oneItem];
-                params += "&ext_cond" + extCount + "field=" + encodeURI(criteraObject["field"]);
-                if ( criteraObject["operator"] != null )    {
-                    params += "&ext_cond" + extCount + "operator=" + encodeURI(criteraObject["operator"]);
+                if ( criteraObject["field"] != null )   {
+                    criteraObject = [criteraObject];
                 }
-                params += "&ext_cond" + extCount + "value=" + encodeURI(criteraObject["value"]);
-                extCount++;
+                for ( var index in criteraObject )  {
+                    params += "&ext_cond" + extCount + "field=" + encodeURI(criteraObject[index]["field"]);
+                    if ( criteraObject[index]["operator"] != null )    {
+                        params += "&ext_cond" + extCount + "operator=" + encodeURI(criteraObject[index]["operator"]);
+                    }
+                    params += "&ext_cond" + extCount + "value=" + encodeURI(criteraObject[index]["value"]);
+                    extCount++;
+                }
             }
         }
         params += "&randkey" + Math.random();    // For ie...
