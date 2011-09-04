@@ -23,60 +23,7 @@ var IM_DBAdapter = {
         parentKeyVal:
         extraCondition: "field,operator,value"
      */
-	db_query: function (detaSource, fields, parentKeyVal, extraCondition, useOffset) {
-
-		// Create string for the parameter.
-		var params = "?access=select&table=" + encodeURI(detaSource['name']);
-		params += "&records=" + encodeURI((detaSource['records'] != null) ? detaSource['records'] : 10000000);
-		var arCount = fields.length;
-		for (var i = 0; i < arCount; i++) {
-			params += "&field_" + i + "=" + encodeURI(fields[i]);
-		}
-        if (parentKeyVal != null) {
-            params += "&parent_keyval=" + encodeURI(parentKeyVal);
-        }
-        if ( useOffset && INTERMediator.startFrom != null ) {
-            params += "&start=" + encodeURI(INTERMediator.startFrom);
-        }
-        var extCount = 0;
-		if (extraCondition != null) {
-            var compOfCond = extraCondition.split("=");
-            params += "&ext_cond" + extCount + "field=" + encodeURI(compOfCond[0]);
-            params += "&ext_cond" + extCount + "operator=" + encodeURI("=");
-            compOfCond.shift();
-            params += "&ext_cond" + extCount + "value=" + encodeURI(compOfCond.join("="));
-            extCount++;
-		}
-        for ( var oneItem in INTERMediator.additionalCondition ) {
-            if ( detaSource['name'] == oneItem )    {
-                var criteraObject = INTERMediator.additionalCondition[oneItem];
-                params += "&ext_cond" + extCount + "field=" + encodeURI(criteraObject["field"]);
-                if ( criteraObject["operator"] != null )    {
-                    params += "&ext_cond" + extCount + "operator=" + encodeURI(criteraObject["operator"]);
-                }
-                params += "&ext_cond" + extCount + "value=" + encodeURI(criteraObject["value"]);
-                extCount++;
-            }
-        }
-        params += "&randkey" + Math.random();    // For ie...
-            // IE uses caches as the result in spite of several headers. So URL should be randomly.
-		var appPath = IM_getEntryPath();
-
-        INTERMediator.debugMessages.push( "Access: " + appPath + params );
-        var dbresult = '';
-		myRequest = new XMLHttpRequest();
-		try {
-			myRequest.open('GET', appPath + params, false);
-			myRequest.send(null);
-			eval(myRequest.responseText);
-            if (( detaSource['paging'] != null) && ( detaSource['paging'] == true ))  {
-                INTERMediator.pagedSize = detaSource['records'];
-                INTERMediator.pagedAllCount = resultCount;
-            }
-
-		} catch (e) {
-			INTERMediator.errorMessages.push("ERROR in db_query=" + e + "/" + myRequest.responseText);
-		}
+	db_query: function (args) {
 		return dbresult;
 	},
 
@@ -87,7 +34,7 @@ var IM_DBAdapter = {
         objectSpec[keying]
         newValue
      */
-	db_update: function (objectSpec, newValue) {
+	db_update: function (args) {
 		var params = "?access=update&table=" + encodeURI(objectSpec['table']);
         var extCount = 0;
 		if ( objectSpec['keying'] != null ) {
@@ -118,7 +65,7 @@ var IM_DBAdapter = {
 		return dbresult;
 	},
 
-    db_delete: function( tableName, fieldsValues )   {
+    db_delete: function( args )   {
         var params = "?access=delete&table=" + encodeURI(tableName);
         var count = 0;
         for ( var oneField in fieldsValues )    {
@@ -140,7 +87,7 @@ var IM_DBAdapter = {
         INTERMediator.flushMessage();
     },
 
-    db_createRecord: function( tableName, fieldsValues ) {
+    db_createRecord: function( args ) {
         var params = "?access=insert&table=" + encodeURI(tableName);
         var count = 0;
         for ( var oneField in fieldsValues )    {

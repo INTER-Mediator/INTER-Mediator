@@ -9,11 +9,6 @@ Change Log will be supplied by English only.
 To Do, that is left-over.
 =================================
 
-Ver.0.7.X
-- Browser check and showing suitable message when it's not compatible.
-- Re-engineering the API used on application
-- Correct IE issues for textarea element
-
 Ver.0.8.X
 - Objective handling for the data in database.
 - Single query can retrieve main and related tables simultaneously.
@@ -38,14 +33,14 @@ Known Issues for Browsers:
 
 Internet Explorer 7
 - Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
-- The next line in TEXTAREA is not work properly. They are ignored.
-
-Internet Explorer 9
-- The next line in TEXTAREA is not work properly. They are ignored.
 
 =================================
+Ver.0.7.5/Ver.0.8.0=== will be next release
 
-Ver.0.7.4 === will be next release
+Ver.0.7.4 (2011/9/5)
+- Re-engineering the API used on application (Adapter_DBServer.jp's functions).
+- IE and TEXTAREA issue is solved (I hope so). But innerText mode is not good for IE. It's suitable to use textNode mode.
+- Browser check and showing suitable message when it's not compatible.
 
 Ver.0.7.3 (2011/9/1)
 - All interface from HTML page exists in the INTERMediatorOnPage object.

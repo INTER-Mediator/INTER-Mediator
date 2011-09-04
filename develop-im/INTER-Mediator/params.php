@@ -25,13 +25,14 @@ $dbOption = array();
 $dbUser = 'web';
 $dbPassword = 'password';
 
-/* Browser Compatibility Check: (Not implemented)
+/* Browser Compatibility Check:
  */
 $browserCompatibility = array(
-    'Explorer'=>array('7+'),
-    'FireFox'=>array('2+'),
-    'Safari'=>array('3+'),
-    'Chrome'=>array('3+'),
+    'msie'=>'7+',
+    'FireFox'=>'2+',
+    'Safari'=>array('Mac'=>'4+','Win'=>'4+'),
+    'Chrome'=>'1+',
+    'Opera'=>'1+'
 );
 
 

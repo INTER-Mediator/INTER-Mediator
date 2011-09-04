@@ -36,6 +36,8 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
     header( 'Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0' );
     header( 'Expires: 0' );
 
+    include( 'params.php' );
+    
     if ( ! isset( $_GET['access'] ) )	{
 		echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Adapter_DBServer.js');
@@ -51,6 +53,7 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
             $messageClass = new MessageStrings();
         }
         echo "function IM_getMessages(){return ", arrayToJS( $messageClass->getMessages(), '' ), ";}{$LF}";
+        echo "function IM_browserCompatibility(){return ", arrayToJS( $browserCompatibility, '' ), ";}{$LF}";
         echo "INTERMediator.debugMode=", $debug ? "true" : "false", ";{$LF}";
 	} else {
        $fieldsRequired = array();
@@ -73,8 +76,6 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
 				break;
 			}
 		}
-
-        include( 'params.php' );
 
         $dbClassName = isset( $dbspec['db-class'] ) ? $dbspec['db-class'] : (isset ( $dbClass ) ? $dbClass : '');
 		$dbClassName = "DB_{$dbClassName}";
