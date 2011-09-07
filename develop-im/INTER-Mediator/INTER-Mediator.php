@@ -23,9 +23,9 @@ require_once( 'MessageStrings_ja.php' );
  * &records=<how many records should it return>
  * &field_<N>=<field name>
  * &value_<N>=<value of the field>
- * &ext_cond<N>field=<Extra criteria's field name>
- * &ext_cond<N>operator=<Extra criteria's operator>
- * &ext_cond<N>value=<Extra criteria's value>
+ * &condition<N>field=<Extra criteria's field name>
+ * &condition<N>operator=<Extra criteria's operator>
+ * &condition<N>value=<Extra criteria's value>
  * &parent_keyval=<value of the foreign key field>
  */
 
@@ -83,8 +83,6 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
 		eval( "\$dbInstance = new {$dbClassName}();" );
 		if ( $debug )	{
             $dbInstance->setDebugMode();
-
-
         }
         $dbInstance->setDbSpecServer(
             isset( $dbspec['server'] ) ? $dbspec['server'] : (isset ( $dbServer ) ? $dbServer : ''));
@@ -110,7 +108,7 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
 		if ( isset($options['formatter']))  {
             $dbInstance->setFormatter( $options['formatter'] );
         }
-		$dbInstance->setTargetTable( $_GET['table'] );
+		$dbInstance->setTargetName( $_GET['name'] );
         if ( isset($_GET['start']))	{
             $dbInstance->setStart( $_GET['start'] );
         }
@@ -118,11 +116,11 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
             $dbInstance->setRecordCount( $_GET['records'] );
         }
         for ( $count = 0 ; $count < 10000 ; $count++ )  {
-            if ( isset($_GET["ext_cond{$count}field"]))	{
+            if ( isset($_GET["condition{$count}field"]))	{
                 $dbInstance->setExtraCriteria(
-                    $_GET["ext_cond{$count}field"],
-                    $_GET["ext_cond{$count}operator"],
-                    $_GET["ext_cond{$count}value"] );
+                    $_GET["condition{$count}field"],
+                    $_GET["condition{$count}operator"],
+                    $_GET["condition{$count}value"] );
             } else {
                 break;
             }

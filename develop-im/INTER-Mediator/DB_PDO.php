@@ -25,7 +25,7 @@ class DB_PDO extends DB_Base	{
 	
 	function getFromDB(  )	{
 		$tableInfo = $this->getDataSourceTargetArray();
-        $tableName = $this->tableName;
+        $tableName = $this->getEntityForRetrieve();
 
 		try {
 			$this->link = new PDO( 	$this->getDbSpecDSN(),
@@ -123,6 +123,7 @@ class DB_PDO extends DB_Base	{
 	}
 	
 	function setToDB( )	{
+        $tableName = $this->getEntityForUpdate();
 		try {
 			$this->link = new PDO( 	$this->getDbSpecDSN(),
 									$this->getDbSpecUser(),
@@ -170,7 +171,7 @@ class DB_PDO extends DB_Base	{
 		if ( $queryClause != '' )	{
 			$queryClause = "WHERE {$queryClause}";
 		}
-		$sql = "UPDATE {$this->tableName} SET {$setCaluse} {$queryClause}";
+		$sql = "UPDATE {$tableName} SET {$setCaluse} {$queryClause}";
         $prepSQL = $this->link->prepare( $sql );
 		if ( $this->isDebug )	{
             $this->debugMessage[] = $prepSQL->queryString;
@@ -200,8 +201,8 @@ class DB_PDO extends DB_Base	{
 	}
 	
 	function newToDB( )	{
-        $tableName = $this->tableName;
         $tableInfo = $this->getDataSourceTargetArray();
+        $tableName = $this->getEntityForUpdate();
 
         try {
             $this->link = new PDO( 	$this->getDbSpecDSN(),
@@ -272,8 +273,8 @@ class DB_PDO extends DB_Base	{
 	}
 	
 	function deleteFromDB( )	{
-        $tableName = $this->tableName;
         $tableInfo = $this->getDataSourceTargetArray();
+        $tableName = $this->getEntityForUpdate();
 
         try {
             $this->link = new PDO( 	$this->getDbSpecDSN(),
@@ -300,7 +301,7 @@ class DB_PDO extends DB_Base	{
 				}
 			}
 		}
-
+/*
 		$whereClause = array();
         $countFields = count( $this->fieldsRequired );
 		for ( $i = 0 ; $i < $countFields ; $i++ )	{
@@ -315,8 +316,13 @@ class DB_PDO extends DB_Base	{
 			$this->errorMessageStore( 'Don\'t delete with no ciriteria.' );
 			return false;
 		}
-		$whereClause = implode( ',', $whereClause );
-		$sql = "DELETE FROM {$tableName} WHERE {$whereClause}";
+		$whereClause = implode( ',', $whereClause );    */
+        $queryClause = $this->getWhereClause();
+        if ( $queryClause == '' )	{
+            $this->errorMessageStore( 'Don\'t delete with no ciriteria.' );
+			return false;
+        }
+		$sql = "DELETE FROM {$tableName} WHERE {$queryClause}";
 		if ( $this->isDebug )	{
             $this->debugMessage[] = $sql;
         }

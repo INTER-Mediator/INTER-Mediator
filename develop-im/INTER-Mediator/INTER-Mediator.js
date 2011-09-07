@@ -602,14 +602,17 @@ var INTERMediator = {
         if (changedObj != null) {
             // Check the current value of the field
             var objectSpec = INTERMediator.updateRequiredObject[idValue];
+            var keyingComp = objectSpec['keying'].split('=');
+            var keyingField = keyingComp[0];
+            keyingComp.shift();
+            var keyingValue = keyingComp.join('=');
             var currentVal = IM_DBAdapter.db_query({
                                     name:objectSpec['name'],
-                                    table:(objectSpec['table']==null)?objectSpec['name']:objectSpec['table'],
                                     records:1,
                                     paging:objectSpec['paging'],
                                     fields:[objectSpec['field']],
                                     parentkeyvalue:null,
-                                    extracondition:objectSpec['keying'],
+                                    conditions:[{field:keyingField,operator:'=',value:keyingValue}],
                                     useoffset: false});
             if (currentVal == null || currentVal[0] == null || currentVal[0][objectSpec['field']] == null) {
                 alert(INTERMediatorLib.getInsertedString(IM_getMessages()[1003], [objectSpec['field']]));
@@ -651,10 +654,8 @@ var INTERMediator = {
             //    IM_DBAdapter.db_update(objectSpec, newValue);
                 var criteria =  objectSpec['keying'].split('=');
                 IM_DBAdapter.db_update({
-                    table:objectSpec['table'],
-                    key:criteria[0],
-                    operator:'=',
-                    value:criteria[1],
+                    name:objectSpec['name'],
+                    conditions:[{field:criteria[0],operator:'=',value:criteria[1]}],
                     dataset:[{field:objectSpec['field'], value:newValue}]});
 
                 objectSpec['initialvalue'] = newValue;
@@ -669,10 +670,10 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    deleteButton: function (tableName, keyField, keyValue, removeNodes) {
+    deleteButton: function (targetName, keyField, keyValue, removeNodes) {
         IM_DBAdapter.db_delete({
-            table:tableName,
-            dataset:[{field:keyField,value:keyValue}]
+            name:targetName,
+            conditions:[{field:keyField,operator:'=',value:keyValue}]
         });
         for (var key in removeNodes) {
             var removeNode = document.getElementById(removeNodes[key]);
@@ -681,23 +682,23 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    insertButton: function (tableName, keyField, keyValue, updateNodes, removeNodes) {
+    insertButton: function (targetName, keyField, keyValue, updateNodes, removeNodes) {
         var ds = IM_getDataSources(); // Get DataSource parameters
-        var targetKey = '';
-        for (var key in ds) { // Search this table from DataSource
-            if (INTERMediatorLib.getTargetTableForUpdate(ds[key]) == tableName) {
-                targetKey = key;
+        var targetKey = -1;
+        for ( var index in ds ) {
+            if ( ds[index]['name'] == targetName )  {
+                targetKey = index;
                 break;
             }
         }
-
         var recordSet = [{field:keyField, value:keyValue}];
-        for (var index in ds[key]['default-values']) {
-            recordSet.push({
-                field:ds[key]['default-values'][index]['field'],
-                value:ds[key]['default-values'][index]['value']});
+        if ( ds[targetKey]['default-values'] != null )  {
+            for (var index in ds[targetKey]['default-values']) {
+                        recordSet.push({field:ds[targetKey]['default-values'][index]['field'],
+                                        value:ds[targetKey]['default-values'][index]['value']});
+            }
         }
-        IM_DBAdapter.db_createRecord({table:tableName, dataset:recordSet});
+        IM_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         for (var key in removeNodes) {
             var removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
@@ -712,11 +713,11 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    insertRecordFromNavi: function (tableName, keyField) {
+    insertRecordFromNavi: function (targetName, keyField) {
         var ds = IM_getDataSources(); // Get DataSource parameters
         var targetKey = '';
         for (var key in ds) { // Search this table from DataSource
-            if (INTERMediatorLib.getTargetTableForUpdate(ds[key]) == tableName) {
+            if (INTERMediatorLib.getTargetTableForUpdate(ds[key]) == targetName) {
                 targetKey = key;
                 break;
             }
@@ -728,7 +729,7 @@ var INTERMediator = {
                 field:ds[key]['default-values'][index]['field'],
                 value:ds[key]['default-values'][index]['value']});
         }
-        var newId = IM_DBAdapter.db_createRecord({table:tableName, dataset:recordSet});
+        var newId = IM_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         if (newId > -1) {
             var restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
@@ -737,17 +738,17 @@ var INTERMediator = {
                 value: newId
             };
             INTERMediator.additionalCondition = {};
-            INTERMediator.additionalCondition[tableName] = fieldObj;
+            INTERMediator.additionalCondition[targetName] = fieldObj;
             INTERMediator.construct(true);
             INTERMediator.additionalCondition = restore;
         }
         INTERMediator.flushMessage();
     },
 
-    deleteRecordFromNavi: function (tableName, keyField, keyValue) {
+    deleteRecordFromNavi: function (targetName, keyField, keyValue) {
         IM_DBAdapter.db_delete({
-            table:tableName,
-            dataset:[{field:keyField,value:keyValue}]
+            name:targetName,
+            conditions:[{field:keyField,operator:'=',value:keyValue}]
         });
         if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 2) {
             INTERMediator.startFrom--;
@@ -1038,12 +1039,11 @@ var INTERMediator = {
 
                 var targetRecords = IM_DBAdapter.db_query({
                                         name:ds[targetKey]['name'],
-                                        table:(ds[targetKey]['view']!=null)?ds[targetKey]['view']:ds[targetKey]['name'],
                                         records:ds[targetKey]['records'],
                                         paging:ds[targetKey]['paging'],
                                         fields:fieldList,
                                         parentkeyvalue:foreignValue,
-                                        extracondition:null,
+                                        conditions:null,
                                         useoffset:true});
                 //IM_DBAdapter.db_query(ds[targetKey], fieldList, foreignValue, null, true);
                 // Access database and get records
@@ -1225,7 +1225,7 @@ var INTERMediator = {
                                 'id': thisId,
                                 'event': 'click',
                                 'todo': new Function("INTERMediator.deleteButton(" + "'"
-                                    + INTERMediatorLib.getTargetTableForUpdate(ds[targetKey])
+                                    + ds[targetKey]['name']
                                     + "'," + "'" + keyField + "'," + "'" + keyValue + "',"
                                     + INTERMediatorLib.objectToString(shouldDeleteNodes) + ");")
                             });
@@ -1250,7 +1250,7 @@ var INTERMediator = {
                         } else {
                             deleteInsertOnNavi.push({
                                 kind: 'DELETE',
-                                table: INTERMediatorLib.getTargetTableForUpdate(ds[targetKey]),
+                                name: ds[targetKey]['name'],
                                 key: keyField,
                                 value: keyValue
                             });
@@ -1321,14 +1321,13 @@ var INTERMediator = {
                             buttonNode,
                             'click',
                             new Function("INTERMediator.insertButton("
-                                + "'" + INTERMediatorLib.getTargetTableForUpdate(ds[targetKey]) + "'," + "'"
-                                + ds[targetKey]['foreign-key'] + "'," + "'" + foreignValue + "'," + "'"
-                                + node.getAttribute('id') + "',"
+                                + "'" + ds[targetKey]['name'] + "'," + "'" + ds[targetKey]['foreign-key'] + "'," + "'"
+                                + foreignValue + "'," + "'" + node.getAttribute('id') + "',"
                                 + (shouldRemove == null ? 'null' : INTERMediatorLib.objectToString(shouldRemove)) + ");"));
                     } else {
                         deleteInsertOnNavi.push({
                             kind: 'INSERT',
-                            table: INTERMediatorLib.getTargetTableForUpdate(ds[targetKey]),
+                            name: ds[targetKey]['name'],
                             key: ds[targetKey]['key']
                         });
                     }
@@ -1458,20 +1457,20 @@ var INTERMediator = {
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
                         node.appendChild(
-                            document.createTextNode(IM_getMessages()[3] + ': ' + deleteInsertOnNavi[i]['table']));
+                            document.createTextNode(IM_getMessages()[3] + ': ' + deleteInsertOnNavi[i]['name']));
                         node.setAttribute('class', 'IM_NAV_button');
                         INTERMediatorLib.addEvent(node, 'click',
-                            new Function("INTERMediator.insertRecordFromNavi(" + "'" + deleteInsertOnNavi[i]['table']
+                            new Function("INTERMediator.insertRecordFromNavi(" + "'" + deleteInsertOnNavi[i]['name']
                                 + "'," + "'" + deleteInsertOnNavi[i]['key'] + "'" + ");"));
                         break;
                     case 'DELETE':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
                         node.appendChild(
-                            document.createTextNode(IM_getMessages()[4] + ': ' + deleteInsertOnNavi[i]['table']));
+                            document.createTextNode(IM_getMessages()[4] + ': ' + deleteInsertOnNavi[i]['name']));
                         node.setAttribute('class', 'IM_NAV_button');
                         INTERMediatorLib.addEvent(node, 'click',
-                            new Function("INTERMediator.deleteRecordFromNavi(" + "'" + deleteInsertOnNavi[i]['table']
+                            new Function("INTERMediator.deleteRecordFromNavi(" + "'" + deleteInsertOnNavi[i]['name']
                                 + "'," + "'" + deleteInsertOnNavi[i]['key'] + "',"
                                 + "'" + deleteInsertOnNavi[i]['value'] + "'" + ");"));
                         break;

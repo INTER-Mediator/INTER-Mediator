@@ -21,10 +21,9 @@ class DB_Base	{
     var $dbSpecOption = null;
 
 	var $dataSource = null;
+    var $targetDataSource = null;
 	var $extraCriteria = array();
-	var $tableName = null;
 	var $mainTableCount = 0;
-//	var $mainTalbeKeyValue = null;
 	var $fieldsRequired = null;
 	var $fieldsValues = null;
 	var $formatter = null;
@@ -35,14 +34,82 @@ class DB_Base	{
 	var $debugMessage = array();
 	var $isDebug = false;
 	var $parentKeyValue = null;
+    var $dataSourceName = '';
 
 	function __construct()	{
 	}
-	
-	function setParentKeyValue( $val )	{
-		$this->parentKeyValue = $val;
-	}
 
+    /* Call on INTER-Mediator.php */
+    function setDataSource( $src )		{   $this->dataSource = $src;       }
+    function setSeparator( $sep )		{	$this->separator = $sep;        }
+    function setTargetName( $val )      {   $this->dataSourceName = $val;   }
+	function setParentKeyValue( $val )	{   $this->parentKeyValue = $val;   }
+    function setTargetFields( $fields )	{	$this->fieldsRequired = $fields;}
+    function setValues( $values )	    {	$this->fieldsValues = $values;  }
+    function setStart( $st )		    {	$this->start = $st;	            }
+    function setRecordCount( $sk )		{	$this->recordCount = $sk;		}
+    function setExtraCriteria( $field, $operator, $value )	{
+        $this->extraCriteria[] = array( 'field'=>$field, 'operator'=>$operator, 'value'=>$value);
+    }
+
+    /* get the information for the 'name'. */
+    function getDataSourceTargetArray()	{
+        if ( $this->targetDataSource == null )  {
+            foreach( $this->dataSource as $record )	{
+                if ( $record['name'] == $this->dataSourceName )	{
+                    $this->targetDataSource = $record;
+                    return $record;
+                }
+            }
+        } else {
+            return $this->targetDataSource;
+        }
+        return null;
+    }
+
+    function getEntityForRetrieve() {
+        $dsrc = $this->getDataSourceTargetArray();
+        if ( isset( $dsrc['view']) )  {
+            return $dsrc['view'];
+        }
+        return $dsrc['name'];
+    }
+
+    function getEntityForUpdate()   {
+        $dsrc = $this->getDataSourceTargetArray();
+        if ( isset( $dsrc['table']) )  {
+            return $dsrc['table'];
+        }
+        return $dsrc['name'];
+    }
+
+    /* Database connection paramters */
+    function setDbSpecServer($str)  {   $this->dbSpecServer = $str;   }
+    function getDbSpecServer()      {   return $this->dbSpecServer;   }
+    function setDbSpecPort($str)    {   $this->dbSpecPort = $str;     }
+    function getDbSpecPort()        {   return $this->dbSpecPort;     }
+    function setDbSpecUser($str)    {   $this->dbSpecUser = $str;     }
+    function getDbSpecUser()        {   return $this->dbSpecUser;     }
+    function setDbSpecPassword($str){   $this->dbSpecPassword = $str; }
+    function getDbSpecPassword()    {   return $this->dbSpecPassword; }
+    function setDbSpecDataType($str){   $this->dbSpecDataType = $str; }
+    function getDbSpecDataType()    {   return $this->dbSpecDataType; }
+    function setDbSpecDatabase($str){   $this->dbSpecDatabase = $str; }
+    function getDbSpecDatabase()    {   return $this->dbSpecDatabase; }
+    function setDbSpecProtocol($str){   $this->dbSpecProtocol = $str; }
+    function getDbSpecProtocol()    {   return $this->dbSpecProtocol; }
+    function setDbSpecDSN($str)     {   $this->dbSpecDSN = $str;      }
+    function getDbSpecDSN()         {   return $this->dbSpecDSN;      }
+    function setDbSpecOption($str)  {   $this->dbSpecOption = $str;   }
+    function getDbSpecOption()      {   return $this->dbSpecOption;   }
+
+	// The following methods should be implemented in the inherited class.
+	function getFromDB( )	{	}
+	function setToDB( )	{	}
+	function newToDB( )	{	}
+	function deleteFromDB( )	{	}
+
+    /* Debug and Messages */
 	function setDebugMessage( $str )		{
         if ( $this->isDebug )   {
     		$this->debugMessage[] = $str;
@@ -61,113 +128,11 @@ class DB_Base	{
 		return $this->errorMessage;
 	}
 
-    function setDbSpecServer($str)   {
-        $this->dbSpecServer = $str;
-    }
-    function getDbSpecServer()   {
-        return $this->dbSpecServer;
-    }
-    function setDbSpecPort($str) {
-        $this->dbSpecPort = $str;
-    }
-    function getDbSpecPort() {
-        return $this->dbSpecPort;
-    }
-    function setDbSpecUser($str) {
-        $this->dbSpecUser = $str;
-    }
-    function getDbSpecUser() {
-        return $this->dbSpecUser;
-    }
-    function setDbSpecPassword($str) {
-        $this->dbSpecPassword = $str;
-    }
-    function getDbSpecPassword() {
-        return $this->dbSpecPassword;
-    }
-    function setDbSpecDataType($str) {
-        $this->dbSpecDataType = $str;
-    }
-    function getDbSpecDataType() {
-        return $this->dbSpecDataType;
-    }
-    function setDbSpecDatabase($str) {
-        $this->dbSpecDatabase = $str;
-    }
-    function getDbSpecDatabase() {
-        return $this->dbSpecDatabase;
-    }
-    function setDbSpecProtocol($str) {
-        $this->dbSpecProtocol = $str;
-    }
-    function getDbSpecProtocol() {
-        return $this->dbSpecProtocol;
-    }
-    function setDbSpecDSN($str) {
-        $this->dbSpecDSN = $str;
-    }
-    function getDbSpecDSN() {
-        return $this->dbSpecDSN;
-    }
-    function setDbSpecOption($str)  {
-        $this->dbSpecOption = $str;
-    }
-    function getDbSpecOption()  {
-        return $this->dbSpecOption;
-    }
-
 	function setDebugMode()	{
 		$this->isDebug = true;
 	}
-	
-	function setTargetTable( $table )	{
-		$this->tableName = $table;
-	}
-	
-	function setTargetFields( $fields )	{
-		$this->fieldsRequired = $fields;
-	}
-	
-	function setValues( $values )	{
-		$this->fieldsValues = $values;
-	}
-	
-	function setSeparator( $sep )			{
-		$this->separator = $sep;
-	}
-	
-	function setDataSource( $src )			{	
-		$this->dataSource = $src;
-	}
-	
-	function getDataSourceTargetArray()	{
-		foreach( $this->dataSource as $record )	{
-			if ( $record['name'] == $this->tableName )	{
-				return $record;
-			}
-		}
-	}
-	
-	function setCreteria( $criteria )		{	
-		$this->criteria = $criteria;	
-	}
-	
-	function setSortOrder( $sortorder )		{	
-		$this->sortOrder = $sortorder;	
-	}
-	
-	function setStart( $st )		{
-		$this->start = $st;
-	}
 
-	function setRecordCount( $sk )		{	
-		$this->recordCount = $sk;	
-	}
-
-	function setExtraCriteria( $field, $operator, $value )	{
-		$this->extraCriteria[] = array( 'field'=>$field, 'operator'=>$operator, 'value'=>$value);
-	}
-	
+	/* Formatter processing */
 	function setFormatter( $fmt )		{
 		if ( is_array( $fmt ))	{
 			$this->formatter = array();
@@ -199,11 +164,8 @@ class DB_Base	{
 		}
 		return $data;
 	}
-	
-	function getMainTableCount()	{	
-		return $this->mainTableCount;
-	}
 
+    /* Genrate SQL Sort and Where clause */
 	function getSortClause()	{
 		$tableInfo = $this->getDataSourceTargetArray();
 		$sortClause = array();
@@ -227,47 +189,37 @@ class DB_Base	{
 		$queryClause = '';
 		$queryClauseArray = array();
 		if ( isset( $tableInfo['query'][0] ))	{
-			if ( $tableInfo['query'][0]['field'] == '__clause__' )	{
-/*				$queryClause = "{$tableInfo['query'][0]['value']}";
-				if ( $this->isMainTable( $tableName ) )	{
-					foreach( $this->extraCriteria as $field=>$value )	{
-						$escedField = $this->link->quote( $field );
-						$escedVal = $this->link->quote( $value );
-						$queryClause .= "AND ({$escedField} = '{$escedVal}')";
-					}
-				}
-*/			} else {
-				$chanckCount = 0;
-				$insideOp = ' AND ';	$outsiceOp = ' OR ';
-				foreach( $tableInfo['query'] as $condition )	{
-					if ( $condition['field'] == '__operation__' )	{
-						$chanckCount++;
-						if ( $condition['operator'] == 'ex' )	{
-							$insideOp = ' OR ';	$outsiceOp = ' AND ';
-						}
-					} else {
-						if ( isset( $condition['value'] ))	{
-							$escedVal = $this->link->quote( $condition['value'] );
-							if ( isset( $condition['operator'] ))	{
-								$queryClauseArray[$chanckCount][]
-                                        = "{$condition['field']} {$condition['operator']} {$escedVal}";
-							} else {
-								$queryClauseArray[$chanckCount][]
-                                        = "{$condition['field']} = {$escedVal}";
-							}
-						} else {
-							$queryClauseArray[$chanckCount][]
-                                    = "{$condition['field']} {$condition['operator']}";
-						}
-						$chanckCount++;
-					}
-				}
-				foreach( $queryClauseArray as $oneTerm )	{
-					$oneClause[] = '(' . implode( $insideOp, $oneTerm ) . ')';
-				}
-				$queryClause = implode( $outsiceOp, $oneClause );
-			}
-		} 
+            $chanckCount = 0;
+            $insideOp = ' AND ';	$outsiceOp = ' OR ';
+            foreach( $tableInfo['query'] as $condition )	{
+                if ( $condition['field'] == '__operation__' )	{
+                    $chanckCount++;
+                    if ( $condition['operator'] == 'ex' )	{
+                        $insideOp = ' OR ';	$outsiceOp = ' AND ';
+                    }
+                } else {
+                    if ( isset( $condition['value'] ))	{
+                        $escedVal = $this->link->quote( $condition['value'] );
+                        if ( isset( $condition['operator'] ))	{
+                            $queryClauseArray[$chanckCount][]
+                                    = "{$condition['field']} {$condition['operator']} {$escedVal}";
+                        } else {
+                            $queryClauseArray[$chanckCount][]
+                                    = "{$condition['field']} = {$escedVal}";
+                        }
+                    } else {
+                        $queryClauseArray[$chanckCount][]
+                                = "{$condition['field']} {$condition['operator']}";
+                    }
+                    $chanckCount++;
+                }
+            }
+            foreach( $queryClauseArray as $oneTerm )	{
+                $oneClause[] = '(' . implode( $insideOp, $oneTerm ) . ')';
+            }
+            $queryClause = implode( $outsiceOp, $oneClause );
+        }
+
 		$queryClauseArray = array();
 		foreach( $this->extraCriteria as $criteria )	{
             $field = $criteria['field'];
@@ -288,12 +240,6 @@ class DB_Base	{
 		return $queryClause;
 	}
 
-	// The following methods should be implemented in the inherited class.
-	function getFromDB( )	{	}
-//	function countOnDB( )	{	}
-	function setToDB( $tableName, $data )	{	}
-	function newToDB( $tableName, $data, &$keyValue )	{	}
-	function deleteFromDB( $tableName, $data )	{	}
-	
+
 }
 ?>

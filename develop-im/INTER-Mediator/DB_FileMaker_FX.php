@@ -41,7 +41,7 @@ class DB_FileMaker_FX extends DB_Base	{
             $limitParam = $this->recordCount;
         }
 
-        $fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, $limitParam );
+        $fx->setDBData( $this->getDbSpecDatabase(), $this->getEntityForRetrieve(), $limitParam );
         $skipParam = 0;
         if ( isset($tableInfo['paging']) and $tableInfo['paging'] == true ) {
             $skipParam = $this->start;
@@ -114,7 +114,7 @@ class DB_FileMaker_FX extends DB_Base	{
                 foreach( $oneRecord as $field=>$dataArray )	{
                     if ( count( $dataArray ) == 1 )	{
                         $oneRecordArray[$field] = $this->formatterFromDB(
-                            "{$this->tableName}{$this->separator}$field", $dataArray[0] );
+                            "{$this->getEntityForRetrieve()}{$this->separator}$field", $dataArray[0] );
                     }
                 }
                 $returnArray[] = $oneRecordArray;
@@ -136,7 +136,7 @@ class DB_FileMaker_FX extends DB_Base	{
 		$tableInfo = $this->getDataSourceTargetArray();
 		$fx->setCharacterEncoding( 'UTF-8' );
 		$fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
-		$fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+		$fx->setDBData( $this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1 );
 	//	$fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
 		foreach ( $this->extraCriteria as $value )	{
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
@@ -154,7 +154,7 @@ class DB_FileMaker_FX extends DB_Base	{
 				
 				$fx->setCharacterEncoding( 'UTF-8' );
 				$fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
-        		$fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+        		$fx->setDBData( $this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1 );
 				$fx->SetRecordID( $recId );
 				$counter = 0;
 				foreach ( $this->fieldsRequired as $field )	{
@@ -190,7 +190,7 @@ class DB_FileMaker_FX extends DB_Base	{
 				}
 				$result = $fx->DoFxAction( FX_ACTION_EDIT, TRUE, TRUE, 'full' );
 				if( $result['errorCode'] > 0 )	{
-					$this->errorMessage[] = "FX reports error at edit action: table={$this->tableName}, code={$result['errorCode']}, url={$result['URL']}<hr>";
+					$this->errorMessage[] = "FX reports error at edit action: table={$this->getEntityForUpdate()}, code={$result['errorCode']}, url={$result['URL']}<hr>";
 					return false;
 				}
 				if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
@@ -213,13 +213,13 @@ class DB_FileMaker_FX extends DB_Base	{
             $this->getDbSpecProtocol());
         $fx->setCharacterEncoding( 'UTF-8' );
         $fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
-        $fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+        $fx->setDBData( $this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1 );
         $countFields = count( $this->fieldsRequired );
 		for ( $i = 0 ; $i < $countFields ; $i++ )	{
             $field = $this->fieldsRequired[$i];
             $value = $this->fieldsValues[$i];
 			if ( $field != $keyFieldName){
-				$filedInForm = "{$this->tableNam}{$this->separator}{$field}";
+				$filedInForm = "{$this->getEntityForUpdate()}{$this->separator}{$field}";
 				$convVal = $this->unifyCRLF( (is_array( $value )) ? implode( "\r", $value ) : $value );
 				$fx->AddDBParam( $field, $this->formatterToDB( $filedInForm, $convVal ));
 			}
@@ -267,13 +267,17 @@ class DB_FileMaker_FX extends DB_Base	{
             $this->getDbSpecProtocol());
         $fx->setCharacterEncoding( 'UTF-8' );
         $fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
-        $fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+        $fx->setDBData( $this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1 );
         $countFields = count( $this->fieldsRequired );
-        for ( $i = 0 ; $i < $countFields ; $i++ )	{
+/*        for ( $i = 0 ; $i < $countFields ; $i++ )	{
             $field = $this->fieldsRequired[$i];
             $value = $this->fieldsValues[$i];
 			$fx->AddDBParam( $field, $value, 'eq' );
-		}
+		}   */
+        foreach ( $this->extraCriteria as $value )	{
+            $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
+            $fx->AddDBParam( $value['field'], $value['value'], $op );
+        }
 		$result = $this->fxResult = $fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
 		if ( $this->isDebug )	{
             $this->debugMessage[] = $result['URL'];
@@ -288,7 +292,7 @@ class DB_FileMaker_FX extends DB_Base	{
 				
 				$fx->setCharacterEncoding( 'UTF-8' );
                 $fx->setDBUserPass( $this->getDbSpecUser(), $this->getDbSpecPassword() );
-                $fx->setDBData( $this->getDbSpecDatabase(), $this->tableName, 1 );
+                $fx->setDBData( $this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1 );
 				$fx->SetRecordID( $recId );
 				if ( isset( $tableInfo['global'] ))	{
 					foreach( $tableInfo['global'] as $condition )	{

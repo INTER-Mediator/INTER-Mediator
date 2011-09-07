@@ -39,10 +39,10 @@ var IM_DBAdapter = {
         var extCount = 0;
 		if ( objectSpec['keying'] != null ) {
             var compOfCond = objectSpec['keying'].split("=");
-            params += "&ext_cond" + extCount + "field=" + encodeURI(compOfCond[0]);
-            params += "&ext_cond" + extCount + "operator=" + encodeURI("=");
+            params += "&condition" + extCount + "field=" + encodeURI(compOfCond[0]);
+            params += "&condition" + extCount + "operator=" + encodeURI("=");
             compOfCond.shift();
-            params += "&ext_cond" + extCount + "value=" + encodeURI(compOfCond.join("="));
+            params += "&condition" + extCount + "value=" + encodeURI(compOfCond.join("="));
             extCount++;
         }
 		params += "&field_0=" + encodeURI(objectSpec['field']);
