@@ -24,7 +24,7 @@ var IM_DBAdapter = {
      */
 	db_query: function (args) {
         var noError = true;
-        if (args['name'] == null && args['conditions'] != null)   {
+        if ( args['name'] == null )   {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
             noError = false;
         }
