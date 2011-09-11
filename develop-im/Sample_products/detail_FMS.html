@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!--
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
@@ -12,34 +13,55 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-    <link href="../sample.css" rel="stylesheet" type="text/css" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link href="../sample.css" rel="stylesheet" type="text/css"/>
     <script src="detail_MySQL_include.php"></script>
-<script type="text/javascript">
-    function doAtTheStarting()  {
-        var param = location.search.split('&');
-        for( var i=0 ; i<param.length ; i++)    {
-            if ( param[i].match(/id=/)) {
-                var values = param[i].split('=');
-                var param = {field:'id',operator:'=',value:values[1]};
-                INTERMediator.additionalCondition["product"] = param;
+    <script type="text/javascript">
+        function doAtTheStarting() {
+            var param = location.search.split('&');
+            for (var i = 0; i < param.length; i++) {
+                if (param[i].match(/id=/)) {
+                    var values = param[i].split('=');
+                    var param = {field:'id',operator:'=',value:values[1]};
+                    INTERMediator.additionalCondition["product"] = param;
+                }
             }
+            INTERMediator.construct(true);
         }
-        INTERMediator.construct(true);
-    }
-</script>
+    </script>
 </head>
 <body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">
 <p><a href="products_MySQL.html">back</a></p>
 <table border="1">
     <tbody>
-    <tr><th>id</th><td class="IM[product@id]"></td></tr>
-    <tr><th>name</th><td class="IM[product@name]"></td></tr>
-    <tr><th>unitprice</th><td class="IM[product@unitprice]"></td></tr>
-    <tr><th>photofile</th><td class="IM[product@photofile]"></td></tr>
-    <tr><th>acknowledgement</th><td class="IM[product@acknowledgement]"></td></tr>
-    <tr><th>ack_link</th><td class="IM[product@ack_link]"></td></tr>
-    <tr><th>photofile</th><td><img src="images/" class="IM[product@photofile@#src]"/></td></tr>
+    <tr>
+        <th>id</th>
+        <td class="IM[product@id]"></td>
+    </tr>
+    <tr>
+        <th>name</th>
+        <td class="IM[product@name]"></td>
+    </tr>
+    <tr>
+        <th>unitprice</th>
+        <td class="IM[product@unitprice]"></td>
+    </tr>
+    <tr>
+        <th>photofile</th>
+        <td class="IM[product@photofile]"></td>
+    </tr>
+    <tr>
+        <th>acknowledgement</th>
+        <td class="IM[product@acknowledgement]"></td>
+    </tr>
+    <tr>
+        <th>ack_link</th>
+        <td class="IM[product@ack_link]"></td>
+    </tr>
+    <tr>
+        <th>photofile</th>
+        <td><img src="images/" class="IM[product@photofile@#src]"/></td>
+    </tr>
     </tbody>
 </table>
 </body>

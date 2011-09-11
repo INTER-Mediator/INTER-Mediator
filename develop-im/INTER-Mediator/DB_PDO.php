@@ -22,7 +22,100 @@ class DB_PDO extends DB_Base	{
         $errorInfo = var_export($this->link->errorInfo(),true);
 		$this->errorMessage[] = "Query Error: [{$str}] Code={$this->link->errorCode()} Info = {$errorInfo}";
     }
-	
+
+    /*
+     * Generate SQL style WHERE clause.
+     */
+	function getWhereClause()	{
+		$tableInfo = $this->getDataSourceTargetArray();
+		$queryClause = '';
+		$queryClauseArray = array();
+		if ( isset( $tableInfo['query'][0] ))	{
+            $chanckCount = 0;
+            $insideOp = ' AND ';	$outsiceOp = ' OR ';
+            foreach( $tableInfo['query'] as $condition )	{
+                if ( $condition['field'] == '__operation__' )	{
+                    $chanckCount++;
+                    if ( $condition['operator'] == 'ex' )	{
+                        $insideOp = ' OR ';	$outsiceOp = ' AND ';
+                    }
+                } else {
+                    if ( isset( $condition['value'] ))	{
+                        $escedVal = $this->link->quote( $condition['value'] );
+                        if ( isset( $condition['operator'] ))	{
+                            $queryClauseArray[$chanckCount][]
+                                    = "{$condition['field']} {$condition['operator']} {$escedVal}";
+                        } else {
+                            $queryClauseArray[$chanckCount][]
+                                    = "{$condition['field']} = {$escedVal}";
+                        }
+                    } else {
+                        $queryClauseArray[$chanckCount][]
+                                = "{$condition['field']} {$condition['operator']}";
+                    }
+                    $chanckCount++;
+                }
+            }
+            foreach( $queryClauseArray as $oneTerm )	{
+                $oneClause[] = '(' . implode( $insideOp, $oneTerm ) . ')';
+            }
+            $queryClause = implode( $outsiceOp, $oneClause );
+        }
+
+		$queryClauseArray = array();
+		foreach( $this->extraCriteria as $criteria )	{
+            $field = $criteria['field'];
+            $operator = isset($criteria['operator'])? $criteria['operator'] :'=';
+            $escedVal = $this->link->quote( $criteria['value'] );
+            $queryClauseArray[] = "({$field} {$operator} {$escedVal})";
+ 		}
+		if ( count($queryClauseArray) > 0 )	{
+			if ( $queryClause != '' )	{
+				$queryClauseArray[] = $queryClause;
+			}
+			$queryClause = implode( ' AND ', $queryClauseArray );
+		}
+        if ( count( $this->foreignFieldAndValue ) > 0 )	{
+            foreach( $this->foreignFieldAndValue as $foreignDef )    {
+                foreach( $tableInfo['relation'] as $relDef )    {
+                    if ( $relDef['foreign-key'] == $foreignDef['field'] )    {
+                        $escedVal = $this->link->quote( $foreignDef['value'] );
+                        if ( isset($relDef['operator']) )  {
+                            $op = $relDef['operator'];
+                        } else {
+                            $op = 'eq';
+                        }
+                        $queryClause = (($queryClause!='')?"({$queryClause}) AND ":'')
+                                       . "{$foreignDef['field']}{$op}{$escedVal}";
+                    }
+                }
+            }
+		}
+	/*	if ( isset( $tableInfo['foreign-key'] ) && isset($this->parentKeyValue) )	{
+			$queryClause = (($queryClause!='')?"({$queryClause}) AND ":'')
+				. "{$tableInfo['foreign-key']} = {$this->parentKeyValue}";
+		}
+	*/
+        return $queryClause;
+	}
+
+
+    /* Genrate SQL Sort and Where clause */
+	function getSortClause()	{
+		$tableInfo = $this->getDataSourceTargetArray();
+		$sortClause = array();
+		if ( isset( $tableInfo['sort'] ))	{
+			foreach( $tableInfo['sort'] as $condition )	{
+				if ( isset( $condition['direction'] ))	{
+					$sortClause[] = "{$condition['field']} {$condition['direction']}";
+				} else {
+					$sortClause[] = "{$condition['field']}";
+				}
+			}
+		}
+		return implode( ',', $sortClause);
+	}
+
 	function getFromDB(  )	{
 		$tableInfo = $this->getDataSourceTargetArray();
         $tableName = $this->getEntityForRetrieve();

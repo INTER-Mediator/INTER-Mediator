@@ -11,10 +11,10 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <link href="../sample.css" rel="stylesheet" type="text/css" />
-    <script src="include_MySQL.php"></script>
+    <script src="include_FMS.php"></script>
 <script type="text/javascript">
 
 INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
@@ -45,12 +45,6 @@ function calcTotal( target )	{
 		s += INTERMediatorLib.toNumber( document.getElementById(nodes[i]).innerHTML );
     }
 	document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat( s );
-}
-function afterFieldModified()	{
-	calcTotal();
-}
-function afterTableRowDelete()	{
-	calcTotal();
 }
 </script>
 </head>

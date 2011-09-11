@@ -10,41 +10,45 @@
 require_once('../INTER-Mediator/INTER-Mediator.php');
 $tableDefinitions = array(
     array(
-        'name' 	    => 'invoice',
-        'records' 	=> '1',
-        'paging'    =>  true,
-        'key' 		=> 'id',
-        'sort'		=> array( array( 'field'=>'id', 'direction'=>'ASC' ),),
-        'repeat-control'=> 'insert delete',
+        'name' => 'invoice',
+        'records' => '1',
+        'paging' => true,
+        'key' => 'id',
+        'sort' => array(
+            array('field' => 'id', 'direction' => 'ASC'),
+        ),
+        'repeat-control' => 'insert delete',
     ),
     array(
-        'name' 			=> 'items',
-        'table' 		=> 'item',
-        'view'          => 'item_display',
-        'key' 			=> 'id',
-        'foreign-key' 	=> 'invoice_id',
-        'join-field' 	=> 'id',
-        'repeat-control'=> 'insert delete',
-        'default-values'=> array( array( 'field'=>'product_id', 'value' => 1 ),),
+        'name' => 'items',
+        'table' => 'item',
+        'view' => 'item_display',
+        'key' => 'id',
+        'relation' => array(
+            array('foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => '=')
+        ),
+        //    'foreign-key' 	=> 'invoice_id',
+        //    'join-field' 	=> 'id',
+        'repeat-control' => 'insert delete',
+        'default-values' => array(array('field' => 'product_id', 'value' => 1),),
     ),
     array(
-        'name' 			=> 'product',
-        'key' 			=> 'id',
-        'foreign-key' 	=> 'id',
-        'join-field' 	=> 'product_id',
+        'name' => 'product',
+        'key' => 'id',
+        'relation' => array(
+            array('foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => '=')
+        ),
+        //    'foreign-key' 	=> 'id',
+        //    'join-field' 	=> 'product_id',
     ),
 );
 $optionDefinitions = array(
     'formatter' => array(
-        array( 'field' => 'item@amount', 'converter-class' =>'Number', 'parameter' => '0' ),
-    ),
-    'trigger' => array(
-        array( 'field' => 'item@qty', 'event' =>'change', 'function' => 'modLine' ),
-        array( 'field' => 'item@unitprice', 'event' =>'change',	'function' => 'modLine' ),
+        array('field' => 'item@amount', 'converter-class' => 'Number', 'parameter' => '0'),
     ),
 );
-$dbDefinitions = array(   'db-class' => 'PDO');
+$dbDefinitions = array('db-class' => 'PDO');
 
-IM_Entry( $tableDefinitions, $optionDefinitions, $dbDefinitions, false );
+IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, false);
 
 ?>

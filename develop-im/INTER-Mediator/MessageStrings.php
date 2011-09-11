@@ -28,7 +28,7 @@ var $messages = array(
     1005 => "On calling db_query, Requred parameter 'name' doesn't specified",
     1006 => "On calling db_query, Requred parameter 'table' doesn't specified",
     1007 => "On calling db_update, Requred parameter 'name' doesn't specified",
-    1008 => "On calling db_update, Requred parameter 'conditons' doesn't specified",
+    1008 => "On calling db_update, Requred parameter 'conditions' doesn't specified",
     1009 => "On calling db_update, Requred parameter 'operator' doesn't specified",
     1010 => "On calling db_update, Requred parameter 'value' doesn't specified",
     1011 => "On calling db_update, Requred parameter 'dataset' doesn't specified",
@@ -41,7 +41,7 @@ var $messages = array(
     1018 => "Create Record Access: ",
     1019 => "On calling db_delete, Requred parameter 'name' doesn't specified",
     1020 => "On calling db_delete, Requred parameter 'conditions' doesn't specified",
-    1021 => "On calling db_createRecord, Requred parameter 'table' doesn't specified",
+    1021 => "On calling db_createRecord, Requred parameter 'name' doesn't specified",
     1022 => 'Using Unsupported Browser',
     1023 => '[This site uses INTER-Mediator.]',
 );

@@ -10,22 +10,22 @@
 require_once('../INTER-Mediator/INTER-Mediator.php');
 IM_Entry(
     array(
-        array(
-            'records' 	=> '10',
-            'name' 		=> 'product',
-            'key' 		=> 'id',
-            'query'		=> array( array( 'field'=>'name', 'value'=>'*', 'operator'=>'cn' )),
-            'sort'		=> array( array( 'field'=>'name', 'direction'=>'ascend' ),),
-        ),
+         array(
+             'records' => '10',
+             'name' => 'product',
+             'key' => 'id',
+             'query' => array(array('field' => 'name', 'value' => '*', 'operator' => 'cn')),
+             'sort' => array(array('field' => 'name', 'direction' => 'ascend'),),
+         ),
     ),
     array(
-        'formatter' => array(
-            array( 'field' => 'product@photofile', 	'converter-class' =>'AppendPrefix', 'parameter' => 'images/' ),
-            array( 'field' => 'product@id', 	'converter-class' =>'AppendPrefix', 'parameter' => 'detail_FMS_include.php?id=' ),
-            array( 'field' => 'product@unitprice', 	'converter-class' =>'Number', 'parameter' => '0' ),
-        ),
+         'formatter' => array(
+             array('field' => 'product@photofile', 'converter-class' => 'AppendPrefix', 'parameter' => 'images/'),
+             array('field' => 'product@id', 'converter-class' => 'AppendPrefix', 'parameter' => 'detail_FMS_include.php?id='),
+             array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
+         ),
     ),
     array('db-class' => 'FX_FileMaker'),
-    false		// debug
+    false // debug
 );
 ?>

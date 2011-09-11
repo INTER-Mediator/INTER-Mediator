@@ -25,6 +25,7 @@ class DB_FileMaker_FX extends DB_Base	{
 	}
 	
 	function getFromDB( )	{
+        $contextName = $this->dataSourceName;
         $fx = new FX(
             $this->getDbSpecServer(),
             $this->getDbSpecPort(),
@@ -65,9 +66,25 @@ class DB_FileMaker_FX extends DB_Base	{
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
             $fx->AddDBParam( $value['field'], $value['value'], $op );
         }
-        if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
-            $fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
+        if ( count( $this->foreignFieldAndValue ) > 0 )	{
+            foreach( $this->foreignFieldAndValue as $foreignDef )    {
+                foreach( $tableInfo['relation'] as $relDef )    {
+                    if ( $relDef['foreign-key'] == $foreignDef['field'] )    {
+                        if ( isset($relDef['operator']) )  {
+                            $op = $relDef['operator'];
+                        } else {
+                            $op = 'eq';
+                        }
+                        $fx->AddDBParam( $foreignDef['field'],
+                            $this->formatterToDB("{$contextName}{$this->separator}{$value['field']}",
+                                                 $foreignDef['value'] ), $op );
+                    }
+                }
+            }
         }
+    //    if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
+     //       $fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
+     //   }
         if ( isset( $tableInfo['sort'] ))	{
             foreach( $tableInfo['sort'] as $condition )	{
                 if ( isset( $condition['direction'] ))	{
@@ -98,6 +115,7 @@ class DB_FileMaker_FX extends DB_Base	{
             }
         }
         $fxResult = $fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
+        //var_dump($fxResult);
         if( $fxResult['errorCode'] != 0 && $fxResult['errorCode'] != 401 )	{
             $this->errorMessage[] = "FX reports error at find action: "
                 . "code={$fxResult['errorCode']}, url={$fxResult['URL']}";
@@ -114,7 +132,7 @@ class DB_FileMaker_FX extends DB_Base	{
                 foreach( $oneRecord as $field=>$dataArray )	{
                     if ( count( $dataArray ) == 1 )	{
                         $oneRecordArray[$field] = $this->formatterFromDB(
-                            "{$this->getEntityForRetrieve()}{$this->separator}$field", $dataArray[0] );
+                            "{$contextName}{$this->separator}$field", $dataArray[0] );
                     }
                 }
                 $returnArray[] = $oneRecordArray;
@@ -128,6 +146,7 @@ class DB_FileMaker_FX extends DB_Base	{
 	}
 	
 	function setToDB( )	{
+        $contextName = $this->dataSourceName;
         $fx = new FX(
             $this->getDbSpecServer(),
             $this->getDbSpecPort(),
@@ -140,9 +159,11 @@ class DB_FileMaker_FX extends DB_Base	{
 	//	$fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
 		foreach ( $this->extraCriteria as $value )	{
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-            $fx->AddDBParam( $value['field'], $value['value'], $op );
+            $convertedValue
+                    = $this->formatterToDB("{$contextName}{$this->separator}{$value['field']}", $value['value'] );
+            $fx->AddDBParam( $value['field'], $convertedValue, $op );
         }
-		$result = $fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
+		$result = $fx->DoFxAction( "perform_find", TRUE, TRUE, 'full' );
 		if ( $this->isDebug )	$this->debugMessage[] = $result['URL'];
 		if( $result['errorCode'] > 0 )	{
 			$this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
@@ -161,8 +182,8 @@ class DB_FileMaker_FX extends DB_Base	{
 					$value = $this->fieldsValues[$counter];
 					$counter++;
 					$convVal = (is_array( $value )) ? implode( "\n", $value ) : $value ;
-					$convVal = $this->formatterToDB( $field, $convVal );
-					$fx->AddDBParam( $field, $this->unifyCRLF( $convVal ));
+					$convVal = $this->formatterToDB( "{$contextName}{$this->separator}{$field}", $convVal );
+					$fx->AddDBParam( $field, $convVal);
 				}
 				if ( $counter < 1 )	{
 					$this->errorMessage[] = 'No data to update.';
@@ -188,7 +209,7 @@ class DB_FileMaker_FX extends DB_Base	{
 						}
 					}
 				}
-				$result = $fx->DoFxAction( FX_ACTION_EDIT, TRUE, TRUE, 'full' );
+				$result = $fx->DoFxAction( "update", TRUE, TRUE, 'full' );
 				if( $result['errorCode'] > 0 )	{
 					$this->errorMessage[] = "FX reports error at edit action: table={$this->getEntityForUpdate()}, code={$result['errorCode']}, url={$result['URL']}<hr>";
 					return false;
@@ -203,6 +224,8 @@ class DB_FileMaker_FX extends DB_Base	{
 	}
 	
 	function newToDB( )	{
+        $contextName = $this->dataSourceName;
+
 		$tableInfo = $this->getDataSourceTargetArray();
 		$keyFieldName = $tableInfo['key'];
 
@@ -244,7 +267,7 @@ class DB_FileMaker_FX extends DB_Base	{
 				}
 			}
 		}
-		$result = $fx->DoFxAction( FX_ACTION_NEW, TRUE, TRUE, 'full' );
+		$result = $fx->DoFxAction( "new", TRUE, TRUE, 'full' );
 		if ( $this->isDebug )	{
             $this->debugMessage[] = $result['URL'];
         }
@@ -259,6 +282,8 @@ class DB_FileMaker_FX extends DB_Base	{
 	}
 	
 	function deleteFromDB( )	{
+        $contextName = $this->dataSourceName;
+
         $tableInfo = $this->getDataSourceTargetArray();;
         $fx = new FX(
             $this->getDbSpecServer(),
@@ -278,7 +303,7 @@ class DB_FileMaker_FX extends DB_Base	{
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
             $fx->AddDBParam( $value['field'], $value['value'], $op );
         }
-		$result = $this->fxResult = $fx->DoFxAction( FX_ACTION_FIND, TRUE, TRUE, 'full' );
+		$result = $this->fxResult = $fx->DoFxAction( "perform_find", TRUE, TRUE, 'full' );
 		if ( $this->isDebug )	{
             $this->debugMessage[] = $result['URL'];
         }
@@ -314,7 +339,7 @@ class DB_FileMaker_FX extends DB_Base	{
 						}
 					}
 				}
-				$result = $fx->DoFxAction( FX_ACTION_DELETE, TRUE, TRUE, 'full' );
+				$result = $fx->DoFxAction( "delete", TRUE, TRUE, 'full' );
 				if( $result['errorCode'] > 0 )	{
 					$this->errorMessage[] = "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";
 					return false;

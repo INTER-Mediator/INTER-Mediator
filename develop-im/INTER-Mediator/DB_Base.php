@@ -24,8 +24,8 @@ class DB_Base	{
     var $targetDataSource = null;
 	var $extraCriteria = array();
 	var $mainTableCount = 0;
-	var $fieldsRequired = null;
-	var $fieldsValues = null;
+	var $fieldsRequired = array();
+	var $fieldsValues = array();
 	var $formatter = null;
 	var $separator = null;
 	var $start = 0;
@@ -33,8 +33,9 @@ class DB_Base	{
 	var $errorMessage = array();
 	var $debugMessage = array();
 	var $isDebug = false;
-	var $parentKeyValue = null;
+//	var $parentKeyValue = null;
     var $dataSourceName = '';
+    var $foreignFieldAndValue = array();
 
 	function __construct()	{
 	}
@@ -43,15 +44,17 @@ class DB_Base	{
     function setDataSource( $src )		{   $this->dataSource = $src;       }
     function setSeparator( $sep )		{	$this->separator = $sep;        }
     function setTargetName( $val )      {   $this->dataSourceName = $val;   }
-	function setParentKeyValue( $val )	{   $this->parentKeyValue = $val;   }
-    function setTargetFields( $fields )	{	$this->fieldsRequired = $fields;}
-    function setValues( $values )	    {	$this->fieldsValues = $values;  }
+//	function setParentKeyValue( $val )	{   $this->parentKeyValue = $val;   }
+    function setTargetFields( $field )	{	$this->fieldsRequired[] = $field;}
+    function setValues( $value )	    {	$this->fieldsValues[] = $value;  }
     function setStart( $st )		    {	$this->start = $st;	            }
     function setRecordCount( $sk )		{	$this->recordCount = $sk;		}
     function setExtraCriteria( $field, $operator, $value )	{
         $this->extraCriteria[] = array( 'field'=>$field, 'operator'=>$operator, 'value'=>$value);
     }
-
+    function setForeignValue( $field, $value )	{
+        $this->foreignFieldAndValue[] = array( 'field'=>$field, 'value'=>$value );
+    }
     /* get the information for the 'name'. */
     function getDataSourceTargetArray()	{
         if ( $this->targetDataSource == null )  {
@@ -163,81 +166,6 @@ class DB_Base	{
 			}
 		}
 		return $data;
-	}
-
-    /* Genrate SQL Sort and Where clause */
-	function getSortClause()	{
-		$tableInfo = $this->getDataSourceTargetArray();
-		$sortClause = array();
-		if ( isset( $tableInfo['sort'] ))	{
-			foreach( $tableInfo['sort'] as $condition )	{
-				if ( isset( $condition['direction'] ))	{
-					$sortClause[] = "{$condition['field']} {$condition['direction']}";
-				} else {
-					$sortClause[] = "{$condition['field']}";
-				}
-			}
-		}
-		return implode( ',', $sortClause);
-	}
-
-    /*
-     * Generate SQL style WHERE clause.
-     */
-	function getWhereClause()	{
-		$tableInfo = $this->getDataSourceTargetArray();
-		$queryClause = '';
-		$queryClauseArray = array();
-		if ( isset( $tableInfo['query'][0] ))	{
-            $chanckCount = 0;
-            $insideOp = ' AND ';	$outsiceOp = ' OR ';
-            foreach( $tableInfo['query'] as $condition )	{
-                if ( $condition['field'] == '__operation__' )	{
-                    $chanckCount++;
-                    if ( $condition['operator'] == 'ex' )	{
-                        $insideOp = ' OR ';	$outsiceOp = ' AND ';
-                    }
-                } else {
-                    if ( isset( $condition['value'] ))	{
-                        $escedVal = $this->link->quote( $condition['value'] );
-                        if ( isset( $condition['operator'] ))	{
-                            $queryClauseArray[$chanckCount][]
-                                    = "{$condition['field']} {$condition['operator']} {$escedVal}";
-                        } else {
-                            $queryClauseArray[$chanckCount][]
-                                    = "{$condition['field']} = {$escedVal}";
-                        }
-                    } else {
-                        $queryClauseArray[$chanckCount][]
-                                = "{$condition['field']} {$condition['operator']}";
-                    }
-                    $chanckCount++;
-                }
-            }
-            foreach( $queryClauseArray as $oneTerm )	{
-                $oneClause[] = '(' . implode( $insideOp, $oneTerm ) . ')';
-            }
-            $queryClause = implode( $outsiceOp, $oneClause );
-        }
-
-		$queryClauseArray = array();
-		foreach( $this->extraCriteria as $criteria )	{
-            $field = $criteria['field'];
-            $operator = isset($criteria['operator'])? $criteria['operator'] :'=';
-            $escedVal = $this->link->quote( $criteria['value'] );
-            $queryClauseArray[] = "({$field} {$operator} {$escedVal})";
- 		}
-		if ( count($queryClauseArray) > 0 )	{
-			if ( $queryClause != '' )	{
-				$queryClauseArray[] = $queryClause;
-			}
-			$queryClause = implode( ' AND ', $queryClauseArray );
-		}
-		if ( isset( $tableInfo['foreign-key'] ) && isset($this->parentKeyValue) )	{
-			$queryClause = (($queryClause!='')?"({$queryClause}) AND ":'') 
-				. "{$tableInfo['foreign-key']} = {$this->parentKeyValue}";
-		}
-		return $queryClause;
 	}
 
 

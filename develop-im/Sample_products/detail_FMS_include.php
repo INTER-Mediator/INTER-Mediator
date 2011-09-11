@@ -11,15 +11,15 @@ require_once('../INTER-Mediator/INTER-Mediator.php');
 
 IM_Entry(
     array(
-        array(
-            'records' 	=> '1',
-            'name' 		=> 'product',
-            'key' 		=> 'id',
-            'query'		=> array( array( 'field'=>'name', 'value'=>'*', 'operator'=>'cn' )),
-            'sort'		=> array( array( 'field'=>'name', 'direction'=>'ascend' ),),
-        ),
-    ), 
+         array(
+             'records' => '1',
+             'name' => 'product',
+             'key' => 'id',
+             'query' => array(array('field' => 'name', 'value' => '*', 'operator' => 'cn')),
+             'sort' => array(array('field' => 'name', 'direction' => 'ascend'),),
+         ),
+    ),
     null,
     array('db-class' => 'FX_FileMaker'),
-    false );
+    false);
 ?>

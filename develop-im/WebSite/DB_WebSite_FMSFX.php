@@ -1,6 +1,6 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.0.63 Released 2011-05-29
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
  *
@@ -45,7 +45,6 @@ class DB_WebSite_FMSFX extends DB_FileMaker_FX	{
                     }
                 }
                 if ( count( $selectedRecords ) == 0 )   {
-                    $selectedRecords = array();
                     $priorLang = 'en';
                     foreach( $returnValue as $record )  {
                         if ( $record['Language'] == $priorLang )    {
@@ -53,7 +52,6 @@ class DB_WebSite_FMSFX extends DB_FileMaker_FX	{
                         }
                     }
                     if ( count( $selectedRecords ) == 0 )   {
-                        $selectedRecords = array();
                         $maxLang = 'en';
                         $maxLangCount = -1;
                         foreach( $lang as $language=>$count )   {

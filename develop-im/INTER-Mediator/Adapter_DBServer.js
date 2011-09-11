@@ -6,21 +6,22 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
+/*==================================================
+  Database Access Object for Server-based Database
+  ==================================================*/
 var IM_DBAdapter = {
-    //=================================
-    // Database Access
-    //=================================
     /*
     db_query
     Querying from database. The parameter of this function should be the object as below:
 
-        {   name:<name of the definition, require when the extracondition is set>
-          x  table:<table to access>
+        {   name:<name of the context>
             records:<the number of retrieving records, could be null>
             fields:<the array of fields to retrieve, but this parameter is ignored so far.
             parentkeyvalue:<the value of foreign key field, could be null>
-          x  conditions:<the array of the object {field:xx,operator:xx,value:xx}, could be null>
+            conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>
             useoffset:<true/false whether the offset parameter is set on the query.>    }
+
+     This function returns recordset of retrieved.
      */
 	db_query: function (args) {
         var noError = true;
@@ -34,11 +35,16 @@ var IM_DBAdapter = {
 
 		var params = "?access=select&name=" + encodeURI(args['name']);
 		params += "&records=" + encodeURI((args['records'] != null) ? args['records'] : 10000000);
-		for (var i = 0; i < args['fields'].length; i++) {
+		for ( var i = 0 ; i < args['fields'].length ; i++ ) {
 			params += "&field_" + i + "=" + encodeURI(args['fields'][i]);
 		}
+        var counter = 0;
         if ( args['parentkeyvalue'] != null) {
-            params += "&parent_keyval=" + encodeURI(args['parentkeyvalue']);
+            for ( var index in  args['parentkeyvalue'] ) {
+                params += "&foreign" + counter + "field=" + encodeURI(index);
+                params += "&foreign" + counter + "value=" + encodeURI(args['parentkeyvalue'][index]);
+                counter++;
+            }
         }
         if ( args['useoffset'] && INTERMediator.startFrom != null ) {
             params += "&start=" + encodeURI(INTERMediator.startFrom);
@@ -90,10 +96,8 @@ var IM_DBAdapter = {
     db_update
     Update the database. The parameter of this function should be the object as below:
 
-        {   table:<table to access>->name
-            key:<search criteria's field name>
-            operator:<search criteria's operator>
-            value:<search criteria's value>--> conditions
+        {   name:<Name of the Context>
+            conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
             dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
 	db_update: function ( args ) {
@@ -148,9 +152,8 @@ var IM_DBAdapter = {
     db_delete
     Delete the record. The parameter of this function should be the object as below:
 
-        {   table:<table to access>->name
-            dataset:<the array of the object {field:xx,**operator:XX**,value:xx}. The criteria of the deleting records>
-             ->conditions}
+        {   name:<Name of the Context>
+            conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
     db_delete: function( args )   {
         var noError = true;
@@ -191,7 +194,7 @@ var IM_DBAdapter = {
     db_createRecord
     Create a record. The parameter of this function should be the object as below:
 
-        {   table:<table to access>->name
+        {   name:<Name of the Context>
             dataset:<the array of the object {field:xx,value:xx}. Initial value for each field> }
 
     This function returns the value of the key field of the new record.

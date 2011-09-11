@@ -6,36 +6,45 @@ http://msyk.net/im
 Change Log will be supplied by English only.
 
 =================================
-To Do, that is left-over.
+To Do, that is left-over. Or Plan
 =================================
-
-Ver.0.8.X
-- Objective handling for the data in database.
-- Single query can retrieve main and related tables simultaneously.
-- Caching the result of queries.
+Ver.1.1
+- Built-in Authentication framework.
 - Store NULL for empty string.
-- FileMaker's Find style database search.
 - Multiple values within one field. (It may be required for FileMaker especially.)
 - key and Foreign-key can have multiple fields with operators
 
-Ver.0.9.X
-- Built-in Authentication framework.
+Ver.1.2
+- Objective handling for the data in database.
+- Single query can retrieve main and related tables simultaneously.
+- Caching the result of queries.
+- FileMaker's Find style database search.
+
+Ver.1.3
 - HTML5's local database supporting.
 - Amazon Web Service supporting.
 
 Mostly Slogan: or Should be done:
 - Fulfilling documentation, including tutorials.
-- Proper error recoveries and messages.
 - Translating to English from Japanese Documents.
 
 =================================
 Known Issues for Browsers:
-
+=================================
 Internet Explorer 7
 - Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
 
+Internet Explorer 6 or under are NOT supported!
+FireFox/Safari/Chrome/Opera will work fine as for HTML5 supported version.
+It's hard to check all versions above browsers as you know. I hope you understand.
+
 =================================
-Ver.0.7.5/Ver.0.8.0=== will be next release
+Change Log
+=================================
+Ver.0.7.5=== will be next release
+- Modified FX.php is bundled (Thanks to Chris Hansen)
+- Samples for FileMaker Server are modified.
+- Typo...
 
 Ver.0.7.4 (2011/9/5)
 - Re-engineering the API used on application (Adapter_DBServer.jp's functions).

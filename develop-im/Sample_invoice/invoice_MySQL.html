@@ -50,12 +50,6 @@ function calcTotal( target )	{
         document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat( s );
     }
 }
-function afterFieldModified()	{
-	calcTotal();
-}
-function afterTableRowDelete()	{
-	calcTotal();
-}
 </script>
 </head>
 <body onload="INTERMediator.construct(true);calcTotal();">

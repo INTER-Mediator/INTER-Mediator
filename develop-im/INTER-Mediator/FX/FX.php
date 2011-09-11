@@ -128,10 +128,9 @@ class FX
     var $dataParamsEncoding = '';                                       // Determines how incoming data is encoded.
 
     var $remainNames = array();	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    var $remainNamesReverse = array();	// Added by Masayuki Nii(nii@msyk.net) Jan 23, 2010
     var $portalAsRecord =false;	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
     var $currentSubrecordIndex;	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    
+
     // Flags and Error Tracking
     var $currentFlag = '';
     var $currentRecord = '';
@@ -254,7 +253,6 @@ class FX
         $this->genericKeys = false;
         $this->useInnerArray = true;
         $this->remainNames = array();	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-        $this->remainNamesReverse = array();	// Added by Masayuki Nii(nii@msyk.net) Jan 23, 2011
         $this->portalAsRecord = false;	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
     }
 
@@ -371,7 +369,7 @@ class FX
                 } else {
                 	if ($this->isRemaiName($this->currentField))	{
                 		if ( $this->portalAsRecord )	{
-                			$this->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] = '';               			
+                			$this->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] = '';
                 		} else {
                 			$this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] = "";
                 		}
@@ -530,18 +528,18 @@ class FX
             case "row":
                 if( strlen( trim( $this->customPrimaryKey ) ) > 0 ) {
                     if( $this->useInnerArray ) {
-						$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey][0]] 
+						$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey][0]]
 							= $this->currentData[$this->currentRecord];
                     } else {
                     	if ($this->isRemaiName($this->currentField))	{
                     		if ( $this->portalAsRecord )	{
                 				//
                 			} else {
-                    			$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey][0]] 
+                    			$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey][0]]
 									= $this->currentData[$this->currentRecord];
                 			}
                     	} else {
-							$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey]] 
+							$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey]]
 								= $this->currentData[$this->currentRecord];
                     	}
                     }
@@ -1547,7 +1545,7 @@ This function is particularly written for huge queries of data that are less lik
                 $xmlParseResult = xml_parse($xml_parser, $data, true);
                 if (! $xmlParseResult) {
 /* Masayuki Nii added at Oct 9, 2009 */
-					$this->columnCount = -1; 
+					$this->columnCount = -1;
 					xml_parser_free($xml_parser);
                 	$xml_parser = xml_parser_create("UTF-8");
                 	xml_set_object($xml_parser, $this);
@@ -1555,7 +1553,7 @@ This function is particularly written for huge queries of data that are less lik
                 	xml_set_character_data_handler($xml_parser, "ElementContents");
                 	$xmlParseResult = xml_parse($xml_parser, ConvertSarrogatePair( $data ), true);
                 	if (! $xmlParseResult) {
-/* ==============End of the addition */            	
+/* ==============End of the addition */
                 	$theMessage = sprintf("ExecuteQuery XML error: %s at line %d",
                         xml_error_string(xml_get_error_code($xml_parser)),
                         xml_get_current_line_number($xml_parser));
@@ -1566,7 +1564,7 @@ This function is particularly written for huge queries of data that are less lik
                     return new FX_Error($theMessage);
 /* Masayuki Nii added at Oct 9, 2009 */
                 	}
-/* ==============End of the addition */            	
+/* ==============End of the addition */
                 	}
                 xml_parser_free($xml_parser);
                 break;
@@ -1729,9 +1727,6 @@ This function is particularly written for huge queries of data that are less lik
                 break;
             case 'full':
                 $dataSet['data'] = $this->currentData;
-                if (defined('FX_OBJECTIVE'))	{
-                	$dataSet['object'] = new ObjectiveFX($dataSet['data']);
-                }
             case 'basic':
                 if ($FMNext < $this->foundCount || $FMPrevious >= 0) {
                     $tempQueryString = $this->BuildLinkQueryString();
@@ -1885,7 +1880,7 @@ This function is particularly written for huge queries of data that are less lik
             	$convedValue .= str_repeat( mb_convert_encoding(chr(0xE3).chr(0x80).chr(0x80), $this->dataParamsEncoding, 'UTF-8'), $count );
  			}
             $this->dataParams[key($this->dataParams)]["value"] = $convedValue;
-// ======================= 
+// =======================
         } else {
             $this->dataParams[]["name"] = $name;
             end($this->dataParams);
@@ -2132,62 +2127,40 @@ This function is particularly written for huge queries of data that are less lik
         $this->genericKeys = $genericKeys;
         return true;
     }
-    
+
     // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    function RemainAsArray (
-    			$rArray1,$rArray2=NULL,$rArray3=NULL,$rArray4=NULL,$rArray5=NULL,
-    			$rArray6=NULL,$rArray7=NULL,$rArray8=NULL,$rArray9=NULL,$rArray10=NULL,
-    			$rArray11=NULL,$rArray12=NULL)	{
+    function RemainAsArray ($rArray1,$rArray2=NULL,$rArray3=NULL,$rArray4=NULL,$rArray5=NULL,$rArray6=NULL,
+    				$rArray7=NULL,$rArray8=NULL,$rArray9=NULL,$rArray10=NULL,$rArray11=NULL,$rArray12=NULL)	{
     	$this->portalAsRecord = false;
-    	$counter = 0;
     	for ( $i=1 ; $i<13 ; $i++ )	{
     		eval('$param=$rArray'.$i.';');
      		if ( $param === NULL )	{
     			break;
-    		}
-    		if (is_array($param))	{
+    		} else if (is_array($param))	{
     			$this->portalAsRecord = true;
-    			$isFirstTime = true;
-    			foreach($param as $item)	{
-    				if($isFirstTime)	{
-    					$isFirstTime = false;
-    					$firstItemName = $item;
-    					$this->remainNamesReverse[$item] = true;
-    				} else {
-    					$this->remainNamesReverse[$item] = $firstItemName;
-    				}
-    				$this->remainName[$counter] = $item;
-    				$counter++;
-    			}	
-    		} else {
-    			$this->remainName[$counter] = $param;
-    			$this->remainNamesReverse[$param] = true;
-    			$counter++;
+    			$param = $param[0];
     		}
+    		$this->remainName[$i-1] = $param;
     	}
     }
-    
+
     // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
     function isRemaiName($fieldName)	{
-    	foreach($this->remainName as $fName)	{
+     	foreach($this->remainName as $fName)	{
      		if (strpos($fieldName,$fName) === 0)	{
     			return true;
     		}
     	}
     	return false;
     }
-    
+
     // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
     function getTOCName($fieldName)	{
     	$p = strpos($fieldName,'::');
     	if ( $p === false )	{
     		return 'ERROR-TOC name is conflicted.';
     	}
-    	$tocName = substr($fieldName,0,$p);
-    	if ($this->remainNamesReverse[$tocName] !== true)	{
-    		return $this->remainNamesReverse[$tocName];
-    	}
-    	return $tocName;
+    	return substr($fieldName,0,$p);
     }
 }
 

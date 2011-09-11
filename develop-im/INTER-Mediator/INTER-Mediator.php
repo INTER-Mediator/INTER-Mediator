@@ -32,7 +32,7 @@ require_once( 'MessageStrings_ja.php' );
 function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
 	$LF = "\n";	$q = '"';
     
-    header( 'Content-Type: text/javascript' );
+    header( 'Content-Type: text/javascript; charset="UTF-8"' );
     header( 'Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0' );
     header( 'Expires: 0' );
 
@@ -56,27 +56,6 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
         echo "function IM_browserCompatibility(){return ", arrayToJS( $browserCompatibility, '' ), ";}{$LF}";
         echo "INTERMediator.debugMode=", $debug ? "true" : "false", ";{$LF}";
 	} else {
-       $fieldsRequired = array();
-		for ( $i=0 ; $i< 1000 ; $i++ )	{
-			if ( isset( $_GET["field_{$i}"] ))	{
-				$fieldsRequired[] = $_GET["field_{$i}"];
-			} else {
-				break;
-			}
-		}
-		$valuesRequired = array();
-		for ( $i=0 ; $i< 1000 ; $i++ )	{
-			if ( isset( $_GET["value_{$i}"] ))	{
-                if(get_magic_quotes_gpc())  {
-                    $valuesRequired[] = stripslashes($_GET["value_{$i}"]);
-                } else {
-                    $valuesRequired[] = $_GET["value_{$i}"];
-                }
-			} else {
-				break;
-			}
-		}
-
         $dbClassName = isset( $dbspec['db-class'] ) ? $dbspec['db-class'] : (isset ( $dbClass ) ? $dbClass : '');
 		$dbClassName = "DB_{$dbClassName}";
 		require_once("{$dbClassName}.php");
@@ -125,12 +104,30 @@ function IM_Entry( $datasrc, $options, $dbspec, $debug=false )	{
                 break;
             }
         }
+        for ( $count = 0 ; $count < 10000 ; $count++ )  {
+            if ( ! isset($_GET["foreign{$count}field"]))	{
+                 break;
+            }
+            $dbInstance->setForeignValue( $_GET["foreign{$count}field"], $_GET["foreign{$count}value"] );
+        }
 
-		$dbInstance->setTargetFields( $fieldsRequired );
-		$dbInstance->setValues( $valuesRequired );
-		if ( isset( $_GET['parent_keyval'] ))	{
-			$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
-		}
+        $fieldsRequired = array();
+         for ( $i = 0 ; $i < 1000 ; $i++ )	{
+             if ( ! isset( $_GET["field_{$i}"] ))	{
+                 break;
+             }
+             $dbInstance->setTargetFields( $_GET["field_{$i}"]);
+         }
+         $valuesRequired = array();
+         for ( $i = 0 ; $i < 1000 ; $i++ )	{
+             if ( ! isset( $_GET["value_{$i}"] ))	{
+                 break;
+             }
+             $dbInstance->setValues( get_magic_quotes_gpc() ? stripslashes($_GET["value_{$i}"]) : $_GET["value_{$i}"] );
+         }
+//		if ( isset( $_GET['parent_keyval'] ))	{
+//			$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
+//		}
 		switch( $_GET['access'] )	{
 			case 'select':	$result = $dbInstance->getFromDB();		break;
 			case 'update':	$result = $dbInstance->setToDB();		break;

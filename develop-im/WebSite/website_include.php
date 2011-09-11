@@ -1,6 +1,6 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.0.63 Released 2011-05-29
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
  *
@@ -16,6 +16,8 @@
  */
 
 require_once ('../INTER-Mediator/INTER-Mediator.php');
+
+header('Content-Type: text/javascript');
 
 $tableDefs= array(
     array(
@@ -64,6 +66,6 @@ $dbDefs = array(
     'datatype' => 'FMPro7'
 );
 
-IM_Entry( $tableDefs, $optionDefs, $dbDefs, true );
+IM_Entry( $tableDefs, $optionDefs, $dbDefs, false );
 
 ?>

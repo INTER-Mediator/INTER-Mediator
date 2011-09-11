@@ -15,8 +15,9 @@
  */
 
 function pageLoad(id)  {
-//    INTERMediator.additionalCondition["Contents"] = {field:'Article_id',operator:'eq',value:id};
-    INTERMediator.startFrom = 0;
-    INTERMediator.construct( true );
-    document.getElementById('nonsupportmessage').style.display = 'none';
+    if ( INTERMediatorCheckBrowser(document.getElementById('nonsupportmessage')) )  {
+        INTERMediator.startFrom = 0;
+        INTERMediator.additionalCondition["Contents"] = {field:'Article_id',operator:'eq',value:id};
+        INTERMediator.construct( true );
+    }
 }

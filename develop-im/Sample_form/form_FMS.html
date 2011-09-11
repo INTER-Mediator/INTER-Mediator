@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!--
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
@@ -10,96 +11,111 @@
  */  -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="../sample.css" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../sample.css"/>
     <title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
     <script src="include_FMS.php"></script>
-    <script type="text/javascript"></script>
+    <script type="text/javascript">
+
+    </script>
 </head>
 <body onload="INTERMediator.construct(true);">
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1">
-	<tbody>
-	<tr>
-		<td>id</td>
-		<td><div title="id"></div></td>
-	</tr>
-	<tr>
-		<td>address</td>
-		<td><input type="text" title="address" value="" /></td>
-	</tr>
-	<tr>
-		<td>mail</td>
-		<td><input type="text" title="mail" value="" /></td>
-	</tr>
-	<tr>
-		<td class="a b c d">category</td>
-		<td>
-			<select title="category">
-				<option value="101">Family</option>
-				<option value="102">ClassMate</option>
-				<option value="103">Collegue</option>
-			</select>
-		</td>
-	</tr>
-	<tr>
-		<td>check</td>
-		<td><input type="checkbox" title="check" value="1" /></td>
-	</tr>
-	<tr>
-		<td>location</td>
-		<td>
-			<input type="radio" name="radio1" title="location" value="201" />Domestic
-			<input type="radio" name="radio1" title="location" value="202" />International
-			<input type="radio" name="radio1" title="location" value="203" />Neightbor
-			<input type="radio" name="radio1" title="location" value="204" />Space
-		</td>
-	</tr>
-	<tr>
-		<td>memo</td>
-		<td><textarea title="memo"></textarea></td>
-	</tr>
-	<tr>
-		<td colspan="2">
-			<table border="1">
-			<thead>
-			<tr>
-				<th>person_id</th><th>datetime</th><th>summary</th>
-				<th>important</th><th>way</th><th>kind</th><th>description</th>
-			</tr>
-			</thead>
-			<tbody>
-			<tr>
-				<td><div title="contact_to@person_id"></div></td>
-				<td><input type="text" title="contact_to@datetime|contact_to@datetime@value"/></td>
-				<td><input type="text" title="contact_to@summary"/></td>
-				<td><input type="checkbox" title="contact_to@important" value="1"/></td>
-				<td>
-					<select title="contact_to@way">
-						<option class="IM[contact_way@id@value|contact_way@name@innerHTML] contactway" value=""></option>
-					</select>
-				</td>
-				<td>
-					<select title="contact_to@kind">
-						<option class="IM[cor_way_kind@kind_id@value|cor_way_kind@contact_kind::name@innerHTML] contactkind" value=""></option>
-					</select>
-				</td>
-				<td><textarea title="contact_to@description"></textarea></td>
-			</tr>
-			</tbody>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td colspan="2">
-			<ul>
-				<li><hr/><input type="text" title="history_to@startdate" /></li>
-				<li><input type="text" title="history_to@enddate" /></li>
-				<li><input type="text" title="history_to@description" /></li>
-			</ul>
-		</td>
-	</tr>
-	</tbody>
+    <tbody>
+    <tr>
+        <td>id</td>
+        <td>
+            <div title="person_layout@id"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>address</td>
+        <td><input type="text" title="person_layout@address" value=""/></td>
+    </tr>
+    <tr>
+        <td>mail</td>
+        <td><input type="text" title="person_layout@mail" value=""/></td>
+    </tr>
+    <tr>
+        <td class="a b c d">category</td>
+        <td>
+            <select title="person_layout@category">
+                <option value="101">Family</option>
+                <option value="102">ClassMate</option>
+                <option value="103">Collegue</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>check</td>
+        <td><input type="checkbox" title="person_layout@check" value="1"/></td>
+    </tr>
+    <tr>
+        <td>location</td>
+        <td>
+            <input type="radio" name="radio1" title="person_layout@location" value="201"/>Domestic
+            <input type="radio" name="radio1" title="person_layout@location" value="202"/>International
+            <input type="radio" name="radio1" title="person_layout@location" value="203"/>Neightbor
+            <input type="radio" name="radio1" title="person_layout@location" value="204"/>Space
+        </td>
+    </tr>
+    <tr>
+        <td>memo</td>
+        <td><textarea title="person_layout@memo"></textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>person_id</th>
+                    <th>datetime</th>
+                    <th>summary</th>
+                    <th>important</th>
+                    <th>way</th>
+                    <th>kind</th>
+                    <th>description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <div title="contact_to@person_id"></div>
+                    </td>
+                    <td><input type="text" title="contact_to@datetime"/></td>
+                    <td><input type="text" title="contact_to@summary"/></td>
+                    <td><input type="checkbox" title="contact_to@important" value="1"/></td>
+                    <td>
+                        <select title="contact_to@way">
+                            <option class="IM[contact_way@id@value|contact_way@name@innerHTML] contactway"
+                                    value=""></option>
+                        </select>
+                    </td>
+                    <td>
+                        <select title="contact_to@kind">
+                            <option class="IM[cor_way_kind@kind_id@value|cor_way_kind@contact_kind::name@innerHTML] contactkind"
+                                    value=""></option>
+                        </select>
+                    </td>
+                    <td><textarea title="contact_to@description"></textarea></td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <ul>
+                <li>
+                    <hr/>
+                    <input type="text" title="history_to@startdate"/></li>
+                <li><input type="text" title="history_to@enddate"/></li>
+                <li><input type="text" title="history_to@description"/></li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
 </table>
 </body>
 </html>
