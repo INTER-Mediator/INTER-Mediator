@@ -3,10 +3,13 @@
 # INTER-Mediator Distribution File Builder by Masayuki Nii
 #    Execute for current directory as the root of repository.
 
+YUICOMP="../yuicompressor-2.4.2.jar"
+
 echo "Enter version number (don't include ver. or VER. etc) --> "
 read version
 
 dt=`date "+%Y-%m-%d"`
+versionInFilename=`echo "${version}" | tr '.' '_'`;
 
 curpath=$(cd $(dirname "$0"); pwd)
 echo "Working Directory is:", ${curpath}
@@ -20,7 +23,6 @@ EOF
 rm -r ../temp
 mkdir ../temp
 cd ../temp
-#cp -r "${curpath}"/develop-im .
 cp "${curpath}"/dist-docs/*.txt .
 cp "${curpath}"/dist-docs/TestDB.fp7 .
 
@@ -43,10 +45,19 @@ done
 cp -r "${curpath}"/develop-im/Sample_products/images develop-im/Sample_products/
 cp -r "${curpath}"/develop-im/INTER-Mediator/FX      develop-im/INTER-Mediator/
 
-#java -jar ../yuicompressor-2.4.2.jar -o temp.js develop-im/INTER-Mediator/INTER-Mediator.js
-#mv -f temp.js develop-im/INTER-Mediator/INTER-Mediator.js
+echo "######### Compress INTER-Mediator.js"
+java -jar ${YUICOMP} -o temp.js develop-im/INTER-Mediator/INTER-Mediator.js
+mv -f temp.js develop-im/INTER-Mediator/INTER-Mediator.js
+echo "######### Compress Adapter_DBServer.js"
+java -jar ${YUICOMP} -o temp.js develop-im/INTER-Mediator/Adapter_DBServer.js
+mv -f temp.js develop-im/INTER-Mediator/Adapter_DBServer.js
+echo "######### Compress Adapter_LocalDB"
+java -jar ${YUICOMP} -o temp.js develop-im/INTER-Mediator/Adapter_LocalDB.js
+mv -f temp.js develop-im/INTER-Mediator/Adapter_LocalDB.js
+
+find . -name "\.*"
 
 #rm -rf develop-im/INTER-Mediator/FX
-zip -r INTER-Mediator-${version}.zip *.txt TestDB.fp7 develop-im
+zip -r INTER-Mediator-${versionInFilename}.zip *.txt TestDB.fp7 develop-im
 rm "${curpath}"/sedrule
 

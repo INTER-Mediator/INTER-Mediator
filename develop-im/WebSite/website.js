@@ -18,6 +18,7 @@ function pageLoad(id)  {
     if ( INTERMediatorCheckBrowser(document.getElementById('nonsupportmessage')) )  {
         INTERMediator.startFrom = 0;
         INTERMediator.additionalCondition["Contents"] = {field:'Article_id',operator:'eq',value:id};
+        INTERMediator.additionalCondition["PageInfo"] = {field:'id',operator:'eq',value:id};
         INTERMediator.construct( true );
     }
 }

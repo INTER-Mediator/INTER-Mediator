@@ -14,9 +14,8 @@ Enter password:
 */
 SET NAMES 'utf8';
 
-#### The following 2 lines are required once that you execute this at the first time.
-#CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
-#GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO  'web';
+DROP USER 'web'@'localhost';
+CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
 
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db
@@ -183,8 +182,8 @@ CREATE TABLE product (
 	unitprice			FLOAT(10.2),
 	name				VARCHAR(20),
 	photofile			VARCHAR(20),
-	acknowledgement	VARCHAR(40),
-	ack_link			VARCHAR(40),
+	acknowledgement	    VARCHAR(100),
+	ack_link			VARCHAR(100),
 	memo				VARCHAR(120),
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8,
@@ -193,6 +192,10 @@ CREATE TABLE product (
 
 CREATE VIEW item_display AS SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty, item.unitprice, product.unitprice as unitprice_master, IF(item.unitprice is null, qty * product.unitprice, qty * item.unitprice) AS amount FROM item, product WHERE item.product_id=product.id;
 
+# Grant to All operations for all objects with web account
+GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
+
+# Sample Data
 INSERT product SET name="Apple",id=1,category_id=1,unitprice=340,photofile='mela-verde.png',acknowledgement='Image: djcodrin / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=982';
 INSERT product SET name="Orange",id=2,category_id=1,unitprice=1540,photofile='orange_1.png',acknowledgement='Image: Suat Eman / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=151';
 INSERT product SET name="Melon",id=3,category_id=1,unitprice=3840,photofile='galia-melon.png',acknowledgement='Image: FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net';

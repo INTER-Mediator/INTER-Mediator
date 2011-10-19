@@ -21,6 +21,11 @@ header('Content-Type: text/javascript');
 
 $tableDefs= array(
     array(
+        'name' 	=> 'PageInfo',
+        'view'  => "Article",
+        'key' 	=> 'id',
+    ),
+    array(
         'name' 	=> 'Titles',
         'key' 	=> 'id',
         'query'	=> array(
@@ -43,9 +48,21 @@ $tableDefs= array(
     array(
         'name' 	=> 'News',
         'key' 	=> 'id',
+        'records' => 6,
         'query'	=> array(
             array( 'field'=>'Article_News::ContentKind_id', 'value'=>'1', 'operator'=>'eq' ),
-            array( 'field'=>'creditDate', 'value'=>date('m/d/Y', time()-84000*200), 'operator'=>'gt' ),
+        //    array( 'field'=>'creditDate', 'value'=>date('m/d/Y', time()-84000*200), 'operator'=>'gt' ),
+        ),
+        'sort'	=> array(
+            array( 'field'=>'creditDate', 'direction'=>'descend' ),
+        ),
+    ),
+    array(
+        'name' 	=> 'NewsPage',
+        'view' => 'News',
+        'key' => 'id',
+        'query'	=> array(
+            array( 'field'=>'Article_News::ContentKind_id', 'value'=>'1', 'operator'=>'eq' ),
         ),
         'sort'	=> array(
             array( 'field'=>'creditDate', 'direction'=>'descend' ),
@@ -53,7 +70,11 @@ $tableDefs= array(
     ),
 );
 
-$optionDefs= array();
+$optionDefs= array(
+    'formatter' => array(
+        array('field' => 'PageInfo@updateDate', 'converter-class' => 'FMDateTime'),
+    )
+);
 
 $dbDefs = array(
     'db-class' => 'WebSite_FMSFX',

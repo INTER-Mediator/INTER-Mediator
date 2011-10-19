@@ -8,23 +8,28 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-class DataConverter_AppendPrefix	{
+class DataConverter_AppendPrefix
+{
 
-	var $appendStr;
-	
-	function __construct( $str = '' )	{
-		$this->appendStr = $str;
-	}
-	
-	function converterFromDBtoUser( $str )	{
-		return $this->appendStr . $str;
-	}
+    var $appendStr;
 
-	function converterFromUserToDB( $str )	{
-		if ( strpos( $str, $this->appendStr ) === 0 )	{
-			return substr( $str, strlen( $this->appendStr ));
-		}
-		return $str;
-	}
+    function __construct($str = '')
+    {
+        $this->appendStr = $str;
+    }
+
+    function converterFromDBtoUser($str)
+    {
+        return $this->appendStr . $str;
+    }
+
+    function converterFromUserToDB($str)
+    {
+        if (strpos($str, $this->appendStr) === 0) {
+            return substr($str, strlen($this->appendStr));
+        }
+        return $str;
+    }
 }
+
 ?>

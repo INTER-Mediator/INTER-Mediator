@@ -9,69 +9,33 @@ msyk@msyk.net
 
 These are demo materials for demonstrating INTER-Mediator's fundamental function.
 
-PHP files should be located as same directory as 'develop-im' folder.
-The demo detabase for MySQL with the distribution should be installed and working.
-The file params.php is same as distributed one.
+The "demo-script" folder should be located as same directory as 'develop-im' folder.
+The demo database for MySQL with the distribution should be installed and working.
 
-1. open demo1.html, show the source.
+** DEMO 1
 
-2. change the extension to php, and add following source in the header seciton
+1. open demo1.html, show the source. And show by any browser. You can see just a table.
+
+2. open demo1.php, show the source. It defines the information for database.
+
+3. change the following part of demo1.html. You can see demo1.html and it contains data from database in the table.
 =================================
-<?php
-	require_once( '../develop-im/INTER-Mediator/INTER-Mediator.php' );
-	InitializePage(
-		array( array(	'records' 	=> '1', 'name' => 'person', 'key' 	=> 'id',),), 
-		null,
-		array( 'db-class' => 'MySQL', 'db' => 'test_db', )
-	);
-?>
-</head>
-<body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">
+<body>
+  v
+<body onload="INTERMediator.construct(true)">
 =================================
-
-3. open demo1.php and proof that shows the contents of database.
 
 4. add following code in any body part.
 =================================
-<?php GenerateConsole(); ?>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 =================================
 
-5. demo2.html is listing samples.
-
-6. add codes below:
+Uncomment the following lines in demo1.php
 =================================
-<?php 
-	require_once( '../develop-im/INTER-Mediator/INTER-Mediator.php' );
-	InitializePage(
-		array(
-			array(
-				'records'	=>	16,
-				'name'	=> 'postalcode',	
-				'key' 	=> 'id',
-				'query'	=> array( array( 'field'=>'f8', 'operator'=>'=', 'value'=>'�a�J��' ) ),
-				'sort'	=> array( array( 'field'=>'f3', 'direction'=>'DESC' ),),
-			),
-		),
-		null,
-		array( 'db-class' => 'MySQL', 'db' => 'test_db', )
-	);
-	?>
-<script type="text/javascript"></script>
-</head>
-<body onload="doAtTheStarting();" onbeforeunload="return doAtTheFinishing();">
-<?php GenerateConsole( 'pos nav'); ?>
+'repeat-control' => 'insert delete',
+'paging' => true,
 =================================
 
-7. show the navigation.
-
-8. add debug paramter to InitilizePage function and monitor the SQL statement.
-
-9. Change the criteria parameter.
-
-10. Change the skip factor ('records' parameter).
-
-11. Move to the sample one-to-many style form page in the distribution. There are a lot of things must be explained. Go ahead!
-
-
+** DEMO 2
 
 

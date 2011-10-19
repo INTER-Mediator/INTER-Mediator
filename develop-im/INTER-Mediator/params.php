@@ -1,12 +1,12 @@
-<?php 
+<?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
- * 
- *   This project started at the end of 2009.
- *   INTER-Mediator is supplied under MIT License.
- */
+* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+*
+*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+*
+*   This project started at the end of 2009.
+*   INTER-Mediator is supplied under MIT License.
+*/
 
 /* DB_FileMaker_FX awares below:
  */
@@ -20,7 +20,7 @@ $dbProtocol = 'HTTP';
 
 /* DB_PDO awares below:
  */
-$dbDSN ='mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;';
+$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;';
 $dbOption = array();
 $dbUser = 'web';
 $dbPassword = 'password';
@@ -28,11 +28,12 @@ $dbPassword = 'password';
 /* Browser Compatibility Check:
  */
 $browserCompatibility = array(
-    'msie'=>'7+',
-    'FireFox'=>'2+',
-    'Safari'=>array('Mac'=>'4+','Win'=>'4+'),
-    'Chrome'=>'1+',
-    'Opera'=>'1+'
+    'msie' => '7+',
+    'FireFox' => '2+',
+    'Safari' => '4+',
+//    'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
+    'Chrome' => '1+',
+    'Opera' => '1+'
 );
 
 

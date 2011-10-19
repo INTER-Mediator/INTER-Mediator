@@ -7,62 +7,62 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 /*==================================================
-  Database Access Object for Server-based Database
-  ==================================================*/
+ Database Access Object for Server-based Database
+ ==================================================*/
 var IM_DBAdapter = {
     /*
-    db_query
-    Querying from database. The parameter of this function should be the object as below:
+     db_query
+     Querying from database. The parameter of this function should be the object as below:
 
-        {   name:<name of the context>
-            records:<the number of retrieving records, could be null>
-            fields:<the array of fields to retrieve, but this parameter is ignored so far.
-            parentkeyvalue:<the value of foreign key field, could be null>
-            conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>
-            useoffset:<true/false whether the offset parameter is set on the query.>    }
+     {   name:<name of the context>
+     records:<the number of retrieving records, could be null>
+     fields:<the array of fields to retrieve, but this parameter is ignored so far.
+     parentkeyvalue:<the value of foreign key field, could be null>
+     conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>
+     useoffset:<true/false whether the offset parameter is set on the query.>    }
 
      This function returns recordset of retrieved.
      */
-	db_query: function (args) {
+    db_query:function(args) {
         var noError = true;
-        if ( args['name'] == null )   {
+        if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
             noError = false;
         }
-        if ( ! noError )    {
+        if (!noError) {
             return;
         }
 
-		var params = "?access=select&name=" + encodeURI(args['name']);
-		params += "&records=" + encodeURI((args['records'] != null) ? args['records'] : 10000000);
-		for ( var i = 0 ; i < args['fields'].length ; i++ ) {
-			params += "&field_" + i + "=" + encodeURI(args['fields'][i]);
-		}
+        var params = "?access=select&name=" + encodeURI(args['name']);
+        params += "&records=" + encodeURI((args['records'] != null) ? args['records'] : 10000000);
+        for (var i = 0; i < args['fields'].length; i++) {
+            params += "&field_" + i + "=" + encodeURI(args['fields'][i]);
+        }
         var counter = 0;
-        if ( args['parentkeyvalue'] != null) {
-            for ( var index in  args['parentkeyvalue'] ) {
+        if (args['parentkeyvalue'] != null) {
+            for (var index in  args['parentkeyvalue']) {
                 params += "&foreign" + counter + "field=" + encodeURI(index);
                 params += "&foreign" + counter + "value=" + encodeURI(args['parentkeyvalue'][index]);
                 counter++;
             }
         }
-        if ( args['useoffset'] && INTERMediator.startFrom != null ) {
+        if (args['useoffset'] && INTERMediator.startFrom != null) {
             params += "&start=" + encodeURI(INTERMediator.startFrom);
         }
         var extCount = 0;
-		if (args['conditions'] != null) {
+        if (args['conditions'] != null) {
             params += "&condition" + extCount + "field=" + encodeURI(args['conditions'][extCount]['field']);
             params += "&condition" + extCount + "operator=" + encodeURI(args['conditions'][extCount]['operator']);
             params += "&condition" + extCount + "value=" + encodeURI(args['conditions'][extCount]['value']);
             extCount++;
-		}
+        }
         var criteraObject = INTERMediator.additionalCondition[args['name']];
-        if ( criteraObject != null && criteraObject["field"] != null )   {
+        if (criteraObject != null && criteraObject["field"] != null) {
             criteraObject = [criteraObject];
         }
-        for ( var index in criteraObject )  {
+        for (var index in criteraObject) {
             params += "&condition" + extCount + "field=" + encodeURI(criteraObject[index]["field"]);
-            if ( criteraObject[index]["operator"] != null )    {
+            if (criteraObject[index]["operator"] != null) {
                 params += "&condition" + extCount + "operator=" + encodeURI(criteraObject[index]["operator"]);
             }
             params += "&condition" + extCount + "value=" + encodeURI(criteraObject[index]["value"]);
@@ -70,107 +70,107 @@ var IM_DBAdapter = {
         }
 
         params += "&randkey" + Math.random();    // For ie...
-            // IE uses caches as the result in spite of several headers. So URL should be randomly.
-		var appPath = IM_getEntryPath();
+        // IE uses caches as the result in spite of several headers. So URL should be randomly.
+        var appPath = IM_getEntryPath();
 
-        INTERMediator.debugMessages.push( IM_getMessages()[1012] + decodeURI(appPath + params) );
+        INTERMediator.debugMessages.push(IM_getMessages()[1012] + decodeURI(appPath + params));
         var dbresult = '';
-		myRequest = new XMLHttpRequest();
-		try {
-			myRequest.open('GET', appPath + params, false);
-			myRequest.send(null);
-			eval(myRequest.responseText);
-            if (( args['paging'] != null) && ( args['paging'] == true ))  {
+        myRequest = new XMLHttpRequest();
+        try {
+            myRequest.open('GET', appPath + params, false);
+            myRequest.send(null);
+            eval(myRequest.responseText);
+            if (( args['paging'] != null) && ( args['paging'] == true )) {
                 INTERMediator.pagedSize = args['records'];
                 INTERMediator.pagedAllCount = resultCount;
             }
 
-		} catch (e) {
-			INTERMediator.errorMessages.push(
-                INTERMediatorLib.getInsertedString(IM_getMessages()[1004],[e,myRequest.responseText]));
-		}
-		return dbresult;
-	},
+        } catch (e) {
+            INTERMediator.errorMessages.push(
+                INTERMediatorLib.getInsertedString(IM_getMessages()[1004], [e, myRequest.responseText]));
+        }
+        return dbresult;
+    },
 
     /*
-    db_update
-    Update the database. The parameter of this function should be the object as below:
+     db_update
+     Update the database. The parameter of this function should be the object as below:
 
-        {   name:<Name of the Context>
-            conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
-            dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
+     {   name:<Name of the Context>
+     conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
+     dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
-	db_update: function ( args ) {
+    db_update:function(args) {
         var noError = true;
-        if (args['name'] == null )   {
+        if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
             noError = false;
         }
-        if (args['conditions'] == null)   {
+        if (args['conditions'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1008));
             noError = false;
         }
-        if (args['dataset'] == null)   {
+        if (args['dataset'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1011));
             noError = false;
         }
-        if ( ! noError )    {
+        if (!noError) {
             return;
         }
-        
-		var params = "?access=update&name=" + encodeURI(args['name']);
+
+        var params = "?access=update&name=" + encodeURI(args['name']);
         var extCount = 0;
-		if (args['conditions'] != null) {
+        if (args['conditions'] != null) {
             params += "&condition" + extCount + "field=" + encodeURI(args['conditions'][extCount]['field']);
             params += "&condition" + extCount + "operator=" + encodeURI(args['conditions'][extCount]['operator']);
             params += "&condition" + extCount + "value=" + encodeURI(args['conditions'][extCount]['value']);
             extCount++;
-		}
-        for ( var extCount = 0; extCount < args['dataset'].length ; extCount++) {
-		    params += "&field_" + extCount +"=" + encodeURI(args['dataset'][extCount]['field']);
-		    params += "&value_" + extCount +"=" + encodeURI(args['dataset'][extCount]['value']);
+        }
+        for (var extCount = 0; extCount < args['dataset'].length; extCount++) {
+            params += "&field_" + extCount + "=" + encodeURI(args['dataset'][extCount]['field']);
+            params += "&value_" + extCount + "=" + encodeURI(args['dataset'][extCount]['value']);
         }
         var appPath = IM_getEntryPath();
-		INTERMediator.debugMessages.push(IM_getMessages()[1013] + decodeURI(appPath + params));
+        INTERMediator.debugMessages.push(IM_getMessages()[1013] + decodeURI(appPath + params));
 
-		myRequest = new XMLHttpRequest();
-		try {
-			myRequest.open('GET', appPath + params, false);
-			// myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded;
-			// charset=UTF-8');
-			myRequest.send(null);
-			var dbresult = '';
-			eval(myRequest.responseText);
-		} catch (e) {
+        myRequest = new XMLHttpRequest();
+        try {
+            myRequest.open('GET', appPath + params, false);
+            // myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded;
+            // charset=UTF-8');
+            myRequest.send(null);
+            var dbresult = '';
+            eval(myRequest.responseText);
+        } catch (e) {
             INTERMediator.errorMessages.push(
-                INTERMediatorLib.getInsertedString(IM_getMessages()[1014],[e,myRequest.responseText]));
-		}
-		return dbresult;
-	},
+                INTERMediatorLib.getInsertedString(IM_getMessages()[1014], [e, myRequest.responseText]));
+        }
+        return dbresult;
+    },
 
     /*
-    db_delete
-    Delete the record. The parameter of this function should be the object as below:
+     db_delete
+     Delete the record. The parameter of this function should be the object as below:
 
-        {   name:<Name of the Context>
-            conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
+     {   name:<Name of the Context>
+     conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
-    db_delete: function( args )   {
+    db_delete:function(args) {
         var noError = true;
-        if (args['name'] == null )   {
+        if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
             noError = false;
         }
-        if (args['conditions'] == null)   {
+        if (args['conditions'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
             noError = false;
         }
-        if ( ! noError )    {
+        if (!noError) {
             return;
         }
 
         var params = "?access=delete&name=" + encodeURI(args['name']);
-        for ( var i = 0 ; i < args['conditions'].length ; i++ )    {
+        for (var i = 0; i < args['conditions'].length; i++) {
             params += "&condition" + i + "field=" + encodeURI(args['conditions'][i]['field']);
             params += "&condition" + i + "operator=" + encodeURI(args['conditions'][i]['operator']);
             params += "&condition" + i + "value=" + encodeURI(args['conditions'][i]['value']);
@@ -185,27 +185,27 @@ var IM_DBAdapter = {
             eval(myRequest.responseText);
         } catch (e) {
             INTERMediator.errorMessages.push(
-                INTERMediatorLib.getInsertedString(IM_getMessages()[1015],[e,myRequest.responseText]));
+                INTERMediatorLib.getInsertedString(IM_getMessages()[1015], [e, myRequest.responseText]));
         }
         INTERMediator.flushMessage();
     },
 
     /*
-    db_createRecord
-    Create a record. The parameter of this function should be the object as below:
+     db_createRecord
+     Create a record. The parameter of this function should be the object as below:
 
-        {   name:<Name of the Context>
-            dataset:<the array of the object {field:xx,value:xx}. Initial value for each field> }
+     {   name:<Name of the Context>
+     dataset:<the array of the object {field:xx,value:xx}. Initial value for each field> }
 
-    This function returns the value of the key field of the new record.
+     This function returns the value of the key field of the new record.
      */
-    db_createRecord: function( args ) {
-        if (args['name'] == null )   {
+    db_createRecord:function(args) {
+        if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return;
         }
         var params = "?access=insert&name=" + encodeURI(args['name']);
-        for ( var i = 0 ; i < args['dataset'].length ; i++ )    {
+        for (var i = 0; i < args['dataset'].length; i++) {
             params += "&field_" + i + "=" + encodeURI(args['dataset'][i]['field']);
             params += "&value_" + i + "=" + encodeURI(args['dataset'][i]['value']);
         }
@@ -220,7 +220,7 @@ var IM_DBAdapter = {
             eval(myRequest.responseText);
         } catch (e) {
             INTERMediator.errorMessages.push(
-                INTERMediatorLib.getInsertedString(IM_getMessages()[1016],[e,myRequest.responseText]));
+                INTERMediatorLib.getInsertedString(IM_getMessages()[1016], [e, myRequest.responseText]));
         }
         INTERMediator.flushMessage();
         return newRecordKeyValue;

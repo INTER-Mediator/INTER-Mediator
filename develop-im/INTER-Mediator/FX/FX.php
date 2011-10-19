@@ -12,25 +12,25 @@
 #                                                                       #
 #########################################################################
 
-define("FX_VERSION", '4.5.1mod_by_msyk');                               // Current version information for FX.php.  New constants as of version 4.0.
+define("FX_VERSION", '4.5.1mod_by_msyk'); // Current version information for FX.php.  New constants as of version 4.0.
 define("FX_VERSION_FULL", "FX.php version 4.5.1 (28 Feb 2008) by Chris Hansen, Chris Adams, G G Thorsen, and others."
-        . " Modified by Masayuki Nii (nii@msyk.net) on 18 Dec 2010");
+    . " Modified by Masayuki Nii (nii@msyk.net) on 18 Dec 2010");
 
-require_once('FX_Error.php');                                           // This version of FX.php includes object based error handling.  See
-                                                                        // FX_Error.php for more information.
+require_once('FX_Error.php'); // This version of FX.php includes object based error handling.  See
+// FX_Error.php for more information.
 
-if (! defined('DEBUG_FUZZY')) {                                         // This version of FX.php includes the FX Fuzzy Debugger (turned off by default.)
+if (!defined('DEBUG_FUZZY')) { // This version of FX.php includes the FX Fuzzy Debugger (turned off by default.)
     define('DEBUG_FUZZY', false);
 }
 
-require_once('FX_constants.php');                                       // The constants in this file are designed to be used with DoFXAction()
+require_once('FX_constants.php'); // The constants in this file are designed to be used with DoFXAction()
 
-define("EMAIL_ERROR_MESSAGES", FALSE);                                  // Set this to TRUE to enable emailing of specific error messages.
-define("DISPLAY_ERROR_MESSAGES", TRUE);                                 // Set this to FALSE to display the $altErrorMessage to the user.
-$webmasterEmailAddress = 'webmaster@yourdomain.com';                    // If you set the above to TRUE, enter the appropriate email address on this line.
-$emailFromAddress = 'you@yourdomain.com';                               // Sets who the error message will show as the sender.
+define("EMAIL_ERROR_MESSAGES", FALSE); // Set this to TRUE to enable emailing of specific error messages.
+define("DISPLAY_ERROR_MESSAGES", TRUE); // Set this to FALSE to display the $altErrorMessage to the user.
+$webmasterEmailAddress = 'webmaster@yourdomain.com'; // If you set the above to TRUE, enter the appropriate email address on this line.
+$emailFromAddress = 'you@yourdomain.com'; // Sets who the error message will show as the sender.
 
-function EmailError ($errorText)
+function EmailError($errorText)
 {
     global $webmasterEmailAddress;
     global $emailFromAddress;
@@ -42,7 +42,7 @@ function EmailError ($errorText)
     }
 }
 
-function EmailErrorHandler ($FXErrorObj)
+function EmailErrorHandler($FXErrorObj)
 {
     $altErrorMessage = 'The Server was unable to process your request.<br />The WebMaster has been emailed.<br /> Thank you for your patience.';
 
@@ -73,32 +73,32 @@ class FX
     var $dataParams = array();
     var $sortParams = array();
     var $actionArray = array(
-            // for backwards compatibility
-            "-delete"               =>"-delete",
-            "-dup"                  =>"-dup",
-            "-edit"                 =>"-edit",
-            "-find"                 =>"-find",
-            "-findall"              =>"-findall",
-            "-findany"              =>"-findany",
-            "-new"                  =>"-new",
-            "-view"                 =>"-view",
-            "-dbnames"              =>"-dbnames",
-            "-layoutnames"          =>"-layoutnames",
-            "-scriptnames"          =>"-scriptnames",
-            "-sqlquery"             =>"-sqlquery",
-            // new params for DoFXAction
-            "delete"                =>"-delete",
-            "duplicate"             =>"-dup",
-            "update"                =>"-edit",
-            "perform_find"          =>"-find",
-            "show_all"              =>"-findall",
-            "show_any"              =>"-findany",
-            "new"                   =>"-new",
-            "view_layout_objects"   =>"-view",
-            "view_database_names"   =>"-dbnames",
-            "view_layout_names"     =>"-layoutnames",
-            "view_script_names"     =>"-scriptnames"
-        );
+        // for backwards compatibility
+        "-delete" => "-delete",
+        "-dup" => "-dup",
+        "-edit" => "-edit",
+        "-find" => "-find",
+        "-findall" => "-findall",
+        "-findany" => "-findany",
+        "-new" => "-new",
+        "-view" => "-view",
+        "-dbnames" => "-dbnames",
+        "-layoutnames" => "-layoutnames",
+        "-scriptnames" => "-scriptnames",
+        "-sqlquery" => "-sqlquery",
+        // new params for DoFXAction
+        "delete" => "-delete",
+        "duplicate" => "-dup",
+        "update" => "-edit",
+        "perform_find" => "-find",
+        "show_all" => "-findall",
+        "show_any" => "-findany",
+        "new" => "-new",
+        "view_layout_objects" => "-view",
+        "view_database_names" => "-dbnames",
+        "view_layout_names" => "-layoutnames",
+        "view_script_names" => "-scriptnames"
+    );
 
     // Variables to help with SQL queries
     var $primaryKeyField = '';
@@ -124,12 +124,12 @@ class FX
     // Variables used to track how data is moved in and out of FileMaker.  Used when UTF-8 just doesn't cut it (as when working with Japanese characters.)
     // This and all related code were submitted by Masayuki Nii.
     // Note that if either of these variables are simply empty, UTF-8 is the default.
-    var $charSet = '';                                                  // Determines how outgoing data is encoded.
-    var $dataParamsEncoding = '';                                       // Determines how incoming data is encoded.
+    var $charSet = ''; // Determines how outgoing data is encoded.
+    var $dataParamsEncoding = ''; // Determines how incoming data is encoded.
 
-    var $remainNames = array();	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    var $portalAsRecord =false;	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    var $currentSubrecordIndex;	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+    var $remainNames = array(); // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+    var $portalAsRecord = false; // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+    var $currentSubrecordIndex; // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
 
     // Flags and Error Tracking
     var $currentFlag = '';
@@ -137,15 +137,15 @@ class FX
     var $currentField = '';
     var $currentValueList = '';
     var $fieldCount = 0;
-    var $columnCount = -1;                                                // columnCount is ++ed BEFORE looping
+    var $columnCount = -1; // columnCount is ++ed BEFORE looping
     var $fxError = 'No Action Taken';
     var $errorTracking = 0;
-    var $useInnerArray = true;                                              // Do NOT change this variable directly.  Use FlattenInnerArray() or the appropriate param of action method.
+    var $useInnerArray = true; // Do NOT change this variable directly.  Use FlattenInnerArray() or the appropriate param of action method.
     var $useComma2Period = false;
 
     // These variables will be used if you need a password to access your data.
     var $DBUser = 'FX';
-    var $DBPassword = '';                                                 // This can be left blank, or replaced with a default or dummy password.
+    var $DBPassword = ''; // This can be left blank, or replaced with a default or dummy password.
     var $userPass = '';
 
     // These variables are related to sending data to FileMaker via a Post.
@@ -167,6 +167,9 @@ class FX
     var $lastErrorCode = -2;
     var $lastValueLists = array();
     var $lastDebugMessage = '';
+
+    var $currentValueListElement = 0; // It was missing?, by Masayuki Nii Sep 18, 2011
+    var $currentFieldIndex = 0;
 
     // Other variables
     var $invalidXMLChars = array("\x0B", "\x0C", "\x12");
@@ -207,7 +210,7 @@ class FX
         "\$this->BuildExtendedChar('\\1','\\2','\\3','\\4')"
     );
 
-    function BuildExtendedChar ($byteOne, $byteTwo="\x00", $byteThree="\x00", $byteFour="\x00")
+    function BuildExtendedChar($byteOne, $byteTwo = "\x00", $byteThree = "\x00", $byteFour = "\x00")
     {
         if (ord($byteTwo) >= 128) {
             $tempChar = substr(decbin(ord($byteTwo)), -6);
@@ -227,7 +230,7 @@ class FX
         return $tempChar;
     }
 
-    function ClearAllParams ()
+    function ClearAllParams()
     {
         $this->userPass = "";
         $this->dataURL = "";
@@ -245,25 +248,25 @@ class FX
         $this->currentField = "";
         $this->currentFlag = "";
         $this->isPostQuery = $this->defaultPostPolicy;
-        $this->isFOpenQuery = $this->defaultFOpenPolicy;
+        //    $this->isFOpenQuery = $this->defaultFOpenPolicy;  //defaultFOpenPolicy isn't defined, Masayuki Nii Sep 18,2011
         $this->primaryKeyField = '';
         $this->modifyDateField = '';
         $this->dataKeySeparator = '';
         $this->fuzzyKeyLogic = false;
         $this->genericKeys = false;
         $this->useInnerArray = true;
-        $this->remainNames = array();	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-        $this->portalAsRecord = false;	// Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+        $this->remainNames = array(); // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+        $this->portalAsRecord = false; // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
     }
 
-    function ErrorHandler ($errorText)
+    function ErrorHandler($errorText)
     {
         $this->fxError = $errorText;
         $this->errorTracking = 3300;
         return $errorText;
     }
 
-    function FX ($dataServer, $dataPort=80, $dataType='', $dataURLType='')
+    function FX($dataServer, $dataPort = 80, $dataType = '', $dataURLType = '')
     {
         $this->dataServer = $dataServer;
         $this->dataPort = $dataPort;
@@ -283,8 +286,10 @@ class FX
         $this->lastDebugMessage = '<p>Instantiating FX.php.</p>';
     }
 
-    function CreateCurrentSort ()
+    function CreateCurrentSort()
     {
+        $sortOrder = null;
+        $field = null; // Add for eliminate syntax error, by Masayuki Nii Sep 18,2011
         $currentSort = "";
 
         foreach ($this->sortParams as $key1 => $value1) {
@@ -294,25 +299,28 @@ class FX
             $lowerCaseDataServerType = strtolower($this->dataServerType);
             if (substr($lowerCaseDataServerType, 0, 5) == 'fmpro' && substr($lowerCaseDataServerType, -1) > 6) {
                 if ($sortOrder == "") {
-                    $currentSort .= "&-sortfield.{$key1}=" . str_replace ("%3A%3A", "::", rawurlencode($field));
+                    $currentSort .= "&-sortfield.{$key1}=" . str_replace("%3A%3A", "::", rawurlencode($field));
                 }
                 else {
-                    $currentSort .= "&-sortfield.{$key1}=" . str_replace ("%3A%3A", "::", rawurlencode($field)) . "&-sortorder.{$key1}=" . $sortOrder;
+                    $currentSort .= "&-sortfield.{$key1}=" . str_replace("%3A%3A", "::", rawurlencode($field)) . "&-sortorder.{$key1}=" . $sortOrder;
                 }
             } else {
                 if ($sortOrder == "") {
-                    $currentSort .= "&-sortfield=" . str_replace ("%3A%3A", "::", rawurlencode($field));
+                    $currentSort .= "&-sortfield=" . str_replace("%3A%3A", "::", rawurlencode($field));
                 }
                 else {
-                    $currentSort .= "&-sortfield=" . str_replace ("%3A%3A", "::", rawurlencode($field)) . "&-sortorder=" . $sortOrder;
+                    $currentSort .= "&-sortfield=" . str_replace("%3A%3A", "::", rawurlencode($field)) . "&-sortorder=" . $sortOrder;
                 }
             }
         }
         return $currentSort;
     }
 
-    function CreateCurrentSearch ()
+    function CreateCurrentSearch()
     {
+        $name = null;
+        $value = null;
+        $op = null; // Add for eliminate syntax error, by Masayuki Nii Sep 18,2011
         $currentSearch = '';
 
         foreach ($this->dataParams as $key1 => $value1) {
@@ -320,7 +328,7 @@ class FX
                 $$key2 = $value2;
             }
             if ($op == "" && $this->defaultOperator == 'bw') {
-                $currentSearch .= "&" . str_replace ("%3A%3A", "::", urlencode($name)) . "=" . urlencode($value);
+                $currentSearch .= "&" . str_replace("%3A%3A", "::", urlencode($name)) . "=" . urlencode($value);
             } else {
                 if ($op == "") {
                     $op = $this->defaultOperator;
@@ -345,51 +353,53 @@ class FX
         return $currentSearch;
     }
 
-    function AssembleCurrentSearch ($layRequest, $skipRequest, $currentSort, $currentSearch, $action, $FMV=6)
+    function AssembleCurrentSearch($layRequest, $skipRequest, $currentSort, $currentSearch, $action, $FMV = 6)
     {
         $tempSearch = '';
 
-        $tempSearch = "-db=" . urlencode($this->database);               // add the name of the database...
-        $tempSearch .= $layRequest;                                      // and any layout specified...
+        $tempSearch = "-db=" . urlencode($this->database); // add the name of the database...
+        $tempSearch .= $layRequest; // and any layout specified...
         if ($FMV < 7) {
-            $tempSearch .= "&-format=-fmp_xml";                          // then set the FileMaker XML format to use...
+            $tempSearch .= "&-format=-fmp_xml"; // then set the FileMaker XML format to use...
         }
-        $tempSearch .= "&-max=$this->groupSize$skipRequest";             // add the set size and skip size data...
-        $tempSearch .= $currentSort . $currentSearch . "&" . $action;    // finally, add sorting, search parameters, and action data.
+        $tempSearch .= "&-max=$this->groupSize$skipRequest"; // add the set size and skip size data...
+        $tempSearch .= $currentSort . $currentSearch . "&" . $action; // finally, add sorting, search parameters, and action data.
         return $tempSearch;
     }
 
-    function StartElement($parser, $name, $attrs)                        // The functions to start XML parsing begin here
+    function StartElement($parser, $name, $attrs) // The functions to start XML parsing begin here
     {
-        switch(strtolower($name)) {
-             case "data":
+        $recordid = null;
+        $modid = null; // Add for eliminate syntax error, by Masayuki Nii Sep 18,2011
+        switch (strtolower($name)) {
+            case "data":
                 $this->currentFlag = "parseData";
                 if ($this->useInnerArray) {
-                	$this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] = "";
+                    $this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] = "";
                 } else {
-                	if ($this->isRemaiName($this->currentField))	{
-                		if ( $this->portalAsRecord )	{
-                			$this->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] = '';
-                		} else {
-                			$this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] = "";
-                		}
-                	} else {
-	                    $this->currentData[$this->currentRecord][$this->currentField] = "";
-                	}
+                    if ($this->isRemaiName($this->currentField)) {
+                        if ($this->portalAsRecord) {
+                            $this->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] = '';
+                        } else {
+                            $this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] = "";
+                        }
+                    } else {
+                        $this->currentData[$this->currentRecord][$this->currentField] = "";
+                    }
                 }
                 break;
             case "col":
-            	$this->currentFieldIndex = 0;
+                $this->currentFieldIndex = 0;
                 ++$this->columnCount;
                 $this->currentField = $this->fieldInfo[$this->columnCount]['name'];
                 if ($this->useInnerArray) {
                     $this->currentData[$this->currentRecord][$this->currentField] = array();
-                } else if ($this->isRemaiName($this->currentField))	{
-                	if ( $this->portalAsRecord )	{
-                		$this->currentSubrecordIndex = 0;
-                	} else {
-                		$this->currentData[$this->currentRecord][$this->currentField] = array();
-                	}
+                } else if ($this->isRemaiName($this->currentField)) {
+                    if ($this->portalAsRecord) {
+                        $this->currentSubrecordIndex = 0;
+                    } else {
+                        $this->currentData[$this->currentRecord][$this->currentField] = array();
+                    }
                 }
                 break;
             case "row":
@@ -401,10 +411,10 @@ class FX
                     $modid = count($this->currentData);
                 }
                 $this->currentRecord = $recordid . '.' . $modid;
-                $this->currentData[$this->currentRecord] = array( '-recid' => $recordid, '-modid' => $modid );
+                $this->currentData[$this->currentRecord] = array('-recid' => $recordid, '-modid' => $modid);
                 break;
             case "field":
-                if ($this->charSet  != '' && defined('MB_OVERLOAD_STRING')) {
+                if ($this->charSet != '' && defined('MB_OVERLOAD_STRING')) {
                     foreach ($attrs as $key => $value) {
                         $key = strtolower($key);
                         $this->fieldInfo[$this->fieldCount][$key] = mb_convert_encoding($value, $this->charSet, 'UTF-8');
@@ -428,10 +438,10 @@ class FX
                 break;
             case "resultset":
                 foreach ($attrs as $key => $value) {
-                    switch(strtolower($key)) {
+                    switch (strtolower($key)) {
                         case "found":
-                          $this->foundCount = (int)$value;
-                          break;
+                            $this->foundCount = (int)$value;
+                            break;
                     }
                 }
                 break;
@@ -454,16 +464,16 @@ class FX
                 break;
             case "database":
                 foreach ($attrs as $key => $value) {
-                    switch(strtolower($key)) {
+                    switch (strtolower($key)) {
                         case "dateformat":
-                          $this->dateFormat = $value;
-                          break;
+                            $this->dateFormat = $value;
+                            break;
                         case "records":
-                          $this->totalRecordCount = $value;
-                          break;
+                            $this->totalRecordCount = $value;
+                            break;
                         case "timeformat":
-                          $this->timeFormat = $value;
-                          break;
+                            $this->timeFormat = $value;
+                            break;
                     }
                 }
                 break;
@@ -474,35 +484,35 @@ class FX
 
     function ElementContents($parser, $data)
     {
-        switch($this->currentFlag) {
+        switch ($this->currentFlag) {
             case "parseData":
-                if ($this->dataParamsEncoding  != '' && defined('MB_OVERLOAD_STRING')) {
+                if ($this->dataParamsEncoding != '' && defined('MB_OVERLOAD_STRING')) {
                     if ($this->useInnerArray) {
                         $this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= mb_convert_encoding($data, $this->charSet, 'UTF-8');
                     } else {
-                    	if ($this->isRemaiName($this->currentField))	{
-                    		if ( $this->portalAsRecord )	{
-                    			$this->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= mb_convert_encoding($data, $this->charSet, 'UTF-8');
-                			} else {
-                				$this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= mb_convert_encoding($data, $this->charSet, 'UTF-8');
-                			}
-                    	} else {
-                        	$this->currentData[$this->currentRecord][$this->currentField] .= mb_convert_encoding($data, $this->charSet, 'UTF-8');
-                    	}
+                        if ($this->isRemaiName($this->currentField)) {
+                            if ($this->portalAsRecord) {
+                                $this->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= mb_convert_encoding($data, $this->charSet, 'UTF-8');
+                            } else {
+                                $this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= mb_convert_encoding($data, $this->charSet, 'UTF-8');
+                            }
+                        } else {
+                            $this->currentData[$this->currentRecord][$this->currentField] .= mb_convert_encoding($data, $this->charSet, 'UTF-8');
+                        }
                     }
                 } else {
                     if ($this->useInnerArray) {
                         $this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
                     } else {
-                    	if ($this->isRemaiName($this->currentField))	{
-                    		if ( $this->portalAsRecord )	{
-                				$this->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
-                   			} else {
-                    			$this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
-                			}
-                    	} else {
-                    		$this->currentData[$this->currentRecord][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
-                    	}
+                        if ($this->isRemaiName($this->currentField)) {
+                            if ($this->portalAsRecord) {
+                                $this->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                            } else {
+                                $this->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                            }
+                        } else {
+                            $this->currentData[$this->currentRecord][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                        }
                     }
                 }
                 break;
@@ -517,31 +527,31 @@ class FX
 
     function EndElement($parser, $name)
     {
-        switch(strtolower($name)) {
+        switch (strtolower($name)) {
             case "data":
                 $this->currentFieldIndex++;
                 $this->currentFlag = "";
                 $this->currentSubrecordIndex++;
                 break;
             case "col":
-            	break;
+                break;
             case "row":
-                if( strlen( trim( $this->customPrimaryKey ) ) > 0 ) {
-                    if( $this->useInnerArray ) {
-						$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey][0]]
-							= $this->currentData[$this->currentRecord];
+                if (strlen(trim($this->customPrimaryKey)) > 0) {
+                    if ($this->useInnerArray) {
+                        $this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey][0]]
+                            = $this->currentData[$this->currentRecord];
                     } else {
-                    	if ($this->isRemaiName($this->currentField))	{
-                    		if ( $this->portalAsRecord )	{
-                				//
-                			} else {
-                    			$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey][0]]
-									= $this->currentData[$this->currentRecord];
-                			}
-                    	} else {
-							$this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey]]
-								= $this->currentData[$this->currentRecord];
-                    	}
+                        if ($this->isRemaiName($this->currentField)) {
+                            if ($this->portalAsRecord) {
+                                //
+                            } else {
+                                $this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey][0]]
+                                    = $this->currentData[$this->currentRecord];
+                            }
+                        } else {
+                            $this->currentData[$this->currentData[$this->currentRecord][$this->customPrimaryKey]]
+                                = $this->currentData[$this->currentRecord];
+                        }
                     }
                     unset($this->currentData[$this->currentRecord]);
                 }
@@ -557,21 +567,21 @@ class FX
                 $this->currentFlag = "";
                 break;
         }
-    }                                                                       // XML Parsing Functions End Here
+    } // XML Parsing Functions End Here
 
-    function RetrieveFMData ($action)
+    function RetrieveFMData($action)
     {
         $data = '';
-        if ($this->DBPassword != '') {                                      // Assemble the Password Data
+        if ($this->DBPassword != '') { // Assemble the Password Data
             $this->userPass = $this->DBUser . ':' . $this->DBPassword . '@';
         }
-        if ($this->layout != "") {                                          // Set up the layout portion of the query.
+        if ($this->layout != "") { // Set up the layout portion of the query.
             $layRequest = "&-lay=" . urlencode($this->layout);
         }
         else {
             $layRequest = "";
         }
-        if ($this->currentSkip > 0) {                                       // Set up the skip size portion of the query.
+        if ($this->currentSkip > 0) { // Set up the skip size portion of the query.
             $skipRequest = "&-skip=$this->currentSkip";
         } else {
             $skipRequest = "";
@@ -592,7 +602,7 @@ class FX
 
         if (defined("HAS_PHPCACHE") and defined("FX_USE_PHPCACHE") and strlen($this->dataURLParams) <= 510 and (substr_count($this->dataURLParams, '-find') > 0 || substr_count($this->dataURLParams, '-view') > 0 || substr_count($this->dataURLParams, '-dbnames') > 0 || substr_count($this->dataURLParams, '-layoutnames') > 0)) {
             $data = get_url_cached($this->dataURL);
-            if (! $data) {
+            if (!$data) {
                 return new FX_Error("Failed to retrieve cached URL in RetrieveFMData()");
             }
             $data = $data["Body"];
@@ -602,7 +612,7 @@ class FX
                 curl_setopt($curlHandle, CURLOPT_POST, 1);
                 curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $this->dataURLParams);
                 ob_start();
-                if (! curl_exec($curlHandle)) {
+                if (!curl_exec($curlHandle)) {
                     $this->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                     $this->lastDebugMessage .= "You should also double check the user name and password used, the server address, and Web Companion configuration.</p>\n";
                     return new FX_Error("cURL could not retrieve Post data in RetrieveFMData(). A bad URL is the most likely reason.");
@@ -626,13 +636,13 @@ class FX
                 // $socketData .= "Connection: close{$dataDelimiter}";
                 $socketData .= $dataDelimiter . $this->dataURLParams;
 
-                $fp = fsockopen ($this->dataServer, $this->dataPort, $this->errorTracking, $this->fxError, 30);
-                if (! $fp) {
+                $fp = fsockopen($this->dataServer, $this->dataPort, $this->errorTracking, $this->fxError, 30);
+                if (!$fp) {
                     $this->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                     $this->lastDebugMessage .= "You should also double check the user name and password used, the server address, and Web Companion configuration.</p>\n";
-                    return new FX_Error( "Could not fsockopen the URL in retrieveFMData" );
+                    return new FX_Error("Could not fsockopen the URL in retrieveFMData");
                 }
-                fputs ($fp, $socketData);
+                fputs($fp, $socketData);
                 while (!feof($fp)) {
                     $data .= fgets($fp, 128);
                 }
@@ -642,7 +652,7 @@ class FX
             }
         } else {
             $fp = fopen($this->dataURL, "r");
-            if (! $fp) {
+            if (!$fp) {
                 $this->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                 $this->lastDebugMessage .= "You should also double check the user name and password used, the server address, and Web Companion configuration.</p>\n";
                 return new FX_Error("Could not fopen URL in RetrieveFMData.");
@@ -656,13 +666,13 @@ class FX
         return $data;
     }
 
-    function RetrieveFM7Data ($action)
+    function RetrieveFM7Data($action)
     {
         $data = '';
-        if ($this->DBPassword != '' || $this->DBUser != 'FX') {             // Assemble the Password Data
+        if ($this->DBPassword != '' || $this->DBUser != 'FX') { // Assemble the Password Data
             $this->userPass = $this->DBUser . ':' . $this->DBPassword . '@';
         }
-        if ($this->layout != "") {                                          // Set up the layout portion of the query.
+        if ($this->layout != "") { // Set up the layout portion of the query.
             $layRequest = "&-lay=" . urlencode($this->layout);
             if ($this->responseLayout != "") {
                 $layRequest .= "&-lay.response=" . urlencode($this->responseLayout);
@@ -671,7 +681,7 @@ class FX
         else {
             $layRequest = "";
         }
-        if ($this->currentSkip > 0) {                                       // Set up the skip size portion of the query.
+        if ($this->currentSkip > 0) { // Set up the skip size portion of the query.
             $skipRequest = "&-skip={$this->currentSkip}";
         } else {
             $skipRequest = "";
@@ -697,23 +707,23 @@ class FX
 
         if (defined("HAS_PHPCACHE") and defined("FX_USE_PHPCACHE") and strlen($this->dataURLParams) <= 510 and (substr_count($this->dataURLParams, '-find') > 0 || substr_count($this->dataURLParams, '-view') > 0 || substr_count($this->dataURLParams, '-dbnames') > 0 || substr_count($this->dataURLParams, '-layoutnames') > 0)) {
             $data = get_url_cached($this->dataURL);
-            if (! $data) {
+            if (!$data) {
                 return new FX_Error("Failed to retrieve cached URL in RetrieveFM7Data()");
             }
             $data = $data["Body"];
-        } elseif( $this->isFOpenQuery ) {
-/*
-Amendment by G G Thorsen -> ggt667@gmail.com, this function is written to read files exported using File Export in FMSA 10 and newer
-This function is particularly written for huge queries of data that are less likely to change often and that would otherwise choke FM WPE
-*/
-            $f = fopen( $this->dataServer, 'rb' );
+        } elseif ($this->isFOpenQuery) {
+            /*
+            Amendment by G G Thorsen -> ggt667@gmail.com, this function is written to read files exported using File Export in FMSA 10 and newer
+            This function is particularly written for huge queries of data that are less likely to change often and that would otherwise choke FM WPE
+            */
+            $f = fopen($this->dataServer, 'rb');
             $data = '';
-            if( ! $f ) {
-                return new FX_Error( "Failed to retrieve FOpen( '" . $this->dataServer . "', 'rb' ) File not found?" );
+            if (!$f) {
+                return new FX_Error("Failed to retrieve FOpen( '" . $this->dataServer . "', 'rb' ) File not found?");
             } else {
-                while( ! feof( $f ) )
-                    $data .= fread( $f, 4096 );
-                fclose( $f );
+                while (!feof($f))
+                    $data .= fread($f, 4096);
+                fclose($f);
             }
         } elseif ($this->isPostQuery) {
             if ($this->useCURL && defined("CURLOPT_TIMEVALUE")) {
@@ -721,7 +731,7 @@ This function is particularly written for huge queries of data that are less lik
                 curl_setopt($curlHandle, CURLOPT_POST, 1);
                 curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $this->dataURLParams);
                 ob_start();
-                if (! curl_exec($curlHandle)) {
+                if (!curl_exec($curlHandle)) {
                     $this->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                     $this->lastDebugMessage .= "You should also double check the user name and password used, the server address, and WPE configuration.</p>\n";
                     return new FX_Error("cURL could not retrieve Post data in RetrieveFM7Data(). A bad URL is the most likely reason.");
@@ -767,13 +777,13 @@ This function is particularly written for huge queries of data that are less lik
                     }
                 }
 
-                $fp = fsockopen ($protocol . $this->dataServer, $this->dataPort, $this->errorTracking, $this->fxError, 30);
-                if (! $fp) {
+                $fp = fsockopen($protocol . $this->dataServer, $this->dataPort, $this->errorTracking, $this->fxError, 30);
+                if (!$fp) {
                     $this->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                     $this->lastDebugMessage .= "You should also double check the user name and password used, the server address, and WPE configuration.</p>\n";
-                    return new FX_Error( "Could not fsockopen the URL in retrieveFM7Data" );
+                    return new FX_Error("Could not fsockopen the URL in retrieveFM7Data");
                 }
-                fputs ($fp, $socketData);
+                fputs($fp, $socketData);
                 while (!feof($fp)) {
                     $data .= fgets($fp, 128);
                 }
@@ -783,7 +793,7 @@ This function is particularly written for huge queries of data that are less lik
             }
         } else {
             $fp = fopen($this->dataURL, "r");
-            if (! $fp) {
+            if (!$fp) {
                 $this->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                 $this->lastDebugMessage .= "You should also double check the user name and password used, the server address, and WPE configuration.</p>\n";
                 return new FX_Error("Could not fopen URL in RetrieveFM7Data.");
@@ -797,8 +807,10 @@ This function is particularly written for huge queries of data that are less lik
         return $data;
     }
 
-    function BuildSQLSorts ()
+    function BuildSQLSorts()
     {
+        $field = null;
+        $sortOrder = null; // Add for eliminate syntax error, by Masayuki Nii Sep 18,2011
         $currentOrderBy = '';
 
         if (count($this->sortParams) > 0) {
@@ -821,8 +833,11 @@ This function is particularly written for huge queries of data that are less lik
         }
     }
 
-    function BuildSQLQuery ($action)
+    function BuildSQLQuery($action)
     {
+        $op = null;
+        $name = null;
+        $value = null; // Add for eliminate syntax error, by Masayuki Nii Sep 18,2011
         $currentLOP = 'AND';
         $logicalOperators = array();
         $LOPCount = 0;
@@ -971,7 +986,7 @@ This function is particularly written for huge queries of data that are less lik
         return $currentQuery;
     }
 
-    function RetrieveMySQLData ($action)
+    function RetrieveMySQLData($action)
     {
         if (strlen(trim($this->dataServer)) < 1) {
             return new FX_Error('No MySQL server specified.');
@@ -986,13 +1001,13 @@ This function is particularly written for huge queries of data that are less lik
             return new FX_Error('Unable to connect to MySQL server.');
         }
         if ($action != '-dbopen') {
-            if (! mysql_select_db($this->database, $mysql_res)) {
+            if (!mysql_select_db($this->database, $mysql_res)) {
                 return new FX_Error('Unable to connect to specified MySQL database.');
             }
         }
         if (substr_count($action, '-db') == 0 && substr_count($action, 'names') == 0 && strlen(trim($this->layout)) > 0) {
             $theResult = mysql_query('SHOW COLUMNS FROM ' . $this->layout);
-            if (! $theResult) {
+            if (!$theResult) {
                 return new FX_Error('Unable to access MySQL column data: ' . mysql_error());
             }
             $counter = 0;
@@ -1076,7 +1091,7 @@ This function is particularly written for huge queries of data that are less lik
         return true;
     }
 
-    function RetrievePostgreSQLData ($action)
+    function RetrievePostgreSQLData($action)
     {
         $connectString = '';
         $unsupportedActions = array('-dbnames', '-layoutnames', '-scriptnames', '-dbopen', '-dbclose');
@@ -1107,7 +1122,7 @@ This function is particularly written for huge queries of data that are less lik
             return new FX_Error("Unable to connect to PostgreSQL server. (" . pg_last_error($postresql_res) . ")");
         }
         $theResult = pg_query($postresql_res, "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name ='{$this->layout}'");
-        if (! $theResult) {
+        if (!$theResult) {
             return new FX_Error('Unable to access PostgreSQL column data: ' . pg_last_error($postresql_res));
         }
         $counter = 0;
@@ -1131,7 +1146,7 @@ This function is particularly written for huge queries of data that are less lik
                 }
             case '-sqlquery': // note that there is no preceding break, as we don't want to build a query
                 $theResult = pg_query($this->dataQuery);
-                if (! $theResult) {
+                if (!$theResult) {
                     return new FX_Error('Invalid query: ' . pg_last_error($postresql_res));
                 }
                 if (substr_count($action, '-find') > 0 || substr_count($this->dataQuery, 'SELECT ') > 0) {
@@ -1170,12 +1185,13 @@ This function is particularly written for huge queries of data that are less lik
         return true;
     }
 
-    function RetrieveOpenBaseData ($action)
+    function RetrieveOpenBaseData($action)
     {
+        $theResult = null; // Add for eliminate syntax error, by Masayuki Nii Sep 18,2011
         $availableActions = array('-delete', '-edit', '-find', '-findall', '-new', '-sqlquery');
-        $columnTypes = array( 1 => 'char', 2 => 'integer', 3 => 'float', 4 => 'long', 5 => 'money', 6 => 'date', 7 => 'time', 8 => 'object', 9 => 'datetime', 10 => 'longlong', 11 => 'boolean', 12 => 'binary', 13 => 'text', 14 => 'timestamp');
+        $columnTypes = array(1 => 'char', 2 => 'integer', 3 => 'float', 4 => 'long', 5 => 'money', 6 => 'date', 7 => 'time', 8 => 'object', 9 => 'datetime', 10 => 'longlong', 11 => 'boolean', 12 => 'binary', 13 => 'text', 14 => 'timestamp');
 
-        if (! in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under OpenBase
+        if (!in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under OpenBase
             return new FX_Error("The action requested ({$action}) is not supported by OpenBase via FX.php.");
         }
         // although username and password are optional for this function, FX.php expects them to be set
@@ -1196,7 +1212,7 @@ This function is particularly written for huge queries of data that are less lik
             case '-sqlquery': // note that there is no preceding break, as we don't want to build a query
                 ob_makeCommand($openBase_res, $this->dataQuery);
                 $theResult = ob_executeCommand($openBase_res);
-                if (! $theResult) {
+                if (!$theResult) {
                     $tempErrorText = ob_servermessage($openBase_res);
                     ob_disconnect($openBase_res); // ob_disconnect() is not in the documentation
                     return new FX_Error("Unsuccessful query: $this->dataQuery ({$tempErrorText})");
@@ -1215,7 +1231,7 @@ This function is particularly written for huge queries of data that are less lik
                 while (ob_resultReturned($openBase_res) && ob_nextRowWithArray($openBase_res, $retrieveRow)) {
                     $tempRow = array();
                     foreach ($retrieveRow as $key => $value) {
-                        if (! $this->useInnerArray) {
+                        if (!$this->useInnerArray) {
                             $tempRow[$this->fieldInfo[$key]['name']] = $value;
                         } else {
                             $tempRow[$this->fieldInfo[$key]['name']] = array($value);
@@ -1241,11 +1257,12 @@ This function is particularly written for huge queries of data that are less lik
         return true;
     }
 
-    function RetrieveODBCData ($action)
+    function RetrieveODBCData($action)
     {
+        $theResult = null; // Add for eliminate syntax error, by Masayuki Nii Sep 18,2011
         $availableActions = array('-delete', '-edit', '-find', '-findall', '-new', '-sqlquery');
 
-        if (! in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under ODBC
+        if (!in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under ODBC
             return new FX_Error("The action requested ({$action}) is not supported under ODBC via FX.php.");
         }
         $odbc_res = odbc_connect($this->database, $this->DBUser, $this->DBPassword); // although username and password are optional for this function, FX.php expects them to be set
@@ -1264,7 +1281,7 @@ This function is particularly written for huge queries of data that are less lik
                 }
             case '-sqlquery': // note that there is no preceding break, as we don't want to build a query
                 $odbc_result = odbc_exec($odbc_res, $this->dataQuery);
-                if (! $odbc_result) {
+                if (!$odbc_result) {
                     $tempErrorText = odbc_errormsg($odbc_res);
                     odbc_close($odbc_res);
                     return new FX_Error("Unsuccessful query: $this->dataQuery ({$tempErrorText})");
@@ -1277,7 +1294,7 @@ This function is particularly written for huge queries of data that are less lik
                     return new FX_Error("Unable to access field count for current ODBC query.  ({$tempErrorText})");
                 }
                 $odbc_columns = odbc_columns($odbc_res);
-                if (! $odbc_columns) {
+                if (!$odbc_columns) {
                     $tempErrorText = odbc_errormsg($odbc_res);
                     odbc_close($odbc_res);
                     return new FX_Error("Unable to retrieve column data via ODBC.  ({$tempErrorText})");
@@ -1294,7 +1311,7 @@ This function is particularly written for huge queries of data that are less lik
                     $tempRow = array();
                     for ($i = 1; $i <= $fieldCount; ++$i) {
                         $theResult = odbc_result($odbc_result, $i);
-                        if (! $this->useInnerArray) {
+                        if (!$this->useInnerArray) {
                             $tempRow[$this->fieldInfo[$i]['name']] = $theResult;
                         } else {
                             $tempRow[$this->fieldInfo[$i]['name']] = array($theResult);
@@ -1318,7 +1335,7 @@ This function is particularly written for huge queries of data that are less lik
         return true;
     }
 
-    function RetrieveCAFEphp4PCData ($action) // uncomment this section ONLY on Windows, or the COM object will cause the PHP parser to die
+    function RetrieveCAFEphp4PCData($action) // uncomment this section ONLY on Windows, or the COM object will cause the PHP parser to die
     {
         /*
         // Note that because of the way in which CAFEphp and FileMaker are implemented, CAFEphp must be running on the same
@@ -1486,7 +1503,7 @@ This function is particularly written for huge queries of data that are less lik
         */
     }
 
-    function ExecuteQuery ($action)
+    function ExecuteQuery($action)
     {
         switch (strtolower($this->dataServerType)) {
             case 'fmpro5':
@@ -1509,7 +1526,7 @@ This function is particularly written for huge queries of data that are less lik
                 xml_set_element_handler($xml_parser, "StartElement", "EndElement");
                 xml_set_character_data_handler($xml_parser, "ElementContents");
                 $xmlParseResult = xml_parse($xml_parser, $data, true);
-                if (! $xmlParseResult) {
+                if (!$xmlParseResult) {
                     $theMessage = sprintf("ExecuteQuery XML error: %s at line %d",
                         xml_error_string(xml_get_error_code($xml_parser)),
                         xml_get_current_line_number($xml_parser));
@@ -1543,29 +1560,29 @@ This function is particularly written for huge queries of data that are less lik
                 xml_set_element_handler($xml_parser, "StartElement", "EndElement");
                 xml_set_character_data_handler($xml_parser, "ElementContents");
                 $xmlParseResult = xml_parse($xml_parser, $data, true);
-                if (! $xmlParseResult) {
-/* Masayuki Nii added at Oct 9, 2009 */
-					$this->columnCount = -1;
-					xml_parser_free($xml_parser);
-                	$xml_parser = xml_parser_create("UTF-8");
-                	xml_set_object($xml_parser, $this);
-                	xml_set_element_handler($xml_parser, "StartElement", "EndElement");
-                	xml_set_character_data_handler($xml_parser, "ElementContents");
-                	$xmlParseResult = xml_parse($xml_parser, ConvertSarrogatePair( $data ), true);
-                	if (! $xmlParseResult) {
-/* ==============End of the addition */
-                	$theMessage = sprintf("ExecuteQuery XML error: %s at line %d",
-                        xml_error_string(xml_get_error_code($xml_parser)),
-                        xml_get_current_line_number($xml_parser));
+                if (!$xmlParseResult) {
+                    /* Masayuki Nii added at Oct 9, 2009 */
+                    $this->columnCount = -1;
                     xml_parser_free($xml_parser);
-                    $this->lastDebugMessage .= "<p>Unable to parse FileMaker XML.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
-                    $this->lastDebugMessage .= "You should also double check the <strong>user name</strong> and <strong>password</strong> used, the <strong>server address and port</strong>, and <strong>WPE configuration</strong>.<br />\n";
-                    $this->lastDebugMessage .= "Finally, be sure that you have specified the correct <strong>data type</strong> (e.g. FileMaker 5 or 6 versus 7 or 8.)</p>\n";
-                    return new FX_Error($theMessage);
-/* Masayuki Nii added at Oct 9, 2009 */
-                	}
-/* ==============End of the addition */
-                	}
+                    $xml_parser = xml_parser_create("UTF-8");
+                    xml_set_object($xml_parser, $this);
+                    xml_set_element_handler($xml_parser, "StartElement", "EndElement");
+                    xml_set_character_data_handler($xml_parser, "ElementContents");
+                    $xmlParseResult = xml_parse($xml_parser, ConvertSarrogatePair($data), true);
+                    if (!$xmlParseResult) {
+                        /* ==============End of the addition */
+                        $theMessage = sprintf("ExecuteQuery XML error: %s at line %d",
+                            xml_error_string(xml_get_error_code($xml_parser)),
+                            xml_get_current_line_number($xml_parser));
+                        xml_parser_free($xml_parser);
+                        $this->lastDebugMessage .= "<p>Unable to parse FileMaker XML.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
+                        $this->lastDebugMessage .= "You should also double check the <strong>user name</strong> and <strong>password</strong> used, the <strong>server address and port</strong>, and <strong>WPE configuration</strong>.<br />\n";
+                        $this->lastDebugMessage .= "Finally, be sure that you have specified the correct <strong>data type</strong> (e.g. FileMaker 5 or 6 versus 7 or 8.)</p>\n";
+                        return new FX_Error($theMessage);
+                        /* Masayuki Nii added at Oct 9, 2009 */
+                    }
+                    /* ==============End of the addition */
+                }
                 xml_parser_free($xml_parser);
                 break;
             case 'openbase':
@@ -1639,7 +1656,7 @@ This function is particularly written for huge queries of data that are less lik
         }
     }
 
-    function BuildLinkQueryString ()
+    function BuildLinkQueryString()
     {
         $tempQueryString = '';
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -1661,7 +1678,7 @@ This function is particularly written for huge queries of data that are less lik
         } else {
             $beginTagLower = strtolower('-foundSetParams_begin');
             $endTagLower = strtolower('-foundSetParams_end');
-            if (! isset($_SERVER['QUERY_STRING'])) {
+            if (!isset($_SERVER['QUERY_STRING'])) {
                 $_SERVER['QUERY_STRING'] = '';
             }
             $queryStringLower = strtolower($_SERVER['QUERY_STRING']);
@@ -1682,7 +1699,7 @@ This function is particularly written for huge queries of data that are less lik
         return $tempQueryString;
     }
 
-    function AssembleDataSet ($returnData)
+    function AssembleDataSet($returnData)
     {
         $dataSet = array();
         $FMNext = $this->currentSkip + $this->groupSize;
@@ -1775,11 +1792,11 @@ This function is particularly written for huge queries of data that are less lik
         return $dataSet;
     }
 
-    function FMAction ($Action, $returnDataSet, $returnData, $useInnerArray)
+    function FMAction($Action, $returnDataSet, $returnData, $useInnerArray)
     {
         $this->useInnerArray = $useInnerArray;
         $queryResult = $this->ExecuteQuery($this->actionArray[strtolower($Action)]);
-        if (FX::isError($queryResult)){
+        if (FX::isError($queryResult)) {
             if (EMAIL_ERROR_MESSAGES) {
                 EmailErrorHandler($queryResult);
             }
@@ -1798,13 +1815,15 @@ This function is particularly written for huge queries of data that are less lik
     // The functions below are those which are intended for general use by developers (i.e. public functions).
     // Once I'm quite sure that most people are using PHP5, I'll release a version using the improved object model of PHP5.
 
-    function isError($data) {
+    function isError($data)
+    {
         return (bool)(is_object($data) &&
-                      (strtolower(get_class($data)) == 'fx_error' ||
-                      is_subclass_of($data, 'fx_error')));
+            (strtolower(get_class($data)) == 'fx_error' ||
+                is_subclass_of($data, 'fx_error')));
     }
 
-    function SetCharacterEncoding ($encoding) {         // This is the more general of the encoding functions (see notes below, and the functions documentation.)
+    function SetCharacterEncoding($encoding)
+    { // This is the more general of the encoding functions (see notes below, and the functions documentation.)
         $this->charSet = $encoding;
         $this->dataParamsEncoding = $encoding;
 
@@ -1814,11 +1833,12 @@ This function is particularly written for huge queries of data that are less lik
         // *IMPORTANT*: Using either this function or the next one is moot unless you have multi-byte support compliled into PHP (e.g. Complete PHP).
     }
 
-    function SetDataParamsEncoding ($encoding) {        // SetDataParamsEncoding() is used to specify the encoding of parameters sent to the database (upstream encoding.)
+    function SetDataParamsEncoding($encoding)
+    { // SetDataParamsEncoding() is used to specify the encoding of parameters sent to the database (upstream encoding.)
         $this->dataParamsEncoding = $encoding;
     }
 
-    function SetDBData ($database, $layout="", $groupSize=50, $responseLayout="") // the layout parameter is equivalent to the table to be used in SQL queries
+    function SetDBData($database, $layout = "", $groupSize = 50, $responseLayout = "") // the layout parameter is equivalent to the table to be used in SQL queries
     {
         $this->database = $database;
         $this->layout = $layout;
@@ -1828,7 +1848,7 @@ This function is particularly written for huge queries of data that are less lik
         $this->lastDebugMessage .= '<p>Configuring database connection...</p>';
     }
 
-    function SetDBPassword ($DBPassword, $DBUser='FX') // Note that for historical reasons, password is the FIRST parameter for this function
+    function SetDBPassword($DBPassword, $DBUser = 'FX') // Note that for historical reasons, password is the FIRST parameter for this function
     {
         if ($DBUser == '') {
             $DBUser = 'FX';
@@ -1838,49 +1858,52 @@ This function is particularly written for huge queries of data that are less lik
         $this->lastDebugMessage .= '<p>Setting user name and password...</p>';
     }
 
-    function SetDBUserPass ($DBUser, $DBPassword='') // Same as above function, but paramters are in the opposite order
+    function SetDBUserPass($DBUser, $DBPassword = '') // Same as above function, but paramters are in the opposite order
     {
         $this->SetDBPassword($DBPassword, $DBUser);
     }
 
-    function SetCustomPrimaryKey( $fieldname ) {
+    function SetCustomPrimaryKey($fieldname)
+    {
         $this->customPrimaryKey = $fieldname;
     }
 
-    function SetNumberAutoConversionComma2PeriodForDecimal( ) {
+    function SetNumberAutoConversionComma2PeriodForDecimal()
+    {
         $this->useComma2Period = true;
-		/* $this->fieldInfo[$i]['type']
-	if( $this->fieldInfo[$i]['type'] == "NUMBER" && useComma2Period == true ){
-		$this->fieldContent = str_replace( ',', '.', $this->fieldContent );
-	}
-*/
+        /* $this->fieldInfo[$i]['type']
+            if( $this->fieldInfo[$i]['type'] == "NUMBER" && useComma2Period == true ){
+                $this->fieldContent = str_replace( ',', '.', $this->fieldContent );
+            }
+        */
     }
 
-    function SetDefaultOperator ($op)
+    function SetDefaultOperator($op)
     {
         $this->defaultOperator = $op;
         return true;
     }
 
-    function AddDBParam ($name, $value, $op="")                          // Add a search parameter.  An operator is usually not necessary.
+    function AddDBParam($name, $value, $op = "") // Add a search parameter.  An operator is usually not necessary.
     {
-        if ($this->dataParamsEncoding  != '' && defined('MB_OVERLOAD_STRING')) {
+        if ($this->dataParamsEncoding != '' && defined('MB_OVERLOAD_STRING')) {
             $this->dataParams[]["name"] = mb_convert_encoding($name, $this->dataParamsEncoding, $this->charSet);
             end($this->dataParams);
             $convedValue = mb_convert_encoding($value, $this->dataParamsEncoding, $this->charSet);
-/* Masayuki Nii added at Oct 10, 2009 */
-            if ( ! defined('SURROGATE_INPUT_PATCH_DISABLED') && $this->charSet == 'UTF-8')	{
-				$count = 0;
-				for ($i=0; $i< strlen($value); $i++)	{
-					$c = ord(substr( $value, $i, 1 ));
-					if ( ( $c == 0xF0 )&&( (ord(substr( $value, $i+1, 1 )) & 0xF0) == 0xA0 ))	{
-						$i += 4;	$count++;
-					}
-				}
-            	$convedValue .= str_repeat( mb_convert_encoding(chr(0xE3).chr(0x80).chr(0x80), $this->dataParamsEncoding, 'UTF-8'), $count );
- 			}
+            /* Masayuki Nii added at Oct 10, 2009 */
+            if (!defined('SURROGATE_INPUT_PATCH_DISABLED') && $this->charSet == 'UTF-8') {
+                $count = 0;
+                for ($i = 0; $i < strlen($value); $i++) {
+                    $c = ord(substr($value, $i, 1));
+                    if (($c == 0xF0) && ((ord(substr($value, $i + 1, 1)) & 0xF0) == 0xA0)) {
+                        $i += 4;
+                        $count++;
+                    }
+                }
+                $convedValue .= str_repeat(mb_convert_encoding(chr(0xE3) . chr(0x80) . chr(0x80), $this->dataParamsEncoding, 'UTF-8'), $count);
+            }
             $this->dataParams[key($this->dataParams)]["value"] = $convedValue;
-// =======================
+            // =======================
         } else {
             $this->dataParams[]["name"] = $name;
             end($this->dataParams);
@@ -1889,7 +1912,7 @@ This function is particularly written for huge queries of data that are less lik
         $this->dataParams[key($this->dataParams)]["op"] = $op;
     }
 
-    function AddDBParamArray ($paramsArray, $paramOperatorsArray=array())   // Add an array of search parameters.  An operator is usually not necessary.
+    function AddDBParamArray($paramsArray, $paramOperatorsArray = array()) // Add an array of search parameters.  An operator is usually not necessary.
     {
         foreach ($paramsArray as $key => $value) {
             if (isset($paramOperatorsArray[$key]) && strlen(trim($paramOperatorsArray[$key])) > 0) {
@@ -1900,7 +1923,7 @@ This function is particularly written for huge queries of data that are less lik
         }
     }
 
-    function SetPortalRow ($fieldsArray, $portalRowID=0, $relationshipName='')
+    function SetPortalRow($fieldsArray, $portalRowID = 0, $relationshipName = '')
     {
         foreach ($fieldsArray as $fieldName => $fieldValue) {
             if (strlen(trim($relationshipName)) > 0 && substr_count($fieldName, '::') < 1) {
@@ -1911,9 +1934,9 @@ This function is particularly written for huge queries of data that are less lik
         }
     }
 
-    function SetRecordID ($recordID)
+    function SetRecordID($recordID)
     {
-        if (! is_numeric($recordID) || (intval($recordID) != $recordID)) {
+        if (!is_numeric($recordID) || (intval($recordID) != $recordID)) {
             if ((defined("DEBUG") and DEBUG) or DEBUG_FUZZY) {
                 $currentDebugString = "<p>RecordIDs must be integers.  Value passed was &quot;{$recordID}&quot;.</p>\n";
                 $this->lastDebugMessage .= $currentDebugString;
@@ -1925,9 +1948,9 @@ This function is particularly written for huge queries of data that are less lik
         $this->AddDBParam('-recid', $recordID);
     }
 
-    function SetModID ($modID)
+    function SetModID($modID)
     {
-        if (! is_numeric($modID) || (intval($modID) != $modID)) {
+        if (!is_numeric($modID) || (intval($modID) != $modID)) {
             if ((defined("DEBUG") and DEBUG) or DEBUG_FUZZY) {
                 $currentDebugString = "<p>ModIDs must be integers.  Value passed was &quot;{$modID}&quot;.</p>\n";
                 $this->lastDebugMessage .= $currentDebugString;
@@ -1939,33 +1962,33 @@ This function is particularly written for huge queries of data that are less lik
         $this->AddDBParam('-modid', $modID);
     }
 
-    function SetLogicalOR ()
+    function SetLogicalOR()
     {
         $this->AddDBParam('-lop', 'or');
     }
 
     // FileMaker 7 only
-    function SetFMGlobal ($globalFieldName, $globalFieldValue)
+    function SetFMGlobal($globalFieldName, $globalFieldValue)
     {
         $this->AddDBParam("{$globalFieldName}.global", $globalFieldValue);
     }
 
-    function PerformFMScript ($scriptName)                              // This function is only meaningful when working with FileMaker data sources
+    function PerformFMScript($scriptName) // This function is only meaningful when working with FileMaker data sources
     {
         $this->AddDBParam('-script', $scriptName);
     }
 
-    function PerformFMScriptPrefind ($scriptName)                       // This function is only meaningful when working with FileMaker data sources
+    function PerformFMScriptPrefind($scriptName) // This function is only meaningful when working with FileMaker data sources
     {
         $this->AddDBParam('-script.prefind', $scriptName);
     }
 
-    function PerformFMScriptPresort ($scriptName)                       // This function is only meaningful when working with FileMaker data sources
+    function PerformFMScriptPresort($scriptName) // This function is only meaningful when working with FileMaker data sources
     {
         $this->AddDBParam('-script.presort', $scriptName);
     }
 
-    function AddSortParam ($field, $sortOrder="", $performOrder=0)        // Add a sort parameter.  An operator is usually not necessary.
+    function AddSortParam($field, $sortOrder = "", $performOrder = 0) // Add a sort parameter.  An operator is usually not necessary.
     {
         if ($performOrder > 0) {
             $this->sortParams[$performOrder]["field"] = $field;
@@ -1981,108 +2004,108 @@ This function is particularly written for huge queries of data that are less lik
         }
     }
 
-    function FMSkipRecords ($skipSize)
+    function FMSkipRecords($skipSize)
     {
         $this->currentSkip = $skipSize;
     }
 
-    function FMPostQuery ($isPostQuery = true)
+    function FMPostQuery($isPostQuery = true)
     {
         $this->isPostQuery = $isPostQuery;
     }
 
-    function FMFOpenQuery ($isFOpenQuery = true)
+    function FMFOpenQuery($isFOpenQuery = true)
     {
         $this->isFOpenQuery = $isFOpenQuery;
     }
 
-    function FMUseCURL ($useCURL = true)
+    function FMUseCURL($useCURL = true)
     {
         $this->useCURL = $useCURL;
     }
 
     // By default, FX.php adds an extra layer to the returned array to allow for repeating fields and portals.
     // When these are not present, or when accessing SQL data, this may not be desirable.  FlattenInnerArray() removes this extra layer.
-    function FlattenInnerArray ()
+    function FlattenInnerArray()
     {
         $this->useInnerArray = false;
     }
 
 /* The actions that you can send to FileMaker start here */
 
-    function FMDBOpen ()
+    function FMDBOpen()
     {
         $queryResult = $this->ExecuteQuery("-dbopen");
-        if (FX::isError($queryResult)){
+        if (FX::isError($queryResult)) {
             return $queryResult;
         }
     }
 
-    function FMDBClose ()
+    function FMDBClose()
     {
         $queryResult = $this->ExecuteQuery("-dbclose");
-        if (FX::isError($queryResult)){
+        if (FX::isError($queryResult)) {
             return $queryResult;
         }
     }
 
-    function FMDelete ($returnDataSet = false, $returnData = 'basic', $useInnerArray = true)
+    function FMDelete($returnDataSet = false, $returnData = 'basic', $useInnerArray = true)
     {
         return $this->FMAction("-delete", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMDup ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMDup($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-dup", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMEdit ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMEdit($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-edit", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMFind ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMFind($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-find", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMFindAll ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMFindAll($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-findall", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMFindAny ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMFindAny($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-findany", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMNew ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMNew($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-new", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMView ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMView($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-view", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMDBNames ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMDBNames($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-dbnames", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMLayoutNames ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMLayoutNames($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-layoutnames", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMScriptNames ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMScriptNames($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
         return $this->FMAction("-scriptnames", $returnDataSet, $returnData, $useInnerArray);
     }
 
     // DoFXAction() is a general purpose action function designed to streamline FX.php code
-    function DoFXAction ($currentAction, $returnDataSet = true, $useInnerArray = false, $returnType = 'object')
+    function DoFXAction($currentAction, $returnDataSet = true, $useInnerArray = false, $returnType = 'object')
     {
         return $this->FMAction($currentAction, $returnDataSet, $returnType, $useInnerArray);
     }
@@ -2091,14 +2114,14 @@ This function is particularly written for huge queries of data that are less lik
     // PerformSQLQuery() is akin to the FileMaker actions above with two differences:
     //  1) It is SQL specific
     //  2) The SQL query passed is the sole determinant of the query performed (AddDBParam, etc. will be ignored)
-    function PerformSQLQuery ($SQLQuery, $returnDataSet = true, $useInnerArray = false, $returnData = 'object')
+    function PerformSQLQuery($SQLQuery, $returnDataSet = true, $useInnerArray = false, $returnData = 'object')
     {
         $this->dataQuery = $SQLQuery;
         return $this->FMAction("-sqlquery", $returnDataSet, $returnData, $useInnerArray);
     }
 
     // SetDataKey() is used for SQL queries as a way to provide parity with the RecordID/ModID combo provided by FileMaker Pro
-    function SetDataKey ($keyField, $modifyField = '', $separator = '.')
+    function SetDataKey($keyField, $modifyField = '', $separator = '.')
     {
         $this->primaryKeyField = $keyField;
         $this->modifyDateField = $modifyField;
@@ -2107,7 +2130,7 @@ This function is particularly written for huge queries of data that are less lik
     }
 
     // SetSelectColumns() allows users to specify which columns should be returned by an SQL SELECT statement
-    function SetSelectColumns ($columnList)
+    function SetSelectColumns($columnList)
     {
         $this->selectColsSet = true;
         $this->selectColumns = $columnList;
@@ -2115,52 +2138,56 @@ This function is particularly written for huge queries of data that are less lik
     }
 
     // SQLFuzzyKeyLogicOn() can be used to have FX.php make it's best guess as to a viable key in an SQL DB
-    function SQLFuzzyKeyLogicOn ($logicSwitch = false)
+    function SQLFuzzyKeyLogicOn($logicSwitch = false)
     {
         $this->fuzzyKeyLogic = $logicSwitch;
         return true;
     }
 
     // By default, FX.php uses records' keys as the indices for the returned array.  UseGenericKeys() is used to change this behavior.
-    function UseGenericKeys ($genericKeys=true)
+    function UseGenericKeys($genericKeys = true)
     {
         $this->genericKeys = $genericKeys;
         return true;
     }
 
     // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    function RemainAsArray ($rArray1,$rArray2=NULL,$rArray3=NULL,$rArray4=NULL,$rArray5=NULL,$rArray6=NULL,
-    				$rArray7=NULL,$rArray8=NULL,$rArray9=NULL,$rArray10=NULL,$rArray11=NULL,$rArray12=NULL)	{
-    	$this->portalAsRecord = false;
-    	for ( $i=1 ; $i<13 ; $i++ )	{
-    		eval('$param=$rArray'.$i.';');
-     		if ( $param === NULL )	{
-    			break;
-    		} else if (is_array($param))	{
-    			$this->portalAsRecord = true;
-    			$param = $param[0];
-    		}
-    		$this->remainName[$i-1] = $param;
-    	}
+    function RemainAsArray($rArray1, $rArray2 = NULL, $rArray3 = NULL, $rArray4 = NULL, $rArray5 = NULL, $rArray6 = NULL,
+                           $rArray7 = NULL, $rArray8 = NULL, $rArray9 = NULL, $rArray10 = NULL, $rArray11 = NULL, $rArray12 = NULL)
+    {
+        $param = null; // Add for eliminate syntax error, by Masayuki Nii Sep 18,2011
+        $this->portalAsRecord = false;
+        for ($i = 1; $i < 13; $i++) {
+            eval('$param=$rArray' . $i . ';');
+            if ($param === NULL) {
+                break;
+            } else if (is_array($param)) {
+                $this->portalAsRecord = true;
+                $param = $param[0];
+            }
+            $this->remainNames[$i - 1] = $param;
+        }
     }
 
     // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    function isRemaiName($fieldName)	{
-     	foreach($this->remainName as $fName)	{
-     		if (strpos($fieldName,$fName) === 0)	{
-    			return true;
-    		}
-    	}
-    	return false;
+    function isRemaiName($fieldName)
+    {
+        foreach ($this->remainNames as $fName) {
+            if (strpos($fieldName, $fName) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    function getTOCName($fieldName)	{
-    	$p = strpos($fieldName,'::');
-    	if ( $p === false )	{
-    		return 'ERROR-TOC name is conflicted.';
-    	}
-    	return substr($fieldName,0,$p);
+    function getTOCName($fieldName)
+    {
+        $p = strpos($fieldName, '::');
+        if ($p === false) {
+            return 'ERROR-TOC name is conflicted.';
+        }
+        return substr($fieldName, 0, $p);
     }
 }
 
@@ -2168,23 +2195,26 @@ This function is particularly written for huge queries of data that are less lik
  * Masayuki Nii (msyk@msyk.net) Oct 9, 2009
  * Refered http://www.nii.ac.jp/CAT-ILL/about/system/vista.html
  */
-function ConvertSarrogatePair($data)	{
-	$altData = '';
-	for ($i=0; $i<strlen($data); $i++)	{
-		$c = substr( $data, $i, 1 );
-		if (( ord($c) == 0xed )&&( (ord(substr( $data, $i+1, 1 )) & 0xF0) == 0xA0 ))	{
-			for ( $j = 0; $j < 6 ; $j++ )
-				$utfSeq[] = ord(substr($data, $i+$j,1));
-			$convSeq[3] = $utfSeq[5];
-			$convSeq[2] = $utfSeq[4] & 0x0F | (($utfSeq[2] & 0x03) << 4) | 0x80;
-			$topDigit = ($utfSeq[1] & 0x0F) + 1;
-			$convSeq[1] = (($utfSeq[2] >> 2) & 0x0F) | (($topDigit & 0x03) << 4) | 0x80;
-			$convSeq[0] = (($topDigit >> 2) & 0x07) | 0xF0;
-			$c = chr( $convSeq[0] ).chr( $convSeq[1] ).chr( $convSeq[2] ).chr( $convSeq[3] );
-			$i += 5;
-		}
-		$altData .= $c;
-	}
-	return $altData;
+function ConvertSarrogatePair($data)
+{
+    $altData = '';
+    for ($i = 0; $i < strlen($data); $i++) {
+        $c = substr($data, $i, 1);
+        if ((ord($c) == 0xed) && ((ord(substr($data, $i + 1, 1)) & 0xF0) == 0xA0)) {
+            $utfSeq = array();
+            for ($j = 0; $j < 6; $j++)
+                $utfSeq[] = ord(substr($data, $i + $j, 1));
+            $convSeq[3] = $utfSeq[5];
+            $convSeq[2] = $utfSeq[4] & 0x0F | (($utfSeq[2] & 0x03) << 4) | 0x80;
+            $topDigit = ($utfSeq[1] & 0x0F) + 1;
+            $convSeq[1] = (($utfSeq[2] >> 2) & 0x0F) | (($topDigit & 0x03) << 4) | 0x80;
+            $convSeq[0] = (($topDigit >> 2) & 0x07) | 0xF0;
+            $c = chr($convSeq[0]) . chr($convSeq[1]) . chr($convSeq[2]) . chr($convSeq[3]);
+            $i += 5;
+        }
+        $altData .= $c;
+    }
+    return $altData;
 }
+
 ?>

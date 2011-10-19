@@ -19,8 +19,8 @@ include_once('../INTER-Mediator/DB_FileMaker_FX.php');
 
 class DB_WebSite_FMSFX extends DB_FileMaker_FX	{
 
-    function getFromDB( )	{
-        $returnValue = parent::getFromDB();
+    function getFromDB( $sourceName )	{
+        $returnValue = parent::getFromDB( $sourceName );
         if ( count( $returnValue ) > 1 )    {
             // Check for the language of documents
             $lang = array();

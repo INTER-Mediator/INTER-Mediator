@@ -8,20 +8,24 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-require_once( 'DataConverter_NumberBase.php' );
+require_once('DataConverter_NumberBase.php');
 
-class DataConverter_Currency extends DataConverter_NumberBase	{
-	
-	var $d = null;
-	
-	function __construct( $digits = 0 )	{
-		parent::__construct();
-		$this->d = $digits;
-	}
-	
-	function converterFromDBtoUser( $str )	{
-		return $this->currencyMark . number_format( $str, $this->d, $this->decimalMark, $this->thSepMark );
-	}
+class DataConverter_Currency extends DataConverter_NumberBase
+{
+
+    var $d = null;
+
+    function __construct($digits = 0)
+    {
+        parent::__construct();
+        $this->d = $digits;
+    }
+
+    function converterFromDBtoUser($str)
+    {
+        return $this->currencyMark . number_format($str, $this->d, $this->decimalMark, $this->thSepMark);
+    }
 
 }
+
 ?>

@@ -17,7 +17,7 @@
     <script src="website_include.php"></script>
     <script src="website.js"></script>
 </head>
-<body onload="pageLoad(1);">
+<body onload="pageLoad(2);">
 <div id="nonsupportmessage" style="background-color:#333333">
     <div style="text-align:center;color:yellow">If you see this, you must use any unsupported web browser. Or constructing the page.</div>
     <div style="text-align:center;color:yellow">この表示が見えている場合、非対応ブラウザで参照されています。もしくは描画処理中です。</div>
@@ -40,16 +40,17 @@
     <div id="rightbox" class="graybox" style="float:right;width:300px;background-color:#BBBB88">
         <h3 style="margin:0">Contents</h3>
         <ul style="margin:0">
-            <li><a href="." class="IM[Titles@Title@innerHTML|Titles@LinkAddress@href]"></a></li>
+            <li><a href="./">INTER-Mediator Top</a></li>
         </ul>
     </div>
+    <h2>News and Updates</h2>
     <!-- INTER-Mediator works here -->
-    <div id="Contents" class="_im_enclosure">
-        <div class="_im_repeater">
-            <h2 class="IM[Contents@Title@innerHTML]"></h2>
-            <div class="IM[Contents@Body@innerHTML]"></div>
-        </div>
-    </div>
+    <ul>
+         <li>
+                <span class="IM[NewsPage@creditDate@innerHTML]"></span>
+                 <span class="IM[NewsPage@Body@innerHTML]"></span>
+         </li>
+     </ul>
     <!-- ^ -->
 </div>
 </body>

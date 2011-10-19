@@ -8,11 +8,17 @@ Change Log will be supplied by English only.
 =================================
 To Do, that is left-over. Or Plan
 =================================
+Until Ver.1.0
+- Fix the API, things using from outside.
+- Ignoring enclosure/repeater for table or list. It could add any kind of class name.
+- Now debug mode is just two state, but it could be multi-level settings.
+
 Ver.1.1
-- Built-in Authentication framework.
+- Set validation rules.
+- Built-in Authentication/Authorization framework.
 - Store NULL for empty string.
 - Multiple values within one field. (It may be required for FileMaker especially.)
-- key and Foreign-key can have multiple fields with operators
+- Media (Pictures, files etc.) Handling with Authentication/Authorization.
 
 Ver.1.2
 - Objective handling for the data in database.
@@ -41,14 +47,30 @@ It's hard to check all versions above browsers as you know. I hope you understan
 =================================
 Change Log
 =================================
-Ver.0.7.5=== will be next release
+Ver.0.7.7 - 1.0 === will be next release
+- Some issues in sample_schema.txt are corrected.
+- JavaScript source in the distribution are compressed with YUI Compressor(Yahoo).
+  If you want to check the source with more readability, check them in GitHub repository.
+- The file name of the distribution has version number with replacing dot to underline.
+- Web Site sample is updated. All news and updates are shown in the separated page.
+
+Ver.0.7.6 (2011/9/18)
+- Set the browser-compatibility info in the second parameter of IM_Entry function.
+- SPAN tag element can use for enclosures and repeaters.
+- The "WebSite" sample is update and it can show the update date of each page.
+
+Ver.0.7.5 (2011/9/18)
 - Modified FX.php is bundled (Thanks to Chris Hansen)
 - Samples for FileMaker Server are modified.
+- key and Foreign-key can have multiple fields with operators.
+  *CAUTION* The way of definition file is changed. On the relationship, you should write as below:
+  'relation'=>array(array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')),
 - Typo...
 
 Ver.0.7.4 (2011/9/5)
 - Re-engineering the API used on application (Adapter_DBServer.jp's functions).
-- IE and TEXTAREA issue is solved (I hope so). But innerText mode is not good for IE. It's suitable to use textNode mode.
+- IE and TEXTAREA issue is solved (I hope so). But innerText mode is not good for IE.
+  It's suitable to use textNode mode.
 - Browser check and showing suitable message when it's not compatible.
 
 Ver.0.7.3 (2011/9/1)
