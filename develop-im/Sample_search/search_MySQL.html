@@ -17,34 +17,48 @@
     <link rel="stylesheet" type="text/css" href="../sample.css" />
     <script type="text/javascript" src="include_MySQL.php"></script>
     <script type="text/javascript">
-        function doSearchFromTown()  {
-            var param = {field:'f9',operator:'LIKE',value:'%'+document.getElementById('place').value+'%'};
-            INTERMediator.additionalCondition["postalcode"] = param;
+        var searchCriteriaTown;
+        var searchCriteriaZip;
+        var whichSearch;
+        function doSearchFromTown(key,direction)  {
+            searchCriteriaTown = document.getElementById('place').value;
+            searchCriteriaZip = document.getElementById('zipcode').value;
+            whichSearch = 1;
+            INTERMediator.additionalCondition["postalcode"] = {field:'f9',operator:'LIKE',value:'%'+searchCriteriaTown+'%'};
+            INTERMediator.additionalSortKey["postalcode"] = {field:key,direction:direction};
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);
         }
-        function doSearchFromZipcode()  {
-            var param = {field:'f3',operator:'LIKE',value:document.getElementById('zipcode').value+'%'};
-            INTERMediator.additionalCondition["postalcode"] = param;
+        function doSearchFromZipcode(key,direction)  {
+            searchCriteriaTown = document.getElementById('place').value;
+            searchCriteriaZip = document.getElementById('zipcode').value;
+            whichSearch = 2;
+            INTERMediator.additionalCondition["postalcode"] = {field:'f3',operator:'LIKE',value:searchCriteriaZip+'%'};
+            INTERMediator.additionalSortKey["postalcode"] = {field:key,direction:direction};
             INTERMediator.startFrom = 0;
-            INTERMediator.debugMode = false;
             INTERMediator.construct(true);
+        }
+        INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
+            if ( name == 'postalcode' )   {
+                document.getElementById('place').value = searchCriteriaTown;
+                document.getElementById('zipcode').value = searchCriteriaZip;
+            }
         }
     </script>
 </head>
 <body>
 <div>
     地名(Place Name):
-    <input type="text" id="place" value="落合" onkeydown="if(event.keyCode==13){doSearchFromTown()}"/>
-    <button onclick="doSearchFromTown()">
+    <input type="text" id="place" value="落合" onkeydown="if(event.keyCode==13){doSearchFromTown('f3','ASC')}"/>
+    <button onclick="doSearchFromTown('f3','ASC')">
         Search
     </button>
     検索は住所の「町域名」に一部分でも含まれる文字列を検索します。
 </div>
 <div>
     郵便番号(Zipcode):
-    <input type="text" id="zipcode" value="123" onkeydown="if(event.keyCode==13){doSearchFromZipcode()}" />
-    <button onclick="doSearchFromZipcode()">
+    <input type="text" id="zipcode" value="123" onkeydown="if(event.keyCode==13){doSearchFromZipcode('f3','ASC')}" />
+    <button onclick="doSearchFromZipcode('f3','ASC')">
         search
     </button>
     郵便番号を前方一致で検索します。
@@ -52,15 +66,21 @@
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1" id="resultTable">
 	<thead>
-	<tr>
-		<th>郵便番号</th>
-		<th>都道府県</th>
-		<th>市区町村</th>
-		<th>町域名</th>
-	</tr>
-	</thead>
-	<tbody>
-	<tr>
+    <tr>
+        <th>郵便番号
+            <a href="javascript:whichSearch==2?doSearchFromZipcode('f3','ASC'):doSearchFromTown('f3','ASC')">▼</a>
+            <a href="javascript:whichSearch==2?doSearchFromZipcode('f3','DESC'):doSearchFromTown('f3','DESC')">▲</a>
+        </th>
+        <th>都道府県</th>
+        <th>市区町村</th>
+        <th>町域名
+            <a href="javascript:whichSearch==2?doSearchFromZipcode('f9','ASC'):doSearchFromTown('f9','ASC')">▼</a>
+            <a href="javascript:whichSearch==2?doSearchFromZipcode('f9','DESC'):doSearchFromTown('f9','DESC')">▲</a>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
 		<td><div class="IM[postalcode@f3]"></div></td>
 		<td><div class="IM[postalcode@f7]"></div></td>
 		<td><div class="IM[postalcode@f8]"></div></td>

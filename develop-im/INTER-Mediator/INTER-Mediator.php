@@ -110,6 +110,13 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             }
         }
         for ($count = 0; $count < 10000; $count++) {
+            if (isset($_GET["sortkey{$count}field"])) {
+                $dbInstance->setExtraSortKey($_GET["sortkey{$count}field"], $_GET["sortkey{$count}direction"]);
+            } else {
+                break;
+            }
+        }
+        for ($count = 0; $count < 10000; $count++) {
             if (!isset($_GET["foreign{$count}field"])) {
                 break;
             }

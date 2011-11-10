@@ -49,7 +49,7 @@ IM_Entry(
          ),
     ),
     array('db-class' => 'FileMaker_FX'),
-    true
+    false
 );
 
 ?>

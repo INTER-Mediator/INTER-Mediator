@@ -11,96 +11,106 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
     <link href="../sample.css" rel="stylesheet" type="text/css" />
     <script src="include_MySQL.php"></script>
-<script type="text/javascript">
+    <script type="text/javascript">
 
-INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
-    if ( name == 'items' )   {
-        modLine(target);
-    }
-    if ( name == 'invoice' )   {
-        calcTotal( target );
-    }
-}
-
-function modLine(target)	{
-    var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@qty",target);
-    var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@unitprice",target);
-    var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice",target);
-    var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@amount",target);
-    if ( qtyId != null && unitPriceId != null && productPriceId != null && amountId != null)    {
-        var unitPrice = new Number( document.getElementById(unitPriceId).value > 0 ?
-                                    document.getElementById(unitPriceId).value :
-                                    document.getElementById(productPriceId).innerHTML );
-        var amountPrice = unitPrice * document.getElementById(qtyId).value;
-        document.getElementById(amountId).innerHTML = INTERMediatorLib.numberFormat(amountPrice);
-    }
-}
-
-function calcTotal( target )	{
-	var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition( 'items@amount', target );
-    if ( nodes != null )    {
-        var s = 0;
-        for ( var i in nodes )  {
-            s += INTERMediatorLib.toNumber( document.getElementById(nodes[i]).innerHTML );
+        INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
+            if ( name == 'items' )   {
+            //    modLine(target);
+            }
+            if ( name == 'invoice' )   {
+                calcTotal( target );
+            }
         }
-        document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat( s );
-    }
-}
-</script>
+
+        INTERMediatorOnPage.expandingRecordFinish = function(name,repeaters) {
+        //    alert(repeaters[0].tagName);
+        }
+
+        function modLine(target)	{
+            if(target==null)    {
+                return;
+            }
+            var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@qty",target);
+            var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@unitprice",target);
+            var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice",target);
+            var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@amount",target);
+            if(qtyId==null||unitPriceId==null|productPriceId==null|amountId==null)    {
+                return;
+            }
+            if ( qtyId != null && unitPriceId != null && productPriceId != null && amountId != null)    {
+                var unitPrice = new Number( document.getElementById(unitPriceId).value > 0 ?
+                        document.getElementById(unitPriceId).value :
+                        document.getElementById(productPriceId).innerHTML );
+                var amountPrice = unitPrice * document.getElementById(qtyId).value;
+                document.getElementById(amountId).innerHTML = INTERMediatorLib.numberFormat(amountPrice);
+            }
+        }
+
+        function calcTotal( target )	{
+            var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition( 'items@amount', target );
+            if ( nodes != null )    {
+                var s = 0;
+                for ( var i in nodes )  {
+                    s += INTERMediatorLib.toNumber( document.getElementById(nodes[i]).innerHTML );
+                }
+                document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat( s );
+            }
+        }
+    </script>
 </head>
 <body onload="INTERMediator.construct(true);calcTotal();">
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1">
     <tbody>
-	<tr>
-		<td>id</td>
-		<td><input type="text" class="IM[invoice@id]"/></td>
-	</tr>
-	<tr>
-		<td>name</td>
-		<td><input type="text" class="IM[invoice@issued]" value="" /></td>
-	</tr>
-	<tr>
-		<td>title</td>
-		<td><input type="text" class="IM[invoice@title]" value="" /></td>
-	</tr>
+    <tr>
+        <td>id</td>
+        <td><input type="text" class="IM[invoice@id]"/></td>
+    </tr>
+    <tr>
+        <td>name</td>
+        <td><input type="text" class="IM[invoice@issued]" value="" /></td>
+    </tr>
+    <tr>
+        <td>title</td>
+        <td><input type="text" class="IM[invoice@title]" value="" /></td>
+    </tr>
     <tr>
         <td colspan="2">
             <table border="1">
                 <thead>
-                    <tr>
-                        <th>product</th><th>qty</th><th>unitprice (master)</th><th>amount</th><th></th>
-                    </tr>
+                <tr>
+                    <th>product</th><th>qty</th><th>unitprice (master)</th><th>amount</th><th></th>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>
-                            <input type="text" class="IM[items@product_id]" size="2"
-                                    onchange="modLine(this);calcTotal(this)" />
-                            <div style="display:inline;" class="_im_enclosure">
-                                <div style="display:inline;" class="_im_repeater">
-                                    <span class="IM[product@name]"></span>
-                                </div>
+                <tr>
+                    <td>
+                        <input type="text" class="IM[items@product_id]" size="2"
+                               onchange="modLine(this);calcTotal(this)" />
+                        <div style="display:inline;" class="_im_enclosure">
+                            <div style="display:inline;" class="_im_repeater">
+                                <span class="IM[product@name]"></span>
                             </div>
-                        </td>
-                        <td><input type="text" class="IM[items@qty]" size="5" style="text-align:right;"
-                                onchange="modLine(this);calcTotal(this)"/></td>
-                        <td>
-                            <input type="text" class="IM[items@unitprice]" size="8" style="text-align:right;"
-                                    onchange="modLine(this);calcTotal(this)" />
-                            <div style="display:inline;" class="_im_enclosure">
-                                <div style="display:inline;text-align:right;" class="_im_repeater">
+                        </div>
+                    </td>
+                    <td><input type="text" class="IM[items@qty]" size="5" style="text-align:right;"
+                               onchange="modLine(this);calcTotal(this)"/></td>
+                    <td>
+                        <input type="text" class="IM[items@unitprice]" size="8" style="text-align:right;"
+                               onchange="modLine(this);calcTotal(this)" />
+                        <div style="display:inline;" class="_im_enclosure">
+                            <div style="display:inline;text-align:right;" class="_im_repeater">
                                 (<span class="IM[product@unitprice]"></span>)
-                                </div>
                             </div>
-                        </td>
-                        <td align="right"><span align="right" class="IM[items@amount]"></span></td>
-                        <td></td>
-                    </tr>
+                        </div>
+                    </td>
+                    <td align="right"><span align="right" class="IM[items@amount]"></span></td>
+                    <td></td>
+                </tr>
                 </tbody>
             </table>
         </td>

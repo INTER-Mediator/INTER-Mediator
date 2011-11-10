@@ -113,6 +113,11 @@ class DB_PDO extends DB_Base
         $sortClause = array();
         if (isset($tableInfo['sort'])) {
             foreach ($tableInfo['sort'] as $condition) {
+                $sortClause[] = "{$condition['field']} {$condition['direction']}";
+            }
+        }
+        if (count($this->extraSortKey)>0) {
+            foreach ($this->extraSortKey as $condition) {
                 if (isset($condition['direction'])) {
                     $sortClause[] = "{$condition['field']} {$condition['direction']}";
                 } else {

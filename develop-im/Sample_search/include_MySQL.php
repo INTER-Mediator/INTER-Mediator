@@ -15,12 +15,12 @@ IM_Entry(
 			'name'  	=> 'postalcode',
             'records'	=>	10,
             'paging'    =>  true,
-			'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
+		//	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
 		),
 	),
     null,
     array('db-class' => 'PDO'),
-    true
+    false
 );
 
 ?>

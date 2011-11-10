@@ -64,6 +64,10 @@ class DB_FileMaker_FX extends DB_Base
     {
     }
 
+    function stringReturnOnly($str)    {
+            return str_replace("\n\r", "\r",
+                str_replace("\n", "\r", $str));
+    }
     function getFromDB($dataSourceName)
     {
         $contextName = $this->dataSourceName;
@@ -133,6 +137,11 @@ class DB_FileMaker_FX extends DB_Base
                 } else {
                     $fx->AddSortParam($condition['field']);
                 }
+            }
+        }
+        if (count($this->extraSortKey)>0) {
+            foreach ($this->extraSortKey as $condition) {
+                $fx->AddSortParam($condition['field'], $condition['direction']);
             }
         }
         if (isset($tableInfo['global'])) {
@@ -224,7 +233,7 @@ class DB_FileMaker_FX extends DB_Base
                 foreach ($this->fieldsRequired as $field) {
                     $value = $this->fieldsValues[$counter];
                     $counter++;
-                    $convVal = (is_array($value)) ? implode("\n", $value) : $value;
+                    $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
                     $convVal = $this->formatterToDB("{$contextName}{$this->separator}{$field}", $convVal);
                     $fx->AddDBParam($field, $convVal);
                 }

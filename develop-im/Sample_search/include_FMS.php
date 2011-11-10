@@ -16,7 +16,7 @@ IM_Entry(
             'records'	=>	10,
             'paging'    =>  true,
 			'query'	    => array( ),
-			'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
+		//	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
 		),
 	),
     null,

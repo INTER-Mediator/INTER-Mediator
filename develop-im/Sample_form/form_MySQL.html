@@ -22,17 +22,11 @@
 <table border="1">
     <tbody>
     <tr>
-        <td>id</td>
+        <th>id</th>
         <td>
             <div class="IM[person@id]"></div>
         </td>
-    </tr>
-    <tr>
-        <td>mail</td>
-        <td><input type="text" class="IM[person@mail]" value=""/></td>
-    </tr>
-    <tr>
-        <td class="a b c d">category</td>
+        <th>category</th>
         <td>
             <select class="IM[person@category]">
                 <option value="101">Family</option>
@@ -40,14 +34,20 @@
                 <option value="103">Collegue</option>
             </select>
         </td>
-    </tr>
-    <tr>
-        <td>check</td>
+        <th>check</th>
         <td><input type="checkbox" title="person@checking" value="1"/></td>
     </tr>
     <tr>
-        <td>location</td>
-        <td>
+        <th>name</th>
+        <td colspan="5"><input type="text" class="IM[person@name]" value=""/></td>
+    </tr>
+    <tr>
+        <th>mail</th>
+        <td colspan="5"><input type="text" class="IM[person@mail]" value=""/></td>
+    </tr>
+    <tr>
+        <th>location</th>
+        <td colspan="5">
             <input type="radio" name="radio1" title="person@location" value="201"/>Domestic
             <input type="radio" name="radio1" title="person@location" value="202"/>International
             <input type="radio" name="radio1" title="person@location" value="203"/>Neightbor
@@ -55,11 +55,11 @@
         </td>
     </tr>
     <tr>
-        <td>memo</td>
-        <td><textarea title="person@address"></textarea></td>
+        <th>memo</th>
+        <td colspan="5"><textarea title="person@address"></textarea></td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="6">
             <table border="1">
                 <thead>
                 <tr>
@@ -93,7 +93,7 @@
         </td>
     </tr>
     <tr>
-        <td colspan="2">
+        <td colspan="6">
             <ul>
                 <li>
                     <hr/>

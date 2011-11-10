@@ -159,7 +159,10 @@ CREATE TABLE invoice (
 	id		INT  AUTO_INCREMENT,
 	issued	DATE,
 	title	VARCHAR(30),
-	PRIMARY KEY(id)
+	user_id INT,
+	group_id INT,
+	priv_id INT
+	PRIMARY KEY(id),
 )		CHARACTER SET utf8,
 		COLLATE utf8_unicode_ci
 		ENGINE=InnoDB;
@@ -171,6 +174,9 @@ CREATE TABLE item (
 	product_id		INT,
 	qty				INT,
 	unitprice		FLOAT(10.2),
+                               	user_id INT,
+                               	group_id INT,
+                               	priv_id INT,
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8,
 		COLLATE utf8_unicode_ci
@@ -189,6 +195,52 @@ CREATE TABLE product (
 )		CHARACTER SET utf8,
 		COLLATE utf8_unicode_ci
 		ENGINE=InnoDB;	
+
+CREATE TABLE authuser (
+	id					INT  AUTO_INCREMENT,
+	username				VARCHAR(48),
+	hashedpasswd		VARCHAR(48),
+	email               VARCHAR(100),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+
+CREATE TABLE authgroup (
+	id					INT  AUTO_INCREMENT,
+	groupname			VARCHAR(48),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+
+CREATE TABLE authpriv (
+	id					INT  AUTO_INCREMENT,
+	privname			VARCHAR(48),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+
+CREATE TABLE authcor (
+	id					INT  AUTO_INCREMENT,
+	user_id             INT,
+	group_id            INT,
+	prev_id             INT,
+	privname			VARCHAR(48),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+
+CREATE TABLE issuedhash (
+	user_id         INT,
+	hash            VARCHAR(48),
+	expired			DateTime,
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
 
 CREATE VIEW item_display AS SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty, item.unitprice, product.unitprice as unitprice_master, IF(item.unitprice is null, qty * product.unitprice, qty * item.unitprice) AS amount FROM item, product WHERE item.product_id=product.id;
 

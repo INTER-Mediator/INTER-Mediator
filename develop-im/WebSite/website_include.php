@@ -73,6 +73,7 @@ $tableDefs= array(
 $optionDefs= array(
     'formatter' => array(
         array('field' => 'PageInfo@updateDate', 'converter-class' => 'FMDateTime'),
+        array('field' => 'NewsPage@updateDate', 'converter-class' => 'FMDateTime'),
     )
 );
 

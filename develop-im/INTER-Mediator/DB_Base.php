@@ -24,6 +24,7 @@ class DB_Base
     var $dataSource = null;
     var $targetDataSource = null;
     var $extraCriteria = array();
+    var $extraSortKey = array();
     var $mainTableCount = 0;
     var $fieldsRequired = array();
     var $fieldsValues = array();
@@ -85,6 +86,11 @@ class DB_Base
     function setExtraCriteria($field, $operator, $value)
     {
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);
+    }
+
+    function setExtraSortKey($field, $direction)
+    {
+        $this->extraSortKey[] = array('field' => $field, 'direction' => $direction);
     }
 
     function setForeignValue($field, $value)

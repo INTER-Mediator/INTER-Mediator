@@ -69,6 +69,17 @@ var IM_DBAdapter = {
             extCount++;
         }
 
+        extCount = 0;
+        var sortkeyObject = INTERMediator.additionalSortKey[args['name']];
+        if (sortkeyObject != null && sortkeyObject["field"] != null) {
+            sortkeyObject = [sortkeyObject];
+        }
+        for (var index in sortkeyObject) {
+            params += "&sortkey" + extCount + "field=" + encodeURI(sortkeyObject[index]["field"]);
+            params += "&sortkey" + extCount + "direction=" + encodeURI(sortkeyObject[index]["direction"]);
+            extCount++;
+        }
+
         params += "&randkey" + Math.random();    // For ie...
         // IE uses caches as the result in spite of several headers. So URL should be randomly.
         var appPath = IM_getEntryPath();

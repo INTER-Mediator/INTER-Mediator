@@ -35,3 +35,21 @@ span.IM_NAV_disabled    {
 div.IM_CREDIT   {
     
 }
+
+table   {
+    border-collapse: collapse;
+    background-color: #EEEEEE;
+}
+
+th  {
+    border: 2px solid #444444;
+    padding: 6px;
+    margin: 4px;
+}
+
+td  {
+    border: 2px solid #444444;
+    padding: 4px;
+    margin: 4px;
+}
+;
