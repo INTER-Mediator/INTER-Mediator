@@ -18,6 +18,8 @@ Toward Ver.1.1
 - Multiple values within one field. (It may be required for FileMaker especially.)
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
 - Supports HTML5's datalist tag elements
+- Transaction Support (updating=auto-save/transaction/none)
+- Upgrading Criteria (Where clause) generation for FileMaker Server and JS additionalCriteria props.
 
 Toward Ver.1.2
 - Objective handling for the data in database.
@@ -48,11 +50,16 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.1.0.1 === will be next release
+Ver.1.0.2 === will be next release
+- PDO data access class can specify OR condition from JS program.
+- Bug fix for conditions.
+
+Ver.1.0.1 (2011/11/19)
 - Fix the issue to erase "Return" in text on FileMaker Server.
 - Sample pages css is changed and they looks better.
 - Support INTERMediator.additionalSortKey property to add sort keys with JS program.
 - Modified the Sample Search Page,and it's better behavior.
+- Change the URL of the page footer to inter-mediator.info.
 
 Ver.0.7.7 -> 1.0.0 (2011/10/19)
 - Some issues in sample_schema.txt are corrected.

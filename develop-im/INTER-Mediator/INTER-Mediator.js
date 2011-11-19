@@ -653,89 +653,91 @@ var INTERMediator = {
         var newValue = null;
         var changedObj = document.getElementById(idValue);
         if (changedObj != null) {
-            // Check the current value of the field
-            var objectSpec = INTERMediator.updateRequiredObject[idValue];
-            var keyingComp = objectSpec['keying'].split('=');
-            var keyingField = keyingComp[0];
-            keyingComp.shift();
-            var keyingValue = keyingComp.join('=');
-            var currentVal = IM_DBAdapter.db_query({
-                name:objectSpec['name'],
-                records:1,
-                paging:objectSpec['paging'],
-                fields:[objectSpec['field']],
-                parentkeyvalue:null,
-                conditions:[
-                    {field:keyingField, operator:'=', value:keyingValue}
-                ],
-                useoffset:false});
-            if (currentVal == null || currentVal[0] == null || currentVal[0][objectSpec['field']] == null) {
-                alert(INTERMediatorLib.getInsertedString(IM_getMessages()[1003], [objectSpec['field']]));
-                INTERMediator.flushMessage();
-                return;
-            }
-            currentVal = currentVal[0][objectSpec['field']];
-            if (objectSpec['initialvalue'] != currentVal) {
-                // The value of database and the field is diffrent. Others must be changed this field.
-                if (!confirm(INTERMediatorLib.getInsertedString(
-                    IM_getMessages()[1001], [objectSpec['initialvalue'], currentVal]))) {
+            var defOption = IM_getOptions();
+            var optionTrans = ( defOption['transaction'] == null ) ? 'automatic' : defOption['transaction'];
+            if ( optionTrans != 'automatic' )   {
+                INTERMediator.updateRequiredObject[idValue]['edit'] = true;
+            } else {
+                // Check the current value of the field
+                var objectSpec = INTERMediator.updateRequiredObject[idValue];
+                var keyingComp = objectSpec['keying'].split('=');
+                var keyingField = keyingComp[0];
+                keyingComp.shift();
+                var keyingValue = keyingComp.join('=');
+                var currentVal = IM_DBAdapter.db_query({
+                    name:objectSpec['name'],
+                    records:1,
+                    paging:objectSpec['paging'],
+                    fields:[objectSpec['field']],
+                    parentkeyvalue:null,
+                    conditions:[
+                        {field:keyingField, operator:'=', value:keyingValue}
+                    ],
+                    useoffset:false});
+                if (currentVal == null || currentVal[0] == null || currentVal[0][objectSpec['field']] == null) {
+                    alert(INTERMediatorLib.getInsertedString(IM_getMessages()[1003], [objectSpec['field']]));
                     INTERMediator.flushMessage();
                     return;
                 }
-            }
+                currentVal = currentVal[0][objectSpec['field']];
+                if (objectSpec['initialvalue'] != currentVal) {
+                    // The value of database and the field is diffrent. Others must be changed this field.
+                    if (!confirm(INTERMediatorLib.getInsertedString(
+                        IM_getMessages()[1001], [objectSpec['initialvalue'], currentVal]))) {
+                        INTERMediator.flushMessage();
+                        return;
+                    }
+                }
 
-            if (changedObj.tagName == 'TEXTAREA') {
-                newValue = changedObj.value;
-            } else if (changedObj.tagName == 'SELECT') {
-                newValue = changedObj.value;
-            } else if (changedObj.tagName == 'INPUT') {
-                var objType = changedObj.getAttribute('type');
-                if (objType != null) {
-                    if (objType == 'checkbox') {
-                        var valueAttr = changedObj.getAttribute('value');
-                        if (changedObj.checked) {
-                            newValue = valueAttr;
-                        } else {
-                            newValue = '';
-                        }
-                    } else if (objType == 'radio') {
-                        newValue = changedObj.value;
-                    } else { //text, password
-                        newValue = changedObj.value;
-                    }
-                }
-            }
-            if (newValue != null) {
-                var criteria = objectSpec['keying'].split('=');
-                IM_DBAdapter.db_update({
-                    name:objectSpec['name'],
-                    conditions:[
-                        {field:criteria[0], operator:'=', value:criteria[1]}
-                    ],
-                    dataset:[
-                        {field:objectSpec['field'], value:newValue}
-                    ]});
-                objectSpec['initialvalue'] = newValue;
-                var updateNodeId = objectSpec['updatenodeid'];
-                var needUpdate = false;
-                for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
-                    for (var j = 0; j < INTERMediator.keyFieldObject[i]['target'].length; j++) {
-                        if (INTERMediator.keyFieldObject[i]['target'][j] == idValue) {
-                            needUpdate = true;
+                if (changedObj.tagName == 'TEXTAREA') {
+                    newValue = changedObj.value;
+                } else if (changedObj.tagName == 'SELECT') {
+                    newValue = changedObj.value;
+                } else if (changedObj.tagName == 'INPUT') {
+                    var objType = changedObj.getAttribute('type');
+                    if (objType != null) {
+                        if (objType == 'checkbox') {
+                            var valueAttr = changedObj.getAttribute('value');
+                            if (changedObj.checked) {
+                                newValue = valueAttr;
+                            } else {
+                                newValue = '';
+                            }
+                        } else if (objType == 'radio') {
+                            newValue = changedObj.value;
+                        } else { //text, password
+                            newValue = changedObj.value;
                         }
                     }
                 }
-                if (needUpdate) {
+                if (newValue != null) {
+                    var criteria = objectSpec['keying'].split('=');
+                    IM_DBAdapter.db_update({
+                        name:objectSpec['name'],
+                        conditions:[{field:criteria[0], operator:'=', value:criteria[1]}],
+                        dataset:[{field:objectSpec['field'], value:newValue}]});
+                    objectSpec['initialvalue'] = newValue;
+                    var updateNodeId = objectSpec['updatenodeid'];
+                    var needUpdate = false;
                     for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
-                        if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodeId) {
-                            INTERMediator.construct(false, i);
-                            break;
+                        for (var j = 0; j < INTERMediator.keyFieldObject[i]['target'].length; j++) {
+                            if (INTERMediator.keyFieldObject[i]['target'][j] == idValue) {
+                                needUpdate = true;
+                            }
+                        }
+                    }
+                    if (needUpdate) {
+                        for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
+                            if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodeId) {
+                                INTERMediator.construct(false, i);
+                                break;
+                            }
                         }
                     }
                 }
             }
+            INTERMediator.flushMessage();
         }
-        INTERMediator.flushMessage();
     },
 
     deleteButton:function(targetName, keyField, keyValue, removeNodes) {
@@ -1264,11 +1266,6 @@ var INTERMediator = {
                                 theNode, eventListenerPostAdding[i]['event'], eventListenerPostAdding[i]['todo']);
                         }
                     }
-
-
-
-
-
                 }
 
                 if (currentContext['repeat-control'] != null && currentContext['repeat-control'].match(/insert/i)) {
@@ -1507,7 +1504,7 @@ var INTERMediator = {
 
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
-                node.appendChild(document.createTextNode(navLabel == null ? IM_getMessages()[2] : navLabel[1]));
+                node.appendChild(document.createTextNode(navLabel == null ? IM_getMessages()[2] : navLabel[8]));
                 node.setAttribute('class', 'IM_NAV_button');
                 INTERMediatorLib.addEvent(node, 'click', function() {
                     location.reload();
@@ -1648,7 +1645,7 @@ var INTERMediator = {
                 cNode.style.fontSize = '7pt';
                 var aNode = document.createElement('a');
                 aNode.appendChild(document.createTextNode('INTER-Mediator'));
-                aNode.setAttribute('href', 'http://msyk.net/im');
+                aNode.setAttribute('href', 'http://inter-mediator.info/');
                 aNode.setAttribute('target', '_href');
                 spNode.appendChild(document.createTextNode('Generated by '));
                 spNode.appendChild(aNode);

@@ -52,6 +52,7 @@ IM_Entry(
             'kindid' => 'cor_way_kindname@kind_id@value',
             'kindname' => 'cor_way_kindname@name_kind@innerHTML',
         ),
+    //    'transaction' => 'none',
     ),
     array('db-class' => 'PDO'),
     false

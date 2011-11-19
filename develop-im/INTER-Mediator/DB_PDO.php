@@ -33,47 +33,84 @@ class DB_PDO extends DB_Base
     {
         $tableInfo = $this->getDataSourceTargetArray();
         $queryClause = '';
+
         $queryClauseArray = array();
         if (isset($tableInfo['query'][0])) {
-            $chanckCount = 0;
+            $chunkCount = 0;
             $insideOp = ' AND ';
-            $outsiceOp = ' OR ';
+            $outsideOp = ' OR ';
             foreach ($tableInfo['query'] as $condition) {
                 if ($condition['field'] == '__operation__') {
-                    $chanckCount++;
+                    $chunkCount++;
                     if ($condition['operator'] == 'ex') {
                         $insideOp = ' OR ';
-                        $outsiceOp = ' AND ';
+                        $outsideOp = ' AND ';
                     }
                 } else {
                     if (isset($condition['value'])) {
-                        $escedVal = $this->link->quote($condition['value']);
+                        $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
-                            $queryClauseArray[$chanckCount][]
-                                = "{$condition['field']} {$condition['operator']} {$escedVal}";
+                            $queryClauseArray[$chunkCount][]
+                                = "{$condition['field']} {$condition['operator']} {$escapedValue}";
                         } else {
-                            $queryClauseArray[$chanckCount][]
-                                = "{$condition['field']} = {$escedVal}";
+                            $queryClauseArray[$chunkCount][]
+                                = "{$condition['field']} = {$escapedValue}";
                         }
                     } else {
-                        $queryClauseArray[$chanckCount][]
+                        $queryClauseArray[$chunkCount][]
                             = "{$condition['field']} {$condition['operator']}";
                     }
-                    $chanckCount++;
+                //    $chunkCount++;
                 }
             }
             foreach ($queryClauseArray as $oneTerm) {
                 $oneClause[] = '(' . implode($insideOp, $oneTerm) . ')';
             }
-            $queryClause = implode($outsiceOp, $oneClause);
+            $queryClause = implode($outsideOp, $oneClause);
         }
 
         $queryClauseArray = array();
+        if (isset($this->extraCriteria[0])) {
+            $chunkCount = 0;
+            $insideOp = ' AND ';
+            $outsideOp = ' OR ';
+            foreach ($this->extraCriteria as $condition) {
+                if ($condition['field'] == '__operation__') {
+                    $chunkCount++;
+                    if ($condition['operator'] == 'ex') {
+                        $insideOp = ' OR ';
+                        $outsideOp = ' AND ';
+                    }
+                } else {
+                    if (isset($condition['value'])) {
+                        $escapedValue = $this->link->quote($condition['value']);
+                        if (isset($condition['operator'])) {
+                            $queryClauseArray[$chunkCount][]
+                                = "{$condition['field']} {$condition['operator']} {$escapedValue}";
+                        } else {
+                            $queryClauseArray[$chunkCount][]
+                                = "{$condition['field']} = {$escapedValue}";
+                        }
+                    } else {
+                        $queryClauseArray[$chunkCount][]
+                            = "{$condition['field']} {$condition['operator']}";
+                    }
+                //    $chunkCount++;
+                }
+            }
+            foreach ($queryClauseArray as $oneTerm) {
+                $oneClause[] = '(' . implode($insideOp, $oneTerm) . ')';
+            }
+            $queryClause = ($queryClause == '' ? '' : "($queryClause) AND " )
+                . '(' . implode($outsideOp, $oneClause) . ')';
+        }
+
+ /*
         foreach ($this->extraCriteria as $criteria) {
             $field = $criteria['field'];
             $operator = isset($criteria['operator']) ? $criteria['operator'] : '=';
-            $escedVal = $this->link->quote($criteria['value']);
-            $queryClauseArray[] = "({$field} {$operator} {$escedVal})";
+            $escapedValue = $this->link->quote($criteria['value']);
+            $queryClauseArray[] = "({$field} {$operator} {$escapedValue})";
         }
         if (count($queryClauseArray) > 0) {
             if ($queryClause != '') {
@@ -81,27 +118,23 @@ class DB_PDO extends DB_Base
             }
             $queryClause = implode(' AND ', $queryClauseArray);
         }
+ */
         if (count($this->foreignFieldAndValue) > 0) {
             foreach ($this->foreignFieldAndValue as $foreignDef) {
                 foreach ($tableInfo['relation'] as $relDef) {
                     if ($relDef['foreign-key'] == $foreignDef['field']) {
-                        $escedVal = $this->link->quote($foreignDef['value']);
+                        $escapedValue = $this->link->quote($foreignDef['value']);
                         if (isset($relDef['operator'])) {
                             $op = $relDef['operator'];
                         } else {
                             $op = 'eq';
                         }
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
-                            . "{$foreignDef['field']}{$op}{$escedVal}";
+                            . "({$foreignDef['field']}{$op}{$escapedValue})";
                     }
                 }
             }
         }
-        /*	if ( isset( $tableInfo['foreign-key'] ) && isset($this->parentKeyValue) )	{
-              $queryClause = (($queryClause!='')?"({$queryClause}) AND ":'')
-                  . "{$tableInfo['foreign-key']} = {$this->parentKeyValue}";
-          }
-      */
         return $queryClause;
     }
 
@@ -111,11 +144,6 @@ class DB_PDO extends DB_Base
     {
         $tableInfo = $this->getDataSourceTargetArray();
         $sortClause = array();
-        if (isset($tableInfo['sort'])) {
-            foreach ($tableInfo['sort'] as $condition) {
-                $sortClause[] = "{$condition['field']} {$condition['direction']}";
-            }
-        }
         if (count($this->extraSortKey)>0) {
             foreach ($this->extraSortKey as $condition) {
                 if (isset($condition['direction'])) {
@@ -123,6 +151,11 @@ class DB_PDO extends DB_Base
                 } else {
                     $sortClause[] = "{$condition['field']}";
                 }
+            }
+        }
+        if (isset($tableInfo['sort'])) {
+            foreach ($tableInfo['sort'] as $condition) {
+                $sortClause[] = "{$condition['field']} {$condition['direction']}";
             }
         }
         return implode(',', $sortClause);

@@ -59,11 +59,6 @@ function dateArrayFromFMDate($d)
 
 class DB_FileMaker_FX extends DB_Base
 {
-
-    function __construct()
-    {
-    }
-
     function stringReturnOnly($str)    {
             return str_replace("\n\r", "\r",
                 str_replace("\n", "\r", $str));
@@ -107,19 +102,22 @@ class DB_FileMaker_FX extends DB_Base
                 }
             }
         }
-        foreach ($this->extraCriteria as $value) {
-            $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-            $fx->AddDBParam($value['field'], $value['value'], $op);
+
+        if (isset($this->extraCriteria)) {
+            foreach ($this->extraCriteria as $value) {
+                if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
+                    $fx->SetLogicalOR();
+                } else {
+                    $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
+                    $fx->AddDBParam($value['field'], $value['value'], $op);
+                }
+            }
         }
         if (count($this->foreignFieldAndValue) > 0) {
             foreach ($this->foreignFieldAndValue as $foreignDef) {
                 foreach ($tableInfo['relation'] as $relDef) {
                     if ($relDef['foreign-key'] == $foreignDef['field']) {
-                        if (isset($relDef['operator'])) {
-                            $op = $relDef['operator'];
-                        } else {
-                            $op = 'eq';
-                        }
+                        $op = (isset($relDef['operator'])) ? $relDef['operator'] : 'eq';
                         $fx->AddDBParam($foreignDef['field'],
                             $this->formatterToDB("{$contextName}{$this->separator}{$value['field']}",
                                 $foreignDef['value']), $op);
