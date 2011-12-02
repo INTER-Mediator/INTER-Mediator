@@ -23,6 +23,7 @@ class MessageStrings
         4 => 'Delete Record',
         5 => 'Insert',
         6 => 'Delete',
+        7 => 'Save',
         1001 => "Other people might be updated.\n\nInitially=@1@\nCurrent=@2@\n\nYou can overwrite with your data if you select OK.",
         1002 => "Can't determine the Table Name: @1@",
         1003 => "No information to update: field=@1@",
@@ -46,6 +47,7 @@ class MessageStrings
         1021 => "On calling db_createRecord, Requred parameter 'name' doesn't specified",
         1022 => 'Using Unsupported Browser',
         1023 => '[This site uses INTER-Mediator.]',
+        1024 => 'Multiple records are going to be updated. The key field might be wrong. Are you sure?',
     );
 }
 

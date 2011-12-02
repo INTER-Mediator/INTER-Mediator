@@ -44,7 +44,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Adapter_DBServer.js');
         echo "function IM_getEntryPath(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}{$LF}";
-        echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
+    //    echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
         echo "function IM_getDataSources(){return ", arrayToJS($datasrc, ''), ";}{$LF}";
         echo "function IM_getOptions(){return ", arrayToJS($options, ''), ";}{$LF}";
         $clientLang = explode('-', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);

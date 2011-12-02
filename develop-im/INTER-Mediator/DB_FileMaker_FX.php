@@ -164,10 +164,14 @@ class DB_FileMaker_FX extends DB_Base
         }
         $fxResult = $fx->DoFxAction(FX_ACTION_FIND, TRUE, TRUE, 'full');
         //var_dump($fxResult);
+        if ( get_class($fxResult) == "FX_Error" )   {
+            $this->errorMessage[] = "FX_Error: " . $fxResult->getDebugInfo();
+            return null;
+        }
         if ($fxResult['errorCode'] != 0 && $fxResult['errorCode'] != 401) {
             $this->errorMessage[] = "FX reports error at find action: "
                 . "code={$fxResult['errorCode']}, url={$fxResult['URL']}";
-            return '';
+            return null;
         }
         $this->setDebugMessage($fxResult['URL']);
         //$this->setDebugMessage( arrayToJS( $fxResult['data'], '' ));

@@ -33,7 +33,7 @@ function INTERMediatorCheckBrowser(deleteNode) {
         }
     }
     var judge = false;
-    if (matchAgent == true && matchOS == true) {
+    if (matchAgent && matchOS) {
         var specifiedVersion = parseInt(versionStr);
         var versionNum;
         if (navigator.appVersion.indexOf('MSIE') > -1) {
@@ -55,7 +55,7 @@ function INTERMediatorCheckBrowser(deleteNode) {
             judge = (specifiedVersion == versionNum);
         }
     }
-    if (judge == true) {
+    if (judge) {
         if (deleteNode != null) {
             deleteNode.parentNode.removeChild(deleteNode);
         }
@@ -69,7 +69,12 @@ function INTERMediatorCheckBrowser(deleteNode) {
 }
 
 var INTERMediatorLib = {
-    getParentRepeater:function(node) {
+
+    ignoreEnclosureRepeaterClassName:"_im_ignore_enc_rep",
+    rollingRepeaterClassName:"_im_repeater",
+    rollingEnclocureClassName:"_im_enclosure",
+
+    getParentRepeater:function (node) {
         var currentNode = node;
         while (currentNode != null) {
             if (INTERMediatorLib.isRepeater(currentNode, true)) {
@@ -80,7 +85,7 @@ var INTERMediatorLib = {
         return null;
     },
 
-    getParentEnclosure:function(node) {
+    getParentEnclosure:function (node) {
         var currentNode = node;
         while (currentNode != null) {
             if (INTERMediatorLib.isEnclosure(currentNode, true)) {
@@ -91,12 +96,19 @@ var INTERMediatorLib = {
         return null;
     },
 
-    isEnclosure:function(node, nodeOnly) {
+    isEnclosure:function (node, nodeOnly) {
         if (node == null || node.nodeType != 1) return false;
         var tagName = node.tagName;
         var className = INTERMediatorLib.getClassAttributeFromNode(node);
-        if ((tagName == 'TBODY') || (tagName == 'UL') || (tagName == 'OL') || (tagName == 'SELECT')
-            || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null && className.indexOf('_im_enclosure') >= 0)) {
+        if ( className != null && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
+            return false;
+        }
+        if ((tagName == 'TBODY')
+            || (tagName == 'UL')
+            || (tagName == 'OL')
+            || (tagName == 'SELECT')
+            || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null
+                && className.indexOf(INTERMediatorLib.rollingEnclocureClassName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -111,12 +123,18 @@ var INTERMediatorLib = {
         return false;
     },
 
-    isRepeater:function(node, nodeOnly) {
+    isRepeater:function (node, nodeOnly) {
         if (node.nodeType != 1) return false;
         var tagName = node.tagName;
         var className = INTERMediatorLib.getClassAttributeFromNode(node);
-        if ((tagName == 'TR') || (tagName == 'LI') || (tagName == 'OPTION')
-            || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null && className.indexOf('_im_repeater') >= 0)) {
+        if ( className != null && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
+            return false;
+        }
+        if ((tagName == 'TR')
+            || (tagName == 'LI')
+            || (tagName == 'OPTION')
+            || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null
+                && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -148,7 +166,7 @@ var INTERMediatorLib = {
      * Cheking the argument is the Linked Element or not.
      */
 
-    isLinkedElement:function(node) {
+    isLinkedElement:function (node) {
         if (node != null) {
             if (INTERMediator.titleAsLinkInfo) {
                 if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
@@ -173,14 +191,14 @@ var INTERMediatorLib = {
 
     detectedRepeater:null,
 
-    getEnclosureSimple:function(node) {
+    getEnclosureSimple:function (node) {
         if (INTERMediatorLib.isEnclosure(node, true)) {
             return node;
         }
         return INTERMediatorLib.getEnclosureSimple(node.parentNode);
     },
 
-    getEnclosure:function(node) {
+    getEnclosure:function (node) {
 
         var currentNode = node;
         while (currentNode != null) {
@@ -233,7 +251,7 @@ var INTERMediatorLib = {
      * definitions.
      */
 
-    getLinkedElementInfo:function(node) {
+    getLinkedElementInfo:function (node) {
         if (INTERMediatorLib.isLinkedElement(node)) {
             var defs = new Array();
             if (INTERMediator.titleAsLinkInfo) {
@@ -272,7 +290,7 @@ var INTERMediatorLib = {
      * Get the repeater tag from the enclosure tag.
      */
 
-    repeaterTagFromEncTag:function(tag) {
+    repeaterTagFromEncTag:function (tag) {
         if (tag == 'TBODY') return 'TR';
         else if (tag == 'SELECT') return 'OPTION';
         else if (tag == 'UL') return 'LI';
@@ -282,7 +300,7 @@ var INTERMediatorLib = {
         return null;
     },
 
-    getNodeInfoArray:function(nodeInfo) {
+    getNodeInfoArray:function (nodeInfo) {
         var comps = nodeInfo.split(INTERMediator.separator);
         var tableName = '', fieldName = '', targetName = '';
         if (comps.length == 3) {
@@ -304,7 +322,7 @@ var INTERMediatorLib = {
 
     /* As for IE7, DOM element can't have any prototype. */
 
-    getClassAttributeFromNode:function(node) {
+    getClassAttributeFromNode:function (node) {
         if (node == null) return '';
         var str = '';
         if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
@@ -315,7 +333,7 @@ var INTERMediatorLib = {
         return str;
     },
 
-    setClassAttributeToNode:function(node, className) {
+    setClassAttributeToNode:function (node, className) {
         if (node == null) return;
         if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
             node.setAttribute('className', className);
@@ -324,7 +342,7 @@ var INTERMediatorLib = {
         }
     },
 
-    addEvent:function(node, evt, func) {
+    addEvent:function (node, evt, func) {
         if (node.addEventListener) {
             node.addEventListener(evt, func, false);
         } else if (node.attachEvent) {
@@ -332,7 +350,7 @@ var INTERMediatorLib = {
         }
     },
 
-    toNumber:function(str) {
+    toNumber:function (str) {
         var s = '';
         for (var i = 0; i < str.length; i++) {
             var c = str.charAt(i);
@@ -341,7 +359,7 @@ var INTERMediatorLib = {
         return new Number(s);
     },
 
-    numberFormat:function(str) {
+    numberFormat:function (str) {
         var s = new Array();
         var n = new Number(str);
         var sign = '';
@@ -361,7 +379,7 @@ var INTERMediatorLib = {
         return sign + s.reverse().join(',') + f;
     },
 
-    objectToString:function(obj) {
+    objectToString:function (obj) {
         if (obj == null) {
             return "null";
         }
@@ -383,21 +401,21 @@ var INTERMediatorLib = {
         }
     },
 
-    getTargetTableForRetrieve:function(element) {
+    getTargetTableForRetrieve:function (element) {
         if (element['view'] != null) {
             return element['view'];
         }
         return element['name'];
     },
 
-    getTargetTableForUpdate:function(element) {
+    getTargetTableForUpdate:function (element) {
         if (element['table'] != null) {
             return element['table'];
         }
         return element['name'];
     },
 
-    getInsertedString:function(tmpStr, dataArray) {
+    getInsertedString:function (tmpStr, dataArray) {
         var resultStr = tmpStr;
         if (dataArray != null) {
             for (var counter = 1; counter <= dataArray.length; counter++) {
@@ -407,7 +425,7 @@ var INTERMediatorLib = {
         return resultStr;
     },
 
-    getInsertedStringFromErrorNumber:function(errNum, dataArray) {
+    getInsertedStringFromErrorNumber:function (errNum, dataArray) {
         var resultStr = IM_getMessages()[errNum];
         if (dataArray != null) {
             for (var counter = 1; counter <= dataArray.length; counter++) {
@@ -417,7 +435,7 @@ var INTERMediatorLib = {
         return resultStr;
     },
 
-    getNamedObject:function(obj, key, named) {
+    getNamedObject:function (obj, key, named) {
         for (var index in obj) {
             if (obj[index][key] == named) {
                 return obj[index];
@@ -426,7 +444,7 @@ var INTERMediatorLib = {
         return null;
     },
 
-    getNamedObjectInObjectArray:function(ar, key, named) {
+    getNamedObjectInObjectArray:function (ar, key, named) {
         for (var i = 0; i < ar.length; i++) {
             if (ar[i][key] == named) {
                 return ar[i];
@@ -435,7 +453,7 @@ var INTERMediatorLib = {
         return null;
     },
 
-    getNamedValueInObject:function(ar, key, named, retrieveKey) {
+    getNamedValueInObject:function (ar, key, named, retrieveKey) {
         for (var index in ar) {
             if (ar[index][key] == named) {
                 return ar[index][retrieveKey];
@@ -444,7 +462,7 @@ var INTERMediatorLib = {
         return null;
     },
 
-    getRecordsetFromFieldValueObject:function(obj) {
+    getRecordsetFromFieldValueObject:function (obj) {
         var recordset = {};
         for (var index in obj) {
             recordset[ obj[index]['field'] ] = obj[index]['value'];
@@ -452,7 +470,7 @@ var INTERMediatorLib = {
         return recordset;
     },
 
-    getNodePath:function(node) {
+    getNodePath:function (node) {
         var path = '';
         if (node.tagName == null) {
             return '';
@@ -460,13 +478,13 @@ var INTERMediatorLib = {
             return INTERMediatorLib.getNodePath(node.parentNode) + "/" + node.tagName;
         }
     }
-}
+};
 
 var INTERMediatorOnPage = {
     /*
      Seek nodes from the repeater of "fromNode" parameter.
      */
-    getNodeIdFromIMDefinition:function(imDefinition, fromNode) {
+    getNodeIdFromIMDefinition:function (imDefinition, fromNode) {
         var repeaterNode = INTERMediatorLib.getParentRepeater(fromNode);
         return seekNode(repeaterNode, imDefinition);
 
@@ -499,7 +517,7 @@ var INTERMediatorOnPage = {
         }
     },
 
-    getNodeIdsFromIMDefinition:function(imDefinition, fromNode) {
+    getNodeIdsFromIMDefinition:function (imDefinition, fromNode) {
         var enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
         if (enclosureNode != null) {
             var nodeIds = [];
@@ -530,7 +548,7 @@ var INTERMediatorOnPage = {
             return null;
         }
     }
-}
+};
 
 var INTERMediator = {
     /*
@@ -560,6 +578,7 @@ var INTERMediator = {
     ieVersion:-1,
     titleAsLinkInfo:true,
     classAsLinkInfo:true,
+    noRecordClassName:"_im_for_noresult_",
 
     // Remembering Objects
     updateRequiredObject:null,
@@ -591,7 +610,7 @@ var INTERMediator = {
     //=================================
     // Message for Programmers
     //=================================
-    flushMessage:function() {
+    flushMessage:function () {
         if (INTERMediator.errorMessages.length > 0) {
             var debugNode = document.getElementById('easypage_error_panel_4873643897897');
             if (debugNode == null) {
@@ -618,7 +637,7 @@ var INTERMediator = {
                 debugNode.style.backgroundColor = '#DDDDDD';
                 var clearButton = document.createElement('button');
                 clearButton.setAttribute('title', 'clear');
-                INTERMediatorLib.addEvent(clearButton, 'click', function() {
+                INTERMediatorLib.addEvent(clearButton, 'click', function () {
                     var target = document.getElementById('easypage_debug_panel_4873643897897');
                     target.parentNode.removeChild(target);
                 });
@@ -649,98 +668,114 @@ var INTERMediator = {
      valueChange
      Parameters:
      */
-    valueChange:function(idValue) {
+    valueChange:function (idValue) {
         var newValue = null;
         var changedObj = document.getElementById(idValue);
         if (changedObj != null) {
-            var defOption = IM_getOptions();
-            var optionTrans = ( defOption['transaction'] == null ) ? 'automatic' : defOption['transaction'];
-            if ( optionTrans != 'automatic' )   {
+            if (IM_getOptions()['transaction'] == 'none') {
                 INTERMediator.updateRequiredObject[idValue]['edit'] = true;
             } else {
-                // Check the current value of the field
-                var objectSpec = INTERMediator.updateRequiredObject[idValue];
-                var keyingComp = objectSpec['keying'].split('=');
-                var keyingField = keyingComp[0];
-                keyingComp.shift();
-                var keyingValue = keyingComp.join('=');
-                var currentVal = IM_DBAdapter.db_query({
-                    name:objectSpec['name'],
-                    records:1,
-                    paging:objectSpec['paging'],
-                    fields:[objectSpec['field']],
-                    parentkeyvalue:null,
-                    conditions:[
-                        {field:keyingField, operator:'=', value:keyingValue}
-                    ],
-                    useoffset:false});
-                if (currentVal == null || currentVal[0] == null || currentVal[0][objectSpec['field']] == null) {
-                    alert(INTERMediatorLib.getInsertedString(IM_getMessages()[1003], [objectSpec['field']]));
+                INTERMediator.updateDB(idValue);
+                INTERMediator.flushMessage();
+            }
+        }
+    },
+
+    updateDB:function (idValue) {
+        var changedObj = document.getElementById(idValue);
+        if (changedObj != null) {
+            var objectSpec = INTERMediator.updateRequiredObject[idValue];
+            var keyingComp = objectSpec['keying'].split('=');
+            var keyingField = keyingComp[0];
+            keyingComp.shift();
+            var keyingValue = keyingComp.join('=');
+            var currentVal = IM_DBAdapter.db_query({
+                name:objectSpec['name'],
+                records:1,
+                paging:objectSpec['paging'],
+                fields:[objectSpec['field']],
+                parentkeyvalue:null,
+                conditions:[
+                    {field:keyingField, operator:'=', value:keyingValue}
+                ],
+                useoffset:false});
+            if (currentVal.recordset == null || currentVal.recordset[0] == null
+                || currentVal.recordset[0][objectSpec['field']] == null) {
+                alert(INTERMediatorLib.getInsertedString(IM_getMessages()[1003], [objectSpec['field']]));
+                INTERMediator.flushMessage();
+                return;
+            }
+            if (currentVal.count > 1 ) {
+                var response = confirm(IM_getMessages()[1024]);
+                if ( ! response )   {
                     INTERMediator.flushMessage();
                     return;
                 }
-                currentVal = currentVal[0][objectSpec['field']];
-                if (objectSpec['initialvalue'] != currentVal) {
-                    // The value of database and the field is diffrent. Others must be changed this field.
-                    if (!confirm(INTERMediatorLib.getInsertedString(
-                        IM_getMessages()[1001], [objectSpec['initialvalue'], currentVal]))) {
-                        INTERMediator.flushMessage();
-                        return;
-                    }
+            }
+            currentVal = currentVal.recordset[0][objectSpec['field']];
+            if (objectSpec['initialvalue'] != currentVal) {
+                // The value of database and the field is diffrent. Others must be changed this field.
+                if (!confirm(INTERMediatorLib.getInsertedString(
+                    IM_getMessages()[1001], [objectSpec['initialvalue'], currentVal]))) {
+                    INTERMediator.flushMessage();
+                    return;
                 }
+            }
 
-                if (changedObj.tagName == 'TEXTAREA') {
-                    newValue = changedObj.value;
-                } else if (changedObj.tagName == 'SELECT') {
-                    newValue = changedObj.value;
-                } else if (changedObj.tagName == 'INPUT') {
-                    var objType = changedObj.getAttribute('type');
-                    if (objType != null) {
-                        if (objType == 'checkbox') {
-                            var valueAttr = changedObj.getAttribute('value');
-                            if (changedObj.checked) {
-                                newValue = valueAttr;
-                            } else {
-                                newValue = '';
-                            }
-                        } else if (objType == 'radio') {
-                            newValue = changedObj.value;
-                        } else { //text, password
-                            newValue = changedObj.value;
+            if (changedObj.tagName == 'TEXTAREA') {
+                newValue = changedObj.value;
+            } else if (changedObj.tagName == 'SELECT') {
+                newValue = changedObj.value;
+            } else if (changedObj.tagName == 'INPUT') {
+                var objType = changedObj.getAttribute('type');
+                if (objType != null) {
+                    if (objType == 'checkbox') {
+                        var valueAttr = changedObj.getAttribute('value');
+                        if (changedObj.checked) {
+                            newValue = valueAttr;
+                        } else {
+                            newValue = '';
+                        }
+                    } else if (objType == 'radio') {
+                        newValue = changedObj.value;
+                    } else { //text, password
+                        newValue = changedObj.value;
+                    }
+                }
+            }
+            if (newValue != null) {
+                var criteria = objectSpec['keying'].split('=');
+                IM_DBAdapter.db_update({
+                    name:objectSpec['name'],
+                    conditions:[
+                        {field:criteria[0], operator:'=', value:criteria[1]}
+                    ],
+                    dataset:[
+                        {field:objectSpec['field'], value:newValue}
+                    ]});
+                objectSpec['initialvalue'] = newValue;
+                var updateNodeId = objectSpec['updatenodeid'];
+                var needUpdate = false;
+                for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
+                    for (var j = 0; j < INTERMediator.keyFieldObject[i]['target'].length; j++) {
+                        if (INTERMediator.keyFieldObject[i]['target'][j] == idValue) {
+                            needUpdate = true;
                         }
                     }
                 }
-                if (newValue != null) {
-                    var criteria = objectSpec['keying'].split('=');
-                    IM_DBAdapter.db_update({
-                        name:objectSpec['name'],
-                        conditions:[{field:criteria[0], operator:'=', value:criteria[1]}],
-                        dataset:[{field:objectSpec['field'], value:newValue}]});
-                    objectSpec['initialvalue'] = newValue;
-                    var updateNodeId = objectSpec['updatenodeid'];
-                    var needUpdate = false;
+                if (needUpdate) {
                     for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
-                        for (var j = 0; j < INTERMediator.keyFieldObject[i]['target'].length; j++) {
-                            if (INTERMediator.keyFieldObject[i]['target'][j] == idValue) {
-                                needUpdate = true;
-                            }
-                        }
-                    }
-                    if (needUpdate) {
-                        for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
-                            if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodeId) {
-                                INTERMediator.construct(false, i);
-                                break;
-                            }
+                        if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodeId) {
+                            INTERMediator.construct(false, i);
+                            break;
                         }
                     }
                 }
             }
-            INTERMediator.flushMessage();
         }
     },
 
-    deleteButton:function(targetName, keyField, keyValue, removeNodes) {
+    deleteButton:function (targetName, keyField, keyValue, removeNodes) {
         IM_DBAdapter.db_delete({
             name:targetName,
             conditions:[
@@ -754,7 +789,7 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    insertButton:function(targetName, foreignValues, updateNodes, removeNodes) {
+    insertButton:function (targetName, foreignValues, updateNodes, removeNodes) {
         var currentContext = INTERMediatorLib.getNamedObject(IM_getDataSources(), 'name', targetName);
         var recordSet = [];
         if (foreignValues != null) {
@@ -784,7 +819,7 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    insertRecordFromNavi:function(targetName, keyField) {
+    insertRecordFromNavi:function (targetName, keyField) {
         var ds = IM_getDataSources(); // Get DataSource parameters
         var targetKey = '';
         for (var key in ds) { // Search this table from DataSource
@@ -816,7 +851,7 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    deleteRecordFromNavi:function(targetName, keyField, keyValue) {
+    deleteRecordFromNavi:function (targetName, keyField, keyValue) {
         IM_DBAdapter.db_delete({
             name:targetName,
             conditions:[
@@ -830,6 +865,15 @@ var INTERMediator = {
             }
         }
         INTERMediator.construct(true);
+        INTERMediator.flushMessage();
+    },
+
+    saveRecordFromNavi:function () {
+        for( var idValue in INTERMediator.updateRequiredObject )    {
+            if ( INTERMediator.updateRequiredObject[idValue]['edit'] )    {
+                INTERMediator.updateDB(idValue);
+            }
+        }
         INTERMediator.flushMessage();
     },
     /*
@@ -853,7 +897,7 @@ var INTERMediator = {
      *
      * parameter: fromStart: true=construct page, false=construct partially
      */
-    construct:function(fromStart, indexOfKeyFieldObject) {
+    construct:function (fromStart, indexOfKeyFieldObject) {
 
         var currentLevel = 0;
         var linkedNodes;
@@ -1006,10 +1050,6 @@ var INTERMediator = {
          */
 
         function expandEnclosure(node, currentRecord, currentTable, parentEnclosure, parentObjectInfo) {
-            /*    INTERMediator.debugMessages.push( "expandEnclosure("+INTERMediatorLib.getNodePath(node) + "#" +
-             currentTable+"#"+INTERMediatorLib.objectToString(currentRecord)+"#"
-             +(parentEnclosure==null?'null':parentEnclosure.getAttribute('id'))+"#"
-             +INTERMediatorLib.objectToString(parentObjectInfo));*/
             currentLevel++;
             INTERMediator.currentEncNumber++;
             var objectReference = {};
@@ -1083,9 +1123,6 @@ var INTERMediator = {
                     }
                 }
 
-                /*   INTERMediator.debugMessages.push(
-                 "$$$"+node.getAttribute('id')+"#"+
-                 INTERMediatorLib.objectToString(dependObject));*/
                 var thisKeyFieldObject = {
                     'node':node,
                     'name':currentContext['name'] /*currentTable */,
@@ -1109,11 +1146,25 @@ var INTERMediator = {
                     conditions:null,
                     useoffset:true});
 
+                if (targetRecords.count == 0) {
+                    for (var i = 0; i < repeaters.length; i++) {
+                        var newNode = repeaters[i].cloneNode(true);
+                        var nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
+                        if ( nodeClass == INTERMediator.noRecordClassName ){
+                            node.appendChild(newNode);
+                            if (newNode.getAttribute('id') == null) {
+                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+                                newNode.setAttribute('id', idValue);
+                                linkedElmCounter++;
+                            }
+                        }
+                    }
+                }
+
                 var RecordCounter = 0;
                 var eventListenerPostAdding = [];
-
                 // var currentEncNumber = currentLevel;
-                for (var ix in targetRecords) { // for each record
+                for (var ix in targetRecords.recordset ) { // for each record
                     RecordCounter++;
 
                     var shouldDeleteNodes = [];
@@ -1134,7 +1185,7 @@ var INTERMediator = {
                     }
                     var currentLinkedNodes = linkedNodes; // Store in the local variable
                     var keyField = currentContext['key'];
-                    var keyValue = targetRecords[ix][currentContext['key']];
+                    var keyValue = targetRecords.recordset[ix][currentContext['key']];
                     var keyingValue = keyField + "=" + keyValue;
 
                     for (var k = 0; k < currentLinkedNodes.length; k++) {
@@ -1173,7 +1224,7 @@ var INTERMediator = {
                             // for each info Multiple replacement definitions
                             // for one node is prohibited.
                             var nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
-                            var curVal = targetRecords[ix][nInfo['field']];
+                            var curVal = targetRecords.recordset[ix][nInfo['field']];
                             if (curVal == null) {
                                 curVal = '';
                             }
@@ -1200,8 +1251,9 @@ var INTERMediator = {
                         }
                     }
 
+                    // Handling Delete buttons
                     if (currentContext['repeat-control'] != null && currentContext['repeat-control'].match(/delete/i)) {
-                        if (currentContext['relation'] != null) {
+                        if ( currentContext['relation'] != null || currentContext['records'] > 1) {
                             var buttonNode = document.createElement('BUTTON');
                             buttonNode.appendChild(document.createTextNode(IM_getMessages()[6]));
                             var thisId = 'IM_Button_' + buttonIdNum;
@@ -1249,13 +1301,16 @@ var INTERMediator = {
 
                     for (var i = 0; i < repeaters.length; i++) {
                         var newNode = repeaters[i].cloneNode(true);
-                        node.appendChild(newNode);
-                        if (newNode.getAttribute('id') == null) {
-                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-                            newNode.setAttribute('id', idValue);
-                            linkedElmCounter++;
+                        var nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
+                        if ( nodeClass != INTERMediator.noRecordClassName ){
+                            node.appendChild(newNode);
+                            if (newNode.getAttribute('id') == null) {
+                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+                                newNode.setAttribute('id', idValue);
+                                linkedElmCounter++;
+                            }
+                            seekEnclosureNode(newNode, targetRecords.recordset[ix], currentContext['name'], node, objectReference);
                         }
-                        seekEnclosureNode(newNode, targetRecords[ix], currentContext['name'], node, objectReference);
                     }
 
                     // Event listener should add after adding node to document.
@@ -1296,14 +1351,14 @@ var INTERMediator = {
                             case 'UL':
                             case 'OL':
                                 var liNode = document.createElement('LI');
-                                liNode.appendChild(buttonNode)
+                                liNode.appendChild(buttonNode);
                                 node.appendChild(liNode);
                                 break;
                             case 'DIV':
                             case 'SPAN':
                                 if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                                     var divNode = document.createElement(repNodeTag);
-                                    divNode.appendChild(buttonNode)
+                                    divNode.appendChild(buttonNode);
                                     node.appendChild(liNode);
                                 }
                                 break;
@@ -1493,6 +1548,7 @@ var INTERMediator = {
         function navigationSetup() {
             var navigation = document.getElementById('IM_NAVIGATOR');
             if (navigation != null) {
+                var sq = "'", comma = ',';
 
                 var insideNav = navigation.childNodes;
                 for (var i = 0; i < insideNav.length; i++) {
@@ -1504,9 +1560,9 @@ var INTERMediator = {
 
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
-                node.appendChild(document.createTextNode(navLabel == null ? IM_getMessages()[2] : navLabel[8]));
+                node.appendChild(document.createTextNode((navLabel == null ? IM_getMessages()[2] : navLabel[8])));
                 node.setAttribute('class', 'IM_NAV_button');
-                INTERMediatorLib.addEvent(node, 'click', function() {
+                INTERMediatorLib.addEvent(node, 'click', function () {
                     location.reload();
                 });
 
@@ -1527,7 +1583,7 @@ var INTERMediator = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(navLabel == null ? '<<' : navLabel[0]));
                 node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
-                INTERMediatorLib.addEvent(node, 'click', function() {
+                INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator.startFrom = 0;
                     INTERMediator.construct(true);
                 });
@@ -1537,7 +1593,7 @@ var INTERMediator = {
                 node.appendChild(document.createTextNode(navLabel == null ? '<' : navLabel[1]));
                 node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
                 var prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
-                INTERMediatorLib.addEvent(node, 'click', function() {
+                INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator.startFrom = prevPageCount;
                     INTERMediator.construct(true);
                 });
@@ -1548,7 +1604,7 @@ var INTERMediator = {
                 node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
                 var nextPageCount
                     = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
-                INTERMediatorLib.addEvent(node, 'click', function() {
+                INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator.startFrom = nextPageCount;
                     INTERMediator.construct(true);
                 });
@@ -1558,7 +1614,7 @@ var INTERMediator = {
                 node.appendChild(document.createTextNode(navLabel == null ? '>>' : navLabel[3]));
                 node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
                 var endPageCount = allCount - pageSize;
-                INTERMediatorLib.addEvent(node, 'click', function() {
+                INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
                     INTERMediator.construct(true);
                 });
@@ -1572,8 +1628,9 @@ var INTERMediator = {
                                 document.createTextNode(IM_getMessages()[3] + ': ' + deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
                             INTERMediatorLib.addEvent(node, 'click',
-                                new Function("INTERMediator.insertRecordFromNavi(" + "'" + deleteInsertOnNavi[i]['name']
-                                    + "'," + "'" + deleteInsertOnNavi[i]['key'] + "'" + ");"));
+                                new Function("INTERMediator.insertRecordFromNavi("
+                                    + sq + deleteInsertOnNavi[i]['name'] + sq + comma
+                                    + sq + deleteInsertOnNavi[i]['key'] + sq + ");"));
                             break;
                         case 'DELETE':
                             node = document.createElement('SPAN');
@@ -1582,11 +1639,20 @@ var INTERMediator = {
                                 document.createTextNode(IM_getMessages()[4] + ': ' + deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
                             INTERMediatorLib.addEvent(node, 'click',
-                                new Function("INTERMediator.deleteRecordFromNavi(" + "'" + deleteInsertOnNavi[i]['name']
-                                    + "'," + "'" + deleteInsertOnNavi[i]['key'] + "',"
-                                    + "'" + deleteInsertOnNavi[i]['value'] + "'" + ");"));
+                                new Function("INTERMediator.deleteRecordFromNavi("
+                                    + sq + deleteInsertOnNavi[i]['name'] + sq + comma
+                                    + sq + deleteInsertOnNavi[i]['key'] + sq + comma
+                                    + sq + deleteInsertOnNavi[i]['value'] + sq + ");"));
                             break;
                     }
+                }
+                if (IM_getOptions()['transaction'] == 'none') {
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(IM_getMessages()[7]));
+                    node.setAttribute('class', 'IM_NAV_button');
+                    INTERMediatorLib.addEvent(node, 'click',
+                        new Function("INTERMediator.saveRecordFromNavi();"));
                 }
             }
         }
@@ -1653,4 +1719,4 @@ var INTERMediator = {
             }
         }
     }
-}
+};

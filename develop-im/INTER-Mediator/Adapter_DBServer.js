@@ -23,7 +23,7 @@ var IM_DBAdapter = {
 
      This function returns recordset of retrieved.
      */
-    db_query:function(args) {
+    db_query:function (args) {
         var noError = true;
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
@@ -86,6 +86,8 @@ var IM_DBAdapter = {
 
         INTERMediator.debugMessages.push(IM_getMessages()[1012] + decodeURI(appPath + params));
         var dbresult = '';
+        var resultCount = 0;
+        var returnValue = {};
         myRequest = new XMLHttpRequest();
         try {
             myRequest.open('GET', appPath + params, false);
@@ -95,12 +97,17 @@ var IM_DBAdapter = {
                 INTERMediator.pagedSize = args['records'];
                 INTERMediator.pagedAllCount = resultCount;
             }
-
+            returnValue.recordset = dbresult;
+            returnValue.totalCount = resultCount;
+            returnValue.count = 0;
+            for( var ix in dbresult )   {
+                returnValue.count++;
+            }
         } catch (e) {
             INTERMediator.errorMessages.push(
                 INTERMediatorLib.getInsertedString(IM_getMessages()[1004], [e, myRequest.responseText]));
         }
-        return dbresult;
+        return returnValue;
     },
 
     /*
@@ -111,7 +118,7 @@ var IM_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
-    db_update:function(args) {
+    db_update:function (args) {
         var noError = true;
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
@@ -166,7 +173,7 @@ var IM_DBAdapter = {
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
-    db_delete:function(args) {
+    db_delete:function (args) {
         var noError = true;
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
@@ -210,7 +217,7 @@ var IM_DBAdapter = {
 
      This function returns the value of the key field of the new record.
      */
-    db_createRecord:function(args) {
+    db_createRecord:function (args) {
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return;
@@ -237,4 +244,4 @@ var IM_DBAdapter = {
         return newRecordKeyValue;
     }
 
-}
+};

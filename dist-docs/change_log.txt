@@ -10,23 +10,22 @@ To Do, that is left-over. Or Plan
 =================================
 
 Toward Ver.1.1
-- Ignoring enclosure/repeater for table or list. It could add any kind of class name.
 - Now debug mode is just two state, but it could be multi-level settings.
-- Set validation rules.
 - Built-in Authentication/Authorization framework.
-- Store NULL for empty string.
-- Multiple values within one field. (It may be required for FileMaker especially.)
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
 - Supports HTML5's datalist tag elements
-- Transaction Support (updating=auto-save/transaction/none)
-- Upgrading Criteria (Where clause) generation for FileMaker Server and JS additionalCriteria props.
+- Set validation rules.
 
 Toward Ver.1.2
 - Objective handling for the data in database.
+- Server side processing with Ruby on Rails.
 - Single query can retrieve main and related tables simultaneously.
 - Caching the result of queries.
 - Aspect programming into some call-back function and Data Access class.
 - FileMaker's Find style database search.
+- Transaction Support (updating=transaction)
+- Store NULL for empty string.
+- Multiple values within one field. (It may be required for FileMaker especially.)
 
 Toward Ver.1.3
 - HTML5's local database supporting.
@@ -53,6 +52,13 @@ Change Log
 Ver.1.0.2 === will be next release
 - PDO data access class can specify OR condition from JS program.
 - Bug fix for conditions.
+- 'transaction' =>'none' is supported. If it's specified, "Save" button will be appear in the navigation.
+  This option causes batch saving. The field data will not be sent without clicking "Save" button.
+- The return value of the db_query function is modified.
+- Support the repeater nodes for 0 record is returned.
+  The repeater node having the "_im_for_noresult" class is used for that.
+- Ignoring enclosure/repeater for table or list. It could do by adding the class "_im_ignore_enc_rep".
+
 
 Ver.1.0.1 (2011/11/19)
 - Fix the issue to erase "Return" in text on FileMaker Server.

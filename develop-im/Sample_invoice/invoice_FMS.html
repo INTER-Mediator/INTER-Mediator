@@ -17,14 +17,14 @@
     <script src="include_FMS.php"></script>
     <script type="text/javascript">
 
-        INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
-            if ( name == 'item' )   {
+        INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
+            if (name == 'item') {
                 modLine(target);
             }
-            if ( name == 'invoice' )   {
-                calcTotal( target );
+            if (name == 'invoice') {
+                calcTotal(target);
             }
-        }
+        };
 
         function modLine(target)	{
             if(target==null)    {

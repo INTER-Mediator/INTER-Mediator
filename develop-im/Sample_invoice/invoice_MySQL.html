@@ -17,18 +17,18 @@
     <script src="include_MySQL.php"></script>
     <script type="text/javascript">
 
-        INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
-            if ( name == 'items' )   {
-            //    modLine(target);
+        INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
+            if (name == 'items') {
+                //    modLine(target);
             }
-            if ( name == 'invoice' )   {
-                calcTotal( target );
+            if (name == 'invoice') {
+                calcTotal(target);
             }
-        }
+        };
 
-        INTERMediatorOnPage.expandingRecordFinish = function(name,repeaters) {
-        //    alert(repeaters[0].tagName);
-        }
+        INTERMediatorOnPage.expandingRecordFinish = function (name, repeaters) {
+            //    alert(repeaters[0].tagName);
+        };
 
         function modLine(target)	{
             if(target==null)    {

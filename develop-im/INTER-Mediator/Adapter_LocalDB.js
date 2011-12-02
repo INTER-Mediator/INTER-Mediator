@@ -30,7 +30,7 @@ var IM_DBAdapter = {
 
      This function returns recordset of retrieved.
      */
-    db_query:function(args) {
+    db_query:function (args) {
         alert('The IM_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
     },
 
@@ -42,7 +42,7 @@ var IM_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
-    db_update:function(args) {
+    db_update:function (args) {
         alert('The IM_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
     },
 
@@ -53,7 +53,7 @@ var IM_DBAdapter = {
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
-    db_delete:function(args) {
+    db_delete:function (args) {
         alert('The IM_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
     },
 
@@ -66,9 +66,9 @@ var IM_DBAdapter = {
 
      This function returns the value of the key field of the new record.
      */
-    db_createRecord:function(args) {
+    db_createRecord:function (args) {
         alert('The IM_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
     }
 
-}
+};
 

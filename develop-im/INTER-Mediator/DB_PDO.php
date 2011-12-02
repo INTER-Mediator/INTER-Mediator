@@ -29,14 +29,15 @@ class DB_PDO extends DB_Base
     /*
      * Generate SQL style WHERE clause.
      */
-    function getWhereClause()
+    function getWhereClause($includeContext = true, $includeExtra = true)
     {
         $tableInfo = $this->getDataSourceTargetArray();
         $queryClause = '';
 
         $queryClauseArray = array();
-        if (isset($tableInfo['query'][0])) {
+        if ($includeContext && isset($tableInfo['query'][0])) {
             $chunkCount = 0;
+            $oneClause = array();
             $insideOp = ' AND ';
             $outsideOp = ' OR ';
             foreach ($tableInfo['query'] as $condition) {
@@ -60,7 +61,6 @@ class DB_PDO extends DB_Base
                         $queryClauseArray[$chunkCount][]
                             = "{$condition['field']} {$condition['operator']}";
                     }
-                //    $chunkCount++;
                 }
             }
             foreach ($queryClauseArray as $oneTerm) {
@@ -70,8 +70,9 @@ class DB_PDO extends DB_Base
         }
 
         $queryClauseArray = array();
-        if (isset($this->extraCriteria[0])) {
+        if ($includeExtra && isset($this->extraCriteria[0])) {
             $chunkCount = 0;
+            $oneClause = array();
             $insideOp = ' AND ';
             $outsideOp = ' OR ';
             foreach ($this->extraCriteria as $condition) {
@@ -95,7 +96,6 @@ class DB_PDO extends DB_Base
                         $queryClauseArray[$chunkCount][]
                             = "{$condition['field']} {$condition['operator']}";
                     }
-                //    $chunkCount++;
                 }
             }
             foreach ($queryClauseArray as $oneTerm) {
@@ -105,20 +105,6 @@ class DB_PDO extends DB_Base
                 . '(' . implode($outsideOp, $oneClause) . ')';
         }
 
- /*
-        foreach ($this->extraCriteria as $criteria) {
-            $field = $criteria['field'];
-            $operator = isset($criteria['operator']) ? $criteria['operator'] : '=';
-            $escapedValue = $this->link->quote($criteria['value']);
-            $queryClauseArray[] = "({$field} {$operator} {$escapedValue})";
-        }
-        if (count($queryClauseArray) > 0) {
-            if ($queryClause != '') {
-                $queryClauseArray[] = $queryClause;
-            }
-            $queryClause = implode(' AND ', $queryClauseArray);
-        }
- */
         if (count($this->foreignFieldAndValue) > 0) {
             foreach ($this->foreignFieldAndValue as $foreignDef) {
                 foreach ($tableInfo['relation'] as $relDef) {
@@ -192,7 +178,7 @@ class DB_PDO extends DB_Base
 
         $viewOrTableName = isset($tableInfo['view']) ? $tableInfo['view'] : $tableName;
 
-        $queryClause = $this->getWhereClause();
+        $queryClause = $this->getWhereClause(false, true);
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
@@ -206,7 +192,7 @@ class DB_PDO extends DB_Base
         if ($this->isDebug) $this->debugMessage[] = $sql;
         $result = $this->link->query($sql);
         if ($result === false) {
-            $this->errorMessageStore('Select:' + $sql);
+            $this->errorMessageStore('Select:' . $sql);
             return array();
         }
         $this->mainTableCount = $result->fetchColumn(0);
@@ -230,7 +216,7 @@ class DB_PDO extends DB_Base
         // Query
         $result = $this->link->query($sql);
         if ($result === false) {
-            $this->errorMessageStore('Select:' + $sql);
+            $this->errorMessageStore('Select:' . $sql);
             return array();
         }
         $this->sqlResult = array();
@@ -252,7 +238,7 @@ class DB_PDO extends DB_Base
                         if ($this->isDebug) $this->debugMessage[] = $sql;
                         $result = $this->link->query($sql);
                         if ($result === false) {
-                            $this->errorMessageStore('Post-script:' + $sql);
+                            $this->errorMessageStore('Post-script:' . $sql);
                             ;
                         }
                     }
@@ -284,14 +270,14 @@ class DB_PDO extends DB_Base
                     }
                     $result = $this->link->query($sql);
                     if (!$result) {
-                        $this->errorMessageStore('Pre-script:' + $sql);
+                        $this->errorMessageStore('Pre-script:' . $sql);
                         return false;
                     }
                 }
             }
         }
 
-        $setCaluse = array();
+        $setClause = array();
         $setParameter = array();
         $counter = 0;
         foreach ($this->fieldsRequired as $field) {
@@ -300,20 +286,20 @@ class DB_PDO extends DB_Base
             $convVal = (is_array($value)) ? implode("\n", $value) : $value;
             $convVal = $this->formatterToDB($field, $convVal);
             //    $convVal = $this->link->quote( $this->formatterToDB( $field, $convVal ));
-            $setCaluse[] = "{$field}=?";
+            $setClause[] = "{$field}=?";
             $setParameter[] = $convVal;
         }
-        if (count($setCaluse) < 1) {
+        if (count($setClause) < 1) {
             $this->errorMessage[] = 'No data to update.';
             return false;
         }
-        $setCaluse = implode(',', $setCaluse);
+        $setClause = implode(',', $setClause);
 
-        $queryClause = $this->getWhereClause();
+        $queryClause = $this->getWhereClause(false,true);
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
-        $sql = "UPDATE {$tableName} SET {$setCaluse} {$queryClause}";
+        $sql = "UPDATE {$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
         if ($this->isDebug) {
             $this->debugMessage[] = $prepSQL->queryString;
@@ -332,7 +318,7 @@ class DB_PDO extends DB_Base
                     if ($this->isDebug) $this->debugMessage[] = $sql;
                     $result = $this->link->query($sql);
                     if (!$result) {
-                        $this->errorMessageStore('Post-script:' + $sql);
+                        $this->errorMessageStore('Post-script:' . $sql);
                         return false;
                     }
                 }
@@ -365,14 +351,14 @@ class DB_PDO extends DB_Base
                     }
                     $result = $this->link->query($sql);
                     if (!$result) {
-                        $this->errorMessageStore('Pre-script:' + $sql);
+                        $this->errorMessageStore('Pre-script:' . $sql);
                         return false;
                     }
                 }
             }
         }
 
-        $setCaluse = array();
+        $setClause = array();
         $countFields = count($this->fieldsRequired);
         for ($i = 0; $i < $countFields; $i++) {
             $field = $this->fieldsRequired[$i];
@@ -380,17 +366,17 @@ class DB_PDO extends DB_Base
             $filedInForm = "{$tableName}{$this->separator}{$field}";
             $convVal = (is_array($value)) ? implode("\n", $value) : $value;
             $convVal = $this->link->quote($this->formatterToDB($filedInForm, $convVal));
-            $setCaluse[] = "{$field}={$convVal}";
+            $setClause[] = "{$field}={$convVal}";
         }
-        $setCaluse = (count($setCaluse) == 0) ? "{$tableInfo['key']}=DEFAULT"
-            : implode(',', $setCaluse);
-        $sql = "INSERT {$tableName} SET {$setCaluse}";
+        $setClause = (count($setClause) == 0) ? "{$tableInfo['key']}=DEFAULT"
+            : implode(',', $setClause);
+        $sql = "INSERT {$tableName} SET {$setClause}";
         if ($this->isDebug) {
             $this->debugMessage[] = $sql;
         }
         $result = $this->link->query($sql);
         if ($result === false) {
-            $this->errorMessageStore('Insert:' + $sql);
+            $this->errorMessageStore('Insert:' . $sql);
             return false;
         }
         $lastKeyValue = $this->link->lastInsertId($tableInfo['key']);
@@ -404,7 +390,7 @@ class DB_PDO extends DB_Base
                     }
                     $result = $this->link->query($sql);
                     if (!$result) {
-                        $this->errorMessageStore('Post-script:' + $sql);
+                        $this->errorMessageStore('Post-script:' . $sql);
                         return false;
                     }
                 }
@@ -438,13 +424,13 @@ class DB_PDO extends DB_Base
                     }
                     $result = $this->link->query($sql);
                     if (!$result) {
-                        $this->errorMessageStore('Pre-script:' + $sql);
+                        $this->errorMessageStore('Pre-script:' . $sql);
                         return false;
                     }
                 }
             }
         }
-        $queryClause = $this->getWhereClause();
+        $queryClause = $this->getWhereClause(false,true);
         if ($queryClause == '') {
             $this->errorMessageStore('Don\'t delete with no ciriteria.');
             return false;
@@ -455,7 +441,7 @@ class DB_PDO extends DB_Base
         }
         $result = $this->link->query($sql);
         if (!$result) {
-            $this->errorMessageStore('Delete Error:' + $sql);
+            $this->errorMessageStore('Delete Error:' . $sql);
             return false;
         }
 
@@ -468,7 +454,7 @@ class DB_PDO extends DB_Base
                     }
                     $result = $this->link->query($sql);
                     if (!$result) {
-                        $this->errorMessageStore('Post-script:' + $sql);
+                        $this->errorMessageStore('Post-script:' . $sql);
                         return false;
                     }
                 }

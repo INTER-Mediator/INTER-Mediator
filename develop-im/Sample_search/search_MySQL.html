@@ -50,17 +50,13 @@
 <div>
     地名(Place Name):
     <input type="text" id="place" value="落合" onkeydown="if(event.keyCode==13){doSearchFromTown('f3','ASC')}"/>
-    <button onclick="doSearchFromTown('f3','ASC')">
-        Search
-    </button>
+    <button onclick="doSearchFromTown('f3','ASC')">Search</button>
     検索は住所の「町域名」に一部分でも含まれる文字列を検索します。
 </div>
 <div>
     郵便番号(Zipcode):
     <input type="text" id="zipcode" value="123" onkeydown="if(event.keyCode==13){doSearchFromZipcode('f3','ASC')}" />
-    <button onclick="doSearchFromZipcode('f3','ASC')">
-        search
-    </button>
+    <button onclick="doSearchFromZipcode('f3','ASC')">search</button>
     郵便番号を前方一致で検索します。
 </div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
@@ -85,6 +81,9 @@
 		<td><div class="IM[postalcode@f7]"></div></td>
 		<td><div class="IM[postalcode@f8]"></div></td>
 		<td><div class="IM[postalcode@f9]"></div></td>
+	</tr>
+    <tr class="_im_for_noresult_">
+		<td colspan="4">検索結果はありません。あるいは検索前です。</td>
 	</tr>
 	</tbody>
 </table>
