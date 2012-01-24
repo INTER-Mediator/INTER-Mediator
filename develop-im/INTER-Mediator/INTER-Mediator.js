@@ -359,16 +359,16 @@ var INTERMediatorLib = {
         return new Number(s);
     },
 
-    numberFormat:function (str) {
+    numberFormat:function (str, digit) {
         var s = new Array();
-        var n = new Number(str);
+        var n = INTERMediatorLib.toNumber(str);
         var sign = '';
         if (n < 0) {
             sign = '-';
             n = -n;
         }
         var f = n - Math.floor(n);
-        if (f == 0) f = '';
+    //    if (f == 0) f = '';
         for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
             if (n > 1000) {
                 s.push(('000' + (n % 1000).toString()).substr(-3));
@@ -376,7 +376,8 @@ var INTERMediatorLib = {
                 s.push(n);
             }
         }
-        return sign + s.reverse().join(',') + f;
+        var underDot = digit == null ? 0 : INTERMediatorLib.toNumber(digit);
+        return sign + s.reverse().join(',') + (underDot == 0 ? '' : Math.floor( f * 10 ^ underDot ));
     },
 
     objectToString:function (obj) {
@@ -713,14 +714,6 @@ var INTERMediator = {
                 }
             }
             currentVal = currentVal.recordset[0][objectSpec['field']];
-            if (objectSpec['initialvalue'] != currentVal) {
-                // The value of database and the field is diffrent. Others must be changed this field.
-                if (!confirm(INTERMediatorLib.getInsertedString(
-                    IM_getMessages()[1001], [objectSpec['initialvalue'], currentVal]))) {
-                    INTERMediator.flushMessage();
-                    return;
-                }
-            }
 
             if (changedObj.tagName == 'TEXTAREA') {
                 newValue = changedObj.value;
@@ -743,6 +736,16 @@ var INTERMediator = {
                     }
                 }
             }
+
+            if (objectSpec['initialvalue'] != currentVal) {
+                // The value of database and the field is diffrent. Others must be changed this field.
+                if (!confirm(INTERMediatorLib.getInsertedString(
+                    IM_getMessages()[1001], [objectSpec['initialvalue'], newValue, currentVal]))) {
+                    INTERMediator.flushMessage();
+                    return;
+                }
+            }
+
             if (newValue != null) {
                 var criteria = objectSpec['keying'].split('=');
                 IM_DBAdapter.db_update({
@@ -775,7 +778,12 @@ var INTERMediator = {
         }
     },
 
-    deleteButton:function (targetName, keyField, keyValue, removeNodes) {
+    deleteButton:function (targetName, keyField, keyValue, removeNodes, isConfirm) {
+        if ( isConfirm )    {
+            if ( ! confirm(IM_getMessages()[1025]) )  {
+                return;
+            }
+        }
         IM_DBAdapter.db_delete({
             name:targetName,
             conditions:[
@@ -789,7 +797,12 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    insertButton:function (targetName, foreignValues, updateNodes, removeNodes) {
+    insertButton:function (targetName, foreignValues, updateNodes, removeNodes, isConfirm) {
+        if ( isConfirm )    {
+            if ( ! confirm(IM_getMessages()[1026]) )  {
+                return;
+            }
+        }
         var currentContext = INTERMediatorLib.getNamedObject(IM_getDataSources(), 'name', targetName);
         var recordSet = [];
         if (foreignValues != null) {
@@ -819,7 +832,12 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    insertRecordFromNavi:function (targetName, keyField) {
+    insertRecordFromNavi:function (targetName, keyField, isConfirm) {
+        if ( isConfirm )    {
+            if ( ! confirm(IM_getMessages()[1025]) )  {
+                return;
+            }
+        }
         var ds = IM_getDataSources(); // Get DataSource parameters
         var targetKey = '';
         for (var key in ds) { // Search this table from DataSource
@@ -851,7 +869,12 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    deleteRecordFromNavi:function (targetName, keyField, keyValue) {
+    deleteRecordFromNavi:function (targetName, keyField, keyValue, isConfirm) {
+        if ( isConfirm )    {
+            if ( ! confirm(IM_getMessages()[1026]) )  {
+                return;
+            }
+        }
         IM_DBAdapter.db_delete({
             name:targetName,
             conditions:[
@@ -1259,13 +1282,15 @@ var INTERMediator = {
                             var thisId = 'IM_Button_' + buttonIdNum;
                             buttonNode.setAttribute('id', thisId);
                             buttonIdNum++;
+                            var deleteJSScript = "INTERMediator.deleteButton(" + "'"
+                                + currentContext['name']
+                                + "'," + "'" + keyField + "'," + "'" + keyValue + "',"
+                                + INTERMediatorLib.objectToString(shouldDeleteNodes) +  ","
+                                + (currentContext['repeat-control'].match(/confirm-delete/i) ? "true" : "false") + ");";
                             eventListenerPostAdding.push({
                                 'id':thisId,
                                 'event':'click',
-                                'todo':new Function("INTERMediator.deleteButton(" + "'"
-                                    + currentContext['name']
-                                    + "'," + "'" + keyField + "'," + "'" + keyValue + "',"
-                                    + INTERMediatorLib.objectToString(shouldDeleteNodes) + ");")
+                                'todo':new Function(deleteJSScript)
                             });
                             var endOfRepeaters = repeaters[repeaters.length - 1];
                             switch (encNodeTag) {
@@ -1290,7 +1315,8 @@ var INTERMediator = {
                                 kind:'DELETE',
                                 name:currentContext['name'],
                                 key:keyField,
-                                value:keyValue
+                                value:keyValue,
+                                confirm:currentContext['repeat-control'].match(/confirm-delete/i) ? true : false
                             });
                         }
                     }
@@ -1367,7 +1393,8 @@ var INTERMediator = {
                             + "'" + currentContext['name'] + "',"
                             + (retationValue == null ? 'null' : INTERMediatorLib.objectToString(retationValue)) + ","
                             + "'" + node.getAttribute('id') + "',"
-                            + (shouldRemove == null ? 'null' : INTERMediatorLib.objectToString(shouldRemove)) + ");"
+                            + (shouldRemove == null ? 'null' : INTERMediatorLib.objectToString(shouldRemove)) + ","
+                            + (currentContext['repeat-control'].match(/confirm-insert/i) ? "true" : "false") + ");";
                         INTERMediatorLib.addEvent(buttonNode, 'click', new Function(insertJSScript));
                         //    INTERMediator.debugMessages.push(
                         //        "insertJSScript:"+INTERMediatorLib.objectToString(insertJSScript) );
@@ -1375,7 +1402,8 @@ var INTERMediator = {
                         deleteInsertOnNavi.push({
                             kind:'INSERT',
                             name:currentContext['name'],
-                            key:currentContext['key']
+                            key:currentContext['key'],
+                            confirm:currentContext['repeat-control'].match(/confirm-insert/i) ? true : false
                         });
                     }
                 }
@@ -1630,7 +1658,8 @@ var INTERMediator = {
                             INTERMediatorLib.addEvent(node, 'click',
                                 new Function("INTERMediator.insertRecordFromNavi("
                                     + sq + deleteInsertOnNavi[i]['name'] + sq + comma
-                                    + sq + deleteInsertOnNavi[i]['key'] + sq + ");"));
+                                    + sq + deleteInsertOnNavi[i]['key'] + sq + comma
+                                    + (deleteInsertOnNavi[i]['confirm'] ? "true" : "false") + ");"));
                             break;
                         case 'DELETE':
                             node = document.createElement('SPAN');
@@ -1642,7 +1671,8 @@ var INTERMediator = {
                                 new Function("INTERMediator.deleteRecordFromNavi("
                                     + sq + deleteInsertOnNavi[i]['name'] + sq + comma
                                     + sq + deleteInsertOnNavi[i]['key'] + sq + comma
-                                    + sq + deleteInsertOnNavi[i]['value'] + sq + ");"));
+                                    + sq + deleteInsertOnNavi[i]['value'] + sq + comma
+                                    + (deleteInsertOnNavi[i]['confirm'] ? "true" : "false") + ");"));
                             break;
                     }
                 }

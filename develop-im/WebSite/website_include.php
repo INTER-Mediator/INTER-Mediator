@@ -79,12 +79,12 @@ $optionDefs= array(
 
 $dbDefs = array(
     'db-class' => 'WebSite_FMSFX',
-    'server' => 'msyk.net',
+    'server' => 'server.msyk.net',
     'database' => 'WebSite',
     'user' => 'web',
     'password' => 'webpassword',
-    'port' => '80',
-    'protocol' => 'HTTP',
+    'port' => '443',
+    'protocol' => 'HTTPS',
     'datatype' => 'FMPro7'
 );
 

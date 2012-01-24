@@ -10,8 +10,14 @@
 
 require_once('DB_Base.php');
 
-class DB_PDO extends DB_Base
+class DB_PDO extends DB_Base implements DB_Interface
 {
+
+    function authSupportStoreChallenge($username, $challenge)   {}
+    function authSupportRetrieveChallenge($username)    {}
+    function authSupportRetrieveHashedPassword($username)   {}
+    function authSupportCreateUser($username, $hashedpassword)  {}
+    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)   {}
 
     var $sqlResult = array();
     var $link = null;

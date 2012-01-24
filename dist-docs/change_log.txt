@@ -15,6 +15,10 @@ Toward Ver.1.1
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
 - Supports HTML5's datalist tag elements
 - Set validation rules.
+- Showing as the alert box when any errors occurred ??
+- Popup menu's default value; if there isn't the value of them, set first one.
+- DIV._im_multivalue: Set muliti-line values to one field within the div element.
+- [BUG] Radio buttons shows the message of another was updated in spite of it's not true.
 
 Toward Ver.1.2
 - Objective handling for the data in database.
@@ -49,7 +53,15 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.1.0.2 === will be next release
+Ver.1.0.4 === will be next release.
+
+Ver.1.0.3 (2012/1/25)
+- DB_FileMaker_FX.php's warning is fixed.
+- INTERMEdiatorLib.numberFormat(str,digit) support the "digit" parameter to specify how many digits after period.
+- The message in case of someone modify the field after loading is updated clearer.
+- Confirming before insert/delete records. 'repeat-control' => 'confirm-delete comfirm-insert' are supported.
+
+Ver.1.0.2 (2011/12/4)
 - PDO data access class can specify OR condition from JS program.
 - Bug fix for conditions.
 - 'transaction' =>'none' is supported. If it's specified, "Save" button will be appear in the navigation.
@@ -58,7 +70,6 @@ Ver.1.0.2 === will be next release
 - Support the repeater nodes for 0 record is returned.
   The repeater node having the "_im_for_noresult" class is used for that.
 - Ignoring enclosure/repeater for table or list. It could do by adding the class "_im_ignore_enc_rep".
-
 
 Ver.1.0.1 (2011/11/19)
 - Fix the issue to erase "Return" in text on FileMaker Server.

@@ -57,8 +57,14 @@ function dateArrayFromFMDate($d)
     );
 }
 
-class DB_FileMaker_FX extends DB_Base
+class DB_FileMaker_FX extends DB_Base implements DB_Interface
 {
+    function authSupportStoreChallenge($username, $challenge)   {}
+    function authSupportRetrieveChallenge($username)    {}
+    function authSupportRetrieveHashedPassword($username)   {}
+    function authSupportCreateUser($username, $hashedpassword)  {}
+    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)   {}
+
     function stringReturnOnly($str)    {
             return str_replace("\n\r", "\r",
                 str_replace("\n", "\r", $str));
@@ -164,8 +170,8 @@ class DB_FileMaker_FX extends DB_Base
         }
         $fxResult = $fx->DoFxAction(FX_ACTION_FIND, TRUE, TRUE, 'full');
         //var_dump($fxResult);
-        if ( get_class($fxResult) == "FX_Error" )   {
-            $this->errorMessage[] = "FX_Error: " . $fxResult->getDebugInfo();
+        if ( ! is_array($fxResult) )   {
+            $this->errorMessage[] = get_class($fxResult) . ': '. $fxResult->getDebugInfo() . var_export($fx,true);
             return null;
         }
         if ($fxResult['errorCode'] != 0 && $fxResult['errorCode'] != 401) {
@@ -218,7 +224,13 @@ class DB_FileMaker_FX extends DB_Base
             $fx->AddDBParam($value['field'], $convertedValue, $op);
         }
         $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ($this->isDebug) $this->debugMessage[] = $result['URL'];
+        if ( ! is_array($result) )   {
+            $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
+            return false;
+        }
+        if ($this->isDebug) {
+            $this->debugMessage[] = $result['URL'];
+        }
         if ($result['errorCode'] > 0) {
             $this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
             return false;
@@ -264,6 +276,10 @@ class DB_FileMaker_FX extends DB_Base
                     }
                 }
                 $result = $fx->DoFxAction("update", TRUE, TRUE, 'full');
+                if ( ! is_array($result) )   {
+                    $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
+                    return false;
+                }
                 if ($result['errorCode'] > 0) {
                     $this->errorMessage[] = "FX reports error at edit action: table={$this->getEntityForUpdate()}, code={$result['errorCode']}, url={$result['URL']}<hr>";
                     return false;
@@ -323,6 +339,10 @@ class DB_FileMaker_FX extends DB_Base
             }
         }
         $result = $fx->DoFxAction("new", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
+            return false;
+        }
         if ($this->isDebug) {
             $this->debugMessage[] = $result['URL'];
         }
@@ -350,17 +370,16 @@ class DB_FileMaker_FX extends DB_Base
         $fx->setCharacterEncoding('UTF-8');
         $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
         $fx->setDBData($this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1);
-        $countFields = count($this->fieldsRequired);
-        /*        for ( $i = 0 ; $i < $countFields ; $i++ )	{
-              $field = $this->fieldsRequired[$i];
-              $value = $this->fieldsValues[$i];
-              $fx->AddDBParam( $field, $value, 'eq' );
-          }   */
+
         foreach ($this->extraCriteria as $value) {
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
             $fx->AddDBParam($value['field'], $value['value'], $op);
         }
-        $result = $this->fxResult = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
+            return false;
+        }
         if ($this->isDebug) {
             $this->debugMessage[] = $result['URL'];
         }
@@ -397,6 +416,10 @@ class DB_FileMaker_FX extends DB_Base
                     }
                 }
                 $result = $fx->DoFxAction("delete", TRUE, TRUE, 'full');
+                if ( ! is_array($result) )   {
+                    $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
+                    return false;
+                }
                 if ($result['errorCode'] > 0) {
                     $this->errorMessage[] = "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";
                     return false;

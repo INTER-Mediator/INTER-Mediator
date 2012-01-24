@@ -24,7 +24,7 @@ class MessageStrings
         5 => 'Insert',
         6 => 'Delete',
         7 => 'Save',
-        1001 => "Other people might be updated.\n\nInitially=@1@\nCurrent=@2@\n\nYou can overwrite with your data if you select OK.",
+        1001 => "Other people might be updated.\n\nInitially=@1@\nCurrent=@2@\nDatabase=@3@\n\nYou can overwrite with your data if you select OK.",
         1002 => "Can't determine the Table Name: @1@",
         1003 => "No information to update: field=@1@",
         1004 => "Connection Error in db_query=@1@/@2@",
@@ -48,6 +48,8 @@ class MessageStrings
         1022 => 'Using Unsupported Browser',
         1023 => '[This site uses INTER-Mediator.]',
         1024 => 'Multiple records are going to be updated. The key field might be wrong. Are you sure?',
+        1025 => 'Are you sure to delete?',
+        1026 => 'Are you sure to create record?',
     );
 }
 

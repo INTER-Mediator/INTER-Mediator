@@ -44,6 +44,21 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
+            'authentication' => array(
+                'all' => array( /* load, update, new, delete*/
+                    'user' => array (),
+                    'group' => array(),
+                    'privilege' => array(),
+                    'target' => 'table',
+                ),
+                'load' => array( /* load, update, new, delete*/
+                    'user' => array (),
+                    'group' => array(),
+                    'privilege' => array(),
+                    'target' => 'record',
+                    'field' => 'field'
+                ),
+            ),
         ),
     ),
     array(
@@ -52,7 +67,17 @@ IM_Entry(
             'kindid' => 'cor_way_kindname@kind_id@value',
             'kindname' => 'cor_way_kindname@name_kind@innerHTML',
         ),
-    //    'transaction' => 'none',
+        //    'transaction' => 'none',
+        'authentication' => array(  // table only, for all operations
+            'user' => array (),
+            'group' => array(),
+            'privilege' => array(),
+            'usertable' => 'Users', // Default values
+            'grouptable' => 'Groups',
+            'privilegetable' => 'Privilege',
+            'challengetable' => 'Challenge',
+        ),
+
     ),
     array('db-class' => 'PDO'),
     true

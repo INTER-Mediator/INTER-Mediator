@@ -21,7 +21,9 @@ IM_Entry(
             'repeat-control' => 'insert delete',
 		),
 	),
-    array('transaction' =>'none',),
+    array(
+        'transaction' =>'none',
+    ),
     array('db-class' => 'PDO'),
     true
 );

@@ -16,7 +16,7 @@ IM_Entry(
             'paging' => true,
             'name' => 'person_layout',
             'key' => 'id',
-            'repeat-control' => 'delete insert',
+            'repeat-control' => 'confirm-delete confirm-insert',
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(
                 array('field' => 'id', 'direction' => 'ascend'
@@ -26,7 +26,7 @@ IM_Entry(
         array(
             'name' => 'contact_to',
             'key' => 'id',
-            'repeat-control' => 'delete insert',
+            'repeat-control' => 'confirm-delete confirm-insert',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq')
             ),

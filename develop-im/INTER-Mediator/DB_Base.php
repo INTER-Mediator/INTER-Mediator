@@ -8,7 +8,66 @@
 *   INTER-Mediator is supplied under MIT License.
 */
 
-class DB_Base
+interface DB_Interface
+{
+    // Data Access Object pattern.
+    /**
+     * @param $dataSourceName
+     * @return
+     */
+    function getFromDB($dataSourceName);
+
+    /**
+     * @param $dataSourceName
+     * @return
+     */
+    function setToDB($dataSourceName);
+
+    /**
+     * @param $dataSourceName
+     * @return
+     */
+    function newToDB($dataSourceName);
+
+    /**
+     * @param $dataSourceName
+     * @return
+     */
+    function deleteFromDB($dataSourceName);
+
+    // These method should be be implemented in the inherited class
+    /**
+     * @param $username
+     * @param $challenge
+     * @return
+     */
+    function authSupportStoreChallenge($username, $challenge);
+
+    /**
+     * @param $username
+     */
+    function authSupportRetrieveChallenge($username);
+
+    /**
+     * @param $username
+     */
+    function authSupportRetrieveHashedPassword($username);
+
+    /**
+     * @param $username
+     * @param $hashedpassword
+     */
+    function authSupportCreateUser($username, $hashedpassword);
+
+    /**
+     * @param $username
+     * @param $hashedoldpassword
+     * @param $hashednewpassword
+     */
+    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword);
+}
+
+abstract class DB_Base
 {
 
     var $dbSpecServer = null;
@@ -223,23 +282,6 @@ class DB_Base
         return $this->dbSpecOption;
     }
 
-    // The following methods should be implemented in the inherited class.
-    function getFromDB($dataSourceName)
-    {
-    }
-
-    function setToDB($dataSourceName)
-    {
-    }
-
-    function newToDB($dataSourceName)
-    {
-    }
-
-    function deleteFromDB($dataSourceName)
-    {
-    }
-
     /* Debug and Messages */
     function setDebugMessage($str)
     {
@@ -277,6 +319,7 @@ class DB_Base
                 if (!isset($this->formatter[$oneItem['field']])) {
                     require_once("DataConverter_{$oneItem['converter-class']}.php");
                     $parameter = isset($oneItem['parameter']) ? $oneItem['parameter'] : '';
+                    $cvInstance = '';
                     eval("\$cvInstance = new DataConverter_{$oneItem['converter-class']}('{$parameter}');");
                     $this->formatter[$oneItem['field']] = $cvInstance;
                 }
@@ -304,6 +347,50 @@ class DB_Base
         return $data;
     }
 
+    /* Authentication support */
+    function generateChallenge()
+    {
+        $str = '';
+        for ( $i = 0 ; $i < 8 ; $i++ )  {
+            $str .= chr( rand( 1, 255 ));
+        }
+        return urlencode( $str );
+    }
+
+    function saveChallenge( $username, $challenge )
+    {
+        $this->authSupportStoreChallenge($username, $challenge);
+        return false;
+    }
+
+    function checkChallenge( $username, $hashedvalue )
+    {
+        $returnValue = false;
+
+        $storedChalenge = $this->authSupportRetrieveChallenge($username);
+        if ( strlen($storedChalenge) == 8 ) {
+            $hashedPassword = $this->authSupportRetrieveHashedPassword($username);
+            if ( strlen($hashedPassword) > 0 ) {
+                $hashSeed = $hashedPassword . $storedChalenge . $username;
+                if ( $hashedvalue === sha1($hashSeed) ) {
+                    $returnValue = true;
+                }
+            }
+        }
+        return $returnValue;
+    }
+
+    function addUser( $username, $password )
+    {
+        $returnValue = $this->authSupportCreateUser($username, sha1($password));
+        return $returnValue;
+    }
+
+    function changePassword( $username, $oldpassword, $newpassword )
+    {
+        $returnValue = $this->authSupportChangePassword($username, sha1($oldpassword),sha1($newpassword));
+        return $returnValue;
+    }
 
 }
 
