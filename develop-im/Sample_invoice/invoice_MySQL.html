@@ -18,16 +18,17 @@
     <script type="text/javascript">
 
         INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
-            if (name == 'items') {
-                //    modLine(target);
-            }
             if (name == 'invoice') {
+                //    modLine(repeaters[0]);
                 calcTotal(target);
             }
         };
 
         INTERMediatorOnPage.expandingRecordFinish = function (name, repeaters) {
+            if (name == 'items') {
+                modLine(repeaters[0]);
             //    alert(repeaters[0].tagName);
+            }
         };
 
         function modLine(target)	{
@@ -38,9 +39,6 @@
             var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@unitprice",target);
             var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice",target);
             var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@amount",target);
-            if(qtyId==null||unitPriceId==null|productPriceId==null|amountId==null)    {
-                return;
-            }
             if ( qtyId != null && unitPriceId != null && productPriceId != null && amountId != null)    {
                 var unitPrice = new Number( document.getElementById(unitPriceId).value > 0 ?
                         document.getElementById(unitPriceId).value :
@@ -54,10 +52,12 @@
             var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition( 'items@amount', target );
             if ( nodes != null )    {
                 var s = 0;
-                for ( var i in nodes )  {
+                for ( var i = 0; i < nodes.length; i++ )  {
                     s += INTERMediatorLib.toNumber( document.getElementById(nodes[i]).innerHTML );
                 }
-                document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat( s );
+                if ( document.getElementById('total') != null ) {
+                     document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat( s, 2 );
+                }
             }
         }
     </script>

@@ -9,17 +9,20 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 -->
-<html>
+<HTML>
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-    <link href="http://msyk.net/msyk_style.css" rel="stylesheet" media="screen">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link href="http://msyk.net/msyk_style.css" rel="stylesheet" media="screen"/>
+    <link href="pagestyle.css" rel="stylesheet" media="screen"/>
     <title>INTER-Mediator</title>
-    <script src="website_include.php"></script>
-    <script src="website.js"></script>
+    <script type="text/javascript" src="website_include.php"></script>
+    <script type="text/javascript" src="website.js"></script>
 </head>
 <body onload="pageLoad(1);">
 <div id="nonsupportmessage" style="background-color:#333333">
-    <div style="text-align:center;color:yellow">If you see this, you must use any unsupported web browser. Or constructing the page.</div>
+    <div style="text-align:center;color:yellow">If you see this, you must use any unsupported web browser. Or
+        constructing the page.
+    </div>
     <div style="text-align:center;color:yellow">この表示が見えている場合、非対応ブラウザで参照されています。もしくは描画処理中です。</div>
 </div>
 <div id="entire_page" style="margin:0;padding:0;">
@@ -28,29 +31,63 @@
         <a href="http://msyk.net/fmp/">←FileMaker情報</a> |
         <a href="http://msyk.net/macos/index.htm">←Browsing Mac OS X</a>
     </p>
-    <a href="./"><img src="im-icon.png" align="left" style="margin-left: 40px; margin-top: 16px;" /></a>
+    <a href="./"><img src="im-icon.png" align="left" style="margin-left: 40px; margin-top: 16px;"/></a>
+
     <h1>INTER-Mediator</h1>
+
     <div align="right">
         <p>
             Updated at
             <span class="_im_enclosure"><span class="_im_repeater IM[PageInfo@updateDate]"></span></span>
             <br>新居雅行 Masayuki Nii／msyk@msyk.net
         </p>
-    </div><br/><br/>
-    <div id="rightbox" class="graybox" style="float:right;width:300px;background-color:#BBBB88">
+    </div>
+    <br/><br/>
+
+    <div id="navigationbox" class="graybox">
         <h3 style="margin:0">Contents</h3>
         <ul style="margin:0">
             <li><a href="." class="IM[Titles@Title@innerHTML|Titles@LinkAddress@href]"></a></li>
         </ul>
+        <h3 style="margin:0">Community</h3>
+        <ul style="margin:0">
+            <li><a href="http://groups.google.co.jp/group/inter-mediator" target="_blank">Google Group</a>
+                ：メーリングリストなどがあります。
+            </li>
+            <li>Facebook INTER-Mediatorグループ<a href="http://www.facebook.com/groups/233378356708157/"
+                                              target="_blank">日本語</a>|<a
+                    href="http://www.facebook.com/groups/254446237922985/" target="_blank">英語</a>
+                ：Facebookの「グループ」機能を使ったグループです。
+            </li>
+            <li><a href="http://github.com/msyk/INTER-Mediator" target="_blank">GitHub</a>
+                ：ソースコードのレポジトリです。／
+                <a href="https://github.com/msyk/INTER-Mediator/blob/master/dist-docs/change_log.txt">
+                    変更履歴,
+                    将来計画（英語）</a>／<a href="https://msyk.net/users/msyk/?tag=inter-mediator"
+                                    target="_blank">開発者によるBlog</a></li>
+            <li><a href="http://www.cafepress.com/intermediator" target="_blank">ショップ（ロゴグッズ）</a> </li>
+        </ul>
+        <h3 style="margin:0">News and Updates</h3>
+        <!-- INTER-Mediator works here -->
+        <ul style="margin:0">
+            <li>
+                <span class="datestring IM[News@creditDate@innerHTML]"></span>
+                <span class="IM[News@Body@innerHTML]"></span>
+            </li>
+        </ul>
+        <!-- ^ -->
+
     </div>
     <!-- INTER-Mediator works here -->
     <div id="Contents" class="_im_enclosure">
         <div class="_im_repeater">
             <h2 class="IM[Contents@Title@innerHTML]"></h2>
+
             <div class="IM[Contents@Body@innerHTML]"></div>
         </div>
     </div>
     <!-- ^ -->
+
 </div>
 </body>
-</html>
+</HTML>

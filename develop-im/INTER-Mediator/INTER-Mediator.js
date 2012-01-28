@@ -9,65 +9,6 @@
 // Cleaning-up by http://jsbeautifier.org/ or Eclipse's Formatting
 
 
-function INTERMediatorCheckBrowser(deleteNode) {
-    var positiveList = IM_browserCompatibility();
-    var matchAgent = false;
-    var matchOS = false;
-    var versionStr;
-    for (var agent in  positiveList) {
-        if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
-            matchAgent = true;
-            if (positiveList[agent] instanceof Object) {
-                for (var os in positiveList[agent]) {
-                    if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
-                        matchOS = true;
-                        versionStr = positiveList[agent][os];
-                        break;
-                    }
-                }
-            } else {
-                matchOS = true;
-                versionStr = positiveList[agent];
-                break;
-            }
-        }
-    }
-    var judge = false;
-    if (matchAgent && matchOS) {
-        var specifiedVersion = parseInt(versionStr);
-        var versionNum;
-        if (navigator.appVersion.indexOf('MSIE') > -1) {
-            var msieMark = navigator.appVersion.indexOf('MSIE');
-            var dotPos = navigator.appVersion.indexOf('.', msieMark);
-            versionNum = parseInt(navigator.appVersion.substring(msieMark + 4, dotPos));
-            /*
-             As for the appVersion property of IE, refer http://msdn.microsoft.com/en-us/library/aa478988.aspx
-             */
-        } else {
-            var dotPos = navigator.appVersion.indexOf('.');
-            versionNum = parseInt(navigator.appVersion.substring(0, dotPos));
-        }
-        if (versionStr.indexOf('-') > -1) {
-            judge = (specifiedVersion >= versionNum);
-        } else if (versionStr.indexOf('+') > -1) {
-            judge = (specifiedVersion <= versionNum);
-        } else {
-            judge = (specifiedVersion == versionNum);
-        }
-    }
-    if (judge) {
-        if (deleteNode != null) {
-            deleteNode.parentNode.removeChild(deleteNode);
-        }
-    } else {
-        var bodyNode = document.getElementsByTagName('BODY')[0];
-        bodyNode.innerHTML = '<div align="center"><font color="gray"><font size="+2">'
-            + IM_getMessages()[1022] + '</font><br>'
-            + IM_getMessages()[1023] + '<br>' + navigator.userAgent + '</font></div>';
-    }
-    return judge;
-}
-
 var INTERMediatorLib = {
 
     ignoreEnclosureRepeaterClassName:"_im_ignore_enc_rep",
@@ -108,7 +49,7 @@ var INTERMediatorLib = {
             || (tagName == 'OL')
             || (tagName == 'SELECT')
             || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null
-                && className.indexOf(INTERMediatorLib.rollingEnclocureClassName) >= 0)) {
+            && className.indexOf(INTERMediatorLib.rollingEnclocureClassName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -134,7 +75,7 @@ var INTERMediatorLib = {
             || (tagName == 'LI')
             || (tagName == 'OPTION')
             || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null
-                && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)) {
+            && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -277,7 +218,7 @@ var INTERMediatorLib = {
         return false;
 
         function resolveAlias(def) {
-            var options = IM_getOptions();
+            var options = INTERMediatorOnPage.getOptionsAliases();
             var aliases = options['aliases'];
             if (aliases != null && aliases[def] != null) {
                 return aliases[def];
@@ -352,11 +293,14 @@ var INTERMediatorLib = {
 
     toNumber:function (str) {
         var s = '';
+        str = (new String(str)).toString();
         for (var i = 0; i < str.length; i++) {
             var c = str.charAt(i);
-            if ((c >= '0' && c <= '9') || c == '-' || c == '.') s += c;
+            if ((c >= '0' && c <= '9') || c == '-' || c == '.') {
+                s += c;
+            }
         }
-        return new Number(s);
+        return parseFloat(s);
     },
 
     numberFormat:function (str, digit) {
@@ -368,7 +312,7 @@ var INTERMediatorLib = {
             n = -n;
         }
         var f = n - Math.floor(n);
-    //    if (f == 0) f = '';
+        //    if (f == 0) f = '';
         for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
             if (n > 1000) {
                 s.push(('000' + (n % 1000).toString()).substr(-3));
@@ -376,8 +320,12 @@ var INTERMediatorLib = {
                 s.push(n);
             }
         }
-        var underDot = digit == null ? 0 : INTERMediatorLib.toNumber(digit);
-        return sign + s.reverse().join(',') + (underDot == 0 ? '' : Math.floor( f * 10 ^ underDot ));
+        var underDot = (digit == null) ? 0 : INTERMediatorLib.toNumber(digit);
+        var underNumStr = (underDot == 0) ? '' : new String( Math.floor( f * Math.pow( 10, underDot )));
+        while( underNumStr.length < underDot )  {
+            underNumStr = "0" + underNumStr;
+        }
+        return sign + s.reverse().join(',') + (underNumStr == '' ? '' : '.' + underNumStr);
     },
 
     objectToString:function (obj) {
@@ -427,7 +375,7 @@ var INTERMediatorLib = {
     },
 
     getInsertedStringFromErrorNumber:function (errNum, dataArray) {
-        var resultStr = IM_getMessages()[errNum];
+        var resultStr = INTERMediatorOnPage.getMessages()[errNum];
         if (dataArray != null) {
             for (var counter = 1; counter <= dataArray.length; counter++) {
                 resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
@@ -482,6 +430,67 @@ var INTERMediatorLib = {
 };
 
 var INTERMediatorOnPage = {
+    authCount: 0,
+
+    INTERMediatorCheckBrowser: function(deleteNode) {
+        var positiveList = INTERMediatorOnPage.browserCompatibility();
+        var matchAgent = false;
+        var matchOS = false;
+        var versionStr;
+        for (var agent in  positiveList) {
+            if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
+                matchAgent = true;
+                if (positiveList[agent] instanceof Object) {
+                    for (var os in positiveList[agent]) {
+                        if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
+                            matchOS = true;
+                            versionStr = positiveList[agent][os];
+                            break;
+                        }
+                    }
+                } else {
+                    matchOS = true;
+                    versionStr = positiveList[agent];
+                    break;
+                }
+            }
+        }
+        var judge = false;
+        if (matchAgent && matchOS) {
+            var specifiedVersion = parseInt(versionStr);
+            var versionNum;
+            if (navigator.appVersion.indexOf('MSIE') > -1) {
+                var msieMark = navigator.appVersion.indexOf('MSIE');
+                var dotPos = navigator.appVersion.indexOf('.', msieMark);
+                versionNum = parseInt(navigator.appVersion.substring(msieMark + 4, dotPos));
+                /*
+                 As for the appVersion property of IE, refer http://msdn.microsoft.com/en-us/library/aa478988.aspx
+                 */
+            } else {
+                var dotPos = navigator.appVersion.indexOf('.');
+                versionNum = parseInt(navigator.appVersion.substring(0, dotPos));
+            }
+            if (versionStr.indexOf('-') > -1) {
+                judge = (specifiedVersion >= versionNum);
+            } else if (versionStr.indexOf('+') > -1) {
+                judge = (specifiedVersion <= versionNum);
+            } else {
+                judge = (specifiedVersion == versionNum);
+            }
+        }
+        if (judge) {
+            if (deleteNode != null) {
+                deleteNode.parentNode.removeChild(deleteNode);
+            }
+        } else {
+            var bodyNode = document.getElementsByTagName('BODY')[0];
+            bodyNode.innerHTML = '<div align="center"><font color="gray"><font size="+2">'
+                + INTERMediatorOnPage.getMessages()[1022] + '</font><br>'
+                + INTERMediatorOnPage.getMessages()[1023] + '<br>' + navigator.userAgent + '</font></div>';
+        }
+        return judge;
+    },
+
     /*
      Seek nodes from the repeater of "fromNode" parameter.
      */
@@ -673,7 +682,7 @@ var INTERMediator = {
         var newValue = null;
         var changedObj = document.getElementById(idValue);
         if (changedObj != null) {
-            if (IM_getOptions()['transaction'] == 'none') {
+            if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
                 INTERMediator.updateRequiredObject[idValue]['edit'] = true;
             } else {
                 INTERMediator.updateDB(idValue);
@@ -690,7 +699,7 @@ var INTERMediator = {
             var keyingField = keyingComp[0];
             keyingComp.shift();
             var keyingValue = keyingComp.join('=');
-            var currentVal = IM_DBAdapter.db_query({
+            var currentVal = INTERMediaotr_DBAdapter.db_query({
                 name:objectSpec['name'],
                 records:1,
                 paging:objectSpec['paging'],
@@ -702,12 +711,12 @@ var INTERMediator = {
                 useoffset:false});
             if (currentVal.recordset == null || currentVal.recordset[0] == null
                 || currentVal.recordset[0][objectSpec['field']] == null) {
-                alert(INTERMediatorLib.getInsertedString(IM_getMessages()[1003], [objectSpec['field']]));
+                alert(INTERMediatorLib.getInsertedString(INTERMediatorOnPage.getMessages()[1003], [objectSpec['field']]));
                 INTERMediator.flushMessage();
                 return;
             }
             if (currentVal.count > 1 ) {
-                var response = confirm(IM_getMessages()[1024]);
+                var response = confirm(INTERMediatorOnPage.getMessages()[1024]);
                 if ( ! response )   {
                     INTERMediator.flushMessage();
                     return;
@@ -740,7 +749,7 @@ var INTERMediator = {
             if (objectSpec['initialvalue'] != currentVal) {
                 // The value of database and the field is diffrent. Others must be changed this field.
                 if (!confirm(INTERMediatorLib.getInsertedString(
-                    IM_getMessages()[1001], [objectSpec['initialvalue'], newValue, currentVal]))) {
+                    INTERMediatorOnPage.getMessages()[1001], [objectSpec['initialvalue'], newValue, currentVal]))) {
                     INTERMediator.flushMessage();
                     return;
                 }
@@ -748,7 +757,7 @@ var INTERMediator = {
 
             if (newValue != null) {
                 var criteria = objectSpec['keying'].split('=');
-                IM_DBAdapter.db_update({
+                INTERMediaotr_DBAdapter.db_update({
                     name:objectSpec['name'],
                     conditions:[
                         {field:criteria[0], operator:'=', value:criteria[1]}
@@ -780,11 +789,11 @@ var INTERMediator = {
 
     deleteButton:function (targetName, keyField, keyValue, removeNodes, isConfirm) {
         if ( isConfirm )    {
-            if ( ! confirm(IM_getMessages()[1025]) )  {
+            if ( ! confirm(INTERMediatorOnPage.getMessages()[1025]) )  {
                 return;
             }
         }
-        IM_DBAdapter.db_delete({
+        INTERMediaotr_DBAdapter.db_delete({
             name:targetName,
             conditions:[
                 {field:keyField, operator:'=', value:keyValue}
@@ -799,11 +808,11 @@ var INTERMediator = {
 
     insertButton:function (targetName, foreignValues, updateNodes, removeNodes, isConfirm) {
         if ( isConfirm )    {
-            if ( ! confirm(IM_getMessages()[1026]) )  {
+            if ( ! confirm(INTERMediatorOnPage.getMessages()[1026]) )  {
                 return;
             }
         }
-        var currentContext = INTERMediatorLib.getNamedObject(IM_getDataSources(), 'name', targetName);
+        var currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
         var recordSet = [];
         if (foreignValues != null) {
             for (var fieldName in foreignValues) {
@@ -817,7 +826,7 @@ var INTERMediator = {
                     value:currentContext['default-values'][index]['value']});
             }
         }
-        IM_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+        INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         for (var key in removeNodes) {
             var removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
@@ -834,11 +843,11 @@ var INTERMediator = {
 
     insertRecordFromNavi:function (targetName, keyField, isConfirm) {
         if ( isConfirm )    {
-            if ( ! confirm(IM_getMessages()[1025]) )  {
+            if ( ! confirm(INTERMediatorOnPage.getMessages()[1025]) )  {
                 return;
             }
         }
-        var ds = IM_getDataSources(); // Get DataSource parameters
+        var ds = INTERMediatorOnPage.getDataSources(); // Get DataSource parameters
         var targetKey = '';
         for (var key in ds) { // Search this table from DataSource
             if (INTERMediatorLib.getTargetTableForUpdate(ds[key]) == targetName) {
@@ -853,7 +862,7 @@ var INTERMediator = {
                 field:ds[key]['default-values'][index]['field'],
                 value:ds[key]['default-values'][index]['value']});
         }
-        var newId = IM_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+        var newId = INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         if (newId > -1) {
             var restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
@@ -871,11 +880,11 @@ var INTERMediator = {
 
     deleteRecordFromNavi:function (targetName, keyField, keyValue, isConfirm) {
         if ( isConfirm )    {
-            if ( ! confirm(IM_getMessages()[1026]) )  {
+            if ( ! confirm(INTERMediatorOnPage.getMessages()[1026]) )  {
                 return;
             }
         }
-        IM_DBAdapter.db_delete({
+        INTERMediaotr_DBAdapter.db_delete({
             name:targetName,
             conditions:[
                 {field:keyField, operator:'=', value:keyValue}
@@ -928,6 +937,8 @@ var INTERMediator = {
         var buttonIdNum = 1;
         var deleteInsertOnNavi = [];
 
+        INTERMediatorOnPage.authCount = 0;
+
         if (fromStart) {
             INTERMediator.partialConstructing = false;
             pageConstruct();
@@ -952,7 +963,7 @@ var INTERMediator = {
                 updateNode.appendChild(originalNodes[i]);
             }
             var beforeKeyFieldObjectCount = INTERMediator.keyFieldObject.length;
-            var currentContext = INTERMediatorLib.getNamedObject(IM_getDataSources(), 'name', updateContext);
+            var currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', updateContext);
             var parentRecordset = {};
             for (var field in INTERMediator.keyFieldObject[indexOfKeyFieldObject]['foreign-value']) {
                 var joinFled = INTERMediatorLib.getNamedValueInObject(
@@ -1129,13 +1140,13 @@ var INTERMediator = {
             var fieldList = voteResult.fieldlist; // Create field list for database fetch.
 
             if (currentContext != null) {
-                var retationValue = null;
+                var relationValue = null;
                 var dependObject = [];
                 var relationDef = currentContext['relation'];
                 if (relationDef != null) {
-                    var retationValue = [];
+                    relationValue = [];
                     for (var index in relationDef) {
-                        retationValue[ relationDef[index]['foreign-key'] ]
+                        relationValue[ relationDef[index]['foreign-key'] ]
                             = currentRecord[relationDef[index]['join-field']];
 
                         for (var fieldName in parentObjectInfo) {
@@ -1149,7 +1160,7 @@ var INTERMediator = {
                 var thisKeyFieldObject = {
                     'node':node,
                     'name':currentContext['name'] /*currentTable */,
-                    'foreign-value':retationValue,
+                    'foreign-value':relationValue,
                     'parent':node.parentNode,
                     'original':[],
                     'target':dependObject
@@ -1160,12 +1171,12 @@ var INTERMediator = {
                 INTERMediator.keyFieldObject.push(thisKeyFieldObject);
 
                 // Access database and get records
-                var targetRecords = IM_DBAdapter.db_query({
+                var targetRecords = INTERMediaotr_DBAdapter.db_query({
                     name:currentContext['name'],
                     records:currentContext['records'],
                     paging:currentContext['paging'],
                     fields:fieldList,
-                    parentkeyvalue:retationValue,
+                    parentkeyvalue:relationValue,
                     conditions:null,
                     useoffset:true});
 
@@ -1235,13 +1246,18 @@ var INTERMediator = {
                         }
 
                         if (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA') {
+                            var valueChangeFunction = function(a)   {
+                                var idValue = a;
+                                return function()   {
+                                    INTERMediator.valueChange(idValue);
+                                };
+                            }
                             eventListenerPostAdding.push({
                                 'id':idValue,
                                 'event':'change',
-                                'todo':new Function('INTERMediator.valueChange("' + idValue + '")')
+                                'todo':valueChangeFunction(idValue)
                             });
                         }
-
 
                         for (var j = 0; j < linkInfoArray.length; j++) {
                             // for each info Multiple replacement definitions
@@ -1261,7 +1277,7 @@ var INTERMediator = {
                                     field:nInfo['field'],
                                     'parent-enclosure':node.getAttribute('id'),
                                     keying:keyingValue,
-                                    'foreign-value':retationValue,
+                                    'foreign-value':relationValue,
                                     'updatenodeid':parentNodeId};
                             }
 
@@ -1278,19 +1294,26 @@ var INTERMediator = {
                     if (currentContext['repeat-control'] != null && currentContext['repeat-control'].match(/delete/i)) {
                         if ( currentContext['relation'] != null || currentContext['records'] > 1) {
                             var buttonNode = document.createElement('BUTTON');
-                            buttonNode.appendChild(document.createTextNode(IM_getMessages()[6]));
+                            buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
                             var thisId = 'IM_Button_' + buttonIdNum;
                             buttonNode.setAttribute('id', thisId);
                             buttonIdNum++;
-                            var deleteJSScript = "INTERMediator.deleteButton(" + "'"
-                                + currentContext['name']
-                                + "'," + "'" + keyField + "'," + "'" + keyValue + "',"
-                                + INTERMediatorLib.objectToString(shouldDeleteNodes) +  ","
-                                + (currentContext['repeat-control'].match(/confirm-delete/i) ? "true" : "false") + ");";
+                            var deleteJSFunction = function(a,b,c,d,e)   {
+                                var contextName = a;
+                                var keyField = b;
+                                var keyValue = c;
+                                var removeNodes = d;
+                                var confirming = e;
+                                return function()   {
+                                    INTERMediator.deleteButton(
+                                        contextName, keyField, keyValue, removeNodes, confirming);
+                                };
+                            };
                             eventListenerPostAdding.push({
                                 'id':thisId,
                                 'event':'click',
-                                'todo':new Function(deleteJSScript)
+                                'todo':deleteJSFunction(currentContext['name'], keyField, keyValue, shouldDeleteNodes,
+                                    currentContext['repeat-control'].match(/confirm-delete/i) ? true : false)
                             });
                             var endOfRepeaters = repeaters[repeaters.length - 1];
                             switch (encNodeTag) {
@@ -1350,9 +1373,9 @@ var INTERMediator = {
                 }
 
                 if (currentContext['repeat-control'] != null && currentContext['repeat-control'].match(/insert/i)) {
-                    if (retationValue != null) {
+                    if (relationValue != null) {
                         var buttonNode = document.createElement('BUTTON');
-                        buttonNode.appendChild(document.createTextNode(IM_getMessages()[5]));
+                        buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
                         var shouldRemove = [];
                         switch (encNodeTag) {
                             case 'TBODY':
@@ -1389,15 +1412,26 @@ var INTERMediator = {
                                 }
                                 break;
                         }
-                        var insertJSScript = "INTERMediator.insertButton("
-                            + "'" + currentContext['name'] + "',"
-                            + (retationValue == null ? 'null' : INTERMediatorLib.objectToString(retationValue)) + ","
-                            + "'" + node.getAttribute('id') + "',"
-                            + (shouldRemove == null ? 'null' : INTERMediatorLib.objectToString(shouldRemove)) + ","
-                            + (currentContext['repeat-control'].match(/confirm-insert/i) ? "true" : "false") + ");";
-                        INTERMediatorLib.addEvent(buttonNode, 'click', new Function(insertJSScript));
-                        //    INTERMediator.debugMessages.push(
-                        //        "insertJSScript:"+INTERMediatorLib.objectToString(insertJSScript) );
+                        var insertJSFunction = function(a,b,c,d,e)   {
+                            var contextName = a;
+                            var relationValue = b;
+                            var nodeId = c;
+                            var removeNodes = d;
+                            var confirming = e;
+                            return function()   {
+                                INTERMediator.insertButton(contextName, relationValue, nodeId, removeNodes, confirming);
+                            }};
+
+                        INTERMediatorLib.addEvent(
+                            buttonNode,
+                            'click',
+                            insertJSFunction(
+                                currentContext['name'],
+                                relationValue,
+                                node.getAttribute('id'),
+                                shouldRemove,
+                                currentContext['repeat-control'].match(/confirm-insert/i) ? true : false)
+                        );
                     } else {
                         deleteInsertOnNavi.push({
                             kind:'INSERT',
@@ -1415,7 +1449,7 @@ var INTERMediator = {
             } else {
                 INTERMediator.errorMessages.push(
                     INTERMediatorLib.getInsertedString(
-                        IM_getMessages()[1002], [INTERMediatorLib.objectToString(fieldList)]));
+                        INTERMediatorOnPage.getMessages()[1002], [INTERMediatorLib.objectToString(fieldList)]));
             }
             currentLevel--;
             //    return foreignValue != '';
@@ -1480,7 +1514,7 @@ var INTERMediator = {
                     maxTableName = tableName;
                 }
             }
-            var context = INTERMediatorLib.getNamedObject(IM_getDataSources(), 'name', maxTableName);
+            var context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName);
             return {'targettable':context, 'fieldlist':fieldList[maxTableName]};
         }
 
@@ -1588,7 +1622,7 @@ var INTERMediator = {
 
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
-                node.appendChild(document.createTextNode((navLabel == null ? IM_getMessages()[2] : navLabel[8])));
+                node.appendChild(document.createTextNode((navLabel == null ? INTERMediatorOnPage.getMessages()[2] : navLabel[8])));
                 node.setAttribute('class', 'IM_NAV_button');
                 INTERMediatorLib.addEvent(node, 'click', function () {
                     location.reload();
@@ -1601,7 +1635,7 @@ var INTERMediator = {
                 var node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
-                    (navLabel == null ? IM_getMessages()[1] : navLabel[4]) + (start + 1)
+                    (navLabel == null ? INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
                         + ((Math.min(start + pageSize, allCount) - start > 2) ?
                         ((navLabel == null ? "-" : navLabel[5]) + Math.min(start + pageSize, allCount)) : '')
                         + (navLabel == null ? " / " : navLabel[6]) + (allCount) + (navLabel == null ? "" : navLabel[7])));
@@ -1653,36 +1687,57 @@ var INTERMediator = {
                             node = document.createElement('SPAN');
                             navigation.appendChild(node);
                             node.appendChild(
-                                document.createTextNode(IM_getMessages()[3] + ': ' + deleteInsertOnNavi[i]['name']));
+                                document.createTextNode(INTERMediatorOnPage.getMessages()[3] + ': ' + deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
-                            INTERMediatorLib.addEvent(node, 'click',
-                                new Function("INTERMediator.insertRecordFromNavi("
-                                    + sq + deleteInsertOnNavi[i]['name'] + sq + comma
-                                    + sq + deleteInsertOnNavi[i]['key'] + sq + comma
-                                    + (deleteInsertOnNavi[i]['confirm'] ? "true" : "false") + ");"));
+                            var onNaviInsertFunction = function(a,b,c)  {
+                                var contextName = a;
+                                var keyValue = b;
+                                var confirming = c;
+                                return function()   {
+                                    INTERMediator.insertRecordFromNavi(contextName, keyValue, confirming);
+                                };
+                            };
+                            INTERMediatorLib.addEvent(
+                                node,
+                                'click',
+                                onNaviInsertFunction(
+                                    deleteInsertOnNavi[i]['name'],
+                                    deleteInsertOnNavi[i]['key'],
+                                    deleteInsertOnNavi[i]['confirm'] ? true : false)
+                            );
                             break;
                         case 'DELETE':
                             node = document.createElement('SPAN');
                             navigation.appendChild(node);
                             node.appendChild(
-                                document.createTextNode(IM_getMessages()[4] + ': ' + deleteInsertOnNavi[i]['name']));
+                                document.createTextNode(INTERMediatorOnPage.getMessages()[4] + ': ' + deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
-                            INTERMediatorLib.addEvent(node, 'click',
-                                new Function("INTERMediator.deleteRecordFromNavi("
-                                    + sq + deleteInsertOnNavi[i]['name'] + sq + comma
-                                    + sq + deleteInsertOnNavi[i]['key'] + sq + comma
-                                    + sq + deleteInsertOnNavi[i]['value'] + sq + comma
-                                    + (deleteInsertOnNavi[i]['confirm'] ? "true" : "false") + ");"));
+                            var onNaviDeleteFunction = function(a,b,c,d)   {
+                                var contextName = a;
+                                var keyName = b;
+                                var keyValue = c;
+                                var confirming = d;
+                                return function()   {
+                                    INTERMediator.deleteRecordFromNavi(contextName, keyName, keyValue, confirming);
+                                };
+                            }
+                            INTERMediatorLib.addEvent(
+                                node,
+                                'click',
+                                onNaviDeleteFunction(
+                                    deleteInsertOnNavi[i]['name'],
+                                    deleteInsertOnNavi[i]['key'],
+                                    deleteInsertOnNavi[i]['value'],
+                                    deleteInsertOnNavi[i]['confirm'] ? true: false));
                             break;
                     }
                 }
-                if (IM_getOptions()['transaction'] == 'none') {
+                if ( INTERMediatorOnPage.getOptionsTransaction() == 'none' ) {
                     node = document.createElement('SPAN');
                     navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(IM_getMessages()[7]));
+                    node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[7]));
                     node.setAttribute('class', 'IM_NAV_button');
-                    INTERMediatorLib.addEvent(node, 'click',
-                        new Function("INTERMediator.saveRecordFromNavi();"));
+                    INTERMediatorLib.addEvent(node, 'click', INTERMediator.saveRecordFromNavi);
                 }
             }
         }

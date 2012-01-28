@@ -97,11 +97,103 @@ abstract class DB_Base
     var $dataSourceName = '';
     var $foreignFieldAndValue = array();
 
+    var $currentUser = null;
+    var $currentChallenge = null;
+    var $authentication = null;
+
     function __construct()
     {
     }
 
+    function initialize( $datasrc, $options, $dbspec )   {
+        include('params.php');
+        $this->setDbSpecServer(
+            isset($dbspec['server']) ? $dbspec['server'] : (isset ($dbServer) ? $dbServer : ''));
+        $this->setDbSpecPort(
+            isset($dbspec['port']) ? $dbspec['port'] : (isset ($dbPort) ? $dbPort : ''));
+        $this->setDbSpecUser(
+            isset($dbspec['user']) ? $dbspec['user'] : (isset ($dbUser) ? $dbUser : ''));
+        $this->setDbSpecPassword(
+            isset($dbspec['password']) ? $dbspec['password'] : (isset ($dbPassword) ? $dbPassword : ''));
+        $this->setDbSpecDataType(
+            isset($dbspec['datatype']) ? $dbspec['datatype'] : (isset ($dbDataType) ? $dbDataType : ''));
+        $this->setDbSpecDatabase(
+            isset($dbspec['database']) ? $dbspec['database'] : (isset ($dbDatabase) ? $dbDatabase : ''));
+        $this->setDbSpecProtocol(
+            isset($dbspec['protocol']) ? $dbspec['protocol'] : (isset ($dbProtocol) ? $dbProtocol : ''));
+        $this->setDbSpecOption(
+            isset($dbspec['option']) ? $dbspec['option'] : (isset ($dbOption) ? $dbOption : ''));
+        $this->setDbSpecDSN(
+            isset($dbspec['dsn']) ? $dbspec['dsn'] : (isset ($dbDSN) ? $dbDSN : ''));
+
+        $this->setDataSource( $datasrc );
+        $this->setCurrentUser( isset($_GET['user']) ? $_GET['user'] : null );
+        $this->setCurrentChallenge( isset($_GET['challenge']) ? $_GET['challenge'] : null );
+        $this->setAuthentication( isset($options['authentication']) ? $_GET['authentication'] : null );
+
+        $this->setSeparator( isset($options['separator']) ? $options['separator'] : '@');
+        $this->setFormatter( isset($options['formatter']) ? $options['formatter'] : null);
+        $this->setTargetName($_GET['name']);
+
+        $this->setStart( isset($_GET['start']) ? $_GET['start'] : 0 );
+        $this->setRecordCount( isset($_GET['records']) ? $_GET['records'] : 10000000 );
+
+        for ($count = 0; $count < 10000; $count++) {
+            if (isset($_GET["condition{$count}field"])) {
+                $this->setExtraCriteria(
+                    $_GET["condition{$count}field"],
+                    isset($_GET["condition{$count}operator"]) ? $_GET["condition{$count}operator"] : '=',
+                    isset($_GET["condition{$count}value"]) ? $_GET["condition{$count}value"] : '');
+            } else {
+                break;
+            }
+        }
+        for ($count = 0; $count < 10000; $count++) {
+            if (isset($_GET["sortkey{$count}field"])) {
+                $this->setExtraSortKey($_GET["sortkey{$count}field"], $_GET["sortkey{$count}direction"]);
+            } else {
+                break;
+            }
+        }
+        for ($count = 0; $count < 10000; $count++) {
+            if (!isset($_GET["foreign{$count}field"])) {
+                break;
+            }
+            $this->setForeignValue($_GET["foreign{$count}field"], $_GET["foreign{$count}value"]);
+        }
+
+        for ($i = 0; $i < 1000; $i++) {
+            if (!isset($_GET["field_{$i}"])) {
+                break;
+            }
+            $this->setTargetFields($_GET["field_{$i}"]);
+        }
+        for ($i = 0; $i < 1000; $i++) {
+            if (!isset($_GET["value_{$i}"])) {
+                break;
+            }
+            $this->setValues(get_magic_quotes_gpc() ? stripslashes($_GET["value_{$i}"]) : $_GET["value_{$i}"]);
+        }
+        //		if ( isset( $_GET['parent_keyval'] ))	{
+        //			$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
+        //		}
+
+    }
     /* Call on INTER-Mediator.php */
+    function setAuthentication($ar) {
+        $this->authentication = $ar;
+    }
+
+    function setCurrentUser($str)
+    {
+        $this->currentUser = $str;
+    }
+
+    function setCurrentChallenge($str)
+    {
+        $this->currentChallenge = $str;
+    }
+
     function setDataSource($src)
     {
         $this->dataSource = $src;
@@ -303,6 +395,18 @@ abstract class DB_Base
     function getErrorMessages()
     {
         return $this->errorMessage;
+    }
+
+    function getMessagesForJS() {
+        $q = '"';
+        $returnData = array();
+        foreach ($this->getErrorMessages() as $oneError) {
+            $returnData[] = "INTERMediator.errorMessages.push({$q}" . addslashes($oneError) . "{$q});";
+        }
+        foreach ($this->getDebugMessages() as $oneError) {
+            $returnData[] = "INTERMediator.debugMessages.push({$q}" . addslashes($oneError) . "{$q});";
+        }
+        return $returnData;
     }
 
     function setDebugMode()

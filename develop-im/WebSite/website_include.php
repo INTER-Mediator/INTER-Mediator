@@ -15,7 +15,15 @@
  * To change this template use File | Settings | File Templates.
  */
 
-require_once ('../INTER-Mediator/INTER-Mediator.php');
+$fpath = 'INTER-Mediator/INTER-Mediator.php';
+if ( file_exists( $fpath ) )    {
+    require_once ( $fpath );
+} else {
+    $fpath = "../{$fpath}";
+    if ( file_exists( $fpath ) )    {
+        require_once ( $fpath );
+    }
+}
 
 header('Content-Type: text/javascript');
 
@@ -79,13 +87,14 @@ $optionDefs= array(
 
 $dbDefs = array(
     'db-class' => 'WebSite_FMSFX',
-    'server' => 'server.msyk.net',
     'database' => 'WebSite',
     'user' => 'web',
     'password' => 'webpassword',
-    'port' => '443',
-    'protocol' => 'HTTPS',
-    'datatype' => 'FMPro7'
+    'port' => '80',
+    'protocol' => 'HTTP',
+    'datatype' => 'FMPro7',
+
+    'server' => 'db00050.worldcloud.com',
 );
 
 IM_Entry( $tableDefs, $optionDefs, $dbDefs, false );

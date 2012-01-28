@@ -1,5 +1,5 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.0.7.6 Released 2011-09-18
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
  *
@@ -15,10 +15,28 @@
  */
 
 function pageLoad(id)  {
-    if ( INTERMediatorCheckBrowser(document.getElementById('nonsupportmessage')) )  {
+    if ( INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupportmessage')) )  {
         INTERMediator.startFrom = 0;
         INTERMediator.additionalCondition["Contents"] = {field:'Article_id',operator:'eq',value:id};
         INTERMediator.additionalCondition["PageInfo"] = {field:'id',operator:'eq',value:id};
         INTERMediator.construct( true );
     }
+    fitToPage( document.getElementsByClassName('openingpicture')[0] );
 }
+
+function fitToPage(object)   {
+    if( object != null) {
+        var picw = 990;
+        var otherw = 200 + 40 *2 + 30;
+        var bodyw = document.getElementsByTagName('BODY')[0].clientWidth;
+        if ( picw > bodyw-otherw)   {
+            object.width = bodyw-otherw;
+        }
+    }
+}
+
+window.addEventListener('resize', function(){
+    fitToPage( document.getElementsByClassName('openingpicture')[0] );
+});
+
+

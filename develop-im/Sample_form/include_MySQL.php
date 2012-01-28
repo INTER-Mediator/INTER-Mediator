@@ -69,13 +69,14 @@ IM_Entry(
         ),
         //    'transaction' => 'none',
         'authentication' => array(  // table only, for all operations
-            'user' => array (),
-            'group' => array(),
-            'privilege' => array(),
-            'usertable' => 'Users', // Default values
-            'grouptable' => 'Groups',
-            'privilegetable' => 'Privilege',
-            'challengetable' => 'Challenge',
+            'user' => array (), // Itemize permitted users
+            'group' => array(), // Itemize permitted groups
+            'privilege' => array(), // Itemize permitted privileges
+            'user-table' => 'authuser', // Default values, or "_Native"
+            'group-table' => 'authgroup',
+            'privilege-table' => 'authpriv',
+            'corresponding-table' => 'authcor',
+            'challenge-table' => 'Challenge',
         ),
 
     ),

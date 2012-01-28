@@ -18,7 +18,7 @@ require_once('MessageStrings_ja.php');
 /*
  * GET
  * ?access=select
- * &table=<table name>
+ * &name=<table name>
  * &start=<record number to start>
  * &records=<how many records should it return>
  * &field_<N>=<field name>
@@ -41,12 +41,17 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
     include('params.php');
 
     if (!isset($_GET['access'])) {
+
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Adapter_DBServer.js');
-        echo "function IM_getEntryPath(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}{$LF}";
+        echo "INTERMediatorOnPage.getEntryPath = function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};};{$LF}";
         //    echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
-        echo "function IM_getDataSources(){return ", arrayToJS($datasrc, ''), ";}{$LF}";
-        echo "function IM_getOptions(){return ", arrayToJS($options, ''), ";}{$LF}";
+        echo "INTERMediatorOnPage.getDataSources = function(){return ",
+        arrayToJS( $datasrc, ''), ";};{$LF}";
+        echo "INTERMediatorOnPage.getOptionsAliases = function(){return ",
+        arrayToJS($options['aliases'], ''), ";};{$LF}";
+        echo "INTERMediatorOnPage.getOptionsTransaction = function(){return ",
+        arrayToJS($options['transaction'], ''), ";};{$LF}";
         $clientLang = explode('-', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
         $messageClass = "MessageStrings_{$clientLang[0]}";
         if (class_exists($messageClass)) {
@@ -54,141 +59,64 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         } else {
             $messageClass = new MessageStrings();
         }
-        echo "function IM_getMessages(){return ", arrayToJS($messageClass->getMessages(), ''), ";}{$LF}";
+        echo "INTERMediatorOnPage.getMessages = function(){return ",
+        arrayToJS($messageClass->getMessages(), ''), ";};{$LF}";
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
-        echo "function IM_browserCompatibility(){return ", arrayToJS($browserCompatibility, ''), ";}{$LF}";
+        echo "INTERMediatorOnPage.browserCompatibility = function(){return ",
+        arrayToJS($browserCompatibility, ''), ";};{$LF}";
         echo "INTERMediator.debugMode=", $debug ? "true" : "false", ";{$LF}";
+
     } else {
-        if (       $_GET['access'] == 'select' || $_GET['access'] == 'update'
-                || $_GET['access'] == 'insert' || $_GET['access'] == 'delete' )  {
-            $dbClassName = isset($dbspec['db-class']) ? $dbspec['db-class'] : (isset ($dbClass) ? $dbClass : '');
-            $dbClassName = "DB_{$dbClassName}";
-            require_once("{$dbClassName}.php");
-            $dbInstance = null;
-            eval("\$dbInstance = new {$dbClassName}();");
-            if ($debug) {
-                $dbInstance->setDebugMode();
-            }
-            $dbInstance->setDbSpecServer(
-                isset($dbspec['server']) ? $dbspec['server'] : (isset ($dbServer) ? $dbServer : ''));
-            $dbInstance->setDbSpecPort(
-                isset($dbspec['port']) ? $dbspec['port'] : (isset ($dbPort) ? $dbPort : ''));
-            $dbInstance->setDbSpecUser(
-                isset($dbspec['user']) ? $dbspec['user'] : (isset ($dbUser) ? $dbUser : ''));
-            $dbInstance->setDbSpecPassword(
-                isset($dbspec['password']) ? $dbspec['password'] : (isset ($dbPassword) ? $dbPassword : ''));
-            $dbInstance->setDbSpecDataType(
-                isset($dbspec['datatype']) ? $dbspec['datatype'] : (isset ($dbDataType) ? $dbDataType : ''));
-            $dbInstance->setDbSpecDatabase(
-                isset($dbspec['database']) ? $dbspec['database'] : (isset ($dbDatabase) ? $dbDatabase : ''));
-            $dbInstance->setDbSpecProtocol(
-                isset($dbspec['protocol']) ? $dbspec['protocol'] : (isset ($dbProtocol) ? $dbProtocol : ''));
-            $dbInstance->setDbSpecOption(
-                isset($dbspec['option']) ? $dbspec['option'] : (isset ($dbOption) ? $dbOption : ''));
-            $dbInstance->setDbSpecDSN(
-                isset($dbspec['dsn']) ? $dbspec['dsn'] : (isset ($dbDSN) ? $dbDSN : ''));
 
-            $dbInstance->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
-            $dbInstance->setDataSource($datasrc);
-            if (isset($options['formatter'])) {
-                $dbInstance->setFormatter($options['formatter']);
-            }
-            $dbInstance->setTargetName($_GET['name']);
-            if (isset($_GET['start'])) {
-                $dbInstance->setStart($_GET['start']);
-            }
-            if (isset($_GET['records'])) {
-                $dbInstance->setRecordCount($_GET['records']);
-            }
-            for ($count = 0; $count < 10000; $count++) {
-                if (isset($_GET["condition{$count}field"])) {
-                    $dbInstance->setExtraCriteria(
-                        $_GET["condition{$count}field"],
-                        isset($_GET["condition{$count}operator"]) ? $_GET["condition{$count}operator"] : '=',
-                        isset($_GET["condition{$count}value"]) ? $_GET["condition{$count}value"] : '');
-                } else {
-                    break;
-                }
-            }
-            for ($count = 0; $count < 10000; $count++) {
-                if (isset($_GET["sortkey{$count}field"])) {
-                    $dbInstance->setExtraSortKey($_GET["sortkey{$count}field"], $_GET["sortkey{$count}direction"]);
-                } else {
-                    break;
-                }
-            }
-            for ($count = 0; $count < 10000; $count++) {
-                if (!isset($_GET["foreign{$count}field"])) {
-                    break;
-                }
-                $dbInstance->setForeignValue($_GET["foreign{$count}field"], $_GET["foreign{$count}value"]);
-            }
+        $dbClassName = 'DB_' . (isset($dbspec['db-class']) ? $dbspec['db-class'] : (isset ($dbClass) ? $dbClass : ''));
+        require_once("{$dbClassName}.php");
+        $dbInstance = null;
+        $dbInstance = new $dbClassName();
+        if ( $dbInstance == null )  {
+            $dbInstance->errorMessage[] = "The database class [{$dbClassName}] that you specify is not valid.";
+            echo implode('', $dbInstance->getMessagesForJS());
+            return;
+        }
+        if ($debug) {
+            $dbInstance->setDebugMode();
+        }
+        $dbInstance->initialize( $datasrc, $options, $dbspec );
 
-            for ($i = 0; $i < 1000; $i++) {
-                if (!isset($_GET["field_{$i}"])) {
-                    break;
-                }
-                $dbInstance->setTargetFields($_GET["field_{$i}"]);
+        $authentication
+            = ( isset( $datasrc['name']['authentication'] ) ? $datasrc['name']['authentication'] :
+                ( isset( $options['authentication'] ) ? $options['authentication'] : null ));
+        if ( $authentication != null )  {
+            if ( ! isset( $_GET['user'] ) && ! isset( $_GET['response'] ))  {
+                echo "challenge='{$dbInstance->generateChallenge()}';requireAuth=true;";
+                return;
             }
-            for ($i = 0; $i < 1000; $i++) {
-                if (!isset($_GET["value_{$i}"])) {
-                    break;
-                }
-                $dbInstance->setValues(get_magic_quotes_gpc() ? stripslashes($_GET["value_{$i}"]) : $_GET["value_{$i}"]);
-            }
-            //		if ( isset( $_GET['parent_keyval'] ))	{
-            //			$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
-            //		}
-            switch ($_GET['access']) {
-                case 'select':
-                    $result = $dbInstance->getFromDB($dbInstance->getTargetName());
-                    break;
-                case 'update':
-                    $result = $dbInstance->setToDB($dbInstance->getTargetName());
-                    break;
-                case 'insert':
-                    $result = $dbInstance->newToDB($dbInstance->getTargetName());
-                    break;
-                case 'delete':
-                    $result = $dbInstance->deleteFromDB($dbInstance->getTargetName());
-                    break;
-            }
-            $returnData = array();
-            foreach ($dbInstance->getErrorMessages() as $oneError) {
-                $returnData[] = "INTERMediator.errorMessages.push({$q}" . addslashes($oneError) . "{$q});";
-            }
-            foreach ($dbInstance->getDebugMessages() as $oneError) {
-                $returnData[] = "INTERMediator.debugMessages.push({$q}" . addslashes($oneError) . "{$q});";
-            }
-            switch ($_GET['access']) {
-                case 'select':
-                    echo implode('', $returnData),
-                        'var dbresult=' . arrayToJS($result, ''), ';',
-                        'var resultCount=', $dbInstance->mainTableCount, ';';
-                    break;
-                case 'insert':
-                    echo implode('', $returnData), 'var newRecordKeyValue=', $result, ';';
-                    break;
-                default:
-                    echo implode('', $returnData);
-                    break;
-            }
-        } else if ( $_GET['access'] == 'challenge' )   {
-            getChallenge($_GET['username']);
+        }
 
-        } else if ( $_GET['access'] == 'authenticate' )   {
-
+        switch ($_GET['access'])    {
+            case 'select':
+                $result = $dbInstance->getFromDB($dbInstance->getTargetName());
+                echo implode('', $dbInstance->getMessagesForJS()), 'var dbresult=' . arrayToJS($result, ''), ';',
+                'var resultCount=', $dbInstance->mainTableCount, ';';
+                break;
+            case 'update':
+                $dbInstance->setToDB($dbInstance->getTargetName());
+                echo implode('', $dbInstance->getMessagesForJS());
+                break;
+            case 'insert':
+                $result = $dbInstance->newToDB($dbInstance->getTargetName());
+                echo implode('', $dbInstance->getMessagesForJS()), 'var newRecordKeyValue=', $result, ';';
+                break;
+            case 'delete':
+                $dbInstance->deleteFromDB($dbInstance->getTargetName());
+                echo implode('', $dbInstance->getMessagesForJS());
+                break;
+            case 'challenge':
+                break;
+            case 'authenticate':
+                break;
         }
     }
-}
-
-function getChallenge($userName) {
-
-}
-
-function checkAuthentication()  {
-
 }
 ?>

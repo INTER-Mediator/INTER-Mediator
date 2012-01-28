@@ -15,7 +15,15 @@
  * To change this template use File | Settings | File Templates.
  */
 
-include_once('../INTER-Mediator/DB_FileMaker_FX.php');
+$fpath = 'INTER-Mediator/DB_FileMaker_FX.php';
+if ( file_exists( $fpath ) )    {
+    require_once ( $fpath );
+} else {
+    $fpath = "../{$fpath}";
+    if ( file_exists( $fpath ) )    {
+        require_once ( $fpath );
+    }
+}
 
 class DB_WebSite_FMSFX extends DB_FileMaker_FX	{
 

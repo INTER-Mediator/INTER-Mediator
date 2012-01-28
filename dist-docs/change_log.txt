@@ -2,7 +2,7 @@ INTER-Mediator Change Log
 by Masayuki Nii
 msyk@msyk.net
 
-http://msyk.net/im
+http://inter-mediator.info/
 Change Log will be supplied by English only.
 
 =================================
@@ -53,7 +53,12 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.1.0.4 === will be next release.
+Ver.1.0.5 === will be next release.
+
+Ver.1.0.4 (2012/1/28)
+- So many renaming for refactoring.
+- INTERMediatorCheckBrowse() function was moved to INTERMediatorOnPage.INTERMediatorCheckBrowser().
+- Bug fix for INTERMediatorLib.numberFormat().
 
 Ver.1.0.3 (2012/1/25)
 - DB_FileMaker_FX.php's warning is fixed.

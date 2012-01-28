@@ -9,7 +9,47 @@
 /*==================================================
  Database Access Object for Server-based Database
  ==================================================*/
-var IM_DBAdapter = {
+var INTERMediaotr_DBAdapter = {
+
+    server_access: function( accessURL, debugMessageNumber, errorMessageNumber )   {
+
+        var appPath = INTERMediatorOnPage.getEntryPath();
+        INTERMediator.debugMessages.push(
+            INTERMediatorOnPage.getMessages()[debugMessageNumber] + decodeURI(appPath + accessURL));
+        try {
+            do {
+                myRequest = new XMLHttpRequest();
+                myRequest.open('GET', appPath + accessURL, false);
+                myRequest.send(null);
+                var newRecordKeyValue = '';
+                var dbresult = '';
+                var resultCount = 0;
+                var requireAuth = false;
+                eval( myRequest.responseText );
+                if ( requireAuth )  {
+                    if ( INTERMediatorOnPage.authCount < 3 ) {
+                        var inputuser = prompt('user name', INTERMediatorOnPage.currentUser);
+                        if ( inputuser == null )    {
+                            throw "auth error";
+                        }
+                        var inputpassword = prompt('password', '');
+                        if ( inputpassword == null )    {
+                            throw "auth error";
+                        }
+
+                        INTERMediatorOnPage.authCount++;
+                    } else {
+                        throw "auth error";
+                    }
+                }
+            } while ( requireAuth );
+            return {dbresult: dbresult, resultCount: resultCount, newRecordKeyValue: newRecordKeyValue};
+        } catch (e) {
+            INTERMediator.errorMessages.push(
+                INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
+        }
+    },
     /*
      db_query
      Querying from database. The parameter of this function should be the object as below:
@@ -82,30 +122,23 @@ var IM_DBAdapter = {
 
         params += "&randkey" + Math.random();    // For ie...
         // IE uses caches as the result in spite of several headers. So URL should be randomly.
-        var appPath = IM_getEntryPath();
-
-        INTERMediator.debugMessages.push(IM_getMessages()[1012] + decodeURI(appPath + params));
-        var dbresult = '';
-        var resultCount = 0;
         var returnValue = {};
-        myRequest = new XMLHttpRequest();
         try {
-            myRequest.open('GET', appPath + params, false);
-            myRequest.send(null);
-            eval(myRequest.responseText);
-            if (( args['paging'] != null) && ( args['paging'] == true )) {
-                INTERMediator.pagedSize = args['records'];
-                INTERMediator.pagedAllCount = resultCount;
-            }
-            returnValue.recordset = dbresult;
-            returnValue.totalCount = resultCount;
+            var result = this.server_access( params, 1012, 1004 );
+            returnValue.recordset = result.dbresult;
+            returnValue.totalCount = result.resultCount;
             returnValue.count = 0;
-            for( var ix in dbresult )   {
+            for( var ix in result.dbresult )   {
                 returnValue.count++;
             }
-        } catch (e) {
-            INTERMediator.errorMessages.push(
-                INTERMediatorLib.getInsertedString(IM_getMessages()[1004], [e, myRequest.responseText]));
+            if (( args['paging'] != null) && ( args['paging'] == true )) {
+                INTERMediator.pagedSize = args['records'];
+                INTERMediator.pagedAllCount = result.resultCount;
+            }
+        } catch(e)  {
+            returnValue.recordset = null;
+            returnValue.totalCount = 0;
+            returnValue.count = 0;
         }
         return returnValue;
     },
@@ -148,22 +181,8 @@ var IM_DBAdapter = {
             params += "&field_" + extCount + "=" + encodeURI(args['dataset'][extCount]['field']);
             params += "&value_" + extCount + "=" + encodeURI(args['dataset'][extCount]['value']);
         }
-        var appPath = IM_getEntryPath();
-        INTERMediator.debugMessages.push(IM_getMessages()[1013] + decodeURI(appPath + params));
-
-        myRequest = new XMLHttpRequest();
-        try {
-            myRequest.open('GET', appPath + params, false);
-            // myRequest.setRequestHeader('Content-Type','application/x-www-form-urlencoded;
-            // charset=UTF-8');
-            myRequest.send(null);
-            var dbresult = '';
-            eval(myRequest.responseText);
-        } catch (e) {
-            INTERMediator.errorMessages.push(
-                INTERMediatorLib.getInsertedString(IM_getMessages()[1014], [e, myRequest.responseText]));
-        }
-        return dbresult;
+        var result = this.server_access( params, 1013, 1014 );
+        return result.dbresult;
     },
 
     /*
@@ -193,19 +212,8 @@ var IM_DBAdapter = {
             params += "&condition" + i + "operator=" + encodeURI(args['conditions'][i]['operator']);
             params += "&condition" + i + "value=" + encodeURI(args['conditions'][i]['value']);
         }
-        var appPath = IM_getEntryPath();
-        INTERMediator.debugMessages.push(IM_getMessages()[1017] + decodeURI(appPath + params));
-        myRequest = new XMLHttpRequest();
-        try {
-            myRequest.open('GET', appPath + params, false);
-            myRequest.send(null);
-            var dbresult = '';
-            eval(myRequest.responseText);
-        } catch (e) {
-            INTERMediator.errorMessages.push(
-                INTERMediatorLib.getInsertedString(IM_getMessages()[1015], [e, myRequest.responseText]));
-        }
-        INTERMediator.flushMessage();
+        var result = this.server_access( params, 1017, 1015 );
+//        INTERMediator.flushMessage();
     },
 
     /*
@@ -227,21 +235,8 @@ var IM_DBAdapter = {
             params += "&field_" + i + "=" + encodeURI(args['dataset'][i]['field']);
             params += "&value_" + i + "=" + encodeURI(args['dataset'][i]['value']);
         }
-        var appPath = IM_getEntryPath();
-
-        var newRecordKeyValue = '';
-        INTERMediator.debugMessages.push(IM_getMessages()[1018] + decodeURI(appPath + params));
-        myRequest = new XMLHttpRequest();
-        try {
-            myRequest.open('GET', appPath + params, false);
-            myRequest.send(null);
-            eval(myRequest.responseText);
-        } catch (e) {
-            INTERMediator.errorMessages.push(
-                INTERMediatorLib.getInsertedString(IM_getMessages()[1016], [e, myRequest.responseText]));
-        }
-        INTERMediator.flushMessage();
-        return newRecordKeyValue;
+        var result = this.server_access( params, 1018, 1016 );
+//        INTERMediator.flushMessage();
+        return result.newRecordKeyValue;
     }
-
 };

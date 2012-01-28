@@ -16,7 +16,7 @@
 //=================================
 // Database Access
 //=================================
-var IM_DBAdapter = {
+var INTERMediaotr_DBAdapter = {
     /*
      db_query
      Querying from database. The parameter of this function should be the object as below:
@@ -31,7 +31,7 @@ var IM_DBAdapter = {
      This function returns recordset of retrieved.
      */
     db_query:function (args) {
-        alert('The IM_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
+        alert('The INTERMediaotr_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
     },
 
     /*
@@ -43,7 +43,7 @@ var IM_DBAdapter = {
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
     db_update:function (args) {
-        alert('The IM_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
+        alert('The INTERMediaotr_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
     },
 
     /*
@@ -54,7 +54,7 @@ var IM_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
     db_delete:function (args) {
-        alert('The IM_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
+        alert('The INTERMediaotr_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
     },
 
     /*
@@ -67,7 +67,7 @@ var IM_DBAdapter = {
      This function returns the value of the key field of the new record.
      */
     db_createRecord:function (args) {
-        alert('The IM_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
+        alert('The INTERMediaotr_DBAdapter of HTML local database isn\'t supported yet. It will be in a future.');
     }
 
 };
