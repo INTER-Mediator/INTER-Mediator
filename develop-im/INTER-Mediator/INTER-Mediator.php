@@ -42,8 +42,11 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
 
     if (!isset($_GET['access'])) {
 
+        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Lib.js');
+        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Page.js');
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Adapter_DBServer.js');
+        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sha-1.js');
         echo "INTERMediatorOnPage.getEntryPath = function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};};{$LF}";
         //    echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
         echo "INTERMediatorOnPage.getDataSources = function(){return ",
@@ -68,6 +71,21 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         arrayToJS($browserCompatibility, ''), ";};{$LF}";
         echo "INTERMediator.debugMode=", $debug ? "true" : "false", ";{$LF}";
 
+        // Check Authentication
+        $boolValue = "false";
+        $requireAuthContext = array();
+        if ( isset( $options['authentication'] ))  {
+            $boolValue = "true";
+        }
+        foreach ( $datasrc as $aContext )   {
+            if ( $aContext['authentication'])   {
+                $boolValue = "true";
+                $requireAuthContext[] = $aContext['name'];
+            }
+        }
+        echo "INTERMediatorOnPage.requreAuthentication={$boolValue};";
+        echo "INTERMediatorOnPage.authRequiredContext=", arrayToJS($requireAuthContext, ''), ";";
+
     } else {
 
         $dbClassName = 'DB_' . (isset($dbspec['db-class']) ? $dbspec['db-class'] : (isset ($dbClass) ? $dbClass : ''));
@@ -84,21 +102,33 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         }
         $dbInstance->initialize( $datasrc, $options, $dbspec );
 
+        $access = $_GET['access'];
+        $requireAuth = false;
+
         $authentication
             = ( isset( $datasrc['name']['authentication'] ) ? $datasrc['name']['authentication'] :
-                ( isset( $options['authentication'] ) ? $options['authentication'] : null ));
-        if ( $authentication != null )  {
-            if ( ! isset( $_GET['user'] ) && ! isset( $_GET['response'] ))  {
-                echo "challenge='{$dbInstance->generateChallenge()}';requireAuth=true;";
-                return;
+            ( isset( $options['authentication'] ) ? $options['authentication'] : null ));
+        if ( $authentication != null )  {   // Authentication required
+            if ( ! isset( $_GET['authuser'] ) || ! isset( $_GET['response'] )
+                || strlen( $_GET['authuser'] ) == 0 || strlen( $_GET['response'] ) == 0 )  {   // No username or password
+                $access = "do nothing";
+                $requireAuth = true;
+            }
+            // User and Password are suppried but...
+            if ( ! $dbInstance->checkChallenge( $_GET['authuser'], $_GET['response'] )  // Not Authenticated!
+                && $_GET['access'] != 'challenge')  {  // Not accessing getting a challenge.
+                $access = "do nothing";
+                $requireAuth = true;
             }
         }
+        // Come here access=challenge or authenticated access
 
-        switch ($_GET['access'])    {
+        switch ($access)    {
             case 'select':
                 $result = $dbInstance->getFromDB($dbInstance->getTargetName());
-                echo implode('', $dbInstance->getMessagesForJS()), 'var dbresult=' . arrayToJS($result, ''), ';',
-                'var resultCount=', $dbInstance->mainTableCount, ';';
+                echo implode('', $dbInstance->getMessagesForJS()),
+                    'dbresult=' . arrayToJS($result, ''), ';',
+                "resultCount='{$dbInstance->mainTableCount}';";
                 break;
             case 'update':
                 $dbInstance->setToDB($dbInstance->getTargetName());
@@ -106,7 +136,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                 break;
             case 'insert':
                 $result = $dbInstance->newToDB($dbInstance->getTargetName());
-                echo implode('', $dbInstance->getMessagesForJS()), 'var newRecordKeyValue=', $result, ';';
+                echo implode('', $dbInstance->getMessagesForJS()), "newRecordKeyValue='{$result}';";
                 break;
             case 'delete':
                 $dbInstance->deleteFromDB($dbInstance->getTargetName());
@@ -114,8 +144,14 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                 break;
             case 'challenge':
                 break;
-            case 'authenticate':
-                break;
+        }
+        if ( $authentication != null )  {
+            $generatedChallenge = $dbInstance->generateChallenge();
+            $dbInstance->saveChallenge( $_GET['authuser'], $generatedChallenge );
+            echo "challenge='{$generatedChallenge}';";
+            if ( $requireAuth ) {
+                echo "requireAuth=true;";     // Force authentication to client
+            }
         }
     }
 }

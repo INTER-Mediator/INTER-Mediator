@@ -1,43 +1,17 @@
 FX.php inside of INTER-Mediator
 Masayuki Nii
 nii@msyk.net
-September 9, 2011
+September 9, 2011 / Feb 2, 2012 modified
 
 FX.php is developed by Chris Hansen et,al, and it could be used for FileMaker Server with PHP.
 
 * FX.php website: http://www.iviking.org/FX.php/ *
+* FX.php Souce code repository: https://github.com/yodarunamok/fxphp *
 * This framework(INTER-Mediator) is neither affiliated with nor endorsed by Chris Hansen. *
 
-The following archived file in the same directory as this file includes some directories
-and files in FX distribution file. They won't use in INTER-Mediator so far, so they are archived.
+INTER-Mediator requires FX.php to access the FileMaker Server. FX.php already includes INTER-Mediator distribution.
+FX folder of INTER-Mediator doesn't contain full FX.php files. If you need to check all files, refer to above sites.
 
-- files_in_FXdistribution.zip
-
-The archived file includes following files and directory.
-If you want to read any documents, please extract it.
-
-- ABOUT_THE_FILES.TXT
-- CHANGES.TXT
-- README.pdf
-- README.RTF
-- README.TXT
-- Licenses (dir)
-- Databases (dir)
-- Developer (dir)
-- Documentation (dir)
-- index.php
-- detail.php
-- image_proxy.php
-- server_data.php
-- fxparser (dir)
-- Tutorials (dir)
-
-I've modified the following file to adapt INTER-Mediator.
-
-- FX.php
-
-I've created the following file to adapt INTER-Mediator.
-
-- ObjectiveFX.php
+I'm contributing FX.php for supporting Unicode characters.
 
 Thanks for Chris and FX.php developers.

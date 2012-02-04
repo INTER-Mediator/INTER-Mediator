@@ -184,6 +184,31 @@ abstract class DB_Base
         $this->authentication = $ar;
     }
 
+    function getUserTable() {
+        return isset($this->authentication['user-table'])
+            ? $this->authentication['user-table'] : 'authuser';
+    }
+
+    function getGroupTable() {
+        return isset($this->authentication['group-table'])
+            ? $this->authentication['group-table'] : 'authgroup';
+    }
+
+    function getPrivTable() {
+        return isset($this->authentication['privilege-table'])
+            ? $this->authentication['privilege-table'] : 'authpriv';
+    }
+
+    function getCorrTable() {
+        return isset($this->authentication['corresponding-table'])
+            ? $this->authentication['corresponding-table'] : 'authcor';
+    }
+
+    function getHashTable() {
+        return isset($this->authentication['challenge-table'])
+            ? $this->authentication['challenge-table'] : 'issuedhash';
+    }
+
     function setCurrentUser($str)
     {
         $this->currentUser = $str;
@@ -455,10 +480,10 @@ abstract class DB_Base
     function generateChallenge()
     {
         $str = '';
-        for ( $i = 0 ; $i < 8 ; $i++ )  {
+        for ( $i = 0 ; $i < 12 ; $i++ )  {
             $str .= chr( rand( 1, 255 ));
         }
-        return urlencode( $str );
+        return base64_encode( $str );
     }
 
     function saveChallenge( $username, $challenge )
@@ -472,11 +497,11 @@ abstract class DB_Base
         $returnValue = false;
 
         $storedChalenge = $this->authSupportRetrieveChallenge($username);
-        if ( strlen($storedChalenge) == 8 ) {
+        if ( strlen($storedChalenge) == 16 ) {   // ex.LK54OKLn2SQQvlPH
             $hashedPassword = $this->authSupportRetrieveHashedPassword($username);
             if ( strlen($hashedPassword) > 0 ) {
-                $hashSeed = $hashedPassword . $storedChalenge . $username;
-                if ( $hashedvalue === sha1($hashSeed) ) {
+                $hashSeed = $storedChalenge . $hashedPassword;
+                if ( $hashedvalue == sha1($hashSeed) ) {
                     $returnValue = true;
                 }
             }

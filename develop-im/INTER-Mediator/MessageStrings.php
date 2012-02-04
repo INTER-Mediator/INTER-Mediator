@@ -50,6 +50,10 @@ class MessageStrings
         1024 => 'Multiple records are going to be updated. The key field might be wrong. Are you sure?',
         1025 => 'Are you sure to delete?',
         1026 => 'Are you sure to create record?',
+        2001 => 'Authentication Error!',
+        2002 => 'User:',
+        2003 => 'Password:',
+        2004 => 'Log In',
     );
 }
 

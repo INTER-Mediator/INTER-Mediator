@@ -1568,7 +1568,7 @@ class FX
                     xml_set_object($xml_parser, $this);
                     xml_set_element_handler($xml_parser, "StartElement", "EndElement");
                     xml_set_character_data_handler($xml_parser, "ElementContents");
-                    $xmlParseResult = xml_parse($xml_parser, ConvertSarrogatePair($data), true);
+                    $xmlParseResult = xml_parse($xml_parser, ConvertSurrogatePair($data), true);
                     if (!$xmlParseResult) {
                         /* ==============End of the addition */
                         $theMessage = sprintf("ExecuteQuery XML error: %s at line %d",
@@ -2191,11 +2191,11 @@ class FX
     }
 }
 
-/* Convert wrong sarrogated-pair character to light code sequence in UTF-8
+/* Convert wrong surrogated-pair character to light code sequence in UTF-8
  * Masayuki Nii (msyk@msyk.net) Oct 9, 2009
  * Refered http://www.nii.ac.jp/CAT-ILL/about/system/vista.html
  */
-function ConvertSarrogatePair($data)
+function ConvertSurrogatePair($data)
 {
     $altData = '';
     for ($i = 0; $i < strlen($data); $i++) {

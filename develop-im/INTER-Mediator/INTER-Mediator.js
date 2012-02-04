@@ -8,558 +8,6 @@
  */
 // Cleaning-up by http://jsbeautifier.org/ or Eclipse's Formatting
 
-
-var INTERMediatorLib = {
-
-    ignoreEnclosureRepeaterClassName:"_im_ignore_enc_rep",
-    rollingRepeaterClassName:"_im_repeater",
-    rollingEnclocureClassName:"_im_enclosure",
-
-    getParentRepeater:function (node) {
-        var currentNode = node;
-        while (currentNode != null) {
-            if (INTERMediatorLib.isRepeater(currentNode, true)) {
-                return currentNode;
-            }
-            currentNode = currentNode.parentNode;
-        }
-        return null;
-    },
-
-    getParentEnclosure:function (node) {
-        var currentNode = node;
-        while (currentNode != null) {
-            if (INTERMediatorLib.isEnclosure(currentNode, true)) {
-                return currentNode;
-            }
-            currentNode = currentNode.parentNode;
-        }
-        return null;
-    },
-
-    isEnclosure:function (node, nodeOnly) {
-        if (node == null || node.nodeType != 1) return false;
-        var tagName = node.tagName;
-        var className = INTERMediatorLib.getClassAttributeFromNode(node);
-        if ( className != null && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
-            return false;
-        }
-        if ((tagName == 'TBODY')
-            || (tagName == 'UL')
-            || (tagName == 'OL')
-            || (tagName == 'SELECT')
-            || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null
-            && className.indexOf(INTERMediatorLib.rollingEnclocureClassName) >= 0)) {
-            if (nodeOnly) {
-                return true;
-            } else {
-                var countChild = node.childNodes.length;
-                for (var k = 0; k < countChild; k++) {
-                    if (INTERMediatorLib.isRepeater(node.childNodes[k], false)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    },
-
-    isRepeater:function (node, nodeOnly) {
-        if (node.nodeType != 1) return false;
-        var tagName = node.tagName;
-        var className = INTERMediatorLib.getClassAttributeFromNode(node);
-        if ( className != null && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
-            return false;
-        }
-        if ((tagName == 'TR')
-            || (tagName == 'LI')
-            || (tagName == 'OPTION')
-            || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null
-            && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)) {
-            if (nodeOnly) {
-                return true;
-            } else {
-                return searchLinkedElement(node);
-            }
-        }
-        return false;
-
-        function searchLinkedElement(node) {
-            if (INTERMediatorLib.isLinkedElement(node)) {
-                return true;
-            }
-            var countChild = node.childNodes.length;
-            for (var k = 0; k < countChild; k++) {
-                var nType = node.childNodes[k].nodeType;
-                if (nType == 1) { // Work for an element
-                    if (INTERMediatorLib.isLinkedElement(node.childNodes[k])) {
-                        return true;
-                    } else if (searchLinkedElement(node.childNodes[k])) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-    },
-
-    /**
-     * Cheking the argument is the Linked Element or not.
-     */
-
-    isLinkedElement:function (node) {
-        if (node != null) {
-            if (INTERMediator.titleAsLinkInfo) {
-                if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
-                    // IE: If the node doesn't have a title attribute, getAttribute
-                    // doesn't return null.
-                    // So it requrired check if it's empty string.
-                    return true;
-                }
-            }
-            if (INTERMediator.classAsLinkInfo) {
-                var classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classInfo != null) {
-                    var matched = classInfo.match(/IM\[.*\]/);
-                    if (matched != null) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    },
-
-    detectedRepeater:null,
-
-    getEnclosureSimple:function (node) {
-        if (INTERMediatorLib.isEnclosure(node, true)) {
-            return node;
-        }
-        return INTERMediatorLib.getEnclosureSimple(node.parentNode);
-    },
-
-    getEnclosure:function (node) {
-
-        var currentNode = node;
-        while (currentNode != null) {
-            if (INTERMediatorLib.isRepeater(currentNode)) {
-                INTERMediatorLib.detectedRepeater = currentNode;
-            } else if (isRepeaterOfEnclosure(INTERMediatorLib.detectedRepeater, currentNode)) {
-                INTERMediatorLib.detectedRepeater = null;
-                return currentNode;
-            }
-            currentNode = currentNode.parentNode;
-        }
-        return null;
-
-        /**
-         * Check the pair of nodes in argument is valid for repater/enclosure.
-         */
-
-        function isRepeaterOfEnclosure(repeater, enclosure) {
-            if (repeater == null || enclosure == null) return false;
-            var repeaterTag = repeater.tagName;
-            var enclosureTag = enclosure.tagName;
-            if ((repeaterTag == 'TR' && enclosureTag == 'TBODY')
-                || (repeaterTag == 'OPTION' && enclosureTag == 'SELECT')
-                || (repeaterTag == 'LI' && enclosureTag == 'OL')
-                || (repeaterTag == 'LI' && enclosureTag == 'UL')) {
-                return true;
-            }
-            if ((enclosureTag == 'DIV' || enclosureTag == 'SPAN' )) {
-                var enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
-                if (enclosureClass != null && enclosureClass.indexOf('_im_enclosure') >= 0) {
-                    var repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
-                    if ((repeaterTag == 'DIV' || repeaterTag == 'SPAN') && repeaterClass != null && repeaterClass.indexOf('_im_repeater') >= 0) {
-                        return true;
-                    } else if (repeaterTag == 'INPUT') {
-                        var repeaterType = repeater.getAttribute('type');
-                        if (repeaterType != null && ((repeaterType.indexOf('radio') >= 0
-                            || repeaterType.indexOf('check') >= 0))) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-    },
-
-
-    /**
-     * Get the table name / field name information from node as the array of
-     * definitions.
-     */
-
-    getLinkedElementInfo:function (node) {
-        if (INTERMediatorLib.isLinkedElement(node)) {
-            var defs = new Array();
-            if (INTERMediator.titleAsLinkInfo) {
-                if (node.getAttribute('TITLE') != null) {
-                    var eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
-                    for (var i = 0; i < eachDefs.length; i++) {
-                        defs.push(resolveAlias(eachDefs[i]));
-                    }
-                }
-            }
-            if (INTERMediator.classAsLinkInfo) {
-                var classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classAttr != null && classAttr.length > 0) {
-                    var matched = classAttr.match(/IM\[([^\]]*)\]/);
-                    var eachDefs = matched[1].split(INTERMediator.defDivider);
-                    for (var i = 0; i < eachDefs.length; i++) {
-                        defs.push(resolveAlias(eachDefs[i]));
-                    }
-                }
-            }
-            return defs;
-        }
-        return false;
-
-        function resolveAlias(def) {
-            var options = INTERMediatorOnPage.getOptionsAliases();
-            var aliases = options['aliases'];
-            if (aliases != null && aliases[def] != null) {
-                return aliases[def];
-            }
-            return def;
-        }
-    },
-
-    /**
-     * Get the repeater tag from the enclosure tag.
-     */
-
-    repeaterTagFromEncTag:function (tag) {
-        if (tag == 'TBODY') return 'TR';
-        else if (tag == 'SELECT') return 'OPTION';
-        else if (tag == 'UL') return 'LI';
-        else if (tag == 'OL') return 'LI';
-        else if (tag == 'DIV') return 'DIV';
-        else if (tag == 'SPAN') return 'SPAN';
-        return null;
-    },
-
-    getNodeInfoArray:function (nodeInfo) {
-        var comps = nodeInfo.split(INTERMediator.separator);
-        var tableName = '', fieldName = '', targetName = '';
-        if (comps.length == 3) {
-            tableName = comps[0];
-            fieldName = comps[1];
-            targetName = comps[2];
-        } else if (comps.length == 2) {
-            tableName = comps[0];
-            fieldName = comps[1];
-        } else {
-            fieldName = nodeInfo;
-        }
-        return {
-            'table':tableName,
-            'field':fieldName,
-            'target':targetName
-        };
-    },
-
-    /* As for IE7, DOM element can't have any prototype. */
-
-    getClassAttributeFromNode:function (node) {
-        if (node == null) return '';
-        var str = '';
-        if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
-            str = node.getAttribute('className');
-        } else {
-            str = node.getAttribute('class');
-        }
-        return str;
-    },
-
-    setClassAttributeToNode:function (node, className) {
-        if (node == null) return;
-        if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
-            node.setAttribute('className', className);
-        } else {
-            node.setAttribute('class', className);
-        }
-    },
-
-    addEvent:function (node, evt, func) {
-        if (node.addEventListener) {
-            node.addEventListener(evt, func, false);
-        } else if (node.attachEvent) {
-            node.attachEvent('on' + evt, func);
-        }
-    },
-
-    toNumber:function (str) {
-        var s = '';
-        str = (new String(str)).toString();
-        for (var i = 0; i < str.length; i++) {
-            var c = str.charAt(i);
-            if ((c >= '0' && c <= '9') || c == '-' || c == '.') {
-                s += c;
-            }
-        }
-        return parseFloat(s);
-    },
-
-    numberFormat:function (str, digit) {
-        var s = new Array();
-        var n = INTERMediatorLib.toNumber(str);
-        var sign = '';
-        if (n < 0) {
-            sign = '-';
-            n = -n;
-        }
-        var f = n - Math.floor(n);
-        //    if (f == 0) f = '';
-        for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
-            if (n > 1000) {
-                s.push(('000' + (n % 1000).toString()).substr(-3));
-            } else {
-                s.push(n);
-            }
-        }
-        var underDot = (digit == null) ? 0 : INTERMediatorLib.toNumber(digit);
-        var underNumStr = (underDot == 0) ? '' : new String( Math.floor( f * Math.pow( 10, underDot )));
-        while( underNumStr.length < underDot )  {
-            underNumStr = "0" + underNumStr;
-        }
-        return sign + s.reverse().join(',') + (underNumStr == '' ? '' : '.' + underNumStr);
-    },
-
-    objectToString:function (obj) {
-        if (obj == null) {
-            return "null";
-        }
-        if (typeof obj == 'object') {
-            var str = '';
-            if (obj.constractor === Array) {
-                for (var i = 0; i < obj.length; i++) {
-                    str += INTERMediatorLib.objectToString(obj[i]) + ", ";
-                }
-                return "[" + str + "]";
-            } else {
-                for (var key in obj) {
-                    str += "'" + key + "':" + INTERMediatorLib.objectToString(obj[key]) + ", ";
-                }
-                return "{" + str + "}"
-            }
-        } else {
-            return "'" + obj + "'";
-        }
-    },
-
-    getTargetTableForRetrieve:function (element) {
-        if (element['view'] != null) {
-            return element['view'];
-        }
-        return element['name'];
-    },
-
-    getTargetTableForUpdate:function (element) {
-        if (element['table'] != null) {
-            return element['table'];
-        }
-        return element['name'];
-    },
-
-    getInsertedString:function (tmpStr, dataArray) {
-        var resultStr = tmpStr;
-        if (dataArray != null) {
-            for (var counter = 1; counter <= dataArray.length; counter++) {
-                resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
-            }
-        }
-        return resultStr;
-    },
-
-    getInsertedStringFromErrorNumber:function (errNum, dataArray) {
-        var resultStr = INTERMediatorOnPage.getMessages()[errNum];
-        if (dataArray != null) {
-            for (var counter = 1; counter <= dataArray.length; counter++) {
-                resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
-            }
-        }
-        return resultStr;
-    },
-
-    getNamedObject:function (obj, key, named) {
-        for (var index in obj) {
-            if (obj[index][key] == named) {
-                return obj[index];
-            }
-        }
-        return null;
-    },
-
-    getNamedObjectInObjectArray:function (ar, key, named) {
-        for (var i = 0; i < ar.length; i++) {
-            if (ar[i][key] == named) {
-                return ar[i];
-            }
-        }
-        return null;
-    },
-
-    getNamedValueInObject:function (ar, key, named, retrieveKey) {
-        for (var index in ar) {
-            if (ar[index][key] == named) {
-                return ar[index][retrieveKey];
-            }
-        }
-        return null;
-    },
-
-    getRecordsetFromFieldValueObject:function (obj) {
-        var recordset = {};
-        for (var index in obj) {
-            recordset[ obj[index]['field'] ] = obj[index]['value'];
-        }
-        return recordset;
-    },
-
-    getNodePath:function (node) {
-        var path = '';
-        if (node.tagName == null) {
-            return '';
-        } else {
-            return INTERMediatorLib.getNodePath(node.parentNode) + "/" + node.tagName;
-        }
-    }
-};
-
-var INTERMediatorOnPage = {
-    authCount: 0,
-
-    INTERMediatorCheckBrowser: function(deleteNode) {
-        var positiveList = INTERMediatorOnPage.browserCompatibility();
-        var matchAgent = false;
-        var matchOS = false;
-        var versionStr;
-        for (var agent in  positiveList) {
-            if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
-                matchAgent = true;
-                if (positiveList[agent] instanceof Object) {
-                    for (var os in positiveList[agent]) {
-                        if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
-                            matchOS = true;
-                            versionStr = positiveList[agent][os];
-                            break;
-                        }
-                    }
-                } else {
-                    matchOS = true;
-                    versionStr = positiveList[agent];
-                    break;
-                }
-            }
-        }
-        var judge = false;
-        if (matchAgent && matchOS) {
-            var specifiedVersion = parseInt(versionStr);
-            var versionNum;
-            if (navigator.appVersion.indexOf('MSIE') > -1) {
-                var msieMark = navigator.appVersion.indexOf('MSIE');
-                var dotPos = navigator.appVersion.indexOf('.', msieMark);
-                versionNum = parseInt(navigator.appVersion.substring(msieMark + 4, dotPos));
-                /*
-                 As for the appVersion property of IE, refer http://msdn.microsoft.com/en-us/library/aa478988.aspx
-                 */
-            } else {
-                var dotPos = navigator.appVersion.indexOf('.');
-                versionNum = parseInt(navigator.appVersion.substring(0, dotPos));
-            }
-            if (versionStr.indexOf('-') > -1) {
-                judge = (specifiedVersion >= versionNum);
-            } else if (versionStr.indexOf('+') > -1) {
-                judge = (specifiedVersion <= versionNum);
-            } else {
-                judge = (specifiedVersion == versionNum);
-            }
-        }
-        if (judge) {
-            if (deleteNode != null) {
-                deleteNode.parentNode.removeChild(deleteNode);
-            }
-        } else {
-            var bodyNode = document.getElementsByTagName('BODY')[0];
-            bodyNode.innerHTML = '<div align="center"><font color="gray"><font size="+2">'
-                + INTERMediatorOnPage.getMessages()[1022] + '</font><br>'
-                + INTERMediatorOnPage.getMessages()[1023] + '<br>' + navigator.userAgent + '</font></div>';
-        }
-        return judge;
-    },
-
-    /*
-     Seek nodes from the repeater of "fromNode" parameter.
-     */
-    getNodeIdFromIMDefinition:function (imDefinition, fromNode) {
-        var repeaterNode = INTERMediatorLib.getParentRepeater(fromNode);
-        return seekNode(repeaterNode, imDefinition);
-
-        function seekNode(node, imDefinition) {
-            if (node.nodeType != 1) {
-                return null;
-            }
-            var children = node.childNodes;
-            if (children == null) {
-                return null;
-            } else {
-                for (var i = 0; i < children.length; i++) {
-                    if (children[i].getAttribute != null) {
-                        var thisClass = children[i].getAttribute('class');
-                        var thisTitle = children[i].getAttribute('title');
-                        if ((thisClass != null && thisClass.indexOf(imDefinition) > -1)
-                            || (thisTitle != null && thisTitle.indexOf(imDefinition) > -1)) {
-                            return children[i].getAttribute('id');
-                            break;
-                        } else {
-                            var returnValue = seekNode(children[i], imDefinition);
-                            if (returnValue != null) {
-                                return returnValue;
-                            }
-                        }
-                    }
-                }
-            }
-            return null;
-        }
-    },
-
-    getNodeIdsFromIMDefinition:function (imDefinition, fromNode) {
-        var enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
-        if (enclosureNode != null) {
-            var nodeIds = [];
-            seekNode(enclosureNode, imDefinition);
-        }
-        return nodeIds;
-
-        function seekNode(node, imDefinition) {
-            if (node.nodeType != 1) {
-                return null;
-            }
-            var children = node.childNodes;
-            if (children == null) {
-                return null;
-            } else {
-                for (var i = 0; i < children.length; i++) {
-                    if (children[i].getAttribute != null) {
-                        var thisClass = children[i].getAttribute('class');
-                        var thisTitle = children[i].getAttribute('title');
-                        if ((thisClass != null && thisClass.indexOf(imDefinition) > -1)
-                            || (thisTitle != null && thisTitle.indexOf(imDefinition) > -1)) {
-                            nodeIds.push(children[i].getAttribute('id'));
-                        }
-                        seekNode(children[i], imDefinition);
-                    }
-                }
-            }
-            return null;
-        }
-    }
-};
-
 var INTERMediator = {
     /*
      Properties
@@ -699,16 +147,23 @@ var INTERMediator = {
             var keyingField = keyingComp[0];
             keyingComp.shift();
             var keyingValue = keyingComp.join('=');
-            var currentVal = INTERMediaotr_DBAdapter.db_query({
-                name:objectSpec['name'],
-                records:1,
-                paging:objectSpec['paging'],
-                fields:[objectSpec['field']],
-                parentkeyvalue:null,
-                conditions:[
-                    {field:keyingField, operator:'=', value:keyingValue}
-                ],
-                useoffset:false});
+            try {
+                var currentVal = INTERMediaotr_DBAdapter.db_query({
+                    name:objectSpec['name'],
+                    records:1,
+                    paging:objectSpec['paging'],
+                    fields:[objectSpec['field']],
+                    parentkeyvalue:null,
+                    conditions:[
+                        {field:keyingField, operator:'=', value:keyingValue}
+                    ],
+                    useoffset:false});
+            } catch (ex) {
+                if ( ex == "_im_requath_request_" ) {
+                    throw ex;
+                }
+            }
+
             if (currentVal.recordset == null || currentVal.recordset[0] == null
                 || currentVal.recordset[0][objectSpec['field']] == null) {
                 alert(INTERMediatorLib.getInsertedString(INTERMediatorOnPage.getMessages()[1003], [objectSpec['field']]));
@@ -757,14 +212,21 @@ var INTERMediator = {
 
             if (newValue != null) {
                 var criteria = objectSpec['keying'].split('=');
-                INTERMediaotr_DBAdapter.db_update({
-                    name:objectSpec['name'],
-                    conditions:[
-                        {field:criteria[0], operator:'=', value:criteria[1]}
-                    ],
-                    dataset:[
-                        {field:objectSpec['field'], value:newValue}
-                    ]});
+                try {
+                    INTERMediaotr_DBAdapter.db_update({
+                        name:objectSpec['name'],
+                        conditions:[
+                            {field:criteria[0], operator:'=', value:criteria[1]}
+                        ],
+                        dataset:[
+                            {field:objectSpec['field'], value:newValue}
+                        ]});
+                } catch (ex) {
+                    if ( ex == "_im_requath_request_" ) {
+                        throw ex;
+                    }
+                }
+
                 objectSpec['initialvalue'] = newValue;
                 var updateNodeId = objectSpec['updatenodeid'];
                 var needUpdate = false;
@@ -793,12 +255,19 @@ var INTERMediator = {
                 return;
             }
         }
-        INTERMediaotr_DBAdapter.db_delete({
-            name:targetName,
-            conditions:[
-                {field:keyField, operator:'=', value:keyValue}
-            ]
-        });
+        try {
+            INTERMediaotr_DBAdapter.db_delete({
+                name:targetName,
+                conditions:[
+                    {field:keyField, operator:'=', value:keyValue}
+                ]
+            });
+        } catch (ex) {
+            if ( ex == "_im_requath_request_" ) {
+                throw ex;
+            }
+        }
+
         for (var key in removeNodes) {
             var removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
@@ -826,7 +295,14 @@ var INTERMediator = {
                     value:currentContext['default-values'][index]['value']});
             }
         }
-        INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+        try {
+            INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+        } catch (ex) {
+            if ( ex == "_im_requath_request_" ) {
+                throw ex;
+            }
+        }
+
         for (var key in removeNodes) {
             var removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
@@ -884,12 +360,19 @@ var INTERMediator = {
                 return;
             }
         }
-        INTERMediaotr_DBAdapter.db_delete({
-            name:targetName,
-            conditions:[
-                {field:keyField, operator:'=', value:keyValue}
-            ]
-        });
+        try {
+            INTERMediaotr_DBAdapter.db_delete({
+                name:targetName,
+                conditions:[
+                    {field:keyField, operator:'=', value:keyValue}
+                ]
+            });
+        } catch (ex) {
+            if ( ex == "_im_requath_request_" ) {
+                throw ex;
+            }
+        }
+
         if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 2) {
             INTERMediator.startFrom--;
             if (INTERMediator.startFrom < 0) {
@@ -931,21 +414,39 @@ var INTERMediator = {
      */
     construct:function (fromStart, indexOfKeyFieldObject) {
 
+        if ( INTERMediatorOnPage.authCount > 2 )    {
+            INTERMediatorOnPage.authenticationError();
+            INTERMediator.flushMessage();
+            return;
+        }
+
         var currentLevel = 0;
         var linkedNodes;
         var postSetFields = [];
         var buttonIdNum = 1;
         var deleteInsertOnNavi = [];
 
-        INTERMediatorOnPage.authCount = 0;
-
-        if (fromStart) {
-            INTERMediator.partialConstructing = false;
-            pageConstruct();
-        } else {
-            INTERMediator.partialConstructing = true;
-            partialConstruct(indexOfKeyFieldObject);
+        try {
+            if (fromStart) {
+                this.partialConstructing = false;
+                pageConstruct();
+            } else {
+                this.partialConstructing = true;
+                partialConstruct(indexOfKeyFieldObject);
+            }
+        } catch (ex) {
+            if ( ex == "_im_requath_request_" ) {
+                if ( INTERMediatorOnPage.requreAuthentication && ! INTERMediatorOnPage.isComplementAuthData() ) {
+                    INTERMediatorOnPage.authChallenge = null;
+                    INTERMediatorOnPage.authHashedPassword = null;
+                    INTERMediatorOnPage.authenticating(
+                        function(){INTERMediator.construct(fromStart, indexOfKeyFieldObject);}
+                    );
+                    return;
+                }
+            }
         }
+
         INTERMediator.flushMessage(); // Show messages
 
         /*
@@ -972,10 +473,15 @@ var INTERMediator = {
                     = INTERMediator.keyFieldObject[indexOfKeyFieldObject]['foreign-value'][field];
             }
             postSetFields = [];
-
-            seekEnclosureNode(
-                updateNode, parentRecordset, updateContext,
-                INTERMediatorLib.getEnclosureSimple(updateNode), null);
+            try{
+                seekEnclosureNode(
+                    updateNode, parentRecordset, updateContext,
+                    INTERMediatorLib.getEnclosureSimple(updateNode), null);
+            } catch (ex) {
+                if ( ex == "_im_requath_request_" ) {
+                    throw ex;
+                }
+            }
 
             for (var i = 0; i < postSetFields.length; i++) {
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
@@ -1030,7 +536,14 @@ var INTERMediator = {
             }
             postSetFields = [];
 
-            seekEnclosureNode(bodyNode, null, null, null, null);
+            try {
+                seekEnclosureNode(bodyNode, null, null, null, null);
+            } catch (ex) {
+                if ( ex == "_im_requath_request_" ) {
+                    throw ex;
+                }
+            }
+
 
             // After work to set up popup menus.
             for (var i = 0; i < postSetFields.length; i++) {
@@ -1066,16 +579,23 @@ var INTERMediator = {
         function seekEnclosureNode(node, currentRecord, currentTable, parentEnclosure, objectReference) {
             var nType = node.nodeType;
             if (nType == 1) { // Work for an element
-                if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
-                    expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
-                } else {
-                    var childs = node.childNodes; // Check all child nodes.
-                    for (var i = 0; i < childs.length; i++) {
-                        if (childs[i].nodeType == 1) {
-                            seekEnclosureNode(childs[i], currentRecord, currentTable, parentEnclosure, objectReference);
+                try {
+                    if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
+                        expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                    } else {
+                        var childs = node.childNodes; // Check all child nodes.
+                        for (var i = 0; i < childs.length; i++) {
+                            if (childs[i].nodeType == 1) {
+                                seekEnclosureNode(childs[i], currentRecord, currentTable, parentEnclosure, objectReference);
+                            }
                         }
                     }
+                } catch (ex) {
+                    if ( ex == "_im_requath_request_" ) {
+                        throw ex;
+                    }
                 }
+
             }
         }
 
@@ -1171,14 +691,20 @@ var INTERMediator = {
                 INTERMediator.keyFieldObject.push(thisKeyFieldObject);
 
                 // Access database and get records
-                var targetRecords = INTERMediaotr_DBAdapter.db_query({
-                    name:currentContext['name'],
-                    records:currentContext['records'],
-                    paging:currentContext['paging'],
-                    fields:fieldList,
-                    parentkeyvalue:relationValue,
-                    conditions:null,
-                    useoffset:true});
+                try {
+                    var targetRecords = INTERMediaotr_DBAdapter.db_query({
+                        name:currentContext['name'],
+                        records:currentContext['records'],
+                        paging:currentContext['paging'],
+                        fields:fieldList,
+                        parentkeyvalue:relationValue,
+                        conditions:null,
+                        useoffset:true});
+                } catch (ex) {
+                    if ( ex == "_im_requath_request_" ) {
+                        throw ex;
+                    }
+                }
 
                 if (targetRecords.count == 0) {
                     for (var i = 0; i < repeaters.length; i++) {

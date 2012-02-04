@@ -20,17 +20,20 @@ IM_Entry(
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
         ),
-        array('name' => 'contact',
+        array(
+            'name' => 'contact',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
         ),
-        array('name' => 'contact_way',
+        array(
+            'name' => 'contact_way',
             'key' => 'id',
         ),
-        array('name' => 'cor_way_kindname',
+        array(
+            'name' => 'cor_way_kindname',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')
@@ -38,12 +41,28 @@ IM_Entry(
             'foreign-key' => 'way_id',
             'join-field' => 'way'
         ),
-        array('name' => 'history',
+        array(
+            'name' => 'history',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
+            'authentication' => array(
+                'all' => array( /* load, update, new, delete*/
+                    'user' => array (),
+                    'group' => array(),
+                    'privilege' => array(),
+                    'target' => 'table',
+                ),
+                'load' => array( /* load, update, new, delete*/
+                    'user' => array (),
+                    'group' => array(),
+                    'privilege' => array(),
+                    'target' => 'record',
+                    'field' => 'field'
+                ),
+            ),
         ),
     ),
     array(
@@ -52,6 +71,18 @@ IM_Entry(
             'kindid' => 'cor_way_kindname@kind_id@value',
             'kindname' => 'cor_way_kindname@name_kind@innerHTML',
         ),
+        //    'transaction' => 'none',
+        'authentication' => array(  // table only, for all operations
+            'user' => array (), // Itemize permitted users
+            'group' => array(), // Itemize permitted groups
+            'privilege' => array(), // Itemize permitted privileges
+            'user-table' => 'authuser', // Default values, or "_Native"
+            'group-table' => 'authgroup',
+            'privilege-table' => 'authpriv',
+            'corresponding-table' => 'authcor',
+            'challenge-table' => 'Challenge',
+        ),
+
     ),
     array('db-class' => 'PDO'),
     false

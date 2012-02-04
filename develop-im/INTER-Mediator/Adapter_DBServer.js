@@ -14,42 +14,62 @@ var INTERMediaotr_DBAdapter = {
     server_access: function( accessURL, debugMessageNumber, errorMessageNumber )   {
 
         var appPath = INTERMediatorOnPage.getEntryPath();
-        INTERMediator.debugMessages.push(
-            INTERMediatorOnPage.getMessages()[debugMessageNumber] + decodeURI(appPath + accessURL));
-        try {
-            do {
-                myRequest = new XMLHttpRequest();
-                myRequest.open('GET', appPath + accessURL, false);
-                myRequest.send(null);
-                var newRecordKeyValue = '';
-                var dbresult = '';
-                var resultCount = 0;
-                var requireAuth = false;
-                eval( myRequest.responseText );
-                if ( requireAuth )  {
-                    if ( INTERMediatorOnPage.authCount < 3 ) {
-                        var inputuser = prompt('user name', INTERMediatorOnPage.currentUser);
-                        if ( inputuser == null )    {
-                            throw "auth error";
-                        }
-                        var inputpassword = prompt('password', '');
-                        if ( inputpassword == null )    {
-                            throw "auth error";
-                        }
+        var authParams = '';
+        if ( INTERMediatorOnPage.authUser.length > 0 )  {
+            authParams = "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser )
+                + "&response=" + encodeURIComponent(
+                CybozuLabs.SHA1.calc(
+                    INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword) );
+        }
 
-                        INTERMediatorOnPage.authCount++;
-                    } else {
-                        throw "auth error";
-                    }
-                }
-            } while ( requireAuth );
-            return {dbresult: dbresult, resultCount: resultCount, newRecordKeyValue: newRecordKeyValue};
+        INTERMediator.debugMessages.push(
+            INTERMediatorOnPage.getMessages()[debugMessageNumber] + decodeURI(appPath + accessURL + authParams));
+
+        INTERMediator.debugMessages.push("INTERMediatorOnPage.authChallenge="+INTERMediatorOnPage.authChallenge);
+
+        var newRecordKeyValue = '';
+        var dbresult = '';
+        var resultCount = 0;
+        var challenge = null;
+        var requireAuth = false;
+        try {
+            //    do {
+            myRequest = new XMLHttpRequest();
+            myRequest.open('GET', appPath + accessURL + authParams, false);
+            myRequest.send(null);
+            INTERMediator.debugMessages.push("myRequest.responseText="+myRequest.responseText);
+
+            eval( myRequest.responseText );
+            if ( challenge != null )    {
+                INTERMediatorOnPage.authChallenge = challenge;
+            }
         } catch (e) {
             INTERMediator.errorMessages.push(
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
         }
+        if ( requireAuth )  {
+            INTERMediator.debugMessages.push("requiredAuth == true");
+            INTERMediatorOnPage.authHashedPassword = null;
+            throw "_im_requath_request_"
+        }
+        return {dbresult: dbresult, resultCount: resultCount, newRecordKeyValue: newRecordKeyValue};
     },
+
+    getChallenge: function( )  {
+        try {
+            this.server_access( "?access=challenge", 0, 0 );
+        } catch(ex)  {
+            if ( ex == "_im_requath_request_" ) {
+                throw ex;
+            }
+}
+        if ( INTERMediatorOnPage.authChallenge == null )    {
+            return false;
+        }
+        return true;
+    },
+
     /*
      db_query
      Querying from database. The parameter of this function should be the object as below:
@@ -135,7 +155,10 @@ var INTERMediaotr_DBAdapter = {
                 INTERMediator.pagedSize = args['records'];
                 INTERMediator.pagedAllCount = result.resultCount;
             }
-        } catch(e)  {
+        } catch(ex)  {
+             if ( ex == "_im_requath_request_" ) {
+                throw ex;
+            }
             returnValue.recordset = null;
             returnValue.totalCount = 0;
             returnValue.count = 0;

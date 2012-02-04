@@ -13,11 +13,143 @@ require_once('DB_Base.php');
 class DB_PDO extends DB_Base implements DB_Interface
 {
 
-    function authSupportStoreChallenge($username, $challenge)   {}
-    function authSupportRetrieveChallenge($username)    {}
-    function authSupportRetrieveHashedPassword($username)   {}
-    function authSupportCreateUser($username, $hashedpassword)  {}
-    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)   {}
+    function authSupportStoreChallenge($username, $challenge)   {
+        $clienthost = $_SERVER['REMOTE_ADDR'];
+        $hashTable = $this->getHashTable();
+        $uid = $this->authSupportGetUserIdFromUsername($username);
+        if ( $uid === false )   {
+            $this->errorMessageStore("User '{$username}' does't exist.");
+            return false;
+        }
+        try {
+            $this->link = new PDO($this->getDbSpecDSN(),
+                $this->getDbSpecUser(),
+                $this->getDbSpecPassword(),
+                is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
+        } catch (PDOException $ex) {
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+        $sql = "select id from {$hashTable} where user_id={$uid} and clienthost=" . $this->link->quote($clienthost);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        $currentDT = new DateTime();
+        $currentDTFormat = $currentDT->format('c');
+
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $sql = "update {$hashTable} set hash=" . $this->link->quote($challenge)
+                . ",expired=" . $this->link->quote($currentDTFormat)
+                . "where id={$row['id']}";
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+                return false;
+            }
+            return true;
+        }
+        $sql = "insert {$hashTable} set user_id={$uid},clienthost="
+            . $this->link->quote($clienthost)
+            . ",hash=" . $this->link->quote($challenge)
+            . ",expired=" . $this->link->quote($currentDTFormat);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        return true;
+
+
+    }
+    function authSupportRetrieveChallenge($username)    {
+        $clienthost = $_SERVER['REMOTE_ADDR'];
+        $hashTable = $this->getHashTable();
+        $uid = $this->authSupportGetUserIdFromUsername($username);
+        if ( $uid === false )   {
+            $this->errorMessageStore("User '{$username}' does't exist.");
+            return false;
+        }
+        try {
+            $this->link = new PDO($this->getDbSpecDSN(),
+                $this->getDbSpecUser(),
+                $this->getDbSpecPassword(),
+                is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
+        } catch (PDOException $ex) {
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+        $sql = "select hash,expired from {$hashTable} where user_id={$uid} and clienthost=" . $this->link->quote($clienthost);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $expiredDT = new DateTime($row['expired']);
+            $intervalDT = $expiredDT->diff(new DateTime(), true);
+            if ( $intervalDT->format('U') > 3600 *1 )   {       // Judge timeout.
+                return "_TIMEOUT_";
+            }
+            return $row['hash'];
+        }
+
+    }
+
+    function authSupportRetrieveHashedPassword($username)   {
+        $userTable = $this->getUserTable();
+        try {
+            $this->link = new PDO($this->getDbSpecDSN(),
+                $this->getDbSpecUser(),
+                $this->getDbSpecPassword(),
+                is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
+        } catch (PDOException $ex) {
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+        $sql = "select hashedpasswd from {$userTable} where username=" . $this->link->quote($username);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            return $row['hashedpasswd'];
+        }
+        return false;
+    }
+
+    function authSupportCreateUser($username, $hashedpassword)  {
+
+    }
+
+    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)   {
+
+    }
+
+    function authSupportGetUserIdFromUsername($username)    {
+        $userTable = $this->getUserTable();
+        try {
+            $this->link = new PDO($this->getDbSpecDSN(),
+                $this->getDbSpecUser(),
+                $this->getDbSpecPassword(),
+                is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
+        } catch (PDOException $ex) {
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+        $sql = "select id from {$userTable} where username=" . $this->link->quote($username);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            return $row['id'];
+        }
+        return false;
+    }
 
     var $sqlResult = array();
     var $link = null;
