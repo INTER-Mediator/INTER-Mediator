@@ -3,7 +3,7 @@
 # INTER-Mediator Distribution File Builder by Masayuki Nii
 #    Execute for current directory as the root of repository.
 
-YUICOMP="../yuicompressor-2.4.2.jar"
+YUICOMP="../yuicompressor-2.4.7.jar"
 
 echo "Enter version number (don't include ver. or VER. etc) --> "
 read version
@@ -45,14 +45,23 @@ done
 cp -r "${curpath}"/develop-im/Sample_products/images develop-im/Sample_products/
 cp -r "${curpath}"/develop-im/INTER-Mediator/FX      develop-im/INTER-Mediator/
 
+echo "######### Marge JavaScript program"
+cat develop-im/INTER-Mediator/INTER-Mediator-Lib.js   > temp.js
+cat develop-im/INTER-Mediator/INTER-Mediator-Page.js >> temp.js
+cat develop-im/INTER-Mediator/INTER-Mediator.js      >> temp.js
+rm develop-im/INTER-Mediator/INTER-Mediator-Lib.js
+rm develop-im/INTER-Mediator/INTER-Mediator-Page.js
+rm develop-im/INTER-Mediator/INTER-Mediator.js
+
 echo "######### Compress INTER-Mediator.js"
-java -jar ${YUICOMP} -o temp.js develop-im/INTER-Mediator/INTER-Mediator.js
-mv -f temp.js develop-im/INTER-Mediator/INTER-Mediator.js
+java -jar ${YUICOMP} temp.js -v --charset UTF-8 -o develop-im/INTER-Mediator/INTER-Mediator.js
+
 echo "######### Compress Adapter_DBServer.js"
-java -jar ${YUICOMP} -o temp.js develop-im/INTER-Mediator/Adapter_DBServer.js
+java -jar ${YUICOMP} develop-im/INTER-Mediator/Adapter_DBServer.js --charset UTF-8 -o temp.js
 mv -f temp.js develop-im/INTER-Mediator/Adapter_DBServer.js
+
 echo "######### Compress Adapter_LocalDB"
-java -jar ${YUICOMP} -o temp.js develop-im/INTER-Mediator/Adapter_LocalDB.js
+java -jar ${YUICOMP} develop-im/INTER-Mediator/Adapter_LocalDB.js --charset UTF-8 -o temp.js
 mv -f temp.js develop-im/INTER-Mediator/Adapter_LocalDB.js
 
 find . -name "\.*"

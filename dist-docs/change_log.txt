@@ -60,6 +60,7 @@ Ver.1.0.5 (2012/2/5)
   * Before checking this, you should re-import MySQL's schema file 'sample_shchema.txt'.
   * Open develop-im/index.html and click to the relevant link of 'Sample Portal Page'.
   * Try username 'user1' and password 'user1', and try other arbitarily terms.
+- Divide JavaScript source INTER-Mediator.js into INTER-Mediator-Lib.js, INTER-Mediator-Page.js and itself.
 
 Ver.1.0.4 (2012/1/28)
 - So many renaming for refactoring.

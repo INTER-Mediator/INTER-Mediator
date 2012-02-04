@@ -50,12 +50,11 @@ var INTERMediatorOnPage = {
 
         var labelWidth = "100px";
         var userLabel = document.createElement('LABEL');
-        userLabel.style.display = "block;"
         frontPanel.appendChild( userLabel );
         var userSpan = document.createElement('div');
         userSpan.style.width = labelWidth;
         userSpan.style.textAlign = "right";
-        userSpan.style.float = "left";
+        userSpan.style.cssFloat = "left";
         userLabel.appendChild( userSpan );
         userSpan.appendChild( document.createTextNode( INTERMediatorLib.getInsertedStringFromErrorNumber(2002) ));
         var userBox = document.createElement('INPUT');
@@ -70,12 +69,11 @@ var INTERMediatorOnPage = {
         frontPanel.appendChild( breakLine );
 
         var passwordLabel = document.createElement('LABEL');
-        passwordLabel.style.display = "block;"
         frontPanel.appendChild( passwordLabel );
         var passwordSpan = document.createElement('SPAN');
         passwordSpan.style.minWidth = labelWidth;
         passwordSpan.style.textAlign = "right";
-        passwordSpan.style.float = "left";
+        passwordSpan.style.cssFloat = "left";
         passwordLabel.appendChild( passwordSpan );
         passwordSpan.appendChild( document.createTextNode( INTERMediatorLib.getInsertedStringFromErrorNumber(2003) ));
         var passwordBox = document.createElement('INPUT');
@@ -88,7 +86,9 @@ var INTERMediatorOnPage = {
             };};
         passwordLabel.appendChild( passwordBox );
 
-        frontPanel.appendChild( document.createElement('BR') );
+        var breakLine = document.createElement('BR');
+        breakLine.clear = "all";
+        frontPanel.appendChild( breakLine );
 
         var authButton = document.createElement('BUTTON');
         authButton.style.marginLeft = labelWidth;
@@ -138,7 +138,7 @@ var INTERMediatorOnPage = {
         frontPanel.style.padding = "20px 4px 20px 4px";
         frontPanel.style.borderRadius = "10px";
         frontPanel.style.position = "relatvie";
-        frontPanel.style.textAlign = "Center"
+        frontPanel.style.textAlign = "Center";
         backBox.appendChild( frontPanel );
         frontPanel.appendChild( document.createTextNode( INTERMediatorLib.getInsertedStringFromErrorNumber(2001) ));
     },
