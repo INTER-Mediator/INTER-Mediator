@@ -46,7 +46,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Page.js');
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
         echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Adapter_DBServer.js');
-        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'sha-1.js');
+        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'external-library.js');
         echo "INTERMediatorOnPage.getEntryPath = function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};};{$LF}";
         //    echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
         echo "INTERMediatorOnPage.getDataSources = function(){return ",

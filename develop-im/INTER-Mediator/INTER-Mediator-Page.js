@@ -32,7 +32,13 @@ var INTERMediatorOnPage = {
         bodyNode.insertBefore( backBox, bodyNode.childNodes[0] );
         backBox.style.height = "100%";
         backBox.style.width = "100%";
-        backBox.style.backgroundColor = "#BBBBBB";
+    //    backBox.style.backgroundColor = "#BBBBBB";
+        backBox.style.backgroundImage = "url(data:image/png;base64,"
+            +"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA"
+            +"ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ"
+            +"REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA"
+            +"AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        +"AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)";
         backBox.style.position = "absolute";
         backBox.style.padding = " 50px 0 0 0";
         backBox.style.top = "0";
@@ -84,6 +90,10 @@ var INTERMediatorOnPage = {
             if ( event.keyCode == 13)   {
                 authButton.onclick();
             };};
+        userBox.onkeydown = function(event) {
+            if ( event.keyCode == 13)   {
+                passwordBox.focus();
+            };};
         passwordLabel.appendChild( passwordBox );
 
         var breakLine = document.createElement('BR');
@@ -95,7 +105,7 @@ var INTERMediatorOnPage = {
         authButton.appendChild( document.createTextNode( INTERMediatorLib.getInsertedStringFromErrorNumber(2004) ));
         authButton.onclick = function() {
             INTERMediatorOnPage.authUser = document.getElementById('_im_username').value;
-            INTERMediatorOnPage.authHashedPassword = CybozuLabs.SHA1.calc(document.getElementById('_im_password').value);
+            INTERMediatorOnPage.authHashedPassword = SHA1(document.getElementById('_im_password').value);
             bodyNode.removeChild(backBox);
             if ( INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 16 )    {
                 try {
@@ -123,7 +133,13 @@ var INTERMediatorOnPage = {
         bodyNode.insertBefore( backBox, bodyNode.childNodes[0] );
         backBox.style.height = "100%";
         backBox.style.width = "100%";
-        backBox.style.backgroundColor = "#BBBBBB";
+        //backBox.style.backgroundColor = "#BBBBBB";
+        backBox.style.backgroundImage = "url(data:image/png;base64,"
+            +"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA"
+            +"ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHlJ"
+            +"REFUeJzs0UENACAQA8EzdAl2EIEg3CKjyTGP/TfTur1OuJ2sAAAAAAAAAAAAAAAA"
+            +"AAAAAAAAAAAAAAAAAAAAAAAAAADAJwDRAekDAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+            +"AAAAAAAAAAAAAAAAAADzAR4AAAD//wMAkUKRPI/rh/AAAAAASUVORK5CYII=)";
         backBox.style.position = "absolute";
         backBox.style.padding = " 50px 0 0 0";
         backBox.style.top = "0";

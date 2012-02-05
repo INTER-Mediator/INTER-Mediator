@@ -18,8 +18,7 @@ var INTERMediaotr_DBAdapter = {
         if ( INTERMediatorOnPage.authUser.length > 0 )  {
             authParams = "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser )
                 + "&response=" + encodeURIComponent(
-                CybozuLabs.SHA1.calc(
-                    INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword) );
+                SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword) );
         }
 
         INTERMediator.debugMessages.push(

@@ -6,7 +6,7 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-// Cleaning-up by http://jsbeautifier.org/ or Eclipse's Formatting
+// Cleaning-up by PHPStrom's formatting feature.
 
 var INTERMediator = {
     /*
