@@ -43,7 +43,7 @@ class FX_Fuzzy_Debugger
     var $fieldsArray = array();
     var $similarityThreshold = 5;
 
-    function FX_Fuzzy_Debugger(&$fmConnection, &$dataSet = '') // When using with the FileMaker API for PHP, pass both the connection, and the returned data set
+    function FX_Fuzzy_Debugger (&$fmConnection, &$dataSet='') // When using with the FileMaker API for PHP, pass both the connection, and the returned data set
     {
         if ((bool)(is_object($fmConnection) && (strtolower(get_class($fmConnection)) == 'filemaker' || is_subclass_of($fmConnection, 'filemaker')))) {
             require_once('FileMaker.php');
@@ -51,7 +51,7 @@ class FX_Fuzzy_Debugger
             $this->currentConnection = clone($fmConnection);
             $this->currentDataSet = $dataSet;
             if (FileMaker::isError($dataSet)) {
-                if (!isset($dataSet->code) || strlen(trim($dataSet->code)) < 1) {
+                if (! isset($dataSet->code) || strlen(trim($dataSet->code)) < 1) {
                     $currentErrorMessage = "<p>A connection or XML error occured during your FileMaker query.<br />\n";
                     $currentErrorMessage .= "You may be able to get additional information by performing the same query using FX.php,<br />\n";
                     $currentErrorMessage .= "combined with a DEBUG constant and php's print_r() function.<br />\n";
@@ -87,10 +87,10 @@ class FX_Fuzzy_Debugger
             $this->fuzzyOut = $currentErrorMessage;
             return;
         }
-        $this->fuzzyOut = $this->ProcessErrorCode();
+        $this->fuzzyOut =  $this->ProcessErrorCode();
     }
 
-    function ProcessErrorCode()
+    function ProcessErrorCode ()
     {
         global $errorsList;
 
@@ -148,7 +148,7 @@ class FX_Fuzzy_Debugger
             $tempFunctionReturn = call_user_func(array(&$this, $tempFuction));
             if ($tempFunctionReturn !== true) {
                 if (is_array($tempFunctionReturn)) {
-                    if (!is_array($tempFunctionReturn[0])) {
+                    if (! is_array($tempFunctionReturn[0])) {
                         $tempFunctionReturn[0] = array($tempFunctionReturn[0]);
                     }
                     foreach ($tempFunctionReturn[0] as $tempDBElement) {
@@ -171,7 +171,7 @@ class FX_Fuzzy_Debugger
         return $processingOutput;
     }
 
-    function CheckDBList()
+    function CheckDBList ()
     {
         if (count($this->databasesArray) < 1) {
             if ($this->connectionType == FILEMAKER_API_CONNECTION) {
@@ -192,7 +192,7 @@ class FX_Fuzzy_Debugger
         }
     }
 
-    function CheckLayoutsList()
+    function CheckLayoutsList ()
     {
         if (count($this->layoutsArray) < 1) {
             if ($this->connectionType == FILEMAKER_API_CONNECTION) {
@@ -213,7 +213,7 @@ class FX_Fuzzy_Debugger
         }
     }
 
-    function CheckFieldsList()
+    function CheckFieldsList ()
     {
         $unknownFieldsArray = array();
         if ($this->connectionType == FILEMAKER_API_CONNECTION) {
@@ -238,11 +238,11 @@ class FX_Fuzzy_Debugger
         }
     }
 
-    function FindNearestMatch($currentItem, $searchArray)
+    function FindNearestMatch ($currentItem, $searchArray)
     {
         $nearestDistance = -1;
         $nearestMatch = false;
-        if (!is_array($searchArray)) { // if $searchArray isn't an array, it will cause us some grief...
+        if (! is_array($searchArray)) { // if $searchArray isn't an array, it will cause us some grief...
             return false;
         }
         foreach ($searchArray as $key => $tempItem) {
@@ -258,12 +258,11 @@ class FX_Fuzzy_Debugger
         return $nearestMatch;
     }
 
-    function SetSimilarityThreshold($newThreshold)
+    function SetSimilarityThreshold ($newThreshold)
     {
         $this->similarityThreshold = $newThreshold;
         return true;
     }
 
 }
-
 ?>

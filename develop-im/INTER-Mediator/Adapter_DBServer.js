@@ -16,16 +16,19 @@ var INTERMediaotr_DBAdapter = {
         var appPath = INTERMediatorOnPage.getEntryPath();
         var authParams = '';
         if ( INTERMediatorOnPage.authUser.length > 0 )  {
-            authParams = "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser )
-                + "&response=" + encodeURIComponent(
-                SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword) );
+            authParams
+                = "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser )
+                + "&response=" + encodeURIComponent( SHA1(INTERMediatorOnPage.authChallenge
+                + INTERMediatorOnPage.authHashedPassword ));
         }
 
         INTERMediator.debugMessages.push(
             INTERMediatorOnPage.getMessages()[debugMessageNumber] + decodeURI(appPath + accessURL + authParams));
 
-        INTERMediator.debugMessages.push("INTERMediatorOnPage.authChallenge="+INTERMediatorOnPage.authChallenge);
-
+        /*    INTERMediator.debugMessages.push(
+         "INTERMediatorOnPage.authChallenge="+INTERMediatorOnPage.authChallenge
+         +"/INTERMediatorOnPage.authUserSalt="+INTERMediatorOnPage.authUserSalt);
+         */
         var newRecordKeyValue = '';
         var dbresult = '';
         var resultCount = 0;
@@ -40,17 +43,32 @@ var INTERMediaotr_DBAdapter = {
 
             eval( myRequest.responseText );
             if ( challenge != null )    {
-                INTERMediatorOnPage.authChallenge = challenge;
+                INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
+                INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
+                INTERMediatorOnPage.authUserSalt =String.fromCharCode(
+                    parseInt(challenge.substr(24, 2),16),
+                    parseInt(challenge.substr(26, 2),16),
+                    parseInt(challenge.substr(28, 2),16),
+                    parseInt(challenge.substr(30, 2),16));
+
+            //    INTERMediator.debugMessages.push(
+            //        "INTERMediatorOnPage.authChallenge="+INTERMediatorOnPage.authChallenge
+            //            +"/INTERMediatorOnPage.authUserSalt="+INTERMediatorOnPage.authUserSalt);
             }
         } catch (e) {
+
             INTERMediator.errorMessages.push(
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
+
         }
         if ( requireAuth )  {
-            INTERMediator.debugMessages.push("requiredAuth == true");
+            //INTERMediator.debugMessages.push("requiredAuth == true");
             INTERMediatorOnPage.authHashedPassword = null;
             throw "_im_requath_request_"
+        }
+        if ( ! accessURL.match(/access=challenge/) )  {
+            INTERMediatorOnPage.authCount = 0;
         }
         return {dbresult: dbresult, resultCount: resultCount, newRecordKeyValue: newRecordKeyValue};
     },
@@ -62,7 +80,7 @@ var INTERMediaotr_DBAdapter = {
             if ( ex == "_im_requath_request_" ) {
                 throw ex;
             }
-}
+        }
         if ( INTERMediatorOnPage.authChallenge == null )    {
             return false;
         }
@@ -155,7 +173,7 @@ var INTERMediaotr_DBAdapter = {
                 INTERMediator.pagedAllCount = result.resultCount;
             }
         } catch(ex)  {
-             if ( ex == "_im_requath_request_" ) {
+            if ( ex == "_im_requath_request_" ) {
                 throw ex;
             }
             returnValue.recordset = null;

@@ -54,6 +54,10 @@ Change Log
 =================================
 
 Ver.1.0.6 === will be next release.
+- Authentication screen was redesigned with transparent backgrounds.
+- The password of the user are stored with randam generated salts.
+- FX.php 6.0 included.
+- The statement "$prohibitDebugMode = true;" in params.php. It can prohibit debug mode on the server side.
 
 Ver.1.0.5 (2012/2/5)
 - Authentication support first appearance!

@@ -413,13 +413,13 @@ var INTERMediator = {
      * parameter: fromStart: true=construct page, false=construct partially
      */
     construct:function (fromStart, indexOfKeyFieldObject) {
-
+/*
         if ( INTERMediatorOnPage.authCount > 2 )    {
             INTERMediatorOnPage.authenticationError();
             INTERMediator.flushMessage();
             return;
         }
-
+*/
         var currentLevel = 0;
         var linkedNodes;
         var postSetFields = [];

@@ -216,7 +216,7 @@ CREATE VIEW item_display AS SELECT item.id, item.invoice_id, item.product_id, it
 
 CREATE TABLE authuser (
 	id					INT  AUTO_INCREMENT,
-	username				VARCHAR(48),
+	username			VARCHAR(48),
 	hashedpasswd		VARCHAR(48),
 	email               VARCHAR(100),
 	PRIMARY KEY(id)
@@ -224,11 +224,22 @@ CREATE TABLE authuser (
 		COLLATE utf8_unicode_ci
 		ENGINE=InnoDB;
 
-INSERT authuser SET id=1,username='user1',hashedpasswd=SHA1('user1');
-INSERT authuser SET id=2,username='user2',hashedpasswd=SHA1('user2');
-INSERT authuser SET id=3,username='user3',hashedpasswd=SHA1('user3');
-INSERT authuser SET id=4,username='user4',hashedpasswd=SHA1('user4');
-INSERT authuser SET id=5,username='user5',hashedpasswd=SHA1('user5');
+INSERT authuser SET id=1,username='user1',hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+INSERT authuser SET id=2,username='user2',hashedpasswd='5115aba773983066bcf4a8655ddac8525c1d3c6354455354';
+INSERT authuser SET id=3,username='user3',hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354';
+INSERT authuser SET id=4,username='user4',hashedpasswd='8c1b394577d0191417e8d962c5f6e3ca15068f8254455354';
+INSERT authuser SET id=5,username='user5',hashedpasswd='ee403ef2642f2e63dca12af72856620e6a24102d54455354';
+
+# The user1 has the password 'user1'. It's salted with the string 'TEXT'.
+# All users have the password the same as user name. All are salted with 'TEXT'
+# The following command lines are used to generate above hashed-hexed-password.
+#
+#  $ echo -n 'user1TEST' | openssl sha1 -sha1
+#  d83eefa0a9bd7190c94e7911688503737a99db01
+#  echo -n 'TEST' | xxd -ps
+#  54455354
+#  - combine above two results:
+#  d83eefa0a9bd7190c94e7911688503737a99db0154455354
 
 CREATE TABLE authgroup (
 	id					INT  AUTO_INCREMENT,

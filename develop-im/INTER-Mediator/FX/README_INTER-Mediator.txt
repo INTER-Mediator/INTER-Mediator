@@ -1,7 +1,7 @@
 FX.php inside of INTER-Mediator
 Masayuki Nii
 nii@msyk.net
-September 9, 2011 / Feb 2, 2012 modified
+September 9, 2011 / Feb 6, 2012 modified
 
 FX.php is developed by Chris Hansen et,al, and it could be used for FileMaker Server with PHP.
 

@@ -80,12 +80,13 @@ IM_Entry(
             'group-table' => 'authgroup',
             'privilege-table' => 'authpriv',
             'corresponding-table' => 'authcor',
-            'challenge-table' => 'Challenge',
+            'challenge-table' => 'issuedhash',
+            'authexpired' => '3600',  // Set as seconds.
         ),
 
     ),
     array('db-class' => 'PDO'),
-    false
+    true
 );
 
 ?>

@@ -69,7 +69,11 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         }
         echo "INTERMediatorOnPage.browserCompatibility = function(){return ",
         arrayToJS($browserCompatibility, ''), ";};{$LF}";
-        echo "INTERMediator.debugMode=", $debug ? "true" : "false", ";{$LF}";
+        if ( isset( $prohibitDebugMode ) && $prohibitDebugMode )    {
+            echo "INTERMediator.debugMode=false;{$LF}";
+        } else {
+            echo "INTERMediator.debugMode=", $debug ? "true" : "false", ";{$LF}";
+        }
 
         // Check Authentication
         $boolValue = "false";
@@ -97,7 +101,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             echo implode('', $dbInstance->getMessagesForJS());
             return;
         }
-        if ($debug) {
+        if (( ! isset( $prohibitDebugMode ) || ! $prohibitDebugMode ) && $debug)    {
             $dbInstance->setDebugMode();
         }
         $dbInstance->initialize( $datasrc, $options, $dbspec );
@@ -115,8 +119,9 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                 $requireAuth = true;
             }
             // User and Password are suppried but...
-            if ( ! $dbInstance->checkChallenge( $_GET['authuser'], $_GET['response'] )  // Not Authenticated!
-                && $_GET['access'] != 'challenge')  {  // Not accessing getting a challenge.
+            if ( $access != 'challenge'         // Not accessing getting a challenge.
+                && ! $dbInstance->checkChallenge( $_GET['authuser'], $_GET['response'], $_SERVER['REMOTE_ADDR'] ))  {
+                                                // Not Authenticated!
                 $access = "do nothing";
                 $requireAuth = true;
             }
@@ -147,8 +152,8 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         }
         if ( $authentication != null )  {
             $generatedChallenge = $dbInstance->generateChallenge();
-            $dbInstance->saveChallenge( $_GET['authuser'], $generatedChallenge );
-            echo "challenge='{$generatedChallenge}';";
+            $userSalt = $dbInstance->saveChallenge( $_GET['authuser'], $generatedChallenge, $_SERVER['REMOTE_ADDR'] );
+            echo "challenge='{$generatedChallenge}{$userSalt}';";
             if ( $requireAuth ) {
                 echo "requireAuth=true;";     // Force authentication to client
             }

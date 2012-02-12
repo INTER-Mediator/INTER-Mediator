@@ -41,12 +41,18 @@ interface DB_Interface
      * @param $challenge
      * @return
      */
-    function authSupportStoreChallenge($username, $challenge);
+    function authSupportStoreChallenge($username, $challenge, $clientId);
+
+    /**
+     * @abstract
+     * @param $username
+     */
+    function authSupportGetSalt($username);
 
     /**
      * @param $username
      */
-    function authSupportRetrieveChallenge($username);
+    function authSupportRetrieveChallenge($username, $clientId);
 
     /**
      * @param $username
@@ -98,7 +104,7 @@ abstract class DB_Base
     var $foreignFieldAndValue = array();
 
     var $currentUser = null;
-    var $currentChallenge = null;
+//    var $currentChallenge = null;
     var $authentication = null;
 
     function __construct()
@@ -128,8 +134,8 @@ abstract class DB_Base
 
         $this->setDataSource( $datasrc );
         $this->setCurrentUser( isset($_GET['user']) ? $_GET['user'] : null );
-        $this->setCurrentChallenge( isset($_GET['challenge']) ? $_GET['challenge'] : null );
-        $this->setAuthentication( isset($options['authentication']) ? $_GET['authentication'] : null );
+    //    $this->setCurrentChallenge( isset($_GET['challenge']) ? $_GET['challenge'] : null );
+        $this->authentication = isset($options['authentication']) ? $options['authentication'] : null;
 
         $this->setSeparator( isset($options['separator']) ? $options['separator'] : '@');
         $this->setFormatter( isset($options['formatter']) ? $options['formatter'] : null);
@@ -180,9 +186,6 @@ abstract class DB_Base
 
     }
     /* Call on INTER-Mediator.php */
-    function setAuthentication($ar) {
-        $this->authentication = $ar;
-    }
 
     function getUserTable() {
         return isset($this->authentication['user-table'])
@@ -209,16 +212,21 @@ abstract class DB_Base
             ? $this->authentication['challenge-table'] : 'issuedhash';
     }
 
+    function getExpiringSeconds() {
+        return isset($this->authentication['authexpired'])
+            ? $this->authentication['authexpired'] : 3600 * 8;
+    }
+
     function setCurrentUser($str)
     {
         $this->currentUser = $str;
     }
-
+/*
     function setCurrentChallenge($str)
     {
         $this->currentChallenge = $str;
     }
-
+*/
     function setDataSource($src)
     {
         $this->dataSource = $src;
@@ -481,27 +489,40 @@ abstract class DB_Base
     {
         $str = '';
         for ( $i = 0 ; $i < 12 ; $i++ )  {
-            $str .= chr( rand( 1, 255 ));
+            $n = rand( 1, 255 );
+            $str .= ($n < 16 ? '0' : '' ) . dechex($n);
         }
-        return base64_encode( $str );
+        return $str;
     }
 
-    function saveChallenge( $username, $challenge )
+    function generateSalt()
     {
-        $this->authSupportStoreChallenge($username, $challenge);
-        return false;
+        $str = '';
+        for ( $i = 0 ; $i < 4 ; $i++ )  {
+            $n = rand( 1, 255 );
+            $str .= chr($n);
+        }
+        return $str;
     }
 
-    function checkChallenge( $username, $hashedvalue )
+    /* returns user's hash salt.
+
+    */
+    function saveChallenge( $username, $challenge, $clientId )
+    {
+        $this->authSupportStoreChallenge($username, $challenge, $clientId);
+        return $this->authSupportGetSalt($username);
+    }
+
+    function checkChallenge( $username, $hashedvalue, $clientId )
     {
         $returnValue = false;
 
-        $storedChalenge = $this->authSupportRetrieveChallenge($username);
-        if ( strlen($storedChalenge) == 16 ) {   // ex.LK54OKLn2SQQvlPH
-            $hashedPassword = $this->authSupportRetrieveHashedPassword($username);
+        $storedChalenge = $this->authSupportRetrieveChallenge($username, $clientId);
+        if ( strlen($storedChalenge) == 24 ) {   // ex.fc0d54312ce33c2fac19d758
+            $hashedPassword = $this->authSupportRetrieveHashedPassword($username, $clientId);
             if ( strlen($hashedPassword) > 0 ) {
-                $hashSeed = $storedChalenge . $hashedPassword;
-                if ( $hashedvalue == sha1($hashSeed) ) {
+                if ( $hashedvalue == sha1($storedChalenge . $hashedPassword) ) {
                     $returnValue = true;
                 }
             }
@@ -511,7 +532,9 @@ abstract class DB_Base
 
     function addUser( $username, $password )
     {
-        $returnValue = $this->authSupportCreateUser($username, sha1($password));
+        $salt = $this->generateSalt();
+        $hexSalt = bin2hex( $salt );
+        $returnValue = $this->authSupportCreateUser($username, sha1($password . $salt) . $hexSalt);
         return $returnValue;
     }
 

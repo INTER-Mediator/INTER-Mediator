@@ -13,8 +13,7 @@ require_once('DB_Base.php');
 class DB_PDO extends DB_Base implements DB_Interface
 {
 
-    function authSupportStoreChallenge($username, $challenge)   {
-        $clienthost = $_SERVER['REMOTE_ADDR'];
+    function authSupportStoreChallenge($username, $challenge, $clientId)   {
         $hashTable = $this->getHashTable();
         $uid = $this->authSupportGetUserIdFromUsername($username);
         if ( $uid === false )   {
@@ -30,7 +29,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
             return false;
         }
-        $sql = "select id from {$hashTable} where user_id={$uid} and clienthost=" . $this->link->quote($clienthost);
+        $sql = "select id from {$hashTable} where user_id={$uid} and clienthost=" . $this->link->quote($clientId);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -51,7 +50,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             return true;
         }
         $sql = "insert {$hashTable} set user_id={$uid},clienthost="
-            . $this->link->quote($clienthost)
+            . $this->link->quote($clientId)
             . ",hash=" . $this->link->quote($challenge)
             . ",expired=" . $this->link->quote($currentDTFormat);
         $result = $this->link->query($sql);
@@ -60,11 +59,9 @@ class DB_PDO extends DB_Base implements DB_Interface
             return false;
         }
         return true;
-
-
     }
-    function authSupportRetrieveChallenge($username)    {
-        $clienthost = $_SERVER['REMOTE_ADDR'];
+
+    function authSupportRetrieveChallenge($username, $clientId)    {
         $hashTable = $this->getHashTable();
         $uid = $this->authSupportGetUserIdFromUsername($username);
         if ( $uid === false )   {
@@ -80,7 +77,8 @@ class DB_PDO extends DB_Base implements DB_Interface
             $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
             return false;
         }
-        $sql = "select hash,expired from {$hashTable} where user_id={$uid} and clienthost=" . $this->link->quote($clienthost);
+        $sql = "select hash,expired from {$hashTable} where user_id={$uid} and clienthost="
+            . $this->link->quote($clientId);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -89,12 +87,12 @@ class DB_PDO extends DB_Base implements DB_Interface
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $expiredDT = new DateTime($row['expired']);
             $intervalDT = $expiredDT->diff(new DateTime(), true);
-            if ( $intervalDT->format('U') > 3600 *1 )   {       // Judge timeout.
-                return "_TIMEOUT_";
+            if ( $intervalDT->format('U') > $this->getExpiringSeconds() )   {   // Judge timeout.
+            //    return false;
             }
             return $row['hash'];
         }
-
+        return false;
     }
 
     function authSupportRetrieveHashedPassword($username)   {
@@ -120,7 +118,34 @@ class DB_PDO extends DB_Base implements DB_Interface
         return false;
     }
 
+    function authSupportGetSalt($username)  {
+        $hashedpw = $this->authSupportRetrieveHashedPassword($username);
+        return substr( $hashedpw, -8 );
+    }
+
     function authSupportCreateUser($username, $hashedpassword)  {
+        if ( $this->authSupportRetrieveHashedPassword($username) !== false )    {
+            $this->errorMessage[] = 'User Already exist: ' . $username;
+            return false;
+        }
+        try {
+            $this->link = new PDO($this->getDbSpecDSN(),
+                $this->getDbSpecUser(),
+                $this->getDbSpecPassword(),
+                is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
+        } catch (PDOException $ex) {
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+        $userTable = $this->getUserTable();
+        $sql = "insert {$userTable} set username=" . $this->link->quote($username)
+            . ",hashedpasswd='{$hashedpassword}'";
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Insert:' . $sql);
+            return false;
+        }
+        return true;
 
     }
 
@@ -598,7 +623,6 @@ class DB_PDO extends DB_Base implements DB_Interface
                 }
             }
         }
-
         return true;
     }
 }

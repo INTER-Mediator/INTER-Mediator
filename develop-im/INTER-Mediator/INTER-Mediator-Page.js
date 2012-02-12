@@ -13,6 +13,8 @@ var INTERMediatorOnPage = {
     authCount: 0,
     authUser: '',
     authHashedPassword: '',
+    authUserSalt: '',
+    authUserHexSalt: '',
     authChallenge: '',
     requreAuthentication: false,
     authRequiredContext: null,
@@ -20,6 +22,7 @@ var INTERMediatorOnPage = {
     isComplementAuthData: function()    {
         if (   this.authUser != null && this.authUser.length > 0
             && this.authHashedPassword != null && this.authHashedPassword.length > 0
+            && this.authUserSalt != null && this.authUserSalt.length > 0
             && this.authChallenge != null && this.authChallenge.length > 0 )  {
             return true;
         }
@@ -27,18 +30,24 @@ var INTERMediatorOnPage = {
     },
 
     authenticating: function(doAfterAuth)   {
+        if ( INTERMediatorOnPage.authCount > 2 )    {
+            INTERMediatorOnPage.authenticationError();
+            INTERMediator.flushMessage();
+            return;
+        }
+
         var bodyNode = document.getElementsByTagName('BODY')[0];
         var backBox = document.createElement('div');
         bodyNode.insertBefore( backBox, bodyNode.childNodes[0] );
         backBox.style.height = "100%";
         backBox.style.width = "100%";
-    //    backBox.style.backgroundColor = "#BBBBBB";
+        //    backBox.style.backgroundColor = "#BBBBBB";
         backBox.style.backgroundImage = "url(data:image/png;base64,"
             +"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA"
             +"ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ"
             +"REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA"
             +"AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        +"AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)";
+            +"AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)";
         backBox.style.position = "absolute";
         backBox.style.padding = " 50px 0 0 0";
         backBox.style.top = "0";
@@ -104,19 +113,21 @@ var INTERMediatorOnPage = {
         authButton.style.marginLeft = labelWidth;
         authButton.appendChild( document.createTextNode( INTERMediatorLib.getInsertedStringFromErrorNumber(2004) ));
         authButton.onclick = function() {
-            INTERMediatorOnPage.authUser = document.getElementById('_im_username').value;
-            INTERMediatorOnPage.authHashedPassword = SHA1(document.getElementById('_im_password').value);
+            var inputUsername = document.getElementById('_im_username').value;
+            var inputPassword = document.getElementById('_im_password').value;
+            INTERMediatorOnPage.authUser = inputUsername;
             bodyNode.removeChild(backBox);
-            if ( INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 16 )    {
-                try {
-                if ( ! INTERMediaotr_DBAdapter.getChallenge() )     {
+            if ( inputUsername != ''
+                && (INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 24 ))    {
+                INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
+                var challengeResult = INTERMediaotr_DBAdapter.getChallenge();
+                if ( ! challengeResult )     {
                     INTERMediator.flushMessage();
                     return;
                 }
-                } catch (ex) {
-                    // nothing to do
-                }
             }
+            INTERMediatorOnPage.authHashedPassword
+                = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
             doAfterAuth();
             INTERMediator.flushMessage();
         };
@@ -155,6 +166,7 @@ var INTERMediatorOnPage = {
         frontPanel.style.borderRadius = "10px";
         frontPanel.style.position = "relatvie";
         frontPanel.style.textAlign = "Center";
+        frontPanel.onclick = function() {bodyNode.removeChild(backBox);};
         backBox.appendChild( frontPanel );
         frontPanel.appendChild( document.createTextNode( INTERMediatorLib.getInsertedStringFromErrorNumber(2001) ));
     },

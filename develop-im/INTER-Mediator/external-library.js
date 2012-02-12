@@ -176,432 +176,796 @@ function SHA1 (msg) {
 
 }
 
-//https://github.com/takezoh/blowfish.js
+// http://www.ohdave.com/rsa/
 
-/**
- * blowfish.js
- * JavaScript Blowfish Library
- *
- * The MIT License
- *
- * Copyright (c) 2011 Takehito Gondo
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+// BigInt, a suite of routines for performing multiple-precision arithmetic in
+// JavaScript.
+//
+// Copyright 1998-2005 David Shapiro.
+//
+// You may use, re-use, abuse,
+// copy, and modify this code to your liking, but please keep this header.
+// Thanks!
+//
+// Dave Shapiro
+// dave@ohdave.com
 
-function Blowfish(config) {
-    this.config = config;
-    if (typeof(config) == "string") {
-        this.config = { key: config };
+// IMPORTANT THING: Be sure to set maxDigits according to your precision
+// needs. Use the setMaxDigits() function to do this. See comments below.
+//
+// Tweaked by Ian Bunning
+// Alterations:
+// Fix bug in function biFromHex(s) to allow
+// parsing of strings of length != 0 (mod 4)
+
+// Changes made by Dave Shapiro as of 12/30/2004:
+//
+// The BigInt() constructor doesn't take a string anymore. If you want to
+// create a BigInt from a string, use biFromDecimal() for base-10
+// representations, biFromHex() for base-16 representations, or
+// biFromString() for base-2-to-36 representations.
+//
+// biFromArray() has been removed. Use biCopy() instead, passing a BigInt
+// instead of an array.
+//
+// The BigInt() constructor now only constructs a zeroed-out array.
+// Alternatively, if you pass <true>, it won't construct any array. See the
+// biCopy() method for an example of this.
+//
+// Be sure to set maxDigits depending on your precision needs. The default
+// zeroed-out array ZERO_ARRAY is constructed inside the setMaxDigits()
+// function. So use this function to set the variable. DON'T JUST SET THE
+// VALUE. USE THE FUNCTION.
+//
+// ZERO_ARRAY exists to hopefully speed up construction of BigInts(). By
+// precalculating the zero array, we can just use slice(0) to make copies of
+// it. Presumably this calls faster native code, as opposed to setting the
+// elements one at a time. I have not done any timing tests to verify this
+// claim.
+
+// Max number = 10^16 - 2 = 9999999999999998;
+//               2^53     = 9007199254740992;
+
+var biRadixBase = 2;
+var biRadixBits = 16;
+var bitsPerDigit = biRadixBits;
+var biRadix = 1 << 16; // = 2^16 = 65536
+var biHalfRadix = biRadix >>> 1;
+var biRadixSquared = biRadix * biRadix;
+var maxDigitVal = biRadix - 1;
+var maxInteger = 9999999999999998;
+
+// maxDigits:
+// Change this to accommodate your largest number size. Use setMaxDigits()
+// to change it!
+//
+// In general, if you're working with numbers of size N bits, you'll need 2*N
+// bits of storage. Each digit holds 16 bits. So, a 1024-bit key will need
+//
+// 1024 * 2 / 16 = 128 digits of storage.
+//
+
+var maxDigits;
+var ZERO_ARRAY;
+var bigZero, bigOne;
+
+function setMaxDigits(value)
+{
+    maxDigits = value;
+    ZERO_ARRAY = new Array(maxDigits);
+    for (var iza = 0; iza < ZERO_ARRAY.length; iza++) ZERO_ARRAY[iza] = 0;
+    bigZero = new BigInt();
+    bigOne = new BigInt();
+    bigOne.digits[0] = 1;
+}
+
+setMaxDigits(20);
+
+// The maximum number of digits in base 10 you can convert to an
+// integer without JavaScript throwing up on you.
+var dpl10 = 15;
+// lr10 = 10 ^ dpl10
+var lr10 = biFromNumber(1000000000000000);
+
+function BigInt(flag)
+{
+    if (typeof flag == "boolean" && flag == true) {
+        this.digits = null;
     }
-    this.init([
-        this.P=Blowfish.prototype.P(this.config.key),
-        this.SBOX1=Blowfish.prototype.SBOX1(),
-        this.SBOX2=Blowfish.prototype.SBOX2(),
-        this.SBOX3=Blowfish.prototype.SBOX3(),
-        this.SBOX4=Blowfish.prototype.SBOX4()
-    ]);
-};
-Blowfish.prototype.init=function(o){
-    var t = {l:0, r:0};
-    for (var i=0; i<o.length; ++i) {
-        for (var j=0,len=o[i].length; j<len; j+=2) {
-            t = this.encipher(t.l, t.r);
-            o[i][j] = t.l;
-            o[i][j+1] = t.r;
-        }
+    else {
+        this.digits = ZERO_ARRAY.slice(0);
     }
-};
-Blowfish.prototype.JSONInit=function(o) {
-    o = JSON.parse(o);
-    this.P = o.P;
-    this.SBOX1 = o.SBOX1;
-    this.SBOX2 = o.SBOX2;
-    this.SBOX3 = o.SBOX3;
-    this.SBOX4 = o.SBOX4;
-};
-Blowfish.prototype.encrypt=function(t) {
-    var bf = this;
-    return this._encrypt(t, {
-        f: [],
-        push: function(l,r){
-            this.f.push(bf.fromStringCode32(l));
-            this.f.push(bf.fromStringCode32(r));
-        },
-        get: function(){
-            return this.f.join('');
+    this.isNeg = false;
+}
+
+function biFromDecimal(s)
+{
+    var isNeg = s.charAt(0) == '-';
+    var i = isNeg ? 1 : 0;
+    var result;
+    // Skip leading zeros.
+    while (i < s.length && s.charAt(i) == '0') ++i;
+    if (i == s.length) {
+        result = new BigInt();
+    }
+    else {
+        var digitCount = s.length - i;
+        var fgl = digitCount % dpl10;
+        if (fgl == 0) fgl = dpl10;
+        result = biFromNumber(Number(s.substr(i, fgl)));
+        i += fgl;
+        while (i < s.length) {
+            result = biAdd(biMultiply(result, lr10),
+                biFromNumber(Number(s.substr(i, dpl10))));
+            i += dpl10;
         }
-    });
-};
-Blowfish.prototype.encrypt64=function(t){
-    return this._encrypt(t, {
-        f: [],
-        stack: [],
-        map64: function(b){
-            if (b==62) return '+';
-            else if (b==63) return '/';
-            else if (b>=52) return String.fromCharCode(b-4); // 0-9
-            else if (b>=26) return String.fromCharCode(b+71); // a-z
-            else return String.fromCharCode(b+65); // A-Z
-        },
-        extract32: function(i32) {
-            return [
-                i32>>30 & 0x03, i32>>28 & 0x03, i32>>26 & 0x03, i32>>24 & 0x03,
-                i32>>22 & 0x03, i32>>20 & 0x03, i32>>18 & 0x03, i32>>16 & 0x03,
-                i32>>14 & 0x03, i32>>12 & 0x03, i32>>10 & 0x03, i32>> 8 & 0x03,
-                i32>> 6 & 0x03, i32>> 4 & 0x03, i32>> 2 & 0x03, i32>> 0 & 0x03
-            ];
-        },
-        push: function(l,r){
-            this.stack = this.stack.concat(this.extract32(l), this.extract32(r));
-            while (this.stack.length >= 3) {
-                this.f.push(this.map64(this.stack.shift()<<4 | this.stack.shift()<<2 | this.stack.shift()));
+        result.isNeg = isNeg;
+    }
+    return result;
+}
+
+function biCopy(bi)
+{
+    var result = new BigInt(true);
+    result.digits = bi.digits.slice(0);
+    result.isNeg = bi.isNeg;
+    return result;
+}
+
+function biFromNumber(i)
+{
+    var result = new BigInt();
+    result.isNeg = i < 0;
+    i = Math.abs(i);
+    var j = 0;
+    while (i > 0) {
+        result.digits[j++] = i & maxDigitVal;
+        i >>= biRadixBits;
+    }
+    return result;
+}
+
+function reverseStr(s)
+{
+    var result = "";
+    for (var i = s.length - 1; i > -1; --i) {
+        result += s.charAt(i);
+    }
+    return result;
+}
+
+var hexatrigesimalToChar = new Array(
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+    'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+    'u', 'v', 'w', 'x', 'y', 'z'
+);
+
+function biToString(x, radix)
+    // 2 <= radix <= 36
+{
+    var b = new BigInt();
+    b.digits[0] = radix;
+    var qr = biDivideModulo(x, b);
+    var result = hexatrigesimalToChar[qr[1].digits[0]];
+    while (biCompare(qr[0], bigZero) == 1) {
+        qr = biDivideModulo(qr[0], b);
+        digit = qr[1].digits[0];
+        result += hexatrigesimalToChar[qr[1].digits[0]];
+    }
+    return (x.isNeg ? "-" : "") + reverseStr(result);
+}
+
+function biToDecimal(x)
+{
+    var b = new BigInt();
+    b.digits[0] = 10;
+    var qr = biDivideModulo(x, b);
+    var result = String(qr[1].digits[0]);
+    while (biCompare(qr[0], bigZero) == 1) {
+        qr = biDivideModulo(qr[0], b);
+        result += String(qr[1].digits[0]);
+    }
+    return (x.isNeg ? "-" : "") + reverseStr(result);
+}
+
+var hexToChar = new Array('0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+    'a', 'b', 'c', 'd', 'e', 'f');
+
+function digitToHex(n)
+{
+    var mask = 0xf;
+    var result = "";
+    for (i = 0; i < 4; ++i) {
+        result += hexToChar[n & mask];
+        n >>>= 4;
+    }
+    return reverseStr(result);
+}
+
+function biToHex(x)
+{
+    var result = "";
+    var n = biHighIndex(x);
+    for (var i = biHighIndex(x); i > -1; --i) {
+        result += digitToHex(x.digits[i]);
+    }
+    return result;
+}
+
+function charToHex(c)
+{
+    var ZERO = 48;
+    var NINE = ZERO + 9;
+    var littleA = 97;
+    var littleZ = littleA + 25;
+    var bigA = 65;
+    var bigZ = 65 + 25;
+    var result;
+
+    if (c >= ZERO && c <= NINE) {
+        result = c - ZERO;
+    } else if (c >= bigA && c <= bigZ) {
+        result = 10 + c - bigA;
+    } else if (c >= littleA && c <= littleZ) {
+        result = 10 + c - littleA;
+    } else {
+        result = 0;
+    }
+    return result;
+}
+
+function hexToDigit(s)
+{
+    var result = 0;
+    var sl = Math.min(s.length, 4);
+    for (var i = 0; i < sl; ++i) {
+        result <<= 4;
+        result |= charToHex(s.charCodeAt(i))
+    }
+    return result;
+}
+
+function biFromHex(s)
+{
+    var result = new BigInt();
+    var sl = s.length;
+    for (var i = sl, j = 0; i > 0; i -= 4, ++j) {
+        result.digits[j] = hexToDigit(s.substr(Math.max(i - 4, 0), Math.min(i, 4)));
+    }
+    return result;
+}
+
+function biFromString(s, radix)
+{
+    var isNeg = s.charAt(0) == '-';
+    var istop = isNeg ? 1 : 0;
+    var result = new BigInt();
+    var place = new BigInt();
+    place.digits[0] = 1; // radix^0
+    for (var i = s.length - 1; i >= istop; i--) {
+        var c = s.charCodeAt(i);
+        var digit = charToHex(c);
+        var biDigit = biMultiplyDigit(place, digit);
+        result = biAdd(result, biDigit);
+        place = biMultiplyDigit(place, radix);
+    }
+    result.isNeg = isNeg;
+    return result;
+}
+
+function biDump(b)
+{
+    return (b.isNeg ? "-" : "") + b.digits.join(" ");
+}
+
+function biAdd(x, y)
+{
+    var result;
+
+    if (x.isNeg != y.isNeg) {
+        y.isNeg = !y.isNeg;
+        result = biSubtract(x, y);
+        y.isNeg = !y.isNeg;
+    }
+    else {
+        result = new BigInt();
+        var c = 0;
+        var n;
+        for (var i = 0; i < x.digits.length; ++i) {
+            n = x.digits[i] + y.digits[i] + c;
+            result.digits[i] = n & 0xffff;
+            c = Number(n >= biRadix);
+        }
+        result.isNeg = x.isNeg;
+    }
+    return result;
+}
+
+function biSubtract(x, y)
+{
+    var result;
+    if (x.isNeg != y.isNeg) {
+        y.isNeg = !y.isNeg;
+        result = biAdd(x, y);
+        y.isNeg = !y.isNeg;
+    } else {
+        result = new BigInt();
+        var n, c;
+        c = 0;
+        for (var i = 0; i < x.digits.length; ++i) {
+            n = x.digits[i] - y.digits[i] + c;
+            result.digits[i] = n & 0xffff;
+            // Stupid non-conforming modulus operation.
+            if (result.digits[i] < 0) result.digits[i] += biRadix;
+            c = 0 - Number(n < 0);
+        }
+        // Fix up the negative sign, if any.
+        if (c == -1) {
+            c = 0;
+            for (var i = 0; i < x.digits.length; ++i) {
+                n = 0 - result.digits[i] + c;
+                result.digits[i] = n & 0xffff;
+                // Stupid non-conforming modulus operation.
+                if (result.digits[i] < 0) result.digits[i] += biRadix;
+                c = 0 - Number(n < 0);
             }
-        },
-        get: function() {
-            if (this.stack.length) {
-                for (var i=3-this.stack.length; i>0; --i) this.stack.push(0);
-                this.f.push(this.map64(this.stack.shift()<<4 | this.stack.shift()<<2 | this.stack.shift()));
+            // Result is opposite sign of arguments.
+            result.isNeg = !x.isNeg;
+        } else {
+            // Result is same sign.
+            result.isNeg = x.isNeg;
+        }
+    }
+    return result;
+}
+
+function biHighIndex(x)
+{
+    var result = x.digits.length - 1;
+    while (result > 0 && x.digits[result] == 0) --result;
+    return result;
+}
+
+function biNumBits(x)
+{
+    var n = biHighIndex(x);
+    var d = x.digits[n];
+    var m = (n + 1) * bitsPerDigit;
+    var result;
+    for (result = m; result > m - bitsPerDigit; --result) {
+        if ((d & 0x8000) != 0) break;
+        d <<= 1;
+    }
+    return result;
+}
+
+function biMultiply(x, y)
+{
+    var result = new BigInt();
+    var c;
+    var n = biHighIndex(x);
+    var t = biHighIndex(y);
+    var u, uv, k;
+
+    for (var i = 0; i <= t; ++i) {
+        c = 0;
+        k = i;
+        for (j = 0; j <= n; ++j, ++k) {
+            uv = result.digits[k] + x.digits[j] * y.digits[i] + c;
+            result.digits[k] = uv & maxDigitVal;
+            c = uv >>> biRadixBits;
+        }
+        result.digits[i + n + 1] = c;
+    }
+    // Someone give me a logical xor, please.
+    result.isNeg = x.isNeg != y.isNeg;
+    return result;
+}
+
+function biMultiplyDigit(x, y)
+{
+    var n, c, uv;
+
+    result = new BigInt();
+    n = biHighIndex(x);
+    c = 0;
+    for (var j = 0; j <= n; ++j) {
+        uv = result.digits[j] + x.digits[j] * y + c;
+        result.digits[j] = uv & maxDigitVal;
+        c = uv >>> biRadixBits;
+    }
+    result.digits[1 + n] = c;
+    return result;
+}
+
+function arrayCopy(src, srcStart, dest, destStart, n)
+{
+    var m = Math.min(srcStart + n, src.length);
+    for (var i = srcStart, j = destStart; i < m; ++i, ++j) {
+        dest[j] = src[i];
+    }
+}
+
+var highBitMasks = new Array(0x0000, 0x8000, 0xC000, 0xE000, 0xF000, 0xF800,
+    0xFC00, 0xFE00, 0xFF00, 0xFF80, 0xFFC0, 0xFFE0,
+    0xFFF0, 0xFFF8, 0xFFFC, 0xFFFE, 0xFFFF);
+
+function biShiftLeft(x, n)
+{
+    var digitCount = Math.floor(n / bitsPerDigit);
+    var result = new BigInt();
+    arrayCopy(x.digits, 0, result.digits, digitCount,
+        result.digits.length - digitCount);
+    var bits = n % bitsPerDigit;
+    var rightBits = bitsPerDigit - bits;
+    for (var i = result.digits.length - 1, i1 = i - 1; i > 0; --i, --i1) {
+        result.digits[i] = ((result.digits[i] << bits) & maxDigitVal) |
+            ((result.digits[i1] & highBitMasks[bits]) >>>
+                (rightBits));
+    }
+    result.digits[0] = ((result.digits[i] << bits) & maxDigitVal);
+    result.isNeg = x.isNeg;
+    return result;
+}
+
+var lowBitMasks = new Array(0x0000, 0x0001, 0x0003, 0x0007, 0x000F, 0x001F,
+    0x003F, 0x007F, 0x00FF, 0x01FF, 0x03FF, 0x07FF,
+    0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF);
+
+function biShiftRight(x, n)
+{
+    var digitCount = Math.floor(n / bitsPerDigit);
+    var result = new BigInt();
+    arrayCopy(x.digits, digitCount, result.digits, 0,
+        x.digits.length - digitCount);
+    var bits = n % bitsPerDigit;
+    var leftBits = bitsPerDigit - bits;
+    for (var i = 0, i1 = i + 1; i < result.digits.length - 1; ++i, ++i1) {
+        result.digits[i] = (result.digits[i] >>> bits) |
+            ((result.digits[i1] & lowBitMasks[bits]) << leftBits);
+    }
+    result.digits[result.digits.length - 1] >>>= bits;
+    result.isNeg = x.isNeg;
+    return result;
+}
+
+function biMultiplyByRadixPower(x, n)
+{
+    var result = new BigInt();
+    arrayCopy(x.digits, 0, result.digits, n, result.digits.length - n);
+    return result;
+}
+
+function biDivideByRadixPower(x, n)
+{
+    var result = new BigInt();
+    arrayCopy(x.digits, n, result.digits, 0, result.digits.length - n);
+    return result;
+}
+
+function biModuloByRadixPower(x, n)
+{
+    var result = new BigInt();
+    arrayCopy(x.digits, 0, result.digits, 0, n);
+    return result;
+}
+
+function biCompare(x, y)
+{
+    if (x.isNeg != y.isNeg) {
+        return 1 - 2 * Number(x.isNeg);
+    }
+    for (var i = x.digits.length - 1; i >= 0; --i) {
+        if (x.digits[i] != y.digits[i]) {
+            if (x.isNeg) {
+                return 1 - 2 * Number(x.digits[i] > y.digits[i]);
+            } else {
+                return 1 - 2 * Number(x.digits[i] < y.digits[i]);
             }
-            return this.f.join('');
-        }
-    });
-};
-Blowfish.prototype._encrypt=function(t,o){
-    var tl,tr,e;
-    if (this.config.verification) {
-        for (var i=0; i<this.config.verification.length; i+=8) {
-            tl = this.stringCode32(this.config.verification.substr(i, 4));
-            tr = this.stringCode32(this.config.verification.substr(i+4, 4));
-            e = this.encipher(tl,tr);
-            o.push(e.l, e.r);
         }
     }
-    for (var i=0; i<t.length+4; i+=8) {
-        tl = this.stringCode32(t.substr(i, 4));
-        tr = this.stringCode32(t.substr(i+4, 4));
-        e = this.encipher(tl,tr);
-        o.push(e.l, e.r);
+    return 0;
+}
+
+function biDivideModulo(x, y)
+{
+    var nb = biNumBits(x);
+    var tb = biNumBits(y);
+    var origYIsNeg = y.isNeg;
+    var q, r;
+    if (nb < tb) {
+        // |x| < |y|
+        if (x.isNeg) {
+            q = biCopy(bigOne);
+            q.isNeg = !y.isNeg;
+            x.isNeg = false;
+            y.isNeg = false;
+            r = biSubtract(y, x);
+            // Restore signs, 'cause they're references.
+            x.isNeg = true;
+            y.isNeg = origYIsNeg;
+        } else {
+            q = new BigInt();
+            r = biCopy(x);
+        }
+        return new Array(q, r);
     }
-    return o.get();
-};
-Blowfish.prototype.decrypt=function(t) {
-    var tl,tr;
-    var o = this._decrypt();
-    for (var i=0; i<t.length; i+=8) {
-        tl = this.stringCode32(t.substr(i, 4));
-        tr = this.stringCode32(t.substr(i+4, 4));
-        o.push(tl,tr);
+
+    q = new BigInt();
+    r = x;
+
+    // Normalize Y.
+    var t = Math.ceil(tb / bitsPerDigit) - 1;
+    var lambda = 0;
+    while (y.digits[t] < biHalfRadix) {
+        y = biShiftLeft(y, 1);
+        ++lambda;
+        ++tb;
+        t = Math.ceil(tb / bitsPerDigit) - 1;
     }
-    return o.get();
-};
-Blowfish.prototype.decrypt64=function(t){
-    var stack=[];
-    var o = this._decrypt();
-    function map64(b) {
-        if (b==47) return 63; // "/"
-        else if (b==43) return 62; // "+"
-        else if (b>=97) return b-71; // a-z
-        else if (b>=65) return b-65; // A-Z
-        else return b+4; // 0-9
+    // Shift r over to keep the quotient constant. We'll shift the
+    // remainder back at the end.
+    r = biShiftLeft(r, lambda);
+    nb += lambda; // Update the bit count for x.
+    var n = Math.ceil(nb / bitsPerDigit) - 1;
+
+    var b = biMultiplyByRadixPower(y, n - t);
+    while (biCompare(r, b) != -1) {
+        ++q.digits[n - t];
+        r = biSubtract(r, b);
     }
-    function compact32() {
-        return (
-            (stack.shift()<<6 | stack.shift()<<4 | stack.shift()<<2 | stack.shift())<<24 |
-                (stack.shift()<<6 | stack.shift()<<4 | stack.shift()<<2 | stack.shift())<<16 |
-                (stack.shift()<<6 | stack.shift()<<4 | stack.shift()<<2 | stack.shift())<< 8 |
-                (stack.shift()<<6 | stack.shift()<<4 | stack.shift()<<2 | stack.shift())<< 0
-            );
-    }
-    for (var i=0; i<t.length; ++i) {
-        var c = map64(t.charCodeAt(i));
-        stack = stack.concat([ c>>4 & 0x03, c>>2 & 0x03, c>>0 & 0x03 ]);
-        if (stack.length >= 32) {
-            o.push(compact32(), compact32());
+    for (var i = n; i > t; --i) {
+        var ri = (i >= r.digits.length) ? 0 : r.digits[i];
+        var ri1 = (i - 1 >= r.digits.length) ? 0 : r.digits[i - 1];
+        var ri2 = (i - 2 >= r.digits.length) ? 0 : r.digits[i - 2];
+        var yt = (t >= y.digits.length) ? 0 : y.digits[t];
+        var yt1 = (t - 1 >= y.digits.length) ? 0 : y.digits[t - 1];
+        if (ri == yt) {
+            q.digits[i - t - 1] = maxDigitVal;
+        } else {
+            q.digits[i - t - 1] = Math.floor((ri * biRadix + ri1) / yt);
+        }
+
+        var c1 = q.digits[i - t - 1] * ((yt * biRadix) + yt1);
+        var c2 = (ri * biRadixSquared) + ((ri1 * biRadix) + ri2);
+        while (c1 > c2) {
+            --q.digits[i - t - 1];
+            c1 = q.digits[i - t - 1] * ((yt * biRadix) | yt1);
+            c2 = (ri * biRadix * biRadix) + ((ri1 * biRadix) + ri2);
+        }
+
+        b = biMultiplyByRadixPower(y, i - t - 1);
+        r = biSubtract(r, biMultiplyDigit(b, q.digits[i - t - 1]));
+        if (r.isNeg) {
+            r = biAdd(r, b);
+            --q.digits[i - t - 1];
         }
     }
-    return o.get();
-};
-Blowfish.prototype._decrypt=function(){
-    var bf = this;
-    return {
-        f: [],
-        push: function(l,r){
-            var e = bf.decipher(l, r);
-            this.f.push(bf.fromStringCode32(e.l));
-            this.f.push(bf.fromStringCode32(e.r));
-        },
-        normalize: function(s){
-            var c = 0x00;
-            var i = s.length;
-            while (c == 0x00)
-                c = s.charCodeAt(--i);
-            if (i < s.length -1)
-                return s.substr(0, i+1);
-            return s;
-        },
-        get: function(){
-            if (bf.config.verification) {
-                var len = Math.ceil(bf.config.verification.length / 8) * 2;
-                var check = this.f.slice(0, len).join('');
-                if (this.normalize(check) !== bf.config.verification) {
-                    return false;
-                }
-                this.f = this.f.slice(len);
-            }
-            return this.normalize(this.f.join(''));
+    r = biShiftRight(r, lambda);
+    // Fiddle with the signs and stuff to make sure that 0 <= r < y.
+    q.isNeg = x.isNeg != origYIsNeg;
+    if (x.isNeg) {
+        if (origYIsNeg) {
+            q = biAdd(q, bigOne);
+        } else {
+            q = biSubtract(q, bigOne);
         }
-    };
-};
-Blowfish.prototype.stringCode32=function(t){
-    return t.charCodeAt(0) << 24 | t.charCodeAt(1) << 16 | t.charCodeAt(2) << 8 | t.charCodeAt(3);
-};
-Blowfish.prototype.fromStringCode32=function(b){
-    return (
-        String.fromCharCode(b>>24&0xff)+
-            String.fromCharCode(b>>16&0xff)+
-            String.fromCharCode(b>>8&0xff)+
-            String.fromCharCode(b>>0&0xff)
-        );
-};
-Blowfish.prototype.encipher=function(tl,tr){
-    var t = {l:tl,r:tr};
-    for (var i=0; i<16; ++i) {
-        t.l = t.l ^ this.P[i];
-        t.r = t.r ^ (((this.SBOX1[t.l>>24&0xff]+this.SBOX2[t.l>>16&0xff])^this.SBOX3[t.l>>8&0xff])+this.SBOX4[t.l&0xff]);
-        this.swp(t);
+        y = biShiftRight(y, lambda);
+        r = biSubtract(y, r);
     }
-    t.l = t.l ^ this.P[16];
-    t.r = t.r ^ this.P[17];
-    this.swp(t);
-    return t;
-};
-Blowfish.prototype.decipher=function(tl,tr){
-    var t = {l:tl,r:tr};
-    this.swp(t);
-    t.r = t.r ^ this.P[17];
-    t.l = t.l ^ this.P[16];
-    for (var i=15; i>=0; --i) {
-        this.swp(t);
-        t.r = t.r ^ (((this.SBOX1[t.l>>24&0xff]+this.SBOX2[t.l>>16&0xff])^this.SBOX3[t.l>>8&0xff])+this.SBOX4[t.l&0xff]);
-        t.l = t.l ^ this.P[i];
+    // Check for the unbelievably stupid degenerate case of r == -0.
+    if (r.digits[0] == 0 && biHighIndex(r) == 0) r.isNeg = false;
+
+    return new Array(q, r);
+}
+
+function biDivide(x, y)
+{
+    return biDivideModulo(x, y)[0];
+}
+
+function biModulo(x, y)
+{
+    return biDivideModulo(x, y)[1];
+}
+
+function biMultiplyMod(x, y, m)
+{
+    return biModulo(biMultiply(x, y), m);
+}
+
+function biPow(x, y)
+{
+    var result = bigOne;
+    var a = x;
+    while (true) {
+        if ((y & 1) != 0) result = biMultiply(result, a);
+        y >>= 1;
+        if (y == 0) break;
+        a = biMultiply(a, a);
     }
-    return t;
-};
-Blowfish.prototype.swp=function(t) {
-    t.l = t.l ^ t.r;
-    t.r = t.l ^ t.r;
-    t.l = t.l ^ t.r;
-};
-Blowfish.prototype.P=function(k){
-    var P =[
-        0x243f6a88,0x85a308d3,0x13198a2e,0x03707344,0xa4093822,0x299f31d0,
-        0x082efa98,0xec4e6c89,0x452821e6,0x38d01377,0xbe5466cf,0x34e90c6c,
-        0xc0ac29b7,0xc97c50dd,0x3f84d5b5,0xb5470917,0x9216d5d9,0x8979fb1b
-    ];
-    for (var i=0; i<18; ++i) {
-        P[i] = P[i] ^ (
-            (k.charCodeAt((i*4)%k.length)&0xff)<<24 |
-                (k.charCodeAt((i*4+1)%k.length)&0xff)<<16 |
-                (k.charCodeAt((i*4+2)%k.length)&0xff)<<8 |
-                (k.charCodeAt((i*4+3)%k.length)&0xff)
-            );
+    return result;
+}
+
+function biPowMod(x, y, m)
+{
+    var result = bigOne;
+    var a = x;
+    var k = y;
+    while (true) {
+        if ((k.digits[0] & 1) != 0) result = biMultiplyMod(result, a, m);
+        k = biShiftRight(k, 1);
+        if (k.digits[0] == 0 && biHighIndex(k) == 0) break;
+        a = biMultiplyMod(a, a, m);
     }
-    return P;
-};
-Blowfish.prototype.SBOX1=function(){return[
-    0xd1310ba6,0x98dfb5ac,0x2ffd72db,0xd01adfb7,0xb8e1afed,0x6a267e96,
-    0xba7c9045,0xf12c7f99,0x24a19947,0xb3916cf7,0x0801f2e2,0x858efc16,
-    0x636920d8,0x71574e69,0xa458fea3,0xf4933d7e,0x0d95748f,0x728eb658,
-    0x718bcd58,0x82154aee,0x7b54a41d,0xc25a59b5,0x9c30d539,0x2af26013,
-    0xc5d1b023,0x286085f0,0xca417918,0xb8db38ef,0x8e79dcb0,0x603a180e,
-    0x6c9e0e8b,0xb01e8a3e,0xd71577c1,0xbd314b27,0x78af2fda,0x55605c60,
-    0xe65525f3,0xaa55ab94,0x57489862,0x63e81440,0x55ca396a,0x2aab10b6,
-    0xb4cc5c34,0x1141e8ce,0xa15486af,0x7c72e993,0xb3ee1411,0x636fbc2a,
-    0x2ba9c55d,0x741831f6,0xce5c3e16,0x9b87931e,0xafd6ba33,0x6c24cf5c,
-    0x7a325381,0x28958677,0x3b8f4898,0x6b4bb9af,0xc4bfe81b,0x66282193,
-    0x61d809cc,0xfb21a991,0x487cac60,0x5dec8032,0xef845d5d,0xe98575b1,
-    0xdc262302,0xeb651b88,0x23893e81,0xd396acc5,0x0f6d6ff3,0x83f44239,
-    0x2e0b4482,0xa4842004,0x69c8f04a,0x9e1f9b5e,0x21c66842,0xf6e96c9a,
-    0x670c9c61,0xabd388f0,0x6a51a0d2,0xd8542f68,0x960fa728,0xab5133a3,
-    0x6eef0b6c,0x137a3be4,0xba3bf050,0x7efb2a98,0xa1f1651d,0x39af0176,
-    0x66ca593e,0x82430e88,0x8cee8619,0x456f9fb4,0x7d84a5c3,0x3b8b5ebe,
-    0xe06f75d8,0x85c12073,0x401a449f,0x56c16aa6,0x4ed3aa62,0x363f7706,
-    0x1bfedf72,0x429b023d,0x37d0d724,0xd00a1248,0xdb0fead3,0x49f1c09b,
-    0x075372c9,0x80991b7b,0x25d479d8,0xf6e8def7,0xe3fe501a,0xb6794c3b,
-    0x976ce0bd,0x04c006ba,0xc1a94fb6,0x409f60c4,0x5e5c9ec2,0x196a2463,
-    0x68fb6faf,0x3e6c53b5,0x1339b2eb,0x3b52ec6f,0x6dfc511f,0x9b30952c,
-    0xcc814544,0xaf5ebd09,0xbee3d004,0xde334afd,0x660f2807,0x192e4bb3,
-    0xc0cba857,0x45c8740f,0xd20b5f39,0xb9d3fbdb,0x5579c0bd,0x1a60320a,
-    0xd6a100c6,0x402c7279,0x679f25fe,0xfb1fa3cc,0x8ea5e9f8,0xdb3222f8,
-    0x3c7516df,0xfd616b15,0x2f501ec8,0xad0552ab,0x323db5fa,0xfd238760,
-    0x53317b48,0x3e00df82,0x9e5c57bb,0xca6f8ca0,0x1a87562e,0xdf1769db,
-    0xd542a8f6,0x287effc3,0xac6732c6,0x8c4f5573,0x695b27b0,0xbbca58c8,
-    0xe1ffa35d,0xb8f011a0,0x10fa3d98,0xfd2183b8,0x4afcb56c,0x2dd1d35b,
-    0x9a53e479,0xb6f84565,0xd28e49bc,0x4bfb9790,0xe1ddf2da,0xa4cb7e33,
-    0x62fb1341,0xcee4c6e8,0xef20cada,0x36774c01,0xd07e9efe,0x2bf11fb4,
-    0x95dbda4d,0xae909198,0xeaad8e71,0x6b93d5a0,0xd08ed1d0,0xafc725e0,
-    0x8e3c5b2f,0x8e7594b7,0x8ff6e2fb,0xf2122b64,0x8888b812,0x900df01c,
-    0x4fad5ea0,0x688fc31c,0xd1cff191,0xb3a8c1ad,0x2f2f2218,0xbe0e1777,
-    0xea752dfe,0x8b021fa1,0xe5a0cc0f,0xb56f74e8,0x18acf3d6,0xce89e299,
-    0xb4a84fe0,0xfd13e0b7,0x7cc43b81,0xd2ada8d9,0x165fa266,0x80957705,
-    0x93cc7314,0x211a1477,0xe6ad2065,0x77b5fa86,0xc75442f5,0xfb9d35cf,
-    0xebcdaf0c,0x7b3e89a0,0xd6411bd3,0xae1e7e49,0x00250e2d,0x2071b35e,
-    0x226800bb,0x57b8e0af,0x2464369b,0xf009b91e,0x5563911d,0x59dfa6aa,
-    0x78c14389,0xd95a537f,0x207d5ba2,0x02e5b9c5,0x83260376,0x6295cfa9,
-    0x11c81968,0x4e734a41,0xb3472dca,0x7b14a94a,0x1b510052,0x9a532915,
-    0xd60f573f,0xbc9bc6e4,0x2b60a476,0x81e67400,0x08ba6fb5,0x571be91f,
-    0xf296ec6b,0x2a0dd915,0xb6636521,0xe7b9f9b6,0xff34052e,0xc5855664,
-    0x53b02d5d,0xa99f8fa1,0x08ba4799,0x6e85076a
-];};
-Blowfish.prototype.SBOX2=function(){return[
-    0x4b7a70e9,0xb5b32944,0xdb75092e,0xc4192623,0xad6ea6b0,0x49a7df7d,
-    0x9cee60b8,0x8fedb266,0xecaa8c71,0x699a17ff,0x5664526c,0xc2b19ee1,
-    0x193602a5,0x75094c29,0xa0591340,0xe4183a3e,0x3f54989a,0x5b429d65,
-    0x6b8fe4d6,0x99f73fd6,0xa1d29c07,0xefe830f5,0x4d2d38e6,0xf0255dc1,
-    0x4cdd2086,0x8470eb26,0x6382e9c6,0x021ecc5e,0x09686b3f,0x3ebaefc9,
-    0x3c971814,0x6b6a70a1,0x687f3584,0x52a0e286,0xb79c5305,0xaa500737,
-    0x3e07841c,0x7fdeae5c,0x8e7d44ec,0x5716f2b8,0xb03ada37,0xf0500c0d,
-    0xf01c1f04,0x0200b3ff,0xae0cf51a,0x3cb574b2,0x25837a58,0xdc0921bd,
-    0xd19113f9,0x7ca92ff6,0x94324773,0x22f54701,0x3ae5e581,0x37c2dadc,
-    0xc8b57634,0x9af3dda7,0xa9446146,0x0fd0030e,0xecc8c73e,0xa4751e41,
-    0xe238cd99,0x3bea0e2f,0x3280bba1,0x183eb331,0x4e548b38,0x4f6db908,
-    0x6f420d03,0xf60a04bf,0x2cb81290,0x24977c79,0x5679b072,0xbcaf89af,
-    0xde9a771f,0xd9930810,0xb38bae12,0xdccf3f2e,0x5512721f,0x2e6b7124,
-    0x501adde6,0x9f84cd87,0x7a584718,0x7408da17,0xbc9f9abc,0xe94b7d8c,
-    0xec7aec3a,0xdb851dfa,0x63094366,0xc464c3d2,0xef1c1847,0x3215d908,
-    0xdd433b37,0x24c2ba16,0x12a14d43,0x2a65c451,0x50940002,0x133ae4dd,
-    0x71dff89e,0x10314e55,0x81ac77d6,0x5f11199b,0x043556f1,0xd7a3c76b,
-    0x3c11183b,0x5924a509,0xf28fe6ed,0x97f1fbfa,0x9ebabf2c,0x1e153c6e,
-    0x86e34570,0xeae96fb1,0x860e5e0a,0x5a3e2ab3,0x771fe71c,0x4e3d06fa,
-    0x2965dcb9,0x99e71d0f,0x803e89d6,0x5266c825,0x2e4cc978,0x9c10b36a,
-    0xc6150eba,0x94e2ea78,0xa5fc3c53,0x1e0a2df4,0xf2f74ea7,0x361d2b3d,
-    0x1939260f,0x19c27960,0x5223a708,0xf71312b6,0xebadfe6e,0xeac31f66,
-    0xe3bc4595,0xa67bc883,0xb17f37d1,0x018cff28,0xc332ddef,0xbe6c5aa5,
-    0x65582185,0x68ab9802,0xeecea50f,0xdb2f953b,0x2aef7dad,0x5b6e2f84,
-    0x1521b628,0x29076170,0xecdd4775,0x619f1510,0x13cca830,0xeb61bd96,
-    0x0334fe1e,0xaa0363cf,0xb5735c90,0x4c70a239,0xd59e9e0b,0xcbaade14,
-    0xeecc86bc,0x60622ca7,0x9cab5cab,0xb2f3846e,0x648b1eaf,0x19bdf0ca,
-    0xa02369b9,0x655abb50,0x40685a32,0x3c2ab4b3,0x319ee9d5,0xc021b8f7,
-    0x9b540b19,0x875fa099,0x95f7997e,0x623d7da8,0xf837889a,0x97e32d77,
-    0x11ed935f,0x16681281,0x0e358829,0xc7e61fd6,0x96dedfa1,0x7858ba99,
-    0x57f584a5,0x1b227263,0x9b83c3ff,0x1ac24696,0xcdb30aeb,0x532e3054,
-    0x8fd948e4,0x6dbc3128,0x58ebf2ef,0x34c6ffea,0xfe28ed61,0xee7c3c73,
-    0x5d4a14d9,0xe864b7e3,0x42105d14,0x203e13e0,0x45eee2b6,0xa3aaabea,
-    0xdb6c4f15,0xfacb4fd0,0xc742f442,0xef6abbb5,0x654f3b1d,0x41cd2105,
-    0xd81e799e,0x86854dc7,0xe44b476a,0x3d816250,0xcf62a1f2,0x5b8d2646,
-    0xfc8883a0,0xc1c7b6a3,0x7f1524c3,0x69cb7492,0x47848a0b,0x5692b285,
-    0x095bbf00,0xad19489d,0x1462b174,0x23820e00,0x58428d2a,0x0c55f5ea,
-    0x1dadf43e,0x233f7061,0x3372f092,0x8d937e41,0xd65fecf1,0x6c223bdb,
-    0x7cde3759,0xcbee7460,0x4085f2a7,0xce77326e,0xa6078084,0x19f8509e,
-    0xe8efd855,0x61d99735,0xa969a7aa,0xc50c06c2,0x5a04abfc,0x800bcadc,
-    0x9e447a2e,0xc3453484,0xfdd56705,0x0e1e9ec9,0xdb73dbd3,0x105588cd,
-    0x675fda79,0xe3674340,0xc5c43465,0x713e38d8,0x3d28f89e,0xf16dff20,
-    0x153e21e7,0x8fb03d4a,0xe6e39f2b,0xdb83adf7
-];};
-Blowfish.prototype.SBOX3=function(){return[
-    0xe93d5a68,0x948140f7,0xf64c261c,0x94692934,0x411520f7,0x7602d4f7,
-    0xbcf46b2e,0xd4a20068,0xd4082471,0x3320f46a,0x43b7d4b7,0x500061af,
-    0x1e39f62e,0x97244546,0x14214f74,0xbf8b8840,0x4d95fc1d,0x96b591af,
-    0x70f4ddd3,0x66a02f45,0xbfbc09ec,0x03bd9785,0x7fac6dd0,0x31cb8504,
-    0x96eb27b3,0x55fd3941,0xda2547e6,0xabca0a9a,0x28507825,0x530429f4,
-    0x0a2c86da,0xe9b66dfb,0x68dc1462,0xd7486900,0x680ec0a4,0x27a18dee,
-    0x4f3ffea2,0xe887ad8c,0xb58ce006,0x7af4d6b6,0xaace1e7c,0xd3375fec,
-    0xce78a399,0x406b2a42,0x20fe9e35,0xd9f385b9,0xee39d7ab,0x3b124e8b,
-    0x1dc9faf7,0x4b6d1856,0x26a36631,0xeae397b2,0x3a6efa74,0xdd5b4332,
-    0x6841e7f7,0xca7820fb,0xfb0af54e,0xd8feb397,0x454056ac,0xba489527,
-    0x55533a3a,0x20838d87,0xfe6ba9b7,0xd096954b,0x55a867bc,0xa1159a58,
-    0xcca92963,0x99e1db33,0xa62a4a56,0x3f3125f9,0x5ef47e1c,0x9029317c,
-    0xfdf8e802,0x04272f70,0x80bb155c,0x05282ce3,0x95c11548,0xe4c66d22,
-    0x48c1133f,0xc70f86dc,0x07f9c9ee,0x41041f0f,0x404779a4,0x5d886e17,
-    0x325f51eb,0xd59bc0d1,0xf2bcc18f,0x41113564,0x257b7834,0x602a9c60,
-    0xdff8e8a3,0x1f636c1b,0x0e12b4c2,0x02e1329e,0xaf664fd1,0xcad18115,
-    0x6b2395e0,0x333e92e1,0x3b240b62,0xeebeb922,0x85b2a20e,0xe6ba0d99,
-    0xde720c8c,0x2da2f728,0xd0127845,0x95b794fd,0x647d0862,0xe7ccf5f0,
-    0x5449a36f,0x877d48fa,0xc39dfd27,0xf33e8d1e,0x0a476341,0x992eff74,
-    0x3a6f6eab,0xf4f8fd37,0xa812dc60,0xa1ebddf8,0x991be14c,0xdb6e6b0d,
-    0xc67b5510,0x6d672c37,0x2765d43b,0xdcd0e804,0xf1290dc7,0xcc00ffa3,
-    0xb5390f92,0x690fed0b,0x667b9ffb,0xcedb7d9c,0xa091cf0b,0xd9155ea3,
-    0xbb132f88,0x515bad24,0x7b9479bf,0x763bd6eb,0x37392eb3,0xcc115979,
-    0x8026e297,0xf42e312d,0x6842ada7,0xc66a2b3b,0x12754ccc,0x782ef11c,
-    0x6a124237,0xb79251e7,0x06a1bbe6,0x4bfb6350,0x1a6b1018,0x11caedfa,
-    0x3d25bdd8,0xe2e1c3c9,0x44421659,0x0a121386,0xd90cec6e,0xd5abea2a,
-    0x64af674e,0xda86a85f,0xbebfe988,0x64e4c3fe,0x9dbc8057,0xf0f7c086,
-    0x60787bf8,0x6003604d,0xd1fd8346,0xf6381fb0,0x7745ae04,0xd736fccc,
-    0x83426b33,0xf01eab71,0xb0804187,0x3c005e5f,0x77a057be,0xbde8ae24,
-    0x55464299,0xbf582e61,0x4e58f48f,0xf2ddfda2,0xf474ef38,0x8789bdc2,
-    0x5366f9c3,0xc8b38e74,0xb475f255,0x46fcd9b9,0x7aeb2661,0x8b1ddf84,
-    0x846a0e79,0x915f95e2,0x466e598e,0x20b45770,0x8cd55591,0xc902de4c,
-    0xb90bace1,0xbb8205d0,0x11a86248,0x7574a99e,0xb77f19b6,0xe0a9dc09,
-    0x662d09a1,0xc4324633,0xe85a1f02,0x09f0be8c,0x4a99a025,0x1d6efe10,
-    0x1ab93d1d,0x0ba5a4df,0xa186f20f,0x2868f169,0xdcb7da83,0x573906fe,
-    0xa1e2ce9b,0x4fcd7f52,0x50115e01,0xa70683fa,0xa002b5c4,0x0de6d027,
-    0x9af88c27,0x773f8641,0xc3604c06,0x61a806b5,0xf0177a28,0xc0f586e0,
-    0x006058aa,0x30dc7d62,0x11e69ed7,0x2338ea63,0x53c2dd94,0xc2c21634,
-    0xbbcbee56,0x90bcb6de,0xebfc7da1,0xce591d76,0x6f05e409,0x4b7c0188,
-    0x39720a3d,0x7c927c24,0x86e3725f,0x724d9db9,0x1ac15bb4,0xd39eb8fc,
-    0xed545578,0x08fca5b5,0xd83d7cd3,0x4dad0fc4,0x1e50ef5e,0xb161e6f8,
-    0xa28514d9,0x6c51133c,0x6fd5c7e7,0x56e14ec4,0x362abfce,0xddc6c837,
-    0xd79a3234,0x92638212,0x670efa8e,0x406000e0
-];};
-Blowfish.prototype.SBOX4=function(){return[
-    0x3a39ce37,0xd3faf5cf,0xabc27737,0x5ac52d1b,0x5cb0679e,0x4fa33742,
-    0xd3822740,0x99bc9bbe,0xd5118e9d,0xbf0f7315,0xd62d1c7e,0xc700c47b,
-    0xb78c1b6b,0x21a19045,0xb26eb1be,0x6a366eb4,0x5748ab2f,0xbc946e79,
-    0xc6a376d2,0x6549c2c8,0x530ff8ee,0x468dde7d,0xd5730a1d,0x4cd04dc6,
-    0x2939bbdb,0xa9ba4650,0xac9526e8,0xbe5ee304,0xa1fad5f0,0x6a2d519a,
-    0x63ef8ce2,0x9a86ee22,0xc089c2b8,0x43242ef6,0xa51e03aa,0x9cf2d0a4,
-    0x83c061ba,0x9be96a4d,0x8fe51550,0xba645bd6,0x2826a2f9,0xa73a3ae1,
-    0x4ba99586,0xef5562e9,0xc72fefd3,0xf752f7da,0x3f046f69,0x77fa0a59,
-    0x80e4a915,0x87b08601,0x9b09e6ad,0x3b3ee593,0xe990fd5a,0x9e34d797,
-    0x2cf0b7d9,0x022b8b51,0x96d5ac3a,0x017da67d,0xd1cf3ed6,0x7c7d2d28,
-    0x1f9f25cf,0xadf2b89b,0x5ad6b472,0x5a88f54c,0xe029ac71,0xe019a5e6,
-    0x47b0acfd,0xed93fa9b,0xe8d3c48d,0x283b57cc,0xf8d56629,0x79132e28,
-    0x785f0191,0xed756055,0xf7960e44,0xe3d35e8c,0x15056dd4,0x88f46dba,
-    0x03a16125,0x0564f0bd,0xc3eb9e15,0x3c9057a2,0x97271aec,0xa93a072a,
-    0x1b3f6d9b,0x1e6321f5,0xf59c66fb,0x26dcf319,0x7533d928,0xb155fdf5,
-    0x03563482,0x8aba3cbb,0x28517711,0xc20ad9f8,0xabcc5167,0xccad925f,
-    0x4de81751,0x3830dc8e,0x379d5862,0x9320f991,0xea7a90c2,0xfb3e7bce,
-    0x5121ce64,0x774fbe32,0xa8b6e37e,0xc3293d46,0x48de5369,0x6413e680,
-    0xa2ae0810,0xdd6db224,0x69852dfd,0x09072166,0xb39a460a,0x6445c0dd,
-    0x586cdecf,0x1c20c8ae,0x5bbef7dd,0x1b588d40,0xccd2017f,0x6bb4e3bb,
-    0xdda26a7e,0x3a59ff45,0x3e350a44,0xbcb4cdd5,0x72eacea8,0xfa6484bb,
-    0x8d6612ae,0xbf3c6f47,0xd29be463,0x542f5d9e,0xaec2771b,0xf64e6370,
-    0x740e0d8d,0xe75b1357,0xf8721671,0xaf537d5d,0x4040cb08,0x4eb4e2cc,
-    0x34d2466a,0x0115af84,0xe1b00428,0x95983a1d,0x06b89fb4,0xce6ea048,
-    0x6f3f3b82,0x3520ab82,0x011a1d4b,0x277227f8,0x611560b1,0xe7933fdc,
-    0xbb3a792b,0x344525bd,0xa08839e1,0x51ce794b,0x2f32c9b7,0xa01fbac9,
-    0xe01cc87e,0xbcc7d1f6,0xcf0111c3,0xa1e8aac7,0x1a908749,0xd44fbd9a,
-    0xd0dadecb,0xd50ada38,0x0339c32a,0xc6913667,0x8df9317c,0xe0b12b4f,
-    0xf79e59b7,0x43f5bb3a,0xf2d519ff,0x27d9459c,0xbf97222c,0x15e6fc2a,
-    0x0f91fc71,0x9b941525,0xfae59361,0xceb69ceb,0xc2a86459,0x12baa8d1,
-    0xb6c1075e,0xe3056a0c,0x10d25065,0xcb03a442,0xe0ec6e0e,0x1698db3b,
-    0x4c98a0be,0x3278e964,0x9f1f9532,0xe0d392df,0xd3a0342b,0x8971f21e,
-    0x1b0a7441,0x4ba3348c,0xc5be7120,0xc37632d8,0xdf359f8d,0x9b992f2e,
-    0xe60b6f47,0x0fe3f11d,0xe54cda54,0x1edad891,0xce6279cf,0xcd3e7e6f,
-    0x1618b166,0xfd2c1d05,0x848fd2c5,0xf6fb2299,0xf523f357,0xa6327623,
-    0x93a83531,0x56cccd02,0xacf08162,0x5a75ebb5,0x6e163697,0x88d273cc,
-    0xde966292,0x81b949d0,0x4c50901b,0x71c65614,0xe6c6c7bd,0x327a140a,
-    0x45e1d006,0xc3f27b9a,0xc9aa53fd,0x62a80f00,0xbb25bfe2,0x35bdd2f6,
-    0x71126905,0xb2040222,0xb6cbcf7c,0xcd769c2b,0x53113ec0,0x1640e3d3,
-    0x38abbd60,0x2547adf0,0xba38209c,0xf746ce76,0x77afa1c5,0x20756060,
-    0x85cbfe4e,0x8ae88dd8,0x7aaaf9b0,0x4cf9aa7e,0x1948c25c,0x02fb8a8c,
-    0x01c36ae4,0xd6ebe1f9,0x90d4f869,0xa65cdea0,0x3f09252d,0xc208e69f,
-    0xb74e6132,0xce77e25b,0x578fdfe3,0x3ac372e6
-];};
+    return result;
+}
+
+// BarrettMu, a class for performing Barrett modular reduction computations in
+// JavaScript.
+//
+// Requires BigInt.js.
+//
+// Copyright 2004-2005 David Shapiro.
+//
+// You may use, re-use, abuse, copy, and modify this code to your liking, but
+// please keep this header.
+//
+// Thanks!
+//
+// Dave Shapiro
+// dave@ohdave.com
+
+function BarrettMu(m)
+{
+    this.modulus = biCopy(m);
+    this.k = biHighIndex(this.modulus) + 1;
+    var b2k = new BigInt();
+    b2k.digits[2 * this.k] = 1; // b2k = b^(2k)
+    this.mu = biDivide(b2k, this.modulus);
+    this.bkplus1 = new BigInt();
+    this.bkplus1.digits[this.k + 1] = 1; // bkplus1 = b^(k+1)
+    this.modulo = BarrettMu_modulo;
+    this.multiplyMod = BarrettMu_multiplyMod;
+    this.powMod = BarrettMu_powMod;
+}
+
+function BarrettMu_modulo(x)
+{
+    var q1 = biDivideByRadixPower(x, this.k - 1);
+    var q2 = biMultiply(q1, this.mu);
+    var q3 = biDivideByRadixPower(q2, this.k + 1);
+    var r1 = biModuloByRadixPower(x, this.k + 1);
+    var r2term = biMultiply(q3, this.modulus);
+    var r2 = biModuloByRadixPower(r2term, this.k + 1);
+    var r = biSubtract(r1, r2);
+    if (r.isNeg) {
+        r = biAdd(r, this.bkplus1);
+    }
+    var rgtem = biCompare(r, this.modulus) >= 0;
+    while (rgtem) {
+        r = biSubtract(r, this.modulus);
+        rgtem = biCompare(r, this.modulus) >= 0;
+    }
+    return r;
+}
+
+function BarrettMu_multiplyMod(x, y)
+{
+    /*
+     x = this.modulo(x);
+     y = this.modulo(y);
+     */
+    var xy = biMultiply(x, y);
+    return this.modulo(xy);
+}
+
+function BarrettMu_powMod(x, y)
+{
+    var result = new BigInt();
+    result.digits[0] = 1;
+    var a = x;
+    var k = y;
+    while (true) {
+        if ((k.digits[0] & 1) != 0) result = this.multiplyMod(result, a);
+        k = biShiftRight(k, 1);
+        if (k.digits[0] == 0 && biHighIndex(k) == 0) break;
+        a = this.multiplyMod(a, a);
+    }
+    return result;
+}
+
+// RSA, a suite of routines for performing RSA public-key computations in
+// JavaScript.
+//
+// Requires BigInt.js and Barrett.js.
+//
+// Copyright 1998-2005 David Shapiro.
+//
+// You may use, re-use, abuse, copy, and modify this code to your liking, but
+// please keep this header.
+//
+// Thanks!
+//
+// Dave Shapiro
+// dave@ohdave.com
+
+function RSAKeyPair(encryptionExponent, decryptionExponent, modulus)
+{
+    this.e = biFromHex(encryptionExponent);
+    this.d = biFromHex(decryptionExponent);
+    this.m = biFromHex(modulus);
+    // We can do two bytes per digit, so
+    // chunkSize = 2 * (number of digits in modulus - 1).
+    // Since biHighIndex returns the high index, not the number of digits, 1 has
+    // already been subtracted.
+    this.chunkSize = 2 * biHighIndex(this.m);
+    this.radix = 16;
+    this.barrett = new BarrettMu(this.m);
+}
+
+function twoDigit(n)
+{
+    return (n < 10 ? "0" : "") + String(n);
+}
+
+function encryptedString(key, s)
+    // Altered by Rob Saunders (rob@robsaunders.net). New routine pads the
+    // string after it has been converted to an array. This fixes an
+    // incompatibility with Flash MX's ActionScript.
+{
+    var a = new Array();
+    var sl = s.length;
+    var i = 0;
+    while (i < sl) {
+        a[i] = s.charCodeAt(i);
+        i++;
+    }
+
+    while (a.length % key.chunkSize != 0) {
+        a[i++] = 0;
+    }
+
+    var al = a.length;
+    var result = "";
+    var j, k, block;
+    for (i = 0; i < al; i += key.chunkSize) {
+        block = new BigInt();
+        j = 0;
+        for (k = i; k < i + key.chunkSize; ++j) {
+            block.digits[j] = a[k++];
+            block.digits[j] += a[k++] << 8;
+        }
+        var crypt = key.barrett.powMod(block, key.e);
+        var text = key.radix == 16 ? biToHex(crypt) : biToString(crypt, key.radix);
+        result += text + " ";
+    }
+    return result.substring(0, result.length - 1); // Remove last space.
+}
+
+function decryptedString(key, s)
+{
+    var blocks = s.split(" ");
+    var result = "";
+    var i, j, block;
+    for (i = 0; i < blocks.length; ++i) {
+        var bi;
+        if (key.radix == 16) {
+            bi = biFromHex(blocks[i]);
+        }
+        else {
+            bi = biFromString(blocks[i], key.radix);
+        }
+        block = key.barrett.powMod(bi, key.d);
+        for (j = 0; j <= biHighIndex(block); ++j) {
+            result += String.fromCharCode(block.digits[j] & 255,
+                block.digits[j] >> 8);
+        }
+    }
+    // Remove trailing null, if any.
+    if (result.charCodeAt(result.length - 1) == 0) {
+        result = result.substring(0, result.length - 1);
+    }
+    return result;
+}
