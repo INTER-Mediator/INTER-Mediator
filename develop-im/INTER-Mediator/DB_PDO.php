@@ -87,8 +87,9 @@ class DB_PDO extends DB_Base implements DB_Interface
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $expiredDT = new DateTime($row['expired']);
             $intervalDT = $expiredDT->diff(new DateTime(), true);
-            if ( $intervalDT->format('U') > $this->getExpiringSeconds() )   {   // Judge timeout.
-            //    return false;
+            $seconds = (( $intervalDT->days * 24 + $intervalDT->h ) * 60 + $intervalDT->i ) * 60 + $intervalDT->s;
+            if ( $seconds > $this->getExpiringSeconds() )   {   // Judge timeout.
+                return false;
             }
             return $row['hash'];
         }

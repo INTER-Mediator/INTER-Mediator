@@ -25,17 +25,12 @@ var INTERMediaotr_DBAdapter = {
         INTERMediator.debugMessages.push(
             INTERMediatorOnPage.getMessages()[debugMessageNumber] + decodeURI(appPath + accessURL + authParams));
 
-        /*    INTERMediator.debugMessages.push(
-         "INTERMediatorOnPage.authChallenge="+INTERMediatorOnPage.authChallenge
-         +"/INTERMediatorOnPage.authUserSalt="+INTERMediatorOnPage.authUserSalt);
-         */
         var newRecordKeyValue = '';
         var dbresult = '';
         var resultCount = 0;
         var challenge = null;
         var requireAuth = false;
         try {
-            //    do {
             myRequest = new XMLHttpRequest();
             myRequest.open('GET', appPath + accessURL + authParams, false);
             myRequest.send(null);
@@ -50,10 +45,6 @@ var INTERMediaotr_DBAdapter = {
                     parseInt(challenge.substr(26, 2),16),
                     parseInt(challenge.substr(28, 2),16),
                     parseInt(challenge.substr(30, 2),16));
-
-            //    INTERMediator.debugMessages.push(
-            //        "INTERMediatorOnPage.authChallenge="+INTERMediatorOnPage.authChallenge
-            //            +"/INTERMediatorOnPage.authUserSalt="+INTERMediatorOnPage.authUserSalt);
             }
         } catch (e) {
 
@@ -70,6 +61,7 @@ var INTERMediaotr_DBAdapter = {
         if ( ! accessURL.match(/access=challenge/) )  {
             INTERMediatorOnPage.authCount = 0;
         }
+        INTERMediatorOnPage.storeCredencialsToCookie();
         return {dbresult: dbresult, resultCount: resultCount, newRecordKeyValue: newRecordKeyValue};
     },
 

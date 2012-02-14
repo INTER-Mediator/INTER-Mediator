@@ -89,6 +89,8 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         }
         echo "INTERMediatorOnPage.requreAuthentication={$boolValue};";
         echo "INTERMediatorOnPage.authRequiredContext=", arrayToJS($requireAuthContext, ''), ";";
+        echo "INTERMediatorOnPage.authStoring='", $options['authentication']['storing'], "';";
+        echo "INTERMediatorOnPage.authExpired='", $options['authentication']['authexpired'], "';";
 
     } else {
 

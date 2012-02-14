@@ -52,13 +52,11 @@ IM_Entry(
                 'all' => array( /* load, update, new, delete*/
                     'user' => array (),
                     'group' => array(),
-                    'privilege' => array(),
                     'target' => 'table',
                 ),
                 'load' => array( /* load, update, new, delete*/
                     'user' => array (),
                     'group' => array(),
-                    'privilege' => array(),
                     'target' => 'record',
                     'field' => 'field'
                 ),
@@ -81,7 +79,8 @@ IM_Entry(
             'privilege-table' => 'authpriv',
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
-            'authexpired' => '3600',  // Set as seconds.
+            'authexpired' => '60',  // Set as seconds.
+            'storing' => 'cookie-domainwide',   // 'cookie'(default), 'cookie-domainwide', 'none'
         ),
 
     ),

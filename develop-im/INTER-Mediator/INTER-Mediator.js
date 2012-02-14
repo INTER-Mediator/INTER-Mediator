@@ -160,7 +160,14 @@ var INTERMediator = {
                     useoffset:false});
             } catch (ex) {
                 if ( ex == "_im_requath_request_" ) {
-                    throw ex;
+                    if ( INTERMediatorOnPage.requreAuthentication && ! INTERMediatorOnPage.isComplementAuthData() ) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(
+                            function(){INTERMediator.updateDB(idValue);}
+                        );
+                        return;
+                    }
                 }
             }
 
@@ -223,7 +230,16 @@ var INTERMediator = {
                         ]});
                 } catch (ex) {
                     if ( ex == "_im_requath_request_" ) {
-                        throw ex;
+                        if ( ex == "_im_requath_request_" ) {
+                            if ( INTERMediatorOnPage.requreAuthentication && ! INTERMediatorOnPage.isComplementAuthData() ) {
+                                INTERMediatorOnPage.authChallenge = null;
+                                INTERMediatorOnPage.authHashedPassword = null;
+                                INTERMediatorOnPage.authenticating(
+                                    function(){INTERMediator.updateDB(idValue);}
+                                );
+                                return;
+                            }
+                        }
                     }
                 }
 
@@ -264,7 +280,17 @@ var INTERMediator = {
             });
         } catch (ex) {
             if ( ex == "_im_requath_request_" ) {
-                throw ex;
+                if ( ex == "_im_requath_request_" ) {
+                    if ( INTERMediatorOnPage.requreAuthentication && ! INTERMediatorOnPage.isComplementAuthData() ) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(
+                            function(){INTERMediator.deleteButton(
+                                targetName, keyField, keyValue, removeNodes, isConfirm);}
+                        );
+                        return;
+                    }
+                }
             }
         }
 
@@ -299,7 +325,13 @@ var INTERMediator = {
             INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         } catch (ex) {
             if ( ex == "_im_requath_request_" ) {
-                throw ex;
+                INTERMediatorOnPage.authChallenge = null;
+                INTERMediatorOnPage.authHashedPassword = null;
+                INTERMediatorOnPage.authenticating(
+                    function(){INTERMediator.insertButton(
+                        targetName, foreignValues, updateNodes, removeNodes, isConfirm);}
+                );
+                return;
             }
         }
 
@@ -369,7 +401,12 @@ var INTERMediator = {
             });
         } catch (ex) {
             if ( ex == "_im_requath_request_" ) {
-                throw ex;
+                INTERMediatorOnPage.authChallenge = null;
+                INTERMediatorOnPage.authHashedPassword = null;
+                INTERMediatorOnPage.authenticating(
+                    function(){INTERMediator.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);}
+                );
+                return;
             }
         }
 
@@ -413,19 +450,14 @@ var INTERMediator = {
      * parameter: fromStart: true=construct page, false=construct partially
      */
     construct:function (fromStart, indexOfKeyFieldObject) {
-/*
-        if ( INTERMediatorOnPage.authCount > 2 )    {
-            INTERMediatorOnPage.authenticationError();
-            INTERMediator.flushMessage();
-            return;
-        }
-*/
+
         var currentLevel = 0;
         var linkedNodes;
         var postSetFields = [];
         var buttonIdNum = 1;
         var deleteInsertOnNavi = [];
 
+        INTERMediatorOnPage.retrieveAuthInfo();
         try {
             if (fromStart) {
                 this.partialConstructing = false;
@@ -436,13 +468,15 @@ var INTERMediator = {
             }
         } catch (ex) {
             if ( ex == "_im_requath_request_" ) {
-                if ( INTERMediatorOnPage.requreAuthentication && ! INTERMediatorOnPage.isComplementAuthData() ) {
-                    INTERMediatorOnPage.authChallenge = null;
-                    INTERMediatorOnPage.authHashedPassword = null;
-                    INTERMediatorOnPage.authenticating(
-                        function(){INTERMediator.construct(fromStart, indexOfKeyFieldObject);}
-                    );
-                    return;
+                if ( INTERMediatorOnPage.requreAuthentication ) {
+                    if ( ! INTERMediatorOnPage.isComplementAuthData() ) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(
+                            function(){INTERMediator.construct(fromStart, indexOfKeyFieldObject);}
+                        );
+                        return;
+                    }
                 }
             }
         }

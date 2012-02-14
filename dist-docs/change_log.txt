@@ -19,6 +19,7 @@ Toward Ver.1.1
 - Popup menu's default value; if there isn't the value of them, set first one.
 - DIV._im_multivalue: Set muliti-line values to one field within the div element.
 - [BUG] Radio buttons shows the message of another was updated in spite of it's not true.
+- Put the params.php file out side of INTER-Mediator.
 
 Toward Ver.1.2
 - Objective handling for the data in database.
@@ -58,6 +59,7 @@ Ver.1.0.6 === will be next release.
 - The password of the user are stored with randam generated salts.
 - FX.php 6.0 included.
 - The statement "$prohibitDebugMode = true;" in params.php. It can prohibit debug mode on the server side.
+- Timeout of authentication is supported.
 
 Ver.1.0.5 (2012/2/5)
 - Authentication support first appearance!

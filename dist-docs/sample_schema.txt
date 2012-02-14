@@ -253,23 +253,11 @@ INSERT authgroup SET id=1,groupname='group1';
 INSERT authgroup SET id=2,groupname='group2';
 INSERT authgroup SET id=3,groupname='group3';
 
-CREATE TABLE authpriv (
-	id					INT  AUTO_INCREMENT,
-	privname			VARCHAR(48),
-	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
-		ENGINE=InnoDB;
-
-INSERT authpriv SET id=1,privname='priv1';
-INSERT authpriv SET id=2,privname='priv2';
-INSERT authpriv SET id=3,privname='priv3';
-
 CREATE TABLE authcor (
 	id					INT  AUTO_INCREMENT,
 	user_id             INT,
 	group_id            INT,
-	prev_id             INT,
+	dest_group_id             INT,
 	privname			VARCHAR(48),
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8,
