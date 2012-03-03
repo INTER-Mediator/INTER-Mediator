@@ -28,8 +28,8 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
     {
         $expiredDT = new DateTime('2012-02-13 11:32:40');
         $currentDate = new DateTime('2012-02-14 11:32:51');
-    //    $expiredDT = new DateTime('2012-02-13 00:00:00');
-    //    $currentDate = new DateTime('2013-04-13 01:02:03');
+        //    $expiredDT = new DateTime('2012-02-13 00:00:00');
+        //    $currentDate = new DateTime('2013-04-13 01:02:03');
         $intervalDT = $expiredDT->diff($currentDate, true);
         var_export($intervalDT);
         $calc = (( $intervalDT->days * 24 + $intervalDT->h ) * 60 + $intervalDT->i ) * 60 + $intervalDT->s;
@@ -51,7 +51,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
 
         $username = "testuser";
         $password = "testuser";
-    //    $this->assertTrue($this->db_pdo->addUser( $username, $password ));
+        //    $this->assertTrue($this->db_pdo->addUser( $username, $password ));
 
         $retrievedHexSalt = $this->db_pdo->authSupportGetSalt($username);
         $retrievedSalt = pack( 'N', hexdec( $retrievedHexSalt ));
@@ -64,5 +64,11 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         echo $hashedvalue;
 
         $this->assertTrue($this->db_pdo->checkChallenge( $username, sha1($challenge . $hashedvalue), $clientId ));
+    }
+
+    function testUserGroup()    {
+        $groupArray = $this->db_pdo->getGroupsOfUser('user1');
+        echo var_export($groupArray);
+        $this->assertTrue(count($groupArray)>0);
     }
 }

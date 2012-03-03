@@ -59,16 +59,24 @@ function dateArrayFromFMDate($d)
 
 class DB_FileMaker_FX extends DB_Base implements DB_Interface
 {
-    function authSupportStoreChallenge($username, $challenge)   {}
-    function authSupportRetrieveChallenge($username)    {}
-    function authSupportRetrieveHashedPassword($username)   {}
-    function authSupportCreateUser($username, $hashedpassword)  {}
-    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)   {}
+    /* Defined in DB_Interface class of the file DB_Base.php */
+    function authSupportStoreChallenge($username, $challenge, $clientId){}
+    /* Defined in DB_Interface class of the file DB_Base.php */
+    function authSupportGetSalt($username){}
+    /* Defined in DB_Interface class of the file DB_Base.php */
+    function authSupportRetrieveChallenge($username, $clientId){}
+    /* Defined in DB_Interface class of the file DB_Base.php */
+    function authSupportRetrieveHashedPassword($username){}
+    /* Defined in DB_Interface class of the file DB_Base.php */
+    function authSupportCreateUser($username, $hashedpassword){}
+    /* Defined in DB_Interface class of the file DB_Base.php */
+    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword){}
 
     function stringReturnOnly($str)    {
             return str_replace("\n\r", "\r",
                 str_replace("\n", "\r", $str));
     }
+
     function getFromDB($dataSourceName)
     {
         $contextName = $this->dataSourceName;
@@ -228,9 +236,8 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
             return false;
         }
-        if ($this->isDebug) {
-            $this->debugMessage[] = $result['URL'];
-        }
+        $this->setDebugMessage( $result['URL'] );
+
         if ($result['errorCode'] > 0) {
             $this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
             return false;
@@ -284,7 +291,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                     $this->errorMessage[] = "FX reports error at edit action: table={$this->getEntityForUpdate()}, code={$result['errorCode']}, url={$result['URL']}<hr>";
                     return false;
                 }
-                if ($this->isDebug) $this->debugMessage[] = $result['URL'];
+                $this->setDebugMessage( $result['URL'] );
                 break;
             }
         } else {
@@ -343,9 +350,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
             return false;
         }
-        if ($this->isDebug) {
-            $this->debugMessage[] = $result['URL'];
-        }
+        $this->setDebugMessage( $result['URL'] );
         if ($result['errorCode'] > 0 && $result['errorCode'] != 401) {
             $this->errorMessage[] = "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";
             return false;
@@ -380,9 +385,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
             return false;
         }
-        if ($this->isDebug) {
-            $this->debugMessage[] = $result['URL'];
-        }
+        $this->setDebugMessage( $result['URL'] );
         if ($result['errorCode'] > 0) {
             $this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
             return false;
@@ -424,9 +427,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                     $this->errorMessage[] = "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>";
                     return false;
                 }
-                if ($this->isDebug) {
-                    $this->debugMessage[] = $result['URL'];
-                }
+                $this->setDebugMessage( $result['URL'] );
                 break;
             }
         }

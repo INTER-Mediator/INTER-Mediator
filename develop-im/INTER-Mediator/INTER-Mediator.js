@@ -69,48 +69,49 @@ var INTERMediator = {
     // Message for Programmers
     //=================================
     flushMessage:function () {
+        var debugNode, title, body, i, clearButton, tNode ;
         if (INTERMediator.errorMessages.length > 0) {
-            var debugNode = document.getElementById('easypage_error_panel_4873643897897');
+            debugNode = document.getElementById('easypage_error_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
                 debugNode.setAttribute('id', 'easypage_error_panel_4873643897897');
                 debugNode.style.backgroundColor = '#FFDDDD';
-                var title = document.createElement('h3');
+                title = document.createElement('h3');
                 title.appendChild(document.createTextNode('Error Info from INTER-Mediator'));
                 title.appendChild(document.createElement('hr'));
                 debugNode.appendChild(title);
-                var body = document.getElementsByTagName('body')[0];
+                body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-            for (var i = 0; i < INTERMediator.errorMessages.length; i++) {
+            for (i = 0; i < INTERMediator.errorMessages.length; i++) {
                 debugNode.appendChild(document.createTextNode(INTERMediator.errorMessages[i]));
                 debugNode.appendChild(document.createElement('hr'));
             }
         }
         if (INTERMediator.debugMode && INTERMediator.debugMessages.length > 0) {
-            var debugNode = document.getElementById('easypage_debug_panel_4873643897897');
+            debugNode = document.getElementById('easypage_debug_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
                 debugNode.setAttribute('id', 'easypage_debug_panel_4873643897897');
                 debugNode.style.backgroundColor = '#DDDDDD';
-                var clearButton = document.createElement('button');
+                clearButton = document.createElement('button');
                 clearButton.setAttribute('title', 'clear');
                 INTERMediatorLib.addEvent(clearButton, 'click', function () {
                     var target = document.getElementById('easypage_debug_panel_4873643897897');
                     target.parentNode.removeChild(target);
                 });
-                var tNode = document.createTextNode('clear');
+                tNode = document.createTextNode('clear');
                 clearButton.appendChild(tNode);
-                var title = document.createElement('h3');
+                title = document.createElement('h3');
                 title.appendChild(document.createTextNode('Debug Info from INTER-Mediator'));
                 title.appendChild(clearButton);
                 title.appendChild(document.createElement('hr'));
                 debugNode.appendChild(title);
-                var body = document.getElementsByTagName('body')[0];
+                body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
 
-            for (var i = 0; i < INTERMediator.debugMessages.length; i++) {
+            for ( i = 0; i < INTERMediator.debugMessages.length; i++) {
                 debugNode.appendChild(document.createTextNode(INTERMediator.debugMessages[i]));
                 debugNode.appendChild(document.createElement('hr'));
             }
@@ -127,7 +128,6 @@ var INTERMediator = {
      Parameters:
      */
     valueChange:function (idValue) {
-        var newValue = null;
         var changedObj = document.getElementById(idValue);
         if (changedObj != null) {
             if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
@@ -140,8 +140,14 @@ var INTERMediator = {
     },
 
     updateDB:function (idValue) {
-        var changedObj = document.getElementById(idValue);
+        var newValue = null, changedObj;
+        changedObj = document.getElementById(idValue);
         if (changedObj != null) {
+            INTERMediatorOnPage.retrieveAuthInfo();
+            var objType = changedObj.getAttribute('type');
+            if ( objType == 'radio' && ! changedObj.selected )  {
+                return;
+            }
             var objectSpec = INTERMediator.updateRequiredObject[idValue];
             var keyingComp = objectSpec['keying'].split('=');
             var keyingField = keyingComp[0];
@@ -159,12 +165,14 @@ var INTERMediator = {
                     ],
                     useoffset:false});
             } catch (ex) {
-                if ( ex == "_im_requath_request_" ) {
-                    if ( INTERMediatorOnPage.requreAuthentication && ! INTERMediatorOnPage.isComplementAuthData() ) {
+                if (ex == "_im_requath_request_") {
+                    if (INTERMediatorOnPage.requreAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.authChallenge = null;
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
-                            function(){INTERMediator.updateDB(idValue);}
+                            function () {
+                                INTERMediator.updateDB(idValue);
+                            }
                         );
                         return;
                     }
@@ -177,28 +185,31 @@ var INTERMediator = {
                 INTERMediator.flushMessage();
                 return;
             }
-            if (currentVal.count > 1 ) {
+            if (currentVal.count > 1) {
                 var response = confirm(INTERMediatorOnPage.getMessages()[1024]);
-                if ( ! response )   {
+                if (!response) {
                     INTERMediator.flushMessage();
                     return;
                 }
             }
             currentVal = currentVal.recordset[0][objectSpec['field']];
+            var isDiffrentOnDB = (objectSpec['initialvalue'] != currentVal);
 
             if (changedObj.tagName == 'TEXTAREA') {
                 newValue = changedObj.value;
             } else if (changedObj.tagName == 'SELECT') {
                 newValue = changedObj.value;
             } else if (changedObj.tagName == 'INPUT') {
-                var objType = changedObj.getAttribute('type');
+
                 if (objType != null) {
                     if (objType == 'checkbox') {
                         var valueAttr = changedObj.getAttribute('value');
                         if (changedObj.checked) {
                             newValue = valueAttr;
+                            isDiffrentOnDB = (valueAttr == currentVal);
                         } else {
                             newValue = '';
+                            isDiffrentOnDB = (valueAttr != currentVal);
                         }
                     } else if (objType == 'radio') {
                         newValue = changedObj.value;
@@ -208,13 +219,15 @@ var INTERMediator = {
                 }
             }
 
-            if (objectSpec['initialvalue'] != currentVal) {
+            if ( isDiffrentOnDB ) {
                 // The value of database and the field is diffrent. Others must be changed this field.
-                if (!confirm(INTERMediatorLib.getInsertedString(
-                    INTERMediatorOnPage.getMessages()[1001], [objectSpec['initialvalue'], newValue, currentVal]))) {
+                if ( ! confirm(INTERMediatorLib.getInsertedString(
+                            INTERMediatorOnPage.getMessages()[1001],
+                            [objectSpec['initialvalue'], newValue, currentVal]))) {
                     INTERMediator.flushMessage();
                     return;
                 }
+                INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
             }
 
             if (newValue != null) {
@@ -222,20 +235,18 @@ var INTERMediator = {
                 try {
                     INTERMediaotr_DBAdapter.db_update({
                         name:objectSpec['name'],
-                        conditions:[
-                            {field:criteria[0], operator:'=', value:criteria[1]}
-                        ],
-                        dataset:[
-                            {field:objectSpec['field'], value:newValue}
-                        ]});
+                        conditions:[{field:criteria[0], operator:'=', value:criteria[1]}],
+                        dataset:[{field:objectSpec['field'], value:newValue}]});
                 } catch (ex) {
-                    if ( ex == "_im_requath_request_" ) {
-                        if ( ex == "_im_requath_request_" ) {
-                            if ( INTERMediatorOnPage.requreAuthentication && ! INTERMediatorOnPage.isComplementAuthData() ) {
+                    if (ex == "_im_requath_request_") {
+                        if (ex == "_im_requath_request_") {
+                            if (INTERMediatorOnPage.requreAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                                 INTERMediatorOnPage.authChallenge = null;
                                 INTERMediatorOnPage.authHashedPassword = null;
                                 INTERMediatorOnPage.authenticating(
-                                    function(){INTERMediator.updateDB(idValue);}
+                                    function () {
+                                        INTERMediator.updateDB(idValue);
+                                    }
                                 );
                                 return;
                             }
@@ -266,12 +277,13 @@ var INTERMediator = {
     },
 
     deleteButton:function (targetName, keyField, keyValue, removeNodes, isConfirm) {
-        if ( isConfirm )    {
-            if ( ! confirm(INTERMediatorOnPage.getMessages()[1025]) )  {
+        if (isConfirm) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                 return;
             }
         }
         try {
+            INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediaotr_DBAdapter.db_delete({
                 name:targetName,
                 conditions:[
@@ -279,14 +291,16 @@ var INTERMediator = {
                 ]
             });
         } catch (ex) {
-            if ( ex == "_im_requath_request_" ) {
-                if ( ex == "_im_requath_request_" ) {
-                    if ( INTERMediatorOnPage.requreAuthentication && ! INTERMediatorOnPage.isComplementAuthData() ) {
+            if (ex == "_im_requath_request_") {
+                if (ex == "_im_requath_request_") {
+                    if (INTERMediatorOnPage.requreAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.authChallenge = null;
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
-                            function(){INTERMediator.deleteButton(
-                                targetName, keyField, keyValue, removeNodes, isConfirm);}
+                            function () {
+                                INTERMediator.deleteButton(
+                                    targetName, keyField, keyValue, removeNodes, isConfirm);
+                            }
                         );
                         return;
                     }
@@ -302,8 +316,8 @@ var INTERMediator = {
     },
 
     insertButton:function (targetName, foreignValues, updateNodes, removeNodes, isConfirm) {
-        if ( isConfirm )    {
-            if ( ! confirm(INTERMediatorOnPage.getMessages()[1026]) )  {
+        if (isConfirm) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
             }
         }
@@ -322,14 +336,17 @@ var INTERMediator = {
             }
         }
         try {
+            INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         } catch (ex) {
-            if ( ex == "_im_requath_request_" ) {
+            if (ex == "_im_requath_request_") {
                 INTERMediatorOnPage.authChallenge = null;
                 INTERMediatorOnPage.authHashedPassword = null;
                 INTERMediatorOnPage.authenticating(
-                    function(){INTERMediator.insertButton(
-                        targetName, foreignValues, updateNodes, removeNodes, isConfirm);}
+                    function () {
+                        INTERMediator.insertButton(
+                            targetName, foreignValues, updateNodes, removeNodes, isConfirm);
+                    }
                 );
                 return;
             }
@@ -350,8 +367,8 @@ var INTERMediator = {
     },
 
     insertRecordFromNavi:function (targetName, keyField, isConfirm) {
-        if ( isConfirm )    {
-            if ( ! confirm(INTERMediatorOnPage.getMessages()[1025]) )  {
+        if (isConfirm) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                 return;
             }
         }
@@ -370,7 +387,24 @@ var INTERMediator = {
                 field:ds[key]['default-values'][index]['field'],
                 value:ds[key]['default-values'][index]['value']});
         }
-        var newId = INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+        try {
+            INTERMediatorOnPage.retrieveAuthInfo();
+            var newId = INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requreAuthentication) {
+                    if (!INTERMediatorOnPage.isComplementAuthData()) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(function () {
+                            INTERMediator.insertRecordFromNavi(targetName, keyField, isConfirm);
+                        });
+                        return;
+                    }
+                }
+            }
+        }
+
         if (newId > -1) {
             var restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
@@ -387,12 +421,13 @@ var INTERMediator = {
     },
 
     deleteRecordFromNavi:function (targetName, keyField, keyValue, isConfirm) {
-        if ( isConfirm )    {
-            if ( ! confirm(INTERMediatorOnPage.getMessages()[1026]) )  {
+        if (isConfirm) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
             }
         }
         try {
+            INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediaotr_DBAdapter.db_delete({
                 name:targetName,
                 conditions:[
@@ -400,11 +435,13 @@ var INTERMediator = {
                 ]
             });
         } catch (ex) {
-            if ( ex == "_im_requath_request_" ) {
+            if (ex == "_im_requath_request_") {
                 INTERMediatorOnPage.authChallenge = null;
                 INTERMediatorOnPage.authHashedPassword = null;
                 INTERMediatorOnPage.authenticating(
-                    function(){INTERMediator.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);}
+                    function () {
+                        INTERMediator.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);
+                    }
                 );
                 return;
             }
@@ -421,8 +458,8 @@ var INTERMediator = {
     },
 
     saveRecordFromNavi:function () {
-        for( var idValue in INTERMediator.updateRequiredObject )    {
-            if ( INTERMediator.updateRequiredObject[idValue]['edit'] )    {
+        for (var idValue in INTERMediator.updateRequiredObject) {
+            if (INTERMediator.updateRequiredObject[idValue]['edit']) {
                 INTERMediator.updateDB(idValue);
             }
         }
@@ -440,9 +477,9 @@ var INTERMediator = {
     partialConstructing:false,
     objectReference:{},
 
-    //=================================
-    // Construct Page
-    //=================================
+//=================================
+// Construct Page
+//=================================
     /**
      * Construct the Web Page with DB Data
      * You should call here when you show the page.
@@ -467,13 +504,15 @@ var INTERMediator = {
                 partialConstruct(indexOfKeyFieldObject);
             }
         } catch (ex) {
-            if ( ex == "_im_requath_request_" ) {
-                if ( INTERMediatorOnPage.requreAuthentication ) {
-                    if ( ! INTERMediatorOnPage.isComplementAuthData() ) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requreAuthentication) {
+                    if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.authChallenge = null;
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
-                            function(){INTERMediator.construct(fromStart, indexOfKeyFieldObject);}
+                            function () {
+                                INTERMediator.construct(fromStart, indexOfKeyFieldObject);
+                            }
                         );
                         return;
                     }
@@ -507,12 +546,12 @@ var INTERMediator = {
                     = INTERMediator.keyFieldObject[indexOfKeyFieldObject]['foreign-value'][field];
             }
             postSetFields = [];
-            try{
+            try {
                 seekEnclosureNode(
                     updateNode, parentRecordset, updateContext,
                     INTERMediatorLib.getEnclosureSimple(updateNode), null);
             } catch (ex) {
-                if ( ex == "_im_requath_request_" ) {
+                if (ex == "_im_requath_request_") {
                     throw ex;
                 }
             }
@@ -573,7 +612,7 @@ var INTERMediator = {
             try {
                 seekEnclosureNode(bodyNode, null, null, null, null);
             } catch (ex) {
-                if ( ex == "_im_requath_request_" ) {
+                if (ex == "_im_requath_request_") {
                     throw ex;
                 }
             }
@@ -625,7 +664,7 @@ var INTERMediator = {
                         }
                     }
                 } catch (ex) {
-                    if ( ex == "_im_requath_request_" ) {
+                    if (ex == "_im_requath_request_") {
                         throw ex;
                     }
                 }
@@ -735,7 +774,7 @@ var INTERMediator = {
                         conditions:null,
                         useoffset:true});
                 } catch (ex) {
-                    if ( ex == "_im_requath_request_" ) {
+                    if (ex == "_im_requath_request_") {
                         throw ex;
                     }
                 }
@@ -744,7 +783,7 @@ var INTERMediator = {
                     for (var i = 0; i < repeaters.length; i++) {
                         var newNode = repeaters[i].cloneNode(true);
                         var nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                        if ( nodeClass == INTERMediator.noRecordClassName ){
+                        if (nodeClass == INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
                             if (newNode.getAttribute('id') == null) {
                                 idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
@@ -758,7 +797,7 @@ var INTERMediator = {
                 var RecordCounter = 0;
                 var eventListenerPostAdding = [];
                 // var currentEncNumber = currentLevel;
-                for (var ix in targetRecords.recordset ) { // for each record
+                for (var ix in targetRecords.recordset) { // for each record
                     RecordCounter++;
 
                     var shouldDeleteNodes = [];
@@ -806,9 +845,9 @@ var INTERMediator = {
                         }
 
                         if (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA') {
-                            var valueChangeFunction = function(a)   {
+                            var valueChangeFunction = function (a) {
                                 var idValue = a;
-                                return function()   {
+                                return function () {
                                     INTERMediator.valueChange(idValue);
                                 };
                             }
@@ -852,19 +891,19 @@ var INTERMediator = {
 
                     // Handling Delete buttons
                     if (currentContext['repeat-control'] != null && currentContext['repeat-control'].match(/delete/i)) {
-                        if ( currentContext['relation'] != null || currentContext['records'] > 1) {
+                        if (currentContext['relation'] != null || currentContext['records'] > 1) {
                             var buttonNode = document.createElement('BUTTON');
                             buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
                             var thisId = 'IM_Button_' + buttonIdNum;
                             buttonNode.setAttribute('id', thisId);
                             buttonIdNum++;
-                            var deleteJSFunction = function(a,b,c,d,e)   {
+                            var deleteJSFunction = function (a, b, c, d, e) {
                                 var contextName = a;
                                 var keyField = b;
                                 var keyValue = c;
                                 var removeNodes = d;
                                 var confirming = e;
-                                return function()   {
+                                return function () {
                                     INTERMediator.deleteButton(
                                         contextName, keyField, keyValue, removeNodes, confirming);
                                 };
@@ -911,7 +950,7 @@ var INTERMediator = {
                     for (var i = 0; i < repeaters.length; i++) {
                         var newNode = repeaters[i].cloneNode(true);
                         var nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                        if ( nodeClass != INTERMediator.noRecordClassName ){
+                        if (nodeClass != INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
                             if (newNode.getAttribute('id') == null) {
                                 idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
@@ -972,15 +1011,16 @@ var INTERMediator = {
                                 }
                                 break;
                         }
-                        var insertJSFunction = function(a,b,c,d,e)   {
+                        var insertJSFunction = function (a, b, c, d, e) {
                             var contextName = a;
                             var relationValue = b;
                             var nodeId = c;
                             var removeNodes = d;
                             var confirming = e;
-                            return function()   {
+                            return function () {
                                 INTERMediator.insertButton(contextName, relationValue, nodeId, removeNodes, confirming);
-                            }};
+                            }
+                        };
 
                         INTERMediatorLib.addEvent(
                             buttonNode,
@@ -1249,11 +1289,11 @@ var INTERMediator = {
                             node.appendChild(
                                 document.createTextNode(INTERMediatorOnPage.getMessages()[3] + ': ' + deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
-                            var onNaviInsertFunction = function(a,b,c)  {
+                            var onNaviInsertFunction = function (a, b, c) {
                                 var contextName = a;
                                 var keyValue = b;
                                 var confirming = c;
-                                return function()   {
+                                return function () {
                                     INTERMediator.insertRecordFromNavi(contextName, keyValue, confirming);
                                 };
                             };
@@ -1272,12 +1312,12 @@ var INTERMediator = {
                             node.appendChild(
                                 document.createTextNode(INTERMediatorOnPage.getMessages()[4] + ': ' + deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
-                            var onNaviDeleteFunction = function(a,b,c,d)   {
+                            var onNaviDeleteFunction = function (a, b, c, d) {
                                 var contextName = a;
                                 var keyName = b;
                                 var keyValue = c;
                                 var confirming = d;
-                                return function()   {
+                                return function () {
                                     INTERMediator.deleteRecordFromNavi(contextName, keyName, keyValue, confirming);
                                 };
                             }
@@ -1288,16 +1328,33 @@ var INTERMediator = {
                                     deleteInsertOnNavi[i]['name'],
                                     deleteInsertOnNavi[i]['key'],
                                     deleteInsertOnNavi[i]['value'],
-                                    deleteInsertOnNavi[i]['confirm'] ? true: false));
+                                    deleteInsertOnNavi[i]['confirm'] ? true : false));
                             break;
                     }
                 }
-                if ( INTERMediatorOnPage.getOptionsTransaction() == 'none' ) {
+                if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
                     node = document.createElement('SPAN');
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[7]));
                     node.setAttribute('class', 'IM_NAV_button');
                     INTERMediatorLib.addEvent(node, 'click', INTERMediator.saveRecordFromNavi);
+                }
+                if (INTERMediatorOnPage.requreAuthentication) {
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        INTERMediatorOnPage.getMessages()[8] + INTERMediatorOnPage.authUser));
+                    node.setAttribute('class', 'IM_NAV_info');
+
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[9]));
+                    node.setAttribute('class', 'IM_NAV_button');
+                    INTERMediatorLib.addEvent(node, 'click',
+                        function () {
+                            INTERMediatorOnPage.logout();
+                            location.reload();
+                        });
                 }
             }
         }

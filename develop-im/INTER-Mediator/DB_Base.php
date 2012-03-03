@@ -50,6 +50,10 @@ interface DB_Interface
     function authSupportGetSalt($username);
 
     /**
+     * @abstract
+     */
+    function removeOutdatedChallenges();
+    /**
      * @param $username
      */
     function authSupportRetrieveChallenge($username, $clientId);
@@ -99,7 +103,7 @@ abstract class DB_Base
     var $recordCount = 0;
     var $errorMessage = array();
     var $debugMessage = array();
-    var $isDebug = false;
+    var $debugLevel = false;
     var $dataSourceName = '';
     var $foreignFieldAndValue = array();
 
@@ -133,7 +137,7 @@ abstract class DB_Base
             isset($dbspec['dsn']) ? $dbspec['dsn'] : (isset ($dbDSN) ? $dbDSN : ''));
 
         $this->setDataSource( $datasrc );
-        $this->setCurrentUser( isset($_GET['user']) ? $_GET['user'] : null );
+        $this->setCurrentUser( isset($_GET['authuser']) ? $_GET['authuser'] : null );
     //    $this->setCurrentChallenge( isset($_GET['challenge']) ? $_GET['challenge'] : null );
         $this->authentication = isset($options['authentication']) ? $options['authentication'] : null;
 
@@ -196,12 +200,12 @@ abstract class DB_Base
         return isset($this->authentication['group-table'])
             ? $this->authentication['group-table'] : 'authgroup';
     }
-
+/*
     function getPrivTable() {
         return isset($this->authentication['privilege-table'])
             ? $this->authentication['privilege-table'] : 'authpriv';
     }
-
+*/
     function getCorrTable() {
         return isset($this->authentication['corresponding-table'])
             ? $this->authentication['corresponding-table'] : 'authcor';
@@ -410,7 +414,7 @@ abstract class DB_Base
     /* Debug and Messages */
     function setDebugMessage($str)
     {
-        if ($this->isDebug) {
+        if ($this->debugLevel !== false ) {
             $this->debugMessage[] = $str;
         }
     }
@@ -442,9 +446,9 @@ abstract class DB_Base
         return $returnData;
     }
 
-    function setDebugMode()
+    function setDebugMode( $val )
     {
-        $this->isDebug = true;
+        $this->debugLevel = $val;
     }
 
     /* Formatter processing */
@@ -485,6 +489,11 @@ abstract class DB_Base
     }
 
     /* Authentication support */
+    function generateClientId( $prefix )
+    {
+        return sha1( uniqid( $prefix, true ));
+    }
+
     function generateChallenge()
     {
         $str = '';
@@ -505,6 +514,65 @@ abstract class DB_Base
         return $str;
     }
 
+    function getFieldForAuthorization( $operation )
+    {
+        $tableInfo = $this->getDataSourceTargetArray();
+        $authInfoField = null;
+        if ( isset( $tableInfo['authentication']['all']['field'] )) {
+            $authInfoField = $tableInfo['authentication']['all']['field'];
+        }
+        if ( isset( $tableInfo['authentication'][$operation]['field'] )) {
+            $authInfoField = $tableInfo['authentication'][ $operation ]['field'];
+        }
+        return $authInfoField;
+    }
+
+    function getTargetForAuthorization( $operation )
+    {
+        $tableInfo = $this->getDataSourceTargetArray();
+        $authInfoTarget = null;
+        if ( isset( $tableInfo['authentication']['all']['target'] )) {
+            $authInfoTarget = $tableInfo['authentication']['all']['target'];
+        }
+        if ( isset( $tableInfo['authentication'][$operation]['target'] )) {
+            $authInfoTarget = $tableInfo['authentication'][ $operation ]['target'];
+        }
+        return $authInfoTarget;
+    }
+
+    function getAuthorizedUsers( $operation = null )
+    {
+        $tableInfo = $this->getDataSourceTargetArray( );
+        $isGlobalDomain = ($operation == null) ? true : false;
+        $usersArray = array();
+        if ( $isGlobalDomain && isset( $this->authentication['user'] )) {
+            $usersArray = array_merge( $usersArray, $this->authentication['user'] );
+        }
+        if ( ! $isGlobalDomain && isset( $tableInfo['authentication']['all']['user'] )) {
+            $usersArray = array_merge( $usersArray, $tableInfo['authentication']['all']['user'] );
+        }
+        if ( ! $isGlobalDomain && isset( $tableInfo['authentication'][ $operation ]['field'] )) {
+            $usersArray = array_merge( $usersArray, $tableInfo['authentication'][ $operation ]['user'] );
+        }
+        return $usersArray;
+    }
+
+    function getAuthorizedGroups( $operation = null )
+    {
+        $tableInfo = $this->getDataSourceTargetArray( );
+        $isGlobalDomain = ($operation == null) ? true : false;
+        $groupsArray = array();
+        if ( $isGlobalDomain && isset( $this->authentication['group'] )) {
+            $groupsArray = array_merge( $groupsArray, $this->authentication['group'] );
+        }
+        if ( ! $isGlobalDomain && isset( $tableInfo['authentication']['all']['group'] )) {
+            $groupsArray = array_merge( $groupsArray, $tableInfo['authentication']['all']['group'] );
+        }
+        if ( ! $isGlobalDomain && isset( $tableInfo['authentication'][ $operation ]['group'] )) {
+            $groupsArray = array_merge( $groupsArray, $tableInfo['authentication'][ $operation ]['group'] );
+        }
+        return $groupsArray;
+    }
     /* returns user's hash salt.
 
     */
@@ -517,6 +585,8 @@ abstract class DB_Base
     function checkChallenge( $username, $hashedvalue, $clientId )
     {
         $returnValue = false;
+
+        $this->removeOutdatedChallenges();
 
         $storedChalenge = $this->authSupportRetrieveChallenge($username, $clientId);
         if ( strlen($storedChalenge) == 24 ) {   // ex.fc0d54312ce33c2fac19d758

@@ -17,7 +17,8 @@ var INTERMediaotr_DBAdapter = {
         var authParams = '';
         if ( INTERMediatorOnPage.authUser.length > 0 )  {
             authParams
-                = "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser )
+                = "&clientid=" + encodeURIComponent( INTERMediatorOnPage.clientId )
+                + "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser )
                 + "&response=" + encodeURIComponent( SHA1(INTERMediatorOnPage.authChallenge
                 + INTERMediatorOnPage.authHashedPassword ));
         }
@@ -29,13 +30,15 @@ var INTERMediaotr_DBAdapter = {
         var dbresult = '';
         var resultCount = 0;
         var challenge = null;
+        var clientid = null;
         var requireAuth = false;
         try {
             myRequest = new XMLHttpRequest();
             myRequest.open('GET', appPath + accessURL + authParams, false);
             myRequest.send(null);
-            INTERMediator.debugMessages.push("myRequest.responseText="+myRequest.responseText);
-
+            if ( INTERMediator.debugMode > 1 )  {
+                INTERMediator.debugMessages.push("myRequest.responseText="+myRequest.responseText);
+            }
             eval( myRequest.responseText );
             if ( challenge != null )    {
                 INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
@@ -46,6 +49,10 @@ var INTERMediaotr_DBAdapter = {
                     parseInt(challenge.substr(28, 2),16),
                     parseInt(challenge.substr(30, 2),16));
             }
+            if ( clientid != null ) {
+                INTERMediatorOnPage.clientId = clientid;
+            }
+
         } catch (e) {
 
             INTERMediator.errorMessages.push(
@@ -54,7 +61,7 @@ var INTERMediaotr_DBAdapter = {
 
         }
         if ( requireAuth )  {
-            //INTERMediator.debugMessages.push("requiredAuth == true");
+            INTERMediator.debugMessages.push("Authentication Required, user/password panel should be show.");
             INTERMediatorOnPage.authHashedPassword = null;
             throw "_im_requath_request_"
         }
@@ -67,7 +74,7 @@ var INTERMediaotr_DBAdapter = {
 
     getChallenge: function( )  {
         try {
-            this.server_access( "?access=challenge", 0, 0 );
+            this.server_access( "?access=challenge", 1027, 1028 );
         } catch(ex)  {
             if ( ex == "_im_requath_request_" ) {
                 throw ex;

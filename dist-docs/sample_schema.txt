@@ -264,16 +264,14 @@ CREATE TABLE authcor (
 		COLLATE utf8_unicode_ci
 		ENGINE=InnoDB;
 
-INSERT authcor SET user_id=1,group_id=1;
-INSERT authcor SET user_id=2,group_id=1;
-INSERT authcor SET user_id=3,group_id=1;
-INSERT authcor SET user_id=4,group_id=2;
-INSERT authcor SET user_id=5,group_id=2;
-INSERT authcor SET user_id=4,group_id=3;
-INSERT authcor SET user_id=5,group_id=3;
-INSERT authcor SET prev_id=1,user_id=1;
-INSERT authcor SET prev_id=1,group_id=2;
-INSERT authcor SET prev_id=2,group_id=1;
+INSERT authcor SET user_id=1,dest_group_id=1;
+INSERT authcor SET user_id=2,dest_group_id=1;
+INSERT authcor SET user_id=3,dest_group_id=1;
+INSERT authcor SET user_id=4,dest_group_id=2;
+INSERT authcor SET user_id=5,dest_group_id=2;
+INSERT authcor SET user_id=4,dest_group_id=3;
+INSERT authcor SET user_id=5,dest_group_id=3;
+INSERT authcor SET group_id=1,dest_group_id=3;
 
 CREATE TABLE issuedhash (
 	id				INT  AUTO_INCREMENT,

@@ -77,8 +77,8 @@ class DB_PDO extends DB_Base implements DB_Interface
             $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
             return false;
         }
-        $sql = "select hash,expired from {$hashTable} where user_id={$uid} and clienthost="
-            . $this->link->quote($clientId);
+        $sql = "select id,hash,expired from {$hashTable} "
+            . "where user_id={$uid} and clienthost=" . $this->link->quote($clientId);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -86,14 +86,46 @@ class DB_PDO extends DB_Base implements DB_Interface
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $expiredDT = new DateTime($row['expired']);
+            $hashValue = $row['hash'];
+            $recordId = $row['id'];
+
+            $sql = "delete from {$hashTable} where id={$recordId}";
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Delete:' . $sql);
+                return false;
+            }
+
             $intervalDT = $expiredDT->diff(new DateTime(), true);
             $seconds = (( $intervalDT->days * 24 + $intervalDT->h ) * 60 + $intervalDT->i ) * 60 + $intervalDT->s;
             if ( $seconds > $this->getExpiringSeconds() )   {   // Judge timeout.
                 return false;
             }
-            return $row['hash'];
+            return $hashValue;
         }
         return false;
+    }
+
+    function removeOutdatedChallenges() {
+        $hashTable = $this->getHashTable();
+        try {
+            $this->link = new PDO($this->getDbSpecDSN(),
+                $this->getDbSpecUser(),
+                $this->getDbSpecPassword(),
+                is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
+        } catch (PDOException $ex) {
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+        $currentDT = new DateTime();
+        $currentDTStr = $this->link->quote($currentDT->format( 'Y-m-d H:i:s' ));
+        $sql = "delete from {$hashTable} where expired < {$currentDTStr}";
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        return true;
     }
 
     function authSupportRetrieveHashedPassword($username)   {
@@ -177,6 +209,78 @@ class DB_PDO extends DB_Base implements DB_Interface
         return false;
     }
 
+    function authSupportGetGroupNameFromGroupId($groupid)    {
+        $groupTable = $this->getGroupTable();
+        try {
+            $this->link = new PDO($this->getDbSpecDSN(),
+                $this->getDbSpecUser(),
+                $this->getDbSpecPassword(),
+                is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
+        } catch (PDOException $ex) {
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+        $sql = "select groupname from {$groupTable} where id=" . $this->link->quote($groupid);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            return $row['groupname'];
+        }
+        return false;
+    }
+
+    function getGroupsOfUser( $user )   {
+        $userid = $this->authSupportGetUserIdFromUsername($user);
+        try {
+            $this->link = new PDO($this->getDbSpecDSN(),
+                $this->getDbSpecUser(),
+                $this->getDbSpecPassword(),
+                is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
+        } catch (PDOException $ex) {
+            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            return false;
+        }
+        $this->firstLevel = true;
+        $this->belongGroups = array();
+        $this->resolveGroup($userid);
+        $this->candidateGroups = array();
+        foreach( $this->belongGroups as $groupid )  {
+            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+        }
+        return $this->candidateGroups;
+    }
+
+    var $candidateGroups;
+    var $belongGroups;
+    var $firstLevel;
+
+    function resolveGroup( $groupid ) {
+        $corrTable = $userTable = $this->getCorrTable();
+
+        if ( $this->firstLevel )    {
+            $sql = "select * from {$corrTable} where user_id = " . $this->link->quote($groupid);
+            $this->firstLevel = false;
+        } else {
+            $sql = "select * from {$corrTable} where group_id = " . $this->link->quote($groupid);
+            $this->belongGroups[] = $groupid;
+        }
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            if ( ! in_array( $row['dest_group_id'], $this->belongGroups ) ) {
+                if ( ! $this->resolveGroup( $row['dest_group_id'] ))  {
+                    return false;
+                }
+            }
+        }
+    }
+
     var $sqlResult = array();
     var $link = null;
 
@@ -193,7 +297,7 @@ class DB_PDO extends DB_Base implements DB_Interface
     /*
      * Generate SQL style WHERE clause.
      */
-    function getWhereClause($includeContext = true, $includeExtra = true)
+    function getWhereClause( $currentOperation, $includeContext = true, $includeExtra = true )
     {
         $tableInfo = $this->getDataSourceTargetArray();
         $queryClause = '';
@@ -285,6 +389,36 @@ class DB_PDO extends DB_Base implements DB_Interface
                 }
             }
         }
+
+        //$currentOperation = 'load';
+        if ( isset( $tableInfo['authentication'] )) {
+            $authInfoField = $this->getFieldForAuthorization( $currentOperation );
+            $authInfoTarget = $this->getTargetForAuthorization( $currentOperation );
+            $authorizedUsers = $this->getAuthorizedUsers( $currentOperation );
+            $authorizedGroups = $this->getAuthorizedGroups( $currentOperation );
+            if ( $authInfoTarget != 'field-user' ) {
+                if ( count( $authorizedUsers ) > 0 && ! in_array( $this->currentUser, $authorizedUsers )) {
+                    $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
+                        . "({$authInfoField}=" . $this->link->quote( $this->currentUser ) . ")";
+                }
+            } else if ( $authInfoTarget != 'field-group' ) {
+                if ( count( $authorizedGroups ) > 0 ) {
+                    $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                    $groupCriteria = array();
+                    foreach ( $belongGroups as $oneGroup )  {
+                        $groupCriteria[] = "{$authInfoField}=" . $this->link->quote( $oneGroup );
+                    }
+                    $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
+                        . "(" . implude( ' OR ', $groupCriteria ) . ")";
+                }
+            } else {
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                if ( ! in_array( $this->currentUser, $authorizedUsers )
+                    && array_intersect( $belongGroups, $authorizedGroups )) {
+                    $queryClause = 'FALSE';
+                }
+            }
+        }
         return $queryClause;
     }
 
@@ -330,7 +464,7 @@ class DB_PDO extends DB_Base implements DB_Interface
                 if ($condition['db-operation'] == 'load') {
                     if ($condition['situation'] == 'pre') {
                         $sql = $condition['definition'];
-                        if ($this->isDebug) $this->debugMessage[] = $sql;
+                        $this->setDebugMessage( $sql );
                         $result = $this->link->query($sql);
                         if ($result === false) {
                             $this->errorMessageStore('Pre-script:' + $sql);
@@ -342,7 +476,7 @@ class DB_PDO extends DB_Base implements DB_Interface
 
         $viewOrTableName = isset($tableInfo['view']) ? $tableInfo['view'] : $tableName;
 
-        $queryClause = $this->getWhereClause(false, true);
+        $queryClause = $this->getWhereClause( 'load', false, true );
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
@@ -353,7 +487,7 @@ class DB_PDO extends DB_Base implements DB_Interface
 
         // Count all records matched with the condtions
         $sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause}";
-        if ($this->isDebug) $this->debugMessage[] = $sql;
+        $this->setDebugMessage( $sql );
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -375,7 +509,7 @@ class DB_PDO extends DB_Base implements DB_Interface
         }
         $sql = "SELECT * FROM {$viewOrTableName} {$queryClause} {$sortClause} "
             . " LIMIT {$limitParam} OFFSET {$skipParam}";
-        if ($this->isDebug) $this->debugMessage[] = $sql;
+        $this->setDebugMessage( $sql );
 
         // Query
         $result = $this->link->query($sql);
@@ -399,7 +533,7 @@ class DB_PDO extends DB_Base implements DB_Interface
                 if ($condition['db-operation'] == 'load') {
                     if ($condition['situation'] == 'post') {
                         $sql = $condition['definition'];
-                        if ($this->isDebug) $this->debugMessage[] = $sql;
+                        $this->setDebugMessage( $sql );
                         $result = $this->link->query($sql);
                         if ($result === false) {
                             $this->errorMessageStore('Post-script:' . $sql);
@@ -429,9 +563,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             foreach($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'update' && $condition['situation'] == 'pre') {
                     $sql = $condition['definition'];
-                    if ($this->isDebug) {
-                        $this->debugMessage[] = $sql;
-                    }
+                    $this->setDebugMessage( $sql );
                     $result = $this->link->query($sql);
                     if (!$result) {
                         $this->errorMessageStore('Pre-script:' . $sql);
@@ -459,16 +591,13 @@ class DB_PDO extends DB_Base implements DB_Interface
         }
         $setClause = implode(',', $setClause);
 
-        $queryClause = $this->getWhereClause(false,true);
+        $queryClause = $this->getWhereClause( 'update', false, true );
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
         $sql = "UPDATE {$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
-        if ($this->isDebug) {
-            $this->debugMessage[] = $prepSQL->queryString;
-        }
-        //	$result = $this->link->query($sql);
+        $this->setDebugMessage( $prepSQL->queryString );
         $result = $prepSQL->execute($setParameter);
         if ($result === false) {
             $this->errorMessageStore('Update:' + $prepSQL->erroInfo);
@@ -479,7 +608,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'update' && $condition['situation'] == 'post') {
                     $sql = $condition['definition'];
-                    if ($this->isDebug) $this->debugMessage[] = $sql;
+                    $this->setDebugMessage( $sql );
                     $result = $this->link->query($sql);
                     if (!$result) {
                         $this->errorMessageStore('Post-script:' . $sql);
@@ -496,6 +625,43 @@ class DB_PDO extends DB_Base implements DB_Interface
         $tableInfo = $this->getDataSourceTargetArray();
         $tableName = $this->getEntityForUpdate();
 
+        $setClause = array();
+        $authorizeJudge = true;
+        if ( isset( $tableInfo['authentication'] )) {
+            $authorizeJudge = false;
+            $currentOperation = "new";
+            $authInfoField = $this->getFieldForAuthorization( $currentOperation );
+            $authInfoTarget = $this->getTargetForAuthorization( $currentOperation );
+            $authorizedUsers = $this->getAuthorizedUsers( $currentOperation );
+            $authorizedGroups = $this->getAuthorizedGroups( $currentOperation );
+            if ( $authInfoTarget != 'field-user' ) {
+                if ( count( $authorizedUsers ) > 0 && ! in_array( $this->currentUser, $authorizedUsers )) {
+                    $authorizeJudge = true;
+                    $setClause[] = "{$authInfoField}=" . $this->link->quote($this->currentUser);
+                }
+            } else if ( $authInfoTarget != 'field-group' ) {
+                if ( count( $authorizedGroups ) > 0 ) {
+                    $intersectGroups = array_intersect( $this->getGroupsOfUser( $this->currentUser ), $authorizedGroups );
+                    sort( $intersectGroups );
+                    if ( count( $intersectGroups ) > 0 )    {
+                        $authorizeJudge = true;
+                        $setClause[] = "{$authInfoField}=" . $this->link->quote( $intersectGroups[0] );
+                    }
+                }
+            } else {
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                if ( ! in_array( $this->currentUser, $authorizedUsers )
+                    && array_intersect( $belongGroups, $authorizedGroups )) {
+                    $authorizeJudge = true;
+                }
+            }
+        }
+
+        if ( !$authorizeJudge ) {
+            $this->debugMessage[] = 'No Authrization:';
+            return false;
+        }
+
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
                 $this->getDbSpecUser(),
@@ -510,9 +676,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'new' && $condition['situation'] == 'pre') {
                     $sql = $condition['definition'];
-                    if ($this->isDebug) {
-                        $this->debugMessage[] = $sql;
-                    }
+                    $this->setDebugMessage( $sql );
                     $result = $this->link->query($sql);
                     if (!$result) {
                         $this->errorMessageStore('Pre-script:' . $sql);
@@ -522,7 +686,6 @@ class DB_PDO extends DB_Base implements DB_Interface
             }
         }
 
-        $setClause = array();
         $countFields = count($this->fieldsRequired);
         for ($i = 0; $i < $countFields; $i++) {
             $field = $this->fieldsRequired[$i];
@@ -532,12 +695,12 @@ class DB_PDO extends DB_Base implements DB_Interface
             $convVal = $this->link->quote($this->formatterToDB($filedInForm, $convVal));
             $setClause[] = "{$field}={$convVal}";
         }
+
+
         $setClause = (count($setClause) == 0) ? "{$tableInfo['key']}=DEFAULT"
             : implode(',', $setClause);
         $sql = "INSERT {$tableName} SET {$setClause}";
-        if ($this->isDebug) {
-            $this->debugMessage[] = $sql;
-        }
+        $this->setDebugMessage( $sql );
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Insert:' . $sql);
@@ -549,9 +712,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'new' && $condition['situation'] == 'post') {
                     $sql = $condition['definition'];
-                    if ($this->isDebug) {
-                        $this->debugMessage[] = $sql;
-                    }
+                    $this->setDebugMessage( $sql );
                     $result = $this->link->query($sql);
                     if (!$result) {
                         $this->errorMessageStore('Post-script:' . $sql);
@@ -583,9 +744,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'delete' && $condition['situation'] == 'pre') {
                     $sql = $condition['definition'];
-                    if ($this->isDebug) {
-                        $this->debugMessage[] = $sql;
-                    }
+                    $this->setDebugMessage( $sql );
                     $result = $this->link->query($sql);
                     if (!$result) {
                         $this->errorMessageStore('Pre-script:' . $sql);
@@ -594,15 +753,13 @@ class DB_PDO extends DB_Base implements DB_Interface
                 }
             }
         }
-        $queryClause = $this->getWhereClause(false,true);
+        $queryClause = $this->getWhereClause( 'delete', false, true );
         if ($queryClause == '') {
             $this->errorMessageStore('Don\'t delete with no ciriteria.');
             return false;
         }
         $sql = "DELETE FROM {$tableName} WHERE {$queryClause}";
-        if ($this->isDebug) {
-            $this->debugMessage[] = $sql;
-        }
+        $this->setDebugMessage( $sql );
         $result = $this->link->query($sql);
         if (!$result) {
             $this->errorMessageStore('Delete Error:' . $sql);
@@ -613,9 +770,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'delete' && $condition['situation'] == 'post') {
                     $sql = $condition['definition'];
-                    if ($this->isDebug) {
-                        $this->debugMessage[] = $sql;
-                    }
+                    $this->setDebugMessage( $sql );
                     $result = $this->link->query($sql);
                     if (!$result) {
                         $this->errorMessageStore('Post-script:' . $sql);

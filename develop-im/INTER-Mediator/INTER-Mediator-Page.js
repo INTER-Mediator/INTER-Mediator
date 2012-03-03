@@ -17,6 +17,7 @@ var INTERMediatorOnPage = {
     authUserHexSalt: '',
     authChallenge: '',
     requreAuthentication: false,
+    clientId: null,
     authRequiredContext: null,
     authStoring: 'cookie',
     authExpired: 3600,
@@ -33,24 +34,26 @@ var INTERMediatorOnPage = {
     },
 
     retrieveAuthInfo: function()    {
-        if ( this.isOnceAtStarting )    {
-            switch( this.authStoring )    {
-                case 'cookie':
-                case 'cookie-domainwide':
-                    this.authUser = this.getCookie( '_im_username' );
-                    this.authHashedPassword = this.getCookie( '_im_crendential' );
-                    if ( this.authUser.length > 0 )  {
-                        if ( ! INTERMediaotr_DBAdapter.getChallenge() )     {
-                            INTERMediator.flushMessage();
-                        }
-                    }
-                    break;
-                default:
-                    this.removeCookie( '_im_username' );
-                    this.removeCookie( '_im_crendential' );
-                    break;
+        if ( this.requreAuthentication )    {
+            if ( this.isOnceAtStarting )    {
+                switch( this.authStoring )    {
+                    case 'cookie':
+                    case 'cookie-domainwide':
+                        this.authUser = this.getCookie( '_im_username' );
+                        this.authHashedPassword = this.getCookie( '_im_crendential' );
+                        break;
+                    default:
+                        this.removeCookie( '_im_username' );
+                        this.removeCookie( '_im_crendential' );
+                        break;
+                }
+                this.isOnceAtStarting = false;
             }
-            this.isOnceAtStarting = false;
+            if ( this.authUser.length > 0 )  {
+                if ( ! INTERMediaotr_DBAdapter.getChallenge() )     {
+                    INTERMediator.flushMessage();
+                }
+            }
         }
     },
 
@@ -59,6 +62,7 @@ var INTERMediatorOnPage = {
         this.authHashedPassword = "";
         this.authUserSalt = "";
         this.authChallenge = "";
+        this.clientId = "";
         this.removeCookie( '_im_username' );
         this.removeCookie( '_im_crendential' );
     },
@@ -68,18 +72,12 @@ var INTERMediatorOnPage = {
             case 'cookie':
                 INTERMediatorOnPage.setCookie( '_im_username', INTERMediatorOnPage.authUser );
                 INTERMediatorOnPage.setCookie( '_im_crendential', INTERMediatorOnPage.authHashedPassword);
-                INTERMediator.debugMessages.push( "Succeed to store credential to cookie:"
-                    + INTERMediatorOnPage.authUser+", "+INTERMediatorOnPage.authHashedPassword );
                 break;
             case 'cookie-domainwide':
                 INTERMediatorOnPage.setCookieDomainWide( '_im_username', INTERMediatorOnPage.authUser );
                 INTERMediatorOnPage.setCookieDomainWide( '_im_crendential', INTERMediatorOnPage.authHashedPassword);
-                INTERMediator.debugMessages.push( "Succeed to store credential to cookie:"
-                    + INTERMediatorOnPage.authUser+", "+INTERMediatorOnPage.authHashedPassword );
                 break;
         }
-        INTERMediator.debugMessages.push( "document.cookie:" + document.cookie );
-
     },
 
     authenticating: function(doAfterAuth)   {
@@ -95,7 +93,6 @@ var INTERMediatorOnPage = {
         bodyNode.insertBefore( backBox, bodyNode.childNodes[0] );
         backBox.style.height = "100%";
         backBox.style.width = "100%";
-        //    backBox.style.backgroundColor = "#BBBBBB";
         backBox.style.backgroundImage = "url(data:image/png;base64,"
             +"iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA"
             +"ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ"
@@ -385,7 +382,6 @@ var INTERMediatorOnPage = {
             + ( isDomain ? ";path=/" : "" )
             + ";expires=" + expDate.toGMTString();
         document.cookie = cookieString;
-        INTERMediator.debugMessages.push( "#COOKIE" + cookieString );
     }
 };
 

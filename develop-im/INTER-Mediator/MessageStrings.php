@@ -24,6 +24,8 @@ class MessageStrings
         5 => 'Insert',
         6 => 'Delete',
         7 => 'Save',
+        8 => 'Login as: ',
+        9 => 'Logout',
         1001 => "Other people might be updated.\n\nInitially=@1@\nCurrent=@2@\nDatabase=@3@\n\nYou can overwrite with your data if you select OK.",
         1002 => "Can't determine the Table Name: @1@",
         1003 => "No information to update: field=@1@",
@@ -50,10 +52,13 @@ class MessageStrings
         1024 => 'Multiple records are going to be updated. The key field might be wrong. Are you sure?',
         1025 => 'Are you sure to delete?',
         1026 => 'Are you sure to create record?',
+        1027 => "Get Challenge: ",
+        1028 => "Connection Error in get_challenge=@1@/@2@",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
         2004 => 'Log In',
+        2005 => 'Change Password',
     );
 }
 

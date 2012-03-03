@@ -38,23 +38,33 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
     header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
     header('Expires: 0');
 
-    include('params.php');
+    $currentDir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
+    $paramsPath = dirname( $currentDir  ). DIRECTORY_SEPARATOR . 'params.php';
+    if ( file_exists( $paramsPath )) {
+        include('params.php');
+    } else if ( file_exists( $currentDir . 'params.php' )) {
+        $paramsPath = $currentDir . 'params.php';
+    }
+    include( $paramsPath );
 
     if (!isset($_GET['access'])) {
 
-        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Lib.js');
-        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Page.js');
-        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.js');
-        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'Adapter_DBServer.js');
-        echo file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'external-library.js');
-        echo "INTERMediatorOnPage.getEntryPath = function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};};{$LF}";
-        //    echo "function IM_getMyPath(){return {$q}", getRelativePath(), "/INTER-Mediator.php{$q};}{$LF}";
-        echo "INTERMediatorOnPage.getDataSources = function(){return ",
-        arrayToJS( $datasrc, ''), ";};{$LF}";
-        echo "INTERMediatorOnPage.getOptionsAliases = function(){return ",
-        arrayToJS($options['aliases'], ''), ";};{$LF}";
-        echo "INTERMediatorOnPage.getOptionsTransaction = function(){return ",
-        arrayToJS($options['transaction'], ''), ";};{$LF}";
+        $jsLibDir = $currentDir . 'js_lib'. DIRECTORY_SEPARATOR;
+        if ( file_exists( $currentDir . '_im_development' ))  {
+            echo file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator.js');
+            echo file_get_contents($jsLibDir . 'sha1.js');
+            echo file_get_contents($jsLibDir . 'rsa.js');
+            echo file_get_contents($currentDir . 'Adapter_DBServer.js');
+        } else {
+            echo file_get_contents($currentDir . 'INTER-Mediator.js');
+        }
+
+        echo "INTERMediatorOnPage.getEntryPath = function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};};";
+        echo "INTERMediatorOnPage.getDataSources = function(){return ", arrayToJS( $datasrc, ''), ";};";
+        echo "INTERMediatorOnPage.getOptionsAliases = function(){return ", arrayToJS($options['aliases'], ''), ";};";
+        echo "INTERMediatorOnPage.getOptionsTransaction = function(){return ",  arrayToJS($options['transaction'], ''), ";};";
         $clientLang = explode('-', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
         $messageClass = "MessageStrings_{$clientLang[0]}";
         if (class_exists($messageClass)) {
@@ -63,16 +73,16 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             $messageClass = new MessageStrings();
         }
         echo "INTERMediatorOnPage.getMessages = function(){return ",
-        arrayToJS($messageClass->getMessages(), ''), ";};{$LF}";
+        arrayToJS($messageClass->getMessages(), ''), ";};";
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
         echo "INTERMediatorOnPage.browserCompatibility = function(){return ",
-        arrayToJS($browserCompatibility, ''), ";};{$LF}";
+        arrayToJS($browserCompatibility, ''), ";};";
         if ( isset( $prohibitDebugMode ) && $prohibitDebugMode )    {
-            echo "INTERMediator.debugMode=false;{$LF}";
+            echo "INTERMediator.debugMode=false;";
         } else {
-            echo "INTERMediator.debugMode=", $debug ? "true" : "false", ";{$LF}";
+            echo "INTERMediator.debugMode=", ($debug === false) ? "false" : $debug, ";";
         }
 
         // Check Authentication
@@ -104,16 +114,15 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             return;
         }
         if (( ! isset( $prohibitDebugMode ) || ! $prohibitDebugMode ) && $debug)    {
-            $dbInstance->setDebugMode();
+            $dbInstance->setDebugMode( $debug );
         }
         $dbInstance->initialize( $datasrc, $options, $dbspec );
-
         $access = $_GET['access'];
         $requireAuth = false;
-
-        $authentication
-            = ( isset( $datasrc['name']['authentication'] ) ? $datasrc['name']['authentication'] :
-            ( isset( $options['authentication'] ) ? $options['authentication'] : null ));
+        $tableInfo = $dbInstance->getDataSourceTargetArray();
+        $clientId = isset( $_GET['clientid'] ) ? $_GET['clientid'] : $_SERVER['REMOTE_ADDR'];
+        $authentication = ( isset( $tableInfo['authentication'] ) ? $tableInfo['authentication'] :
+            ( isset( $options['authentication'] )   ? $options['authentication']   : null ));
         if ( $authentication != null )  {   // Authentication required
             if ( ! isset( $_GET['authuser'] ) || ! isset( $_GET['response'] )
                 || strlen( $_GET['authuser'] ) == 0 || strlen( $_GET['response'] ) == 0 )  {   // No username or password
@@ -121,11 +130,28 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                 $requireAuth = true;
             }
             // User and Password are suppried but...
-            if ( $access != 'challenge'         // Not accessing getting a challenge.
-                && ! $dbInstance->checkChallenge( $_GET['authuser'], $_GET['response'], $_SERVER['REMOTE_ADDR'] ))  {
-                                                // Not Authenticated!
-                $access = "do nothing";
-                $requireAuth = true;
+            if ( $access != 'challenge' ) {       // Not accessing getting a challenge.
+                $noAuthorization = true;
+                $authorizedUsers = $dbInstance->getAuthorizedUsers( );
+                if ( count( $authorizedUsers ) > 0 && in_array( $dbInstance->currentUser, $authorizedUsers )) {
+                    $noAuthorization = false;
+                }
+                $authorizedGroups = $dbInstance->getAuthorizedGroups( );
+                if ( count( $authorizedGroups ) > 0 ) {
+                    $belongGroups = $dbInstance->getGroupsOfUser( $dbInstance->currentUser );
+                    if ( count( array_intersect( $belongGroups, $authorizedGroups )) != 0 )  {
+                        $noAuthorization = false;
+                    }
+                }
+                if ( $noAuthorization ) {
+                    $access = "do nothing";
+                    $requireAuth = true;
+                }
+                if ( ! $dbInstance->checkChallenge( $_GET['authuser'], $_GET['response'], $clientId ))  {
+                    // Not Authenticated!
+                    $access = "do nothing";
+                    $requireAuth = true;
+                }
             }
         }
         // Come here access=challenge or authenticated access
@@ -154,8 +180,10 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         }
         if ( $authentication != null )  {
             $generatedChallenge = $dbInstance->generateChallenge();
-            $userSalt = $dbInstance->saveChallenge( $_GET['authuser'], $generatedChallenge, $_SERVER['REMOTE_ADDR'] );
+            $generatedUID = $dbInstance->generateClientId( '' );
+            $userSalt = $dbInstance->saveChallenge( $_GET['authuser'], $generatedChallenge, $generatedUID );
             echo "challenge='{$generatedChallenge}{$userSalt}';";
+            echo "clientid='{$generatedUID}';";
             if ( $requireAuth ) {
                 echo "requireAuth=true;";     // Force authentication to client
             }

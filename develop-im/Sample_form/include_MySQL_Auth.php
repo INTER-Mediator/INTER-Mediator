@@ -71,21 +71,20 @@ IM_Entry(
         ),
         //    'transaction' => 'none',
         'authentication' => array(  // table only, for all operations
-            'user' => array (), // Itemize permitted users
-            'group' => array(), // Itemize permitted groups
+            'user' => array ('user1'), // Itemize permitted users
+            'group' => array('group2'), // Itemize permitted groups
             'privilege' => array(), // Itemize permitted privileges
             'user-table' => 'authuser', // Default values, or "_Native"
             'group-table' => 'authgroup',
             'privilege-table' => 'authpriv',
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
-            'authexpired' => '60',  // Set as seconds.
+            'authexpired' => '300',  // Set as seconds.
             'storing' => 'cookie-domainwide',   // 'cookie'(default), 'cookie-domainwide', 'none'
         ),
-
     ),
     array('db-class' => 'PDO'),
-    true
+    1
 );
 
 ?>
