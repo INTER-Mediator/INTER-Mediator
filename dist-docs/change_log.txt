@@ -55,6 +55,7 @@ Change Log
 Ver.1.0.7 === will be next release.
 
 Ver.1.0.6 (2012/3/3)
+- Authentication/Authorization is available for PDO database so far. FileMaker Server will be supported soon.
 - Authorization was implemented but it's not well debugged.
 - Authentication screen was redesigned with transparent backgrounds.
 - Client identification is based on the server generated uuid.

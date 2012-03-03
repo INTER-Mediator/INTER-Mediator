@@ -44,21 +44,23 @@ done
 
 cp -r "${curpath}"/develop-im/Sample_products/images develop-im/Sample_products/
 cp -r "${curpath}"/develop-im/INTER-Mediator/FX      develop-im/INTER-Mediator/
+cp -r "${curpath}"/develop-im/INTER-Mediator/js_lib  develop-im/INTER-Mediator/
 
 echo "######### Marge JavaScript program"
-cat develop-im/INTER-Mediator/INTER-Mediator-Lib.js   > temp.js
+cat develop-im/INTER-Mediator/Adapter_DBServer.js     > temp.js
+cat develop-im/INTER-Mediator/INTER-Mediator-Lib.js  >> temp.js
 cat develop-im/INTER-Mediator/INTER-Mediator-Page.js >> temp.js
 cat develop-im/INTER-Mediator/INTER-Mediator.js      >> temp.js
+cat develop-im/INTER-Mediator/js_lib/rsa.js          >> temp.js
+cat develop-im/INTER-Mediator/js_lib/sha1.js         >> temp.js
+rm develop-im/INTER-Mediator/Adapter_DBServer.js
 rm develop-im/INTER-Mediator/INTER-Mediator-Lib.js
 rm develop-im/INTER-Mediator/INTER-Mediator-Page.js
 rm develop-im/INTER-Mediator/INTER-Mediator.js
+rm -rf develop-im/INTER-Mediator/js_lib
 
 echo "######### Compress INTER-Mediator.js"
 java -jar ${YUICOMP} temp.js -v --charset UTF-8 -o develop-im/INTER-Mediator/INTER-Mediator.js
-
-echo "######### Compress Adapter_DBServer.js"
-java -jar ${YUICOMP} develop-im/INTER-Mediator/Adapter_DBServer.js --charset UTF-8 -o temp.js
-mv -f temp.js develop-im/INTER-Mediator/Adapter_DBServer.js
 
 echo "######### Compress Adapter_LocalDB"
 java -jar ${YUICOMP} develop-im/INTER-Mediator/Adapter_LocalDB.js --charset UTF-8 -o temp.js

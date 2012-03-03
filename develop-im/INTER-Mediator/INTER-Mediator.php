@@ -49,8 +49,8 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
 
     if (!isset($_GET['access'])) {
 
-        $jsLibDir = $currentDir . 'js_lib'. DIRECTORY_SEPARATOR;
-        if ( file_exists( $currentDir . '_im_development' ))  {
+        if ( file_exists( $currentDir . 'INTER-Mediator-Lib.js' ))  {
+            $jsLibDir = $currentDir . 'js_lib'. DIRECTORY_SEPARATOR;
             echo file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
             echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
             echo file_get_contents($currentDir . 'INTER-Mediator.js');

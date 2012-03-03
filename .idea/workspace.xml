@@ -2,24 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="be0811f4-c3cd-45ed-bcdb-4e6e627c9f2a" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/_im_development" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/_im_development" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/external-library.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator-UnitTest/DB_PDO_Test.php" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator-UnitTest/DB_PDO_Test.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/Adapter_DBServer.js" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/Adapter_DBServer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_Base.php" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_Base.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_FileMaker_FX.php" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_FileMaker_FX.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_PDO.php" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_PDO.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator-Page.js" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator-Page.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.js" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/buildup.sh" afterPath="$PROJECT_DIR$/buildup.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.php" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/MessageStrings.php" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/MessageStrings.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/INTER-Mediator/MessageStrings_ja.php" afterPath="$PROJECT_DIR$/develop-im/INTER-Mediator/MessageStrings_ja.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/Sample_form/include_MySQL_Auth.php" afterPath="$PROJECT_DIR$/develop-im/Sample_form/include_MySQL_Auth.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/WebSite/README.txt" afterPath="$PROJECT_DIR$/develop-im/WebSite/README.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/develop-im/index.html" afterPath="$PROJECT_DIR$/develop-im/index.html" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist-docs/change_log.txt" afterPath="$PROJECT_DIR$/dist-docs/change_log.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist-docs/readme.txt" afterPath="$PROJECT_DIR$/dist-docs/readme.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/dist-docs/sample_schema.txt" afterPath="$PROJECT_DIR$/dist-docs/sample_schema.txt" />
     </list>
     <ignored path="INTER-Mediator.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -45,19 +34,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="DB_PDO.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/develop-im/INTER-Mediator/DB_PDO.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="773" column="20" selection-start="31329" selection-end="31329" vertical-scroll-proportion="-4.730769">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="include_MySQL_Auth.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/develop-im/Sample_form/include_MySQL_Auth.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="86" column="5" selection-start="3132" selection-end="3132" vertical-scroll-proportion="0.0">
+            <state line="86" column="9" selection-start="3136" selection-end="3136" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -88,7 +68,16 @@
       <file leaf-file-name="change_log.txt" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dist-docs/change_log.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="282" column="0" selection-start="14359" selection-end="14359" vertical-scroll-proportion="2.113744">
+            <state line="57" column="109" selection-start="2051" selection-end="2051" vertical-scroll-proportion="1.3507109">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="buildup.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/buildup.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="46" column="53" selection-start="1355" selection-end="1355" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -98,15 +87,6 @@
         <entry file="file://$PROJECT_DIR$/develop-im/INTER-Mediator/DB_Base.php">
           <provider selected="true" editor-type-id="text-editor">
             <state line="414" column="0" selection-start="10949" selection-end="10949" vertical-scroll-proportion="-238.84616">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="DB_FileMaker_FX.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/develop-im/INTER-Mediator/DB_FileMaker_FX.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="430" column="0" selection-start="19179" selection-end="19179" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -133,7 +113,7 @@
       <file leaf-file-name="INTER-Mediator.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="84" column="41" selection-start="3463" selection-end="3486" vertical-scroll-proportion="0.0">
+            <state line="62" column="0" selection-start="2165" selection-end="2165" vertical-scroll-proportion="-8.230769">
               <folding />
             </state>
           </provider>
@@ -153,21 +133,21 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/operation_common.php" />
         <option value="$PROJECT_DIR$/develop-im/Sample_search/search_MySQL.html" />
         <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/MessageStrings_ja.php" />
         <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/MessageStrings.php" />
         <option value="$PROJECT_DIR$/develop-im/Sample_forDebugging/include_MySQL.php" />
         <option value="$PROJECT_DIR$/dist-docs/sample_schema.txt" />
         <option value="$PROJECT_DIR$/develop-im/INTER-Mediator-UnitTest/DB_PDO_Test.php" />
-        <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.php" />
         <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_FileMaker_FX.php" />
         <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_PDO.php" />
         <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/DB_Base.php" />
         <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/Adapter_DBServer.js" />
         <option value="$PROJECT_DIR$/develop-im/Sample_form/include_MySQL.php" />
-        <option value="$PROJECT_DIR$/develop-im/Sample_form/include_MySQL_Auth.php" />
         <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.js" />
+        <option value="$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.php" />
+        <option value="$PROJECT_DIR$/buildup.sh" />
+        <option value="$PROJECT_DIR$/develop-im/Sample_form/include_MySQL_Auth.php" />
         <option value="$PROJECT_DIR$/dist-docs/change_log.txt" />
       </list>
     </option>
@@ -356,24 +336,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="INTER-Mediator" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="INTER-Mediator" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="develop-im" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="INTER-Mediator" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Favorites" />
@@ -400,7 +362,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
     <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
-    <property name="FullScreen" value="false" />
+    <property name="FullScreen" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
   </component>
@@ -550,7 +512,7 @@
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.42446044" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2663126" sideWeight="0.42158273" order="1" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2663126" sideWeight="0.42158273" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2663126" sideWeight="0.5683453" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -639,16 +601,6 @@
     </PATH>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/develop-im/Sample_forDebugging/include_MySQL.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="0" selection-start="736" selection-end="736" vertical-scroll-proportion="0.6229236" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/develop-im/Sample_search/include_FMS.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/develop-im/Sample_form/form_MySQL.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="21" column="0" selection-start="0" selection-end="852" vertical-scroll-proportion="0.025553662" />
@@ -694,13 +646,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="84" column="41" selection-start="3463" selection-end="3486" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/develop-im/INTER-Mediator/Adapter_DBServer.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="39" column="16" selection-start="1604" selection-end="1604" vertical-scroll-proportion="0.0">
@@ -733,16 +678,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/develop-im/INTER-Mediator/INTER-Mediator.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="62" column="0" selection-start="2165" selection-end="2165" vertical-scroll-proportion="-8.230769">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/buildup.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="53" selection-start="1355" selection-end="1355" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/develop-im/Sample_form/include_MySQL_Auth.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="86" column="5" selection-start="3132" selection-end="3132" vertical-scroll-proportion="0.0">
+        <state line="86" column="9" selection-start="3136" selection-end="3136" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dist-docs/change_log.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="282" column="0" selection-start="14359" selection-end="14359" vertical-scroll-proportion="2.113744">
+        <state line="57" column="109" selection-start="2051" selection-end="2051" vertical-scroll-proportion="1.3507109">
           <folding />
         </state>
       </provider>
