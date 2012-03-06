@@ -222,8 +222,8 @@ var INTERMediator = {
             if ( isDiffrentOnDB ) {
                 // The value of database and the field is diffrent. Others must be changed this field.
                 if ( ! confirm(INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1001],
-                            [objectSpec['initialvalue'], newValue, currentVal]))) {
+                    INTERMediatorOnPage.getMessages()[1001],
+                    [objectSpec['initialvalue'], newValue, currentVal]))) {
                     INTERMediator.flushMessage();
                     return;
                 }
@@ -1220,66 +1220,79 @@ var INTERMediator = {
                 navigation.setAttribute('class', 'IM_NAV_panel');
                 var navLabel = INTERMediator.navigationLabel;
 
-                node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode((navLabel == null ? INTERMediatorOnPage.getMessages()[2] : navLabel[8])));
-                node.setAttribute('class', 'IM_NAV_button');
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    location.reload();
-                });
+                if ( navLabel == null || navLabel[8] !== false )    {
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        ((navLabel == null || navLabel[8] == null) ? INTERMediatorOnPage.getMessages()[2] : navLabel[8])));
+                    node.setAttribute('class', 'IM_NAV_button');
+                    INTERMediatorLib.addEvent(node, 'click', function () {
+                        location.reload();
+                    });
+                }
 
-                var start = Number(INTERMediator.startFrom);
-                var pageSize = Number(INTERMediator.pagedSize);
-                var allCount = Number(INTERMediator.pagedAllCount);
-                var disableClass = " IM_NAV_disabled";
-                var node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode(
-                    (navLabel == null ? INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
-                        + ((Math.min(start + pageSize, allCount) - start > 2) ?
-                        ((navLabel == null ? "-" : navLabel[5]) + Math.min(start + pageSize, allCount)) : '')
-                        + (navLabel == null ? " / " : navLabel[6]) + (allCount) + (navLabel == null ? "" : navLabel[7])));
-                node.setAttribute('class', 'IM_NAV_info');
+                if ( navLabel == null || navLabel[4] !== false )    {
+                    var start = Number(INTERMediator.startFrom);
+                    var pageSize = Number(INTERMediator.pagedSize);
+                    var allCount = Number(INTERMediator.pagedAllCount);
+                    var disableClass = " IM_NAV_disabled";
+                    var node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        ((navLabel == null || navLabel[4] == null) ? INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
+                            + ((Math.min(start + pageSize, allCount) - start > 2) ?
+                            (((navLabel == null || navLabel[5] == null) ? "-" : navLabel[5])
+                                + Math.min(start + pageSize, allCount)) : '')
+                            + ((navLabel == null || navLabel[6] == null) ? " / " : navLabel[6]) + (allCount)
+                            + (navLabel == null ? "" : navLabel[7])));
+                    node.setAttribute('class', 'IM_NAV_info');
+                }
 
-                var node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode(navLabel == null ? '<<' : navLabel[0]));
-                node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator.startFrom = 0;
-                    INTERMediator.construct(true);
-                });
+                if ( navLabel == null || navLabel[0] !== false )    {
+                    var node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        (navLabel == null || navLabel[0] == null) ? '<<' : navLabel[0]));
+                    node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
+                    INTERMediatorLib.addEvent(node, 'click', function () {
+                        INTERMediator.startFrom = 0;
+                        INTERMediator.construct(true);
+                    });
 
-                node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode(navLabel == null ? '<' : navLabel[1]));
-                node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
-                var prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator.startFrom = prevPageCount;
-                    INTERMediator.construct(true);
-                });
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        (navLabel == null || navLabel[1] == null) ? '<' : navLabel[1]));
+                    node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
+                    var prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
+                    INTERMediatorLib.addEvent(node, 'click', function () {
+                        INTERMediator.startFrom = prevPageCount;
+                        INTERMediator.construct(true);
+                    });
 
-                node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode(navLabel == null ? '>' : navLabel[2]));
-                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                var nextPageCount
-                    = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator.startFrom = nextPageCount;
-                    INTERMediator.construct(true);
-                });
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        (navLabel == null || navLabel[2] == null) ? '>' : navLabel[2]));
+                    node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
+                    var nextPageCount
+                        = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
+                    INTERMediatorLib.addEvent(node, 'click', function () {
+                        INTERMediator.startFrom = nextPageCount;
+                        INTERMediator.construct(true);
+                    });
 
-                node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode(navLabel == null ? '>>' : navLabel[3]));
-                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                var endPageCount = allCount - pageSize;
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
-                    INTERMediator.construct(true);
-                });
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        (navLabel == null || navLabel[3] == null) ? '>>' : navLabel[3]));
+                    node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
+                    var endPageCount = allCount - pageSize;
+                    INTERMediatorLib.addEvent(node, 'click', function () {
+                        INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
+                        INTERMediator.construct(true);
+                    });
+                }
 
                 for (var i = 0; i < deleteInsertOnNavi.length; i++) {
                     switch (deleteInsertOnNavi[i]['kind']) {

@@ -47,7 +47,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
     }
     include( $paramsPath );
 
-    if (!isset($_GET['access'])) {
+    if (!isset($_POST['access'])) {
 
         if ( file_exists( $currentDir . 'INTER-Mediator-Lib.js' ))  {
             $jsLibDir = $currentDir . 'js_lib'. DIRECTORY_SEPARATOR;
@@ -117,15 +117,15 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             $dbInstance->setDebugMode( $debug );
         }
         $dbInstance->initialize( $datasrc, $options, $dbspec );
-        $access = $_GET['access'];
+        $access = $_POST['access'];
         $requireAuth = false;
         $tableInfo = $dbInstance->getDataSourceTargetArray();
-        $clientId = isset( $_GET['clientid'] ) ? $_GET['clientid'] : $_SERVER['REMOTE_ADDR'];
+        $clientId = isset( $_POST['clientid'] ) ? $_POST['clientid'] : $_SERVER['REMOTE_ADDR'];
         $authentication = ( isset( $tableInfo['authentication'] ) ? $tableInfo['authentication'] :
             ( isset( $options['authentication'] )   ? $options['authentication']   : null ));
         if ( $authentication != null )  {   // Authentication required
-            if ( ! isset( $_GET['authuser'] ) || ! isset( $_GET['response'] )
-                || strlen( $_GET['authuser'] ) == 0 || strlen( $_GET['response'] ) == 0 )  {   // No username or password
+            if ( ! isset( $_POST['authuser'] ) || ! isset( $_POST['response'] )
+                || strlen( $_POST['authuser'] ) == 0 || strlen( $_POST['response'] ) == 0 )  {   // No username or password
                 $access = "do nothing";
                 $requireAuth = true;
             }
@@ -147,7 +147,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                     $access = "do nothing";
                     $requireAuth = true;
                 }
-                if ( ! $dbInstance->checkChallenge( $_GET['authuser'], $_GET['response'], $clientId ))  {
+                if ( ! $dbInstance->checkChallenge( $_POST['authuser'], $_POST['response'], $clientId ))  {
                     // Not Authenticated!
                     $access = "do nothing";
                     $requireAuth = true;
@@ -181,7 +181,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         if ( $authentication != null )  {
             $generatedChallenge = $dbInstance->generateChallenge();
             $generatedUID = $dbInstance->generateClientId( '' );
-            $userSalt = $dbInstance->saveChallenge( $_GET['authuser'], $generatedChallenge, $generatedUID );
+            $userSalt = $dbInstance->saveChallenge( $_POST['authuser'], $generatedChallenge, $generatedUID );
             echo "challenge='{$generatedChallenge}{$userSalt}';";
             echo "clientid='{$generatedUID}';";
             if ( $requireAuth ) {

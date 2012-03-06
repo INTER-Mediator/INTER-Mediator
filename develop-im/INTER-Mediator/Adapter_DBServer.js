@@ -24,7 +24,8 @@ var INTERMediaotr_DBAdapter = {
         }
 
         INTERMediator.debugMessages.push(
-            INTERMediatorOnPage.getMessages()[debugMessageNumber] + decodeURI(appPath + accessURL + authParams));
+            INTERMediatorOnPage.getMessages()[debugMessageNumber]
+                + "Accessing=" + decodeURI(appPath) + ", Parameters="+ decodeURI(accessURL + authParams));
 
         var newRecordKeyValue = '';
         var dbresult = '';
@@ -34,12 +35,17 @@ var INTERMediaotr_DBAdapter = {
         var requireAuth = false;
         try {
             myRequest = new XMLHttpRequest();
-            myRequest.open('GET', appPath + accessURL + authParams, false);
-            myRequest.send(null);
-            if ( INTERMediator.debugMode > 1 )  {
-                INTERMediator.debugMessages.push("myRequest.responseText="+myRequest.responseText);
-            }
+            myRequest.open( 'POST', appPath, false );
+            myRequest.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+            myRequest.send( accessURL + authParams );
             eval( myRequest.responseText );
+            if ( INTERMediator.debugMode > 1 )  {
+                INTERMediator.debugMessages.push(
+                    "Return: resultCount=" + resultCount + ", dbresult=" + INTERMediatorLib.objectToString(dbresult));
+                INTERMediator.debugMessages.push(
+                    "Return: requireAuth=" + requireAuth + ", challenge=" + challenge + ", clientid="+clientid);
+                INTERMediator.debugMessages.push("Return: newRecordKeyValue="+newRecordKeyValue);
+            }
             if ( challenge != null )    {
                 INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
                 INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
@@ -74,7 +80,7 @@ var INTERMediaotr_DBAdapter = {
 
     getChallenge: function( )  {
         try {
-            this.server_access( "?access=challenge", 1027, 1028 );
+            this.server_access( "access=challenge", 1027, 1028 );
         } catch(ex)  {
             if ( ex == "_im_requath_request_" ) {
                 throw ex;
@@ -109,7 +115,7 @@ var INTERMediaotr_DBAdapter = {
             return;
         }
 
-        var params = "?access=select&name=" + encodeURI(args['name']);
+        var params = "access=select&name=" + encodeURI(args['name']);
         params += "&records=" + encodeURI((args['records'] != null) ? args['records'] : 10000000);
         for (var i = 0; i < args['fields'].length; i++) {
             params += "&field_" + i + "=" + encodeURI(args['fields'][i]);
@@ -208,7 +214,7 @@ var INTERMediaotr_DBAdapter = {
             return;
         }
 
-        var params = "?access=update&name=" + encodeURI(args['name']);
+        var params = "access=update&name=" + encodeURI(args['name']);
         var extCount = 0;
         if (args['conditions'] != null) {
             params += "&condition" + extCount + "field=" + encodeURI(args['conditions'][extCount]['field']);
@@ -245,7 +251,7 @@ var INTERMediaotr_DBAdapter = {
             return;
         }
 
-        var params = "?access=delete&name=" + encodeURI(args['name']);
+        var params = "access=delete&name=" + encodeURI(args['name']);
         for (var i = 0; i < args['conditions'].length; i++) {
             params += "&condition" + i + "field=" + encodeURI(args['conditions'][i]['field']);
             params += "&condition" + i + "operator=" + encodeURI(args['conditions'][i]['operator']);
@@ -269,7 +275,7 @@ var INTERMediaotr_DBAdapter = {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return;
         }
-        var params = "?access=insert&name=" + encodeURI(args['name']);
+        var params = "access=insert&name=" + encodeURI(args['name']);
         for (var i = 0; i < args['dataset'].length; i++) {
             params += "&field_" + i + "=" + encodeURI(args['dataset'][i]['field']);
             params += "&value_" + i + "=" + encodeURI(args['dataset'][i]['value']);

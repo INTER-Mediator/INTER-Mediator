@@ -14,5 +14,5 @@ http://inter-mediator.info/
 
 Sample pages with this archived file are published at below.
 You don't have to deploy the samples if you just want to just a glance.
-http://msyk.dyndns.org/develop-im
+http://msyk.dyndns.org/im-sample.html
 

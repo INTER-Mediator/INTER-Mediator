@@ -137,55 +137,55 @@ abstract class DB_Base
             isset($dbspec['dsn']) ? $dbspec['dsn'] : (isset ($dbDSN) ? $dbDSN : ''));
 
         $this->setDataSource( $datasrc );
-        $this->setCurrentUser( isset($_GET['authuser']) ? $_GET['authuser'] : null );
-    //    $this->setCurrentChallenge( isset($_GET['challenge']) ? $_GET['challenge'] : null );
+        $this->setCurrentUser( isset($_POST['authuser']) ? $_POST['authuser'] : null );
+    //    $this->setCurrentChallenge( isset($_POST['challenge']) ? $_POST['challenge'] : null );
         $this->authentication = isset($options['authentication']) ? $options['authentication'] : null;
 
         $this->setSeparator( isset($options['separator']) ? $options['separator'] : '@');
         $this->setFormatter( isset($options['formatter']) ? $options['formatter'] : null);
-        $this->setTargetName($_GET['name']);
+        $this->setTargetName($_POST['name']);
 
-        $this->setStart( isset($_GET['start']) ? $_GET['start'] : 0 );
-        $this->setRecordCount( isset($_GET['records']) ? $_GET['records'] : 10000000 );
+        $this->setStart( isset($_POST['start']) ? $_POST['start'] : 0 );
+        $this->setRecordCount( isset($_POST['records']) ? $_POST['records'] : 10000000 );
 
         for ($count = 0; $count < 10000; $count++) {
-            if (isset($_GET["condition{$count}field"])) {
+            if (isset($_POST["condition{$count}field"])) {
                 $this->setExtraCriteria(
-                    $_GET["condition{$count}field"],
-                    isset($_GET["condition{$count}operator"]) ? $_GET["condition{$count}operator"] : '=',
-                    isset($_GET["condition{$count}value"]) ? $_GET["condition{$count}value"] : '');
+                    $_POST["condition{$count}field"],
+                    isset($_POST["condition{$count}operator"]) ? $_POST["condition{$count}operator"] : '=',
+                    isset($_POST["condition{$count}value"]) ? $_POST["condition{$count}value"] : '');
             } else {
                 break;
             }
         }
         for ($count = 0; $count < 10000; $count++) {
-            if (isset($_GET["sortkey{$count}field"])) {
-                $this->setExtraSortKey($_GET["sortkey{$count}field"], $_GET["sortkey{$count}direction"]);
+            if (isset($_POST["sortkey{$count}field"])) {
+                $this->setExtraSortKey($_POST["sortkey{$count}field"], $_POST["sortkey{$count}direction"]);
             } else {
                 break;
             }
         }
         for ($count = 0; $count < 10000; $count++) {
-            if (!isset($_GET["foreign{$count}field"])) {
+            if (!isset($_POST["foreign{$count}field"])) {
                 break;
             }
-            $this->setForeignValue($_GET["foreign{$count}field"], $_GET["foreign{$count}value"]);
+            $this->setForeignValue($_POST["foreign{$count}field"], $_POST["foreign{$count}value"]);
         }
 
         for ($i = 0; $i < 1000; $i++) {
-            if (!isset($_GET["field_{$i}"])) {
+            if (!isset($_POST["field_{$i}"])) {
                 break;
             }
-            $this->setTargetFields($_GET["field_{$i}"]);
+            $this->setTargetFields($_POST["field_{$i}"]);
         }
         for ($i = 0; $i < 1000; $i++) {
-            if (!isset($_GET["value_{$i}"])) {
+            if (!isset($_POST["value_{$i}"])) {
                 break;
             }
-            $this->setValues(get_magic_quotes_gpc() ? stripslashes($_GET["value_{$i}"]) : $_GET["value_{$i}"]);
+            $this->setValues(get_magic_quotes_gpc() ? stripslashes($_POST["value_{$i}"]) : $_POST["value_{$i}"]);
         }
-        //		if ( isset( $_GET['parent_keyval'] ))	{
-        //			$dbInstance->setParentKeyValue( $_GET['parent_keyval'] );
+        //		if ( isset( $_POST['parent_keyval'] ))	{
+        //			$dbInstance->setParentKeyValue( $_POST['parent_keyval'] );
         //		}
 
     }
@@ -234,6 +234,15 @@ abstract class DB_Base
     function setDataSource($src)
     {
         $this->dataSource = $src;
+    }
+
+    function getIndexOfDataSource( $dataSourceName )    {
+        foreach( $this->dataSource as $index => $value )    {
+            if ( $value['name'] == $dataSourceName) {
+                return $index;
+            }
+        }
+        return null;
     }
 
     function setSeparator($sep)

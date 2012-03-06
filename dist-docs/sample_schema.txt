@@ -214,6 +214,21 @@ CREATE VIEW item_display AS SELECT item.id, item.invoice_id, item.product_id, it
 #
 #
 
+CREATE TABLE chat (
+	id			INT  AUTO_INCREMENT,
+	user		VARCHAR(16),
+	group		VARCHAR(16),
+	postdt      DATETIME,
+	message     VARCHAR(800),
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+
+#
+#
+#
+
 CREATE TABLE authuser (
 	id					INT  AUTO_INCREMENT,
 	username			VARCHAR(48),

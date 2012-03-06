@@ -9,28 +9,32 @@ Change Log will be supplied by English only.
 To Do, that is left-over. Or Plan
 =================================
 
-Toward Ver.1.1
-- Media (Pictures, files etc.) Handling with Authentication/Authorization.
-- Supports HTML5's datalist tag elements
-- Set validation rules.
+Not big things
 - Showing as the alert box when any errors occurred ??
 - Popup menu's default value; if there isn't the value of them, set first one.
 - DIV._im_multivalue: Set muliti-line values to one field within the div element.
 - Change the password from login panel.
 - Users/Groups Administration user interface.
 
+Toward Ver.1.1
+- FileMaker Server: Authentication/Authorization Support.
+- Database native authorization support.
+
 Toward Ver.1.2
+- Aspect programming into some call-back function and Data Access class.
+- Set validation rules.
+
+After Ver.1.3
+- Media (Pictures, files etc.) Handling with Authentication/Authorization.
+- Supports HTML5's datalist tag elements
 - Objective handling for the data in database.
-- Server side processing with Ruby on Rails.
+- Server side processing with Ruby on Rails or kind of.
 - Single query can retrieve main and related tables simultaneously.
 - Caching the result of queries.
-- Aspect programming into some call-back function and Data Access class.
-- FileMaker's Find style database search.
+- FileMaker's Find style database search. To do tha, the Recordset feature must be support for context.
 - Transaction Support (updating=transaction)
 - Store NULL for empty string.
 - Multiple values within one field. (It may be required for FileMaker especially.)
-
-Toward Ver.1.3
 - HTML5's local database supporting.
 - Amazon Web Service supporting.
 
@@ -53,6 +57,9 @@ Change Log
 =================================
 
 Ver.1.0.7 === will be next release.
+- The communication between client and server is based on POST method.
+- BUG FIX: Ver.1.0.6 couldn't access FileMaker Server DB.
+- BUG FIX: Navigation doesn't show when it isn't customizing.
 
 Ver.1.0.6 (2012/3/3)
 - Authentication/Authorization is available for PDO database so far. FileMaker Server will be supported soon.

@@ -71,7 +71,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
     function authSupportCreateUser($username, $hashedpassword){}
     /* Defined in DB_Interface class of the file DB_Base.php */
     function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword){}
-
+    function removeOutdatedChallenges(){}
     function stringReturnOnly($str)    {
             return str_replace("\n\r", "\r",
                 str_replace("\n", "\r", $str));

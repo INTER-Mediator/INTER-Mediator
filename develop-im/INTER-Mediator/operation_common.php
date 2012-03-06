@@ -112,6 +112,7 @@ function getErrorMessageClass()
             }
         }
     }
+    $c = null;
     require_once($candClassName . '.php');
     eval("\$c = new {$candClassName}();");
     return $c->getMessages();
