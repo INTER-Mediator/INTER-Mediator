@@ -63,7 +63,7 @@ Ver.1.0.8 (2012/3/21)
 - FileMaker Server: Authentication/Authorization Support (Maybe!? version).
 - Support FileMaker Server just after the version 11.
 - [BUG on 1.0.7] Fixed PDO database class didn't involve the 'query' parameters in a context.
-- [BUG on 1.0.7] Fixed error of the sample_schema.txt.
+- [BUG on 1.0.7] Fixed error of the sample_schema.txt. (Thanks for Mr.Murakami.)
 
 Ver.1.0.7 (2012/3/6)
 - The communication between client and server is based on POST method.
