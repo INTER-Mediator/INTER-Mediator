@@ -9,20 +9,26 @@
  */
 
 require_once('PHPUnit/Framework/TestCase.php');
-require_once('../INTER-Mediator/DB_PDO.php');
+require_once('../INTER-Mediator/DB_FileMaker_FX.php');
 
-class DB_PDO_Test extends PHPUnit_Framework_TestCase
+class DB_FMS_Test extends PHPUnit_Framework_TestCase
 {
     function setUp()
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
-        $this->db_pdo = new DB_PDO();
-        $this->db_pdo->setDbSpecDSN('mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;');
-        $this->db_pdo->setDbSpecUser('web');
-        $this->db_pdo->setDbSpecPassword('password');
-        $this->db_pdo->authentication = array(  // table only, for all operations
+        $this->db_filemaker_fx = new DB_FileMaker_FX();
+        $this->db_filemaker_fx->setDbSpecDSN('mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;');
+        $this->db_filemaker_fx->setDbSpecUser('web');
+        $this->db_filemaker_fx->setDbSpecPassword('password');
+        $this->db_filemaker_fx->setDbSpecPort('80');
+        $this->db_filemaker_fx->setDbSpecDataType('FMPro7');
+        $this->db_filemaker_fx->setDbSpecServer('127.0.0.1');
+        $this->db_filemaker_fx->setDbSpecDatabase('TestDB');
+        $this->db_filemaker_fx->setDbSpecProtocol('http');
+
+        $this->db_filemaker_fx->authentication = array(  // table only, for all operations
             'user' => array ('user1'), // Itemize permitted users
             'group' => array('group2'), // Itemize permitted groups
             'privilege' => array(), // Itemize permitted privileges
@@ -54,8 +60,8 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $username = 'user1';
         $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
-        $retrievedPasswd = $this->db_pdo->authSupportRetrieveHashedPassword($username);
-        echo var_export( $this->db_pdo->debugMessage, true );
+        $retrievedPasswd = $this->db_filemaker_fx->authSupportRetrieveHashedPassword($username);
+        echo var_export( $this->db_filemaker_fx->debugMessage, true );
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
 
     }
@@ -63,7 +69,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
     {
         $testName = "Salt retrieving";
         $username = 'user1';
-        $retrievedSalt = $this->db_pdo->authSupportGetSalt($username);
+        $retrievedSalt = $this->db_filemaker_fx->authSupportGetSalt($username);
         $this->assertEquals('54455354', $retrievedSalt, $testName);
 
     }
@@ -71,15 +77,15 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
     {
         $testName = "Generate Challenge and Retrieve it";
         $username = 'user1';
-        $challenge = $this->db_pdo->generateChallenge();
-        $this->db_pdo->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_pdo->authSupportRetrieveChallenge($username, "TEST"), $testName);
-        $challenge = $this->db_pdo->generateChallenge();
-        $this->db_pdo->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_pdo->authSupportRetrieveChallenge($username, "TEST"), $testName);
-        $challenge = $this->db_pdo->generateChallenge();
-        $this->db_pdo->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_pdo->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $challenge = $this->db_filemaker_fx->generateChallenge();
+        $this->db_filemaker_fx->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_filemaker_fx->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $challenge = $this->db_filemaker_fx->generateChallenge();
+        $this->db_filemaker_fx->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_filemaker_fx->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $challenge = $this->db_filemaker_fx->generateChallenge();
+        $this->db_filemaker_fx->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_filemaker_fx->authSupportRetrieveChallenge($username, "TEST"), $testName);
 
     }
 
@@ -87,19 +93,19 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
     {
         $testName = "Simulation of Authentication";
         $username = 'user1';
-        $password = 'user1';//'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+        $password = 'user1';
 
-        $challenge = $this->db_pdo->generateChallenge();
-        $this->db_pdo->authSupportStoreChallenge($username, $challenge, "TEST");
+        $challenge = $this->db_filemaker_fx->generateChallenge();
+        $this->db_filemaker_fx->authSupportStoreChallenge($username, $challenge, "TEST");
 
-//        $challenge = $this->db_pdo->authSupportRetrieveChallenge($username, "TEST");
-        $retrievedHexSalt = $this->db_pdo->authSupportGetSalt($username);
+    //    $challenge = $this->db_filemaker_fx->authSupportRetrieveChallenge($username, $testName);
+        $retrievedHexSalt = $this->db_filemaker_fx->authSupportGetSalt($username);
         $retrievedSalt = pack( 'N', hexdec( $retrievedHexSalt ));
 
         $hashedvalue = sha1( $password . $retrievedSalt) . bin2hex( $retrievedSalt );
         $calcuratedHash = sha1($challenge . $hashedvalue);
         $this->assertTrue(
-            $this->db_pdo->checkChallenge( $username, $calcuratedHash, "TEST" ), $testName);
+            $this->db_filemaker_fx->checkChallenge( $username, $calcuratedHash, "TEST" ), $testName);
     }
 
     public function testAuthUser6()
@@ -107,26 +113,26 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $testName = "Create New User and Authenticate";
         $username = "testuser";
         $password = "testuser";
-        //    $this->assertTrue($this->db_pdo->addUser( $username, $password ));
+    //    $this->assertTrue($this->db_filemaker_fx->addUser( $username, $password ));
 
-        $retrievedHexSalt = $this->db_pdo->authSupportGetSalt($username);
+        $retrievedHexSalt = $this->db_filemaker_fx->authSupportGetSalt($username);
         $retrievedSalt = pack( 'N', hexdec( $retrievedHexSalt ));
 
         $clientId = "TEST";
-        $challenge = $this->db_pdo->generateChallenge();
-        $this->db_pdo->saveChallenge( $username, $challenge, $clientId );
+        $challenge = $this->db_filemaker_fx->generateChallenge();
+        $this->db_filemaker_fx->saveChallenge( $username, $challenge, $clientId );
 
         $hashedvalue = sha1( $password . $retrievedSalt) . bin2hex( $retrievedSalt );
         echo $hashedvalue;
 
         $this->assertTrue(
-            $this->db_pdo->checkChallenge( $username, sha1($challenge . $hashedvalue), $clientId ),
+            $this->db_filemaker_fx->checkChallenge( $username, sha1($challenge . $hashedvalue), $clientId ),
             $testName);
     }
 
     function testUserGroup()    {
         $testName = "Resolve containing group";
-        $groupArray = $this->db_pdo->getGroupsOfUser('user1');
+        $groupArray = $this->db_filemaker_fx->getGroupsOfUser('user1');
         echo var_export($groupArray);
         $this->assertTrue(count($groupArray)>0, $testName);
     }

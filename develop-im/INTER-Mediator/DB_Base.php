@@ -143,7 +143,7 @@ abstract class DB_Base
 
         $this->setSeparator( isset($options['separator']) ? $options['separator'] : '@');
         $this->setFormatter( isset($options['formatter']) ? $options['formatter'] : null);
-        $this->setTargetName($_POST['name']);
+        $this->setTargetName( isset($_POST['name']) ? $_POST['name'] : null );
 
         $this->setStart( isset($_POST['start']) ? $_POST['start'] : 0 );
         $this->setRecordCount( isset($_POST['records']) ? $_POST['records'] : 10000000 );

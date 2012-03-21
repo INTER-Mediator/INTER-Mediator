@@ -15,6 +15,9 @@ class DB_PDO extends DB_Base implements DB_Interface
 
     function authSupportStoreChallenge($username, $challenge, $clientId)   {
         $hashTable = $this->getHashTable();
+        if ( $hashTable == null )   {
+            return false;
+        }
         $uid = $this->authSupportGetUserIdFromUsername($username);
         if ( $uid === false )   {
             $this->errorMessageStore("User '{$username}' does't exist.");
@@ -63,6 +66,9 @@ class DB_PDO extends DB_Base implements DB_Interface
 
     function authSupportRetrieveChallenge($username, $clientId)    {
         $hashTable = $this->getHashTable();
+        if ( $hashTable == null )   {
+            return false;
+        }
         $uid = $this->authSupportGetUserIdFromUsername($username);
         if ( $uid === false )   {
             $this->errorMessageStore("User '{$username}' does't exist.");
@@ -108,6 +114,10 @@ class DB_PDO extends DB_Base implements DB_Interface
 
     function removeOutdatedChallenges() {
         $hashTable = $this->getHashTable();
+        if ( $hashTable == null )   {
+            return false;
+        }
+
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
                 $this->getDbSpecUser(),
@@ -117,9 +127,12 @@ class DB_PDO extends DB_Base implements DB_Interface
             $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
             return false;
         }
+
         $currentDT = new DateTime();
+        $currentDT->sub(new DateInterval( "PT".$this->getExpiringSeconds()."S" ));
         $currentDTStr = $this->link->quote($currentDT->format( 'Y-m-d H:i:s' ));
         $sql = "delete from {$hashTable} where expired < {$currentDTStr}";
+        $this->setDebugMessage( $sql );
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -130,6 +143,10 @@ class DB_PDO extends DB_Base implements DB_Interface
 
     function authSupportRetrieveHashedPassword($username)   {
         $userTable = $this->getUserTable();
+        if ( $userTable == null )   {
+            return false;
+        }
+
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
                 $this->getDbSpecUser(),
@@ -188,6 +205,10 @@ class DB_PDO extends DB_Base implements DB_Interface
 
     function authSupportGetUserIdFromUsername($username)    {
         $userTable = $this->getUserTable();
+        if ( $userTable == null )   {
+            return false;
+        }
+
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
                 $this->getDbSpecUser(),
@@ -211,6 +232,10 @@ class DB_PDO extends DB_Base implements DB_Interface
 
     function authSupportGetGroupNameFromGroupId($groupid)    {
         $groupTable = $this->getGroupTable();
+        if ( $groupTable == null )   {
+            return null;
+        }
+
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
                 $this->getDbSpecUser(),
@@ -233,6 +258,11 @@ class DB_PDO extends DB_Base implements DB_Interface
     }
 
     function getGroupsOfUser( $user )   {
+        $corrTable = $this->getCorrTable();
+        if ( $corrTable == null )   {
+            return array();
+        }
+
         $userid = $this->authSupportGetUserIdFromUsername($user);
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
@@ -258,7 +288,7 @@ class DB_PDO extends DB_Base implements DB_Interface
     var $firstLevel;
 
     function resolveGroup( $groupid ) {
-        $corrTable = $userTable = $this->getCorrTable();
+        $corrTable = $this->getCorrTable();
 
         if ( $this->firstLevel )    {
             $sql = "select * from {$corrTable} where user_id = " . $this->link->quote($groupid);
@@ -476,7 +506,7 @@ class DB_PDO extends DB_Base implements DB_Interface
 
         $viewOrTableName = isset($tableInfo['view']) ? $tableInfo['view'] : $tableName;
 
-        $queryClause = $this->getWhereClause( 'load', false, true );
+        $queryClause = $this->getWhereClause( 'load', true, true );
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
@@ -537,7 +567,6 @@ class DB_PDO extends DB_Base implements DB_Interface
                         $result = $this->link->query($sql);
                         if ($result === false) {
                             $this->errorMessageStore('Post-script:' . $sql);
-                            ;
                         }
                     }
                 }

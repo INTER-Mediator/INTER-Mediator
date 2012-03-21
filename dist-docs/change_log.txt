@@ -17,12 +17,12 @@ Not big things
 - Users/Groups Administration user interface.
 
 Toward Ver.1.1
-- FileMaker Server: Authentication/Authorization Support.
 - Database native authorization support.
 
 Toward Ver.1.2
 - Aspect programming into some call-back function and Data Access class.
 - Set validation rules.
+- Samples by PostgreSQL.
 
 After Ver.1.3
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
@@ -56,7 +56,16 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.1.0.7 === will be next release.
+Ver.1.0.9 (Will be release soon.)
+
+Ver.1.0.8 (2012/3/21)
+- [INFO] Authentication part requires PHP 5.3.0 or above.
+- FileMaker Server: Authentication/Authorization Support (Maybe!? version).
+- Support FileMaker Server just after the version 11.
+- [BUG on 1.0.7] Fixed PDO database class didn't involve the 'query' parameters in a context.
+- [BUG on 1.0.7] Fixed error of the sample_schema.txt.
+
+Ver.1.0.7 (2012/3/6)
 - The communication between client and server is based on POST method.
 - BUG FIX: Ver.1.0.6 couldn't access FileMaker Server DB.
 - BUG FIX: Navigation doesn't show when it isn't customizing.

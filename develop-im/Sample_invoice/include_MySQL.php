@@ -14,6 +14,9 @@ $tableDefinitions = array(
         'records' => '1',
         'paging' => true,
         'key' => 'id',
+        'query' => array(
+            array('field' => 'issued', 'value' => '2012-01-01', 'operator' => '>=')
+        ),
         'sort' => array(
             array('field' => 'id', 'direction' => 'ASC'),
         ),
@@ -27,10 +30,10 @@ $tableDefinitions = array(
         'relation' => array(
             array('foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => '=')
         ),
-        //    'foreign-key' 	=> 'invoice_id',
-        //    'join-field' 	=> 'id',
         'repeat-control' => 'insert delete',
-        'default-values' => array(array('field' => 'product_id', 'value' => 1),),
+        'default-values' => array(
+            array('field' => 'product_id', 'value' => 1),
+        ),
     ),
     array(
         'name' => 'product',

@@ -59,22 +59,337 @@ function dateArrayFromFMDate($d)
 
 class DB_FileMaker_FX extends DB_Base implements DB_Interface
 {
-    /* Defined in DB_Interface class of the file DB_Base.php */
-    function authSupportStoreChallenge($username, $challenge, $clientId){}
-    /* Defined in DB_Interface class of the file DB_Base.php */
-    function authSupportGetSalt($username){}
-    /* Defined in DB_Interface class of the file DB_Base.php */
-    function authSupportRetrieveChallenge($username, $clientId){}
-    /* Defined in DB_Interface class of the file DB_Base.php */
-    function authSupportRetrieveHashedPassword($username){}
-    /* Defined in DB_Interface class of the file DB_Base.php */
-    function authSupportCreateUser($username, $hashedpassword){}
-    /* Defined in DB_Interface class of the file DB_Base.php */
-    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword){}
-    function removeOutdatedChallenges(){}
+    function errorMessageStore($str)
+    {
+        //$errorInfo = var_export($this->link->errorInfo(), true);
+        $this->errorMessage[] = "Query Error: [{$str}] Code= Info =";
+    }
+
+    function authSupportStoreChallenge($username, $challenge, $clientId)   {
+        $hashTable = $this->getHashTable();
+        if ( $hashTable == null )   {
+            return false;
+        }
+        $uid = $this->authSupportGetUserIdFromUsername($username);
+        if ( $uid === false )   {
+            $this->errorMessageStore("User '{$username}' does't exist.");
+            return false;
+        }
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding('UTF-8');
+        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
+        $fx->AddDBParam( 'user_id', $uid , 'eq');
+        $fx->AddDBParam( 'clienthost', $clientId , 'eq');
+        $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        $this->setDebugMessage( $result['URL'] );
+        $currentDT = new DateTime();
+        $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
+        foreach ($result['data'] as $key => $row) {
+            $recId = substr($key, 0, strpos($key, '.'));
+            $fx->setCharacterEncoding('UTF-8');
+            $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+            $fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
+            $fx->SetRecordID($recId);
+            $fx->AddDBParam( 'hash', $challenge);
+            $fx->AddDBParam( 'expired', $currentDTFormat);
+            $fx->AddDBParam( 'clienthost', $clientId );
+            $fx->AddDBParam( 'user_id', $uid );
+            $result = $fx->DoFxAction("update", TRUE, TRUE, 'full');
+            if ( ! is_array($result) )   {
+                $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+                return false;
+            }
+            $this->setDebugMessage( $result['URL'] );
+            return true;
+        }
+        $fx->setCharacterEncoding('UTF-8');
+        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
+        $fx->AddDBParam( 'hash', $challenge);
+        $fx->AddDBParam( 'expired', $currentDTFormat);
+        $fx->AddDBParam( 'clienthost', $clientId );
+        $fx->AddDBParam( 'user_id', $uid );
+        $result = $fx->DoFxAction("new", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        $this->setDebugMessage( $result['URL'] );
+        return true;
+    }
+
+    function authSupportRetrieveChallenge($username, $clientId)    {
+        $hashTable = $this->getHashTable();
+        if ( $hashTable == null )   {
+            return false;
+        }
+        $uid = $this->authSupportGetUserIdFromUsername($username);
+        if ( $uid === false )   {
+            $this->errorMessageStore("User '{$username}' does't exist.");
+            return false;
+        }
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding('UTF-8');
+        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
+        $fx->AddDBParam( 'user_id', $uid , 'eq');
+        $fx->AddDBParam( 'clienthost', $clientId , 'eq');
+        $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        $this->setDebugMessage( $result['URL'] );
+        foreach ($result['data'] as $key => $row) {
+            $recId = substr($key, 0, strpos($key, '.'));
+            $expiredDT = new DateTime($row['expired'][0]);
+            $hashValue = $row['hash'][0];
+            $recordId = $row['id'][0];
+
+            $fx->setCharacterEncoding('UTF-8');
+            $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+            $fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
+            $fx->SetRecordID( $recId );
+            $result = $fx->DoFxAction("delete", TRUE, TRUE, 'full');
+            if ( ! is_array($result) )   {
+                $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+                return false;
+            }
+            return $hashValue;
+        }
+        return false;
+    }
+
+    function removeOutdatedChallenges() {
+        $hashTable = $this->getHashTable();
+        if ( $hashTable == null )   {
+            return false;
+        }
+
+        $currentDT = new DateTime();
+        $currentDT->sub(new DateInterval( "PT".$this->getExpiringSeconds()."S" ));
+
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding('UTF-8');
+        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBData($this->getDbSpecDatabase(), $hashTable, 100000000);
+        $fx->AddDBParam( 'expired', $currentDT->format( 'm/d/Y H:i:s' ) , 'lt');
+        $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        $this->setDebugMessage( $result['URL'] );
+        foreach ($result['data'] as $key => $row) {
+            $recId = substr($key, 0, strpos($key, '.'));
+
+            $fx->setCharacterEncoding('UTF-8');
+            $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+            $fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
+            $fx->SetRecordID( $recId );
+            $result = $fx->DoFxAction("delete", TRUE, TRUE, 'full');
+            if ( ! is_array($result) )   {
+                $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function authSupportRetrieveHashedPassword($username)   {
+        $userTable = $this->getUserTable();
+        if ( $userTable == null )   {
+            return false;
+        }
+
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding('UTF-8');
+        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBData($this->getDbSpecDatabase(), $userTable, 1);
+        $fx->AddDBParam( 'username', $username , 'eq');
+        $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        $this->setDebugMessage( $result['URL'] );
+        foreach ($result['data'] as $key => $row) {
+            return $row['hashedpasswd'][0];
+        }
+        return false;
+    }
+
+    function authSupportGetSalt($username)  {
+        $hashedpw = $this->authSupportRetrieveHashedPassword($username);
+        return substr( $hashedpw, -8 );
+    }
+
+    function authSupportCreateUser($username, $hashedpassword)  {
+        if ( $this->authSupportRetrieveHashedPassword($username) !== false )    {
+            $this->errorMessage[] = 'User Already exist: ' . $username;
+            return false;
+        }
+        $userTable = $this->getUserTable();
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding('UTF-8');
+        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBData($this->getDbSpecDatabase(), $userTable, 1);
+        $fx->AddDBParam( 'username', $username );
+        $fx->AddDBParam( 'hashedpasswd', $hashedpassword );
+        $result = $fx->DoFxAction("new", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        $this->setDebugMessage( $result['URL'] );
+        return true;
+    }
+
+    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)   {
+
+    }
+
+    function authSupportGetUserIdFromUsername($username)    {
+        $userTable = $this->getUserTable();
+        if ( $userTable == null )   {
+            return false;
+        }
+
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding('UTF-8');
+        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBData($this->getDbSpecDatabase(), $userTable, 1);
+        $fx->AddDBParam( 'username', $username );
+        $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        $this->setDebugMessage( $result['URL'] );
+        foreach ($result['data'] as $key => $row) {
+            return $row['id'][0];
+        }
+        return false;
+    }
+
+    function authSupportGetGroupNameFromGroupId($groupid)    {
+        $groupTable = $this->getGroupTable();
+        if ( $groupTable == null )   {
+            return null;
+        }
+
+        $fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+        $fx->setCharacterEncoding('UTF-8');
+        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBData($this->getDbSpecDatabase(), $groupTable, 1);
+        $fx->AddDBParam( 'id', $groupid );
+        $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        $this->setDebugMessage( $result['URL'] );
+        foreach ($result['data'] as $key => $row) {
+            return $row['groupname'][0];
+        }
+        return false;
+    }
+
+    function getGroupsOfUser( $user )   {
+        $corrTable = $this->getCorrTable();
+        if ( $corrTable == null )   {
+            return array();
+        }
+
+        $userid = $this->authSupportGetUserIdFromUsername($user);
+        $this->fx = new FX(
+            $this->getDbSpecServer(),
+            $this->getDbSpecPort(),
+            $this->getDbSpecDataType(),
+            $this->getDbSpecProtocol());
+
+        $this->firstLevel = true;
+        $this->belongGroups = array();
+        $this->resolveGroup($userid);
+        $this->candidateGroups = array();
+        foreach( $this->belongGroups as $groupid )  {
+            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+        }
+        return $this->candidateGroups;
+    }
+
+    var $fx;
+    var $candidateGroups;
+    var $belongGroups;
+    var $firstLevel;
+
+    function resolveGroup( $groupid ) {
+        $corrTable = $this->getCorrTable();
+
+        $this->fx->setCharacterEncoding('UTF-8');
+        $this->fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $this->fx->setDBData($this->getDbSpecDatabase(), $corrTable, 1);
+        if ( $this->firstLevel )    {
+            $this->fx->AddDBParam( 'user_id', $groupid );
+            $this->firstLevel = false;
+        } else {
+            $this->fx->AddDBParam( 'group_id', $groupid );
+            $this->belongGroups[] = $groupid;
+        }
+        $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if ( ! is_array($result) )   {
+            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            return false;
+        }
+        foreach ($result['data'] as $key => $row) {
+            if ( ! in_array( $row['dest_group_id'][0], $this->belongGroups ) ) {
+                if ( ! $this->resolveGroup( $row['dest_group_id'][0] ))  {
+                    return false;
+                }
+            }
+        }
+    }
+
+
+
+
+
     function stringReturnOnly($str)    {
-            return str_replace("\n\r", "\r",
-                str_replace("\n", "\r", $str));
+        return str_replace("\n\r", "\r",
+            str_replace("\n", "\r", $str));
     }
 
     function getFromDB($dataSourceName)
@@ -103,6 +418,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         }
         $fx->FMSkipRecords($skipParam);
 
+        $hasFindParams = false;
         if (isset($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
                 if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
@@ -113,6 +429,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                     } else {
                         $fx->AddDBParam($condition['field'], $condition['value']);
                     }
+                    $hasFindParams = true;
                 }
             }
         }
@@ -124,6 +441,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                 } else {
                     $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
                     $fx->AddDBParam($value['field'], $value['value'], $op);
+                    $hasFindParams = true;
                 }
             }
         }
@@ -133,8 +451,9 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                     if ($relDef['foreign-key'] == $foreignDef['field']) {
                         $op = (isset($relDef['operator'])) ? $relDef['operator'] : 'eq';
                         $fx->AddDBParam($foreignDef['field'],
-                            $this->formatterToDB("{$contextName}{$this->separator}{$value['field']}",
+                            $this->formatterToDB("{$contextName}{$this->separator}{$foreignDef['field']}",
                                 $foreignDef['value']), $op);
+                        $hasFindParams = true;
                     }
                 }
             }
@@ -176,7 +495,12 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                 }
             }
         }
-        $fxResult = $fx->DoFxAction(FX_ACTION_FIND, TRUE, TRUE, 'full');
+        if ( $hasFindParams )   {
+            $fxResult = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        } else {
+            $fxResult = $fx->DoFxAction("show_all", TRUE, TRUE, 'full');
+        }
+
         //var_dump($fxResult);
         if ( ! is_array($fxResult) )   {
             $this->errorMessage[] = get_class($fxResult) . ': '. $fxResult->getDebugInfo() . var_export($fx,true);

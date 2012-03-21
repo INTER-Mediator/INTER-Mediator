@@ -14,7 +14,10 @@ Enter password:
 */
 SET NAMES 'utf8';
 
-DROP USER 'web'@'localhost';
+/***************************** ATTENTION *****************************
+ * If you execute this schema twice or more, remove # of the following 'DROP USER' line.
+ *********************************************************************/
+#DROP USER 'web'@'localhost';
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
 
 DROP DATABASE IF EXISTS test_db;
@@ -23,7 +26,7 @@ CREATE DATABASE test_db
 	COLLATE utf8_unicode_ci;
 USE test_db;
 
-#
+#  The schema for the "Sample_form" and "Sample_Auth" sample set.
 #
 #
 
@@ -145,7 +148,7 @@ CREATE INDEX history_person_id ON history (person_id);
 INSERT history SET person_id=1,startdate='2001-4-1',enddate='2003-3-31',description='Hight School';
 INSERT history SET person_id=1,startdate='2003-4-1',enddate='2007-3-31',description='University';
 
-#
+# The schema for the "Sample_search" sample set.
 #
 #
 
@@ -163,9 +166,10 @@ CREATE UNIQUE INDEX postalcode_id ON postalcode (id);
 CREATE INDEX postalcode_f3 ON postalcode (f3);
 CREATE INDEX postalcode_f8 ON postalcode (f8);
 
+# The schema for the "Sample_products" sample set.
 #
-#
-#
+# The sample data for these table, invoice, item and products is another part of this file.
+# Please scroll down to check it.
 
 CREATE TABLE invoice (
 	id		  INT  AUTO_INCREMENT,
@@ -210,14 +214,14 @@ CREATE TABLE product (
 
 CREATE VIEW item_display AS SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty, item.unitprice, product.unitprice as unitprice_master, IF(item.unitprice is null, qty * product.unitprice, qty * item.unitprice) AS amount FROM item, product WHERE item.product_id=product.id;
 
-#
+#  The schema for the "Sample_Auth" sample set.
 #
 #
 
 CREATE TABLE chat (
 	id			INT  AUTO_INCREMENT,
 	user		VARCHAR(16),
-	group		VARCHAR(16),
+	groupname   VARCHAR(16),
 	postdt      DATETIME,
 	message     VARCHAR(800),
 	PRIMARY KEY(id)

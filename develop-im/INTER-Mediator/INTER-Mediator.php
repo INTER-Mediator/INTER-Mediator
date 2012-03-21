@@ -63,8 +63,10 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
 
         echo "INTERMediatorOnPage.getEntryPath = function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};};";
         echo "INTERMediatorOnPage.getDataSources = function(){return ", arrayToJS( $datasrc, ''), ";};";
-        echo "INTERMediatorOnPage.getOptionsAliases = function(){return ", arrayToJS($options['aliases'], ''), ";};";
-        echo "INTERMediatorOnPage.getOptionsTransaction = function(){return ",  arrayToJS($options['transaction'], ''), ";};";
+        echo "INTERMediatorOnPage.getOptionsAliases = function(){return ",
+            arrayToJS(isset($options['aliases'])?$options['aliases']:array(), ''), ";};";
+        echo "INTERMediatorOnPage.getOptionsTransaction = function(){return ",
+            arrayToJS(isset($options['transaction'])?$options['transaction']:'', ''), ";};";
         $clientLang = explode('-', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
         $messageClass = "MessageStrings_{$clientLang[0]}";
         if (class_exists($messageClass)) {
@@ -73,12 +75,12 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             $messageClass = new MessageStrings();
         }
         echo "INTERMediatorOnPage.getMessages = function(){return ",
-        arrayToJS($messageClass->getMessages(), ''), ";};";
+            arrayToJS($messageClass->getMessages(), ''), ";};";
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
         echo "INTERMediatorOnPage.browserCompatibility = function(){return ",
-        arrayToJS($browserCompatibility, ''), ";};";
+            arrayToJS($browserCompatibility, ''), ";};";
         if ( isset( $prohibitDebugMode ) && $prohibitDebugMode )    {
             echo "INTERMediator.debugMode=false;";
         } else {
@@ -92,7 +94,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             $boolValue = "true";
         }
         foreach ( $datasrc as $aContext )   {
-            if ( $aContext['authentication'])   {
+            if ( isset( $aContext['authentication'] ))   {
                 $boolValue = "true";
                 $requireAuthContext[] = $aContext['name'];
             }
@@ -123,6 +125,8 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         $clientId = isset( $_POST['clientid'] ) ? $_POST['clientid'] : $_SERVER['REMOTE_ADDR'];
         $authentication = ( isset( $tableInfo['authentication'] ) ? $tableInfo['authentication'] :
             ( isset( $options['authentication'] )   ? $options['authentication']   : null ));
+        $paramAuthUser = isset( $_POST['authuser'] ) ? $_POST['authuser'] : "";
+        $paramResponse = isset( $_POST['response'] ) ? $_POST['response'] : "";
         if ( $authentication != null )  {   // Authentication required
             if ( ! isset( $_POST['authuser'] ) || ! isset( $_POST['response'] )
                 || strlen( $_POST['authuser'] ) == 0 || strlen( $_POST['response'] ) == 0 )  {   // No username or password
@@ -147,7 +151,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                     $access = "do nothing";
                     $requireAuth = true;
                 }
-                if ( ! $dbInstance->checkChallenge( $_POST['authuser'], $_POST['response'], $clientId ))  {
+                if ( ! $dbInstance->checkChallenge( $paramAuthUser, $paramResponse, $clientId ))  {
                     // Not Authenticated!
                     $access = "do nothing";
                     $requireAuth = true;
@@ -181,7 +185,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         if ( $authentication != null )  {
             $generatedChallenge = $dbInstance->generateChallenge();
             $generatedUID = $dbInstance->generateClientId( '' );
-            $userSalt = $dbInstance->saveChallenge( $_POST['authuser'], $generatedChallenge, $generatedUID );
+            $userSalt = $dbInstance->saveChallenge( $paramAuthUser, $generatedChallenge, $generatedUID );
             echo "challenge='{$generatedChallenge}{$userSalt}';";
             echo "clientid='{$generatedUID}';";
             if ( $requireAuth ) {

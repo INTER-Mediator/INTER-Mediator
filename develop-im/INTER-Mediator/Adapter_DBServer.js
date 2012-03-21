@@ -25,7 +25,7 @@ var INTERMediaotr_DBAdapter = {
 
         INTERMediator.debugMessages.push(
             INTERMediatorOnPage.getMessages()[debugMessageNumber]
-                + "Accessing=" + decodeURI(appPath) + ", Parameters="+ decodeURI(accessURL + authParams));
+                + "Accessing:" + decodeURI(appPath) + ", Parameters:"+ decodeURI(accessURL + authParams));
 
         var newRecordKeyValue = '';
         var dbresult = '';

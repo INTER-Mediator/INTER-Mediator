@@ -76,7 +76,6 @@ IM_Entry(
             'privilege' => array(), // Itemize permitted privileges
             'user-table' => 'authuser', // Default values, or "_Native"
             'group-table' => 'authgroup',
-            'privilege-table' => 'authpriv',
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
             'authexpired' => '300',  // Set as seconds.
@@ -84,7 +83,7 @@ IM_Entry(
         ),
     ),
     array('db-class' => 'PDO'),
-    false
+    2
 );
 
 ?>
