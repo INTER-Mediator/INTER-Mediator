@@ -39,13 +39,13 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
     header('Expires: 0');
 
     $currentDir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
-    $paramsPath = dirname( $currentDir  ). DIRECTORY_SEPARATOR . 'params.php';
-    if ( file_exists( $paramsPath )) {
-        include('params.php');
-    } else if ( file_exists( $currentDir . 'params.php' )) {
-        $paramsPath = $currentDir . 'params.php';
+    $currentDirParam = $currentDir . 'params.php';
+    $parentDirParam = dirname( dirname( __FILE__ )  ). DIRECTORY_SEPARATOR . 'params.php';
+    if ( file_exists( $parentDirParam )) {
+        include( $parentDirParam );
+    } else if ( file_exists( $currentDirParam )) {
+        include( $currentDirParam );
     }
-    include( $paramsPath );
 
     if (!isset($_POST['access'])) {
 

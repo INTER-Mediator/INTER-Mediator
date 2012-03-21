@@ -5,14 +5,13 @@
 
 YUICOMP="../yuicompressor-2.4.7.jar"
 
-echo "Enter version number (don't include ver. or VER. etc) --> "
-read version
+version="1.0.8"
 
 dt=`date "+%Y-%m-%d"`
 versionInFilename=`echo "${version}" | tr '.' '_'`;
 
 curpath=$(cd $(dirname "$0"); pwd)
-echo "Working Directory is:", ${curpath}
+echo "Working Directory is: ${curpath}"
 cd "${curpath}"
 
 cat << EOF > "${curpath}"/sedrule
@@ -45,6 +44,7 @@ done
 cp -r "${curpath}"/develop-im/Sample_products/images develop-im/Sample_products/
 cp -r "${curpath}"/develop-im/INTER-Mediator/FX      develop-im/INTER-Mediator/
 cp -r "${curpath}"/develop-im/INTER-Mediator/js_lib  develop-im/INTER-Mediator/
+cp -r "${curpath}"/develop-im/WebSite/previous_rsrcs  develop-im/WebSite/
 
 echo "######### Marge JavaScript program"
 cat develop-im/INTER-Mediator/Adapter_DBServer.js     > temp.js

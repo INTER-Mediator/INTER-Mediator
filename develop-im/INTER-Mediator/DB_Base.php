@@ -116,7 +116,15 @@ abstract class DB_Base
     }
 
     function initialize( $datasrc, $options, $dbspec )   {
-        include('params.php');
+        $currentDir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
+        $currentDirParam = $currentDir . 'params.php';
+        $parentDirParam = dirname( dirname( __FILE__ )  ). DIRECTORY_SEPARATOR . 'params.php';
+        if ( file_exists( $parentDirParam )) {
+            include( $parentDirParam );
+        } else if ( file_exists( $currentDirParam )) {
+            include( $currentDirParam );
+        }
+
         $this->setDbSpecServer(
             isset($dbspec['server']) ? $dbspec['server'] : (isset ($dbServer) ? $dbServer : ''));
         $this->setDbSpecPort(
