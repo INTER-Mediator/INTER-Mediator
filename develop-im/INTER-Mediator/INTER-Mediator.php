@@ -38,19 +38,19 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
     header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
     header('Expires: 0');
 
-    $currentDir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
+    $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
     $currentDirParam = $currentDir . 'params.php';
-    $parentDirParam = dirname( dirname( __FILE__ )  ). DIRECTORY_SEPARATOR . 'params.php';
-    if ( file_exists( $parentDirParam )) {
-        include( $parentDirParam );
-    } else if ( file_exists( $currentDirParam )) {
-        include( $currentDirParam );
+    $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+    if (file_exists($parentDirParam)) {
+        include($parentDirParam);
+    } else if (file_exists($currentDirParam)) {
+        include($currentDirParam);
     }
 
     if (!isset($_POST['access'])) {
 
-        if ( file_exists( $currentDir . 'INTER-Mediator-Lib.js' ))  {
-            $jsLibDir = $currentDir . 'js_lib'. DIRECTORY_SEPARATOR;
+        if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
+            $jsLibDir = $currentDir . 'js_lib' . DIRECTORY_SEPARATOR;
             echo file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
             echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
@@ -62,11 +62,11 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         }
 
         echo "INTERMediatorOnPage.getEntryPath = function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};};";
-        echo "INTERMediatorOnPage.getDataSources = function(){return ", arrayToJS( $datasrc, ''), ";};";
+        echo "INTERMediatorOnPage.getDataSources = function(){return ", arrayToJS($datasrc, ''), ";};";
         echo "INTERMediatorOnPage.getOptionsAliases = function(){return ",
-            arrayToJS(isset($options['aliases'])?$options['aliases']:array(), ''), ";};";
+        arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";};";
         echo "INTERMediatorOnPage.getOptionsTransaction = function(){return ",
-            arrayToJS(isset($options['transaction'])?$options['transaction']:'', ''), ";};";
+        arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";};";
         $clientLang = explode('-', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
         $messageClass = "MessageStrings_{$clientLang[0]}";
         if (class_exists($messageClass)) {
@@ -75,13 +75,13 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             $messageClass = new MessageStrings();
         }
         echo "INTERMediatorOnPage.getMessages = function(){return ",
-            arrayToJS($messageClass->getMessages(), ''), ";};";
+        arrayToJS($messageClass->getMessages(), ''), ";};";
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
         echo "INTERMediatorOnPage.browserCompatibility = function(){return ",
-            arrayToJS($browserCompatibility, ''), ";};";
-        if ( isset( $prohibitDebugMode ) && $prohibitDebugMode )    {
+        arrayToJS($browserCompatibility, ''), ";};";
+        if (isset($prohibitDebugMode) && $prohibitDebugMode) {
             echo "INTERMediator.debugMode=false;";
         } else {
             echo "INTERMediator.debugMode=", ($debug === false) ? "false" : $debug, ";";
@@ -89,20 +89,25 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
 
         // Check Authentication
         $boolValue = "false";
-        $requireAuthContext = array();
-        if ( isset( $options['authentication'] ))  {
+        $requireAuthenticationContext = array();
+        if (isset($options['authentication'])) {
             $boolValue = "true";
         }
-        foreach ( $datasrc as $aContext )   {
-            if ( isset( $aContext['authentication'] ))   {
+        foreach ($datasrc as $aContext) {
+            if (isset($aContext['authentication'])) {
                 $boolValue = "true";
-                $requireAuthContext[] = $aContext['name'];
+                $requireAuthenticationContext[] = $aContext['name'];
             }
         }
         echo "INTERMediatorOnPage.requreAuthentication={$boolValue};";
-        echo "INTERMediatorOnPage.authRequiredContext=", arrayToJS($requireAuthContext, ''), ";";
-        echo "INTERMediatorOnPage.authStoring='", $options['authentication']['storing'], "';";
-        echo "INTERMediatorOnPage.authExpired='", $options['authentication']['authexpired'], "';";
+        echo "INTERMediatorOnPage.authRequiredContext=", arrayToJS($requireAuthenticationContext, ''), ";";
+
+        $storing = (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
+            $options['authentication']['storing'] : 'cookie';
+        echo "INTERMediatorOnPage.authStoring='$storing';";
+        $expired = (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
+            $options['authentication']['storing'] : '3600';
+        echo "INTERMediatorOnPage.authExpired='$expired';";
 
     } else {
 
@@ -110,57 +115,77 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         require_once("{$dbClassName}.php");
         $dbInstance = null;
         $dbInstance = new $dbClassName();
-        if ( $dbInstance == null )  {
+        if ($dbInstance == null) {
             $dbInstance->errorMessage[] = "The database class [{$dbClassName}] that you specify is not valid.";
             echo implode('', $dbInstance->getMessagesForJS());
             return;
         }
-        if (( ! isset( $prohibitDebugMode ) || ! $prohibitDebugMode ) && $debug)    {
-            $dbInstance->setDebugMode( $debug );
+        if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
+            $dbInstance->setDebugMode($debug);
         }
-        $dbInstance->initialize( $datasrc, $options, $dbspec );
-        $access = $_POST['access'];
-        $requireAuth = false;
+
+        $dbInstance->initialize($datasrc, $options, $dbspec);
         $tableInfo = $dbInstance->getDataSourceTargetArray();
-        $clientId = isset( $_POST['clientid'] ) ? $_POST['clientid'] : $_SERVER['REMOTE_ADDR'];
-        $authentication = ( isset( $tableInfo['authentication'] ) ? $tableInfo['authentication'] :
-            ( isset( $options['authentication'] )   ? $options['authentication']   : null ));
-        $paramAuthUser = isset( $_POST['authuser'] ) ? $_POST['authuser'] : "";
-        $paramResponse = isset( $_POST['response'] ) ? $_POST['response'] : "";
-        if ( $authentication != null )  {   // Authentication required
-            if ( ! isset( $_POST['authuser'] ) || ! isset( $_POST['response'] )
-                || strlen( $_POST['authuser'] ) == 0 || strlen( $_POST['response'] ) == 0 )  {   // No username or password
+        $access = $_POST['access'];
+        $clientId = isset($_POST['clientid']) ? $_POST['clientid'] : $_SERVER['REMOTE_ADDR'];
+        $paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
+        $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
+
+        $requireAuthentication = false;
+        $requireAuthorization = false;
+        if (   isset($options['authentication'] )
+               && (  isset($options['authentication']['user'])
+                  || isset($options['authentication']['group']) )
+            || $access == 'challenge'
+            || (isset($tableInfo['authentication'])
+                && ( isset($tableInfo['authentication']['all'])
+                  || isset($tableInfo['authentication'][$access])))
+        ) {
+            $requireAuthorization = true;
+        }
+
+        //        $authentication = ( isset( $tableInfo['authentication'] ) ? $tableInfo['authentication'] :
+        //            ( isset( $options['authentication'] )   ? $options['authentication']   : null ));
+        if ($requireAuthorization) { // Authentication required
+            if (!isset($_POST['authuser']) || !isset($_POST['response'])
+                || strlen($_POST['authuser']) == 0 || strlen($_POST['response']) == 0
+            ) { // No username or password
                 $access = "do nothing";
-                $requireAuth = true;
+                $requireAuthentication = true;
             }
             // User and Password are suppried but...
-            if ( $access != 'challenge' ) {       // Not accessing getting a challenge.
+            if ($access != 'challenge') { // Not accessing getting a challenge.
                 $noAuthorization = true;
-                $authorizedUsers = $dbInstance->getAuthorizedUsers( );
-                if ( count( $authorizedUsers ) > 0 && in_array( $dbInstance->currentUser, $authorizedUsers )) {
+                $authorizedUsers = $dbInstance->getAuthorizedUsers($access);
+                $authorizedGroups = $dbInstance->getAuthorizedGroups($access);
+                if (count($authorizedUsers) == 0 && count($authorizedGroups) == 0) {
                     $noAuthorization = false;
-                }
-                $authorizedGroups = $dbInstance->getAuthorizedGroups( );
-                if ( count( $authorizedGroups ) > 0 ) {
-                    $belongGroups = $dbInstance->getGroupsOfUser( $dbInstance->currentUser );
-                    if ( count( array_intersect( $belongGroups, $authorizedGroups )) != 0 )  {
+                } else {
+                    if (in_array($dbInstance->currentUser, $authorizedUsers)) {
                         $noAuthorization = false;
+                    } else {
+                        if (count($authorizedGroups) > 0) {
+                            $belongGroups = $dbInstance->getGroupsOfUser($dbInstance->currentUser);
+                            if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
+                                $noAuthorization = false;
+                            }
+                        }
                     }
                 }
-                if ( $noAuthorization ) {
+                if ($noAuthorization) {
                     $access = "do nothing";
-                    $requireAuth = true;
+                    $requireAuthentication = true;
                 }
-                if ( ! $dbInstance->checkChallenge( $paramAuthUser, $paramResponse, $clientId ))  {
+                if (!$dbInstance->checkChallenge($paramAuthUser, $paramResponse, $clientId)) {
                     // Not Authenticated!
                     $access = "do nothing";
-                    $requireAuth = true;
+                    $requireAuthentication = true;
                 }
             }
         }
         // Come here access=challenge or authenticated access
 
-        switch ($access)    {
+        switch ($access) {
             case 'select':
                 $result = $dbInstance->getFromDB($dbInstance->getTargetName());
                 echo implode('', $dbInstance->getMessagesForJS()),
@@ -171,7 +196,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                 $dbInstance->setToDB($dbInstance->getTargetName());
                 echo implode('', $dbInstance->getMessagesForJS());
                 break;
-            case 'insert':
+            case 'new':
                 $result = $dbInstance->newToDB($dbInstance->getTargetName());
                 echo implode('', $dbInstance->getMessagesForJS()), "newRecordKeyValue='{$result}';";
                 break;
@@ -182,16 +207,17 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             case 'challenge':
                 break;
         }
-        if ( $authentication != null )  {
+        if ($requireAuthorization) {
             $generatedChallenge = $dbInstance->generateChallenge();
-            $generatedUID = $dbInstance->generateClientId( '' );
-            $userSalt = $dbInstance->saveChallenge( $paramAuthUser, $generatedChallenge, $generatedUID );
+            $generatedUID = $dbInstance->generateClientId('');
+            $userSalt = $dbInstance->saveChallenge($paramAuthUser, $generatedChallenge, $generatedUID);
             echo "challenge='{$generatedChallenge}{$userSalt}';";
             echo "clientid='{$generatedUID}';";
-            if ( $requireAuth ) {
-                echo "requireAuth=true;";     // Force authentication to client
+            if ($requireAuthentication) {
+                echo "requireAuth=true;"; // Force authentication to client
             }
         }
     }
 }
+
 ?>

@@ -568,7 +568,7 @@ abstract class DB_Base
         if ( ! $isGlobalDomain && isset( $tableInfo['authentication']['all']['user'] )) {
             $usersArray = array_merge( $usersArray, $tableInfo['authentication']['all']['user'] );
         }
-        if ( ! $isGlobalDomain && isset( $tableInfo['authentication'][ $operation ]['field'] )) {
+        if ( ! $isGlobalDomain && isset( $tableInfo['authentication'][ $operation ]['user'] )) {
             $usersArray = array_merge( $usersArray, $tableInfo['authentication'][ $operation ]['user'] );
         }
         return $usersArray;

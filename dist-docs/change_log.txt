@@ -56,7 +56,13 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
+Ver.1.0.10 (Will be release soon.)
+
 Ver.1.0.9 (Will be release soon.)
+- [BUG on 1.0.7] Fixed the authorization setting was wrongly recognized.
+- [BUG on 1.0.7] Fixed a cosmetic issue for the customezed navigation.
+- Replaced encodeURI function with encodeURIComponent function for POST method.
+- WebSite Sample can edit the contents.
 
 Ver.1.0.8 (2012/3/21)
 - [INFO] Authentication part requires PHP 5.3.0 or above.

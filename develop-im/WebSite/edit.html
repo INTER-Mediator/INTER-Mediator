@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */
+-->
+<HTML>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link href="http://msyk.net/msyk_style.css" rel="stylesheet" media="screen"/>
+    <link href="pagestyle.css" rel="stylesheet" media="screen"/>
+    <title>INTER-Mediator</title>
+    <script type="text/javascript" src="include_edit.php"></script>
+    <script type="text/javascript" src="website.js"></script>
+    <style>
+        table.allbox    {
+            margin: 0;
+            width: 100%;
+        }
+        table.articlebox    {
+            margin: 0;
+            width: 100%;
+            background-color: #AAEEEE;
+        }
+        table.contentsbox    {
+            margin: 0;
+            width: 100%;
+            margin-left: 40px;
+            background-color: #DDDDDD;
+        }
+    </style>
+</head>
+<body onload="INTERMediator.construct(true);">
+    <table width="100%" class="allbox">
+        <tbody>
+        <tr>
+            <td style="border-top: solid 2px black;">
+                [id=<span class="IM[Article@id]"></span>]Kind:
+                <select class="IM[Article@ContentKind_id]">
+                    <option class="IM[ContentKind@id@value|ContentKind@KindName]"></option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%" class="articlebox">
+                    <tbody>
+                    <tr>
+                        <td>
+                            Title: <input type="text" class="IM[TitlesOfArticle@Title]" size="50"/>
+                            Language: <input type="text" class="IM[TitlesOfArticle@Language]" size="4"/>
+                            Order:<input type="text" class="IM[TitlesOfArticle@Ordering]" size="4"/>
+                            Link Address:<input type="text" class="IM[TitlesOfArticle@LinkAddress]" size="30"/>
+                            <input type="checkbox" class="IM[TitlesOfArticle@NotShow]" value="1"/>Not Show
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width="100%" class="contentsbox">
+                    <tbody>
+                    <tr>
+                        <td><input type="hidden" class="IM[ContentsOfArticle@id]"/>
+                            Article ID: <input type="text" class="IM[ContentsOfArticle@Article_id]"  size="4"/>
+                            Title: <input type="text" class="IM[ContentsOfArticle@Title]"  size="50"/>
+                            Language: <input type="text" class="IM[ContentsOfArticle@Language]"  size="4"/>
+                            Credit Date: <input type="text" class="IM[ContentsOfArticle@creditDate]"  size="20"/>
+                            Order: <input type="text" class="IM[ContentsOfArticle@Ordering]" size="4"/>
+                            <button onclick="editbutton(this);">Edit</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <textarea class="IM[ContentsOfArticle@Body]" rows="3"
+                                    style="width:95%;"></textarea>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</body>
+</HTML>

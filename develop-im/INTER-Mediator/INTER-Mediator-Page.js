@@ -81,7 +81,7 @@ var INTERMediatorOnPage = {
     },
 
     authenticating: function(doAfterAuth)   {
-        if ( this.authCount > 2 )    {
+        if ( this.authCount > 10 )    {
             this.authenticationError();
             this.logout();
             INTERMediator.flushMessage();
@@ -103,6 +103,7 @@ var INTERMediatorOnPage = {
         backBox.style.padding = " 50px 0 0 0";
         backBox.style.top = "0";
         backBox.style.left = "0";
+        backBox.style.zIndex = "999998";
 
         var frontPanel = document.createElement('div');
         frontPanel.style.width = "240px";
@@ -211,6 +212,7 @@ var INTERMediatorOnPage = {
         backBox.style.padding = " 50px 0 0 0";
         backBox.style.top = "0";
         backBox.style.left = "0";
+        backBox.style.zIndex = "999999";
 
         var frontPanel = document.createElement('div');
         frontPanel.style.width = "240px";

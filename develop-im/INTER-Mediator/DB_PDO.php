@@ -626,7 +626,8 @@ class DB_PDO extends DB_Base implements DB_Interface
         }
         $sql = "UPDATE {$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
-        $this->setDebugMessage( $prepSQL->queryString );
+        $this->setDebugMessage( $prepSQL->queryString . " with " .
+            str_replace("\n"," ", var_export($setParameter, true)) );
         $result = $prepSQL->execute($setParameter);
         if ($result === false) {
             $this->errorMessageStore('Update:' + $prepSQL->erroInfo);
@@ -655,7 +656,7 @@ class DB_PDO extends DB_Base implements DB_Interface
         $tableName = $this->getEntityForUpdate();
 
         $setClause = array();
-        $authorizeJudge = true;
+/*        $authorizeJudge = true;
         if ( isset( $tableInfo['authentication'] )) {
             $authorizeJudge = false;
             $currentOperation = "new";
@@ -690,7 +691,7 @@ class DB_PDO extends DB_Base implements DB_Interface
             $this->debugMessage[] = 'No Authrization:';
             return false;
         }
-
+*/
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
                 $this->getDbSpecUser(),

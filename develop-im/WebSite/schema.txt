@@ -40,14 +40,12 @@ CREATE TABLE Article
 (
     id			    INT PRIMARY KEY AUTO_INCREMENT,
     ContentKind_id  INT,
-    Ordering           INT,
-    NotShow         INT
 )		CHARACTER SET utf8,
         COLLATE utf8_unicode_ci
         ENGINE=InnoDB;
 
 CREATE VIEW ArticleInfo AS
-    SELECT Article.id as id,ContentKind_id,Article.Ordering as Ordering,NotShow,MAX(ModifiedDT) as Modified
+    SELECT Article.id as id,ContentKind_id,MAX(ModifiedDT) as Modified
     FROM Article, Contents WHERE Article.id=Contents.Article_id
     GROUP BY Article.id;
 

@@ -73,11 +73,11 @@ IM_Entry(
             array(
                 'field' => 'PageInfo@Modified',
                 'converter-class' => 'MySQLDateTime',
-                'parameter'=>'Y/m/d H:i'),
+                'parameter' => 'Y/m/d H:i'),
             array(
                 'field' => 'NewsPage@Modified',
                 'converter-class' => 'MySQLDateTime',
-                'parameter'=>'Y/m/d H:i'),
+                'parameter' => 'Y/m/d H:i'),
         )
     ),
     array(

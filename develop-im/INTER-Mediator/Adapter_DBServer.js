@@ -41,6 +41,8 @@ var INTERMediaotr_DBAdapter = {
             eval( myRequest.responseText );
             if ( INTERMediator.debugMode > 1 )  {
                 INTERMediator.debugMessages.push(
+                    "myRequest.responseText=" + myRequest.responseText );
+                INTERMediator.debugMessages.push(
                     "Return: resultCount=" + resultCount + ", dbresult=" + INTERMediatorLib.objectToString(dbresult));
                 INTERMediator.debugMessages.push(
                     "Return: requireAuth=" + requireAuth + ", challenge=" + challenge + ", clientid="+clientid);
@@ -49,7 +51,7 @@ var INTERMediaotr_DBAdapter = {
             if ( challenge != null )    {
                 INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
                 INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
-                INTERMediatorOnPage.authUserSalt =String.fromCharCode(
+                INTERMediatorOnPage.authUserSalt = String.fromCharCode(
                     parseInt(challenge.substr(24, 2),16),
                     parseInt(challenge.substr(26, 2),16),
                     parseInt(challenge.substr(28, 2),16),
@@ -115,27 +117,27 @@ var INTERMediaotr_DBAdapter = {
             return;
         }
 
-        var params = "access=select&name=" + encodeURI(args['name']);
-        params += "&records=" + encodeURI((args['records'] != null) ? args['records'] : 10000000);
+        var params = "access=select&name=" + encodeURIComponent(args['name']);
+        params += "&records=" + encodeURIComponent((args['records'] != null) ? args['records'] : 10000000);
         for (var i = 0; i < args['fields'].length; i++) {
-            params += "&field_" + i + "=" + encodeURI(args['fields'][i]);
+            params += "&field_" + i + "=" + encodeURIComponent(args['fields'][i]);
         }
         var counter = 0;
         if (args['parentkeyvalue'] != null) {
             for (var index in  args['parentkeyvalue']) {
-                params += "&foreign" + counter + "field=" + encodeURI(index);
-                params += "&foreign" + counter + "value=" + encodeURI(args['parentkeyvalue'][index]);
+                params += "&foreign" + counter + "field=" + encodeURIComponent(index);
+                params += "&foreign" + counter + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
                 counter++;
             }
         }
         if (args['useoffset'] && INTERMediator.startFrom != null) {
-            params += "&start=" + encodeURI(INTERMediator.startFrom);
+            params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
         }
         var extCount = 0;
         if (args['conditions'] != null) {
-            params += "&condition" + extCount + "field=" + encodeURI(args['conditions'][extCount]['field']);
-            params += "&condition" + extCount + "operator=" + encodeURI(args['conditions'][extCount]['operator']);
-            params += "&condition" + extCount + "value=" + encodeURI(args['conditions'][extCount]['value']);
+            params += "&condition" + extCount + "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
+            params += "&condition" + extCount + "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
+            params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
             extCount++;
         }
         var criteraObject = INTERMediator.additionalCondition[args['name']];
@@ -143,11 +145,11 @@ var INTERMediaotr_DBAdapter = {
             criteraObject = [criteraObject];
         }
         for (var index in criteraObject) {
-            params += "&condition" + extCount + "field=" + encodeURI(criteraObject[index]["field"]);
+            params += "&condition" + extCount + "field=" + encodeURIComponent(criteraObject[index]["field"]);
             if (criteraObject[index]["operator"] != null) {
-                params += "&condition" + extCount + "operator=" + encodeURI(criteraObject[index]["operator"]);
+                params += "&condition" + extCount + "operator=" + encodeURIComponent(criteraObject[index]["operator"]);
             }
-            params += "&condition" + extCount + "value=" + encodeURI(criteraObject[index]["value"]);
+            params += "&condition" + extCount + "value=" + encodeURIComponent(criteraObject[index]["value"]);
             extCount++;
         }
 
@@ -157,8 +159,8 @@ var INTERMediaotr_DBAdapter = {
             sortkeyObject = [sortkeyObject];
         }
         for (var index in sortkeyObject) {
-            params += "&sortkey" + extCount + "field=" + encodeURI(sortkeyObject[index]["field"]);
-            params += "&sortkey" + extCount + "direction=" + encodeURI(sortkeyObject[index]["direction"]);
+            params += "&sortkey" + extCount + "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
+            params += "&sortkey" + extCount + "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
             extCount++;
         }
 
@@ -214,17 +216,17 @@ var INTERMediaotr_DBAdapter = {
             return;
         }
 
-        var params = "access=update&name=" + encodeURI(args['name']);
+        var params = "access=update&name=" + encodeURIComponent(args['name']);
         var extCount = 0;
         if (args['conditions'] != null) {
-            params += "&condition" + extCount + "field=" + encodeURI(args['conditions'][extCount]['field']);
-            params += "&condition" + extCount + "operator=" + encodeURI(args['conditions'][extCount]['operator']);
-            params += "&condition" + extCount + "value=" + encodeURI(args['conditions'][extCount]['value']);
+            params += "&condition" + extCount + "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
+            params += "&condition" + extCount + "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
+            params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
             extCount++;
         }
         for (var extCount = 0; extCount < args['dataset'].length; extCount++) {
-            params += "&field_" + extCount + "=" + encodeURI(args['dataset'][extCount]['field']);
-            params += "&value_" + extCount + "=" + encodeURI(args['dataset'][extCount]['value']);
+            params += "&field_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
+            params += "&value_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
         }
         var result = this.server_access( params, 1013, 1014 );
         return result.dbresult;
@@ -251,11 +253,11 @@ var INTERMediaotr_DBAdapter = {
             return;
         }
 
-        var params = "access=delete&name=" + encodeURI(args['name']);
+        var params = "access=delete&name=" + encodeURIComponent(args['name']);
         for (var i = 0; i < args['conditions'].length; i++) {
-            params += "&condition" + i + "field=" + encodeURI(args['conditions'][i]['field']);
-            params += "&condition" + i + "operator=" + encodeURI(args['conditions'][i]['operator']);
-            params += "&condition" + i + "value=" + encodeURI(args['conditions'][i]['value']);
+            params += "&condition" + i + "field=" + encodeURIComponent(args['conditions'][i]['field']);
+            params += "&condition" + i + "operator=" + encodeURIComponent(args['conditions'][i]['operator']);
+            params += "&condition" + i + "value=" + encodeURIComponent(args['conditions'][i]['value']);
         }
         var result = this.server_access( params, 1017, 1015 );
 //        INTERMediator.flushMessage();
@@ -275,10 +277,10 @@ var INTERMediaotr_DBAdapter = {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return;
         }
-        var params = "access=insert&name=" + encodeURI(args['name']);
+        var params = "access=new&name=" + encodeURIComponent(args['name']);
         for (var i = 0; i < args['dataset'].length; i++) {
-            params += "&field_" + i + "=" + encodeURI(args['dataset'][i]['field']);
-            params += "&value_" + i + "=" + encodeURI(args['dataset'][i]['value']);
+            params += "&field_" + i + "=" + encodeURIComponent(args['dataset'][i]['field']);
+            params += "&value_" + i + "=" + encodeURIComponent(args['dataset'][i]['value']);
         }
         var result = this.server_access( params, 1018, 1016 );
 //        INTERMediator.flushMessage();

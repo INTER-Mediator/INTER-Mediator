@@ -71,10 +71,10 @@ var INTERMediator = {
     flushMessage:function () {
         var debugNode, title, body, i, clearButton, tNode ;
         if (INTERMediator.errorMessages.length > 0) {
-            debugNode = document.getElementById('easypage_error_panel_4873643897897');
+            debugNode = document.getElementById('_im_error_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
-                debugNode.setAttribute('id', 'easypage_error_panel_4873643897897');
+                debugNode.setAttribute('id', '_im_error_panel_4873643897897');
                 debugNode.style.backgroundColor = '#FFDDDD';
                 title = document.createElement('h3');
                 title.appendChild(document.createTextNode('Error Info from INTER-Mediator'));
@@ -83,21 +83,23 @@ var INTERMediator = {
                 body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
+            debugNode.appendChild(document.createTextNode("============ERROR MESSAGE on "+new Date()+"============"));
+            debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.errorMessages.length; i++) {
                 debugNode.appendChild(document.createTextNode(INTERMediator.errorMessages[i]));
                 debugNode.appendChild(document.createElement('hr'));
             }
         }
         if (INTERMediator.debugMode && INTERMediator.debugMessages.length > 0) {
-            debugNode = document.getElementById('easypage_debug_panel_4873643897897');
+            debugNode = document.getElementById('_im_debug_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
-                debugNode.setAttribute('id', 'easypage_debug_panel_4873643897897');
+                debugNode.setAttribute('id', '_im_debug_panel_4873643897897');
                 debugNode.style.backgroundColor = '#DDDDDD';
                 clearButton = document.createElement('button');
                 clearButton.setAttribute('title', 'clear');
                 INTERMediatorLib.addEvent(clearButton, 'click', function () {
-                    var target = document.getElementById('easypage_debug_panel_4873643897897');
+                    var target = document.getElementById('_im_debug_panel_4873643897897');
                     target.parentNode.removeChild(target);
                 });
                 tNode = document.createTextNode('clear');
@@ -110,7 +112,8 @@ var INTERMediator = {
                 body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-
+            debugNode.appendChild(document.createTextNode("============DEBUG INFO on "+new Date()+"============"));
+            debugNode.appendChild(document.createElement('hr'));
             for ( i = 0; i < INTERMediator.debugMessages.length; i++) {
                 debugNode.appendChild(document.createTextNode(INTERMediator.debugMessages[i]));
                 debugNode.appendChild(document.createElement('hr'));
@@ -299,7 +302,7 @@ var INTERMediator = {
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 INTERMediator.deleteButton(
-                                    targetName, keyField, keyValue, removeNodes, isConfirm);
+                                    targetName, keyField, keyValue, removeNodes, false);
                             }
                         );
                         return;
@@ -345,9 +348,10 @@ var INTERMediator = {
                 INTERMediatorOnPage.authenticating(
                     function () {
                         INTERMediator.insertButton(
-                            targetName, foreignValues, updateNodes, removeNodes, isConfirm);
+                            targetName, foreignValues, updateNodes, removeNodes, false);
                     }
                 );
+                INTERMediator.flushMessage();
                 return;
             }
         }
@@ -399,6 +403,7 @@ var INTERMediator = {
                         INTERMediatorOnPage.authenticating(function () {
                             INTERMediator.insertRecordFromNavi(targetName, keyField, isConfirm);
                         });
+                        INTERMediator.flushMessage();
                         return;
                     }
                 }
@@ -443,6 +448,7 @@ var INTERMediator = {
                         INTERMediator.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);
                     }
                 );
+                INTERMediator.flushMessage();
                 return;
             }
         }
@@ -1244,7 +1250,7 @@ var INTERMediator = {
                             (((navLabel == null || navLabel[5] == null) ? "-" : navLabel[5])
                                 + Math.min(start + pageSize, allCount)) : '')
                             + ((navLabel == null || navLabel[6] == null) ? " / " : navLabel[6]) + (allCount)
-                            + (navLabel == null ? "" : navLabel[7])));
+                            + ((navLabel == null || navLabel[7] == null) ? "" : navLabel[7])));
                     node.setAttribute('class', 'IM_NAV_info');
                 }
 
