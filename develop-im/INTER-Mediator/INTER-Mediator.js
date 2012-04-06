@@ -148,7 +148,7 @@ var INTERMediator = {
         if (changedObj != null) {
             INTERMediatorOnPage.retrieveAuthInfo();
             var objType = changedObj.getAttribute('type');
-            if ( objType == 'radio' && ! changedObj.selected )  {
+            if ( objType == 'radio' && ! changedObj.checked )  {
                 return;
             }
             var objectSpec = INTERMediator.updateRequiredObject[idValue];
@@ -169,7 +169,7 @@ var INTERMediator = {
                     useoffset:false});
             } catch (ex) {
                 if (ex == "_im_requath_request_") {
-                    if (INTERMediatorOnPage.requreAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                    if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.authChallenge = null;
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
@@ -243,7 +243,7 @@ var INTERMediator = {
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
                         if (ex == "_im_requath_request_") {
-                            if (INTERMediatorOnPage.requreAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                            if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                                 INTERMediatorOnPage.authChallenge = null;
                                 INTERMediatorOnPage.authHashedPassword = null;
                                 INTERMediatorOnPage.authenticating(
@@ -296,7 +296,7 @@ var INTERMediator = {
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (ex == "_im_requath_request_") {
-                    if (INTERMediatorOnPage.requreAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                    if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.authChallenge = null;
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
@@ -396,7 +396,7 @@ var INTERMediator = {
             var newId = INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         } catch (ex) {
             if (ex == "_im_requath_request_") {
-                if (INTERMediatorOnPage.requreAuthentication) {
+                if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.authChallenge = null;
                         INTERMediatorOnPage.authHashedPassword = null;
@@ -511,7 +511,7 @@ var INTERMediator = {
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
-                if (INTERMediatorOnPage.requreAuthentication) {
+                if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.authChallenge = null;
                         INTERMediatorOnPage.authHashedPassword = null;
@@ -1358,7 +1358,7 @@ var INTERMediator = {
                     node.setAttribute('class', 'IM_NAV_button');
                     INTERMediatorLib.addEvent(node, 'click', INTERMediator.saveRecordFromNavi);
                 }
-                if (INTERMediatorOnPage.requreAuthentication) {
+                if (INTERMediatorOnPage.requireAuthentication) {
                     node = document.createElement('SPAN');
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(

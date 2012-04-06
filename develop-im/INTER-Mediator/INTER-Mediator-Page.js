@@ -16,12 +16,14 @@ var INTERMediatorOnPage = {
     authUserSalt: '',
     authUserHexSalt: '',
     authChallenge: '',
-    requreAuthentication: false,
+    requireAuthentication: false,
     clientId: null,
     authRequiredContext: null,
     authStoring: 'cookie',
     authExpired: 3600,
     isOnceAtStarting: true,
+    publickey: null,
+    isNativeAuth: false,
 
     isComplementAuthData: function()    {
         if (   this.authUser != null && this.authUser.length > 0
@@ -34,7 +36,7 @@ var INTERMediatorOnPage = {
     },
 
     retrieveAuthInfo: function()    {
-        if ( this.requreAuthentication )    {
+        if ( this.requireAuthentication )    {
             if ( this.isOnceAtStarting )    {
                 switch( this.authStoring )    {
                     case 'cookie':
@@ -178,8 +180,13 @@ var INTERMediatorOnPage = {
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
-            INTERMediatorOnPage.authHashedPassword
-                = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
+            if ( INTERMediatorOnPage.isNativeAuth ) {
+                INTERMediatorOnPage.authHashedPassword =
+                    inputPassword;
+            } else {
+                INTERMediatorOnPage.authHashedPassword
+                    = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
+            }
 
             if ( INTERMediatorOnPage.authUser.length > 0 )  {   // Authentication succeed, Store coockies.
                 INTERMediatorOnPage.storeCredencialsToCookie();

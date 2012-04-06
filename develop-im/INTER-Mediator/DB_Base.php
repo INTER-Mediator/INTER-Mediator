@@ -90,6 +90,9 @@ abstract class DB_Base
     var $dbSpecDSN = null;
     var $dbSpecOption = null;
 
+    var $accessUser = null;
+    var $accessPassword = null;
+
     var $dataSource = null;
     var $targetDataSource = null;
     var $extraCriteria = array();
@@ -196,6 +199,17 @@ abstract class DB_Base
         //			$dbInstance->setParentKeyValue( $_POST['parent_keyval'] );
         //		}
 
+    }
+
+    function getAccessUser()    {
+        return $this->accessUser != null ? $this->accessUser : $this->dbSpecUser;
+    }
+    function getAccessPassword()    {
+        return $this->accessPassword != null ? $this->accessPassword : $this->dbSpecPassword;
+    }
+    function setUserAndPaswordForAccess( $user, $pass )   {
+        $this->accessUser = $user;
+        $this->accessPassword = $pass;
     }
     /* Call on INTER-Mediator.php */
 
@@ -596,10 +610,10 @@ abstract class DB_Base
     function saveChallenge( $username, $challenge, $clientId )
     {
         $this->authSupportStoreChallenge($username, $challenge, $clientId);
-        return $this->authSupportGetSalt($username);
+        return $username == 0 ? "" : $this->authSupportGetSalt($username);
     }
 
-    function checkChallenge( $username, $hashedvalue, $clientId )
+    function checkAuthorization( $username, $hashedvalue, $clientId )
     {
         $returnValue = false;
 
@@ -613,6 +627,19 @@ abstract class DB_Base
                     $returnValue = true;
                 }
             }
+        }
+        return $returnValue;
+    }
+
+    // This method is just used to authenticate with database user
+    function checkChallenge( $challenge, $clientId )
+    {
+        $returnValue = false;
+        $this->removeOutdatedChallenges();
+        // Database user mode is user_id=0
+        $storedChallenge = $this->authSupportRetrieveChallenge( 0, $clientId );
+        if ( strlen($storedChallenge) == 24 && $storedChallenge == $challenge ) {   // ex.fc0d54312ce33c2fac19d758
+            $returnValue = true;
         }
         return $returnValue;
     }

@@ -31,13 +31,14 @@ require_once('MessageStrings_ja.php');
 
 function IM_Entry($datasrc, $options, $dbspec, $debug = false)
 {
-    $LF = "\n";
     $q = '"';
 
     header('Content-Type: text/javascript; charset="UTF-8"');
     header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
     header('Expires: 0');
 
+    $generatedPrivateKey = '';
+    $passPhrase = '';
     $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
     $currentDirParam = $currentDir . 'params.php';
     $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
@@ -51,11 +52,14 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
 
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             $jsLibDir = $currentDir . 'js_lib' . DIRECTORY_SEPARATOR;
+            $bi2phpDir = $currentDir . 'bi2php' . DIRECTORY_SEPARATOR;
             echo file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
             echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
             echo file_get_contents($jsLibDir . 'sha1.js');
-            echo file_get_contents($jsLibDir . 'rsa.js');
+            echo file_get_contents($bi2phpDir . 'biBigInt.js');
+            echo file_get_contents($bi2phpDir . 'biMontgomery.js');
+            echo file_get_contents($bi2phpDir . 'biRSA.js');
             echo file_get_contents($currentDir . 'Adapter_DBServer.js');
         } else {
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
@@ -99,15 +103,22 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                 $requireAuthenticationContext[] = $aContext['name'];
             }
         }
-        echo "INTERMediatorOnPage.requreAuthentication={$boolValue};";
+        echo "INTERMediatorOnPage.requireAuthentication={$boolValue};";
         echo "INTERMediatorOnPage.authRequiredContext=", arrayToJS($requireAuthenticationContext, ''), ";";
 
+        $nativeAuth = (isset($options['authentication']) && isset($options['authentication']['user'])
+            && ($options['authentication']['user'] === 'database_native')) ? "true" : "false";
+        echo "INTERMediatorOnPage.isNativeAuth={$nativeAuth};";
         $storing = (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
             $options['authentication']['storing'] : 'cookie';
         echo "INTERMediatorOnPage.authStoring='$storing';";
         $expired = (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
             $options['authentication']['storing'] : '3600';
         echo "INTERMediatorOnPage.authExpired='$expired';";
+        $keyArray = openssl_pkey_get_details( openssl_pkey_get_private( $generatedPrivateKey, $passPhrase ));
+        echo "INTERMediatorOnPage.publickey=new biRSAKeyPair('",
+            bin2hex( $keyArray['rsa']['e']),"','0','",bin2hex( $keyArray['rsa']['n']),"');";
+
 
     } else {
 
@@ -133,53 +144,78 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
 
         $requireAuthentication = false;
         $requireAuthorization = false;
+        $isDBNative = false;
         if (   isset($options['authentication'] )
                && (  isset($options['authentication']['user'])
                   || isset($options['authentication']['group']) )
             || $access == 'challenge'
             || (isset($tableInfo['authentication'])
                 && ( isset($tableInfo['authentication']['all'])
-                  || isset($tableInfo['authentication'][$access])))
+                    || isset($tableInfo['authentication'][$access])))
         ) {
             $requireAuthorization = true;
+            $isDBNative = ($options['authentication']['user'] == 'database_native');
         }
 
-        //        $authentication = ( isset( $tableInfo['authentication'] ) ? $tableInfo['authentication'] :
-        //            ( isset( $options['authentication'] )   ? $options['authentication']   : null ));
         if ($requireAuthorization) { // Authentication required
-            if (!isset($_POST['authuser']) || !isset($_POST['response'])
-                || strlen($_POST['authuser']) == 0 || strlen($_POST['response']) == 0
-            ) { // No username or password
+            if ( strlen($paramAuthUser) == 0  || strlen($paramResponse) == 0 ) {
+             // No username or password
                 $access = "do nothing";
                 $requireAuthentication = true;
             }
             // User and Password are suppried but...
-            if ($access != 'challenge') { // Not accessing getting a challenge.
-                $noAuthorization = true;
-                $authorizedUsers = $dbInstance->getAuthorizedUsers($access);
-                $authorizedGroups = $dbInstance->getAuthorizedGroups($access);
-                if (count($authorizedUsers) == 0 && count($authorizedGroups) == 0) {
-                    $noAuthorization = false;
+            if ( $access != 'challenge') { // Not accessing getting a challenge.
+
+                if ( $isDBNative ) {
+
+                    $keyArray = openssl_pkey_get_details( openssl_pkey_get_private( $generatedPrivateKey, $passPhrase ));
+                    require_once( 'bi2php/biRSA.php' );
+                    $keyDecrypt = new biRSAKeyPair( '0', bin2hex( $keyArray['rsa']['d']), bin2hex( $keyArray['rsa']['n']));
+                    $decrypted = $keyDecrypt->biDecryptedString( $paramResponse );
+                    if ( $decrypted !== false ) {
+                        $nlPos = strpos( $decrypted, "\n" );
+                        $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
+                        $password = substr( $decrypted, 0, $nlPos );
+                        $challenge = substr( $decrypted, $nlPos + 1 );
+                        if ( ! $dbInstance->checkChallenge( $challenge, $clientId ) ) {
+                            $access = "do nothing";
+                            $requireAuthentication = true;
+                        } else {
+                            $dbInstance->setUserAndPaswordForAccess( $paramAuthUser, $password );
+                        }
+                    } else {
+                        $dbInstance->setDebugMessage("Can't decrypt.");
+                        $access = "do nothing";
+                        $requireAuthentication = true;
+                    }
+
                 } else {
-                    if (in_array($dbInstance->currentUser, $authorizedUsers)) {
+                    $noAuthorization = true;
+                    $authorizedUsers = $dbInstance->getAuthorizedUsers($access);
+                    $authorizedGroups = $dbInstance->getAuthorizedGroups($access);
+                    if ( (count($authorizedUsers) == 0 && count($authorizedGroups) == 0 )) {
                         $noAuthorization = false;
                     } else {
-                        if (count($authorizedGroups) > 0) {
-                            $belongGroups = $dbInstance->getGroupsOfUser($dbInstance->currentUser);
-                            if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
-                                $noAuthorization = false;
+                        if (in_array($dbInstance->currentUser, $authorizedUsers)) {
+                            $noAuthorization = false;
+                        } else {
+                            if (count($authorizedGroups) > 0) {
+                                $belongGroups = $dbInstance->getGroupsOfUser($dbInstance->currentUser);
+                                if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
+                                    $noAuthorization = false;
+                                }
                             }
                         }
                     }
-                }
-                if ($noAuthorization) {
-                    $access = "do nothing";
-                    $requireAuthentication = true;
-                }
-                if (!$dbInstance->checkChallenge($paramAuthUser, $paramResponse, $clientId)) {
-                    // Not Authenticated!
-                    $access = "do nothing";
-                    $requireAuthentication = true;
+                    if ($noAuthorization) {
+                        $access = "do nothing";
+                        $requireAuthentication = true;
+                    }
+                    if (!$dbInstance->checkAuthorization($paramAuthUser, $paramResponse, $clientId)) {
+                        // Not Authenticated!
+                        $access = "do nothing";
+                        $requireAuthentication = true;
+                    }
                 }
             }
         }
@@ -205,12 +241,14 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                 echo implode('', $dbInstance->getMessagesForJS());
                 break;
             case 'challenge':
+                echo implode('', $dbInstance->getMessagesForJS());
                 break;
         }
         if ($requireAuthorization) {
             $generatedChallenge = $dbInstance->generateChallenge();
             $generatedUID = $dbInstance->generateClientId('');
-            $userSalt = $dbInstance->saveChallenge($paramAuthUser, $generatedChallenge, $generatedUID);
+            $userSalt = $dbInstance->saveChallenge(
+                $isDBNative ? 0 : $paramAuthUser, $generatedChallenge, $generatedUID);
             echo "challenge='{$generatedChallenge}{$userSalt}';";
             echo "clientid='{$generatedUID}';";
             if ($requireAuthentication) {

@@ -195,4 +195,8 @@ function getLocaleFromBrowser()
     return $lstr;
 }
 
+function hex2bin_for53( $str )
+{
+    return pack("H*", $str);
+}
 ?>

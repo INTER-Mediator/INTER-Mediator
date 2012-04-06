@@ -3,11 +3,23 @@ by Masayuki Nii
 msyk@msyk.net
 
 Thanks for your interest of this software.
-All information will show at: 
+All information will be shown at:
 http://inter-mediator.info
 
 Sample pages with this archived file are published at below.
 You don't have to deploy the samples if you just want to just a glance.
 
 http://inter-mediator.info/im-sample.html
+
+===========================
+Acknowledgement
+---------------------------
+Thanks for nice works.
+
+* FX.php by Chris Hansen, et.al. (http://www.iviking.org/FX.php/)
+
+* Secure Hash Algorithm (SHA1) (http://www.webtoolkit.info/)
+
+* bi2php v0.1.113.alfa from http://code.google.com/p/bi2php/
+  This library is based on the work of Dave Shapiro (http://www.ohdave.com/rsa/)
 

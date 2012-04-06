@@ -18,9 +18,16 @@ var INTERMediaotr_DBAdapter = {
         if ( INTERMediatorOnPage.authUser.length > 0 )  {
             authParams
                 = "&clientid=" + encodeURIComponent( INTERMediatorOnPage.clientId )
-                + "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser )
-                + "&response=" + encodeURIComponent( SHA1(INTERMediatorOnPage.authChallenge
-                + INTERMediatorOnPage.authHashedPassword ));
+                + "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser );
+            if ( INTERMediatorOnPage.isNativeAuth ) {
+                authParams += "&response=" + encodeURIComponent(
+                    INTERMediatorOnPage.publickey.biEncryptedString( INTERMediatorOnPage.authHashedPassword
+                                                    + "\n" + INTERMediatorOnPage.authChallenge ));
+
+            } else {
+                authParams += "&response=" + encodeURIComponent(
+                    SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword ));
+            }
         }
 
         INTERMediator.debugMessages.push(
@@ -46,16 +53,19 @@ var INTERMediaotr_DBAdapter = {
                     "Return: resultCount=" + resultCount + ", dbresult=" + INTERMediatorLib.objectToString(dbresult));
                 INTERMediator.debugMessages.push(
                     "Return: requireAuth=" + requireAuth + ", challenge=" + challenge + ", clientid="+clientid);
-                INTERMediator.debugMessages.push("Return: newRecordKeyValue="+newRecordKeyValue);
+                INTERMediator.debugMessages.push(
+                    "Return: newRecordKeyValue=" + newRecordKeyValue  );
             }
             if ( challenge != null )    {
                 INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
-                INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
-                INTERMediatorOnPage.authUserSalt = String.fromCharCode(
-                    parseInt(challenge.substr(24, 2),16),
-                    parseInt(challenge.substr(26, 2),16),
-                    parseInt(challenge.substr(28, 2),16),
-                    parseInt(challenge.substr(30, 2),16));
+                if ( !INTERMediatorOnPage.isNativeAuth ) {
+                    INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
+                    INTERMediatorOnPage.authUserSalt = String.fromCharCode(
+                        parseInt(challenge.substr(24, 2),16),
+                        parseInt(challenge.substr(26, 2),16),
+                        parseInt(challenge.substr(28, 2),16),
+                        parseInt(challenge.substr(30, 2),16));
+                }
             }
             if ( clientid != null ) {
                 INTERMediatorOnPage.clientId = clientid;

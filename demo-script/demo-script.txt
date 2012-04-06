@@ -38,4 +38,115 @@ Uncomment the following lines in demo1.php
 
 ** DEMO 2
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <title>INTER-Mediator Demo 1</title>
+</head>
+<body>
+<table border="1">
+    <thead>
+    <tr><th>郵便番号</th><th>都道府県</th><th>住所</th></tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
+
+require_once( 'INTER-Mediator/INTER-Mediator.php');
+IM_Entry(
+    array(
+        array('name'=>'postalcode'),
+    ),
+    null,
+    array(
+        'db-class' => 'PDO',
+        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
+        'user'=> 'web',
+        'password' => 'password'
+    ),
+    false
+);
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <title>INTER-Mediator Demo 1</title>
+    <script type="text/javascript" src="include.php"></script>
+</head>
+<body onload="INTERMediator.construct(true);">
+<table border="1">
+    <thead>
+    <tr><th>郵便番号</th><th>都道府県</th><th>住所</th></tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td class="IM[postalcode@f3]"></td>
+        <td class="IM[postalcode@f7]"></td>
+        <td><span class="IM[postalcode@f8]"></span><span class="IM[postalcode@f9]"></span></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
+
+
+            'records'=>'10',
+            'paging'=>true,
+
+
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+
+.IM_NAV_panel   {
+    background-color: #CCCCCC;
+    padding: 4px;
+    margin: 4px 0 4px 0;
+}
+
+span.IM_NAV_info    {
+    font-size: 9pt;
+    color: #333333;
+}
+
+span.IM_NAV_button  {
+    padding: 2px 4px 2px 4px;
+    margin: 2px 6px 2px 6px;
+    border-radius: 3px;
+    background-color: #000000;
+    color: yellow;
+    cursor: pointer;
+}
+
+span.IM_NAV_disabled    {
+    background-color: #666666;
+    color: #333333;
+}
+
+            'query'=>array(
+                array('field'=>'f3','value'=>'14%','operator'=>'like')
+            )
+
+            'sort'=>array(
+                array('field'=>'f3','direction'=>'desc')
+            ),
+
+select f3,f9,memo from postalcode where f3 like '14%' desc order by f3 limit 10;
+
+            'key'=>'id',
+
+            'repeat-control' => 'insert delete',
+            'default-values' => array(
+                array('field'=>'f3', 'value'=>'1500000'),
+                array('field'=>'f7', 'value'=>'東京都'),
+           )
 

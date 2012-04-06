@@ -70,10 +70,14 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         if ( $hashTable == null )   {
             return false;
         }
-        $uid = $this->authSupportGetUserIdFromUsername($username);
-        if ( $uid === false )   {
-            $this->errorMessageStore("User '{$username}' does't exist.");
-            return false;
+        if ( $username == 0 )   {
+            $uid = 0;
+        } else {
+            $uid = $this->authSupportGetUserIdFromUsername($username);
+            if ( $uid === false )   {
+                $this->errorMessageStore("User '{$username}' does't exist.");
+                return false;
+            }
         }
         $fx = new FX(
             $this->getDbSpecServer(),
@@ -132,10 +136,14 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         if ( $hashTable == null )   {
             return false;
         }
-        $uid = $this->authSupportGetUserIdFromUsername($username);
-        if ( $uid === false )   {
-            $this->errorMessageStore("User '{$username}' does't exist.");
-            return false;
+        if ( $username == "0" )   {
+            $uid = 0;
+        } else {
+            $uid = $this->authSupportGetUserIdFromUsername($username);
+            if ( $uid === false )   {
+                $this->errorMessageStore("User '{$username}' does't exist.");
+                return false;
+            }
         }
         $fx = new FX(
             $this->getDbSpecServer(),
@@ -279,6 +287,9 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         if ( $userTable == null )   {
             return false;
         }
+        if ( $username == 0 )   {
+            return 0;
+        }
 
         $fx = new FX(
             $this->getDbSpecServer(),
@@ -402,7 +413,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $this->getDbSpecProtocol());
         $tableInfo = $this->getDataSourceTargetArray();
         $fx->setCharacterEncoding('UTF-8');
-        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBUserPass($this->getAccessUser(), $this->getAccessPassword());
         $limitParam = 100000000;
         if (isset($tableInfo['records'])) {
             $limitParam = $tableInfo['records'];
@@ -546,7 +557,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $this->getDbSpecProtocol());
         $tableInfo = $this->getDataSourceTargetArray();
         $fx->setCharacterEncoding('UTF-8');
-        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBUserPass($this->getAccessUser(), $this->getAccessPassword());
         $fx->setDBData($this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1);
         //	$fx->AddDBParam( $keyFieldName, $data[$keyFieldName], 'eq' );
         foreach ($this->extraCriteria as $value) {
@@ -571,7 +582,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                 $recId = substr($key, 0, strpos($key, '.'));
 
                 $fx->setCharacterEncoding('UTF-8');
-                $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+                $fx->setDBUserPass($this->getAccessUser(), $this->getAccessPassword());
                 $fx->setDBData($this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1);
                 $fx->SetRecordID($recId);
                 $counter = 0;
@@ -637,7 +648,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $this->getDbSpecDataType(),
             $this->getDbSpecProtocol());
         $fx->setCharacterEncoding('UTF-8');
-        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBUserPass($this->getAccessUser(), $this->getAccessPassword());
         $fx->setDBData($this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1);
         $countFields = count($this->fieldsRequired);
         for ($i = 0; $i < $countFields; $i++) {
@@ -697,7 +708,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $this->getDbSpecDataType(),
             $this->getDbSpecProtocol());
         $fx->setCharacterEncoding('UTF-8');
-        $fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
+        $fx->setDBUserPass($this->getAccessUser(), $this->getAccessPassword());
         $fx->setDBData($this->getDbSpecDatabase(), $this->getEntityForUpdate(), 1);
 
         foreach ($this->extraCriteria as $value) {

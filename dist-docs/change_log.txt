@@ -16,6 +16,11 @@ Not big things
 - Change the password from login panel.
 - Users/Groups Administration user interface.
 
+Issues
+- The way to cancel (abandan) the editted data in a textfield. How can do it ?
+- Check any HTML editor component.
+- Check to mis-spelling terms in the definition file.
+
 Toward Ver.1.1
 - Database native authorization support.
 
@@ -56,9 +61,17 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.1.0.10 (Will be release soon.)
+Ver.1.0.11 (Will be release soon.)
 
-Ver.1.0.9 (Will be release soon.)
+Ver.1.0.10 (Will be release soon.)
+- Supported to autheticate with the account of the database engine.
+  But it has some serious issue, the row string of the password should be stored in a cookie.
+  This must be modify.
+- Modified Sample schema and FileMaker DB File for "INTER-Mediator Basic" course.
+- Sample Database for FileMaker 12 is added.
+- [Bug on 10.0.9 or before] Radio buttons can't show and update data, fixed it.
+
+Ver.1.0.9 (2012/3/23)
 - [BUG on 1.0.7] Fixed the authorization setting was wrongly recognized.
 - [BUG on 1.0.7] Fixed a cosmetic issue for the customezed navigation.
 - Replaced encodeURI function with encodeURIComponent function for POST method.
@@ -67,7 +80,7 @@ Ver.1.0.9 (Will be release soon.)
 Ver.1.0.8 (2012/3/21)
 - [INFO] Authentication part requires PHP 5.3.0 or above.
 - FileMaker Server: Authentication/Authorization Support (Maybe!? version).
-- Support FileMaker Server just after the version 11.
+- Supports FileMaker Server 12.
 - [BUG on 1.0.7] Fixed PDO database class didn't involve the 'query' parameters in a context.
 - [BUG on 1.0.7] Fixed error of the sample_schema.txt. (Thanks for Mr.Murakami.)
 

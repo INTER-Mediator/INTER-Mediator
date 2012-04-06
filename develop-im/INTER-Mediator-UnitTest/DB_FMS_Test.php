@@ -105,7 +105,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $hashedvalue = sha1( $password . $retrievedSalt) . bin2hex( $retrievedSalt );
         $calcuratedHash = sha1($challenge . $hashedvalue);
         $this->assertTrue(
-            $this->db_filemaker_fx->checkChallenge( $username, $calcuratedHash, "TEST" ), $testName);
+            $this->db_filemaker_fx->checkAuthorization( $username, $calcuratedHash, "TEST" ), $testName);
     }
 
     public function testAuthUser6()
@@ -126,7 +126,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         echo $hashedvalue;
 
         $this->assertTrue(
-            $this->db_filemaker_fx->checkChallenge( $username, sha1($challenge . $hashedvalue), $clientId ),
+            $this->db_filemaker_fx->checkAuthorization( $username, sha1($challenge . $hashedvalue), $clientId ),
             $testName);
     }
 
@@ -136,4 +136,19 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         echo var_export($groupArray);
         $this->assertTrue(count($groupArray)>0, $testName);
     }
+
+    public function testNativeUser()
+    {
+        $testName = "Native User Challenge Check";
+        $cliendId = "12345";
+
+        $challenge = $this->db_filemaker_fx->generateChallenge();
+        echo "\ngenerated=",$challenge;
+        $this->db_filemaker_fx->authSupportStoreChallenge(0, $challenge, $cliendId);
+
+        $this->assertTrue(
+            $this->db_filemaker_fx->checkChallenge( $challenge, $cliendId ), $testName);
+    }
+
+
 }

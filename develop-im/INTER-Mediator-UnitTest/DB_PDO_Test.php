@@ -99,7 +99,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $hashedvalue = sha1( $password . $retrievedSalt) . bin2hex( $retrievedSalt );
         $calcuratedHash = sha1($challenge . $hashedvalue);
         $this->assertTrue(
-            $this->db_pdo->checkChallenge( $username, $calcuratedHash, "TEST" ), $testName);
+            $this->db_pdo->checkAuthorization( $username, $calcuratedHash, "TEST" ), $testName);
     }
 
     public function testAuthUser6()
@@ -120,7 +120,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         echo $hashedvalue;
 
         $this->assertTrue(
-            $this->db_pdo->checkChallenge( $username, sha1($challenge . $hashedvalue), $clientId ),
+            $this->db_pdo->checkAuthorization( $username, sha1($challenge . $hashedvalue), $clientId ),
             $testName);
     }
 
@@ -130,4 +130,18 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         echo var_export($groupArray);
         $this->assertTrue(count($groupArray)>0, $testName);
     }
+
+    public function testNativeUser()
+    {
+        $testName = "Native User Challenge Check";
+        $cliendId = "12345";
+
+        $challenge = $this->db_pdo->generateChallenge();
+        echo "\ngenerated=",$challenge;
+        $this->db_pdo->authSupportStoreChallenge(0, $challenge, $cliendId);
+
+        $this->assertTrue(
+            $this->db_pdo->checkChallenge( $challenge, $cliendId ), $testName);
+    }
+
 }

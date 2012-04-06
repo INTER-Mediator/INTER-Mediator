@@ -158,6 +158,7 @@ CREATE TABLE postalcode	(
 	f7	VARCHAR(40),
 	f8	VARCHAR(15),
 	f9	VARCHAR(40),
+	memo	VARCHAR(200),
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8,
 		COLLATE utf8_unicode_ci

@@ -18,10 +18,14 @@ class DB_PDO extends DB_Base implements DB_Interface
         if ( $hashTable == null )   {
             return false;
         }
-        $uid = $this->authSupportGetUserIdFromUsername($username);
-        if ( $uid === false )   {
-            $this->errorMessageStore("User '{$username}' does't exist.");
-            return false;
+        if ( $username == 0 )   {
+            $uid = 0;
+        } else {
+            $uid = $this->authSupportGetUserIdFromUsername($username);
+            if ( $uid === false )   {
+                $this->errorMessageStore("User '{$username}' does't exist.");
+                return false;
+            }
         }
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
@@ -69,10 +73,14 @@ class DB_PDO extends DB_Base implements DB_Interface
         if ( $hashTable == null )   {
             return false;
         }
-        $uid = $this->authSupportGetUserIdFromUsername($username);
-        if ( $uid === false )   {
-            $this->errorMessageStore("User '{$username}' does't exist.");
-            return false;
+        if ( $username == "0" )   {
+            $uid = 0;
+        } else {
+            $uid = $this->authSupportGetUserIdFromUsername($username);
+            if ( $uid === false )   {
+                $this->errorMessageStore("User '{$username}' does't exist.");
+                return false;
+            }
         }
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
@@ -207,6 +215,9 @@ class DB_PDO extends DB_Base implements DB_Interface
         $userTable = $this->getUserTable();
         if ( $userTable == null )   {
             return false;
+        }
+        if ( $username == 0 )   {
+            return 0;
         }
 
         try {
@@ -482,8 +493,8 @@ class DB_PDO extends DB_Base implements DB_Interface
 
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
-                $this->getDbSpecUser(),
-                $this->getDbSpecPassword(),
+                $this->getAccessUser(),
+                $this->getAccessPassword(),
                 is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
         } catch (PDOException $ex) {
             $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
@@ -581,8 +592,8 @@ class DB_PDO extends DB_Base implements DB_Interface
         $tableInfo = $this->getDataSourceTargetArray();
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
-                $this->getDbSpecUser(),
-                $this->getDbSpecPassword(),
+                $this->getAccessUser(),
+                $this->getAccessPassword(),
                 is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
         } catch (PDOException $ex) {
             $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
@@ -656,46 +667,10 @@ class DB_PDO extends DB_Base implements DB_Interface
         $tableName = $this->getEntityForUpdate();
 
         $setClause = array();
-/*        $authorizeJudge = true;
-        if ( isset( $tableInfo['authentication'] )) {
-            $authorizeJudge = false;
-            $currentOperation = "new";
-            $authInfoField = $this->getFieldForAuthorization( $currentOperation );
-            $authInfoTarget = $this->getTargetForAuthorization( $currentOperation );
-            $authorizedUsers = $this->getAuthorizedUsers( $currentOperation );
-            $authorizedGroups = $this->getAuthorizedGroups( $currentOperation );
-            if ( $authInfoTarget != 'field-user' ) {
-                if ( count( $authorizedUsers ) > 0 && ! in_array( $this->currentUser, $authorizedUsers )) {
-                    $authorizeJudge = true;
-                    $setClause[] = "{$authInfoField}=" . $this->link->quote($this->currentUser);
-                }
-            } else if ( $authInfoTarget != 'field-group' ) {
-                if ( count( $authorizedGroups ) > 0 ) {
-                    $intersectGroups = array_intersect( $this->getGroupsOfUser( $this->currentUser ), $authorizedGroups );
-                    sort( $intersectGroups );
-                    if ( count( $intersectGroups ) > 0 )    {
-                        $authorizeJudge = true;
-                        $setClause[] = "{$authInfoField}=" . $this->link->quote( $intersectGroups[0] );
-                    }
-                }
-            } else {
-                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
-                if ( ! in_array( $this->currentUser, $authorizedUsers )
-                    && array_intersect( $belongGroups, $authorizedGroups )) {
-                    $authorizeJudge = true;
-                }
-            }
-        }
-
-        if ( !$authorizeJudge ) {
-            $this->debugMessage[] = 'No Authrization:';
-            return false;
-        }
-*/
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
-                $this->getDbSpecUser(),
-                $this->getDbSpecPassword(),
+                $this->getAccessUser(),
+                $this->getAccessPassword(),
                 is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
         } catch (PDOException $ex) {
             $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
@@ -762,8 +737,8 @@ class DB_PDO extends DB_Base implements DB_Interface
 
         try {
             $this->link = new PDO($this->getDbSpecDSN(),
-                $this->getDbSpecUser(),
-                $this->getDbSpecPassword(),
+                $this->getAccessUser(),
+                $this->getAccessPassword(),
                 is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
         } catch (PDOException $ex) {
             $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
