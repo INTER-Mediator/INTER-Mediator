@@ -165,9 +165,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             }
             // User and Password are suppried but...
             if ( $access != 'challenge') { // Not accessing getting a challenge.
-
                 if ( $isDBNative ) {
-
                     $keyArray = openssl_pkey_get_details( openssl_pkey_get_private( $generatedPrivateKey, $passPhrase ));
                     require_once( 'bi2php/biRSA.php' );
                     $keyDecrypt = new biRSAKeyPair( '0', bin2hex( $keyArray['rsa']['d']), bin2hex( $keyArray['rsa']['n']));
@@ -188,11 +186,14 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                         $access = "do nothing";
                         $requireAuthentication = true;
                     }
-
                 } else {
                     $noAuthorization = true;
                     $authorizedUsers = $dbInstance->getAuthorizedUsers($access);
                     $authorizedGroups = $dbInstance->getAuthorizedGroups($access);
+                    $dbInstance->setDebugMessage(
+                        "authorizedUsers=" . var_export($authorizedUsers, true)
+                        . "/authorizedGroups=" . var_export($authorizedGroups, true)
+                        ,2);
                     if ( (count($authorizedUsers) == 0 && count($authorizedGroups) == 0 )) {
                         $noAuthorization = false;
                     } else {
@@ -208,10 +209,12 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
                         }
                     }
                     if ($noAuthorization) {
+                        $dbInstance->setDebugMessage("Authorization doesn't meet the settings.");
                         $access = "do nothing";
                         $requireAuthentication = true;
                     }
                     if (!$dbInstance->checkAuthorization($paramAuthUser, $paramResponse, $clientId)) {
+                        $dbInstance->setDebugMessage("Authentication doesn't meet valid.{$paramAuthUser}/{$paramResponse}/{$clientId}");
                         // Not Authenticated!
                         $access = "do nothing";
                         $requireAuthentication = true;
@@ -220,30 +223,25 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             }
         }
         // Come here access=challenge or authenticated access
-
         switch ($access) {
             case 'select':
                 $result = $dbInstance->getFromDB($dbInstance->getTargetName());
-                echo implode('', $dbInstance->getMessagesForJS()),
-                    'dbresult=' . arrayToJS($result, ''), ';',
-                "resultCount='{$dbInstance->mainTableCount}';";
+                echo 'dbresult=' . arrayToJS($result, ''), ';', "resultCount='{$dbInstance->mainTableCount}';";
                 break;
             case 'update':
                 $dbInstance->setToDB($dbInstance->getTargetName());
-                echo implode('', $dbInstance->getMessagesForJS());
                 break;
             case 'new':
                 $result = $dbInstance->newToDB($dbInstance->getTargetName());
-                echo implode('', $dbInstance->getMessagesForJS()), "newRecordKeyValue='{$result}';";
+                echo "newRecordKeyValue='{$result}';";
                 break;
             case 'delete':
                 $dbInstance->deleteFromDB($dbInstance->getTargetName());
-                echo implode('', $dbInstance->getMessagesForJS());
                 break;
             case 'challenge':
-                echo implode('', $dbInstance->getMessagesForJS());
                 break;
         }
+        echo implode('', $dbInstance->getMessagesForJS());
         if ($requireAuthorization) {
             $generatedChallenge = $dbInstance->generateChallenge();
             $generatedUID = $dbInstance->generateClientId('');

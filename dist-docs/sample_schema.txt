@@ -136,8 +136,9 @@ CREATE TABLE history	(
 	id			INT  AUTO_INCREMENT,
 	person_id	INT,
 	description	VARCHAR(50),
-	startdate		DATE,
+	startdate	DATE,
 	enddate		DATE,
+	username    VARCHAR(20),
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8,
 		COLLATE utf8_unicode_ci

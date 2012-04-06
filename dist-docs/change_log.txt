@@ -16,10 +16,11 @@ Not big things
 - Change the password from login panel.
 - Users/Groups Administration user interface.
 
-Issues
+Issues / Known bugs
 - The way to cancel (abandan) the editted data in a textfield. How can do it ?
 - Check any HTML editor component.
 - Check to mis-spelling terms in the definition file.
+- New record on authorization active. (it should add the default values to the login user name)
 
 Toward Ver.1.1
 - Database native authorization support.

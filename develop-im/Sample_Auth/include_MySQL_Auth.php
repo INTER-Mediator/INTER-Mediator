@@ -58,7 +58,7 @@ IM_Entry(
                     'user' => array (),
                     'group' => array(),
                     'target' => 'record',
-                    'field' => 'field'
+                    'field' => 'username',
                 ),
             ),
         ),

@@ -86,7 +86,13 @@ var INTERMediator = {
             debugNode.appendChild(document.createTextNode("============ERROR MESSAGE on "+new Date()+"============"));
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.errorMessages.length; i++) {
-                debugNode.appendChild(document.createTextNode(INTERMediator.errorMessages[i]));
+                var lines = INTERMediator.errorMessages[i].split("\n");
+                for ( var j = 0 ; j < lines.length ; j++ )  {
+                    if ( j > 0 )    {
+                        debugNode.appendChild(document.createElement('br'));
+                    }
+                    debugNode.appendChild(document.createTextNode(lines[j]));
+                }
                 debugNode.appendChild(document.createElement('hr'));
             }
         }
@@ -114,8 +120,14 @@ var INTERMediator = {
             }
             debugNode.appendChild(document.createTextNode("============DEBUG INFO on "+new Date()+"============"));
             debugNode.appendChild(document.createElement('hr'));
-            for ( i = 0; i < INTERMediator.debugMessages.length; i++) {
-                debugNode.appendChild(document.createTextNode(INTERMediator.debugMessages[i]));
+            for (i = 0; i < INTERMediator.debugMessages.length; i++) {
+                var lines = INTERMediator.debugMessages[i].split("\n");
+                for ( var j = 0 ; j < lines.length ; j++ )  {
+                    if ( j > 0 )    {
+                        debugNode.appendChild(document.createElement('br'));
+                    }
+                    debugNode.appendChild(document.createTextNode(lines[j]));
+                }
                 debugNode.appendChild(document.createElement('hr'));
             }
         }

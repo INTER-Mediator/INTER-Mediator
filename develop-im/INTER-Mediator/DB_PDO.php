@@ -18,12 +18,12 @@ class DB_PDO extends DB_Base implements DB_Interface
         if ( $hashTable == null )   {
             return false;
         }
-        if ( $username == 0 )   {
+        if ( $username === 0 )   {
             $uid = 0;
         } else {
             $uid = $this->authSupportGetUserIdFromUsername($username);
             if ( $uid === false )   {
-                $this->errorMessageStore("User '{$username}' does't exist.");
+                $this->setDebugMessage("User '{$username}' does't exist.");
                 return false;
             }
         }
@@ -33,7 +33,7 @@ class DB_PDO extends DB_Base implements DB_Interface
                 $this->getDbSpecPassword(),
                 is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
         } catch (PDOException $ex) {
-            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            $this->setErrorMessage('Connection Error: ' . $ex->getMessage());
             return false;
         }
         $sql = "select id from {$hashTable} where user_id={$uid} and clienthost=" . $this->link->quote($clientId);
@@ -73,12 +73,12 @@ class DB_PDO extends DB_Base implements DB_Interface
         if ( $hashTable == null )   {
             return false;
         }
-        if ( $username == "0" )   {
+        if ( $username === 0 )   {
             $uid = 0;
         } else {
             $uid = $this->authSupportGetUserIdFromUsername($username);
             if ( $uid === false )   {
-                $this->errorMessageStore("User '{$username}' does't exist.");
+                $this->setDebugMessage("User '{$username}' does't exist.");
                 return false;
             }
         }
@@ -88,7 +88,7 @@ class DB_PDO extends DB_Base implements DB_Interface
                 $this->getDbSpecPassword(),
                 is_array($this->getDbSpecOption()) ? $this->getDbSpecOption() : array());
         } catch (PDOException $ex) {
-            $this->errorMessage[] = 'Connection Error: ' . $ex->getMessage();
+            $this->setErrorMessage('Connection Error: ' . $ex->getMessage());
             return false;
         }
         $sql = "select id,hash,expired from {$hashTable} "
@@ -216,7 +216,7 @@ class DB_PDO extends DB_Base implements DB_Interface
         if ( $userTable == null )   {
             return false;
         }
-        if ( $username == 0 )   {
+        if ( $username === 0 )   {
             return 0;
         }
 
@@ -332,7 +332,7 @@ class DB_PDO extends DB_Base implements DB_Interface
     function errorMessageStore($str)
     {
         $errorInfo = var_export($this->link->errorInfo(), true);
-        $this->errorMessage[] = "Query Error: [{$str}] Code={$this->link->errorCode()} Info = {$errorInfo}";
+        $this->setErrorMessage("Query Error: [{$str}] Code={$this->link->errorCode()} Info ={$errorInfo}");
     }
 
     /*

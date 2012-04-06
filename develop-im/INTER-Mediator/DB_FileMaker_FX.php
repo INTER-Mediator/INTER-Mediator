@@ -62,7 +62,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
     function errorMessageStore($str)
     {
         //$errorInfo = var_export($this->link->errorInfo(), true);
-        $this->errorMessage[] = "Query Error: [{$str}] Code= Info =";
+        $this->setErrorMessage("Query Error: [{$str}] Code= Info =");
     }
 
     function authSupportStoreChallenge($username, $challenge, $clientId)   {
@@ -70,12 +70,12 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         if ( $hashTable == null )   {
             return false;
         }
-        if ( $username == 0 )   {
+        if ( $username === 0 )   {
             $uid = 0;
         } else {
             $uid = $this->authSupportGetUserIdFromUsername($username);
             if ( $uid === false )   {
-                $this->errorMessageStore("User '{$username}' does't exist.");
+                $this->setDebugMessage("User '{$username}' does't exist.");
                 return false;
             }
         }
@@ -136,12 +136,12 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         if ( $hashTable == null )   {
             return false;
         }
-        if ( $username == "0" )   {
+        if ( $username === 0 )   {
             $uid = 0;
         } else {
             $uid = $this->authSupportGetUserIdFromUsername($username);
             if ( $uid === false )   {
-                $this->errorMessageStore("User '{$username}' does't exist.");
+                $this->setDebugMessage("User '{$username}' does't exist.");
                 return false;
             }
         }
@@ -287,7 +287,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         if ( $userTable == null )   {
             return false;
         }
-        if ( $username == 0 )   {
+        if ( $username === 0 )   {
             return 0;
         }
 
@@ -340,7 +340,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
     }
 
     function getGroupsOfUser( $user )   {
-        $corrTable = $this->getCorrTable();
+        $corrTable = $this->getGroupTable();
         if ( $corrTable == null )   {
             return array();
         }
@@ -368,7 +368,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
     var $firstLevel;
 
     function resolveGroup( $groupid ) {
-        $corrTable = $this->getCorrTable();
+        $corrTable = $this->getGroupTable();
 
         $this->fx->setCharacterEncoding('UTF-8');
         $this->fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());

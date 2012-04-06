@@ -443,9 +443,9 @@ abstract class DB_Base
     }
 
     /* Debug and Messages */
-    function setDebugMessage($str)
+    function setDebugMessage($str, $level = 1 )
     {
-        if ($this->debugLevel !== false ) {
+        if ($this->debugLevel !== false && $this->debugLevel >= $level ) {
             $this->debugMessage[] = $str;
         }
     }
@@ -469,17 +469,24 @@ abstract class DB_Base
         $q = '"';
         $returnData = array();
         foreach ($this->getErrorMessages() as $oneError) {
-            $returnData[] = "INTERMediator.errorMessages.push({$q}" . addslashes($oneError) . "{$q});";
+            $returnData[] = "INTERMediator.errorMessages.push({$q}"
+                . str_replace( "\n", " ", addslashes($oneError)) . "{$q});";
         }
         foreach ($this->getDebugMessages() as $oneError) {
-            $returnData[] = "INTERMediator.debugMessages.push({$q}" . addslashes($oneError) . "{$q});";
+            $returnData[] = "INTERMediator.debugMessages.push({$q}"
+                . str_replace( "\n", " ", addslashes($oneError)) . "{$q});";
         }
         return $returnData;
     }
 
     function setDebugMode( $val )
     {
-        $this->debugLevel = $val;
+        if ( $val === true )    {
+            $this->debugLevel = 1;
+        } else {
+            $this->debugLevel = $val;
+        }
+
     }
 
     /* Formatter processing */
@@ -574,15 +581,14 @@ abstract class DB_Base
     function getAuthorizedUsers( $operation = null )
     {
         $tableInfo = $this->getDataSourceTargetArray( );
-        $isGlobalDomain = ($operation == null) ? true : false;
         $usersArray = array();
-        if ( $isGlobalDomain && isset( $this->authentication['user'] )) {
+        if ( isset( $this->authentication['user'] )) {
             $usersArray = array_merge( $usersArray, $this->authentication['user'] );
         }
-        if ( ! $isGlobalDomain && isset( $tableInfo['authentication']['all']['user'] )) {
+        if ( isset( $tableInfo['authentication']['all']['user'] )) {
             $usersArray = array_merge( $usersArray, $tableInfo['authentication']['all']['user'] );
         }
-        if ( ! $isGlobalDomain && isset( $tableInfo['authentication'][ $operation ]['user'] )) {
+        if ( isset( $tableInfo['authentication'][ $operation ]['user'] )) {
             $usersArray = array_merge( $usersArray, $tableInfo['authentication'][ $operation ]['user'] );
         }
         return $usersArray;
@@ -591,15 +597,14 @@ abstract class DB_Base
     function getAuthorizedGroups( $operation = null )
     {
         $tableInfo = $this->getDataSourceTargetArray( );
-        $isGlobalDomain = ($operation == null) ? true : false;
         $groupsArray = array();
-        if ( $isGlobalDomain && isset( $this->authentication['group'] )) {
+        if ( isset( $this->authentication['group'] )) {
             $groupsArray = array_merge( $groupsArray, $this->authentication['group'] );
         }
-        if ( ! $isGlobalDomain && isset( $tableInfo['authentication']['all']['group'] )) {
+        if ( isset( $tableInfo['authentication']['all']['group'] )) {
             $groupsArray = array_merge( $groupsArray, $tableInfo['authentication']['all']['group'] );
         }
-        if ( ! $isGlobalDomain && isset( $tableInfo['authentication'][ $operation ]['group'] )) {
+        if ( isset( $tableInfo['authentication'][ $operation ]['group'] )) {
             $groupsArray = array_merge( $groupsArray, $tableInfo['authentication'][ $operation ]['group'] );
         }
         return $groupsArray;
@@ -610,7 +615,7 @@ abstract class DB_Base
     function saveChallenge( $username, $challenge, $clientId )
     {
         $this->authSupportStoreChallenge($username, $challenge, $clientId);
-        return $username == 0 ? "" : $this->authSupportGetSalt($username);
+        return $username === 0 ? "" : $this->authSupportGetSalt($username);
     }
 
     function checkAuthorization( $username, $hashedvalue, $clientId )
@@ -620,8 +625,11 @@ abstract class DB_Base
         $this->removeOutdatedChallenges();
 
         $storedChalenge = $this->authSupportRetrieveChallenge($username, $clientId);
+        $this->setDebugMessage("[checkAuthorization]storedChalenge={$storedChalenge}", 2);
+
         if ( strlen($storedChalenge) == 24 ) {   // ex.fc0d54312ce33c2fac19d758
-            $hashedPassword = $this->authSupportRetrieveHashedPassword($username, $clientId);
+            $hashedPassword = $this->authSupportRetrieveHashedPassword($username);
+            $this->setDebugMessage("[checkAuthorization]hashedPassword={$hashedPassword}", 2);
             if ( strlen($hashedPassword) > 0 ) {
                 if ( $hashedvalue == sha1($storedChalenge . $hashedPassword) ) {
                     $returnValue = true;

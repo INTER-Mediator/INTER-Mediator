@@ -181,11 +181,11 @@ var INTERMediatorOnPage = {
                 }
             }
             if ( INTERMediatorOnPage.isNativeAuth ) {
-                INTERMediatorOnPage.authHashedPassword =
-                    inputPassword;
+                INTERMediatorOnPage.authHashedPassword = inputPassword;
             } else {
                 INTERMediatorOnPage.authHashedPassword
-                    = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
+                    = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
+                    + INTERMediatorOnPage.authUserHexSalt;
             }
 
             if ( INTERMediatorOnPage.authUser.length > 0 )  {   // Authentication succeed, Store coockies.
