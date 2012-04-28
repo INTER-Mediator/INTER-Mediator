@@ -197,6 +197,29 @@ var INTERMediaotr_DBAdapter = {
         return returnValue;
     },
 
+    db_queryWithAuth:function (args, completion) {
+        var returnValue = false;
+        INTERMediatorOnPage.retrieveAuthInfo();
+        try {
+            returnValue =INTERMediaotr_DBAdapter.db_query(args);
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requireAuthentication) {
+                    if (!INTERMediatorOnPage.isComplementAuthData()) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(
+                            function () {
+                                returnValue = INTERMediaotr_DBAdapter.db_queryWithAuth(arg, completion);
+                            });
+                        return;
+                    }
+                }
+            }
+        }
+        completion();
+    },
+
     /*
      db_update
      Update the database. The parameter of this function should be the object as below:
@@ -239,6 +262,29 @@ var INTERMediaotr_DBAdapter = {
         return result.dbresult;
     },
 
+    db_updateWithAuth:function (args, completion) {
+        var returnValue = false;
+        INTERMediatorOnPage.retrieveAuthInfo();
+        try {
+            returnValue =INTERMediaotr_DBAdapter.db_update(args);
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requireAuthentication) {
+                    if (!INTERMediatorOnPage.isComplementAuthData()) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(
+                            function () {
+                                returnValue = INTERMediaotr_DBAdapter.db_updateWithAuth(arg, completion);
+                            });
+                        return;
+                    }
+                }
+            }
+        }
+        completion();
+    },
+
     /*
      db_delete
      Delete the record. The parameter of this function should be the object as below:
@@ -270,6 +316,28 @@ var INTERMediaotr_DBAdapter = {
 //        INTERMediator.flushMessage();
     },
 
+    db_deleteWithAuth:function (args, completion) {
+        var returnValue = false;
+        INTERMediatorOnPage.retrieveAuthInfo();
+        try {
+            returnValue =INTERMediaotr_DBAdapter.db_delete(args);
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requireAuthentication) {
+                    if (!INTERMediatorOnPage.isComplementAuthData()) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(
+                            function () {
+                                returnValue = INTERMediaotr_DBAdapter.db_deleteWithAuth(arg, completion);
+                            });
+                        return;
+                    }
+                }
+            }
+        }
+        completion();
+    },
     /*
      db_createRecord
      Create a record. The parameter of this function should be the object as below:
@@ -292,5 +360,28 @@ var INTERMediaotr_DBAdapter = {
         var result = this.server_access( params, 1018, 1016 );
 //        INTERMediator.flushMessage();
         return result.newRecordKeyValue;
+    },
+
+    db_createRecordWithAuth:function (args, completion) {
+        var returnValue = false;
+        INTERMediatorOnPage.retrieveAuthInfo();
+        try {
+            returnValue =INTERMediaotr_DBAdapter.db_createRecord(args);
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requireAuthentication) {
+                    if (!INTERMediatorOnPage.isComplementAuthData()) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(
+                            function () {
+                                returnValue = INTERMediaotr_DBAdapter.db_createRecordWithAuth(arg, completion);
+                        });
+                        return;
+                    }
+                }
+            }
+        }
+        completion();
     }
-};
+}

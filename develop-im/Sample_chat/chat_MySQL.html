@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <script src="include_MySQL.php"></script>
+    <script type="text/javascript">
+        window.onload = function()  {
+            INTERMediator.construct(true);
+        }
+
+        function postMessage(){
+            INTERMediaotr_DBAdapter.db_createRecordWithAuth({
+                        name:"chat",
+                        dataset:[
+                            //    {field:"user",value: document.getElementById("user").value},
+                            //    {field:"groupname",value: document.getElementById("groupname").value},
+                            {field:"message",value: document.getElementById("message").value}
+                        ]},
+                    function(){
+                        INTERMediator.construct(false, 0);
+                        document.getElementById("message").value = "";
+                        INTERMediator.flushMessage();
+                    });
+        }
+
+        function logout(){
+            INTERMediatorOnPage.logout();
+            INTERMediator.construct(true);
+
+        }
+    </script>
+</head>
+<body>
+<h1>Simple but Authorized Chat</h1>
+<table>
+    <thead>
+    <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+            <input type="text" id="message" />
+            <button onclick="postMessage()">Post</button>
+            <button onclick="logout()">Logout</button>
+        </td>
+    </tr>
+    <tr>
+        <th>Date and Time</th>
+        <th>User</th>
+        <th>Group</th>
+        <th>Message</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td class="IM[chat@postdt]"></td>
+        <td class="IM[chat@user]"></td>
+        <td class="IM[chat@groupname]"></td>
+        <td class="IM[chat@message]"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

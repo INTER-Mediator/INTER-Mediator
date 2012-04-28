@@ -199,4 +199,12 @@ function hex2bin_for53( $str )
 {
     return pack("H*", $str);
 }
+
+function randamString( $digit ) {
+    $resultStr = '';
+    for ( $i = 0 ; $i < $digit ; $i++ ) {
+        $resultStr .= chr( rand(20, 126));
+    }
+    return $resultStr;
+}
 ?>

@@ -469,9 +469,41 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                 }
             }
         }
-        //    if ( $this->parentKeyValue != null && isset( $tableInfo['foreign-key'] ))	{
-        //       $fx->AddDBParam( $tableInfo['foreign-key'], $this->parentKeyValue, 'eq' );
-        //   }
+
+        if ( isset( $tableInfo['authentication'] )) {
+            $authFailure = FALSE;
+            $authInfoField = $this->getFieldForAuthorization( "load" );
+            $authInfoTarget = $this->getTargetForAuthorization( "load" );
+            if ( $authInfoTarget == 'field-user' ) {
+                if ( strlen( $this->currentUser ) == 0 )    {
+                    $authFailure = true;
+                } else {
+                    $fx->AddDBParam($authInfoField, $this->currentUser, "eq");
+                    $hasFindParams = true;
+                }
+            } else if ( $authInfoTarget == 'field-group' ) {
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                $groupCriteria = array();
+                if ( strlen( $this->currentUser ) == 0 || count( $groupCriteria ) == 0 )    {
+                    $authFailure = true;
+                } else {
+                    $fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
+                    $hasFindParams = true;
+                }
+            } else {
+                $authorizedUsers = $this->getAuthorizedUsers( "load" );
+                $authorizedGroups = $this->getAuthorizedGroups( "load" );
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                if ( ! in_array( $this->currentUser, $authorizedUsers )
+                    && array_intersect( $belongGroups, $authorizedGroups )) {
+                    $authFailure = true;
+                }
+            }
+            if ( $authFailure ) {
+                return null;
+            }
+        }
+
         if (isset($tableInfo['sort'])) {
             foreach ($tableInfo['sort'] as $condition) {
                 if (isset($condition['direction'])) {
@@ -565,6 +597,37 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $convertedValue
                 = $this->formatterToDB("{$contextName}{$this->separator}{$value['field']}", $value['value']);
             $fx->AddDBParam($value['field'], $convertedValue, $op);
+        }
+        if ( isset( $tableInfo['authentication'] )) {
+            $authFailure = FALSE;
+            $authInfoField = $this->getFieldForAuthorization( "update" );
+            $authInfoTarget = $this->getTargetForAuthorization( "update" );
+            if ( $authInfoTarget == 'field-user' ) {
+                if ( strlen( $this->currentUser ) == 0 )    {
+                    $authFailure = true;
+                } else {
+                    $fx->AddDBParam($authInfoField, $this->currentUser, "eq");
+                }
+            } else if ( $authInfoTarget == 'field-group' ) {
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                $groupCriteria = array();
+                if ( strlen( $this->currentUser ) == 0 || count( $groupCriteria ) == 0 )    {
+                    $authFailure = true;
+                } else {
+                    $fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
+                }
+            } else {
+                $authorizedUsers = $this->getAuthorizedUsers( "update" );
+                $authorizedGroups = $this->getAuthorizedGroups( "update" );
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                if ( ! in_array( $this->currentUser, $authorizedUsers )
+                    && array_intersect( $belongGroups, $authorizedGroups )) {
+                    $authFailure = true;
+                }
+            }
+            if ( $authFailure ) {
+                return false;
+            }
         }
         $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if ( ! is_array($result) )   {
@@ -660,6 +723,27 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
                 $fx->AddDBParam($field, $this->formatterToDB($filedInForm, $convVal));
             }
         }
+        if (isset($tableInfo['default-values'])) {
+            foreach( $tableInfo['default-values'] as $itemDef ) {
+                $field = $itemDef['field'];
+                $value = $itemDef['value'];
+                if ($field != $keyFieldName) {
+                    $filedInForm = "{$this->getEntityForUpdate()}{$this->separator}{$field}";
+                    $convVal = $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value);
+                    $fx->AddDBParam($field, $this->formatterToDB($filedInForm, $convVal));
+                }
+            }
+        }
+        if ( isset( $tableInfo['authentication'] )) {
+            $authInfoField = $this->getFieldForAuthorization( "new" );
+            $authInfoTarget = $this->getTargetForAuthorization( "new" );
+            if ( $authInfoTarget == 'field-user' ) {
+                $fx->AddDBParam( $authInfoField, strlen($this->currentUser)==0 ? randamString(10) : $this->currentUser );
+             } else if ( $authInfoTarget == 'field-group' ) {
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                $fx->AddDBParam( $authInfoField, strlen($belongGroups[0])==0 ? randamString(10) : $belongGroups[0] );
+            }
+        }
         if (isset($tableInfo['global'])) {
             foreach ($tableInfo['global'] as $condition) {
                 if ($condition['db-operation'] == 'new') {
@@ -714,6 +798,39 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         foreach ($this->extraCriteria as $value) {
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
             $fx->AddDBParam($value['field'], $value['value'], $op);
+        }
+        if ( isset( $tableInfo['authentication'] )) {
+            $authFailure = FALSE;
+            $authInfoField = $this->getFieldForAuthorization( "delete" );
+            $authInfoTarget = $this->getTargetForAuthorization( "delete" );
+            if ( $authInfoTarget == 'field-user' ) {
+                if ( strlen( $this->currentUser ) == 0 )    {
+                    $authFailure = true;
+                } else {
+                    $fx->AddDBParam($authInfoField, $this->currentUser, "eq");
+                    $hasFindParams = true;
+                }
+            } else if ( $authInfoTarget == 'field-group' ) {
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                $groupCriteria = array();
+                if ( strlen( $this->currentUser ) == 0 || count( $groupCriteria ) == 0 )    {
+                    $authFailure = true;
+                } else {
+                    $fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
+                    $hasFindParams = true;
+                }
+            } else {
+                $authorizedUsers = $this->getAuthorizedUsers( "delete" );
+                $authorizedGroups = $this->getAuthorizedGroups( "delete" );
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                if ( ! in_array( $this->currentUser, $authorizedUsers )
+                    && array_intersect( $belongGroups, $authorizedGroups )) {
+                    $authFailure = true;
+                }
+            }
+            if ( $authFailure ) {
+                return false;
+            }
         }
         $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if ( ! is_array($result) )   {

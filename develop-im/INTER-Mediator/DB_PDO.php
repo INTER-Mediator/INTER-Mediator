@@ -435,24 +435,28 @@ class DB_PDO extends DB_Base implements DB_Interface
         if ( isset( $tableInfo['authentication'] )) {
             $authInfoField = $this->getFieldForAuthorization( $currentOperation );
             $authInfoTarget = $this->getTargetForAuthorization( $currentOperation );
-            $authorizedUsers = $this->getAuthorizedUsers( $currentOperation );
-            $authorizedGroups = $this->getAuthorizedGroups( $currentOperation );
-            if ( $authInfoTarget != 'field-user' ) {
-                if ( count( $authorizedUsers ) > 0 && ! in_array( $this->currentUser, $authorizedUsers )) {
+            if ( $authInfoTarget == 'field-user' ) {
+                if ( strlen( $this->currentUser ) == 0 )    {
+                    $queryClause = 'FALSE';
+                } else {
                     $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
                         . "({$authInfoField}=" . $this->link->quote( $this->currentUser ) . ")";
                 }
-            } else if ( $authInfoTarget != 'field-group' ) {
-                if ( count( $authorizedGroups ) > 0 ) {
-                    $belongGroups = $this->getGroupsOfUser( $this->currentUser );
-                    $groupCriteria = array();
-                    foreach ( $belongGroups as $oneGroup )  {
-                        $groupCriteria[] = "{$authInfoField}=" . $this->link->quote( $oneGroup );
-                    }
+            } else if ( $authInfoTarget == 'field-group' ) {
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                $groupCriteria = array();
+                foreach ( $belongGroups as $oneGroup )  {
+                    $groupCriteria[] = "{$authInfoField}=" . $this->link->quote( $oneGroup );
+                }
+                if ( strlen( $this->currentUser ) == 0 || count( $groupCriteria ) == 0 )    {
+                    $queryClause = 'FALSE';
+                } else {
                     $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
-                        . "(" . implude( ' OR ', $groupCriteria ) . ")";
+                        . "(" . implode( ' OR ', $groupCriteria ) . ")";
                 }
             } else {
+                $authorizedUsers = $this->getAuthorizedUsers( $currentOperation );
+                $authorizedGroups = $this->getAuthorizedGroups( $currentOperation );
                 $belongGroups = $this->getGroupsOfUser( $this->currentUser );
                 if ( ! in_array( $this->currentUser, $authorizedUsers )
                     && array_intersect( $belongGroups, $authorizedGroups )) {
@@ -700,10 +704,30 @@ class DB_PDO extends DB_Base implements DB_Interface
             $convVal = $this->link->quote($this->formatterToDB($filedInForm, $convVal));
             $setClause[] = "{$field}={$convVal}";
         }
+        if (isset($tableInfo['default-values'])) {
+            foreach( $tableInfo['default-values'] as $itemDef ) {
+                $field = $itemDef['field'];
+                $value = $itemDef['value'];
+                $filedInForm = "{$tableName}{$this->separator}{$field}";
+                $convVal = (is_array($value)) ? implode("\n", $value) : $value;
+                $convVal = $this->link->quote($this->formatterToDB($filedInForm, $convVal));
+                $setClause[] = "{$field}={$convVal}";
+            }
+        }
+        if ( isset( $tableInfo['authentication'] )) {
+            $authInfoField = $this->getFieldForAuthorization( "new" );
+            $authInfoTarget = $this->getTargetForAuthorization( "new" );
+            if ( $authInfoTarget == 'field-user' ) {
+                $setClause[] = "{$authInfoField}=" . $this->link->quote(
+                    strlen($this->currentUser)==0 ? randamString(10) : $this->currentUser );
+            } else if ( $authInfoTarget == 'field-group' ) {
+                $belongGroups = $this->getGroupsOfUser( $this->currentUser );
+                $setClause[] = "{$authInfoField}=" . $this->link->quote(
+                    strlen($belongGroups[0])==0 ? randamString(10) : $belongGroups[0] );
+            }
+        }
 
-
-        $setClause = (count($setClause) == 0) ? "{$tableInfo['key']}=DEFAULT"
-            : implode(',', $setClause);
+        $setClause = (count($setClause) == 0) ? "{$tableInfo['key']}=DEFAULT" : implode(',', $setClause);
         $sql = "INSERT {$tableName} SET {$setClause}";
         $this->setDebugMessage( $sql );
         $result = $this->link->query($sql);
