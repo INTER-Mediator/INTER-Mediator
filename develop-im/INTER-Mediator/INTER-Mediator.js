@@ -41,14 +41,15 @@ var INTERMediator = {
     // Remembering Objects
     updateRequiredObject:null,
     /*
-     {   id-value:               // For the node of this id attribute.
-     {targetattribute:,      // about target
-     initialvalue:,          // The value from database.
-     name:
-     field:id,               // about target field
-     keying:id=1,            // The key field specifier to identify this record.
-     foreignfield:,          // foreign field name
-     foreignvalue:, }        // foreign field value
+     {id-value:{               // For the node of this id attribute.
+         targetattribute:,      // about target
+         initialvalue:,          // The value from database.
+         name:
+         field:id,               // about target field
+         keying:id=1,            // The key field specifier to identify this record.
+         foreignfield:,          // foreign field name
+         foreignvalue:,},        // foreign field value
+     ...}
      */
     keyFieldObject:null,
     /* inside of keyFieldObject
@@ -59,7 +60,7 @@ var INTERMediator = {
      target:xxxx}       // Related (depending) node's id attribute value.
      */
     rootEnclosure:null,
-    // Storing to retrieve the page to initial condtion.
+    // Storing to retrieve the page to initial condition.
     // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
     errorMessages:[],
     debugMessages:[],
@@ -144,6 +145,43 @@ var INTERMediator = {
      */
     valueChange:function (idValue) {
         var changedObj = document.getElementById(idValue);
+
+        var linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
+        if ( linkInfo.length > 0 )  {
+            var matched = linkInfo[0].match(/([^@]+)/);
+            var context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(),'name',matched[1]);
+            if ( context["validation"] != null )    {
+                for ( var i = 0 ; i < linkInfo.length ; i++ )   {
+                    matched =linkInfo[i].match(/([^@]+)@([^@]+)/);
+                    for ( var index in context["validation"] )  {
+                        if ( context["validation"][index]["field"] == matched[2] )  {
+                            var checkFunction = function()  {
+                                var target = changedObj;
+                                var value = changedObj.value;
+                                var result = false;
+                                eval( "result = " + context["validation"][index]["rule"] );
+                                if ( ! result ) {
+                                    alert( context["validation"][index]["message"] );
+                                    changedObj.value = INTERMediator.updateRequiredObject[idValue]["initialvalue"];
+                                    changedObj.focus();
+                                    if ( INTERMediatorOnPage.doAfterValidationFailure != null ) {
+                                        INTERMediatorOnPage.doAfterValidationFailure(target,linkInfo[i]);
+                                    }
+                                } else {
+                                    if ( INTERMediatorOnPage.doAfterValidationSucceed != null ) {
+                                        INTERMediatorOnPage.doAfterValidationSucceed(target,linkInfo[i]);
+                                    }
+                                }
+                                return result;
+                            };
+                            if ( ! checkFunction()) {
+                                return;
+                            };
+                        }
+                    }
+                }
+            }
+        }
         if (changedObj != null) {
             if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
                 INTERMediator.updateRequiredObject[idValue]['edit'] = true;

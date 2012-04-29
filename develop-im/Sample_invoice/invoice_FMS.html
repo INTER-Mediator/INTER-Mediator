@@ -26,6 +26,10 @@
             }
         };
 
+        INTERMediatorOnPage.doAfterValidationFailure = function(target,linkInfo) {
+            modLine(target);
+        };
+
         function modLine(target)	{
             if(target==null)    {
                 return;

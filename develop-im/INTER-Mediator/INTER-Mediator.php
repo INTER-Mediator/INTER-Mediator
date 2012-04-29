@@ -123,6 +123,11 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
     } else {
 
         $dbClassName = 'DB_' . (isset($dbspec['db-class']) ? $dbspec['db-class'] : (isset ($dbClass) ? $dbClass : ''));
+        foreach( $datasrc as $context ) {
+            if( $context['name'] = $_POST['name'] && isset( $context['db-class'] )) {
+                $dbClassName = 'DB_' . $context['db-class'];
+            }
+        }
         require_once("{$dbClassName}.php");
         $dbInstance = null;
         $dbInstance = new $dbClassName();

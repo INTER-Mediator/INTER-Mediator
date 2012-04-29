@@ -32,6 +32,18 @@ IM_Entry(
              'default-values' => array(
                  array('field' => 'product_id', 'value' => 1),
              ),
+             'validation' => array(
+                 array(
+                     'field' =>'qty',
+                     'rule'=>'value>=0 && value<100',
+                     'message'=>'Quantity should be between 1..99.'
+                 ),
+                 array(
+                     'field' =>'unitprice',
+                     'rule'=>'value>=0 && value<10000',
+                     'message'=>'Unit price should be between 1.. 9999.'
+                 ),
+             ),
          ),
          array(
              'name' => 'product',

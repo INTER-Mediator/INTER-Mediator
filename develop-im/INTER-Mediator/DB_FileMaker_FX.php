@@ -91,7 +91,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         $fx->AddDBParam( 'clienthost', $clientId , 'eq');
         $result = $fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if ( ! is_array($result) )   {
-            $this->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            $this->setDebugMessage( get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
         $this->setDebugMessage( $result['URL'] );
@@ -306,7 +306,7 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             return false;
         }
         $this->setDebugMessage( $result['URL'] );
-        foreach ($result['data'] as $key => $row) {
+        foreach ($result['data'] as $row) {
             return $row['id'][0];
         }
         return false;
@@ -446,12 +446,12 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
         }
 
         if (isset($this->extraCriteria)) {
-            foreach ($this->extraCriteria as $value) {
+            foreach ($this->extraCriteria as $condition) {
                 if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
                     $fx->SetLogicalOR();
                 } else {
-                    $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-                    $fx->AddDBParam($value['field'], $value['value'], $op);
+                    $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
+                    $fx->AddDBParam($condition['field'], $condition['value'], $op);
                     $hasFindParams = true;
                 }
             }
@@ -738,10 +738,10 @@ class DB_FileMaker_FX extends DB_Base implements DB_Interface
             $authInfoField = $this->getFieldForAuthorization( "new" );
             $authInfoTarget = $this->getTargetForAuthorization( "new" );
             if ( $authInfoTarget == 'field-user' ) {
-                $fx->AddDBParam( $authInfoField, strlen($this->currentUser)==0 ? randamString(10) : $this->currentUser );
+                $fx->AddDBParam( $authInfoField, strlen($this->currentUser)==0 ? randomString(10) : $this->currentUser );
              } else if ( $authInfoTarget == 'field-group' ) {
                 $belongGroups = $this->getGroupsOfUser( $this->currentUser );
-                $fx->AddDBParam( $authInfoField, strlen($belongGroups[0])==0 ? randamString(10) : $belongGroups[0] );
+                $fx->AddDBParam( $authInfoField, strlen($belongGroups[0])==0 ? randomString(10) : $belongGroups[0] );
             }
         }
         if (isset($tableInfo['global'])) {

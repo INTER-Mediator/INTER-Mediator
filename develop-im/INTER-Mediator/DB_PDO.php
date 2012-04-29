@@ -719,11 +719,11 @@ class DB_PDO extends DB_Base implements DB_Interface
             $authInfoTarget = $this->getTargetForAuthorization( "new" );
             if ( $authInfoTarget == 'field-user' ) {
                 $setClause[] = "{$authInfoField}=" . $this->link->quote(
-                    strlen($this->currentUser)==0 ? randamString(10) : $this->currentUser );
+                    strlen($this->currentUser)==0 ? randomString(10) : $this->currentUser );
             } else if ( $authInfoTarget == 'field-group' ) {
                 $belongGroups = $this->getGroupsOfUser( $this->currentUser );
                 $setClause[] = "{$authInfoField}=" . $this->link->quote(
-                    strlen($belongGroups[0])==0 ? randamString(10) : $belongGroups[0] );
+                    strlen($belongGroups[0])==0 ? randomString(10) : $belongGroups[0] );
             }
         }
 

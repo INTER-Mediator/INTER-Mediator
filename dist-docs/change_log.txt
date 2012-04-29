@@ -59,6 +59,8 @@ Change Log
 =================================
 
 Ver.2.1 (Will be release soon.)
+- Validation is supported.
+- The parameters for 3rd parameter of IM_Entry function can be specified in any context (1st parameter of IM_Entry).
 
 Ver.2 ====================================================================
 - The version numbering policy is changed.

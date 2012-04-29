@@ -200,7 +200,7 @@ function hex2bin_for53( $str )
     return pack("H*", $str);
 }
 
-function randamString( $digit ) {
+function randomString( $digit ) {
     $resultStr = '';
     for ( $i = 0 ; $i < $digit ; $i++ ) {
         $resultStr .= chr( rand(20, 126));

@@ -128,33 +128,45 @@ abstract class DB_Base
             include( $currentDirParam );
         }
 
-        $this->setDbSpecServer(
-            isset($dbspec['server']) ? $dbspec['server'] : (isset ($dbServer) ? $dbServer : ''));
-        $this->setDbSpecPort(
-            isset($dbspec['port']) ? $dbspec['port'] : (isset ($dbPort) ? $dbPort : ''));
-        $this->setDbSpecUser(
-            isset($dbspec['user']) ? $dbspec['user'] : (isset ($dbUser) ? $dbUser : ''));
-        $this->setDbSpecPassword(
-            isset($dbspec['password']) ? $dbspec['password'] : (isset ($dbPassword) ? $dbPassword : ''));
-        $this->setDbSpecDataType(
-            isset($dbspec['datatype']) ? $dbspec['datatype'] : (isset ($dbDataType) ? $dbDataType : ''));
-        $this->setDbSpecDatabase(
-            isset($dbspec['database']) ? $dbspec['database'] : (isset ($dbDatabase) ? $dbDatabase : ''));
-        $this->setDbSpecProtocol(
-            isset($dbspec['protocol']) ? $dbspec['protocol'] : (isset ($dbProtocol) ? $dbProtocol : ''));
-        $this->setDbSpecOption(
-            isset($dbspec['option']) ? $dbspec['option'] : (isset ($dbOption) ? $dbOption : ''));
-        $this->setDbSpecDSN(
-            isset($dbspec['dsn']) ? $dbspec['dsn'] : (isset ($dbDSN) ? $dbDSN : ''));
-
         $this->setDataSource( $datasrc );
-        $this->setCurrentUser( isset($_POST['authuser']) ? $_POST['authuser'] : null );
-    //    $this->setCurrentChallenge( isset($_POST['challenge']) ? $_POST['challenge'] : null );
-        $this->authentication = isset($options['authentication']) ? $options['authentication'] : null;
 
         $this->setSeparator( isset($options['separator']) ? $options['separator'] : '@');
         $this->setFormatter( isset($options['formatter']) ? $options['formatter'] : null);
         $this->setTargetName( isset($_POST['name']) ? $_POST['name'] : null );
+
+        $context = $this->getDataSourceTargetArray();
+
+        $this->setDbSpecServer(
+            isset($context['server']) ? $context['server'] :
+                (isset($dbspec['server']) ? $dbspec['server'] : (isset ($dbServer) ? $dbServer : '')));
+        $this->setDbSpecPort(
+            isset($context['port']) ? $context['port'] :
+                (isset($dbspec['port']) ? $dbspec['port'] : (isset ($dbPort) ? $dbPort : '')));
+        $this->setDbSpecUser(
+            isset($context['user']) ? $context['user'] :
+                (isset($dbspec['user']) ? $dbspec['user'] : (isset ($dbUser) ? $dbUser : '')));
+        $this->setDbSpecPassword(
+            isset($context['password']) ? $context['password'] :
+                (isset($dbspec['password']) ? $dbspec['password'] : (isset ($dbPassword) ? $dbPassword : '')));
+        $this->setDbSpecDataType(
+            isset($context['datatype']) ? $context['datatype'] :
+                (isset($dbspec['datatype']) ? $dbspec['datatype'] : (isset ($dbDataType) ? $dbDataType : '')));
+        $this->setDbSpecDatabase(
+            isset($context['database']) ? $context['database'] :
+                (isset($dbspec['database']) ? $dbspec['database'] : (isset ($dbDatabase) ? $dbDatabase : '')));
+        $this->setDbSpecProtocol(
+            isset($context['protocol']) ? $context['protocol'] :
+                (isset($dbspec['protocol']) ? $dbspec['protocol'] : (isset ($dbProtocol) ? $dbProtocol : '')));
+        $this->setDbSpecOption(
+            isset($context['option']) ? $context['option'] :
+                (isset($dbspec['option']) ? $dbspec['option'] : (isset ($dbOption) ? $dbOption : '')));
+        $this->setDbSpecDSN(
+            isset($context['dsn']) ? $context['dsn'] :
+                (isset($dbspec['dsn']) ? $dbspec['dsn'] : (isset ($dbDSN) ? $dbDSN : '')));
+
+        $this->setCurrentUser( isset($_POST['authuser']) ? $_POST['authuser'] : null );
+    //    $this->setCurrentChallenge( isset($_POST['challenge']) ? $_POST['challenge'] : null );
+        $this->authentication = isset($options['authentication']) ? $options['authentication'] : null;
 
         $this->setStart( isset($_POST['start']) ? $_POST['start'] : 0 );
         $this->setRecordCount( isset($_POST['records']) ? $_POST['records'] : 10000000 );
