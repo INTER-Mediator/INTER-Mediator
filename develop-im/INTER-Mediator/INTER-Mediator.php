@@ -78,8 +78,7 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         } else {
             $messageClass = new MessageStrings();
         }
-        echo "INTERMediatorOnPage.getMessages = function(){return ",
-        arrayToJS($messageClass->getMessages(), ''), ";};";
+        echo "INTERMediatorOnPage.getMessages = function(){return ", arrayToJS($messageClass->getMessages(), ''), ";};";
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }

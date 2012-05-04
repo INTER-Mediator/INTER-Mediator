@@ -9,29 +9,31 @@
 /*==================================================
  Database Access Object for Server-based Database
  ==================================================*/
-var INTERMediaotr_DBAdapter = {
+var INTERMediator_DBAdapter;
 
-    server_access: function( accessURL, debugMessageNumber, errorMessageNumber )   {
+INTERMediator_DBAdapter = {
+
+    server_access:function (accessURL, debugMessageNumber, errorMessageNumber) {
 
         var appPath = INTERMediatorOnPage.getEntryPath();
         var authParams = '';
-        if ( INTERMediatorOnPage.authUser.length > 0 )  {
+        if (INTERMediatorOnPage.authUser.length > 0) {
             authParams
-                = "&clientid=" + encodeURIComponent( INTERMediatorOnPage.clientId )
-                + "&authuser=" + encodeURIComponent( INTERMediatorOnPage.authUser );
-            if ( INTERMediatorOnPage.isNativeAuth ) {
+                = "&clientid=" + encodeURIComponent(INTERMediatorOnPage.clientId)
+                + "&authuser=" + encodeURIComponent(INTERMediatorOnPage.authUser);
+            if (INTERMediatorOnPage.isNativeAuth) {
                 authParams += "&response=" + encodeURIComponent(
-                    INTERMediatorOnPage.publickey.biEncryptedString( INTERMediatorOnPage.authHashedPassword
-                                                    + "\n" + INTERMediatorOnPage.authChallenge ));
+                    INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authHashedPassword
+                        + "\n" + INTERMediatorOnPage.authChallenge));
             } else {
                 authParams += "&response=" + encodeURIComponent(
-                    SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword ));
+                    SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword));
             }
         }
 
         INTERMediator.debugMessages.push(
             INTERMediatorOnPage.getMessages()[debugMessageNumber]
-                + "Accessing:" + decodeURI(appPath) + ", Parameters:"+ decodeURI(accessURL + authParams));
+                + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
 
         var newRecordKeyValue = '';
         var dbresult = '';
@@ -39,32 +41,33 @@ var INTERMediaotr_DBAdapter = {
         var challenge = null;
         var clientid = null;
         var requireAuth = false;
+        var myRequest = null;
         try {
             myRequest = new XMLHttpRequest();
-            myRequest.open( 'POST', appPath, false );
-            myRequest.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-            myRequest.send( accessURL + authParams );
-            eval( myRequest.responseText );
-            if ( INTERMediator.debugMode > 1 )  {
-                INTERMediator.debugMessages.push( "myRequest.responseText=" + myRequest.responseText );
-                INTERMediator.debugMessages.push( "Return: resultCount=" + resultCount
+            myRequest.open('POST', appPath, false);
+            myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            myRequest.send(accessURL + authParams);
+            eval(myRequest.responseText);
+            if (INTERMediator.debugMode > 1) {
+                INTERMediator.debugMessages.push("myRequest.responseText=" + myRequest.responseText);
+                INTERMediator.debugMessages.push("Return: resultCount=" + resultCount
                     + ", dbresult=" + INTERMediatorLib.objectToString(dbresult) + "\n"
                     + "Return: requireAuth=" + requireAuth
-                    + ", challenge=" + challenge + ", clientid="+clientid + "\n"
-                    + "Return: newRecordKeyValue=" + newRecordKeyValue );
+                    + ", challenge=" + challenge + ", clientid=" + clientid + "\n"
+                    + "Return: newRecordKeyValue=" + newRecordKeyValue);
             }
-            if ( challenge != null )    {
+            if ( challenge !== null ) {
                 INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
-            //    if ( ! INTERMediatorOnPage.isNativeAuth ) {
-                    INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
-                    INTERMediatorOnPage.authUserSalt = String.fromCharCode(
-                        parseInt(challenge.substr(24, 2),16),
-                        parseInt(challenge.substr(26, 2),16),
-                        parseInt(challenge.substr(28, 2),16),
-                        parseInt(challenge.substr(30, 2),16));
-            //    }
+                //    if ( ! INTERMediatorOnPage.isNativeAuth ) {
+                INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
+                INTERMediatorOnPage.authUserSalt = String.fromCharCode(
+                    parseInt(challenge.substr(24, 2), 16),
+                    parseInt(challenge.substr(26, 2), 16),
+                    parseInt(challenge.substr(28, 2), 16),
+                    parseInt(challenge.substr(30, 2), 16));
+                //    }
             }
-            if ( clientid != null ) {
+            if ( clientid !== null ) {
                 INTERMediatorOnPage.clientId = clientid;
             }
 
@@ -75,27 +78,27 @@ var INTERMediaotr_DBAdapter = {
                     INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
 
         }
-        if ( requireAuth )  {
+        if (requireAuth) {
             INTERMediator.debugMessages.push("Authentication Required, user/password panel should be show.");
             INTERMediatorOnPage.authHashedPassword = null;
             throw "_im_requath_request_"
         }
-        if ( ! accessURL.match(/access=challenge/) )  {
+        if (!accessURL.match(/access=challenge/)) {
             INTERMediatorOnPage.authCount = 0;
         }
         INTERMediatorOnPage.storeCredencialsToCookie();
-        return {dbresult: dbresult, resultCount: resultCount, newRecordKeyValue: newRecordKeyValue};
+        return {dbresult:dbresult, resultCount:resultCount, newRecordKeyValue:newRecordKeyValue};
     },
 
-    getChallenge: function( )  {
+    getChallenge:function () {
         try {
-            this.server_access( "access=challenge", 1027, 1028 );
-        } catch(ex)  {
-            if ( ex == "_im_requath_request_" ) {
+            this.server_access("access=challenge", 1027, 1028);
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
                 throw ex;
             }
         }
-        if ( INTERMediatorOnPage.authChallenge == null )    {
+        if (INTERMediatorOnPage.authChallenge == null) {
             return false;
         }
         return true;
@@ -131,10 +134,13 @@ var INTERMediaotr_DBAdapter = {
         }
         var counter = 0;
         if (args['parentkeyvalue'] != null) {
+            //noinspection JSDuplicatedDeclaration
             for (var index in  args['parentkeyvalue']) {
-                params += "&foreign" + counter + "field=" + encodeURIComponent(index);
-                params += "&foreign" + counter + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
-                counter++;
+                if (args['parentkeyvalue'].hasOwnProperty(index)) {
+                    params += "&foreign" + counter + "field=" + encodeURIComponent(index);
+                    params += "&foreign" + counter + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
+                    counter++;
+                }
             }
         }
         if (args['useoffset'] && INTERMediator.startFrom != null) {
@@ -147,17 +153,19 @@ var INTERMediaotr_DBAdapter = {
             params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
             extCount++;
         }
-        var criteraObject = INTERMediator.additionalCondition[args['name']];
-        if (criteraObject != null && criteraObject["field"] != null) {
-            criteraObject = [criteraObject];
+        var criteriaObject = INTERMediator.additionalCondition[args['name']];
+        if (criteriaObject != null && criteriaObject["field"] != null) {
+            criteriaObject = [criteriaObject];
         }
-        for (var index in criteraObject) {
-            params += "&condition" + extCount + "field=" + encodeURIComponent(criteraObject[index]["field"]);
-            if (criteraObject[index]["operator"] != null) {
-                params += "&condition" + extCount + "operator=" + encodeURIComponent(criteraObject[index]["operator"]);
+        for (var index in criteriaObject) {
+            if ( criteriaObject.hasOwnProperty( index )) {
+                params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
+                if (criteriaObject[index]["operator"] != null) {
+                    params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
+                }
+                params += "&condition" + extCount + "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                extCount++;
             }
-            params += "&condition" + extCount + "value=" + encodeURIComponent(criteraObject[index]["value"]);
-            extCount++;
         }
 
         extCount = 0;
@@ -175,19 +183,19 @@ var INTERMediaotr_DBAdapter = {
         // IE uses caches as the result in spite of several headers. So URL should be randomly.
         var returnValue = {};
         try {
-            var result = this.server_access( params, 1012, 1004 );
+            var result = this.server_access(params, 1012, 1004);
             returnValue.recordset = result.dbresult;
             returnValue.totalCount = result.resultCount;
             returnValue.count = 0;
-            for( var ix in result.dbresult )   {
+            for (var ix in result.dbresult) {
                 returnValue.count++;
             }
             if (( args['paging'] != null) && ( args['paging'] == true )) {
                 INTERMediator.pagedSize = args['records'];
                 INTERMediator.pagedAllCount = result.resultCount;
             }
-        } catch(ex)  {
-            if ( ex == "_im_requath_request_" ) {
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
                 throw ex;
             }
             returnValue.recordset = null;
@@ -201,7 +209,7 @@ var INTERMediaotr_DBAdapter = {
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
-            returnValue =INTERMediaotr_DBAdapter.db_query(args);
+            returnValue = INTERMediator_DBAdapter.db_query(args);
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
@@ -210,7 +218,7 @@ var INTERMediaotr_DBAdapter = {
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
                             function () {
-                                returnValue = INTERMediaotr_DBAdapter.db_queryWithAuth(arg, completion);
+                                returnValue = INTERMediator_DBAdapter.db_queryWithAuth(arg, completion);
                             });
                         return;
                     }
@@ -258,7 +266,7 @@ var INTERMediaotr_DBAdapter = {
             params += "&field_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
             params += "&value_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
         }
-        var result = this.server_access( params, 1013, 1014 );
+        var result = this.server_access(params, 1013, 1014);
         return result.dbresult;
     },
 
@@ -266,7 +274,7 @@ var INTERMediaotr_DBAdapter = {
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
-            returnValue =INTERMediaotr_DBAdapter.db_update(args);
+            returnValue = INTERMediator_DBAdapter.db_update(args);
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
@@ -275,7 +283,7 @@ var INTERMediaotr_DBAdapter = {
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
                             function () {
-                                returnValue = INTERMediaotr_DBAdapter.db_updateWithAuth(arg, completion);
+                                returnValue = INTERMediator_DBAdapter.db_updateWithAuth(arg, completion);
                             });
                         return;
                     }
@@ -312,7 +320,7 @@ var INTERMediaotr_DBAdapter = {
             params += "&condition" + i + "operator=" + encodeURIComponent(args['conditions'][i]['operator']);
             params += "&condition" + i + "value=" + encodeURIComponent(args['conditions'][i]['value']);
         }
-        var result = this.server_access( params, 1017, 1015 );
+        var result = this.server_access(params, 1017, 1015);
 //        INTERMediator.flushMessage();
     },
 
@@ -320,7 +328,7 @@ var INTERMediaotr_DBAdapter = {
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
-            returnValue =INTERMediaotr_DBAdapter.db_delete(args);
+            returnValue = INTERMediator_DBAdapter.db_delete(args);
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
@@ -329,7 +337,7 @@ var INTERMediaotr_DBAdapter = {
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
                             function () {
-                                returnValue = INTERMediaotr_DBAdapter.db_deleteWithAuth(arg, completion);
+                                returnValue = INTERMediator_DBAdapter.db_deleteWithAuth(arg, completion);
                             });
                         return;
                     }
@@ -357,7 +365,7 @@ var INTERMediaotr_DBAdapter = {
             params += "&field_" + i + "=" + encodeURIComponent(args['dataset'][i]['field']);
             params += "&value_" + i + "=" + encodeURIComponent(args['dataset'][i]['value']);
         }
-        var result = this.server_access( params, 1018, 1016 );
+        var result = this.server_access(params, 1018, 1016);
 //        INTERMediator.flushMessage();
         return result.newRecordKeyValue;
     },
@@ -366,7 +374,7 @@ var INTERMediaotr_DBAdapter = {
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
-            returnValue =INTERMediaotr_DBAdapter.db_createRecord(args);
+            returnValue = INTERMediator_DBAdapter.db_createRecord(args);
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
@@ -375,8 +383,8 @@ var INTERMediaotr_DBAdapter = {
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
                             function () {
-                                returnValue = INTERMediaotr_DBAdapter.db_createRecordWithAuth(arg, completion);
-                        });
+                                returnValue = INTERMediator_DBAdapter.db_createRecordWithAuth(arg, completion);
+                            });
                         return;
                     }
                 }
@@ -384,4 +392,4 @@ var INTERMediaotr_DBAdapter = {
         }
         completion();
     }
-}
+};

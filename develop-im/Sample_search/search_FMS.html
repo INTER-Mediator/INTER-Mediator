@@ -40,7 +40,7 @@
             INTERMediator.construct(true);
         }
         INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
-            if ( name == 'postalcode' )   {
+            if ( name === 'postalcode' )   {
                 document.getElementById('place').value = searchCriteriaTown;
                 document.getElementById('zipcode').value = searchCriteriaZip;
             }

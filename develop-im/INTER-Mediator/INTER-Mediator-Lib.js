@@ -38,24 +38,30 @@ var INTERMediatorLib = {
     },
 
     isEnclosure:function (node, nodeOnly) {
-        if (node == null || node.nodeType != 1) return false;
-        var tagName = node.tagName;
-        var className = INTERMediatorLib.getClassAttributeFromNode(node);
-        if ( className != null && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
+        if ( ! node || node.nodeType !== 1) {
             return false;
         }
-        if ((tagName == 'TBODY')
-            || (tagName == 'UL')
-            || (tagName == 'OL')
-            || (tagName == 'SELECT')
-            || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null
+        var tagName = node.tagName;
+        var className = INTERMediatorLib.getClassAttributeFromNode(node);
+        if ( className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
+            return false;
+        }
+        if ((tagName === 'TBODY')
+            || (tagName === 'UL')
+            || (tagName === 'OL')
+            || (tagName === 'SELECT')
+            || ((tagName === 'DIV' || tagName === 'SPAN' )
+            && className
             && className.indexOf(INTERMediatorLib.rollingEnclocureClassName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
-                var countChild = node.childNodes.length;
-                for (var k = 0; k < countChild; k++) {
-                    if (INTERMediatorLib.isRepeater(node.childNodes[k], false)) {
+                var children = node.childNodes;
+                for (var k = 0; k < children.length; k++) {
+//                    if (INTERMediatorLib.isEnclosure(children[k], true)) {
+//
+//                    } else
+                    if (INTERMediatorLib.isRepeater(children[k], false)) {
                         return true;
                     }
                 }
@@ -65,16 +71,19 @@ var INTERMediatorLib = {
     },
 
     isRepeater:function (node, nodeOnly) {
-        if (node.nodeType != 1) return false;
-        var tagName = node.tagName;
-        var className = INTERMediatorLib.getClassAttributeFromNode(node);
-        if ( className != null && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
+        if ( ! node || node.nodeType !== 1) {
             return false;
         }
-        if ((tagName == 'TR')
-            || (tagName == 'LI')
-            || (tagName == 'OPTION')
-            || ((tagName == 'DIV' || tagName == 'SPAN' ) && className != null
+        var tagName = node.tagName;
+        var className = INTERMediatorLib.getClassAttributeFromNode(node);
+        if ( className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
+            return false;
+        }
+        if ((tagName === 'TR')
+            || (tagName === 'LI')
+            || (tagName === 'OPTION')
+            || ((tagName === 'DIV' || tagName === 'SPAN' )
+            && className
             && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)) {
             if (nodeOnly) {
                 return true;
@@ -88,13 +97,12 @@ var INTERMediatorLib = {
             if (INTERMediatorLib.isLinkedElement(node)) {
                 return true;
             }
-            var countChild = node.childNodes.length;
-            for (var k = 0; k < countChild; k++) {
-                var nType = node.childNodes[k].nodeType;
-                if (nType == 1) { // Work for an element
-                    if (INTERMediatorLib.isLinkedElement(node.childNodes[k])) {
+            var children = node.childNodes;
+            for (var k = 0; k < children.length ; k++) {
+                if (children[k].nodeType === 1) { // Work for an element
+                    if (INTERMediatorLib.isLinkedElement(children[k])) {
                         return true;
-                    } else if (searchLinkedElement(node.childNodes[k])) {
+                    } else if (searchLinkedElement(children[k])) {
                         return true;
                     }
                 }
@@ -121,7 +129,7 @@ var INTERMediatorLib = {
                 var classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
                 if (classInfo != null) {
                     var matched = classInfo.match(/IM\[.*\]/);
-                    if (matched != null) {
+                    if (matched) {
                         return true;
                     }
                 }
@@ -158,25 +166,27 @@ var INTERMediatorLib = {
          */
 
         function isRepeaterOfEnclosure(repeater, enclosure) {
-            if (repeater == null || enclosure == null) return false;
+            if ( ! repeater || ! enclosure ) {
+                return false;
+            }
             var repeaterTag = repeater.tagName;
             var enclosureTag = enclosure.tagName;
-            if ((repeaterTag == 'TR' && enclosureTag == 'TBODY')
-                || (repeaterTag == 'OPTION' && enclosureTag == 'SELECT')
-                || (repeaterTag == 'LI' && enclosureTag == 'OL')
-                || (repeaterTag == 'LI' && enclosureTag == 'UL')) {
+            if ((repeaterTag === 'TR' && enclosureTag === 'TBODY')
+                || (repeaterTag === 'OPTION' && enclosureTag === 'SELECT')
+                || (repeaterTag === 'LI' && enclosureTag === 'OL')
+                || (repeaterTag === 'LI' && enclosureTag === 'UL')) {
                 return true;
             }
-            if ((enclosureTag == 'DIV' || enclosureTag == 'SPAN' )) {
+            if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
                 var enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
-                if (enclosureClass != null && enclosureClass.indexOf('_im_enclosure') >= 0) {
+                if ( enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0) {
                     var repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
-                    if ((repeaterTag == 'DIV' || repeaterTag == 'SPAN') && repeaterClass != null && repeaterClass.indexOf('_im_repeater') >= 0) {
+                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN') && repeaterClass != null && repeaterClass.indexOf('_im_repeater') >= 0) {
                         return true;
-                    } else if (repeaterTag == 'INPUT') {
+                    } else if (repeaterTag === 'INPUT') {
                         var repeaterType = repeater.getAttribute('type');
-                        if (repeaterType != null && ((repeaterType.indexOf('radio') >= 0
-                            || repeaterType.indexOf('check') >= 0))) {
+                        if (repeaterType
+                            && ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
                             return true;
                         }
                     }

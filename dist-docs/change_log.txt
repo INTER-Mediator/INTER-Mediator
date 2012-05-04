@@ -58,11 +58,18 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.2.1 (Will be release soon.)
+Ver.2.3 (Will be release soon.)
+
+Ver.2.2 (2012/5/5)
+- The variable name "INTERMediaotr_DBAdapter" was typo. It was changed to "INTERMediator_DBAdapter."
+- Bug Fix: The enclosure/repeater nodes by SELECT/OPTION in a non-enclosure/repeater node didn't generate nodes with database.
+- WARNNING: You could see the "Change Password" button but it doesn't work. It just add as an user-interface.
+
+Ver.2.1 (2012/4/29)
 - Validation is supported.
 - The parameters for 3rd parameter of IM_Entry function can be specified in any context (1st parameter of IM_Entry).
 
-Ver.2 ====================================================================
+Ver.2 (2012/4/28)=========================================================
 - The version numbering policy is changed.
 - The default-values key in a context is used automatically.
 - Chat page is added as a sample. It is used to debug the authorization.
@@ -76,7 +83,7 @@ Ver.2 ====================================================================
 - Ignoring enclosure/repeater for table or list. It could do by adding the class "_im_ignore_enc_rep".
 ==========================================================================
 
-Ver.1.0.10 (Will be release soon.)
+Ver.1.0.10 (2012/4/6)
 - Supported to authenticate with the account of the database engine.
   But it has some serious issue, the row string of the password should be stored in a cookie.
   This must be modify.

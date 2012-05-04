@@ -42,13 +42,13 @@ var INTERMediator = {
     updateRequiredObject:null,
     /*
      {id-value:{               // For the node of this id attribute.
-         targetattribute:,      // about target
-         initialvalue:,          // The value from database.
-         name:
-         field:id,               // about target field
-         keying:id=1,            // The key field specifier to identify this record.
-         foreignfield:,          // foreign field name
-         foreignvalue:,},        // foreign field value
+     targetattribute:,      // about target
+     initialvalue:,          // The value from database.
+     name:
+     field:id,               // about target field
+     keying:id=1,            // The key field specifier to identify this record.
+     foreignfield:,          // foreign field name
+     foreignvalue:,},        // foreign field value
      ...}
      */
     keyFieldObject:null,
@@ -207,7 +207,7 @@ var INTERMediator = {
             keyingComp.shift();
             var keyingValue = keyingComp.join('=');
             try {
-                var currentVal = INTERMediaotr_DBAdapter.db_query({
+                var currentVal = INTERMediator_DBAdapter.db_query({
                     name:objectSpec['name'],
                     records:1,
                     paging:objectSpec['paging'],
@@ -286,7 +286,7 @@ var INTERMediator = {
             if (newValue != null) {
                 var criteria = objectSpec['keying'].split('=');
                 try {
-                    INTERMediaotr_DBAdapter.db_update({
+                    INTERMediator_DBAdapter.db_update({
                         name:objectSpec['name'],
                         conditions:[{field:criteria[0], operator:'=', value:criteria[1]}],
                         dataset:[{field:objectSpec['field'], value:newValue}]});
@@ -337,7 +337,7 @@ var INTERMediator = {
         }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            INTERMediaotr_DBAdapter.db_delete({
+            INTERMediator_DBAdapter.db_delete({
                 name:targetName,
                 conditions:[
                     {field:keyField, operator:'=', value:keyValue}
@@ -390,7 +390,7 @@ var INTERMediator = {
         }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+            INTERMediator_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 INTERMediatorOnPage.authChallenge = null;
@@ -443,7 +443,7 @@ var INTERMediator = {
         }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            var newId = INTERMediaotr_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+            var newId = INTERMediator_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
@@ -483,7 +483,7 @@ var INTERMediator = {
         }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            INTERMediaotr_DBAdapter.db_delete({
+            INTERMediator_DBAdapter.db_delete({
                 name:targetName,
                 conditions:[
                     {field:keyField, operator:'=', value:keyValue}
@@ -706,16 +706,15 @@ var INTERMediator = {
          */
 
         function seekEnclosureNode(node, currentRecord, currentTable, parentEnclosure, objectReference) {
-            var nType = node.nodeType;
-            if (nType == 1) { // Work for an element
+            if (node.nodeType === 1) { // Work for an element
                 try {
                     if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
                         expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
                     } else {
-                        var childs = node.childNodes; // Check all child nodes.
-                        for (var i = 0; i < childs.length; i++) {
-                            if (childs[i].nodeType == 1) {
-                                seekEnclosureNode(childs[i], currentRecord, currentTable, parentEnclosure, objectReference);
+                        var children = node.childNodes; // Check all child nodes.
+                        for (var i = 0; i < children.length; i++) {
+                            if (children[i].nodeType === 1) {
+                                seekEnclosureNode(children[i], currentRecord, currentTable, parentEnclosure, objectReference);
                             }
                         }
                     }
@@ -738,7 +737,7 @@ var INTERMediator = {
             var objectReference = {};
 
             var linkedElmCounter = 0;
-            if (node.getAttribute('id') == null) {
+            if (! node.getAttribute('id')) {
                 var idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
                 node.setAttribute('id', idValue);
                 linkedElmCounter++;
@@ -788,11 +787,11 @@ var INTERMediator = {
             var currentContext = voteResult.targettable;
             var fieldList = voteResult.fieldlist; // Create field list for database fetch.
 
-            if (currentContext != null) {
+            if (currentContext) {
                 var relationValue = null;
                 var dependObject = [];
                 var relationDef = currentContext['relation'];
-                if (relationDef != null) {
+                if (relationDef) {
                     relationValue = [];
                     for (var index in relationDef) {
                         relationValue[ relationDef[index]['foreign-key'] ]
@@ -821,7 +820,7 @@ var INTERMediator = {
 
                 // Access database and get records
                 try {
-                    var targetRecords = INTERMediaotr_DBAdapter.db_query({
+                    var targetRecords = INTERMediator_DBAdapter.db_query({
                         name:currentContext['name'],
                         records:currentContext['records'],
                         paging:currentContext['paging'],
@@ -1103,9 +1102,33 @@ var INTERMediator = {
                 }
 
             } else {
-                INTERMediator.errorMessages.push(
-                    INTERMediatorLib.getInsertedString(
-                        INTERMediatorOnPage.getMessages()[1002], [INTERMediatorLib.objectToString(fieldList)]));
+                repeaters = [];
+                for (var i = 0; i < repeatersOriginal.length; i++) {
+                    var newNode = node.appendChild(repeatersOriginal[i]);
+                    seekEnclosureNode(newNode, null, null, node, null);
+                }
+//                repeaters = [];
+//                for (var i = 0; i < repeatersOriginal.length; i++) {
+//                    var clonedNode = repeatersOriginal[i].cloneNode(true);
+//                    repeaters.push(clonedNode);
+//                }
+//                for (var i = 0; i < repeaters.length; i++) {
+//                    var newNode = repeaters[i].cloneNode(true);
+//                    var nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
+//                    if (nodeClass != INTERMediator.noRecordClassName) {
+//                        node.appendChild(newNode);
+//                        if (newNode.getAttribute('id') == null) {
+//                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
+//                            newNode.setAttribute('id', idValue);
+//                            linkedElmCounter++;
+//                        }
+//                        seekEnclosureNode(newNode, targetRecords.recordset[ix], currentContext['name'], node, objectReference);
+//                    }
+//                }
+
+//                INTERMediator.errorMessages.push(
+//                    INTERMediatorLib.getInsertedString(
+//                        INTERMediatorOnPage.getMessages()[1002], [INTERMediatorLib.objectToString(fieldList)]));
             }
             currentLevel--;
             //    return foreignValue != '';

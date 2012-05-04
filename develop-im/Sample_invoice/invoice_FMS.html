@@ -18,10 +18,10 @@
     <script type="text/javascript">
 
         INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
-            if (name == 'item') {
+            if (name === 'item') {
                 modLine(target);
             }
-            if (name == 'invoice') {
+            if (name === 'invoice') {
                 calcTotal(target);
             }
         };
@@ -31,14 +31,14 @@
         };
 
         function modLine(target)	{
-            if(target==null)    {
+            if(!target)    {
                 return;
             }
             var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@qty",target);
             var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@unitprice",target);
             var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice",target);
             var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@amount",target);
-            if(qtyId==null||unitPriceId==null|productPriceId==null|amountId==null)    {
+            if(qtyId||unitPriceId||productPriceId||amountId)    {
                 return;
             }
             var unitPrice = new Number( document.getElementById(unitPriceId).value > 0 ?

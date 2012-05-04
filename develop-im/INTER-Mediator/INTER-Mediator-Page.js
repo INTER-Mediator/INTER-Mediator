@@ -25,6 +25,15 @@ var INTERMediatorOnPage = {
     publickey: null,
     isNativeAuth: false,
 
+    /*
+    This method "getMessages" is going to be replaced valid one with the browser's language.
+    Here is defined to prevent the warning of static check.
+     */
+    getMessages: function(){
+        return null;
+    },
+
+
     isComplementAuthData: function()    {
         if (   this.authUser != null && this.authUser.length > 0
             && this.authHashedPassword != null && this.authHashedPassword.length > 0
@@ -52,7 +61,7 @@ var INTERMediatorOnPage = {
                 this.isOnceAtStarting = false;
             }
             if ( this.authUser.length > 0 )  {
-                if ( ! INTERMediaotr_DBAdapter.getChallenge() )     {
+                if ( ! INTERMediator_DBAdapter.getChallenge() )     {
                     INTERMediator.flushMessage();
                 }
             }
@@ -108,7 +117,7 @@ var INTERMediatorOnPage = {
         backBox.style.zIndex = "999998";
 
         var frontPanel = document.createElement('div');
-        frontPanel.style.width = "240px";
+        frontPanel.style.width = "280px";
         frontPanel.style.backgroundColor = "#333333";
         frontPanel.style.color = "#DDDDAA";
         frontPanel.style.margin = "50px auto 0 auto";
@@ -159,12 +168,13 @@ var INTERMediatorOnPage = {
             };};
         passwordLabel.appendChild( passwordBox );
 
-        var breakLine = document.createElement('BR');
-        breakLine.clear = "all";
-        frontPanel.appendChild( breakLine );
+//        var breakLine = document.createElement('BR');
+//        breakLine.clear = "all";
+//        frontPanel.appendChild( breakLine );
 
         var authButton = document.createElement('BUTTON');
-        authButton.style.marginLeft = labelWidth;
+//        authButton.style.marginLeft = labelWidth;
+        authButton.style.fontSize = "12pt";
         authButton.appendChild( document.createTextNode( INTERMediatorLib.getInsertedStringFromErrorNumber(2004) ));
         authButton.onclick = function() {
             var inputUsername = document.getElementById('_im_username').value;
@@ -174,7 +184,7 @@ var INTERMediatorOnPage = {
             if ( inputUsername != ''    // No usename and no challenge, get a challenge.
                 && (INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 24 ))    {
                 INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
-                var challengeResult = INTERMediaotr_DBAdapter.getChallenge();
+                var challengeResult = INTERMediator_DBAdapter.getChallenge();
                 if ( ! challengeResult )     {
                     INTERMediator.flushMessage();
                     return; // If it's failed to get a challenge, finish everything.
@@ -196,6 +206,17 @@ var INTERMediatorOnPage = {
             INTERMediator.flushMessage();
         };
         frontPanel.appendChild( authButton );
+
+        var breakLine = document.createElement('BR');
+        breakLine.clear = "all";
+        frontPanel.appendChild( breakLine );
+
+        var chgpwButton = document.createElement('BUTTON');
+        chgpwButton.style.marginLeft = labelWidth;
+        chgpwButton.appendChild( document.createTextNode( INTERMediatorLib.getInsertedStringFromErrorNumber(2005) ));
+        chgpwButton.onclick = function() {
+        };
+        frontPanel.appendChild( chgpwButton );
 
         window.scroll(0 ,0);
         userBox.focus();

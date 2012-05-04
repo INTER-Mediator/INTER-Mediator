@@ -35,16 +35,16 @@ class DataConverter_FMDateTime
         $slash = substr_count($str, '/');
         $colon = substr_count($str, ':');
         $dtObj = false;
-        if (($sp !== FALSE) && ($slash == 2) && ($colon == 2)) {
+        if (($sp !== FALSE) && ($slash === 2) && ($colon === 2)) {
             $sep = explode(' ', $str);
             $comp = explode('/', $sep[0]);
             $dtObj = new DateTime($comp[2] . '-' . $comp[0] . '-' . $comp[1] . ' ' . $sep[1]);
             $fmt = '%x %T';
-        } elseif (($sp === FALSE) && ($slash == 2) && ($colon == 0)) {
+        } elseif (($sp === FALSE) && ($slash === 2) && ($colon === 0)) {
             $comp = explode('/', $str);
             $dtObj = new DateTime($comp[2] . '-' . $comp[0] . '-' . $comp[1]);
             $fmt = '%x';
-        } elseif (($sp === FALSE) && ($slash == 0) && ($colon == 2)) {
+        } elseif (($sp === FALSE) && ($slash === 0) && ($colon === 2)) {
             $dtObj = new DateTime($str);
             $fmt = '%T';
         }
