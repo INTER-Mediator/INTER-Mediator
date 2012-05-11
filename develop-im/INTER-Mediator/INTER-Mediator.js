@@ -381,13 +381,13 @@ var INTERMediator = {
                 recordSet.push({field:fieldName, value:foreignValues[fieldName]});
             }
         }
-        if (currentContext['default-values'] != null) {
-            for (var index in currentContext['default-values']) {
-                recordSet.push({
-                    field:currentContext['default-values'][index]['field'],
-                    value:currentContext['default-values'][index]['value']});
-            }
-        }
+//        if (currentContext['default-values'] != null) {
+//            for (var index in currentContext['default-values']) {
+//                recordSet.push({
+//                    field:currentContext['default-values'][index]['field'],
+//                    value:currentContext['default-values'][index]['value']});
+//            }
+//        }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});

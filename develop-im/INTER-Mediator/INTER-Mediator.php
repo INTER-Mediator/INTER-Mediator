@@ -12,9 +12,9 @@
 mb_internal_encoding('UTF-8');
 date_default_timezone_set('Asia/Tokyo');
 
-require_once('operation_common.php');
-require_once('MessageStrings.php');
-require_once('MessageStrings_ja.php');
+require_once('DB_Proxy.php');
+//require_once('MessageStrings.php');
+//require_once('MessageStrings_ja.php');
 /*
  * GET
  * ?access=select
@@ -29,26 +29,43 @@ require_once('MessageStrings_ja.php');
  * &parent_keyval=<value of the foreign key field>
  */
 
-function IM_Entry($datasrc, $options, $dbspec, $debug = false)
+function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-    $q = '"';
 
     header('Content-Type: text/javascript; charset="UTF-8"');
     header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
     header('Expires: 0');
 
-    $generatedPrivateKey = '';
-    $passPhrase = '';
-    $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-    $currentDirParam = $currentDir . 'params.php';
-    $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-    if (file_exists($parentDirParam)) {
-        include($parentDirParam);
-    } else if (file_exists($currentDirParam)) {
-        include($currentDirParam);
-    }
+    spl_autoload_register('loadClass');
 
     if (!isset($_POST['access'])) {
+        $generator = new GenerateInitialJSCode();
+        $generator->generate($datasource, $options, $dbspecification, $debug);
+    } else {
+        $dbInstance = new DB_Proxy();
+        $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
+        $dbInstance->processingRequest($options);
+    }
+}
+
+class GenerateInitialJSCode
+{
+    function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '' )   {
+        echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
+    }
+
+    function generate($datasource, $options, $dbspecification, $debug) {
+        $q = '"';
+        $generatedPrivateKey = null;
+        $passPhrase = null;
+        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+        $currentDirParam = $currentDir . 'params.php';
+        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+        if (file_exists($parentDirParam)) {
+            include($parentDirParam);
+        } else if (file_exists($currentDirParam)) {
+            include($currentDirParam);
+        }
 
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             $jsLibDir = $currentDir . 'js_lib' . DIRECTORY_SEPARATOR;
@@ -65,29 +82,47 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
         }
 
-        echo "INTERMediatorOnPage.getEntryPath = function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};};";
-        echo "INTERMediatorOnPage.getDataSources = function(){return ", arrayToJS($datasrc, ''), ";};";
-        echo "INTERMediatorOnPage.getOptionsAliases = function(){return ",
-        arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";};";
-        echo "INTERMediatorOnPage.getOptionsTransaction = function(){return ",
-        arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";};";
-        $clientLang = explode('-', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-        $messageClass = "MessageStrings_{$clientLang[0]}";
-        if (class_exists($messageClass)) {
-            $messageClass = new $messageClass();
-        } else {
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}");
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.getDataSources", "function(){return ", arrayToJS($datasource, ''), ";}");
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.getOptionsAliases",
+            "function(){return ", arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.getOptionsTransaction",
+            "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
+
+        $messageClass = null;
+        $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+        foreach( $clientLangArray as $oneLanguage)   {
+            $langCountry = explode(';', $oneLanguage);
+            $clientLang = explode('-', $langCountry[0]);
+            $messageClass = "MessageStrings_{$clientLang[0]}";
+            if (class_exists($messageClass)) {
+                $messageClass = new $messageClass();
+                break;
+            }
+        }
+        if ( $messageClass == null ) {
             $messageClass = new MessageStrings();
         }
-        echo "INTERMediatorOnPage.getMessages = function(){return ", arrayToJS($messageClass->getMessages(), ''), ";};";
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.getMessages",
+            "function(){return ", arrayToJS($messageClass->getMessages(), ''), ";}");
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
-        echo "INTERMediatorOnPage.browserCompatibility = function(){return ",
-        arrayToJS($browserCompatibility, ''), ";};";
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.browserCompatibility",
+            "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
-            echo "INTERMediator.debugMode=false;";
+            $this->generateAssignJS(
+                "INTERMediator.debugMode",
+                "false");
         } else {
-            echo "INTERMediator.debugMode=", ($debug === false) ? "false" : $debug, ";";
+            $this->generateAssignJS(
+                "INTERMediator.debugMode", ($debug === false) ? "false" : $debug);
         }
 
         // Check Authentication
@@ -96,168 +131,240 @@ function IM_Entry($datasrc, $options, $dbspec, $debug = false)
         if (isset($options['authentication'])) {
             $boolValue = "true";
         }
-        foreach ($datasrc as $aContext) {
+        foreach ($datasource as $aContext) {
             if (isset($aContext['authentication'])) {
                 $boolValue = "true";
                 $requireAuthenticationContext[] = $aContext['name'];
             }
         }
-        echo "INTERMediatorOnPage.requireAuthentication={$boolValue};";
-        echo "INTERMediatorOnPage.authRequiredContext=", arrayToJS($requireAuthenticationContext, ''), ";";
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.requireAuthentication", $boolValue);
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.authRequiredContext", arrayToJS($requireAuthenticationContext, ''));
 
-        $nativeAuth = (isset($options['authentication']) && isset($options['authentication']['user'])
-            && ($options['authentication']['user'] === 'database_native')) ? "true" : "false";
-        echo "INTERMediatorOnPage.isNativeAuth={$nativeAuth};";
-        $storing = (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
-            $options['authentication']['storing'] : 'cookie';
-        echo "INTERMediatorOnPage.authStoring='$storing';";
-        $expired = (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
-            $options['authentication']['storing'] : '3600';
-        echo "INTERMediatorOnPage.authExpired='$expired';";
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.isNativeAuth",
+            (isset($options['authentication']) && isset($options['authentication']['user'])
+                && ($options['authentication']['user'] === 'database_native')) ? "true" : "false");
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.authStoring",
+            $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
+                $options['authentication']['storing'] : 'cookie', $q);
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.authExpired",
+            (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
+                $options['authentication']['authexpired'] : '3600');
         $keyArray = openssl_pkey_get_details( openssl_pkey_get_private( $generatedPrivateKey, $passPhrase ));
-        echo "INTERMediatorOnPage.publickey=new biRSAKeyPair('",
-            bin2hex( $keyArray['rsa']['e']),"','0','",bin2hex( $keyArray['rsa']['n']),"');";
-
-
-    } else {
-
-        $dbClassName = 'DB_' . (isset($dbspec['db-class']) ? $dbspec['db-class'] : (isset ($dbClass) ? $dbClass : ''));
-        foreach( $datasrc as $context ) {
-            if( $context['name'] = $_POST['name'] && isset( $context['db-class'] )) {
-                $dbClassName = 'DB_' . $context['db-class'];
-            }
-        }
-        require_once("{$dbClassName}.php");
-        $dbInstance = null;
-        $dbInstance = new $dbClassName();
-        if ($dbInstance == null) {
-            $dbInstance->errorMessage[] = "The database class [{$dbClassName}] that you specify is not valid.";
-            echo implode('', $dbInstance->getMessagesForJS());
-            return;
-        }
-        if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
-            $dbInstance->setDebugMode($debug);
-        }
-
-        $dbInstance->initialize($datasrc, $options, $dbspec);
-        $tableInfo = $dbInstance->getDataSourceTargetArray();
-        $access = $_POST['access'];
-        $clientId = isset($_POST['clientid']) ? $_POST['clientid'] : $_SERVER['REMOTE_ADDR'];
-        $paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
-        $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
-
-        $requireAuthentication = false;
-        $requireAuthorization = false;
-        $isDBNative = false;
-        if (   isset($options['authentication'] )
-               && (  isset($options['authentication']['user'])
-                  || isset($options['authentication']['group']) )
-            || $access == 'challenge'
-            || (isset($tableInfo['authentication'])
-                && ( isset($tableInfo['authentication']['all'])
-                    || isset($tableInfo['authentication'][$access])))
-        ) {
-            $requireAuthorization = true;
-            $isDBNative = ($options['authentication']['user'] == 'database_native');
-        }
-
-        if ($requireAuthorization) { // Authentication required
-            if ( strlen($paramAuthUser) == 0  || strlen($paramResponse) == 0 ) {
-             // No username or password
-                $access = "do nothing";
-                $requireAuthentication = true;
-            }
-            // User and Password are suppried but...
-            if ( $access != 'challenge') { // Not accessing getting a challenge.
-                if ( $isDBNative ) {
-                    $keyArray = openssl_pkey_get_details( openssl_pkey_get_private( $generatedPrivateKey, $passPhrase ));
-                    require_once( 'bi2php/biRSA.php' );
-                    $keyDecrypt = new biRSAKeyPair( '0', bin2hex( $keyArray['rsa']['d']), bin2hex( $keyArray['rsa']['n']));
-                    $decrypted = $keyDecrypt->biDecryptedString( $paramResponse );
-                    if ( $decrypted !== false ) {
-                        $nlPos = strpos( $decrypted, "\n" );
-                        $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
-                        $password = substr( $decrypted, 0, $nlPos );
-                        $challenge = substr( $decrypted, $nlPos + 1 );
-                        if ( ! $dbInstance->checkChallenge( $challenge, $clientId ) ) {
-                            $access = "do nothing";
-                            $requireAuthentication = true;
-                        } else {
-                            $dbInstance->setUserAndPaswordForAccess( $paramAuthUser, $password );
-                        }
-                    } else {
-                        $dbInstance->setDebugMessage("Can't decrypt.");
-                        $access = "do nothing";
-                        $requireAuthentication = true;
-                    }
-                } else {
-                    $noAuthorization = true;
-                    $authorizedUsers = $dbInstance->getAuthorizedUsers($access);
-                    $authorizedGroups = $dbInstance->getAuthorizedGroups($access);
-                    $dbInstance->setDebugMessage(
-                        "authorizedUsers=" . var_export($authorizedUsers, true)
-                        . "/authorizedGroups=" . var_export($authorizedGroups, true)
-                        ,2);
-                    if ( (count($authorizedUsers) == 0 && count($authorizedGroups) == 0 )) {
-                        $noAuthorization = false;
-                    } else {
-                        if (in_array($dbInstance->currentUser, $authorizedUsers)) {
-                            $noAuthorization = false;
-                        } else {
-                            if (count($authorizedGroups) > 0) {
-                                $belongGroups = $dbInstance->getGroupsOfUser($dbInstance->currentUser);
-                                if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
-                                    $noAuthorization = false;
-                                }
-                            }
-                        }
-                    }
-                    if ($noAuthorization) {
-                        $dbInstance->setDebugMessage("Authorization doesn't meet the settings.");
-                        $access = "do nothing";
-                        $requireAuthentication = true;
-                    }
-                    if (!$dbInstance->checkAuthorization($paramAuthUser, $paramResponse, $clientId)) {
-                        $dbInstance->setDebugMessage("Authentication doesn't meet valid.{$paramAuthUser}/{$paramResponse}/{$clientId}");
-                        // Not Authenticated!
-                        $access = "do nothing";
-                        $requireAuthentication = true;
-                    }
-                }
-            }
-        }
-        // Come here access=challenge or authenticated access
-        switch ($access) {
-            case 'select':
-                $result = $dbInstance->getFromDB($dbInstance->getTargetName());
-                echo 'dbresult=' . arrayToJS($result, ''), ';', "resultCount='{$dbInstance->mainTableCount}';";
-                break;
-            case 'update':
-                $dbInstance->setToDB($dbInstance->getTargetName());
-                break;
-            case 'new':
-                $result = $dbInstance->newToDB($dbInstance->getTargetName());
-                echo "newRecordKeyValue='{$result}';";
-                break;
-            case 'delete':
-                $dbInstance->deleteFromDB($dbInstance->getTargetName());
-                break;
-            case 'challenge':
-                break;
-        }
-        echo implode('', $dbInstance->getMessagesForJS());
-        if ($requireAuthorization) {
-            $generatedChallenge = $dbInstance->generateChallenge();
-            $generatedUID = $dbInstance->generateClientId('');
-            $userSalt = $dbInstance->saveChallenge(
-                $isDBNative ? 0 : $paramAuthUser, $generatedChallenge, $generatedUID);
-            echo "challenge='{$generatedChallenge}{$userSalt}';";
-            echo "clientid='{$generatedUID}';";
-            if ($requireAuthentication) {
-                echo "requireAuth=true;"; // Force authentication to client
-            }
-        }
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.publickey",
+            "new biRSAKeyPair('", bin2hex( $keyArray['rsa']['e']),"','0','",bin2hex( $keyArray['rsa']['n']),"')");
     }
 }
+/**
+ * Dynamic class loader
+ * @param $className
+ */
+function loadClass($className) {
+    require_once( $className . '.php' );
+}
 
+/**
+ * Convert strings to JavaScript friendly strings.
+ * Contributed by Atsushi Matsuo at Jan 17, 2010
+ * @return string strings for JavaScript
+ */
+function valueForJSInsert($str)
+{
+    return str_replace("'", "\\'",
+        str_replace('"', '\\"',
+            str_replace("/", "\\/",
+                str_replace(">", "\\x3e",
+                    str_replace("<", "\\x3c",
+                        str_replace("\n", "\\n",
+                            str_replace("\r", "\\r",
+                                str_replace("\\", "\\\\", $str))))))));
+}
+
+/**
+ * Create JavaScript source from array
+ * @param array ar parameter array
+ * @param string prefix strings for the prefix for key
+ * @return string JavaScript source
+ */
+function arrayToJS($ar, $prefix)
+{
+    if (is_array($ar)) {
+        $items = array();
+        foreach ($ar as $key => $value) {
+            $items[] = arrayToJS($value, $key);
+        }
+        $currentKey = (string)$prefix;
+        if ($currentKey == '')
+            $returnStr = "{" . implode(',', $items) . '}';
+        else
+            $returnStr = "'{$currentKey}':{" . implode(',', $items) . '}';
+    } else {
+        $currentKey = (string)$prefix;
+        if ($currentKey == '') {
+            $returnStr = "'" . valueForJSInsert($ar) . "'";
+        } else {
+            $returnStr = "'{$prefix}':'" . valueForJSInsert($ar) . "'";
+        }
+    }
+    return $returnStr;
+}
+
+/**
+ * Create parameter strng from array
+ * @param array ar parameter array
+ * @param string prefix strings for the prefix for key
+ * @return string parameter string
+ */
+function arrayToQuery($ar, $prefix)
+{
+    if (is_array($ar)) {
+        $items = array();
+        foreach ($ar as $key => $value) {
+            $items[] = arrayToQuery($value, "{$prefix}_{$key}");
+        }
+        $returnStr = implode('', $items);
+    } else {
+        $returnStr = "&{$prefix}=" . urlencode($ar);
+    }
+    return $returnStr;
+}
+
+/**
+ * Get the relative path from the caller to the directory of 'INTER-Mediator.php'.
+ * @return Relative path as a part of URL.
+ */
+function getRelativePath()
+{
+    $caller = explode(DIRECTORY_SEPARATOR, dirname($_SERVER['SCRIPT_FILENAME']));
+    $imDirectory = explode(DIRECTORY_SEPARATOR, dirname(__FILE__));
+    $commonPath = '';
+    $shorterLength = min(count($caller), count($imDirectory));
+    for ($i = 0; $i < $shorterLength; $i++) {
+        if ($caller[$i] != $imDirectory[$i]) {
+            break;
+        }
+    }
+    $relPath = str_repeat('../', count($caller) - $i)
+        . implode('/', array_slice($imDirectory, $i));
+    return $relPath;
+}
+
+/**
+ * Generate the instance of the message class associated with browser's language.
+ * @return object Generated instance of the message class.
+ */
+//function getErrorMessageClass()
+//{
+//    $currentDir = dirname(__FILE__);
+//    $lang = getLocaleFromBrowser();
+//    $candClassName = 'MessageStrings_' . $lang;
+//    if (!file_exists($currentDir . DIRECTORY_SEPARATOR . $candClassName . '.php')) {
+//        if (strpos($lang, '_') !== false) {
+//            $lang = substr($lang, 0, strpos($lang, '_'));
+//            $candClassName = 'MessageStrings_' . $lang;
+//            if (!file_exists($currentDir . DIRECTORY_SEPARATOR . $candClassName . '.php')) {
+//                $candClassName = 'MessageStrings';
+//            }
+//        }
+//    }
+//    $c = null;
+//    require_once($candClassName . '.php');
+//    eval("\$c = new {$candClassName}();");
+//    return $c->getMessages();
+//}
+
+/**
+ * Set the locale with parameter, for UNIX and Windows OS.
+ * @param string locType locale identifier string.
+ * @return boolean If true, strings with locale are possibly multi-byte string.
+ */
+function setLocaleAsBrowser($locType)
+{
+    $lstr = getLocaleFromBrowser();
+
+    // Detect server platform, Windows or Unix
+    $isWindows = false;
+    $uname = php_uname();
+    if (strpos($uname, 'Windows')) {
+        $isWindows = true;
+    }
+
+    $useMbstring = false;
+    if ($lstr == 'ja_JP') {
+        $useMbstring = true;
+        if ($isWindows) {
+            setlocale($locType, 'jpn_jpn');
+        }
+        else {
+            setlocale($locType, 'ja_JP');
+        }
+    } else if ($lstr == 'ja') {
+        $useMbstring = true;
+        if ($isWindows) {
+            setlocale($locType, 'jpn_jpn');
+        }
+        else {
+            setlocale($locType, 'ja_JP');
+        }
+    } else if ($lstr == 'en_US') {
+        if ($isWindows) {
+            setlocale($locType, 'jpn_jpn');
+        }
+        else {
+            setlocale($locType, 'en_US');
+        }
+    } else if ($lstr == 'en') {
+        if ($isWindows) {
+            setlocale($locType, 'jpn_jpn');
+        }
+        else {
+            setlocale($locType, 'en_US');
+        }
+    }
+    return $useMbstring;
+}
+
+/**
+ * Get the locale string (ex. 'ja_JP') from HTTP header from a browser.
+ * @return string Most prior locale identifier
+ */
+function getLocaleFromBrowser()
+{
+    $lstr = strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+    // Extracting first item and cutting the priority infos.
+    if (strpos($lstr, ',') !== false) $lstr = substr($lstr, 0, strpos($lstr, ','));
+    if (strpos($lstr, ';') !== false) $lstr = substr($lstr, 0, strpos($lstr, ';'));
+
+    // Convert to the right locale identifier.
+    if (strpos($lstr, '-') !== false) {
+        $lstr = explode('-', $lstr);
+    } else if (strpos($lstr, '_') !== false) {
+        $lstr = explode('_', $lstr);
+    } else {
+        $lstr = array($lstr);
+    }
+    if (count($lstr) == 1)
+        $lstr = $lstr[0];
+    else
+        $lstr = strtolower($lstr[0]) . '_' . strtoupper($lstr[1]);
+    return $lstr;
+}
+
+function hex2bin_for53( $str )
+{
+    return pack("H*", $str);
+}
+
+function randomString( $digit ) {
+    $resultStr = '';
+    for ( $i = 0 ; $i < $digit ; $i++ ) {
+        $resultStr .= chr( rand(20, 126));
+    }
+    return $resultStr;
+}
 ?>
