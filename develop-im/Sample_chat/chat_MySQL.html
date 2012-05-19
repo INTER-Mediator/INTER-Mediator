@@ -15,26 +15,26 @@
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <script src="include_MySQL.php"></script>
     <script type="text/javascript">
-        window.onload = function()  {
+        window.onload = function () {
             INTERMediator.construct(true);
         }
 
-        function postMessage(){
+        function postMessage() {
             INTERMediator_DBAdapter.db_createRecordWithAuth({
                         name:"chat",
                         dataset:[
                             //    {field:"user",value: document.getElementById("user").value},
                             //    {field:"groupname",value: document.getElementById("groupname").value},
-                            {field:"message",value: document.getElementById("message").value}
+                            {field:"message", value:document.getElementById("message").value}
                         ]},
-                    function(){
+                    function () {
                         INTERMediator.construct(false, 0);
                         document.getElementById("message").value = "";
                         INTERMediator.flushMessage();
                     });
         }
 
-        function logout(){
+        function logout() {
             INTERMediatorOnPage.logout();
             INTERMediator.construct(true);
 
@@ -50,7 +50,7 @@
         <td></td>
         <td></td>
         <td>
-            <input type="text" id="message" />
+            <input type="text" id="message"/>
             <button onclick="postMessage()">Post</button>
             <button onclick="logout()">Logout</button>
         </td>

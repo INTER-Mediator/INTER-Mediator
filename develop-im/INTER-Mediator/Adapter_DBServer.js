@@ -56,7 +56,7 @@ INTERMediator_DBAdapter = {
                     + ", challenge=" + challenge + ", clientid=" + clientid + "\n"
                     + "Return: newRecordKeyValue=" + newRecordKeyValue);
             }
-            if ( challenge !== null ) {
+            if (challenge !== null) {
                 INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
                 //    if ( ! INTERMediatorOnPage.isNativeAuth ) {
                 INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
@@ -67,7 +67,7 @@ INTERMediator_DBAdapter = {
                     parseInt(challenge.substr(30, 2), 16));
                 //    }
             }
-            if ( clientid !== null ) {
+            if (clientid !== null) {
                 INTERMediatorOnPage.clientId = clientid;
             }
 
@@ -135,10 +135,12 @@ INTERMediator_DBAdapter = {
         var counter = 0;
         if (args['parentkeyvalue'] != null) {
             //noinspection JSDuplicatedDeclaration
-            for (var index in  args['parentkeyvalue']) {
+            for (var index in args['parentkeyvalue']) {
                 if (args['parentkeyvalue'].hasOwnProperty(index)) {
-                    params += "&foreign" + counter + "field=" + encodeURIComponent(index);
-                    params += "&foreign" + counter + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
+                    params += "&foreign" + counter
+                        + "field=" + encodeURIComponent(index);
+                    params += "&foreign" + counter
+                        + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
                     counter++;
                 }
             }
@@ -158,7 +160,7 @@ INTERMediator_DBAdapter = {
             criteriaObject = [criteriaObject];
         }
         for (var index in criteriaObject) {
-            if ( criteriaObject.hasOwnProperty( index )) {
+            if (criteriaObject.hasOwnProperty(index)) {
                 params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
                 if (criteriaObject[index]["operator"] != null) {
                     params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);

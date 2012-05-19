@@ -18,16 +18,18 @@
     <script type="text/javascript" src="include_edit.php"></script>
     <script type="text/javascript" src="website.js"></script>
     <style>
-        table.allbox    {
+        table.allbox {
             margin: 0;
             width: 100%;
         }
-        table.articlebox    {
+
+        table.articlebox {
             margin: 0;
             width: 100%;
             background-color: #AAEEEE;
         }
-        table.contentsbox    {
+
+        table.contentsbox {
             margin: 0;
             width: 100%;
             margin-left: 40px;
@@ -36,58 +38,58 @@
     </style>
 </head>
 <body onload="INTERMediator.construct(true);">
-    <table width="100%" class="allbox">
-        <tbody>
-        <tr>
-            <td style="border-top: solid 2px black;">
-                [id=<span class="IM[Article@id]"></span>]Kind:
-                <select class="IM[Article@ContentKind_id]">
-                    <option class="IM[ContentKind@id@value|ContentKind@KindName]"></option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table width="100%" class="articlebox">
-                    <tbody>
-                    <tr>
-                        <td>
-                            Title: <input type="text" class="IM[TitlesOfArticle@Title]" size="50"/>
-                            Language: <input type="text" class="IM[TitlesOfArticle@Language]" size="4"/>
-                            Order:<input type="text" class="IM[TitlesOfArticle@Ordering]" size="4"/>
-                            Link Address:<input type="text" class="IM[TitlesOfArticle@LinkAddress]" size="30"/>
-                            <input type="checkbox" class="IM[TitlesOfArticle@NotShow]" value="1"/>Not Show
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <table width="100%" class="contentsbox">
-                    <tbody>
-                    <tr>
-                        <td><input type="hidden" class="IM[ContentsOfArticle@id]"/>
-                            Article ID: <input type="text" class="IM[ContentsOfArticle@Article_id]"  size="4"/>
-                            Title: <input type="text" class="IM[ContentsOfArticle@Title]"  size="50"/>
-                            Language: <input type="text" class="IM[ContentsOfArticle@Language]"  size="4"/>
-                            Credit Date: <input type="text" class="IM[ContentsOfArticle@creditDate]"  size="20"/>
-                            Order: <input type="text" class="IM[ContentsOfArticle@Ordering]" size="4"/>
-                            <button onclick="editbutton(this);">Edit</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="4">
-                            <textarea class="IM[ContentsOfArticle@Body]" rows="3"
-                                    style="width:95%;"></textarea>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+<table width="100%" class="allbox">
+    <tbody>
+    <tr>
+        <td style="border-top: solid 2px black;">
+            [id=<span class="IM[Article@id]"></span>]Kind:
+            <select class="IM[Article@ContentKind_id]">
+                <option class="IM[ContentKind@id@value|ContentKind@KindName]"></option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table width="100%" class="articlebox">
+                <tbody>
+                <tr>
+                    <td>
+                        Title: <input type="text" class="IM[TitlesOfArticle@Title]" size="50"/>
+                        Language: <input type="text" class="IM[TitlesOfArticle@Language]" size="4"/>
+                        Order:<input type="text" class="IM[TitlesOfArticle@Ordering]" size="4"/>
+                        Link Address:<input type="text" class="IM[TitlesOfArticle@LinkAddress]" size="30"/>
+                        <input type="checkbox" class="IM[TitlesOfArticle@NotShow]" value="1"/>Not Show
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <table width="100%" class="contentsbox">
+                <tbody>
+                <tr>
+                    <td><input type="hidden" class="IM[ContentsOfArticle@id]"/>
+                        Article ID: <input type="text" class="IM[ContentsOfArticle@Article_id]" size="4"/>
+                        Title: <input type="text" class="IM[ContentsOfArticle@Title]" size="50"/>
+                        Language: <input type="text" class="IM[ContentsOfArticle@Language]" size="4"/>
+                        Credit Date: <input type="text" class="IM[ContentsOfArticle@creditDate]" size="20"/>
+                        Order: <input type="text" class="IM[ContentsOfArticle@Ordering]" size="4"/>
+                        <button onclick="editbutton(this);">Edit</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <textarea class="IM[ContentsOfArticle@Body]" rows="3"
+                                  style="width:95%;"></textarea>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </HTML>

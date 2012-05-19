@@ -11,11 +11,11 @@ require_once('../INTER-Mediator/INTER-Mediator.php');
 
 IM_Entry(
     array(
-         array(
-             'records' => '1',
-             'name' => 'product',
-             'key' => 'id',
-         ),
+        array(
+            'records' => '1',
+            'name' => 'product',
+            'key' => 'id',
+        ),
     ),
     null,
     array('db-class' => 'PDO'),

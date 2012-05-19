@@ -38,12 +38,12 @@ var INTERMediatorLib = {
     },
 
     isEnclosure:function (node, nodeOnly) {
-        if ( ! node || node.nodeType !== 1) {
+        if (!node || node.nodeType !== 1) {
             return false;
         }
         var tagName = node.tagName;
         var className = INTERMediatorLib.getClassAttributeFromNode(node);
-        if ( className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
+        if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
             return false;
         }
         if ((tagName === 'TBODY')
@@ -71,12 +71,12 @@ var INTERMediatorLib = {
     },
 
     isRepeater:function (node, nodeOnly) {
-        if ( ! node || node.nodeType !== 1) {
+        if (!node || node.nodeType !== 1) {
             return false;
         }
         var tagName = node.tagName;
         var className = INTERMediatorLib.getClassAttributeFromNode(node);
-        if ( className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0 )    {
+        if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
             return false;
         }
         if ((tagName === 'TR')
@@ -98,7 +98,7 @@ var INTERMediatorLib = {
                 return true;
             }
             var children = node.childNodes;
-            for (var k = 0; k < children.length ; k++) {
+            for (var k = 0; k < children.length; k++) {
                 if (children[k].nodeType === 1) { // Work for an element
                     if (INTERMediatorLib.isLinkedElement(children[k])) {
                         return true;
@@ -166,7 +166,7 @@ var INTERMediatorLib = {
          */
 
         function isRepeaterOfEnclosure(repeater, enclosure) {
-            if ( ! repeater || ! enclosure ) {
+            if (!repeater || !enclosure) {
                 return false;
             }
             var repeaterTag = repeater.tagName;
@@ -179,7 +179,7 @@ var INTERMediatorLib = {
             }
             if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
                 var enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
-                if ( enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0) {
+                if (enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0) {
                     var repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
                     if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN') && repeaterClass != null && repeaterClass.indexOf('_im_repeater') >= 0) {
                         return true;
@@ -330,8 +330,8 @@ var INTERMediatorLib = {
             }
         }
         var underDot = (digit == null) ? 0 : INTERMediatorLib.toNumber(digit);
-        var underNumStr = (underDot == 0) ? '' : new String( Math.floor( f * Math.pow( 10, underDot )));
-        while( underNumStr.length < underDot )  {
+        var underNumStr = (underDot == 0) ? '' : new String(Math.floor(f * Math.pow(10, underDot)));
+        while (underNumStr.length < underDot) {
             underNumStr = "0" + underNumStr;
         }
         return sign + s.reverse().join(',') + (underNumStr == '' ? '' : '.' + underNumStr);
@@ -412,12 +412,43 @@ var INTERMediatorLib = {
     },
 
     getNamedValueInObject:function (ar, key, named, retrieveKey) {
+        var result = [];
         for (var index in ar) {
             if (ar[index][key] == named) {
-                return ar[index][retrieveKey];
+                result.push(ar[index][retrieveKey]);
             }
         }
-        return null;
+        if (result.length === 0) {
+            return null;
+        } else if (result.length === 1) {
+            return result[0];
+        } else {
+            return result;
+        }
+    },
+
+    is_array:function (target) {
+        return target
+            && typeof target === 'object'
+            && typeof target.length === 'number'
+            && typeof target.splice === 'function'
+            && !(target.propertyIsEnumerable('length'));
+    },
+
+    getNamedValuesInObject:function (ar, key1, named1, key2, named2, retrieveKey) {
+        var result = [];
+        for (var index in ar) {
+            if (ar[index][key1] == named1 && ar[index][key2] == named2) {
+                result.push(ar[index][retrieveKey]);
+            }
+        }
+        if (result.length === 0) {
+            return null;
+        } else if (result.length === 1) {
+            return result[0];
+        } else {
+            return result;
+        }
     },
 
     getRecordsetFromFieldValueObject:function (obj) {

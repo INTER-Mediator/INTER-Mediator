@@ -59,6 +59,8 @@ Change Log
 =================================
 
 Ver.2.3 (Will be release soon.)
+- The new server-side extension. You can specify the class name has the program you want do after/before db processing.
+- Bug Fix: The issue for "relation" settings is resolved.
 
 Ver.2.2 (2012/5/5)
 - The variable name "INTERMediaotr_DBAdapter" was typo. It was changed to "INTERMediator_DBAdapter."

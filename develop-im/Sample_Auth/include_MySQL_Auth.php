@@ -50,12 +50,12 @@ IM_Entry(
             'repeat-control' => 'insert delete',
             'authentication' => array(
                 'all' => array( /* load, update, new, delete*/
-                    'user' => array (),
+                    'user' => array(),
                     'group' => array(),
                     'target' => 'table',
                 ),
                 'load' => array( /* load, update, new, delete*/
-                    'user' => array (),
+                    'user' => array(),
                     'group' => array(),
                     'target' => 'record',
                     'field' => 'username',
@@ -70,16 +70,16 @@ IM_Entry(
             'kindname' => 'cor_way_kindname@name_kind@innerHTML',
         ),
         //    'transaction' => 'none',
-        'authentication' => array(  // table only, for all operations
-            'user' => array ('user1'), // Itemize permitted users
+        'authentication' => array( // table only, for all operations
+            'user' => array('user1'), // Itemize permitted users
             'group' => array('group2'), // Itemize permitted groups
             'privilege' => array(), // Itemize permitted privileges
             'user-table' => 'authuser', // Default values, or "_Native"
             'group-table' => 'authgroup',
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
-            'authexpired' => '300',  // Set as seconds.
-            'storing' => 'cookie-domainwide',   // 'cookie'(default), 'cookie-domainwide', 'none'
+            'authexpired' => '300', // Set as seconds.
+            'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
         ),
     ),
     array('db-class' => 'PDO'),

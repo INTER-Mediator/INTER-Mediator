@@ -6,8 +6,11 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-// Cleaning-up by PHPStrom's formatting feature.
 
+/**
+ *
+ * @type {Object}
+ */
 var INTERMediator = {
     /*
      Properties
@@ -57,6 +60,7 @@ var INTERMediator = {
      original:xxx       // Copy of childs
      name:xxx,             // name of context
      foreign-value:Recordset as {f1:v1, f2:v2, ..} ,not [{field:xx, value:xx},..]
+     f1, f2 is "join-field"'s field name, v1, v2 are their values.
      target:xxxx}       // Related (depending) node's id attribute value.
      */
     rootEnclosure:null,
@@ -70,7 +74,7 @@ var INTERMediator = {
     // Message for Programmers
     //=================================
     flushMessage:function () {
-        var debugNode, title, body, i, clearButton, tNode ;
+        var debugNode, title, body, i, clearButton, tNode;
         if (INTERMediator.errorMessages.length > 0) {
             debugNode = document.getElementById('_im_error_panel_4873643897897');
             if (debugNode == null) {
@@ -84,12 +88,12 @@ var INTERMediator = {
                 body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-            debugNode.appendChild(document.createTextNode("============ERROR MESSAGE on "+new Date()+"============"));
+            debugNode.appendChild(document.createTextNode("============ERROR MESSAGE on " + new Date() + "============"));
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.errorMessages.length; i++) {
                 var lines = INTERMediator.errorMessages[i].split("\n");
-                for ( var j = 0 ; j < lines.length ; j++ )  {
-                    if ( j > 0 )    {
+                for (var j = 0; j < lines.length; j++) {
+                    if (j > 0) {
                         debugNode.appendChild(document.createElement('br'));
                     }
                     debugNode.appendChild(document.createTextNode(lines[j]));
@@ -119,12 +123,12 @@ var INTERMediator = {
                 body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-            debugNode.appendChild(document.createTextNode("============DEBUG INFO on "+new Date()+"============"));
+            debugNode.appendChild(document.createTextNode("============DEBUG INFO on " + new Date() + "============"));
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.debugMessages.length; i++) {
                 var lines = INTERMediator.debugMessages[i].split("\n");
-                for ( var j = 0 ; j < lines.length ; j++ )  {
-                    if ( j > 0 )    {
+                for (var j = 0; j < lines.length; j++) {
+                    if (j > 0) {
                         debugNode.appendChild(document.createElement('br'));
                     }
                     debugNode.appendChild(document.createTextNode(lines[j]));
@@ -147,36 +151,37 @@ var INTERMediator = {
         var changedObj = document.getElementById(idValue);
 
         var linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
-        if ( linkInfo.length > 0 )  {
+        if (linkInfo.length > 0) {
             var matched = linkInfo[0].match(/([^@]+)/);
-            var context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(),'name',matched[1]);
-            if ( context["validation"] != null )    {
-                for ( var i = 0 ; i < linkInfo.length ; i++ )   {
-                    matched =linkInfo[i].match(/([^@]+)@([^@]+)/);
-                    for ( var index in context["validation"] )  {
-                        if ( context["validation"][index]["field"] == matched[2] )  {
-                            var checkFunction = function()  {
+            var context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
+            if (context["validation"] != null) {
+                for (var i = 0; i < linkInfo.length; i++) {
+                    matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
+                    for (var index in context["validation"]) {
+                        if (context["validation"][index]["field"] == matched[2]) {
+                            var checkFunction = function () {
                                 var target = changedObj;
                                 var value = changedObj.value;
                                 var result = false;
-                                eval( "result = " + context["validation"][index]["rule"] );
-                                if ( ! result ) {
-                                    alert( context["validation"][index]["message"] );
+                                eval("result = " + context["validation"][index]["rule"]);
+                                if (!result) {
+                                    alert(context["validation"][index]["message"]);
                                     changedObj.value = INTERMediator.updateRequiredObject[idValue]["initialvalue"];
                                     changedObj.focus();
-                                    if ( INTERMediatorOnPage.doAfterValidationFailure != null ) {
-                                        INTERMediatorOnPage.doAfterValidationFailure(target,linkInfo[i]);
+                                    if (INTERMediatorOnPage.doAfterValidationFailure != null) {
+                                        INTERMediatorOnPage.doAfterValidationFailure(target, linkInfo[i]);
                                     }
                                 } else {
-                                    if ( INTERMediatorOnPage.doAfterValidationSucceed != null ) {
-                                        INTERMediatorOnPage.doAfterValidationSucceed(target,linkInfo[i]);
+                                    if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
+                                        INTERMediatorOnPage.doAfterValidationSucceed(target, linkInfo[i]);
                                     }
                                 }
                                 return result;
                             };
-                            if ( ! checkFunction()) {
+                            if (!checkFunction()) {
                                 return;
-                            };
+                            }
+                            ;
                         }
                     }
                 }
@@ -198,7 +203,7 @@ var INTERMediator = {
         if (changedObj != null) {
             INTERMediatorOnPage.retrieveAuthInfo();
             var objType = changedObj.getAttribute('type');
-            if ( objType == 'radio' && ! changedObj.checked )  {
+            if (objType == 'radio' && !changedObj.checked) {
                 return;
             }
             var objectSpec = INTERMediator.updateRequiredObject[idValue];
@@ -272,9 +277,9 @@ var INTERMediator = {
                 }
             }
 
-            if ( isDiffrentOnDB ) {
+            if (isDiffrentOnDB) {
                 // The value of database and the field is diffrent. Others must be changed this field.
-                if ( ! confirm(INTERMediatorLib.getInsertedString(
+                if (!confirm(INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1001],
                     [objectSpec['initialvalue'], newValue, currentVal]))) {
                     INTERMediator.flushMessage();
@@ -288,8 +293,12 @@ var INTERMediator = {
                 try {
                     INTERMediator_DBAdapter.db_update({
                         name:objectSpec['name'],
-                        conditions:[{field:criteria[0], operator:'=', value:criteria[1]}],
-                        dataset:[{field:objectSpec['field'], value:newValue}]});
+                        conditions:[
+                            {field:criteria[0], operator:'=', value:criteria[1]}
+                        ],
+                        dataset:[
+                            {field:objectSpec['field'], value:newValue}
+                        ]});
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
                         if (ex == "_im_requath_request_") {
@@ -320,7 +329,7 @@ var INTERMediator = {
                 if (needUpdate) {
                     for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
                         if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodeId) {
-                            INTERMediator.construct(false, i);
+                            INTERMediator.construct(i);
                             break;
                         }
                     }
@@ -377,17 +386,13 @@ var INTERMediator = {
         var currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
         var recordSet = [];
         if (foreignValues != null) {
-            for (var fieldName in foreignValues) {
-                recordSet.push({field:fieldName, value:foreignValues[fieldName]});
+            for (var index in currentContext['relation']) {
+                recordSet.push({
+                    field:currentContext['relation'][index]["foreign-key"],
+                    value:foreignValues[currentContext['relation'][index]["join-field"]]
+                });
             }
         }
-//        if (currentContext['default-values'] != null) {
-//            for (var index in currentContext['default-values']) {
-//                recordSet.push({
-//                    field:currentContext['default-values'][index]['field'],
-//                    value:currentContext['default-values'][index]['value']});
-//            }
-//        }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
@@ -413,7 +418,7 @@ var INTERMediator = {
         for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
             if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodes) {
                 INTERMediator.keyFieldObject[i]['foreign-value'] = foreignValues;
-                INTERMediator.construct(false, i);
+                INTERMediator.construct(i);
                 break;
             }
         }
@@ -521,15 +526,7 @@ var INTERMediator = {
         }
         INTERMediator.flushMessage();
     },
-    /*
-     updateNodeId: function (nodeId) {
-     for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
-     if (INTERMediator.keyFieldObject[i]['target'] == nodeId) {
-     INTERMediator.construct(false, i);
-     }
-     }
-     },
-     */
+
     partialConstructing:false,
     objectReference:{},
 
@@ -540,9 +537,9 @@ var INTERMediator = {
      * Construct the Web Page with DB Data
      * You should call here when you show the page.
      *
-     * parameter: fromStart: true=construct page, false=construct partially
+     * parameter: true=construct page, others=construct partially
      */
-    construct:function (fromStart, indexOfKeyFieldObject) {
+    construct:function (indexOfKeyFieldObject) {
 
         var currentLevel = 0;
         var linkedNodes;
@@ -552,7 +549,7 @@ var INTERMediator = {
 
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
-            if (fromStart) {
+            if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === null) {
                 this.partialConstructing = false;
                 pageConstruct();
             } else {
@@ -582,8 +579,6 @@ var INTERMediator = {
 
          */
         function partialConstruct(indexOfKeyFieldObject) {
-            // Create parent table essentials.
-            var updateContext = INTERMediator.keyFieldObject[indexOfKeyFieldObject]['name'];
             var updateNode = INTERMediator.keyFieldObject[indexOfKeyFieldObject]['node'];
             while (updateNode.firstChild) {
                 updateNode.removeChild(updateNode.firstChild);
@@ -593,19 +588,15 @@ var INTERMediator = {
                 updateNode.appendChild(originalNodes[i]);
             }
             var beforeKeyFieldObjectCount = INTERMediator.keyFieldObject.length;
-            var currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', updateContext);
-            var parentRecordset = {};
-            for (var field in INTERMediator.keyFieldObject[indexOfKeyFieldObject]['foreign-value']) {
-                var joinFled = INTERMediatorLib.getNamedValueInObject(
-                    currentContext['relation'], 'foreign-key', field, 'join-field');
-                parentRecordset[joinFled]
-                    = INTERMediator.keyFieldObject[indexOfKeyFieldObject]['foreign-value'][field];
-            }
             postSetFields = [];
             try {
                 seekEnclosureNode(
-                    updateNode, parentRecordset, updateContext,
-                    INTERMediatorLib.getEnclosureSimple(updateNode), null);
+                    updateNode,
+                    INTERMediator.keyFieldObject[indexOfKeyFieldObject]['foreign-value'],
+                    INTERMediator.keyFieldObject[indexOfKeyFieldObject]['name'],
+                    INTERMediatorLib.getEnclosureSimple(updateNode),
+                    null
+                );
             } catch (ex) {
                 if (ex == "_im_requath_request_") {
                     throw ex;
@@ -629,6 +620,7 @@ var INTERMediator = {
                     if (enclosure != null) {
                         var targetNode = getEnclosedNode(enclosure,
                             currentNode['name'], currentNode['foreign-value'][0]['field']);
+                        /**** MUST CHECK ****/
                         if (targetNode) {
                             currentNode['target'] = targetNode.getAttribute('id');
                         }
@@ -737,7 +729,7 @@ var INTERMediator = {
             var objectReference = {};
 
             var linkedElmCounter = 0;
-            if (! node.getAttribute('id')) {
+            if (!node.getAttribute('id')) {
                 var idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
                 node.setAttribute('id', idValue);
                 linkedElmCounter++;
@@ -794,9 +786,8 @@ var INTERMediator = {
                 if (relationDef) {
                     relationValue = [];
                     for (var index in relationDef) {
-                        relationValue[ relationDef[index]['foreign-key'] ]
+                        relationValue[ relationDef[index]['join-field'] ]
                             = currentRecord[relationDef[index]['join-field']];
-
                         for (var fieldName in parentObjectInfo) {
                             if (fieldName == relationDef[index]['join-field']) {
                                 dependObject.push(parentObjectInfo[fieldName]);
@@ -825,7 +816,7 @@ var INTERMediator = {
                         records:currentContext['records'],
                         paging:currentContext['paging'],
                         fields:fieldList,
-                        parentkeyvalue:relationValue,
+                        parentkeyvalue:relationValue, /**** MUST CHECK ****/
                         conditions:null,
                         useoffset:true});
                 } catch (ex) {
@@ -1299,7 +1290,7 @@ var INTERMediator = {
                 navigation.setAttribute('class', 'IM_NAV_panel');
                 var navLabel = INTERMediator.navigationLabel;
 
-                if ( navLabel == null || navLabel[8] !== false )    {
+                if (navLabel == null || navLabel[8] !== false) {
                     node = document.createElement('SPAN');
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(
@@ -1310,7 +1301,7 @@ var INTERMediator = {
                     });
                 }
 
-                if ( navLabel == null || navLabel[4] !== false )    {
+                if (navLabel == null || navLabel[4] !== false) {
                     var start = Number(INTERMediator.startFrom);
                     var pageSize = Number(INTERMediator.pagedSize);
                     var allCount = Number(INTERMediator.pagedAllCount);
@@ -1327,7 +1318,7 @@ var INTERMediator = {
                     node.setAttribute('class', 'IM_NAV_info');
                 }
 
-                if ( navLabel == null || navLabel[0] !== false )    {
+                if (navLabel == null || navLabel[0] !== false) {
                     var node = document.createElement('SPAN');
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(

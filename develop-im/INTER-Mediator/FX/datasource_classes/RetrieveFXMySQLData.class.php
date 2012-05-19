@@ -9,9 +9,11 @@ require_once('RetrieveFXSQLData.class.php');
 #                                                                       #
 #########################################################################
 
-class RetrieveFXMySQLData extends RetrieveFXSQLData {
+class RetrieveFXMySQLData extends RetrieveFXSQLData
+{
 
-    function doQuery ($action) {
+    function doQuery($action)
+    {
         if (strlen(trim($this->FX->dataServer)) < 1) {
             return new FX_Error('No MySQL server specified.');
         }
@@ -25,13 +27,13 @@ class RetrieveFXMySQLData extends RetrieveFXSQLData {
             return new FX_Error('Unable to connect to MySQL server.');
         }
         if ($action != '-dbopen') {
-            if (! mysql_select_db($this->FX->database, $mysql_res)) {
+            if (!mysql_select_db($this->FX->database, $mysql_res)) {
                 return new FX_Error('Unable to connect to specified MySQL database.');
             }
         }
         if (substr_count($action, '-db') == 0 && substr_count($action, 'names') == 0 && strlen(trim($this->FX->layout)) > 0) {
             $theResult = mysql_query('SHOW COLUMNS FROM ' . $this->FX->layout);
-            if (! $theResult) {
+            if (!$theResult) {
                 return new FX_Error('Unable to access MySQL column data: ' . mysql_error());
             }
             $counter = 0;
@@ -71,7 +73,7 @@ class RetrieveFXMySQLData extends RetrieveFXSQLData {
             case '-findany':
             case '-new':
                 if ($action == '-findany') {
-                    $this->FX->dataQuery = 'SELECT ' . ($this->FX->selectColsSet?$this->FX->selectColumns:'*') . " FROM {$this->FX->layout} ORDER BY RAND() LIMIT 1;";
+                    $this->FX->dataQuery = 'SELECT ' . ($this->FX->selectColsSet ? $this->FX->selectColumns : '*') . " FROM {$this->FX->layout} ORDER BY RAND() LIMIT 1;";
                 } else {
                     $this->FX->dataQuery = $this->BuildSQLQuery($action);
                     if (FX::isError($this->FX->dataQuery)) {

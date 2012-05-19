@@ -33,7 +33,7 @@ class DataConverter_MySQLDateTime
             $sep = explode(' ', $str);
             $comp = explode('-', $sep[0]);
             $dtObj = new DateTime($comp[0] . '-' . $comp[1] . '-' . $comp[2]
-                    . ' ' . $sep[1], new DateTimeZone($this->tz));
+                . ' ' . $sep[1], new DateTimeZone($this->tz));
             $fmt = '%x %T';
         } elseif (($sp === FALSE) && ($slash == 2) && ($colon == 0)) {
             $comp = explode('-', $str);

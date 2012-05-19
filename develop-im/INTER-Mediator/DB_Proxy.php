@@ -42,6 +42,7 @@ interface DB_Interface
      * @return
      */
     function getFromDB($dataSourceName);
+
     function countQueryResult($dataSourceName);
 
     /**
@@ -61,7 +62,8 @@ interface DB_Interface
      * @return
      */
     function deleteFromDB($dataSourceName);
-    function initialize( $datasource, $options, $dbspec, $debug );
+
+    function initialize($datasource, $options, $dbspec, $debug);
 }
 
 interface Auth_Interface_DB
@@ -84,6 +86,7 @@ interface Auth_Interface_DB
      * @abstract
      */
     function removeOutdatedChallenges();
+
     /**
      * @param $username
      */
@@ -113,13 +116,19 @@ interface Auth_Interface_DB
  */
 interface Auth_Interface_Communication
 {
-    function generateClientId( $prefix );
+    function generateClientId($prefix);
+
     function generateChallenge();
+
     function generateSalt();
-    function saveChallenge( $username, $challenge, $clientId );
-    function checkAuthorization( $username, $hashedvalue, $clientId );
-    function checkChallenge( $challenge, $clientId );
-    function addUser( $username, $password );
+
+    function saveChallenge($username, $challenge, $clientId);
+
+    function checkAuthorization($username, $hashedvalue, $clientId);
+
+    function checkChallenge($challenge, $clientId);
+
+    function addUser($username, $password);
 }
 
 /**
@@ -127,30 +136,44 @@ interface Auth_Interface_Communication
  */
 interface Auth_Interface_CommonDB
 {
-    function getFieldForAuthorization( $operation );
-    function getTargetForAuthorization( $operation );
-    function getAuthorizedUsers( $operation = null );
-    function getAuthorizedGroups( $operation = null );
-    function changePassword( $username, $oldpassword, $newpassword );
+    function getFieldForAuthorization($operation);
+
+    function getTargetForAuthorization($operation);
+
+    function getAuthorizedUsers($operation = null);
+
+    function getAuthorizedGroups($operation = null);
+
+    function changePassword($username, $oldpassword, $newpassword);
 
 }
 
-interface DB_Proxy_Interface extends DB_Interface, Auth_Interface_Communication  {
+interface DB_Proxy_Interface extends DB_Interface, Auth_Interface_Communication
+{
 
 }
 
-interface DB_Access_Interface extends DB_Interface, Auth_Interface_DB  {
+interface DB_Access_Interface extends DB_Interface, Auth_Interface_DB
+{
 
 }
 
-interface Expanding_Interface   {
+interface Expanding_Interface
+{
     function doBeforeGetFromDB($dataSourceName);
+
     function doAfterGetFromDB($dataSourceName, $result);
+
     function doBeforeSetToDB($dataSourceName);
+
     function doAfterSetToDB($dataSourceName, $result);
+
     function doBeforeNewToDB($dataSourceName);
+
     function doAfterNewToDB($dataSourceName, $result);
+
     function doBeforeDeleteFromDB($dataSourceName);
+
     function doAfterDeleteFromDB($dataSourceName, $result);
 }
 
@@ -276,38 +299,50 @@ class DB_Settings
         return $this->dbSpecOption;
     }
 
-    function getAccessUser()    {
+    function getAccessUser()
+    {
         return $this->accessUser != null ? $this->accessUser : $this->dbSpecUser;
     }
-    function getAccessPassword()    {
+
+    function getAccessPassword()
+    {
         return $this->accessPassword != null ? $this->accessPassword : $this->dbSpecPassword;
     }
-    function setUserAndPaswordForAccess( $user, $pass )   {
+
+    function setUserAndPaswordForAccess($user, $pass)
+    {
         $this->accessUser = $user;
         $this->accessPassword = $pass;
     }
+
     /* Call on INTER-Mediator.php */
 
-    function getUserTable() {
+    function getUserTable()
+    {
         return isset($this->authentication['user-table'])
             ? $this->authentication['user-table'] : 'authuser';
     }
 
-    function getGroupTable() {
+    function getGroupTable()
+    {
         return isset($this->authentication['group-table'])
             ? $this->authentication['group-table'] : 'authgroup';
     }
-    function getCorrTable() {
+
+    function getCorrTable()
+    {
         return isset($this->authentication['corresponding-table'])
             ? $this->authentication['corresponding-table'] : 'authcor';
     }
 
-    function getHashTable() {
+    function getHashTable()
+    {
         return isset($this->authentication['challenge-table'])
             ? $this->authentication['challenge-table'] : 'issuedhash';
     }
 
-    function getExpiringSeconds() {
+    function getExpiringSeconds()
+    {
         return isset($this->authentication['authexpired'])
             ? $this->authentication['authexpired'] : 3600 * 8;
     }
@@ -316,6 +351,7 @@ class DB_Settings
     {
         $this->currentUser = $str;
     }
+
     /*
         function setCurrentChallenge($str)
         {
@@ -327,9 +363,10 @@ class DB_Settings
         $this->dataSource = $src;
     }
 
-    function getIndexOfDataSource( $dataSourceName )    {
-        foreach( $this->dataSource as $index => $value )    {
-            if ( $value['name'] == $dataSourceName) {
+    function getIndexOfDataSource($dataSourceName)
+    {
+        foreach ($this->dataSource as $index => $value) {
+            if ($value['name'] == $dataSourceName) {
                 return $index;
             }
         }
@@ -429,7 +466,7 @@ class DB_Settings
             foreach ($fmt as $oneItem) {
                 if (!isset($this->formatter[$oneItem['field']])) {
                     $cvClassName = "DataConverter_{$oneItem['converter-class']}";
-                //    require_once("{$cvClassName}.php");
+                    //    require_once("{$cvClassName}.php");
                     $parameter = isset($oneItem['parameter']) ? $oneItem['parameter'] : '';
                     $cvInstance = new $cvClassName($parameter);
                     $this->formatter[$oneItem['field']] = $cvInstance;
@@ -467,9 +504,9 @@ class DB_Logger
     var $errorMessage = array();
     var $debugMessage = array();
 
-    function setDebugMessage($str, $level = 1 )
+    function setDebugMessage($str, $level = 1)
     {
-        if ($this->debugLevel !== false && $this->debugLevel >= $level ) {
+        if ($this->debugLevel !== false && $this->debugLevel >= $level) {
             $this->debugMessage[] = $str;
         }
     }
@@ -489,23 +526,24 @@ class DB_Logger
 //        return $this->errorMessage;
 //    }
 
-    function getMessagesForJS() {
+    function getMessagesForJS()
+    {
         $q = '"';
         $returnData = array();
         foreach ($this->errorMessage as $oneError) {
             $returnData[] = "INTERMediator.errorMessages.push({$q}"
-                . str_replace( "\n", " ", addslashes($oneError)) . "{$q});";
+                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         foreach ($this->debugMessage as $oneError) {
             $returnData[] = "INTERMediator.debugMessages.push({$q}"
-                . str_replace( "\n", " ", addslashes($oneError)) . "{$q});";
+                . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         return $returnData;
     }
 
-    function setDebugMode( $val )
+    function setDebugMode($val)
     {
-        if ( $val === true )    {
+        if ($val === true) {
             $this->debugLevel = 1;
         } else {
             $this->debugLevel = $val;
@@ -514,164 +552,175 @@ class DB_Logger
     }
 }
 
-abstract class UseSharedObjects implements Auth_Interface_CommonDB {
+abstract class UseSharedObjects implements Auth_Interface_CommonDB
+{
     var $dbSettings = null;
     var $logger = null;
 
-    function setSettings($dbSettings) {
+    function setSettings($dbSettings)
+    {
         $this->dbSettings = $dbSettings;
     }
-    function setLogger($logger)   {
+
+    function setLogger($logger)
+    {
         $this->logger = $logger;
     }
 
-    function getFieldForAuthorization( $operation )
+    function getFieldForAuthorization($operation)
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $authInfoField = null;
-        if ( isset( $tableInfo['authentication']['all']['field'] )) {
+        if (isset($tableInfo['authentication']['all']['field'])) {
             $authInfoField = $tableInfo['authentication']['all']['field'];
         }
-        if ( isset( $tableInfo['authentication'][$operation]['field'] )) {
-            $authInfoField = $tableInfo['authentication'][ $operation ]['field'];
+        if (isset($tableInfo['authentication'][$operation]['field'])) {
+            $authInfoField = $tableInfo['authentication'][$operation]['field'];
         }
         return $authInfoField;
     }
 
-    function getTargetForAuthorization( $operation )
+    function getTargetForAuthorization($operation)
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $authInfoTarget = null;
-        if ( isset( $tableInfo['authentication']['all']['target'] )) {
+        if (isset($tableInfo['authentication']['all']['target'])) {
             $authInfoTarget = $tableInfo['authentication']['all']['target'];
         }
-        if ( isset( $tableInfo['authentication'][$operation]['target'] )) {
-            $authInfoTarget = $tableInfo['authentication'][ $operation ]['target'];
+        if (isset($tableInfo['authentication'][$operation]['target'])) {
+            $authInfoTarget = $tableInfo['authentication'][$operation]['target'];
         }
         return $authInfoTarget;
     }
 
-    function getAuthorizedUsers( $operation = null )
+    function getAuthorizedUsers($operation = null)
     {
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray( );
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $usersArray = array();
-        if ( isset( $this->dbSettings->authentication['user'] )) {
-            $usersArray = array_merge( $usersArray, $this->dbSettings->authentication['user'] );
+        if (isset($this->dbSettings->authentication['user'])) {
+            $usersArray = array_merge($usersArray, $this->dbSettings->authentication['user']);
         }
-        if ( isset( $tableInfo['authentication']['all']['user'] )) {
-            $usersArray = array_merge( $usersArray, $tableInfo['authentication']['all']['user'] );
+        if (isset($tableInfo['authentication']['all']['user'])) {
+            $usersArray = array_merge($usersArray, $tableInfo['authentication']['all']['user']);
         }
-        if ( isset( $tableInfo['authentication'][ $operation ]['user'] )) {
-            $usersArray = array_merge( $usersArray, $tableInfo['authentication'][ $operation ]['user'] );
+        if (isset($tableInfo['authentication'][$operation]['user'])) {
+            $usersArray = array_merge($usersArray, $tableInfo['authentication'][$operation]['user']);
         }
         return $usersArray;
     }
 
-    function getAuthorizedGroups( $operation = null )
+    function getAuthorizedGroups($operation = null)
     {
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray( );
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $groupsArray = array();
-        if ( isset( $this->dbSettings->authentication['group'] )) {
-            $groupsArray = array_merge( $groupsArray, $this->dbSettings->authentication['group'] );
+        if (isset($this->dbSettings->authentication['group'])) {
+            $groupsArray = array_merge($groupsArray, $this->dbSettings->authentication['group']);
         }
-        if ( isset( $tableInfo['authentication']['all']['group'] )) {
-            $groupsArray = array_merge( $groupsArray, $tableInfo['authentication']['all']['group'] );
+        if (isset($tableInfo['authentication']['all']['group'])) {
+            $groupsArray = array_merge($groupsArray, $tableInfo['authentication']['all']['group']);
         }
-        if ( isset( $tableInfo['authentication'][ $operation ]['group'] )) {
-            $groupsArray = array_merge( $groupsArray, $tableInfo['authentication'][ $operation ]['group'] );
+        if (isset($tableInfo['authentication'][$operation]['group'])) {
+            $groupsArray = array_merge($groupsArray, $tableInfo['authentication'][$operation]['group']);
         }
         return $groupsArray;
     }
 
-    function changePassword( $username, $oldpassword, $newpassword )
+    function changePassword($username, $oldpassword, $newpassword)
     {
-        $returnValue = $this->dbClass->authSupportChangePassword($username, sha1($oldpassword),sha1($newpassword));
+        $returnValue = $this->dbClass->authSupportChangePassword($username, sha1($oldpassword), sha1($newpassword));
         return $returnValue;
     }
 
 }
 
-class DB_Proxy implements DB_Proxy_Interface  {
+class DB_Proxy implements DB_Proxy_Interface
+{
 
     var $dbClass = null;
     var $dbSettings = null;
     var $userExpanded = null;
     var $logger = null;
 
-    function getFromDB($dataSourceName) {
-        if ( $this->userExpanded !== null && method_exists( $this->userExpanded, "doBeforeGetFromDB" ))  {
+    function getFromDB($dataSourceName)
+    {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeGetFromDB")) {
             $this->userExpanded->doBeforeGetFromDB($dataSourceName);
         }
-        if ( $this->dbClass !== null )  {
+        if ($this->dbClass !== null) {
             $result = $this->dbClass->getFromDB($dataSourceName);
         }
-        if ( $this->userExpanded !== null && method_exists( $this->userExpanded, "doAfterGetFromDB" ))  {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterGetFromDB")) {
             $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
         }
         return $result;
     }
 
-    function countQueryResult($dataSourceName)  {
+    function countQueryResult($dataSourceName)
+    {
         return $result = $this->dbClass->countQueryResult($dataSourceName);
     }
 
-    function setToDB($dataSourceName)   {
-        if ( $this->userExpanded !== null && method_exists( $this->userExpanded, "doBeforeSetToDB" ))  {
+    function setToDB($dataSourceName)
+    {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeSetToDB")) {
             $this->userExpanded->doBeforeSetToDB($dataSourceName);
         }
-        if ( $this->dbClass !== null )  {
+        if ($this->dbClass !== null) {
             $result = $this->dbClass->setToDB($dataSourceName);
         }
-        if ( $this->userExpanded !== null && method_exists( $this->userExpanded, "doAfterSetToDB" ))  {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
             $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
         }
         return $result;
     }
 
-    function newToDB($dataSourceName)   {
-        if ( $this->userExpanded !== null && method_exists( $this->userExpanded, "doBeforeNewToDB" ))  {
+    function newToDB($dataSourceName)
+    {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeNewToDB")) {
             $this->userExpanded->doBeforeNewToDB($dataSourceName);
         }
-        if ( $this->dbClass !== null )  {
+        if ($this->dbClass !== null) {
             $result = $this->dbClass->newToDB($dataSourceName);
         }
-        if ( $this->userExpanded !== null && method_exists( $this->userExpanded, "doAfterNewToDB" ))  {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
             $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
         }
         return $result;
     }
 
-    function deleteFromDB($dataSourceName)  {
-        if ( $this->userExpanded !== null && method_exists( $this->userExpanded, "doBeforeDeleteFromDB" ))  {
+    function deleteFromDB($dataSourceName)
+    {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
             $this->userExpanded->doBeforeDeleteFromDB($dataSourceName);
         }
-        if ( $this->dbClass !== null )  {
+        if ($this->dbClass !== null) {
             $result = $this->dbClass->deleteFromDB($dataSourceName);
         }
-        if ( $this->userExpanded !== null && method_exists( $this->userExpanded, "doAfterDeleteFromDB" ))  {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
             $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);
         }
         return $result;
     }
 
-    function initialize( $datasource, $options, $dbspec, $debug )   {
+    function initialize($datasource, $options, $dbspec, $debug)
+    {
         $this->dbSettings = new DB_Settings();
         $this->logger = new DB_Logger();
 
-        $currentDir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
+        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname( dirname( __FILE__ )  ). DIRECTORY_SEPARATOR . 'params.php';
-        if ( file_exists( $parentDirParam )) {
-            include( $parentDirParam );
-        } else if ( file_exists( $currentDirParam )) {
-            include( $currentDirParam );
+        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+        if (file_exists($parentDirParam)) {
+            include($parentDirParam);
+        } else if (file_exists($currentDirParam)) {
+            include($currentDirParam);
         }
 
-        $this->dbSettings->setDataSource( $datasource );
+        $this->dbSettings->setDataSource($datasource);
 
-        $this->dbSettings->setSeparator( isset($options['separator']) ? $options['separator'] : '@' );
-        $this->dbSettings->setFormatter( isset($options['formatter']) ? $options['formatter'] : null);
-        $this->dbSettings->setTargetName( isset($_POST['name']) ? $_POST['name'] : null );
+        $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
+        $this->dbSettings->setFormatter(isset($options['formatter']) ? $options['formatter'] : null);
+        $this->dbSettings->setTargetName(isset($_POST['name']) ? $_POST['name'] : null);
         $context = $this->dbSettings->getDataSourceTargetArray();
 
         $dbClassName = 'DB_' .
@@ -718,29 +767,30 @@ class DB_Proxy implements DB_Proxy_Interface  {
         require_once("{$dbClassName}.php");
         $this->dbClass = new $dbClassName();
         if ($this->dbClass == null) {
-            $this->logger->setErrorMessage( "The database class [{$dbClassName}] that you specify is not valid." );
+            $this->logger->setErrorMessage("The database class [{$dbClassName}] that you specify is not valid.");
             echo implode('', $this->logger->getMessagesForJS());
             return false;
         }
         $this->dbClass->setSettings($this->dbSettings);
         $this->dbClass->setLogger($this->logger);
 
-        if (isset($context['expanded']))    {
+        if (isset($context['expanded'])) {
             $this->userExpanded = new $context['expanded']();
             $this->userExpanded->setSettings($this->dbSettings);
             $this->userExpanded->setLogger($this->logger);
-        };
+        }
+        ;
 
         if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
             $this->logger->setDebugMode($debug);
         }
 
 
-        $this->dbSettings->setCurrentUser( isset($_POST['authuser']) ? $_POST['authuser'] : null );
+        $this->dbSettings->setCurrentUser(isset($_POST['authuser']) ? $_POST['authuser'] : null);
         $this->dbSettings->authentication = isset($options['authentication']) ? $options['authentication'] : null;
 
-        $this->dbSettings->setStart( isset($_POST['start']) ? $_POST['start'] : 0 );
-        $this->dbSettings->setRecordCount( isset($_POST['records']) ? $_POST['records'] : 10000000 );
+        $this->dbSettings->setStart(isset($_POST['start']) ? $_POST['start'] : 0);
+        $this->dbSettings->setRecordCount(isset($_POST['records']) ? $_POST['records'] : 10000000);
 
         for ($count = 0; $count < 10000; $count++) {
             if (isset($_POST["condition{$count}field"])) {
@@ -763,7 +813,9 @@ class DB_Proxy implements DB_Proxy_Interface  {
             if (!isset($_POST["foreign{$count}field"])) {
                 break;
             }
-            $this->dbSettings->setForeignValue($_POST["foreign{$count}field"], $_POST["foreign{$count}value"]);
+            $this->dbSettings->setForeignValue(
+                $_POST["foreign{$count}field"],
+                $_POST["foreign{$count}value"]);
         }
 
         for ($i = 0; $i < 1000; $i++) {
@@ -781,17 +833,18 @@ class DB_Proxy implements DB_Proxy_Interface  {
 
     }
 
-    function processingRequest($options)    {
+    function processingRequest($options)
+    {
         $generatedPrivateKey = '';
         $passPhrase = '';
 
-        $currentDir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
+        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname( dirname( __FILE__ )  ). DIRECTORY_SEPARATOR . 'params.php';
-        if ( file_exists( $parentDirParam )) {
-            include( $parentDirParam );
-        } else if ( file_exists( $currentDirParam )) {
-            include( $currentDirParam );
+        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+        if (file_exists($parentDirParam)) {
+            include($parentDirParam);
+        } else if (file_exists($currentDirParam)) {
+            include($currentDirParam);
         }
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -803,12 +856,12 @@ class DB_Proxy implements DB_Proxy_Interface  {
         $requireAuthentication = false;
         $requireAuthorization = false;
         $isDBNative = false;
-        if (   isset($options['authentication'] )
-            && (  isset($options['authentication']['user'])
-                || isset($options['authentication']['group']) )
+        if (isset($options['authentication'])
+            && (isset($options['authentication']['user'])
+                || isset($options['authentication']['group']))
             || $access == 'challenge'
             || (isset($tableInfo['authentication'])
-                && ( isset($tableInfo['authentication']['all'])
+                && (isset($tableInfo['authentication']['all'])
                     || isset($tableInfo['authentication'][$access])))
         ) {
             $requireAuthorization = true;
@@ -816,28 +869,28 @@ class DB_Proxy implements DB_Proxy_Interface  {
         }
 
         if ($requireAuthorization) { // Authentication required
-            if ( strlen($paramAuthUser) == 0  || strlen($paramResponse) == 0 ) {
+            if (strlen($paramAuthUser) == 0 || strlen($paramResponse) == 0) {
                 // No username or password
                 $access = "do nothing";
                 $requireAuthentication = true;
             }
             // User and Password are suppried but...
-            if ( $access != 'challenge') { // Not accessing getting a challenge.
-                if ( $isDBNative ) {
-                    $keyArray = openssl_pkey_get_details( openssl_pkey_get_private( $generatedPrivateKey, $passPhrase ));
-                    require_once( 'bi2php/biRSA.php' );
-                    $keyDecrypt = new biRSAKeyPair( '0', bin2hex( $keyArray['rsa']['d']), bin2hex( $keyArray['rsa']['n']));
-                    $decrypted = $keyDecrypt->biDecryptedString( $paramResponse );
-                    if ( $decrypted !== false ) {
-                        $nlPos = strpos( $decrypted, "\n" );
+            if ($access != 'challenge') { // Not accessing getting a challenge.
+                if ($isDBNative) {
+                    $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
+                    require_once('bi2php/biRSA.php');
+                    $keyDecrypt = new biRSAKeyPair('0', bin2hex($keyArray['rsa']['d']), bin2hex($keyArray['rsa']['n']));
+                    $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
+                    if ($decrypted !== false) {
+                        $nlPos = strpos($decrypted, "\n");
                         $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
-                        $password = substr( $decrypted, 0, $nlPos );
-                        $challenge = substr( $decrypted, $nlPos + 1 );
-                        if ( ! $this->checkChallenge( $challenge, $clientId ) ) {
+                        $password = substr($decrypted, 0, $nlPos);
+                        $challenge = substr($decrypted, $nlPos + 1);
+                        if (!$this->checkChallenge($challenge, $clientId)) {
                             $access = "do nothing";
                             $requireAuthentication = true;
                         } else {
-                            $this->dbSettings->setUserAndPaswordForAccess( $paramAuthUser, $password );
+                            $this->dbSettings->setUserAndPaswordForAccess($paramAuthUser, $password);
                         }
                     } else {
                         $this->logger->setDebugMessage("Can't decrypt.");
@@ -851,8 +904,8 @@ class DB_Proxy implements DB_Proxy_Interface  {
                     $this->logger->setDebugMessage(
                         "authorizedUsers=" . var_export($authorizedUsers, true)
                             . "/authorizedGroups=" . var_export($authorizedGroups, true)
-                        ,2);
-                    if ( (count($authorizedUsers) == 0 && count($authorizedGroups) == 0 )) {
+                        , 2);
+                    if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
                         $noAuthorization = false;
                     } else {
                         if (in_array($this->dbSettings->currentUser, $authorizedUsers)) {
@@ -885,7 +938,7 @@ class DB_Proxy implements DB_Proxy_Interface  {
             case 'select':
                 $result = $this->dbClass->getFromDB($this->dbSettings->getTargetName());
                 echo 'dbresult=' . arrayToJS($result, ''), ';',
-                    "resultCount='{$this->dbClass->countQueryResult($this->dbSettings->getTargetName())}';";
+                "resultCount='{$this->dbClass->countQueryResult($this->dbSettings->getTargetName())}';";
                 break;
             case 'update':
                 $this->dbClass->setToDB($this->dbSettings->getTargetName());
@@ -916,17 +969,17 @@ class DB_Proxy implements DB_Proxy_Interface  {
 
 
     /* Authentication support */
-    function generateClientId( $prefix )
+    function generateClientId($prefix)
     {
-        return sha1( uniqid( $prefix, true ));
+        return sha1(uniqid($prefix, true));
     }
 
     function generateChallenge()
     {
         $str = '';
-        for ( $i = 0 ; $i < 12 ; $i++ )  {
-            $n = rand( 1, 255 );
-            $str .= ($n < 16 ? '0' : '' ) . dechex($n);
+        for ($i = 0; $i < 12; $i++) {
+            $n = rand(1, 255);
+            $str .= ($n < 16 ? '0' : '') . dechex($n);
         }
         return $str;
     }
@@ -934,8 +987,8 @@ class DB_Proxy implements DB_Proxy_Interface  {
     function generateSalt()
     {
         $str = '';
-        for ( $i = 0 ; $i < 4 ; $i++ )  {
-            $n = rand( 1, 255 );
+        for ($i = 0; $i < 4; $i++) {
+            $n = rand(1, 255);
             $str .= chr($n);
         }
         return $str;
@@ -944,13 +997,13 @@ class DB_Proxy implements DB_Proxy_Interface  {
     /* returns user's hash salt.
 
     */
-    function saveChallenge( $username, $challenge, $clientId )
+    function saveChallenge($username, $challenge, $clientId)
     {
         $this->dbClass->authSupportStoreChallenge($username, $challenge, $clientId);
         return $username === 0 ? "" : $this->dbClass->authSupportGetSalt($username);
     }
 
-    function checkAuthorization( $username, $hashedvalue, $clientId )
+    function checkAuthorization($username, $hashedvalue, $clientId)
     {
         $returnValue = false;
 
@@ -959,11 +1012,11 @@ class DB_Proxy implements DB_Proxy_Interface  {
         $storedChalenge = $this->dbClass->authSupportRetrieveChallenge($username, $clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChalenge={$storedChalenge}", 2);
 
-        if ( strlen($storedChalenge) == 24 ) {   // ex.fc0d54312ce33c2fac19d758
+        if (strlen($storedChalenge) == 24) { // ex.fc0d54312ce33c2fac19d758
             $hashedPassword = $this->dbClass->authSupportRetrieveHashedPassword($username);
             $this->logger->setDebugMessage("[checkAuthorization]hashedPassword={$hashedPassword}", 2);
-            if ( strlen($hashedPassword) > 0 ) {
-                if ( $hashedvalue == sha1($storedChalenge . $hashedPassword) ) {
+            if (strlen($hashedPassword) > 0) {
+                if ($hashedvalue == sha1($storedChalenge . $hashedPassword)) {
                     $returnValue = true;
                 }
             }
@@ -972,22 +1025,22 @@ class DB_Proxy implements DB_Proxy_Interface  {
     }
 
     // This method is just used to authenticate with database user
-    function checkChallenge( $challenge, $clientId )
+    function checkChallenge($challenge, $clientId)
     {
         $returnValue = false;
         $this->dbClass->removeOutdatedChallenges();
         // Database user mode is user_id=0
-        $storedChallenge = $this->dbClass->authSupportRetrieveChallenge( 0, $clientId );
-        if ( strlen($storedChallenge) == 24 && $storedChallenge == $challenge ) {   // ex.fc0d54312ce33c2fac19d758
+        $storedChallenge = $this->dbClass->authSupportRetrieveChallenge(0, $clientId);
+        if (strlen($storedChallenge) == 24 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
         return $returnValue;
     }
 
-    function addUser( $username, $password )
+    function addUser($username, $password)
     {
         $salt = $this->generateSalt();
-        $hexSalt = bin2hex( $salt );
+        $hexSalt = bin2hex($salt);
         $returnValue = $this->dbClass->authSupportCreateUser($username, sha1($password . $salt) . $hexSalt);
         return $returnValue;
     }

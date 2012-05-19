@@ -11,14 +11,14 @@ require_once ('../INTER-Mediator/INTER-Mediator.php');
 
 IM_Entry(
     array(
-		array(
-			'name'  	=> 'postalcode',
-            'records'	=>	10,
-            'paging'    =>  true,
-			'query'	    => array( ),
-		//	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
-		),
-	),
+        array(
+            'name' => 'postalcode',
+            'records' => 10,
+            'paging' => true,
+            'query' => array(),
+            //	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
+        ),
+    ),
     null,
     array('db-class' => 'FileMaker_FX'),
     false

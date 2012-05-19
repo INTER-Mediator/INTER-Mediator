@@ -35,16 +35,16 @@ IM_Entry(
         'formatter' => array(
             array('field' => 'chat@postdt', 'converter-class' => 'FMDateTime'),
         ),
-        'authentication' => array(  // table only, for all operations
-            'user' => array ('user1'), // Itemize permitted users
+        'authentication' => array( // table only, for all operations
+            'user' => array('user1'), // Itemize permitted users
             'group' => array('group2'), // Itemize permitted groups
             'privilege' => array(), // Itemize permitted privileges
             'user-table' => 'authuser', // Default values, or "_Native"
             'group-table' => 'authgroup',
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
-            'authexpired' => '300',  // Set as seconds.
-            'storing' => 'cookie-domainwide',   // 'cookie'(default), 'cookie-domainwide', 'none'
+            'authexpired' => '300', // Set as seconds.
+            'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
         ),
     ),
     array('db-class' => 'FileMaker_FX'),

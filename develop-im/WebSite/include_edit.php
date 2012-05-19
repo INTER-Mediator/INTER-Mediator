@@ -74,6 +74,6 @@ IM_Entry(
         'user' => 'website',
         'password' => 'thirdparty422',
     ),
-false);
+    false);
 
 ?>

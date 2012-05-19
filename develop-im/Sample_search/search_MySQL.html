@@ -13,34 +13,34 @@
 <html>
 <head>
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="../sample.css" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../sample.css"/>
     <script type="text/javascript" src="include_MySQL.php"></script>
     <script type="text/javascript">
         var searchCriteriaTown;
         var searchCriteriaZip;
         var whichSearch;
         INTERMediator.navigationLabel = [null, null, null, null, null, null, null, null, false];
-        function doSearchFromTown(key,direction)  {
+        function doSearchFromTown(key, direction) {
             searchCriteriaTown = document.getElementById('place').value;
             searchCriteriaZip = document.getElementById('zipcode').value;
             whichSearch = 1;
-            INTERMediator.additionalCondition["postalcode"] = {field:'f9',operator:'LIKE',value:'%'+searchCriteriaTown+'%'};
-            INTERMediator.additionalSortKey["postalcode"] = {field:key,direction:direction};
+            INTERMediator.additionalCondition["postalcode"] = {field:'f9', operator:'LIKE', value:'%' + searchCriteriaTown + '%'};
+            INTERMediator.additionalSortKey["postalcode"] = {field:key, direction:direction};
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);
         }
-        function doSearchFromZipcode(key,direction)  {
+        function doSearchFromZipcode(key, direction) {
             searchCriteriaTown = document.getElementById('place').value;
             searchCriteriaZip = document.getElementById('zipcode').value;
             whichSearch = 2;
-            INTERMediator.additionalCondition["postalcode"] = {field:'f3',operator:'LIKE',value:searchCriteriaZip+'%'};
-            INTERMediator.additionalSortKey["postalcode"] = {field:key,direction:direction};
+            INTERMediator.additionalCondition["postalcode"] = {field:'f3', operator:'LIKE', value:searchCriteriaZip + '%'};
+            INTERMediator.additionalSortKey["postalcode"] = {field:key, direction:direction};
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);
         }
-        INTERMediatorOnPage.expandingEnclosureFinish = function(name,target) {
-            if ( name === 'postalcode' )   {
+        INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
+            if (name === 'postalcode') {
                 document.getElementById('place').value = searchCriteriaTown;
                 document.getElementById('zipcode').value = searchCriteriaZip;
             }
@@ -56,13 +56,13 @@
 </div>
 <div>
     郵便番号(Zipcode):
-    <input type="text" id="zipcode" value="123" onkeydown="if(event.keyCode==13){doSearchFromZipcode('f3','ASC')}" />
+    <input type="text" id="zipcode" value="123" onkeydown="if(event.keyCode==13){doSearchFromZipcode('f3','ASC')}"/>
     <button onclick="doSearchFromZipcode('f3','ASC')">search</button>
     郵便番号を前方一致で検索します。
 </div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1" id="resultTable">
-	<thead>
+    <thead>
     <tr>
         <th>郵便番号
             <a href="javascript:whichSearch==2?doSearchFromZipcode('f3','ASC'):doSearchFromTown('f3','ASC')">▼</a>
@@ -78,15 +78,23 @@
     </thead>
     <tbody>
     <tr>
-		<td><div class="IM[postalcode@f3]"></div></td>
-		<td><div class="IM[postalcode@f7]"></div></td>
-		<td><div class="IM[postalcode@f8]"></div></td>
-		<td><div class="IM[postalcode@f9]"></div></td>
-	</tr>
+        <td>
+            <div class="IM[postalcode@f3]"></div>
+        </td>
+        <td>
+            <div class="IM[postalcode@f7]"></div>
+        </td>
+        <td>
+            <div class="IM[postalcode@f8]"></div>
+        </td>
+        <td>
+            <div class="IM[postalcode@f9]"></div>
+        </td>
+    </tr>
     <tr class="_im_for_noresult_">
-		<td colspan="4">検索結果はありません。あるいは検索前です。</td>
-	</tr>
-	</tbody>
+        <td colspan="4">検索結果はありません。あるいは検索前です。</td>
+    </tr>
+    </tbody>
 </table>
 
 </body>

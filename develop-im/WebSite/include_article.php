@@ -24,13 +24,13 @@ IM_Entry(
             'key' => 'id',
         ),
         'authentication' => array(
-            'update'=>array('target'=>'table'),
-            'new'=>array('target'=>'table')
+            'update' => array('target' => 'table'),
+            'new' => array('target' => 'table')
         )
     ),
     array(
         'authentication' => array(
-            'storing'=>'cookie'
+            'storing' => 'cookie'
         ),
     ),
     array(
@@ -40,6 +40,6 @@ IM_Entry(
         'user' => 'website',
         'password' => 'thirdparty422',
     ),
-2);
+    2);
 
 ?>

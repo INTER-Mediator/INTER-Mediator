@@ -22,7 +22,7 @@
             for (var i = 0; i < param.length; i++) {
                 if (param[i].match(/id=/)) {
                     var values = param[i].split('=');
-                    INTERMediator.additionalCondition["product"] = {field:'id',operator:'=',value:values[1]};
+                    INTERMediator.additionalCondition["product"] = {field:'id', operator:'=', value:values[1]};
                 }
             }
             INTERMediator.construct(true);

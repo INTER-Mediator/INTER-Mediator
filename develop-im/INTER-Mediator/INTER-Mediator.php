@@ -50,11 +50,13 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 
 class GenerateInitialJSCode
 {
-    function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '' )   {
+    function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
+    {
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
 
-    function generate($datasource, $options, $dbspecification, $debug) {
+    function generate($datasource, $options, $dbspecification, $debug)
+    {
         $q = '"';
         $generatedPrivateKey = null;
         $passPhrase = null;
@@ -95,7 +97,7 @@ class GenerateInitialJSCode
 
         $messageClass = null;
         $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-        foreach( $clientLangArray as $oneLanguage)   {
+        foreach ($clientLangArray as $oneLanguage) {
             $langCountry = explode(';', $oneLanguage);
             $clientLang = explode('-', $langCountry[0]);
             $messageClass = "MessageStrings_{$clientLang[0]}";
@@ -104,7 +106,7 @@ class GenerateInitialJSCode
                 break;
             }
         }
-        if ( $messageClass == null ) {
+        if ($messageClass == null) {
             $messageClass = new MessageStrings();
         }
         $this->generateAssignJS(
@@ -154,18 +156,20 @@ class GenerateInitialJSCode
             "INTERMediatorOnPage.authExpired",
             (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
                 $options['authentication']['authexpired'] : '3600');
-        $keyArray = openssl_pkey_get_details( openssl_pkey_get_private( $generatedPrivateKey, $passPhrase ));
+        $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
         $this->generateAssignJS(
             "INTERMediatorOnPage.publickey",
-            "new biRSAKeyPair('", bin2hex( $keyArray['rsa']['e']),"','0','",bin2hex( $keyArray['rsa']['n']),"')");
+            "new biRSAKeyPair('", bin2hex($keyArray['rsa']['e']), "','0','", bin2hex($keyArray['rsa']['n']), "')");
     }
 }
+
 /**
  * Dynamic class loader
  * @param $className
  */
-function loadClass($className) {
-    require_once( $className . '.php' );
+function loadClass($className)
+{
+    require_once($className . '.php');
 }
 
 /**
@@ -355,16 +359,18 @@ function getLocaleFromBrowser()
     return $lstr;
 }
 
-function hex2bin_for53( $str )
+function hex2bin_for53($str)
 {
     return pack("H*", $str);
 }
 
-function randomString( $digit ) {
+function randomString($digit)
+{
     $resultStr = '';
-    for ( $i = 0 ; $i < $digit ; $i++ ) {
-        $resultStr .= chr( rand(20, 126));
+    for ($i = 0; $i < $digit; $i++) {
+        $resultStr .= chr(rand(20, 126));
     }
     return $resultStr;
 }
+
 ?>

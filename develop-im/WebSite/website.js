@@ -27,7 +27,7 @@ function pageLoad(id) {
 function editbutton(target) {
     var fieldId = INTERMediatorOnPage.getNodeIdFromIMDefinition("ContentsOfArticle@id", target);
     var idValue = document.getElementById(fieldId).value;
-    location.href="article.html?id=" + idValue;
+    location.href = "article.html?id=" + idValue;
 }
 
 function articlePageLoad() {

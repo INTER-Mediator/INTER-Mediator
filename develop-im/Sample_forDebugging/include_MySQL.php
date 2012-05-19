@@ -11,18 +11,18 @@ require_once ('../INTER-Mediator/INTER-Mediator.php');
 
 IM_Entry(
     array(
-		array(
-			'name'    => 'postalcode',
-            'key'     => 'id',
+        array(
+            'name' => 'postalcode',
+            'key' => 'id',
             'records' => 20,
-            'paging'  => true,
-            'query'	  => array( array( 'field'=>'f3', 'operator'=>'LIKE', 'value'=>"15%" ),),
-            'sort'	  => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
+            'paging' => true,
+            'query' => array(array('field' => 'f3', 'operator' => 'LIKE', 'value' => "15%"),),
+            'sort' => array(array('field' => 'f3', 'direction' => 'ASC'),),
             'repeat-control' => 'insert delete',
-		),
-	),
+        ),
+    ),
     array(
-        'transaction' =>'none',
+        'transaction' => 'none',
     ),
     array('db-class' => 'PDO'),
     true

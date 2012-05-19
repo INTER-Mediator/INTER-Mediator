@@ -21,24 +21,27 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
 {
     var $fx = null;
 
-    function setupFXforAuth($layoutName, $recordCount)   {
+    function setupFXforAuth($layoutName, $recordCount)
+    {
         $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
-    function setupFXforDB($layoutName, $recordCount)   {
+    function setupFXforDB($layoutName, $recordCount)
+    {
         $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    function setupFX_Impl($layoutName, $recordCount, $user, $password)   {
-            $this->fx = new FX(
+    function setupFX_Impl($layoutName, $recordCount, $user, $password)
+    {
+        $this->fx = new FX(
             $this->dbSettings->getDbSpecServer(),
             $this->dbSettings->getDbSpecPort(),
             $this->dbSettings->getDbSpecDataType(),
             $this->dbSettings->getDbSpecProtocol());
         $this->fx->setCharacterEncoding('UTF-8');
-        $this->fx->setDBUserPass( $user, $password );
+        $this->fx->setDBUserPass($user, $password);
         $this->fx->setDBData($this->dbSettings->getDbSpecDatabase(), $layoutName, $recordCount);
     }
 
@@ -48,7 +51,8 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
         $this->logger->setErrorMessage("Query Error: [{$str}] Code= Info =");
     }
 
-    function stringReturnOnly($str)    {
+    function stringReturnOnly($str)
+    {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str));
     }
 
@@ -107,36 +111,37 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
             }
         }
 
-        if ( isset( $context['authentication'] )) {
+        if (isset($context['authentication'])) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization( "load" );
-            $authInfoTarget = $this->getTargetForAuthorization( "load" );
-            if ( $authInfoTarget == 'field-user' ) {
-                if ( strlen( $this->dbSettings->currentUser ) == 0 )    {
+            $authInfoField = $this->getFieldForAuthorization("load");
+            $authInfoTarget = $this->getTargetForAuthorization("load");
+            if ($authInfoTarget == 'field-user') {
+                if (strlen($this->dbSettings->currentUser) == 0) {
                     $authFailure = true;
                 } else {
                     $this->fx->AddDBParam($authInfoField, $this->dbSettings->currentUser, "eq");
                     $hasFindParams = true;
                 }
-            } else if ( $authInfoTarget == 'field-group' ) {
-                $belongGroups = $this->getGroupsOfUser( $this->dbSettings->currentUser );
+            } else if ($authInfoTarget == 'field-group') {
+                $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
                 $groupCriteria = array();
-                if ( strlen( $this->dbSettings->currentUser ) == 0 || count( $groupCriteria ) == 0 )    {
+                if (strlen($this->dbSettings->currentUser) == 0 || count($groupCriteria) == 0) {
                     $authFailure = true;
                 } else {
                     $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
                     $hasFindParams = true;
                 }
             } else {
-                $authorizedUsers = $this->getAuthorizedUsers( "load" );
-                $authorizedGroups = $this->getAuthorizedGroups( "load" );
-                $belongGroups = $this->getGroupsOfUser( $this->dbSettings->currentUser );
-                if ( ! in_array( $this->dbSettings->currentUser, $authorizedUsers )
-                    && array_intersect( $belongGroups, $authorizedGroups )) {
+                $authorizedUsers = $this->getAuthorizedUsers("load");
+                $authorizedGroups = $this->getAuthorizedGroups("load");
+                $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
+                if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
+                    && array_intersect($belongGroups, $authorizedGroups)
+                ) {
                     $authFailure = true;
                 }
             }
-            if ( $authFailure ) {
+            if ($authFailure) {
                 return null;
             }
         }
@@ -150,7 +155,7 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                 }
             }
         }
-        if (count($this->dbSettings->extraSortKey)>0) {
+        if (count($this->dbSettings->extraSortKey) > 0) {
             foreach ($this->dbSettings->extraSortKey as $condition) {
                 $this->fx->AddSortParam($condition['field'], $condition['direction']);
             }
@@ -175,20 +180,20 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                 }
             }
         }
-        if ( $hasFindParams )   {
+        if ($hasFindParams) {
             $this->fxResult = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         } else {
             $this->fxResult = $this->fx->DoFxAction("show_all", TRUE, TRUE, 'full');
         }
 
         //var_dump($this->fxResult);
-        if ( ! is_array($this->fxResult) )   {
+        if (!is_array($this->fxResult)) {
             $this->logger->setErrorMessage(
-                get_class($this->fxResult) . ': '. $this->fxResult->getDebugInfo() . var_export($this->fx,true));
+                get_class($this->fxResult) . ': ' . $this->fxResult->getDebugInfo() . var_export($this->fx, true));
             return null;
         }
         if ($this->fxResult['errorCode'] != 0 && $this->fxResult['errorCode'] != 401) {
-            $this->logger->setErrorMessage( "FX reports error at find action: "
+            $this->logger->setErrorMessage("FX reports error at find action: "
                 . "code={$this->fxResult['errorCode']}, url={$this->fxResult['URL']}");
             return null;
         }
@@ -212,7 +217,8 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
         return $returnArray;
     }
 
-    function countQueryResult($dataSourceName){
+    function countQueryResult($dataSourceName)
+    {
         return $this->mainTableCount;
     }
 
@@ -225,47 +231,48 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                 "{$dataSourceName}{$this->dbSettings->separator}{$value['field']}", $value['value']);
             $this->fx->AddDBParam($value['field'], $convertedValue, $op);
         }
-        if ( isset( $context['authentication'] )) {
+        if (isset($context['authentication'])) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization( "update" );
-            $authInfoTarget = $this->getTargetForAuthorization( "update" );
-            if ( $authInfoTarget == 'field-user' ) {
-                if ( strlen( $this->dbSettings->currentUser ) == 0 )    {
+            $authInfoField = $this->getFieldForAuthorization("update");
+            $authInfoTarget = $this->getTargetForAuthorization("update");
+            if ($authInfoTarget == 'field-user') {
+                if (strlen($this->dbSettings->currentUser) == 0) {
                     $authFailure = true;
                 } else {
                     $this->fx->AddDBParam($authInfoField, $this->dbSettings->currentUser, "eq");
                 }
-            } else if ( $authInfoTarget == 'field-group' ) {
-                $belongGroups = $this->getGroupsOfUser( $this->dbSettings->currentUser );
+            } else if ($authInfoTarget == 'field-group') {
+                $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
                 $groupCriteria = array();
-                if ( strlen( $this->dbSettings->currentUser ) == 0 || count( $groupCriteria ) == 0 )    {
+                if (strlen($this->dbSettings->currentUser) == 0 || count($groupCriteria) == 0) {
                     $authFailure = true;
                 } else {
                     $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
                 }
             } else {
-                $authorizedUsers = $this->getAuthorizedUsers( "update" );
-                $authorizedGroups = $this->getAuthorizedGroups( "update" );
-                $belongGroups = $this->getGroupsOfUser( $this->dbSettings->currentUser );
-                if ( ! in_array( $this->dbSettings->currentUser, $authorizedUsers )
-                    && array_intersect( $belongGroups, $authorizedGroups )) {
+                $authorizedUsers = $this->getAuthorizedUsers("update");
+                $authorizedGroups = $this->getAuthorizedGroups("update");
+                $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
+                if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
+                    && array_intersect($belongGroups, $authorizedGroups)
+                ) {
                     $authFailure = true;
                 }
             }
-            if ( $authFailure ) {
+            if ($authFailure) {
                 return false;
             }
         }
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setErrorMessage( get_class($result) . ': '. $result->getDebugInfo() );
+        if (!is_array($result)) {
+            $this->logger->setErrorMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
 
         if ($result['errorCode'] > 0) {
             $this->logger->setErrorMessage(
-                "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>" );
+                "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>");
             return false;
         }
         if ($result['foundCount'] == 1) {
@@ -283,7 +290,7 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                     $this->fx->AddDBParam($field, $convVal);
                 }
                 if ($counter < 1) {
-                    $this->logger->setErrorMessage( 'No data to update.' );
+                    $this->logger->setErrorMessage('No data to update.');
                     return false;
                 }
                 if (isset($context['global'])) {
@@ -307,17 +314,17 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                     }
                 }
                 $result = $this->fx->DoFxAction("update", TRUE, TRUE, 'full');
-                if ( ! is_array($result) )   {
-                    $this->logger->setErrorMessage( get_class($result) . ': '. $result->getDebugInfo() );
+                if (!is_array($result)) {
+                    $this->logger->setErrorMessage(get_class($result) . ': ' . $result->getDebugInfo());
                     return false;
                 }
                 if ($result['errorCode'] > 0) {
                     $this->logger->setErrorMessage(
                         "FX reports error at edit action: table={$this->getEntityForUpdate()}, "
-                            ."code={$result['errorCode']}, url={$result['URL']}<hr>");
+                            . "code={$result['errorCode']}, url={$result['URL']}<hr>");
                     return false;
                 }
-                $this->logger->setDebugMessage( $result['URL'] );
+                $this->logger->setDebugMessage($result['URL']);
                 break;
             }
         } else {
@@ -343,7 +350,7 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
             }
         }
         if (isset($context['default-values'])) {
-            foreach( $context['default-values'] as $itemDef ) {
+            foreach ($context['default-values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
                 if ($field != $keyFieldName) {
@@ -353,14 +360,14 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                 }
             }
         }
-        if ( isset( $context['authentication'] )) {
-            $authInfoField = $this->getFieldForAuthorization( "new" );
-            $authInfoTarget = $this->getTargetForAuthorization( "new" );
-            if ( $authInfoTarget == 'field-user' ) {
-                $this->fx->AddDBParam( $authInfoField, strlen($this->dbSettings->currentUser)==0 ? randomString(10) : $this->dbSettings->currentUser );
-            } else if ( $authInfoTarget == 'field-group' ) {
-                $belongGroups = $this->getGroupsOfUser( $this->dbSettings->currentUser );
-                $this->fx->AddDBParam( $authInfoField, strlen($belongGroups[0])==0 ? randomString(10) : $belongGroups[0] );
+        if (isset($context['authentication'])) {
+            $authInfoField = $this->getFieldForAuthorization("new");
+            $authInfoTarget = $this->getTargetForAuthorization("new");
+            if ($authInfoTarget == 'field-user') {
+                $this->fx->AddDBParam($authInfoField, strlen($this->dbSettings->currentUser) == 0 ? randomString(10) : $this->dbSettings->currentUser);
+            } else if ($authInfoTarget == 'field-group') {
+                $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
+                $this->fx->AddDBParam($authInfoField, strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
             }
         }
         if (isset($context['global'])) {
@@ -384,13 +391,13 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
             }
         }
         $result = $this->fx->DoFxAction("new", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
+        if (!is_array($result)) {
+            $this->errorMessage[] = get_class($result) . ': ' . $result->getDebugInfo();
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         if ($result['errorCode'] > 0 && $result['errorCode'] != 401) {
-            $this->logger->setErrorMessage( "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>" );
+            $this->logger->setErrorMessage("FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>");
             return false;
         }
         foreach ($result['data'] as $row) {
@@ -407,45 +414,46 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
             $this->fx->AddDBParam($value['field'], $value['value'], $op);
         }
-        if ( isset( $context['authentication'] )) {
+        if (isset($context['authentication'])) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization( "delete" );
-            $authInfoTarget = $this->getTargetForAuthorization( "delete" );
-            if ( $authInfoTarget == 'field-user' ) {
-                if ( strlen( $this->dbSettings->currentUser ) == 0 )    {
+            $authInfoField = $this->getFieldForAuthorization("delete");
+            $authInfoTarget = $this->getTargetForAuthorization("delete");
+            if ($authInfoTarget == 'field-user') {
+                if (strlen($this->dbSettings->currentUser) == 0) {
                     $authFailure = true;
                 } else {
                     $this->fx->AddDBParam($authInfoField, $this->dbSettings->currentUser, "eq");
                     $hasFindParams = true;
                 }
-            } else if ( $authInfoTarget == 'field-group' ) {
-                $belongGroups = $this->getGroupsOfUser( $this->dbSettings->currentUser );
+            } else if ($authInfoTarget == 'field-group') {
+                $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
                 $groupCriteria = array();
-                if ( strlen( $this->dbSettings->currentUser ) == 0 || count( $groupCriteria ) == 0 )    {
+                if (strlen($this->dbSettings->currentUser) == 0 || count($groupCriteria) == 0) {
                     $authFailure = true;
                 } else {
                     $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
                     $hasFindParams = true;
                 }
             } else {
-                $authorizedUsers = $this->getAuthorizedUsers( "delete" );
-                $authorizedGroups = $this->getAuthorizedGroups( "delete" );
-                $belongGroups = $this->getGroupsOfUser( $this->dbSettings->currentUser );
-                if ( ! in_array( $this->dbSettings->currentUser, $authorizedUsers )
-                    && array_intersect( $belongGroups, $authorizedGroups )) {
+                $authorizedUsers = $this->getAuthorizedUsers("delete");
+                $authorizedGroups = $this->getAuthorizedGroups("delete");
+                $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
+                if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
+                    && array_intersect($belongGroups, $authorizedGroups)
+                ) {
                     $authFailure = true;
                 }
             }
-            if ( $authFailure ) {
+            if ($authFailure) {
                 return false;
             }
         }
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->errorMessage[] = get_class($result) . ': '. $result->getDebugInfo();
+        if (!is_array($result)) {
+            $this->errorMessage[] = get_class($result) . ': ' . $result->getDebugInfo();
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         if ($result['errorCode'] > 0) {
             $this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
             return false;
@@ -476,114 +484,116 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                     }
                 }
                 $result = $this->fx->DoFxAction("delete", TRUE, TRUE, 'full');
-                if ( ! is_array($result) )   {
-                    $this->logger->setErrorMessage( get_class($result) . ': '. $result->getDebugInfo() );
+                if (!is_array($result)) {
+                    $this->logger->setErrorMessage(get_class($result) . ': ' . $result->getDebugInfo());
                     return false;
                 }
                 if ($result['errorCode'] > 0) {
                     $this->logger->setErrorMessage(
-                        "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>" );
+                        "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>");
                     return false;
                 }
-                $this->logger->setDebugMessage( $result['URL'] );
+                $this->logger->setDebugMessage($result['URL']);
                 break;
             }
         }
         return true;
     }
 
-    function authSupportStoreChallenge($username, $challenge, $clientId)   {
+    function authSupportStoreChallenge($username, $challenge, $clientId)
+    {
         $hashTable = $this->dbSettings->getHashTable();
-        if ( $hashTable == null )   {
+        if ($hashTable == null) {
             return false;
         }
-        if ( $username === 0 )   {
+        if ($username === 0) {
             $uid = 0;
         } else {
             $uid = $this->authSupportGetUserIdFromUsername($username);
-            if ( $uid === false )   {
+            if ($uid === false) {
                 $this->logger->setDebugMessage("User '{$username}' does't exist.");
                 return false;
             }
         }
-        $this->setupFXforAuth( $hashTable, 1);
-        $this->fx->AddDBParam( 'user_id', $uid , 'eq');
-        $this->fx->AddDBParam( 'clienthost', $clientId , 'eq');
+        $this->setupFXforAuth($hashTable, 1);
+        $this->fx->AddDBParam('user_id', $uid, 'eq');
+        $this->fx->AddDBParam('clienthost', $clientId, 'eq');
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': ' . $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        foreach ( $result['data'] as $key => $row ) {
-            $recId = substr( $key, 0, strpos($key, '.') );
+        foreach ($result['data'] as $key => $row) {
+            $recId = substr($key, 0, strpos($key, '.'));
 //            $this->fx->setCharacterEncoding('UTF-8');
 //            $this->fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
 //            $this->fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
-            $this->setupFXforAuth( $hashTable, 1 );
-            $this->fx->SetRecordID( $recId );
-            $this->fx->AddDBParam( 'hash', $challenge);
-            $this->fx->AddDBParam( 'expired', $currentDTFormat);
-            $this->fx->AddDBParam( 'clienthost', $clientId );
-            $this->fx->AddDBParam( 'user_id', $uid );
+            $this->setupFXforAuth($hashTable, 1);
+            $this->fx->SetRecordID($recId);
+            $this->fx->AddDBParam('hash', $challenge);
+            $this->fx->AddDBParam('expired', $currentDTFormat);
+            $this->fx->AddDBParam('clienthost', $clientId);
+            $this->fx->AddDBParam('user_id', $uid);
             $result = $this->fx->DoFxAction("update", TRUE, TRUE, 'full');
-            if ( ! is_array($result) )   {
-                $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            if (!is_array($result)) {
+                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
                 return false;
             }
-            $this->logger->setDebugMessage( $result['URL'] );
+            $this->logger->setDebugMessage($result['URL']);
             return true;
         }
-        $this->setupFXforAuth( $hashTable, 1);
+        $this->setupFXforAuth($hashTable, 1);
 //        $this->fx->setCharacterEncoding('UTF-8');
 //        $this->fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
 //        $this->fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
-        $this->fx->AddDBParam( 'hash', $challenge);
-        $this->fx->AddDBParam( 'expired', $currentDTFormat);
-        $this->fx->AddDBParam( 'clienthost', $clientId );
-        $this->fx->AddDBParam( 'user_id', $uid );
+        $this->fx->AddDBParam('hash', $challenge);
+        $this->fx->AddDBParam('expired', $currentDTFormat);
+        $this->fx->AddDBParam('clienthost', $clientId);
+        $this->fx->AddDBParam('user_id', $uid);
         $result = $this->fx->DoFxAction("new", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         return true;
     }
 
-    function authSupportRetrieveChallenge($username, $clientId)    {
+    function authSupportRetrieveChallenge($username, $clientId)
+    {
         $hashTable = $this->dbSettings->getHashTable();
-        if ( $hashTable == null )   {
+        if ($hashTable == null) {
             return false;
         }
-        if ( $username === 0 )   {
+        if ($username === 0) {
             $uid = 0;
         } else {
             $uid = $this->authSupportGetUserIdFromUsername($username);
-            if ( $uid === false )   {
+            if ($uid === false) {
                 $this->logger->setDebugMessage("User '{$username}' does't exist.");
                 return false;
             }
         }
-        $this->setupFXforAuth( $hashTable, 1);
-        $this->fx->AddDBParam( 'user_id', $uid , 'eq');
-        $this->fx->AddDBParam( 'clienthost', $clientId , 'eq');
+        $this->setupFXforAuth($hashTable, 1);
+        $this->fx->AddDBParam('user_id', $uid, 'eq');
+        $this->fx->AddDBParam('clienthost', $clientId, 'eq');
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
             $hashValue = $row['hash'][0];
-            $this->setupFXforAuth( $hashTable, 1);
-            $this->fx->SetRecordID( $recId );
+            $this->setupFXforAuth($hashTable, 1);
+            $this->fx->SetRecordID($recId);
             $result = $this->fx->DoFxAction("delete", TRUE, TRUE, 'full');
-            if ( ! is_array($result) )   {
-                $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            if (!is_array($result)) {
+                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
                 return false;
             }
             return $hashValue;
@@ -591,130 +601,138 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
         return false;
     }
 
-    function removeOutdatedChallenges() {
+    function removeOutdatedChallenges()
+    {
         $hashTable = $this->dbSettings->getHashTable();
-        if ( $hashTable == null )   {
+        if ($hashTable == null) {
             return false;
         }
 
         $currentDT = new DateTime();
-        $currentDT->sub(new DateInterval( "PT".$this->dbSettings->getExpiringSeconds()."S" ));
+        $currentDT->sub(new DateInterval("PT" . $this->dbSettings->getExpiringSeconds() . "S"));
 
-        $this->setupFXforAuth( $hashTable, 100000000);
-        $this->fx->AddDBParam( 'expired', $currentDT->format( 'm/d/Y H:i:s' ) , 'lt');
+        $this->setupFXforAuth($hashTable, 100000000);
+        $this->fx->AddDBParam('expired', $currentDT->format('m/d/Y H:i:s'), 'lt');
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
 
-            $this->setupFXforAuth( $hashTable, 1);
-            $this->fx->SetRecordID( $recId );
+            $this->setupFXforAuth($hashTable, 1);
+            $this->fx->SetRecordID($recId);
             $result = $this->fx->DoFxAction("delete", TRUE, TRUE, 'full');
-            if ( ! is_array($result) )   {
-                $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+            if (!is_array($result)) {
+                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
                 return false;
             }
         }
         return true;
     }
 
-    function authSupportRetrieveHashedPassword($username)   {
+    function authSupportRetrieveHashedPassword($username)
+    {
         $userTable = $this->dbSettings->getUserTable();
-        if ( $userTable == null )   {
+        if ($userTable == null) {
             return false;
         }
 
-        $this->setupFXforAuth( $userTable, 1);
-        $this->fx->AddDBParam( 'username', $username , 'eq');
+        $this->setupFXforAuth($userTable, 1);
+        $this->fx->AddDBParam('username', $username, 'eq');
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         foreach ($result['data'] as $key => $row) {
             return $row['hashedpasswd'][0];
         }
         return false;
     }
 
-    function authSupportGetSalt($username)  {
+    function authSupportGetSalt($username)
+    {
         $hashedpw = $this->authSupportRetrieveHashedPassword($username);
-        return substr( $hashedpw, -8 );
+        return substr($hashedpw, -8);
     }
 
-    function authSupportCreateUser($username, $hashedpassword)  {
-        if ( $this->authSupportRetrieveHashedPassword($username) !== false )    {
-            $this->logger->setErrorMessage( 'User Already exist: ' . $username );
+    function authSupportCreateUser($username, $hashedpassword)
+    {
+        if ($this->authSupportRetrieveHashedPassword($username) !== false) {
+            $this->logger->setErrorMessage('User Already exist: ' . $username);
             return false;
         }
         $userTable = $this->dbSettings->getUserTable();
-        $this->setupFXforAuth( $userTable, 1);
-        $this->fx->AddDBParam( 'username', $username );
-        $this->fx->AddDBParam( 'hashedpasswd', $hashedpassword );
+        $this->setupFXforAuth($userTable, 1);
+        $this->fx->AddDBParam('username', $username);
+        $this->fx->AddDBParam('hashedpasswd', $hashedpassword);
         $result = $this->fx->DoFxAction("new", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         return true;
     }
 
-    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)   {
+    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)
+    {
 
     }
 
-    function authSupportGetUserIdFromUsername($username)    {
+    function authSupportGetUserIdFromUsername($username)
+    {
         $userTable = $this->dbSettings->getUserTable();
-        if ( $userTable == null )   {
+        if ($userTable == null) {
             return false;
         }
-        if ( $username === 0 )   {
+        if ($username === 0) {
             return 0;
         }
 
-        $this->setupFXforAuth( $userTable, 1);
-        $this->fx->AddDBParam( 'username', $username );
+        $this->setupFXforAuth($userTable, 1);
+        $this->fx->AddDBParam('username', $username);
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         foreach ($result['data'] as $row) {
             return $row['id'][0];
         }
         return false;
     }
 
-    function authSupportGetGroupNameFromGroupId($groupid)    {
+    function authSupportGetGroupNameFromGroupId($groupid)
+    {
         $groupTable = $this->dbSettings->getGroupTable();
-        if ( $groupTable == null )   {
+        if ($groupTable == null) {
             return null;
         }
 
-        $this->setupFXforAuth( $groupTable, 1);
-        $this->fx->AddDBParam( 'id', $groupid );
+        $this->setupFXforAuth($groupTable, 1);
+        $this->fx->AddDBParam('id', $groupid);
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage( $result['URL'] );
+        $this->logger->setDebugMessage($result['URL']);
         foreach ($result['data'] as $key => $row) {
             return $row['groupname'][0];
         }
         return false;
     }
 
-    function getGroupsOfUser( $user )   {
+    function getGroupsOfUser($user)
+    {
         $corrTable = $this->dbSettings->getGroupTable();
-        if ( $corrTable == null )   {
+        if ($corrTable == null) {
             return array();
         }
 
@@ -723,7 +741,7 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
         $this->belongGroups = array();
         $this->resolveGroup($userid);
         $this->candidateGroups = array();
-        foreach( $this->belongGroups as $groupid )  {
+        foreach ($this->belongGroups as $groupid) {
             $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
         return $this->candidateGroups;
@@ -733,23 +751,24 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
     var $belongGroups;
     var $firstLevel;
 
-    function resolveGroup( $groupid ) {
-        $this->setupFXforAuth( $this->dbSettings->getCorrTable(), 1 );
-        if ( $this->firstLevel )    {
-            $this->fx->AddDBParam( 'user_id', $groupid );
+    function resolveGroup($groupid)
+    {
+        $this->setupFXforAuth($this->dbSettings->getCorrTable(), 1);
+        if ($this->firstLevel) {
+            $this->fx->AddDBParam('user_id', $groupid);
             $this->firstLevel = false;
         } else {
-            $this->fx->AddDBParam( 'group_id', $groupid );
+            $this->fx->AddDBParam('group_id', $groupid);
             $this->belongGroups[] = $groupid;
         }
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if ( ! is_array($result) )   {
-            $this->logger->setDebugMessage( get_class($result) . ': '. $result->getDebugInfo());
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
         foreach ($result['data'] as $key => $row) {
-            if ( ! in_array( $row['dest_group_id'][0], $this->belongGroups ) ) {
-                if ( ! $this->resolveGroup( $row['dest_group_id'][0] ))  {
+            if (!in_array($row['dest_group_id'][0], $this->belongGroups)) {
+                if (!$this->resolveGroup($row['dest_group_id'][0])) {
                     return false;
                 }
             }

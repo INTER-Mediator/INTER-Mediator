@@ -13,23 +13,24 @@
 #                                                                       #
 #########################################################################
 
-define("FX_VERSION", '6.0');                                            // Current version information for FX.php.  New constants as of version 4.0.
+define("FX_VERSION", '6.0'); // Current version information for FX.php.  New constants as of version 4.0.
 define("FX_VERSION_FULL", 'FX.php version ' . FX_VERSION . ' (3 Feb 2012) by Chris Hansen, Chris Adams, G G Thorsen, Masayuki Nii, and others.');
 
-require_once('FX_Error.php');                                           // FX.php includes object based error handling.  See FX_Error.php for more info.
+require_once('FX_Error.php'); // FX.php includes object based error handling.  See FX_Error.php for more info.
 
-if (! defined('DEBUG_FUZZY')) {                                         // This version of FX.php includes the FX Fuzzy Debugger (turned off by default.)
+if (!defined('DEBUG_FUZZY')) { // This version of FX.php includes the FX Fuzzy Debugger (turned off by default.)
     define('DEBUG_FUZZY', false);
 }
 
-require_once('FX_constants.php');                                       // The constants in this file are designed to be used with DoFXAction()
+require_once('FX_constants.php'); // The constants in this file are designed to be used with DoFXAction()
 
-define("EMAIL_ERROR_MESSAGES", FALSE);                                  // Set this to TRUE to enable emailing of specific error messages.
-define("DISPLAY_ERROR_MESSAGES", TRUE);                                 // Set this to FALSE to display the $altErrorMessage to the user.
-$webmasterEmailAddress = 'webmaster@yourdomain.com';                    // If you set the above to TRUE, enter the appropriate email address on this line.
-$emailFromAddress = 'you@yourdomain.com';                               // Sets who the error message will show as the sender.
+define("EMAIL_ERROR_MESSAGES", FALSE); // Set this to TRUE to enable emailing of specific error messages.
+define("DISPLAY_ERROR_MESSAGES", TRUE); // Set this to FALSE to display the $altErrorMessage to the user.
+$webmasterEmailAddress = 'webmaster@yourdomain.com'; // If you set the above to TRUE, enter the appropriate email address on this line.
+$emailFromAddress = 'you@yourdomain.com'; // Sets who the error message will show as the sender.
 
-function EmailError ($errorText) {
+function EmailError($errorText)
+{
     global $webmasterEmailAddress;
     global $emailFromAddress;
 
@@ -40,7 +41,8 @@ function EmailError ($errorText) {
     }
 }
 
-function EmailErrorHandler ($FXErrorObj) {
+function EmailErrorHandler($FXErrorObj)
+{
     $altErrorMessage = 'The Server was unable to process your request.<br />The WebMaster has been emailed.<br /> Thank you for your patience.';
 
     EmailError($FXErrorObj->message);
@@ -52,7 +54,8 @@ function EmailErrorHandler ($FXErrorObj) {
     return true;
 }
 
-class FX {
+class FX
+{
 
     // These are the basic database variables.
     var $dataServer = "";
@@ -73,33 +76,33 @@ class FX {
     var $dataParams = array();
     var $sortParams = array();
     var $actionArray = array(
-            // for backwards compatibility
-            "-delete"               =>"-delete",
-            "-dup"                  =>"-dup",
-            "-edit"                 =>"-edit",
-            "-find"                 =>"-find",
-            "-findall"              =>"-findall",
-            "-findany"              =>"-findany",
-            '-findquery'            =>'-findquery',
-            "-new"                  =>"-new",
-            "-view"                 =>"-view",
-            "-dbnames"              =>"-dbnames",
-            "-layoutnames"          =>"-layoutnames",
-            "-scriptnames"          =>"-scriptnames",
-            "-sqlquery"             =>"-sqlquery",
-            // new params for DoFXAction
-            "delete"                =>"-delete",
-            "duplicate"             =>"-dup",
-            "update"                =>"-edit",
-            "perform_find"          =>"-find",
-            "show_all"              =>"-findall",
-            "show_any"              =>"-findany",
-            "new"                   =>"-new",
-            "view_layout_objects"   =>"-view",
-            "view_database_names"   =>"-dbnames",
-            "view_layout_names"     =>"-layoutnames",
-            "view_script_names"     =>"-scriptnames"
-        );
+        // for backwards compatibility
+        "-delete" => "-delete",
+        "-dup" => "-dup",
+        "-edit" => "-edit",
+        "-find" => "-find",
+        "-findall" => "-findall",
+        "-findany" => "-findany",
+        '-findquery' => '-findquery',
+        "-new" => "-new",
+        "-view" => "-view",
+        "-dbnames" => "-dbnames",
+        "-layoutnames" => "-layoutnames",
+        "-scriptnames" => "-scriptnames",
+        "-sqlquery" => "-sqlquery",
+        // new params for DoFXAction
+        "delete" => "-delete",
+        "duplicate" => "-dup",
+        "update" => "-edit",
+        "perform_find" => "-find",
+        "show_all" => "-findall",
+        "show_any" => "-findany",
+        "new" => "-new",
+        "view_layout_objects" => "-view",
+        "view_database_names" => "-dbnames",
+        "view_layout_names" => "-layoutnames",
+        "view_script_names" => "-scriptnames"
+    );
 
     // Variables to help with SQL queries
     var $primaryKeyField = '';
@@ -123,23 +126,23 @@ class FX {
     // Variables used to track how data is moved in and out of FileMaker.  Used when UTF-8 just doesn't cut it (as when working with Japanese characters.)
     // This and all related code were submitted by Masayuki Nii.
     // Note that if either of these variables are simply empty, UTF-8 is the default.
-    var $charSet = '';                                                  // Determines how outgoing data is encoded.
-    var $dataParamsEncoding = '';                                       // Determines how incoming data is encoded.
+    var $charSet = ''; // Determines how outgoing data is encoded.
+    var $dataParamsEncoding = ''; // Determines how incoming data is encoded.
 
-    var $remainNames = array();    // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-    var $remainNamesReverse = array();    // Added by Masayuki Nii(nii@msyk.net) Jan 23, 2010
-    var $portalAsRecord =false;    // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+    var $remainNames = array(); // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+    var $remainNamesReverse = array(); // Added by Masayuki Nii(nii@msyk.net) Jan 23, 2010
+    var $portalAsRecord = false; // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
 
     // Flags and Error Tracking
     var $fieldCount = 0;
     var $fxError = 'No Action Taken';
     var $errorTracking = 0;
-    var $useInnerArray = null;                                              // Do NOT change this variable directly.  Use FlattenInnerArray() or the appropriate param of action method.
+    var $useInnerArray = null; // Do NOT change this variable directly.  Use FlattenInnerArray() or the appropriate param of action method.
     var $useComma2Period = false;
 
     // These variables will be used if you need a password to access your data.
     var $DBUser = 'FX';
-    var $DBPassword = '';                                                 // This can be left blank, or replaced with a default or dummy password.
+    var $DBPassword = ''; // This can be left blank, or replaced with a default or dummy password.
     var $userPass = '';
 
     // These variables are related to sending data to FileMaker via a Post.
@@ -166,7 +169,8 @@ class FX {
     var $fuzzyFXPass = ''; // this is to handle the fact that I couldn't provide a default value for a pass-by-value param in PHP4
 
     // Constructor
-    function FX ($dataServer, $dataPort=80, $dataType='', $dataURLType='') {
+    function FX($dataServer, $dataPort = 80, $dataType = '', $dataURLType = '')
+    {
         $this->dataServer = $dataServer;
         $this->dataPort = $dataPort;
         $this->dataPortSuffix = ":" . $dataPort;
@@ -190,7 +194,8 @@ class FX {
         $this->lastDebugMessage = '<p>Instantiating FX.php.</p>';
     }
 
-    function BuildExtendedChar ($byteOne, $byteTwo="\x00", $byteThree="\x00", $byteFour="\x00") {
+    function BuildExtendedChar($byteOne, $byteTwo = "\x00", $byteThree = "\x00", $byteFour = "\x00")
+    {
         if (ord($byteTwo) >= 128) {
             $tempChar = substr(decbin(ord($byteTwo)), -6);
             if (ord($byteThree) >= 128) {
@@ -209,7 +214,8 @@ class FX {
         return $tempChar;
     }
 
-    function ClearAllParams () {
+    function ClearAllParams()
+    {
         $this->userPass = "";
         $this->dataQuery = "";
         $this->dataParams = array();
@@ -228,20 +234,22 @@ class FX {
         $this->fuzzyKeyLogic = false;
         $this->genericKeys = false;
         $this->useInnerArray = null;
-        $this->remainNames = array();    // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
-        $this->remainNamesReverse = array();    // Added by Masayuki Nii(nii@msyk.net) Jan 23, 2011
-        $this->portalAsRecord = false;    // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+        $this->remainNames = array(); // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
+        $this->remainNamesReverse = array(); // Added by Masayuki Nii(nii@msyk.net) Jan 23, 2011
+        $this->portalAsRecord = false; // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
         $this->findquerynumber = 1; // added by Nick Salonen
         $this->findquerystring = ''; // added by Nick Salonen
     }
 
-    function ErrorHandler ($errorText) {
+    function ErrorHandler($errorText)
+    {
         $this->fxError = $errorText;
         $this->errorTracking = 3300;
         return $errorText;
     }
 
-    function ExecuteQuery ($action) {
+    function ExecuteQuery($action)
+    {
         switch ($this->dataServerType) {
             case 'fmpro':
                 if ($this->dataServerVersion >= 7) {
@@ -298,18 +306,17 @@ class FX {
 
     }
 
-    function BuildLinkQueryString () {
+    function BuildLinkQueryString()
+    {
         $tempQueryString = '';
         if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $paramSetCount = 0;
             $appendFlag = true;
             foreach ($_POST as $key => $value) {
                 if ($appendFlag && strcasecmp($key, '-foundSetParams_begin') != 0 && strcasecmp($key, '-foundSetParams_end') != 0) {
-                    if (is_array($value))
-                    {
-                        foreach($value as $innertkey => $innertvalue)
-                        {
-                            $tempQueryString .= urlencode($key.'[]') . '='.$innertvalue.'&';
+                    if (is_array($value)) {
+                        foreach ($value as $innertkey => $innertvalue) {
+                            $tempQueryString .= urlencode($key . '[]') . '=' . $innertvalue . '&';
                         }
                     } else {
                         $tempQueryString .= urlencode($key) . '=' . urlencode($value) . '&';
@@ -327,7 +334,7 @@ class FX {
         } else {
             $beginTagLower = strtolower('-foundSetParams_begin');
             $endTagLower = strtolower('-foundSetParams_end');
-            if (! isset($_SERVER['QUERY_STRING'])) {
+            if (!isset($_SERVER['QUERY_STRING'])) {
                 $_SERVER['QUERY_STRING'] = '';
             }
             $queryStringLower = strtolower($_SERVER['QUERY_STRING']);
@@ -348,7 +355,8 @@ class FX {
         return $tempQueryString;
     }
 
-    function AssembleDataSet ($returnData) {
+    function AssembleDataSet($returnData)
+    {
         $dataSet = array();
         $FMNext = $this->currentSkip + $this->groupSize;
         $FMPrevious = $this->currentSkip - $this->groupSize;
@@ -441,12 +449,13 @@ class FX {
         return $dataSet;
     }
 
-    function FMAction ($Action, $returnDataSet, $returnData, $useInnerArray) {
+    function FMAction($Action, $returnDataSet, $returnData, $useInnerArray)
+    {
         if ($this->useInnerArray === null) {
             $this->useInnerArray = $useInnerArray;
         }
         $queryResult = $this->ExecuteQuery($this->actionArray[strtolower($Action)]);
-        if (FX::isError($queryResult)){
+        if (FX::isError($queryResult)) {
             if (EMAIL_ERROR_MESSAGES) {
                 EmailErrorHandler($queryResult);
             }
@@ -465,13 +474,15 @@ class FX {
     // The functions below are those which are intended for general use by developers (i.e. public functions).
     // Once I'm quite sure that most people are using PHP5, I'll release a version using the improved object model of PHP5.
 
-    function isError($data) {
+    function isError($data)
+    {
         return (bool)(is_object($data) &&
-                      (strtolower(get_class($data)) == 'fx_error' ||
-                      is_subclass_of($data, 'fx_error')));
+            (strtolower(get_class($data)) == 'fx_error' ||
+                is_subclass_of($data, 'fx_error')));
     }
 
-    function SetCharacterEncoding ($encoding) {         // This is the more general of the encoding functions (see notes below, and the functions documentation.)
+    function SetCharacterEncoding($encoding)
+    { // This is the more general of the encoding functions (see notes below, and the functions documentation.)
         $this->charSet = $encoding;
         $this->dataParamsEncoding = $encoding;
 
@@ -481,12 +492,14 @@ class FX {
         // *IMPORTANT*: Using either this function or the next one is moot unless you have multi-byte support compliled into PHP (e.g. Complete PHP).
     }
 
-    function SetDataParamsEncoding ($encoding) {        // SetDataParamsEncoding() is used to specify the encoding of parameters sent to the database (upstream encoding.)
+    function SetDataParamsEncoding($encoding)
+    { // SetDataParamsEncoding() is used to specify the encoding of parameters sent to the database (upstream encoding.)
         $this->dataParamsEncoding = $encoding;
     }
 
     // the layout parameter is equivalent to the table to be used in SQL queries
-    function SetDBData ($database, $layout="", $groupSize=50, $responseLayout="") {
+    function SetDBData($database, $layout = "", $groupSize = 50, $responseLayout = "")
+    {
         $this->database = $database;
         $this->layout = $layout;
         $this->groupSize = $groupSize;
@@ -495,7 +508,8 @@ class FX {
         $this->lastDebugMessage .= '<p>Configuring database connection...</p>';
     }
 
-    function SetDBPassword ($DBPassword, $DBUser='FX') { // Note that for historical reasons, password is the FIRST parameter for this function
+    function SetDBPassword($DBPassword, $DBUser = 'FX')
+    { // Note that for historical reasons, password is the FIRST parameter for this function
         if ($DBUser == '') {
             $DBUser = 'FX';
         }
@@ -504,15 +518,18 @@ class FX {
         $this->lastDebugMessage .= '<p>Setting user name and password...</p>';
     }
 
-    function SetDBUserPass ($DBUser, $DBPassword='') { // Same as above function, but paramters are in the opposite order
+    function SetDBUserPass($DBUser, $DBPassword = '')
+    { // Same as above function, but paramters are in the opposite order
         $this->SetDBPassword($DBPassword, $DBUser);
     }
 
-    function SetCustomPrimaryKey( $fieldname ) {
+    function SetCustomPrimaryKey($fieldname)
+    {
         $this->customPrimaryKey = $fieldname;
     }
 
-    function SetNumberAutoConversionComma2PeriodForDecimal( ) {
+    function SetNumberAutoConversionComma2PeriodForDecimal()
+    {
         $this->useComma2Period = true;
         /* $this->fieldInfo[$i]['type']
     if( $this->fieldInfo[$i]['type'] == "NUMBER" && useComma2Period == true ){
@@ -521,29 +538,27 @@ class FX {
 */
     }
 
-    function SetDefaultOperator ($op) {
+    function SetDefaultOperator($op)
+    {
         $this->defaultOperator = $op;
         return true;
     }
 
 // start of findquery section
     /**
-    * Returns the "q" number (q1, q2, etc) if a duplicate name/value pair exists already, else returns a false value (q cannot be 0 anyway).
-    *
-    * @param mixed $name
-    * @param mixed $value
-    */
+     * Returns the "q" number (q1, q2, etc) if a duplicate name/value pair exists already, else returns a false value (q cannot be 0 anyway).
+     *
+     * @param mixed $name
+     * @param mixed $value
+     */
     function FindQuery_DuplicateExists($name, $value)
     {
         $currentParamList = $this->GetKeyPairDataParams();
-        for($c = 1; $c <= $this->findquerynumber; $c++)
-        {
-            if (isset($currentParamList['-q'.$c]))
-            {
-                $cname = $currentParamList['-q'.$c];
-                $cvalue = $currentParamList['-q'.$c.'.value'];
-                if ($cname == $name && $cvalue == $value)
-                {
+        for ($c = 1; $c <= $this->findquerynumber; $c++) {
+            if (isset($currentParamList['-q' . $c])) {
+                $cname = $currentParamList['-q' . $c];
+                $cvalue = $currentParamList['-q' . $c . '.value'];
+                if ($cname == $name && $cvalue == $value) {
                     return $c;
                 }
             }
@@ -553,76 +568,70 @@ class FX {
     }
 
     /**
-    * when using FMFindQuery, appends name and value pairs to the findquery query string. optionally (doModify=false), returns the string for further manipulation.
-    *  example:  $searchFields = array();
-$searchFields[] = array('zAssignedGroup::ID_Group', $group);
-$searchFields[] = array('DateClosed', $startdate.'...'.$enddate);
-$wo_find->FindQuery_Append($searchFields);
-    *   note the two arrays, to allow multiple of the same key in one find, to handle fields with multiple values separated by return.
-    * @param mixed $namevaluepair
-    * @param mixed $doModify
-    */
+     * when using FMFindQuery, appends name and value pairs to the findquery query string. optionally (doModify=false), returns the string for further manipulation.
+     *  example:  $searchFields = array();
+    $searchFields[] = array('zAssignedGroup::ID_Group', $group);
+    $searchFields[] = array('DateClosed', $startdate.'...'.$enddate);
+    $wo_find->FindQuery_Append($searchFields);
+     *   note the two arrays, to allow multiple of the same key in one find, to handle fields with multiple values separated by return.
+     * @param mixed $namevaluepair
+     * @param mixed $doModify
+     */
     function FindQuery_Append($namevaluepair = array(), $doModify = true)
     {
-        if (is_array($namevaluepair) && count($namevaluepair) > 0)
-        {
+        if (is_array($namevaluepair) && count($namevaluepair) > 0) {
             $appendquerystring = '';
-            foreach($namevaluepair as $fieldInfo)  // fieldInfo is just an array with [0] as name, and [1] as data
+            foreach ($namevaluepair as $fieldInfo) // fieldInfo is just an array with [0] as name, and [1] as data
             {
 
-                    $foundFlagQNumber = $this->FindQuery_DuplicateExists($fieldInfo[0], $fieldInfo[1]);
+                $foundFlagQNumber = $this->FindQuery_DuplicateExists($fieldInfo[0], $fieldInfo[1]);
 
-                    if (!$foundFlagQNumber)
-                    {
-                        $this->AddDBParam('-q'.$this->findquerynumber, $fieldInfo[0]);
-                        $this->AddDBParam('-q'.$this->findquerynumber.'.value', $fieldInfo[1]);
+                if (!$foundFlagQNumber) {
+                    $this->AddDBParam('-q' . $this->findquerynumber, $fieldInfo[0]);
+                    $this->AddDBParam('-q' . $this->findquerynumber . '.value', $fieldInfo[1]);
 
-                        // add the find to the end of the string
-                        $appendquerystring .= ',q'.$this->findquerynumber;
+                    // add the find to the end of the string
+                    $appendquerystring .= ',q' . $this->findquerynumber;
 
-                        $this->findquerynumber++;
-                    } else {
-                        // the exact namevalue pair was found and attempted to be searched on again.
-                       $appendquerystring .= ',q'.$foundFlagQNumber;
-                    }
+                    $this->findquerynumber++;
+                } else {
+                    // the exact namevalue pair was found and attempted to be searched on again.
+                    $appendquerystring .= ',q' . $foundFlagQNumber;
+                }
 
             }
-            if ($appendquerystring != '')
-            {
+            if ($appendquerystring != '') {
                 $appendquerystring = substr($appendquerystring, 1); // strip beginning comma.
-                if ($doModify)
-                {
-                    $this->findquerystring .= ';('.$appendquerystring . ')';
+                if ($doModify) {
+                    $this->findquerystring .= ';(' . $appendquerystring . ')';
                 } else {
-                    return ';('.$appendquerystring . ')';
+                    return ';(' . $appendquerystring . ')';
                 }
             }
         }
     }
 
     /**
-    * exact duplicate of FindQuery_Append except for the '!' near teh end..
-    *
-    * @param mixed $namevaluepair
-    * @param mixed $doModify
-    */
+     * exact duplicate of FindQuery_Append except for the '!' near teh end..
+     *
+     * @param mixed $namevaluepair
+     * @param mixed $doModify
+     */
     function FindQuery_Omit($namevaluepair = array(), $doModify = true)
     {
         $str = $this->FindQuery_Append($namevaluepair, false); // send false to not modify the internal query string.
-        if ($doModify)
-        {
+        if ($doModify) {
             // the string will come back looking like: ;(q1) so we have to strip the initial semicolon.
-            $this->findquerystring .= ';!'.substr($str, 1);
+            $this->findquerystring .= ';!' . substr($str, 1);
         } else {
-            return ';!'.substr($str, 1);
+            return ';!' . substr($str, 1);
         }
     }
 
     function GetKeyPairDataParams()
     {
         $temp = array();
-        foreach($this->dataParams as $key=>$row)
-        {
+        foreach ($this->dataParams as $key => $row) {
             $name = $row['name'];
             $value = $row['value'];
             $temp[$name] = $value;
@@ -631,63 +640,53 @@ $wo_find->FindQuery_Append($searchFields);
     }
 
     /**
-    * Fields will be an array of fields you want to make an AND find on.
-    * the second param will be the querystring to be used.
-    * @param mixed $fields
-    */
+     * Fields will be an array of fields you want to make an AND find on.
+     * the second param will be the querystring to be used.
+     * @param mixed $fields
+     */
     function FindQuery_AND($namevaluepair = array(), $fieldnames = array(), $querystring = '', $doModify = true)
     {
-        if ($querystring == '')
-        {
+        if ($querystring == '') {
             $querystring = $this->findquerystring; // use the internal querystring by default.
         }
         $qnumlist = array(); // used to keep a list of the qnum we are ANDing.
-        if (is_array($namevaluepair) && count($namevaluepair) > 0)
-        {
+        if (is_array($namevaluepair) && count($namevaluepair) > 0) {
 
-            foreach($namevaluepair as $fieldInfo)
-            {
+            foreach ($namevaluepair as $fieldInfo) {
 
-                    $qnum = $this->FindQuery_DuplicateExists($fieldInfo[0], $fieldInfo[1]);
-                    if (!$qnum)
-                    {
-                        $this->FindQuery_Append(array(array($fieldInfo[0], $fieldInfo[1])), false); // add parameters to the list of possible query params but don't modify the query yet.
-                        $qnum = $this->FindQuery_DuplicateExists($fieldInfo[0], $fieldInfo[1]); // find the q number after it has been created in the dataParams.
-                    }
-                    if ($qnum !== false) $qnumlist[] = $qnum;
+                $qnum = $this->FindQuery_DuplicateExists($fieldInfo[0], $fieldInfo[1]);
+                if (!$qnum) {
+                    $this->FindQuery_Append(array(array($fieldInfo[0], $fieldInfo[1])), false); // add parameters to the list of possible query params but don't modify the query yet.
+                    $qnum = $this->FindQuery_DuplicateExists($fieldInfo[0], $fieldInfo[1]); // find the q number after it has been created in the dataParams.
+                }
+                if ($qnum !== false) $qnumlist[] = $qnum;
 
             }
 
             if ($this->findquerystring == '') // if starting with an AND, then do this
             {
-                foreach($qnumlist as $num)
-                {
+                foreach ($qnumlist as $num) {
                     // make sure that the query data is not already in this section ex: (q2,q2) is illegal
-                        $newquerystring .= ',q'.$num;
+                    $newquerystring .= ',q' . $num;
                 }
-                $newquerystring = ';('. substr($newquerystring, 1) .')'; // strip off initial comma
+                $newquerystring = ';(' . substr($newquerystring, 1) . ')'; // strip off initial comma
             } else {
 
                 $findquerypieces = explode(';', $this->findquerystring);
                 $newquerystring = '';
-                foreach ($findquerypieces as $findquerypiece)
-                {
-                    if (!empty($findquerypiece))
-                    {
-                        $newquerystring .= ';'.substr($findquerypiece, 0, (strlen($findquerypiece)-1));
-                        if (strpos($findquerypiece, '!') === false)
-                        {
-    //                        if (count($fieldnames) == 0 || in_array( /// check for field in dataParams for this query piece
-                            foreach($qnumlist as $num)
-                            {
+                foreach ($findquerypieces as $findquerypiece) {
+                    if (!empty($findquerypiece)) {
+                        $newquerystring .= ';' . substr($findquerypiece, 0, (strlen($findquerypiece) - 1));
+                        if (strpos($findquerypiece, '!') === false) {
+                            //                        if (count($fieldnames) == 0 || in_array( /// check for field in dataParams for this query piece
+                            foreach ($qnumlist as $num) {
                                 // make sure that the query data is not already in this section ex: (q2,q2) is illegal
-                                if (strpos($findquerypiece, array('q'.$num.')', 'q'.$num.',')) === false)
-                                {
-                                    $newquerystring .= ',q'.$num;
+                                if (strpos($findquerypiece, array('q' . $num . ')', 'q' . $num . ',')) === false) {
+                                    $newquerystring .= ',q' . $num;
                                 }
                             }
                         }
-                            $newquerystring .= ')';
+                        $newquerystring .= ')';
                     }
 //                     else {
 //                        $newquerystring .= ';'.$findquerypiece;
@@ -699,24 +698,27 @@ $wo_find->FindQuery_Append($searchFields);
 
 
     }
+
 // end of findquery section
 
-    function AddDBParam ($name, $value, $op="") {                        // Add a search parameter.  An operator is usually not necessary.
-        if ($this->dataParamsEncoding  != '' && defined('MB_OVERLOAD_STRING')) {
+    function AddDBParam($name, $value, $op = "")
+    { // Add a search parameter.  An operator is usually not necessary.
+        if ($this->dataParamsEncoding != '' && defined('MB_OVERLOAD_STRING')) {
             $this->dataParams[]["name"] = mb_convert_encoding($name, $this->dataParamsEncoding, $this->charSet);
             end($this->dataParams);
             $convedValue = mb_convert_encoding($value, $this->dataParamsEncoding, $this->charSet);
-/* Masayuki Nii added at Oct 10, 2009 */
-            if ( ! defined('SURROGATE_INPUT_PATCH_DISABLED') && $this->charSet == 'UTF-8')    {
+            /* Masayuki Nii added at Oct 10, 2009 */
+            if (!defined('SURROGATE_INPUT_PATCH_DISABLED') && $this->charSet == 'UTF-8') {
                 $count = 0;
-                for ($i=0; $i< strlen($value); $i++) {
-                    $c = ord(substr( $value, $i, 1 ));
-                    if ( ( $c == 0xF0 )&&( (ord(substr( $value, $i+1, 1 )) & 0xF0) == 0xA0 )) {
-                        $i += 4;    $count++;
+                for ($i = 0; $i < strlen($value); $i++) {
+                    $c = ord(substr($value, $i, 1));
+                    if (($c == 0xF0) && ((ord(substr($value, $i + 1, 1)) & 0xF0) == 0xA0)) {
+                        $i += 4;
+                        $count++;
                     }
                 }
-                $convedValue .= str_repeat( mb_convert_encoding(chr(0xE3).chr(0x80).chr(0x80), $this->dataParamsEncoding, 'UTF-8'), $count );
-             }
+                $convedValue .= str_repeat(mb_convert_encoding(chr(0xE3) . chr(0x80) . chr(0x80), $this->dataParamsEncoding, 'UTF-8'), $count);
+            }
             $this->dataParams[key($this->dataParams)]["value"] = $convedValue;
 // =======================
         } else {
@@ -727,7 +729,8 @@ $wo_find->FindQuery_Append($searchFields);
         $this->dataParams[key($this->dataParams)]["op"] = $op;
     }
 
-    function AddDBParamArray ($paramsArray, $paramOperatorsArray=array()) { // Add an array of search parameters.  An operator is usually not necessary.
+    function AddDBParamArray($paramsArray, $paramOperatorsArray = array())
+    { // Add an array of search parameters.  An operator is usually not necessary.
         foreach ($paramsArray as $key => $value) {
             if (isset($paramOperatorsArray[$key]) && strlen(trim($paramOperatorsArray[$key])) > 0) {
                 $this->AddDBParam($key, $value, $paramOperatorsArray[$key]);
@@ -737,7 +740,8 @@ $wo_find->FindQuery_Append($searchFields);
         }
     }
 
-    function SetPortalRow ($fieldsArray, $portalRowID=0, $relationshipName='') {
+    function SetPortalRow($fieldsArray, $portalRowID = 0, $relationshipName = '')
+    {
         foreach ($fieldsArray as $fieldName => $fieldValue) {
             if (strlen(trim($relationshipName)) > 0 && substr_count($fieldName, '::') < 1) {
                 $this->AddDBParam("{$relationshipName}::{$fieldName}.{$portalRowID}", $fieldValue);
@@ -747,8 +751,9 @@ $wo_find->FindQuery_Append($searchFields);
         }
     }
 
-    function SetRecordID ($recordID) {
-        if (! is_numeric($recordID) || (intval($recordID) != $recordID)) {
+    function SetRecordID($recordID)
+    {
+        if (!is_numeric($recordID) || (intval($recordID) != $recordID)) {
             if ((defined("DEBUG") and DEBUG) or DEBUG_FUZZY) {
                 $currentDebugString = "<p>RecordIDs must be integers.  Value passed was &quot;{$recordID}&quot;.</p>\n";
                 $this->lastDebugMessage .= $currentDebugString;
@@ -760,8 +765,9 @@ $wo_find->FindQuery_Append($searchFields);
         $this->AddDBParam('-recid', $recordID);
     }
 
-    function SetModID ($modID) {
-        if (! is_numeric($modID) || (intval($modID) != $modID)) {
+    function SetModID($modID)
+    {
+        if (!is_numeric($modID) || (intval($modID) != $modID)) {
             if ((defined("DEBUG") and DEBUG) or DEBUG_FUZZY) {
                 $currentDebugString = "<p>ModIDs must be integers.  Value passed was &quot;{$modID}&quot;.</p>\n";
                 $this->lastDebugMessage .= $currentDebugString;
@@ -773,28 +779,34 @@ $wo_find->FindQuery_Append($searchFields);
         $this->AddDBParam('-modid', $modID);
     }
 
-    function SetLogicalOR () {
+    function SetLogicalOR()
+    {
         $this->AddDBParam('-lop', 'or');
     }
 
     // FileMaker 7 only
-    function SetFMGlobal ($globalFieldName, $globalFieldValue) {
+    function SetFMGlobal($globalFieldName, $globalFieldValue)
+    {
         $this->AddDBParam("{$globalFieldName}.global", $globalFieldValue);
     }
 
-    function PerformFMScript ($scriptName) {                            // This function is only meaningful when working with FileMaker data sources
+    function PerformFMScript($scriptName)
+    { // This function is only meaningful when working with FileMaker data sources
         $this->AddDBParam('-script', $scriptName);
     }
 
-    function PerformFMScriptPrefind ($scriptName) {                     // This function is only meaningful when working with FileMaker data sources
+    function PerformFMScriptPrefind($scriptName)
+    { // This function is only meaningful when working with FileMaker data sources
         $this->AddDBParam('-script.prefind', $scriptName);
     }
 
-    function PerformFMScriptPresort ($scriptName) {                     // This function is only meaningful when working with FileMaker data sources
+    function PerformFMScriptPresort($scriptName)
+    { // This function is only meaningful when working with FileMaker data sources
         $this->AddDBParam('-script.presort', $scriptName);
     }
 
-    function AddSortParam ($field, $sortOrder='', $performOrder=0) {    // Add a sort parameter.  An operator is usually not necessary.
+    function AddSortParam($field, $sortOrder = '', $performOrder = 0)
+    { // Add a sort parameter.  An operator is usually not necessary.
         if ($performOrder > 0) {
             $this->sortParams[$performOrder]["field"] = $field;
             $this->sortParams[$performOrder]["sortOrder"] = $sortOrder;
@@ -809,109 +821,130 @@ $wo_find->FindQuery_Append($searchFields);
         }
     }
 
-    function FMSkipRecords ($skipSize) {
+    function FMSkipRecords($skipSize)
+    {
         $this->currentSkip = $skipSize;
     }
 
-    function FMPostQuery ($isPostQuery = true) {
+    function FMPostQuery($isPostQuery = true)
+    {
         $this->isPostQuery = $isPostQuery;
     }
 
-    function FMFOpenQuery ($isFOpenQuery = true) {
+    function FMFOpenQuery($isFOpenQuery = true)
+    {
         $this->isFOpenQuery = $isFOpenQuery;
     }
 
-    function FMUseCURL ($useCURL = true) {
+    function FMUseCURL($useCURL = true)
+    {
         $this->useCURL = $useCURL;
     }
 
     // By default, FX.php adds an extra layer to the returned array to allow for repeating fields and portals.
     // When these are not present, or when accessing SQL data, this may not be desirable.  FlattenInnerArray() removes this extra layer.
-    function FlattenInnerArray () {
+    function FlattenInnerArray()
+    {
         $this->useInnerArray = false;
     }
 
-/* The actions that you can send to FileMaker start here */
+    /* The actions that you can send to FileMaker start here */
 
-    function FMDBOpen () {
+    function FMDBOpen()
+    {
         $queryResult = $this->ExecuteQuery("-dbopen");
-        if (FX::isError($queryResult)){
+        if (FX::isError($queryResult)) {
             return $queryResult;
         }
     }
 
-    function FMDBClose () {
+    function FMDBClose()
+    {
         $queryResult = $this->ExecuteQuery("-dbclose");
-        if (FX::isError($queryResult)){
+        if (FX::isError($queryResult)) {
             return $queryResult;
         }
     }
 
-    function FMDelete ($returnDataSet = false, $returnData = 'basic', $useInnerArray = true) {
+    function FMDelete($returnDataSet = false, $returnData = 'basic', $useInnerArray = true)
+    {
         return $this->FMAction("-delete", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMDup ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMDup($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-dup", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMEdit ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMEdit($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-edit", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMFind ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMFind($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-find", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMFindAll ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMFindAll($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-findall", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMFindAny ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMFindAny($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-findany", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMFindQuery ($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    function FMFindQuery($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
     {
-            return $this->FMAction("-findquery", $returnDataSet, $returnData, $useInnerArray);
+        return $this->FMAction("-findquery", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMNew ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMNew($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-new", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMView ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMView($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-view", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMDBNames ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMDBNames($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-dbnames", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMLayoutNames ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMLayoutNames($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-layoutnames", $returnDataSet, $returnData, $useInnerArray);
     }
 
-    function FMScriptNames ($returnDataSet = true, $returnData = 'full', $useInnerArray = true) {
+    function FMScriptNames($returnDataSet = true, $returnData = 'full', $useInnerArray = true)
+    {
         return $this->FMAction("-scriptnames", $returnDataSet, $returnData, $useInnerArray);
     }
 
     // DoFXAction() is a general purpose action function designed to streamline FX.php code
-    function DoFXAction ($currentAction, $returnDataSet = true, $useInnerArray = false, $returnType = 'object') {
+    function DoFXAction($currentAction, $returnDataSet = true, $useInnerArray = false, $returnType = 'object')
+    {
         return $this->FMAction($currentAction, $returnDataSet, $returnType, $useInnerArray);
     }
 
-/* The actions that you can send to FileMaker end here */
+    /* The actions that you can send to FileMaker end here */
     // PerformSQLQuery() is akin to the FileMaker actions above with two differences:
     //  1) It is SQL specific
     //  2) The SQL query passed is the sole determinant of the query performed (AddDBParam, etc. will be ignored)
-    function PerformSQLQuery ($SQLQuery, $returnDataSet = true, $useInnerArray = false, $returnData = 'object') {
+    function PerformSQLQuery($SQLQuery, $returnDataSet = true, $useInnerArray = false, $returnData = 'object')
+    {
         $this->dataQuery = $SQLQuery;
         return $this->FMAction("-sqlquery", $returnDataSet, $returnData, $useInnerArray);
     }
 
     // SetDataKey() is used for SQL queries as a way to provide parity with the RecordID/ModID combo provided by FileMaker Pro
-    function SetDataKey ($keyField, $modifyField = '', $separator = '.') {
+    function SetDataKey($keyField, $modifyField = '', $separator = '.')
+    {
         $this->primaryKeyField = $keyField;
         $this->modifyDateField = $modifyField;
         $this->dataKeySeparator = $separator;
@@ -919,43 +952,47 @@ $wo_find->FindQuery_Append($searchFields);
     }
 
     // SetSelectColumns() allows users to specify which columns should be returned by an SQL SELECT statement
-    function SetSelectColumns ($columnList) {
+    function SetSelectColumns($columnList)
+    {
         $this->selectColsSet = true;
         $this->selectColumns = $columnList;
         return true;
     }
 
     // SQLFuzzyKeyLogicOn() can be used to have FX.php make it's best guess as to a viable key in an SQL DB
-    function SQLFuzzyKeyLogicOn ($logicSwitch = false) {
+    function SQLFuzzyKeyLogicOn($logicSwitch = false)
+    {
         $this->fuzzyKeyLogic = $logicSwitch;
         return true;
     }
 
     // By default, FX.php uses records' keys as the indices for the returned array.  UseGenericKeys() is used to change this behavior.
-    function UseGenericKeys ($genericKeys=true) {
+    function UseGenericKeys($genericKeys = true)
+    {
         $this->genericKeys = $genericKeys;
         return true;
     }
 
     // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010
     // Modified by msyk, Feb 1-6, 2012
-    function RemainAsArray (
-                $rArray1,$rArray2=NULL,$rArray3=NULL,$rArray4=NULL,$rArray5=NULL,
-                $rArray6=NULL,$rArray7=NULL,$rArray8=NULL,$rArray9=NULL,$rArray10=NULL,
-                $rArray11=NULL,$rArray12=NULL) {
+    function RemainAsArray(
+        $rArray1, $rArray2 = NULL, $rArray3 = NULL, $rArray4 = NULL, $rArray5 = NULL,
+        $rArray6 = NULL, $rArray7 = NULL, $rArray8 = NULL, $rArray9 = NULL, $rArray10 = NULL,
+        $rArray11 = NULL, $rArray12 = NULL)
+    {
         $this->portalAsRecord = false;
         $counter = 0;
-        for ( $i=1 ; $i<13 ; $i++ ) {
+        for ($i = 1; $i < 13; $i++) {
             $valName = "rArray{$i}";
-             if ( ! isset($$valName) ) {
+            if (!isset($$valName)) {
                 break;
             }
             if (is_array($$valName)) {
                 $this->portalAsRecord = true;
                 $isFirstTime = true;
                 $firstItemName = '';
-                foreach($$valName as $item) {
-                    if($isFirstTime)    {
+                foreach ($$valName as $item) {
+                    if ($isFirstTime) {
                         $isFirstTime = false;
                         $firstItemName = $item;
                         $this->remainNamesReverse[$item] = true;
@@ -964,7 +1001,7 @@ $wo_find->FindQuery_Append($searchFields);
                     }
                     $this->remainNames[$counter] = $item;
                     $counter++;
-                }    
+                }
             } else {
                 $this->remainNames[$counter] = $$valName;
                 $this->remainNamesReverse[$$valName] = true;
@@ -973,4 +1010,5 @@ $wo_find->FindQuery_Append($searchFields);
         }
     }
 }
+
 ?>

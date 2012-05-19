@@ -28,19 +28,19 @@ class DataConverter_Currency extends DataConverter_NumberBase
 
     function converterFromUserToDB($str)
     {
-        $normalized = mb_convert_kana( $str, 'n' );
+        $normalized = mb_convert_kana($str, 'n');
         $numberString = '';
         $isPeriod = false;
-        for ( $i = 0 ; $i < mb_strlen( $normalized ) ; $i++ )   {
-            $c = mb_substr( $normalized, $i, 1 );
-            if ( ( $c >= "0" && $c <= "9" ) || $c = "." )   {
+        for ($i = 0; $i < mb_strlen($normalized); $i++) {
+            $c = mb_substr($normalized, $i, 1);
+            if (($c >= "0" && $c <= "9") || $c = ".") {
                 $numberString .= $c;
-                if ( $c == "." )    {
+                if ($c == ".") {
                     $isPeriod = true;
                 }
             }
         }
-        return $isPeriod ? floatval( $numberString ) : intval( $numberString );
+        return $isPeriod ? floatval($numberString) : intval($numberString);
     }
 
 }

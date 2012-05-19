@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!--
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
@@ -11,9 +12,9 @@
 -->
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
-    <link href="../sample.css" rel="stylesheet" type="text/css" />
+    <link href="../sample.css" rel="stylesheet" type="text/css"/>
     <script src="include_FMS.php"></script>
     <script type="text/javascript">
 
@@ -26,35 +27,35 @@
             }
         };
 
-        INTERMediatorOnPage.doAfterValidationFailure = function(target,linkInfo) {
+        INTERMediatorOnPage.doAfterValidationFailure = function (target, linkInfo) {
             modLine(target);
         };
 
-        function modLine(target)	{
-            if(!target)    {
+        function modLine(target) {
+            if (!target) {
                 return;
             }
-            var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@qty",target);
-            var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@unitprice",target);
-            var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice",target);
-            var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@amount",target);
-            if(qtyId||unitPriceId||productPriceId||amountId)    {
+            var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@qty", target);
+            var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@unitprice", target);
+            var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice", target);
+            var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@amount", target);
+            if (qtyId || unitPriceId || productPriceId || amountId) {
                 return;
             }
-            var unitPrice = new Number( document.getElementById(unitPriceId).value > 0 ?
+            var unitPrice = new Number(document.getElementById(unitPriceId).value > 0 ?
                     document.getElementById(unitPriceId).value :
-                    document.getElementById(productPriceId).innerHTML );
+                    document.getElementById(productPriceId).innerHTML);
             var amountPrice = unitPrice * document.getElementById(qtyId).value;
             document.getElementById(amountId).innerHTML = INTERMediatorLib.numberFormat(amountPrice);
         }
 
-        function calcTotal( target )	{
-            var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition( 'item@amount', target );
+        function calcTotal(target) {
+            var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition('item@amount', target);
             var s = 0;
-            for ( var i in nodes )  {
-                s += INTERMediatorLib.toNumber( document.getElementById(nodes[i]).innerHTML );
+            for (var i in nodes) {
+                s += INTERMediatorLib.toNumber(document.getElementById(nodes[i]).innerHTML);
             }
-            document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat( s );
+            document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat(s);
         }
     </script>
 </head>
@@ -68,25 +69,30 @@
     </tr>
     <tr>
         <td>name</td>
-        <td><input type="text" class="IM[invoice@issued]" value="" /></td>
+        <td><input type="text" class="IM[invoice@issued]" value=""/></td>
     </tr>
     <tr>
         <td>title</td>
-        <td><input type="text" class="IM[invoice@title]" value="" /></td>
+        <td><input type="text" class="IM[invoice@title]" value=""/></td>
     </tr>
     <tr>
         <td colspan="2">
             <table border="1">
                 <thead>
                 <tr>
-                    <th>product</th><th>qty</th><th>unitprice (master)</th><th>amount</th><th></th>
+                    <th>product</th>
+                    <th>qty</th>
+                    <th>unitprice (master)</th>
+                    <th>amount</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
                         <input type="text" class="IM[item@product_id]" size="2"
-                               onchange="modLine(this);calcTotal(this)" />
+                               onchange="modLine(this);calcTotal(this)"/>
+
                         <div style="display:inline;" class="_im_enclosure">
                             <div style="display:inline;" class="_im_repeater">
                                 <span class="IM[product@name]"></span>
@@ -97,7 +103,8 @@
                                onchange="modLine(this);calcTotal(this)"/></td>
                     <td>
                         <input type="text" class="IM[item@unitprice]" size="8" style="text-align:right;"
-                               onchange="modLine(this);calcTotal(this)" />
+                               onchange="modLine(this);calcTotal(this)"/>
+
                         <div style="display:inline;" class="_im_enclosure">
                             <div style="display:inline;text-align:right;" class="_im_repeater">
                                 (<span class="IM[product@unitprice]"></span>)

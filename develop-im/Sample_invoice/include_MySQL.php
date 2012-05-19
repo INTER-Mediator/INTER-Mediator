@@ -15,7 +15,7 @@ $tableDefinitions = array(
         'paging' => true,
         'key' => 'id',
         'query' => array(
-        //    array('field' => 'issued', 'value' => '2012-01-01', 'operator' => '>=')
+            //    array('field' => 'issued', 'value' => '2012-01-01', 'operator' => '>=')
         ),
         'sort' => array(
             array('field' => 'id', 'direction' => 'ASC'),
@@ -36,14 +36,14 @@ $tableDefinitions = array(
         ),
         'validation' => array(
             array(
-                'field' =>'qty',
-                'rule'=>'value>=0 && value<100',
-                'message'=>'Quantity should be between 1..99.'
+                'field' => 'qty',
+                'rule' => 'value>=0 && value<100',
+                'message' => 'Quantity should be between 1..99.'
             ),
             array(
-                'field' =>'unitprice',
-                'rule'=>'value>=0 && value<10000',
-                'message'=>'Unit price should be between 1.. 9999.'
+                'field' => 'unitprice',
+                'rule' => 'value>=0 && value<10000',
+                'message' => 'Unit price should be between 1.. 9999.'
             ),
         ),
     ),

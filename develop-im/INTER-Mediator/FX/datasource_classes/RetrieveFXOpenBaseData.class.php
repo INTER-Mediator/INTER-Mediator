@@ -9,13 +9,15 @@ require_once('RetrieveFXSQLData.class.php');
 #                                                                       #
 #########################################################################
 
-class RetrieveFXOpenBaseData extends RetrieveFXSQLData {
+class RetrieveFXOpenBaseData extends RetrieveFXSQLData
+{
 
-    function doQuery ($action) {
+    function doQuery($action)
+    {
         $availableActions = array('-delete', '-edit', '-find', '-findall', '-new', '-sqlquery');
-        $columnTypes = array( 1 => 'char', 2 => 'integer', 3 => 'float', 4 => 'long', 5 => 'money', 6 => 'date', 7 => 'time', 8 => 'object', 9 => 'datetime', 10 => 'longlong', 11 => 'boolean', 12 => 'binary', 13 => 'text', 14 => 'timestamp');
+        $columnTypes = array(1 => 'char', 2 => 'integer', 3 => 'float', 4 => 'long', 5 => 'money', 6 => 'date', 7 => 'time', 8 => 'object', 9 => 'datetime', 10 => 'longlong', 11 => 'boolean', 12 => 'binary', 13 => 'text', 14 => 'timestamp');
 
-        if (! in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under OpenBase
+        if (!in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under OpenBase
             return new FX_Error("The action requested ({$action}) is not supported by OpenBase via FX.php.");
         }
         // although username and password are optional for this function, FX.php expects them to be set
@@ -36,7 +38,7 @@ class RetrieveFXOpenBaseData extends RetrieveFXSQLData {
             case '-sqlquery': // note that there is no preceding break, as we don't want to build a query
                 ob_makeCommand($openBase_res, $this->FX->dataQuery);
                 $theResult = ob_executeCommand($openBase_res);
-                if (! $theResult) {
+                if (!$theResult) {
                     $tempErrorText = ob_servermessage($openBase_res);
                     ob_disconnect($openBase_res); // ob_disconnect() is not in the documentation
                     return new FX_Error("Unsuccessful query: {$this->FX->dataQuery} ({$tempErrorText})");
@@ -55,7 +57,7 @@ class RetrieveFXOpenBaseData extends RetrieveFXSQLData {
                 while (ob_resultReturned($openBase_res) && ob_nextRowWithArray($openBase_res, $retrieveRow)) {
                     $tempRow = array();
                     foreach ($retrieveRow as $key => $value) {
-                        if (! $this->FX->useInnerArray) {
+                        if (!$this->FX->useInnerArray) {
                             $tempRow[$this->FX->fieldInfo[$key]['name']] = $value;
                         } else {
                             $tempRow[$this->FX->fieldInfo[$key]['name']] = array($value);

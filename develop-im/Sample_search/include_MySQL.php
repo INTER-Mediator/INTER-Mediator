@@ -11,13 +11,13 @@ require_once ('../INTER-Mediator/INTER-Mediator.php');
 
 IM_Entry(
     array(
-		array(
-			'name'  	=> 'postalcode',
-            'records'	=>	10,
-            'paging'    =>  true,
-		//	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
-		),
-	),
+        array(
+            'name' => 'postalcode',
+            'records' => 10,
+            'paging' => true,
+            //	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
+        ),
+    ),
     null,
     array('db-class' => 'PDO'),
     false

@@ -1,19 +1,22 @@
-div#navigationbox	{
-	background-color: #FFFFEE;
-    float:right;
-    width:200px;
+div#navigationbox {
+    background-color: #FFFFEE;
+    float: right;
+    width: 200px;
     border-bottom: 2px solid gray;
     border-left: 2px solid gray;
     font-size: 10pt;
     margin-left: 16px;
     margin-right: 10px;
 }
-div#navigationbox li{
+
+div#navigationbox li {
     font-size: 10pt;
 }
-div#navigationbox ul{
+
+div#navigationbox ul {
     padding-left: 12px;
 }
+
 span.datestring {
     border-bottom: 1px dotted black;
     color: #4444BB;
