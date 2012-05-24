@@ -50,7 +50,7 @@ IM_Entry(
         ),
     ),
     array('db-class' => 'PDO'),
-    1
+    2
 );
 
 ?>

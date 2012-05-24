@@ -17,7 +17,7 @@ if (error_get_last() !== null) { // If FX.php isn't installed in valid directori
 }
 error_reporting($currentEr);
 
-class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
+class DB_FileMaker_FX extends DB_UseSharedObjects implements Auth_Interface_DB
 {
     var $fx = null;
 
@@ -39,7 +39,8 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
             $this->dbSettings->getDbSpecServer(),
             $this->dbSettings->getDbSpecPort(),
             $this->dbSettings->getDbSpecDataType(),
-            $this->dbSettings->getDbSpecProtocol());
+            $this->dbSettings->getDbSpecProtocol()
+        );
         $this->fx->setCharacterEncoding('UTF-8');
         $this->fx->setDBUserPass($user, $password);
         $this->fx->setDBData($this->dbSettings->getDbSpecDatabase(), $layoutName, $recordCount);
@@ -97,14 +98,15 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
             }
         }
         if (count($this->dbSettings->foreignFieldAndValue) > 0) {
-            foreach ($this->dbSettings->foreignFieldAndValue as $foreignDef) {
-                foreach ($context['relation'] as $relDef) {
-                    if ($relDef['foreign-key'] == $foreignDef['field']) {
-                        $op = (isset($relDef['operator'])) ? $relDef['operator'] : 'eq';
-                        $this->fx->AddDBParam($foreignDef['field'],
-                            $this->dbSettings->formatterToDB(
-                                "{$dataSourceName}{$this->dbSettings->separator}{$foreignDef['field']}",
-                                $foreignDef['value']), $op);
+            foreach ($context['relation'] as $relDef) {
+                foreach ($this->dbSettings->foreignFieldAndValue as $foreignDef) {
+                    if ($relDef['join-field'] == $foreignDef['field']) {
+                        $foreignField = $relDef['foreign-key'];
+                        $foreignValue = $foreignDef['value'];
+                        $foreignOperator = isset( $relDef['operator'] ) ? $relDef['operator'] : 'eq';
+                        $formattedValue = $this->formatter->formatterToDB(
+                            "{$dataSourceName}{$this->dbSettings->separator}{$foreignField}", $foreignValue);
+                        $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
                         $hasFindParams = true;
                     }
                 }
@@ -113,8 +115,8 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
 
         if (isset($context['authentication'])) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization("load");
-            $authInfoTarget = $this->getTargetForAuthorization("load");
+            $authInfoField = $this->authCommon->getFieldForAuthorization("load");
+            $authInfoTarget = $this->authCommon->getTargetForAuthorization("load");
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->currentUser) == 0) {
                     $authFailure = true;
@@ -207,7 +209,7 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                 $oneRecordArray = array();
                 foreach ($oneRecord as $field => $dataArray) {
                     if (count($dataArray) == 1) {
-                        $oneRecordArray[$field] = $this->dbSettings->formatterFromDB(
+                        $oneRecordArray[$field] = $this->formatter->formatterFromDB(
                             "{$dataSourceName}{$this->dbSettings->separator}$field", $dataArray[0]);
                     }
                 }
@@ -227,7 +229,7 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         foreach ($this->dbSettings->extraCriteria as $value) {
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-            $convertedValue = $this->dbSettings->formatterToDB(
+            $convertedValue = $this->formatter->formatterToDB(
                 "{$dataSourceName}{$this->dbSettings->separator}{$value['field']}", $value['value']);
             $this->fx->AddDBParam($value['field'], $convertedValue, $op);
         }
@@ -285,7 +287,7 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                     $value = $this->dbSettings->fieldsValues[$counter];
                     $counter++;
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
-                    $convVal = $this->dbSettings->formatterToDB(
+                    $convVal = $this->formatter->formatterToDB(
                         "{$dataSourceName}{$this->dbSettings->separator}{$field}", $convVal);
                     $this->fx->AddDBParam($field, $convVal);
                 }
@@ -346,7 +348,7 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
             if ($field != $keyFieldName) {
                 $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->separator}{$field}";
                 $convVal = $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value);
-                $this->fx->AddDBParam($field, $this->dbSettings->formatterToDB($filedInForm, $convVal));
+                $this->fx->AddDBParam($field, $this->formatter->formatterToDB($filedInForm, $convVal));
             }
         }
         if (isset($context['default-values'])) {
@@ -356,13 +358,13 @@ class DB_FileMaker_FX extends UseSharedObjects implements Auth_Interface_DB
                 if ($field != $keyFieldName) {
                     $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->separator}{$field}";
                     $convVal = $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value);
-                    $this->fx->AddDBParam($field, $this->dbSettings->formatterToDB($filedInForm, $convVal));
+                    $this->fx->AddDBParam($field, $this->formatter->formatterToDB($filedInForm, $convVal));
                 }
             }
         }
         if (isset($context['authentication'])) {
-            $authInfoField = $this->getFieldForAuthorization("new");
-            $authInfoTarget = $this->getTargetForAuthorization("new");
+            $authInfoField = $this->authCommon->getFieldForAuthorization("new");
+            $authInfoTarget = $this->authCommon->getTargetForAuthorization("new");
             if ($authInfoTarget == 'field-user') {
                 $this->fx->AddDBParam($authInfoField, strlen($this->dbSettings->currentUser) == 0 ? randomString(10) : $this->dbSettings->currentUser);
             } else if ($authInfoTarget == 'field-group') {

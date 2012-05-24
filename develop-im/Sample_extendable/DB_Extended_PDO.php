@@ -33,6 +33,40 @@ class DB_Extended_PDO extends DB_PDO
             }
             $this->queryCount = count($result);
         }
+        else if ($dataSourceName == "summary1") {
+            $sum = array();
+            foreach ($result as $record) {
+                $sum[$record["item"]] += $record["total"];
+            }
+            arsort($sum);
+            $result = array();
+            $counter = 10;
+            foreach ( $sum as $product => $totalprice )  {
+                $result[] = array("itemname"=>$product, "totalprice"=>$totalprice);
+                $counter--;
+                if ( $counter <= 0 )    {
+                    break;
+                }
+            }
+            $this->queryCount = 10;
+        }
+        else if ($dataSourceName == "summary2") {
+            $sum = array();
+            foreach ($result as $record) {
+                $sum[$record["customer"]] += $record["total"];
+            }
+            arsort($sum);
+            $result = array();
+            $counter = 10;
+            foreach ( $sum as $customer => $totalprice )  {
+                $result[] = array("customername"=>$customer, "totalprice"=>$totalprice);
+                $counter--;
+                if ( $counter <= 0 )    {
+                    break;
+                }
+            }
+            $this->queryCount = 10;
+        }
 
         return $result;
     }

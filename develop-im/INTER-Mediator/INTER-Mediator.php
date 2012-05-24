@@ -12,9 +12,12 @@
 mb_internal_encoding('UTF-8');
 date_default_timezone_set('Asia/Tokyo');
 
+require_once('DB_Interfaces.php');
+require_once('DB_Logger.php');
+require_once('DB_Settings.php');
+require_once('DB_UseSharedObjects.php');
 require_once('DB_Proxy.php');
-//require_once('MessageStrings.php');
-//require_once('MessageStrings_ja.php');
+
 /*
  * GET
  * ?access=select
@@ -39,8 +42,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     spl_autoload_register('loadClass');
 
     if (!isset($_POST['access'])) {
-        $generator = new GenerateInitialJSCode();
-        $generator->generate($datasource, $options, $dbspecification, $debug);
+        $generator = new GenerateJSCode();
+        $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
@@ -48,14 +51,21 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     }
 }
 
-class GenerateInitialJSCode
+class GenerateJSCode
 {
     function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
     {
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
 
-    function generate($datasource, $options, $dbspecification, $debug)
+    function generateErrorMessageJS($message)
+    {
+        $q = '"';
+        echo "INTERMediator.errorMessages.push({$q}"
+            . str_replace("\n", " ", addslashes($message)) . "{$q});";
+    }
+
+    function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
     {
         $q = '"';
         $generatedPrivateKey = null;
@@ -169,7 +179,12 @@ class GenerateInitialJSCode
  */
 function loadClass($className)
 {
-    require_once($className . '.php');
+    if (( include_once $className . '.php' ) === false ) {
+        $errorGenerator = new GenerateJSCode();
+        if ( strpos( $className, "MessageStrings_" ) !== 0 )    {
+            $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
+        }
+    }
 }
 
 /**

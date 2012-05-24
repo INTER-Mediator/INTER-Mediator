@@ -88,7 +88,8 @@ var INTERMediator = {
                 body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-            debugNode.appendChild(document.createTextNode("============ERROR MESSAGE on " + new Date() + "============"));
+            debugNode.appendChild(document.createTextNode(
+                "============ERROR MESSAGE on " + new Date() + "============"));
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.errorMessages.length; i++) {
                 var lines = INTERMediator.errorMessages[i].split("\n");
@@ -123,7 +124,8 @@ var INTERMediator = {
                 body = document.getElementsByTagName('body')[0];
                 body.insertBefore(debugNode, body.firstChild);
             }
-            debugNode.appendChild(document.createTextNode("============DEBUG INFO on " + new Date() + "============"));
+            debugNode.appendChild(document.createTextNode(
+                "============DEBUG INFO on " + new Date() + "============"));
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.debugMessages.length; i++) {
                 var lines = INTERMediator.debugMessages[i].split("\n");
@@ -143,11 +145,40 @@ var INTERMediator = {
     //=================================
     // User interactions
     //=================================
+
+    isShiftKeyDown: false,
+    isControlKeyDown: false,
+
+    keyDown: function(evt) {
+        if ( evt.keyCode == 16 ){
+            INTERMediator.isShiftKeyDown = true;
+        };
+        if ( evt.keyCode == 17 ){
+            INTERMediator.isControlKeyDown = true;
+        };
+    },
+
+    keyUp: function(evt)   {
+        if ( evt.keyCode == 16 ){
+            INTERMediator.isShiftKeyDown = false;
+        };
+        if ( evt.keyCode == 17 ){
+            INTERMediator.isControlKeyDown = false;
+        };
+    },
     /*
      valueChange
      Parameters:
      */
     valueChange:function (idValue) {
+        if (INTERMediator.isShiftKeyDown && INTERMediator.isControlKeyDown) {
+            INTERMediator.debugMessages.push("Canceled to update the value with shift+control keys.");
+            INTERMediator.flushMessage();
+             return;
+        };
+        INTERMediator.isShiftKeyDown = false;
+        INTERMediator.isControlKeyDown = false;
+
         var changedObj = document.getElementById(idValue);
 
         var linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
@@ -237,9 +268,11 @@ var INTERMediator = {
                 }
             }
 
-            if (currentVal.recordset == null || currentVal.recordset[0] == null
+            if (currentVal.recordset == null
+                || currentVal.recordset[0] == null
                 || currentVal.recordset[0][objectSpec['field']] == null) {
-                alert(INTERMediatorLib.getInsertedString(INTERMediatorOnPage.getMessages()[1003], [objectSpec['field']]));
+                alert(INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[1003], [objectSpec['field']]));
                 INTERMediator.flushMessage();
                 return;
             }
@@ -302,7 +335,8 @@ var INTERMediator = {
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
                         if (ex == "_im_requath_request_") {
-                            if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                            if (INTERMediatorOnPage.requireAuthentication
+                                && !INTERMediatorOnPage.isComplementAuthData()) {
                                 INTERMediatorOnPage.authChallenge = null;
                                 INTERMediatorOnPage.authHashedPassword = null;
                                 INTERMediatorOnPage.authenticating(
@@ -564,7 +598,7 @@ var INTERMediator = {
                         INTERMediatorOnPage.authHashedPassword = null;
                         INTERMediatorOnPage.authenticating(
                             function () {
-                                INTERMediator.construct(fromStart, indexOfKeyFieldObject);
+                                INTERMediator.construct(indexOfKeyFieldObject);
                             }
                         );
                         return;
@@ -618,11 +652,11 @@ var INTERMediator = {
                             INTERMediatorLib.getParentEnclosure(currentNode['node']));
                     }
                     if (enclosure != null) {
-                        var targetNode = getEnclosedNode(enclosure,
-                            currentNode['name'], currentNode['foreign-value'][0]['field']);
-                        /**** MUST CHECK ****/
-                        if (targetNode) {
-                            currentNode['target'] = targetNode.getAttribute('id');
+                        for ( var field in currentNode['foreign-value'] )   {
+                            var targetNode = getEnclosedNode( enclosure, currentNode['name'], field );
+                            if (targetNode) {
+                                currentNode['target'] = targetNode.getAttribute('id');
+                            }
                         }
                     }
                 }
@@ -706,7 +740,13 @@ var INTERMediator = {
                         var children = node.childNodes; // Check all child nodes.
                         for (var i = 0; i < children.length; i++) {
                             if (children[i].nodeType === 1) {
-                                seekEnclosureNode(children[i], currentRecord, currentTable, parentEnclosure, objectReference);
+                                seekEnclosureNode(
+                                    children[i],
+                                    currentRecord,
+                                    currentTable,
+                                    parentEnclosure,
+                                    objectReference
+                                );
                             }
                         }
                     }
@@ -816,7 +856,7 @@ var INTERMediator = {
                         records:currentContext['records'],
                         paging:currentContext['paging'],
                         fields:fieldList,
-                        parentkeyvalue:relationValue, /**** MUST CHECK ****/
+                        parentkeyvalue:relationValue,
                         conditions:null,
                         useoffset:true});
                 } catch (ex) {
@@ -891,16 +931,42 @@ var INTERMediator = {
                         }
 
                         if (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA') {
-                            var valueChangeFunction = function (a) {
-                                var idValue = a;
-                                return function () {
-                                    INTERMediator.valueChange(idValue);
-                                };
-                            }
+//                            var valueChangeFunction = function (a) {
+//                                var idValue = a;
+//                                return function () {
+//                                    INTERMediator.valueChange(idValue);
+//                                };
+//                            }
+//                            eventListenerPostAdding.push({
+//                                'id':idValue,
+//                                'event':'change',
+//                                'todo':valueChangeFunction(idValue)
+//                            });
+//                            var valueChangeObject = new EventListener();
+                            var valueChangeFunction = function(targetId){
+                                var theId = targetId;
+                                return function(evt) {
+//                                    alert(evt.shiftKey);
+//                                    if ( ! evt.shiftKey ) {
+//                                        return null;
+//                                    }
+                                    INTERMediator.valueChange(theId);
+                                }
+                            };
                             eventListenerPostAdding.push({
                                 'id':idValue,
                                 'event':'change',
                                 'todo':valueChangeFunction(idValue)
+                            });
+                            eventListenerPostAdding.push({
+                                'id':idValue,
+                                'event':'keydown',
+                                'todo':INTERMediator.keyDown
+                            });
+                            eventListenerPostAdding.push({
+                                'id':idValue,
+                                'event':'keyup',
+                                'todo':INTERMediator.keyUp
                             });
                         }
 
@@ -1003,7 +1069,13 @@ var INTERMediator = {
                                 newNode.setAttribute('id', idValue);
                                 linkedElmCounter++;
                             }
-                            seekEnclosureNode(newNode, targetRecords.recordset[ix], currentContext['name'], node, objectReference);
+                            seekEnclosureNode(
+                                newNode,
+                                targetRecords.recordset[ix],
+                                currentContext['name'],
+                                node,
+                                objectReference
+                            );
                         }
                     }
 
@@ -1098,35 +1170,11 @@ var INTERMediator = {
                     var newNode = node.appendChild(repeatersOriginal[i]);
                     seekEnclosureNode(newNode, null, null, node, null);
                 }
-//                repeaters = [];
-//                for (var i = 0; i < repeatersOriginal.length; i++) {
-//                    var clonedNode = repeatersOriginal[i].cloneNode(true);
-//                    repeaters.push(clonedNode);
-//                }
-//                for (var i = 0; i < repeaters.length; i++) {
-//                    var newNode = repeaters[i].cloneNode(true);
-//                    var nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-//                    if (nodeClass != INTERMediator.noRecordClassName) {
-//                        node.appendChild(newNode);
-//                        if (newNode.getAttribute('id') == null) {
-//                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-//                            newNode.setAttribute('id', idValue);
-//                            linkedElmCounter++;
-//                        }
-//                        seekEnclosureNode(newNode, targetRecords.recordset[ix], currentContext['name'], node, objectReference);
-//                    }
-//                }
-
-//                INTERMediator.errorMessages.push(
-//                    INTERMediatorLib.getInsertedString(
-//                        INTERMediatorOnPage.getMessages()[1002], [INTERMediatorLib.objectToString(fieldList)]));
             }
             currentLevel--;
-            //    return foreignValue != '';
         }
 
         function seekLinkedElement(node) {
-            var enclosure = null;
             var nType = node.nodeType;
             if (nType == 1) {
                 if (INTERMediatorLib.isLinkedElement(node)) {

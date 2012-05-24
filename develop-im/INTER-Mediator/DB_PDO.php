@@ -8,7 +8,7 @@
 *   INTER-Mediator is supplied under MIT License.
 */
 
-class DB_PDO extends UseSharedObjects implements Auth_Interface_DB
+class DB_PDO extends DB_UseSharedObjects implements Auth_Interface_DB
 {
     var $link = null;
     var $mainTableCount = 0;
@@ -122,7 +122,7 @@ class DB_PDO extends UseSharedObjects implements Auth_Interface_DB
                         } else {
                             $op = '=';
                         }
-                        if ($relDef['option'] == "timestamp") {
+                        if ( isset( $relDef['option'] ) && $relDef['option'] == "timestamp" ) {
                             $escapedValue = "timestamp {$escapedValue}";
                         }
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
@@ -134,8 +134,8 @@ class DB_PDO extends UseSharedObjects implements Auth_Interface_DB
 
         //$currentOperation = 'load';
         if (isset($tableInfo['authentication'])) {
-            $authInfoField = $this->getFieldForAuthorization($currentOperation);
-            $authInfoTarget = $this->getTargetForAuthorization($currentOperation);
+            $authInfoField = $this->authCommon->getFieldForAuthorization($currentOperation);
+            $authInfoTarget = $this->authCommon->getTargetForAuthorization($currentOperation);
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->currentUser) == 0) {
                     $queryClause = 'FALSE';
@@ -156,8 +156,8 @@ class DB_PDO extends UseSharedObjects implements Auth_Interface_DB
                         . "(" . implode(' OR ', $groupCriteria) . ")";
                 }
             } else {
-                $authorizedUsers = $this->getAuthorizedUsers($currentOperation);
-                $authorizedGroups = $this->getAuthorizedGroups($currentOperation);
+                $authorizedUsers = $this->authCommon->getAuthorizedUsers($currentOperation);
+                $authorizedGroups = $this->authCommon->getAuthorizedGroups($currentOperation);
                 $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
                 if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
                     && array_intersect($belongGroups, $authorizedGroups)
@@ -264,7 +264,7 @@ class DB_PDO extends UseSharedObjects implements Auth_Interface_DB
             $rowArray = array();
             foreach ($row as $field => $val) {
                 $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
-                $rowArray[$field] = $this->dbSettings->formatterFromDB($filedInForm, $val);
+                $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
             }
             $sqlResult[] = $rowArray;
         }
@@ -318,10 +318,10 @@ class DB_PDO extends UseSharedObjects implements Auth_Interface_DB
         foreach ($this->dbSettings->fieldsRequired as $field) {
             $value = $this->dbSettings->fieldsValues[$counter];
             $counter++;
-            $convVal = (is_array($value)) ? implode("\n", $value) : $value;
-            $convVal = $this->dbSettings->formatterToDB($field, $convVal);
+            $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+            $convertedValue = $this->formatter->formatterToDB($field, $convertedValue);
             $setClause[] = "{$field}=?";
-            $setParameter[] = $convVal;
+            $setParameter[] = $convertedValue;
         }
         if (count($setClause) < 1) {
             $this->logger->setErrorMessage('No data to update.');
@@ -387,23 +387,23 @@ class DB_PDO extends UseSharedObjects implements Auth_Interface_DB
             $field = $this->dbSettings->fieldsRequired[$i];
             $value = $this->dbSettings->fieldsValues[$i];
             $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
-            $convVal = (is_array($value)) ? implode("\n", $value) : $value;
-            $convVal = $this->link->quote($this->dbSettings->formatterToDB($filedInForm, $convVal));
-            $setClause[] = "{$field}={$convVal}";
+            $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+            $convertedValue = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
+            $setClause[] = "{$field}={$convertedValue}";
         }
         if (isset($tableInfo['default-values'])) {
             foreach ($tableInfo['default-values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
                 $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
-                $convVal = (is_array($value)) ? implode("\n", $value) : $value;
-                $convVal = $this->link->quote($this->dbSettings->formatterToDB($filedInForm, $convVal));
-                $setClause[] = "{$field}={$convVal}";
+                $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+                $convertedValue = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
+                $setClause[] = "{$field}={$convertedValue}";
             }
         }
         if (isset($tableInfo['authentication'])) {
-            $authInfoField = $this->getFieldForAuthorization("new");
-            $authInfoTarget = $this->getTargetForAuthorization("new");
+            $authInfoField = $this->authCommon->getFieldForAuthorization("new");
+            $authInfoTarget = $this->authCommon->getTargetForAuthorization("new");
             if ($authInfoTarget == 'field-user') {
                 $setClause[] = "{$authInfoField}=" . $this->link->quote(
                     strlen($this->dbSettings->currentUser) == 0 ? randomString(10) : $this->dbSettings->currentUser);
@@ -650,7 +650,7 @@ class DB_PDO extends UseSharedObjects implements Auth_Interface_DB
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $userTable = $this->getUserTable();
+        $userTable = $this->dbSettings->getUserTable();
         $sql = "insert {$userTable} set username=" . $this->link->quote($username)
             . ",hashedpasswd='{$hashedpassword}'";
         $result = $this->link->query($sql);

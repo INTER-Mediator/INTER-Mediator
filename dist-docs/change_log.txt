@@ -17,16 +17,14 @@ Not big things
 - Users/Groups Administration user interface.
 
 Issues / Known bugs
-- The way to cancel (abandan) the editted data in a textfield. How can do it ?
 - Check any HTML editor component.
 - Check to mis-spelling terms in the definition file.
-- New record on authorization active. (it should add the default values to the login user name)
-- OPTION tag doesn't expand as an eclosure/repeater in case of any enclosure tag inside of the option tag.
+- OPTION tag doesn't expand as an enlosure/repeater in case of any enclosure tag inside of the option tag.
 
 Toward Next Majour Version
 - Aspect programming into some call-back function and Data Access class.
 - Set validation rules.
-- Samples by PostgreSQL.
+- Samples by PostgreSQL, SQLite.
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
 - Supports HTML5's datalist tag elements
 - Objective handling for the data in database.
@@ -58,8 +56,14 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.2.3 (Will be release soon.)
+Ver.2.4 (Will be release soon.)
+
+Ver.2.3 (2012/5/25)
 - The new server-side extension. You can specify the class name has the program you want do after/before db processing.
+  You could specify the 'extending-class' for your contexts.
+- You could specify the database connection to each context.
+- If you want to cancel to change the text field, click outside of it with Shift+Control keys.
+- New sample "Sample_Extendable" is added.
 - Bug Fix: The issue for "relation" settings is resolved.
 
 Ver.2.2 (2012/5/5)
