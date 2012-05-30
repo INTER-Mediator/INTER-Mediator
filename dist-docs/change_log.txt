@@ -9,21 +9,11 @@ Change Log will be supplied by English only.
 To Do, that is left-over. Or Plan
 =================================
 
-Not big things
+To Do List for the INTER-Mediator developer(s)
 - Showing as the alert box when any errors occurred ??
-- Popup menu's default value; if there isn't the value of them, set first one.
 - DIV._im_multivalue: Set muliti-line values to one field within the div element.
 - Change the password from login panel.
 - Users/Groups Administration user interface.
-
-Issues / Known bugs
-- Check any HTML editor component.
-- Check to mis-spelling terms in the definition file.
-- OPTION tag doesn't expand as an enlosure/repeater in case of any enclosure tag inside of the option tag.
-
-Toward Next Majour Version
-- Aspect programming into some call-back function and Data Access class.
-- Set validation rules.
 - Samples by PostgreSQL, SQLite.
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
 - Supports HTML5's datalist tag elements
@@ -32,11 +22,17 @@ Toward Next Majour Version
 - Single query can retrieve main and related tables simultaneously.
 - Caching the result of queries.
 - FileMaker's Find style database search. To do tha, the Recordset feature must be support for context.
-- Transaction Support (updating=transaction)
 - Store NULL for empty string.
 - Multiple values within one field. (It may be required for FileMaker especially.)
 - HTML5's local database supporting.
 - Amazon Web Service supporting.
+
+Issues / Known bugs
+- Popup menu's default value; if there isn't the value of them, set first one.
+- Check any HTML editor component.
+- OPTION tag doesn't expand as an enlosure/repeater in case of any enclosure tag inside of the option tag.
+- Check to mis-spelling terms in the definition file.
+- After clicking Inset button, sometimes two Insert buttons are shown.
 
 Mostly Slogan at anytime: or Should be done:
 - Fulfilling documentation, including tutorials.
@@ -56,11 +52,16 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.2.4 (Will be release soon.)
+Ver.2.5 (Will be release soon.)
+
+Ver.2.4 (2012/5/30)
+- Define the post repeater/enclosure method for each context. The key is 'post-repeater' and 'post-enclosure'.
 
 Ver.2.3 (2012/5/25)
 - The new server-side extension. You can specify the class name has the program you want do after/before db processing.
   You could specify the 'extending-class' for your contexts.
+  [[ This is my final work of the Education Program for Top Software Engineers (TopSE Project)
+     by the National Institute of Informatics. I appreciate Dr. Kenji Tei and his enthusiastic coaching. ]]
 - You could specify the database connection to each context.
 - If you want to cancel to change the text field, click outside of it with Shift+Control keys.
 - New sample "Sample_Extendable" is added.
@@ -69,7 +70,7 @@ Ver.2.3 (2012/5/25)
 Ver.2.2 (2012/5/5)
 - The variable name "INTERMediaotr_DBAdapter" was typo. It was changed to "INTERMediator_DBAdapter."
 - Bug Fix: The enclosure/repeater nodes by SELECT/OPTION in a non-enclosure/repeater node didn't generate nodes with database.
-- WARNNING: You could see the "Change Password" button but it doesn't work. It just add as an user-interface.
+- WARNING: You could see the "Change Password" button but it doesn't work. It just add as an user-interface.
 
 Ver.2.1 (2012/4/29)
 - Validation is supported.

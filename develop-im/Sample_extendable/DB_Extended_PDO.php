@@ -11,12 +11,9 @@ require_once ('../INTER-Mediator/DB_PDO.php');
 
 class DB_Extended_PDO extends DB_PDO
 {
-    var $queryCount;
-
     function getFromDB($dataSourceName)
     {
         $result = parent::getFromDB($dataSourceName);
-        $this->queryCount = parent::countQueryResult($dataSourceName);
 
         if ($dataSourceName == "everymonth") {
             $result = array();
@@ -31,7 +28,6 @@ class DB_Extended_PDO extends DB_PDO
                     "enddt" => $endDate->format("Y-m-d H:i:s"),
                 );
             }
-            $this->queryCount = count($result);
         }
         else if ($dataSourceName == "summary1") {
             $sum = array();
@@ -48,7 +44,6 @@ class DB_Extended_PDO extends DB_PDO
                     break;
                 }
             }
-            $this->queryCount = 10;
         }
         else if ($dataSourceName == "summary2") {
             $sum = array();
@@ -65,14 +60,7 @@ class DB_Extended_PDO extends DB_PDO
                     break;
                 }
             }
-            $this->queryCount = 10;
         }
-
         return $result;
-    }
-
-    function countQueryResult($dataSourceName)
-    {
-        return $this->queryCount;
     }
 }

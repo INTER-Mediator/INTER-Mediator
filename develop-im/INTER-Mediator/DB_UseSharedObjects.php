@@ -10,20 +10,17 @@ abstract class DB_UseSharedObjects
 {
     var $dbSettings = null;
     var $logger = null;
-    var $authCommon = null;
     var $formatter = null;
 
-    function setUpSahredObjects( $obj = null )
+    function setUpSharedObjects( $obj = null )
     {
         if ( $obj == null )    {
             $this->setSettings(new DB_Settings());
             $this->setLogger(new DB_Logger());
-            $this->setAuthCommon(new DB_AuthCommon());
             $this->setFormatter(new DB_Formatters());
         } else {
             $this->setSettings($obj->dbSettings);
             $this->setLogger($obj->logger);
-            $this->setAuthCommon($obj->authCommon);
             $this->setFormatter($obj->formatter);
         }
     }
@@ -36,11 +33,6 @@ abstract class DB_UseSharedObjects
     function setLogger($logger)
     {
         $this->logger = $logger;
-    }
-
-    function setAuthCommon($authCommon)
-    {
-        $this->authCommon = $authCommon;
     }
 
     function setFormatter($formatter)

@@ -21,8 +21,8 @@ IM_Entry(
             'name' => 'summary1',
             'view' => 'saleslog',
             'relation' => array(
-                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', 'option' => 'timestamp'),
-                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', 'option' => 'timestamp'),
+                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', ),
+                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', ),
             ),
             //    'records' => 10,
         ),
@@ -30,8 +30,8 @@ IM_Entry(
             'name' => 'summary2',
             'view' => 'saleslog',
             'relation' => array(
-                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', 'option' => 'timestamp'),
-                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', 'option' => 'timestamp'),
+                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', ),
+                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', ),
             ),
             //    'records' => 10,
         ),
@@ -39,8 +39,8 @@ IM_Entry(
             'name' => 'data',
             'view' => 'saleslog',
             'relation' => array(
-                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', 'option' => 'timestamp'),
-                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', 'option' => 'timestamp'),
+                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', ),
+                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', ),
             ),
             'sort' => array(
                 array('field'=>'total', 'direction'=>'desc'),

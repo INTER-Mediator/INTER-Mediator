@@ -8,7 +8,7 @@
 *   INTER-Mediator is supplied under MIT License.
 */
 
-class DB_PDO extends DB_UseSharedObjects implements Auth_Interface_DB
+class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 {
     var $link = null;
     var $mainTableCount = 0;
@@ -117,14 +117,7 @@ class DB_PDO extends DB_UseSharedObjects implements Auth_Interface_DB
                 foreach ($this->dbSettings->foreignFieldAndValue as $foreignDef) {
                     if ($relDef['join-field'] == $foreignDef['field']) {
                         $escapedValue = $this->link->quote($foreignDef['value']);
-                        if (isset($relDef['operator'])) {
-                            $op = $relDef['operator'];
-                        } else {
-                            $op = '=';
-                        }
-                        if ( isset( $relDef['option'] ) && $relDef['option'] == "timestamp" ) {
-                            $escapedValue = "timestamp {$escapedValue}";
-                        }
+                        $op = isset($relDef['operator']) ? $relDef['operator'] : '=';
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
                             . "({$relDef['foreign-key']}{$op}{$escapedValue})";
                     }
@@ -134,8 +127,8 @@ class DB_PDO extends DB_UseSharedObjects implements Auth_Interface_DB
 
         //$currentOperation = 'load';
         if (isset($tableInfo['authentication'])) {
-            $authInfoField = $this->authCommon->getFieldForAuthorization($currentOperation);
-            $authInfoTarget = $this->authCommon->getTargetForAuthorization($currentOperation);
+            $authInfoField = $this->getFieldForAuthorization($currentOperation);
+            $authInfoTarget = $this->getTargetForAuthorization($currentOperation);
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->currentUser) == 0) {
                     $queryClause = 'FALSE';
@@ -156,8 +149,8 @@ class DB_PDO extends DB_UseSharedObjects implements Auth_Interface_DB
                         . "(" . implode(' OR ', $groupCriteria) . ")";
                 }
             } else {
-                $authorizedUsers = $this->authCommon->getAuthorizedUsers($currentOperation);
-                $authorizedGroups = $this->authCommon->getAuthorizedGroups($currentOperation);
+                $authorizedUsers = $this->getAuthorizedUsers($currentOperation);
+                $authorizedGroups = $this->getAuthorizedGroups($currentOperation);
                 $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
                 if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
                     && array_intersect($belongGroups, $authorizedGroups)
@@ -402,8 +395,8 @@ class DB_PDO extends DB_UseSharedObjects implements Auth_Interface_DB
             }
         }
         if (isset($tableInfo['authentication'])) {
-            $authInfoField = $this->authCommon->getFieldForAuthorization("new");
-            $authInfoTarget = $this->authCommon->getTargetForAuthorization("new");
+            $authInfoField = $this->getFieldForAuthorization("new");
+            $authInfoTarget = $this->getTargetForAuthorization("new");
             if ($authInfoTarget == 'field-user') {
                 $setClause[] = "{$authInfoField}=" . $this->link->quote(
                     strlen($this->dbSettings->currentUser) == 0 ? randomString(10) : $this->dbSettings->currentUser);
@@ -763,7 +756,6 @@ class DB_PDO extends DB_UseSharedObjects implements Auth_Interface_DB
             }
         }
     }
-
 }
 
 ?>

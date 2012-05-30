@@ -86,9 +86,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     function initialize($datasource, $options, $dbspec, $debug)
     {
-      //  $this->dbSettings = new DB_Settings();
-     //   $this->logger = new DB_Logger();
-        $this->setUpSahredObjects();
+        $this->setUpSharedObjects();
 
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $currentDirParam = $currentDir . 'params.php';
@@ -154,11 +152,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             echo implode('', $this->logger->getMessagesForJS());
             return false;
         }
-        $this->dbClass->setUpSahredObjects( $this );
-        $this->authCommon->dbClass = $this->dbClass;
-        $this->authCommon->setUpSahredObjects( $this );
-//        $this->dbClass->setSettings($this->dbSettings);
-//        $this->dbClass->setLogger($this->logger);
+        $this->dbClass->setUpSharedObjects( $this );
         if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
             $this->logger->setDebugMode($debug);
         }
@@ -173,9 +167,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->logger->setDebugMessage("The class '{$className}' was instanciated.", 2);
             }
             if ( is_subclass_of( $this->userExpanded, 'DB_UseSharedObjects' ))   {
-//                $this->userExpanded->setSettings($this->dbSettings);
-//                $this->userExpanded->setLogger($this->logger);
-                $this->dbClass->setUpSahredObjects( $this );
+                $this->userExpanded->setUpSharedObjects( $this );
             }
         }
 
@@ -280,7 +272,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
                         $password = substr($decrypted, 0, $nlPos);
                         $challenge = substr($decrypted, $nlPos + 1);
-                        if (!$this->authCommon->checkChallenge($challenge, $clientId)) {
+                        if (!$this->dbClass->checkChallenge($challenge, $clientId)) {
                             $access = "do nothing";
                             $requireAuthentication = true;
                         } else {
@@ -293,8 +285,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     }
                 } else {
                     $noAuthorization = true;
-                    $authorizedUsers = $this->authCommon->getAuthorizedUsers($access);
-                    $authorizedGroups = $this->authCommon->getAuthorizedGroups($access);
+                    $authorizedUsers = $this->dbClass->getAuthorizedUsers($access);
+                    $authorizedGroups = $this->dbClass->getAuthorizedGroups($access);
                     $this->logger->setDebugMessage(
                         "authorizedUsers=" . var_export($authorizedUsers, true)
                             . "/authorizedGroups=" . var_export($authorizedGroups, true)
@@ -318,7 +310,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $access = "do nothing";
                         $requireAuthentication = true;
                     }
-                    if (!$this->authCommon->checkAuthorization($paramAuthUser, $paramResponse, $clientId)) {
+                    if (!$this->checkAuthorization($paramAuthUser, $paramResponse, $clientId)) {
                         $this->logger->setDebugMessage("Authentication doesn't meet valid.{$paramAuthUser}/{$paramResponse}/{$clientId}");
                         // Not Authenticated!
                         $access = "do nothing";
@@ -349,9 +341,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
         echo implode('', $this->logger->getMessagesForJS());
         if ($requireAuthorization) {
-            $generatedChallenge = $this->authCommon->generateChallenge();
-            $generatedUID = $this->authCommon->generateClientId('');
-            $userSalt = $this->authCommon->saveChallenge(
+            $generatedChallenge = $this->generateChallenge();
+            $generatedUID = $this->generateClientId('');
+            $userSalt = $this->saveChallenge(
                 $isDBNative ? 0 : $paramAuthUser, $generatedChallenge, $generatedUID);
             echo "challenge='{$generatedChallenge}{$userSalt}';";
             echo "clientid='{$generatedUID}';";
@@ -359,6 +351,89 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 echo "requireAuth=true;"; // Force authentication to client
             }
         }
+    }
+
+    /* Authentication support */
+    function generateClientId($prefix)
+    {
+        return sha1(uniqid($prefix, true));
+    }
+
+    function generateChallenge()
+    {
+        $str = '';
+        for ($i = 0; $i < 12; $i++) {
+            $n = rand(1, 255);
+            $str .= ($n < 16 ? '0' : '') . dechex($n);
+        }
+        return $str;
+    }
+
+    function generateSalt()
+    {
+        $str = '';
+        for ($i = 0; $i < 4; $i++) {
+            $n = rand(1, 255);
+            $str .= chr($n);
+        }
+        return $str;
+    }
+
+    /* returns user's hash salt.
+
+    */
+    function saveChallenge($username, $challenge, $clientId)
+    {
+        $this->dbClass->authSupportStoreChallenge($username, $challenge, $clientId);
+        return $username === 0 ? "" : $this->dbClass->authSupportGetSalt($username);
+    }
+
+    function checkAuthorization($username, $hashedvalue, $clientId)
+    {
+        $returnValue = false;
+
+        $this->dbClass->removeOutdatedChallenges();
+
+        $storedChalenge = $this->dbClass->authSupportRetrieveChallenge($username, $clientId);
+        $this->logger->setDebugMessage("[checkAuthorization]storedChalenge={$storedChalenge}", 2);
+
+        if (strlen($storedChalenge) == 24) { // ex.fc0d54312ce33c2fac19d758
+            $hashedPassword = $this->dbClass->authSupportRetrieveHashedPassword($username);
+            $this->logger->setDebugMessage("[checkAuthorization]hashedPassword={$hashedPassword}", 2);
+            if (strlen($hashedPassword) > 0) {
+                if ($hashedvalue == sha1($storedChalenge . $hashedPassword)) {
+                    $returnValue = true;
+                }
+            }
+        }
+        return $returnValue;
+    }
+
+    // This method is just used to authenticate with database user
+    function checkChallenge($challenge, $clientId)
+    {
+        $returnValue = false;
+        $this->dbClass->removeOutdatedChallenges();
+        // Database user mode is user_id=0
+        $storedChallenge = $this->dbClass->authSupportRetrieveChallenge(0, $clientId);
+        if (strlen($storedChallenge) == 24 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
+            $returnValue = true;
+        }
+        return $returnValue;
+    }
+
+    function addUser($username, $password)
+    {
+        $salt = $this->generateSalt();
+        $hexSalt = bin2hex($salt);
+        $returnValue = $this->dbClass->authSupportCreateUser($username, sha1($password . $salt) . $hexSalt);
+        return $returnValue;
+    }
+
+    function changePassword($username, $oldpassword, $newpassword)
+    {
+        $returnValue = $this->dbClass->authSupportChangePassword($username, sha1($oldpassword), sha1($newpassword));
+        return $returnValue;
     }
 
 

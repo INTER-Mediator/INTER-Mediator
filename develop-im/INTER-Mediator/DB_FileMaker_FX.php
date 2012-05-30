@@ -17,7 +17,7 @@ if (error_get_last() !== null) { // If FX.php isn't installed in valid directori
 }
 error_reporting($currentEr);
 
-class DB_FileMaker_FX extends DB_UseSharedObjects implements Auth_Interface_DB
+class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 {
     var $fx = null;
 
@@ -115,8 +115,8 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements Auth_Interface_DB
 
         if (isset($context['authentication'])) {
             $authFailure = FALSE;
-            $authInfoField = $this->authCommon->getFieldForAuthorization("load");
-            $authInfoTarget = $this->authCommon->getTargetForAuthorization("load");
+            $authInfoField = $this->getFieldForAuthorization("load");
+            $authInfoTarget = $this->getTargetForAuthorization("load");
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->currentUser) == 0) {
                     $authFailure = true;
@@ -363,13 +363,22 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements Auth_Interface_DB
             }
         }
         if (isset($context['authentication'])) {
-            $authInfoField = $this->authCommon->getFieldForAuthorization("new");
-            $authInfoTarget = $this->authCommon->getTargetForAuthorization("new");
+            $authInfoField = $this->getFieldForAuthorization("new");
+            $authInfoTarget = $this->getTargetForAuthorization("new");
             if ($authInfoTarget == 'field-user') {
                 $this->fx->AddDBParam($authInfoField, strlen($this->dbSettings->currentUser) == 0 ? randomString(10) : $this->dbSettings->currentUser);
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
                 $this->fx->AddDBParam($authInfoField, strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
+            } else {
+                $authorizedUsers = $this->getAuthorizedUsers("new");
+                $authorizedGroups = $this->getAuthorizedGroups("new");
+                $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
+                if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
+                    && array_intersect($belongGroups, $authorizedGroups)
+                ) {
+                    $authFailure = true;
+                }
             }
         }
         if (isset($context['global'])) {

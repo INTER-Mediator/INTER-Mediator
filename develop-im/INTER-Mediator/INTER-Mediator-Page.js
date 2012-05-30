@@ -326,30 +326,30 @@ var INTERMediatorOnPage = {
      Seek nodes from the repeater of "fromNode" parameter.
      */
     getNodeIdFromIMDefinition:function (imDefinition, fromNode) {
-        var repeaterNode = INTERMediatorLib.getParentRepeater(fromNode);
+        var repeaterNode;
+
+        repeaterNode = INTERMediatorLib.getParentRepeater(fromNode);
         return seekNode(repeaterNode, imDefinition);
 
         function seekNode(node, imDefinition) {
+            var children, i, nodeDefs, returnValue;
             if (node.nodeType != 1) {
                 return null;
             }
-            var children = node.childNodes;
-            if (children == null) {
-                return null;
-            } else {
-                for (var i = 0; i < children.length; i++) {
-                    if (children[i].getAttribute != null) {
-                        var thisClass = children[i].getAttribute('class');
-                        var thisTitle = children[i].getAttribute('title');
-                        if ((thisClass != null && thisClass.indexOf(imDefinition) > -1)
-                            || (thisTitle != null && thisTitle.indexOf(imDefinition) > -1)) {
-                            return children[i].getAttribute('id');
-                            break;
-                        } else {
-                            var returnValue = seekNode(children[i], imDefinition);
-                            if (returnValue != null) {
+            children = node.childNodes;
+            if (children) {
+                for (i = 0; i < children.length; i++) {
+                    if (children[i].nodeType == 1) {
+                        if (INTERMediatorLib.isLinkedElement(children[i])) {
+                            nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
+                            if (nodeDefs.indexOf(imDefinition) > -1)   {
+                                returnValue = children[i].getAttribute('id');
                                 return returnValue;
                             }
+                        }
+                        returnValue = seekNode(children[i], imDefinition);
+                        if (returnValue !== null) {
+                            return returnValue;
                         }
                     }
                 }

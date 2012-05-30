@@ -17,29 +17,37 @@
     <link href="../sample.css" rel="stylesheet" type="text/css"/>
     <script src="include_MySQL.php"></script>
     <script type="text/javascript">
+        /*
+         INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
+         if (name === 'invoice') {
+         //    modLine(repeaters[0]);
+         calcTotal(target);
+         }
+         };
 
-        INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
-            if (name === 'invoice') {
-                //    modLine(repeaters[0]);
-                calcTotal(target);
-            }
+         INTERMediatorOnPage.expandingRecordFinish = function (name, repeaters) {
+         if (name === 'items') {
+         modLine(repeaters[0]);
+         //    alert(repeaters[0].tagName);
+         }
+         };
+         */
+        INTERMediatorOnPage.invoiceExpanded = function (target) {
+            calcTotal(target);
         };
 
-        INTERMediatorOnPage.expandingRecordFinish = function (name, repeaters) {
-            if (name === 'items') {
-                modLine(repeaters[0]);
-                //    alert(repeaters[0].tagName);
-            }
+        INTERMediatorOnPage.itemsExpanded = function (repeaters) {
+            modLine(repeaters[0]);
         };
 
         function modLine(target) {
             if (!target) {
                 return;
             }
-            var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@qty", target);
-            var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@unitprice", target);
+            var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@qty", target);
+            var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@unitprice", target);
             var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice", target);
-            var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("items@amount", target);
+            var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@amount", target);
             if (qtyId && unitPriceId && productPriceId && amountId) {
                 var unitPrice = new Number(document.getElementById(unitPriceId).value > 0 ?
                         document.getElementById(unitPriceId).value :
@@ -50,7 +58,7 @@
         }
 
         function calcTotal(target) {
-            var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition('items@amount', target);
+            var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition('item@amount', target);
             if (nodes) {
                 var s = 0;
                 for (var i = 0; i < nodes.length; i++) {
@@ -63,7 +71,7 @@
         }
     </script>
 </head>
-<body onload="INTERMediator.construct(true);calcTotal();">
+<body onload="INTERMediator.construct(true);">
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1">
     <tbody>
@@ -94,7 +102,7 @@
                 <tbody>
                 <tr>
                     <td>
-                        <input type="text" class="IM[items@product_id]" size="2"
+                        <input type="text" class="IM[item@product_id]" size="2"
                                onchange="modLine(this);calcTotal(this)"/>
 
                         <div style="display:inline;" class="_im_enclosure">
@@ -103,10 +111,10 @@
                             </div>
                         </div>
                     </td>
-                    <td><input type="text" class="IM[items@qty]" size="5" style="text-align:right;"
+                    <td><input type="text" class="IM[item@qty]" size="5" style="text-align:right;"
                                onchange="modLine(this);calcTotal(this)"/></td>
                     <td>
-                        <input type="text" class="IM[items@unitprice]" size="8" style="text-align:right;"
+                        <input type="text" class="IM[item@unitprice]" size="8" style="text-align:right;"
                                onchange="modLine(this);calcTotal(this)"/>
 
                         <div style="display:inline;" class="_im_enclosure">
@@ -115,7 +123,7 @@
                             </div>
                         </div>
                     </td>
-                    <td align="right"><span align="right" class="IM[items@amount]"></span></td>
+                    <td align="right"><span align="right" class="IM[item@amount]"></span></td>
                     <td></td>
                 </tr>
                 </tbody>

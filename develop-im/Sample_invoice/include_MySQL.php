@@ -21,11 +21,12 @@ $tableDefinitions = array(
             array('field' => 'id', 'direction' => 'ASC'),
         ),
         'repeat-control' => 'insert delete',
+        'post-enclosure' => 'invoiceExpanded',
     ),
     array(
-        'name' => 'items',
-        'table' => 'item',
-        'view' => 'item_display',
+        'name' => 'item',
+      //  'table' => 'item',
+    //    'view' => 'item_display',
         'key' => 'id',
         'relation' => array(
             array('foreign-key' => 'invoice_id', 'join-field' => 'id', 'operator' => '=')
@@ -46,6 +47,7 @@ $tableDefinitions = array(
                 'message' => 'Unit price should be between 1.. 9999.'
             ),
         ),
+        'post-repeater' => 'itemsExpanded',
     ),
     array(
         'name' => 'product',
@@ -64,6 +66,6 @@ $optionDefinitions = array(
 );
 $dbDefinitions = array('db-class' => 'PDO');
 
-IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, 1);
+IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, 2);
 
 ?>

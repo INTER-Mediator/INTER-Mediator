@@ -28,6 +28,7 @@ class DB_Settings
     var $start = 0;
     var $dataSourceName = '';
     var $foreignFieldAndValue = array();
+    var $recordCount = 0;
 
     var $currentUser = null;
     var $authentication = null;

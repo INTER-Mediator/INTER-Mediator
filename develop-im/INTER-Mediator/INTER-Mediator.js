@@ -73,6 +73,13 @@ var INTERMediator = {
     //=================================
     // Message for Programmers
     //=================================
+
+    setDebugMessage:function(message, level)   {
+        if ( INTERMediator.debugMode <= level ) {
+            INTERMediator.debugMessages.push(message);
+        }
+    },
+
     flushMessage:function () {
         var debugNode, title, body, i, clearButton, tNode;
         if (INTERMediator.errorMessages.length > 0) {
@@ -174,7 +181,9 @@ var INTERMediator = {
         if (INTERMediator.isShiftKeyDown && INTERMediator.isControlKeyDown) {
             INTERMediator.debugMessages.push("Canceled to update the value with shift+control keys.");
             INTERMediator.flushMessage();
-             return;
+            INTERMediator.isShiftKeyDown = false;
+            INTERMediator.isControlKeyDown = false;
+            return;
         };
         INTERMediator.isShiftKeyDown = false;
         INTERMediator.isControlKeyDown = false;
@@ -208,11 +217,10 @@ var INTERMediator = {
                                     }
                                 }
                                 return result;
-                            };
+                            }
                             if (!checkFunction()) {
                                 return;
                             }
-                            ;
                         }
                     }
                 }
@@ -931,27 +939,9 @@ var INTERMediator = {
                         }
 
                         if (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA') {
-//                            var valueChangeFunction = function (a) {
-//                                var idValue = a;
-//                                return function () {
-//                                    INTERMediator.valueChange(idValue);
-//                                };
-//                            }
-//                            eventListenerPostAdding.push({
-//                                'id':idValue,
-//                                'event':'change',
-//                                'todo':valueChangeFunction(idValue)
-//                            });
-//                            var valueChangeObject = new EventListener();
                             var valueChangeFunction = function(targetId){
                                 var theId = targetId;
-                                return function(evt) {
-//                                    alert(evt.shiftKey);
-//                                    if ( ! evt.shiftKey ) {
-//                                        return null;
-//                                    }
-                                    INTERMediator.valueChange(theId);
-                                }
+                                return function(evt) { INTERMediator.valueChange(theId); }
                             };
                             eventListenerPostAdding.push({
                                 'id':idValue,
@@ -1055,15 +1045,13 @@ var INTERMediator = {
                         }
                     }
 
-                    if (INTERMediatorOnPage.expandingRecordFinish != null) {
-                        INTERMediatorOnPage.expandingRecordFinish(currentContext['name'], repeaters);
-                    }
-
+                    var newlyAddedNodes = [];
                     for (var i = 0; i < repeaters.length; i++) {
                         var newNode = repeaters[i].cloneNode(true);
                         var nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                         if (nodeClass != INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
+                            newlyAddedNodes.push(newNode);
                             if (newNode.getAttribute('id') == null) {
                                 idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
                                 newNode.setAttribute('id', idValue);
@@ -1077,6 +1065,20 @@ var INTERMediator = {
                                 objectReference
                             );
                         }
+                    }
+
+                    if (INTERMediatorOnPage.expandingRecordFinish != null) {
+                        INTERMediatorOnPage.expandingRecordFinish(currentContext['name'], newlyAddedNodes);
+                        INTERMediator.setDebugMessage(
+                            "Call INTERMediatorOnPage.expandingRecordFinish with the context: "+currentContext['name'], 2);
+                    }
+
+                    if (currentContext['post-repeater'])    {
+                        var postCallFunc = new Function("arg",
+                            "INTERMediatorOnPage." + currentContext['post-repeater'] + "(arg)");
+                        postCallFunc( newlyAddedNodes );
+                        INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
+                            + currentContext['post-repeater'] + "' with the context: " + currentContext['name'], 2);
                     }
 
                     // Event listener should add after adding node to document.
@@ -1162,6 +1164,17 @@ var INTERMediator = {
 
                 if (INTERMediatorOnPage.expandingEnclosureFinish != null) {
                     INTERMediatorOnPage.expandingEnclosureFinish(currentContext['name'], node);
+                    INTERMediator.setDebugMessage(
+                        "Call INTERMediatorOnPage.expandingEnclosureFinish with the context: "
+                            +currentContext['name'], 2);
+                }
+                if (currentContext['post-enclosure'])    {
+                    var postCallFunc = new Function("arg",
+                        "INTERMediatorOnPage." + currentContext['post-enclosure'] + "(arg)");
+                    postCallFunc( node );
+                    INTERMediator.setDebugMessage(
+                        "Call the post enclosure method 'INTERMediatorOnPage."+currentContext['post-enclosure']
+                            +"' with the context: "+currentContext['name'], 2);
                 }
 
             } else {
