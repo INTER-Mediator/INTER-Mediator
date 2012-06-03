@@ -6,10 +6,9 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-// Cleaning-up by http://jsbeautifier.org/ or Eclipse's Formatting
 
-
-var INTERMediatorOnPage = {
+var INTERMediatorOnPage;
+INTERMediatorOnPage = {
     authCount:0,
     authUser:'',
     authHashedPassword:'',
@@ -342,7 +341,7 @@ var INTERMediatorOnPage = {
                     if (children[i].nodeType == 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
-                            if (nodeDefs.indexOf(imDefinition) > -1)   {
+                            if (nodeDefs.indexOf(imDefinition) > -1) {
                                 returnValue = children[i].getAttribute('id');
                                 return returnValue;
                             }

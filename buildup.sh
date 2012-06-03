@@ -5,7 +5,7 @@
 
 YUICOMP="../yuicompressor-2.4.7.jar"
 
-version="2.4"
+version="2.5"
 
 dt=`date "+%Y-%m-%d"`
 versionInFilename=`echo "${version}" | tr '.' '_'`;

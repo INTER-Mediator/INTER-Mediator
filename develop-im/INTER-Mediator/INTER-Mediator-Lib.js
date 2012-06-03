@@ -6,10 +6,9 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-// Cleaning-up by http://jsbeautifier.org/ or Eclipse's Formatting
 
-
-var INTERMediatorLib = {
+var INTERMediatorLib;
+INTERMediatorLib = {
 
     ignoreEnclosureRepeaterClassName:"_im_ignore_enc_rep",
     rollingRepeaterClassName:"_im_repeater",

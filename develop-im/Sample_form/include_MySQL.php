@@ -52,6 +52,15 @@ IM_Entry(
             'kindid' => 'cor_way_kindname@kind_id@value',
             'kindname' => 'cor_way_kindname@name_kind@innerHTML',
         ),
+        'browser-compatibility' => array(
+            'msie' => '7+',
+            'FireFox' => '2+',
+            'Safari' => '1+',
+//    'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
+            'chrome' => '1+',
+            'Opera' => '1+'
+        ),
+//        'transaction'=>'none',
     ),
     array('db-class' => 'PDO'),
     2

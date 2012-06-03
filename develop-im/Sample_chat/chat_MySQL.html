@@ -12,7 +12,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
-    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
     <script src="include_MySQL.php"></script>
     <script type="text/javascript">
         window.onload = function () {
@@ -22,11 +22,10 @@
         function postMessage() {
             INTERMediator_DBAdapter.db_createRecordWithAuth({
                         name:"chat",
-                        dataset:[
-                            //    {field:"user",value: document.getElementById("user").value},
-                            //    {field:"groupname",value: document.getElementById("groupname").value},
-                            {field:"message", value:document.getElementById("message").value}
-                        ]},
+                        dataset:[{
+                            field: "message",
+                            value: document.getElementById("message").value
+                        }]},
                     function () {
                         INTERMediator.construct(0);
                         document.getElementById("message").value = "";

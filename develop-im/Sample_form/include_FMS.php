@@ -56,7 +56,16 @@ IM_Entry(
             array('field' => 'contact_to@datetime', 'converter-class' => 'FMDateTime'),
             array('field' => 'history_to@startdate', 'converter-class' => 'FMDateTime'),
             array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
-        )
+        ),
+        'browser-compatibility' => array(
+            'msie' => '7+',
+            'FireFox' => '2+',
+            'Safari' => '4+',
+//    'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
+            'Chrome' => '1+',
+            'Opera' => '1+'
+        ),
+//        'transaction'=>'none',
     ),
     array('db-class' => 'FileMaker_FX'),
     false

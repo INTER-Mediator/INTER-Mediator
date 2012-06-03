@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link href="../sample.css" rel="stylesheet" type="text/css"/>
+    <script src="contexts_FMS.php"></script>
+    <script type="text/javascript">
+        window.onload = function(){showList();};
+        function showDetail(id) {
+            INTERMediator.additionalCondition['productlist'] = {field:'id',operator:'lt',value:0};
+            INTERMediator.additionalCondition['productdetail'] = {field:'id',operator:'eq',value:id};
+            INTERMediator.construct();
+            document.getElementById("listarea").style.display = "none";
+            document.getElementById("detailarea").style.display = "";
+        }
+
+        function showList() {
+            if ( INTERMediator.additionalCondition['productlist'] ) {
+                INTERMediator.additionalCondition['productlist'] = null;
+            }
+            INTERMediator.additionalCondition['productdetail'] = {field:'id',operator:'lt',value:0};
+            INTERMediator.construct();
+            document.getElementById("listarea").style.display = "";
+            document.getElementById("detailarea").style.display = "none";
+        }
+    </script>
+</head>
+<body>
+<!-- Table for the list view -->
+<div id="listarea">
+    <table border="1">
+        <thead>
+        <tr>
+            <th>id's</th><th>name</th><th>unitprice</th><th>photo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <button class="IM[productlist@id@$onclick]" onclick="showDetail($)">Detail</button>
+            </td>
+            <td class="IM[productlist@name]"></td>
+            <td style="text-align:right;" class="IM[productlist@unitprice]"></td>
+            <td>
+                <img width="30" src="images/" class="IM[productlist@photofile@#src]"/>
+                <a class="IM[productlist@ack_link@href|productlist@acknowledgement]"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Table for the detail view -->
+<div id="detailarea">
+    <a href="javascript:showList()">Show List</a>
+    <table border="1">
+        <tbody>
+        <tr>
+            <th>id</th>
+            <td class="IM[productdetail@id]"></td>
+        </tr>
+        <tr>
+            <th>name</th>
+            <td class="IM[productdetail@name]"></td>
+        </tr>
+        <tr>
+            <th>unitprice</th>
+            <td class="IM[productdetail@unitprice]"></td>
+        </tr>
+        <tr>
+            <th>photofile</th>
+            <td class="IM[productdetail@photofile]"></td>
+        </tr>
+        <tr>
+            <th>acknowledgement</th>
+            <td class="IM[productdetail@acknowledgement]"></td>
+        </tr>
+        <tr>
+            <th>ack_link</th>
+            <td class="IM[productdetail@ack_link]"></td>
+        </tr>
+        <tr>
+            <th>photofile</th>
+            <td><img src="images/" class="IM[productdetail@photofile@#src]"/></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

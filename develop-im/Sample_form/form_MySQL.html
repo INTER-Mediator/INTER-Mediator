@@ -14,9 +14,28 @@
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <script src="include_MySQL.php"></script>
-    <script type="text/javascript"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            var nodeUnsupport = document.getElementById('nonsupportmessage');
+            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
+                INTERMediator.construct(true);
+            }
+        }
+    </script>
 </head>
-<body onload="if(INTERMediatorOnPage.INTERMediatorCheckBrowser()){INTERMediator.construct(true)}">
+<body>
+<div id="nonsupportmessage" style="background-color:#333333">
+    <div style="text-align:center;color:yellow">
+        If you see this, you must use any unsupported web browser.
+        Or you should set to active for JavaScript.
+        In case of generating the page, Please wait a while.
+    </div>
+    <div style="text-align:center;color:yellow">
+        この表示が見えている場合、非対応ブラウザで参照されています。
+        あるいは、JavaScriptを使用しないように設定されています。
+        描画処理中の場合はしばらくお待ちください。
+    </div>
+</div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1">
     <tbody>
@@ -104,5 +123,6 @@
     </tr>
     </tbody>
 </table>
+<!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
 </body>
 </html>

@@ -52,7 +52,13 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.2.5 (Will be release soon.)
+Ver.2.6 (Will be release soon.)
+
+Ver.2.5 (2012/6/4)
+- In a link definition, "$" shows replace with the data from database.
+  Ex. <span class="IM[table@field@$onclick]" onclick="doClick($)">,
+      The onclick's value is going to be "doClick(value of the field)" after the page generation.
+- Some samples modified for INTER-Mediator Advanced Client Programming course.
 
 Ver.2.4 (2012/5/30)
 - Define the post repeater/enclosure method for each context. The key is 'post-repeater' and 'post-enclosure'.

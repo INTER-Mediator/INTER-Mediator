@@ -7,11 +7,8 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-/**
- *
- * @type {Object}
- */
-var INTERMediator = {
+var INTERMediator;
+INTERMediator = {
     /*
      Properties
      */
@@ -74,10 +71,14 @@ var INTERMediator = {
     // Message for Programmers
     //=================================
 
-    setDebugMessage:function(message, level)   {
-        if ( INTERMediator.debugMode <= level ) {
+    setDebugMessage:function (message, level) {
+        if (INTERMediator.debugMode <= level) {
             INTERMediator.debugMessages.push(message);
         }
+    },
+
+    setErrorMessage:function (message) {
+        INTERMediator.errorMessages.push(message);
     },
 
     flushMessage:function () {
@@ -153,25 +154,29 @@ var INTERMediator = {
     // User interactions
     //=================================
 
-    isShiftKeyDown: false,
-    isControlKeyDown: false,
+    isShiftKeyDown:false,
+    isControlKeyDown:false,
 
-    keyDown: function(evt) {
-        if ( evt.keyCode == 16 ){
+    keyDown:function (evt) {
+        if (evt.keyCode == 16) {
             INTERMediator.isShiftKeyDown = true;
-        };
-        if ( evt.keyCode == 17 ){
+        }
+        ;
+        if (evt.keyCode == 17) {
             INTERMediator.isControlKeyDown = true;
-        };
+        }
+        ;
     },
 
-    keyUp: function(evt)   {
-        if ( evt.keyCode == 16 ){
+    keyUp:function (evt) {
+        if (evt.keyCode == 16) {
             INTERMediator.isShiftKeyDown = false;
-        };
-        if ( evt.keyCode == 17 ){
+        }
+        ;
+        if (evt.keyCode == 17) {
             INTERMediator.isControlKeyDown = false;
-        };
+        }
+        ;
     },
     /*
      valueChange
@@ -184,7 +189,8 @@ var INTERMediator = {
             INTERMediator.isShiftKeyDown = false;
             INTERMediator.isControlKeyDown = false;
             return;
-        };
+        }
+        ;
         INTERMediator.isShiftKeyDown = false;
         INTERMediator.isControlKeyDown = false;
 
@@ -591,7 +597,7 @@ var INTERMediator = {
 
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
-            if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === null) {
+            if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
                 this.partialConstructing = false;
                 pageConstruct();
             } else {
@@ -660,8 +666,8 @@ var INTERMediator = {
                             INTERMediatorLib.getParentEnclosure(currentNode['node']));
                     }
                     if (enclosure != null) {
-                        for ( var field in currentNode['foreign-value'] )   {
-                            var targetNode = getEnclosedNode( enclosure, currentNode['name'], field );
+                        for (var field in currentNode['foreign-value']) {
+                            var targetNode = getEnclosedNode(enclosure, currentNode['name'], field);
                             if (targetNode) {
                                 currentNode['target'] = targetNode.getAttribute('id');
                             }
@@ -939,9 +945,11 @@ var INTERMediator = {
                         }
 
                         if (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA') {
-                            var valueChangeFunction = function(targetId){
+                            var valueChangeFunction = function (targetId) {
                                 var theId = targetId;
-                                return function(evt) { INTERMediator.valueChange(theId); }
+                                return function (evt) {
+                                    INTERMediator.valueChange(theId);
+                                }
                             };
                             eventListenerPostAdding.push({
                                 'id':idValue,
@@ -1070,13 +1078,13 @@ var INTERMediator = {
                     if (INTERMediatorOnPage.expandingRecordFinish != null) {
                         INTERMediatorOnPage.expandingRecordFinish(currentContext['name'], newlyAddedNodes);
                         INTERMediator.setDebugMessage(
-                            "Call INTERMediatorOnPage.expandingRecordFinish with the context: "+currentContext['name'], 2);
+                            "Call INTERMediatorOnPage.expandingRecordFinish with the context: " + currentContext['name'], 2);
                     }
 
-                    if (currentContext['post-repeater'])    {
+                    if (currentContext['post-repeater']) {
                         var postCallFunc = new Function("arg",
                             "INTERMediatorOnPage." + currentContext['post-repeater'] + "(arg)");
-                        postCallFunc( newlyAddedNodes );
+                        postCallFunc(newlyAddedNodes);
                         INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
                             + currentContext['post-repeater'] + "' with the context: " + currentContext['name'], 2);
                     }
@@ -1166,15 +1174,15 @@ var INTERMediator = {
                     INTERMediatorOnPage.expandingEnclosureFinish(currentContext['name'], node);
                     INTERMediator.setDebugMessage(
                         "Call INTERMediatorOnPage.expandingEnclosureFinish with the context: "
-                            +currentContext['name'], 2);
+                            + currentContext['name'], 2);
                 }
-                if (currentContext['post-enclosure'])    {
+                if (currentContext['post-enclosure']) {
                     var postCallFunc = new Function("arg",
                         "INTERMediatorOnPage." + currentContext['post-enclosure'] + "(arg)");
-                    postCallFunc( node );
+                    postCallFunc(node);
                     INTERMediator.setDebugMessage(
-                        "Call the post enclosure method 'INTERMediatorOnPage."+currentContext['post-enclosure']
-                            +"' with the context: "+currentContext['name'], 2);
+                        "Call the post enclosure method 'INTERMediatorOnPage." + currentContext['post-enclosure']
+                            + "' with the context: " + currentContext['name'], 2);
                 }
 
             } else {
@@ -1275,6 +1283,27 @@ var INTERMediator = {
                     } else {
                         var currentValue = element.getAttribute(curTarget);
                         element.setAttribute(curTarget, currentValue + curVal);
+                    }
+                }
+                else if (curTarget.charAt(0) == '$') { // Replacing
+                    curTarget = curTarget.substring(1);
+                    if (curTarget == 'innerHTML') {
+                        if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                        }
+                        element.innerHTML = element.innerHTML.replace("$", curVal);
+                    } else if (curTarget == 'textNode') {
+                        if (nodeTag == "TEXTAREA") {
+                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                        }
+                        element.innerHTML = element.innerHTML.replace("$", curVal);
+                    } else if (curTarget.indexOf('style.') == 0) {
+                        var styleName = curTarget.substring(6, curTarget.length);
+                        var statement = "element.style." + styleName + "='" + curVal + "';";
+                        eval(statement);
+                    } else {
+                        var currentValue = element.getAttribute(curTarget);
+                        element.setAttribute(curTarget, currentValue.replace("$", curVal));
                     }
                 } else { // Setting
                     if (curTarget == 'innerHTML') { // Setting
