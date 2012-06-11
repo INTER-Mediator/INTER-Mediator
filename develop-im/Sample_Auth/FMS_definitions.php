@@ -58,11 +58,12 @@ IM_Entry(
             array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
         ),
         'authentication' => array( // table only, for all operations
-            'user' => 'database_native', // Itemize permitted users
-            'group' => array('group2'), // Itemize permitted groups
-            'user-table' => 'authuser', // Default values, or "_Native"
-            'group-table' => '', //'authgroup',
-            'challenge-table' => 'issuedhash',
+            'user' => array('user1'), // Itemize permitted users
+//            'user' => 'database_native', // Itemize permitted users
+//            'group' => array('group2'), // Itemize permitted groups
+//            'user-table' => 'authuser', // Default values, or "_Native"
+//            'group-table' => '', //'authgroup',
+//            'challenge-table' => 'issuedhash',
             'authexpired' => '300', // Set as seconds.
             'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
         ),
