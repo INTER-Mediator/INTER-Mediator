@@ -42,6 +42,7 @@ INTERMediator_DBAdapter = {
         var clientid = null;
         var requireAuth = false;
         var myRequest = null;
+        var changePasswordResult = null;
         try {
             myRequest = new XMLHttpRequest();
             myRequest.open('POST', appPath, false);
@@ -54,7 +55,8 @@ INTERMediator_DBAdapter = {
                     + ", dbresult=" + INTERMediatorLib.objectToString(dbresult) + "\n"
                     + "Return: requireAuth=" + requireAuth
                     + ", challenge=" + challenge + ", clientid=" + clientid + "\n"
-                    + "Return: newRecordKeyValue=" + newRecordKeyValue);
+                    + "Return: newRecordKeyValue=" + newRecordKeyValue
+                    + ", changePasswordResult=" + changePasswordResult);
             }
             if (challenge !== null) {
                 INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
@@ -87,7 +89,10 @@ INTERMediator_DBAdapter = {
             INTERMediatorOnPage.authCount = 0;
         }
         INTERMediatorOnPage.storeCredencialsToCookie();
-        return {dbresult:dbresult, resultCount:resultCount, newRecordKeyValue:newRecordKeyValue};
+        return {dbresult:dbresult,
+            resultCount:resultCount,
+            newRecordKeyValue:newRecordKeyValue,
+            newPasswordResult:changePasswordResult};
     },
 
     getChallenge:function () {

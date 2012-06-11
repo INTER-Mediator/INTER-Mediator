@@ -20,17 +20,20 @@ IM_Entry(
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
         ),
-        array('name' => 'contact',
+        array(
+            'name' => 'contact',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
         ),
-        array('name' => 'contact_way',
+        array(
+            'name' => 'contact_way',
             'key' => 'id',
         ),
-        array('name' => 'cor_way_kindname',
+        array(
+            'name' => 'cor_way_kindname',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')

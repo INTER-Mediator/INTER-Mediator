@@ -24,7 +24,7 @@ interface Auth_Interface_DB
     function authSupportRetrieveChallenge($username, $clientId);
     function authSupportRetrieveHashedPassword($username);
     function authSupportCreateUser($username, $hashedpassword);
-    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword);
+    function authSupportChangePassword($username, $hashednewpassword);
 }
 
 interface Auth_Interface_Communication
@@ -38,7 +38,7 @@ interface Auth_Interface_Communication
 
     function addUser($username, $password);
     function generateSalt();    // Use inside addUser
-    function changePassword($username, $oldpassword, $newpassword);
+    function changePassword($username, $newpassword);
 }
 
 interface Auth_Interface_CommonDB

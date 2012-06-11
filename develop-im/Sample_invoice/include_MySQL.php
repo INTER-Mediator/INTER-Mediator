@@ -61,11 +61,15 @@ $tableDefinitions = array(
 );
 $optionDefinitions = array(
     'formatter' => array(
-        array('field' => 'item@amount', 'converter-class' => 'Number', 'parameter' => '0'),
+        array(
+            'field' => 'item@amount',
+            'converter-class' => 'Number',
+            'parameter' => '0'
+        ),
     ),
 );
 $dbDefinitions = array('db-class' => 'PDO');
 
-IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, 2);
+IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, false);
 
 ?>

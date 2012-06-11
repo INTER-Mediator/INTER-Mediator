@@ -19,6 +19,7 @@ IM_Entry(
                 array('field' => 'id', 'direction' => 'ascend'),
             ),
             'repeat-control' => 'insert delete',
+            'post-enclosure' => 'invoiceExpanded',
         ),
         array(
             'name' => 'item',
@@ -44,6 +45,7 @@ IM_Entry(
                     'message' => 'Unit price should be between 1.. 9999.'
                 ),
             ),
+            'post-repeater' => 'itemsExpanded',
         ),
         array(
             'name' => 'product',

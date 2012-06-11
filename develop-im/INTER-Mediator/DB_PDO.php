@@ -515,7 +515,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $sql = "update {$hashTable} set hash=" . $this->link->quote($challenge)
                 . ",expired=" . $this->link->quote($currentDTFormat)
-                . "where id={$row['id']}";
+                . " where id={$row['id']}";
             $result = $this->link->query($sql);
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
@@ -617,6 +617,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $sql = "select hashedpasswd from {$userTable} where username=" . $this->link->quote($username);
+        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -646,6 +647,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $userTable = $this->dbSettings->getUserTable();
         $sql = "insert {$userTable} set username=" . $this->link->quote($username)
             . ",hashedpasswd='{$hashedpassword}'";
+        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Insert:' . $sql);
@@ -655,9 +657,24 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     }
 
-    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)
+    function authSupportChangePassword($username, $hashednewpassword)
     {
-
+        $userTable = $this->dbSettings->getUserTable();
+        if ($userTable == null) {
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "update {$userTable} set hashedpasswd=" . $this->link->quote($hashednewpassword)
+            . " where username=" . $this->link->quote($username);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Update:' . $sql);
+            return false;
+        }
+        return true;
     }
 
     function authSupportGetUserIdFromUsername($username)
@@ -674,6 +691,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $sql = "select id from {$userTable} where username=" . $this->link->quote($username);
+        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -696,6 +714,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $sql = "select groupname from {$groupTable} where id=" . $this->link->quote($groupid);
+        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -743,6 +762,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $sql = "select * from {$corrTable} where group_id = " . $this->link->quote($groupid);
             $this->belongGroups[] = $groupid;
         }
+        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);

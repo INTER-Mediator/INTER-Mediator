@@ -505,10 +505,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     return false;
                 }
                 $this->logger->setDebugMessage($result['URL']);
+                return true;
                 break;
             }
         }
-        return true;
+        return false;
     }
 
     function authSupportStoreChallenge($username, $challenge, $clientId)
@@ -690,9 +691,35 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportChangePassword($username, $hashedoldpassword, $hashednewpassword)
+    function authSupportChangePassword($username, $hashednewpassword)
     {
+        $userTable = $this->dbSettings->getUserTable();
+        if ($userTable == null) {
+            return false;
+        }
 
+        $this->setupFXforAuth($userTable, 1);
+        $this->fx->AddDBParam('username', $username, 'eq');
+        $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+            return false;
+        }
+        $this->logger->setDebugMessage($result['URL']);
+        foreach ($result['data'] as $key => $row) {
+            $recId = substr($key, 0, strpos($key, '.'));
+
+            $this->setupFXforAuth($userTable, 1);
+            $this->fx->SetRecordID($recId);
+            $this->fx->AddDBParam("hashedpasswd", $hashednewpassword);
+            $result = $this->fx->DoFxAction("update", TRUE, TRUE, 'full');
+            if (!is_array($result)) {
+                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+                return false;
+            }
+            break;
+        }
+        return true;
     }
 
     function authSupportGetUserIdFromUsername($username)
@@ -706,7 +733,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
 
         $this->setupFXforAuth($userTable, 1);
-        $this->fx->AddDBParam('username', $username);
+        $this->fx->AddDBParam('username', $username, "eq");
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());

@@ -22,7 +22,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->userExpanded->doBeforeGetFromDB($dataSourceName);
         }
         if ($this->dbClass !== null) {
-            $this->logger->setDebugMessage("The method 'doBeforeSetToDB' of the class '{$className}' is calling.", 2);
+            $this->logger->setDebugMessage("The method 'getFromDB' of the class '{$className}' is calling.", 2);
             $result = $this->dbClass->getFromDB($dataSourceName);
         }
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterGetFromDB" )) {
@@ -243,8 +243,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $requireAuthorization = false;
         $isDBNative = false;
         if (isset($options['authentication'])
-            && (isset($options['authentication']['user'])
-                || isset($options['authentication']['group']))
+//            && (isset($options['authentication']['user'])
+//                || isset($options['authentication']['group']))
             || $access == 'challenge'
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all'])
@@ -338,6 +338,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             case 'challenge':
                 break;
+            case 'changepassword':
+                if( isset($_POST['newpass'])) {
+                    $changeResult = $this->changePassword($paramAuthUser, $_POST['newpass']);
+                    echo "changePasswordResult=", $changeResult?"true":"false", ";";
+                } else {
+                    echo "changePasswordResult=false;";
+                }
+                break;
         }
         echo implode('', $this->logger->getMessagesForJS());
         if ($requireAuthorization) {
@@ -430,9 +438,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return $returnValue;
     }
 
-    function changePassword($username, $oldpassword, $newpassword)
+    function changePassword($username, $newpassword)
     {
-        $returnValue = $this->dbClass->authSupportChangePassword($username, sha1($oldpassword), sha1($newpassword));
+        $returnValue = $this->dbClass->authSupportChangePassword($username, $newpassword);
         return $returnValue;
     }
 

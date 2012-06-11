@@ -72,6 +72,9 @@ INTERMediator = {
     //=================================
 
     setDebugMessage:function (message, level) {
+        if ( level === undefined )  {
+            level = 1;
+        }
         if (INTERMediator.debugMode <= level) {
             INTERMediator.debugMessages.push(message);
         }
@@ -387,6 +390,7 @@ INTERMediator = {
     },
 
     deleteButton:function (targetName, keyField, keyValue, removeNodes, isConfirm) {
+        var key, removeNode;
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                 return;
@@ -396,9 +400,7 @@ INTERMediator = {
             INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.db_delete({
                 name:targetName,
-                conditions:[
-                    {field:keyField, operator:'=', value:keyValue}
-                ]
+                conditions:[{field:keyField, operator:'=', value:keyValue}]
             });
         } catch (ex) {
             if (ex == "_im_requath_request_") {
@@ -418,23 +420,24 @@ INTERMediator = {
             }
         }
 
-        for (var key in removeNodes) {
-            var removeNode = document.getElementById(removeNodes[key]);
+        for ( key in removeNodes) {
+             removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
         }
         INTERMediator.flushMessage();
     },
 
     insertButton:function (targetName, foreignValues, updateNodes, removeNodes, isConfirm) {
+        var currentContext, recordSet, index, key, removeNode, i;
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
             }
         }
-        var currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
-        var recordSet = [];
+        currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
+        recordSet = [];
         if (foreignValues != null) {
-            for (var index in currentContext['relation']) {
+            for ( index in currentContext['relation']) {
                 recordSet.push({
                     field:currentContext['relation'][index]["foreign-key"],
                     value:foreignValues[currentContext['relation'][index]["join-field"]]
@@ -459,11 +462,11 @@ INTERMediator = {
             }
         }
 
-        for (var key in removeNodes) {
-            var removeNode = document.getElementById(removeNodes[key]);
+        for ( key in removeNodes) {
+            removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
         }
-        for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
+        for (i = 0; i < INTERMediator.keyFieldObject.length; i++) {
             if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodes) {
                 INTERMediator.keyFieldObject[i]['foreign-value'] = foreignValues;
                 INTERMediator.construct(i);
@@ -473,30 +476,35 @@ INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    insertRecordFromNavi:function (targetName, keyField, isConfirm) {
+    insertRecordFromNavi:function (targetName, keyField, isConfirm)     {
+        var key, ds, targetKey, index, newId, restore, fieldObj;
         if (isConfirm) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
             }
         }
-        var ds = INTERMediatorOnPage.getDataSources(); // Get DataSource parameters
-        var targetKey = '';
-        for (var key in ds) { // Search this table from DataSource
-            if (INTERMediatorLib.getTargetTableForUpdate(ds[key]) == targetName) {
+        ds = INTERMediatorOnPage.getDataSources(); // Get DataSource parameters
+        targetKey = null;
+        for ( key in ds) { // Search this table from DataSource
+            if (ds[key]['name'] == targetName) {
                 targetKey = key;
                 break;
             }
         }
+        if ( targetKey === null )   {
+            alert("no targetname :" +targetName);
+            return;
+        }
 
         var recordSet = [];
-        for (var index in ds[key]['default-values']) {
+        for ( index in ds[targetKey]['default-values']) {
             recordSet.push({
-                field:ds[key]['default-values'][index]['field'],
-                value:ds[key]['default-values'][index]['value']});
+                field:ds[targetKey]['default-values'][index]['field'],
+                value:ds[targetKey]['default-values'][index]['value']});
         }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            var newId = INTERMediator_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
+            newId = INTERMediator_DBAdapter.db_createRecord({name:targetName, dataset:recordSet});
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
@@ -520,8 +528,10 @@ INTERMediator = {
                 field:keyField,
                 value:newId
             };
-            INTERMediator.additionalCondition = {};
-            INTERMediator.additionalCondition[targetName] = fieldObj;
+            if ( ds[targetKey]['records'] <= 1 )    {
+                INTERMediator.additionalCondition = {};
+                INTERMediator.additionalCondition[targetName] = fieldObj;
+            }
             INTERMediator.construct(true);
             INTERMediator.additionalCondition = restore;
         }
@@ -578,6 +588,8 @@ INTERMediator = {
     partialConstructing:false,
     objectReference:{},
 
+    linkedElmCounter:0,
+
 //=================================
 // Construct Page
 //=================================
@@ -594,6 +606,7 @@ INTERMediator = {
         var postSetFields = [];
         var buttonIdNum = 1;
         var deleteInsertOnNavi = [];
+        var eventListenerPostAdding = [];
 
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
@@ -620,6 +633,16 @@ INTERMediator = {
                 }
             }
         }
+
+        // Event listener should add after adding node to document.
+        for (var i = 0; i < eventListenerPostAdding.length; i++) {
+            var theNode = document.getElementById(eventListenerPostAdding[i].id);
+            if (theNode) {
+                INTERMediatorLib.addEvent(
+                    theNode, eventListenerPostAdding[i].event, eventListenerPostAdding[i].todo);
+            }
+        }
+//                }
 
         INTERMediator.flushMessage(); // Show messages
 
@@ -782,11 +805,10 @@ INTERMediator = {
             INTERMediator.currentEncNumber++;
             var objectReference = {};
 
-            var linkedElmCounter = 0;
             if (!node.getAttribute('id')) {
-                var idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-                node.setAttribute('id', idValue);
-                linkedElmCounter++;
+//                var idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+                node.setAttribute('id', nextIdValue());
+//                INTERMediator.linkedElmCounter++;
             }
 
             var encNodeTag = node.tagName;
@@ -808,9 +830,9 @@ INTERMediator = {
                 var parentOfRep = repeatersOriginal[i].parentNode;
                 var cloneNode = repeatersOriginal[i].cloneNode(true);
                 repeaters.push(cloneNode);
-                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-                cloneNode.setAttribute('id', idValue);
-                linkedElmCounter++;
+//                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+                cloneNode.setAttribute('id', nextIdValue());
+//                INTERMediator.linkedElmCounter++;
                 parentOfRep.removeChild(inDocNode);
             }
             linkedNodes = []; // Collecting linked elements to this array.
@@ -886,35 +908,33 @@ INTERMediator = {
                         if (nodeClass == INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
                             if (newNode.getAttribute('id') == null) {
-                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-                                newNode.setAttribute('id', idValue);
-                                linkedElmCounter++;
+//                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+                                newNode.setAttribute('id', nextIdValue());
+//                                INTERMediator.linkedElmCounter++;
                             }
                         }
                     }
                 }
 
                 var RecordCounter = 0;
-                var eventListenerPostAdding = [];
                 // var currentEncNumber = currentLevel;
                 for (var ix in targetRecords.recordset) { // for each record
                     RecordCounter++;
 
                     var shouldDeleteNodes = [];
-                    repeaters = [];
+                    var repeatersOneRec = [];
                     for (var i = 0; i < repeatersOriginal.length; i++) {
-                        var clonedNode = repeatersOriginal[i].cloneNode(true);
-                        repeaters.push(clonedNode);
+                        repeatersOneRec.push(repeatersOriginal[i].cloneNode(true));
                     }
                     linkedNodes = [];
-                    for (var i = 0; i < repeaters.length; i++) {
-                        seekLinkedElement(repeaters[i]);
-                        if (repeaters[i].getAttribute('id') == null) {
-                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-                            repeaters[i].setAttribute('id', idValue);
-                            linkedElmCounter++;
+                    for (var i = 0; i < repeatersOneRec.length; i++) {
+                        seekLinkedElement(repeatersOneRec[i]);
+                        if (repeatersOneRec[i].getAttribute('id') == null) {
+//                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+                            repeatersOneRec[i].setAttribute('id', nextIdValue());
+//                            INTERMediator.linkedElmCounter++;
                         }
-                        shouldDeleteNodes.push(repeaters[i].getAttribute('id'));
+                        shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
                     }
                     var currentLinkedNodes = linkedNodes; // Store in the local variable
                     var keyField = currentContext['key'];
@@ -924,9 +944,9 @@ INTERMediator = {
                     for (var k = 0; k < currentLinkedNodes.length; k++) {
                         // for each linked element
                         if (currentLinkedNodes[k].getAttribute('id') == null) {
-                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-                            currentLinkedNodes[k].setAttribute('id', idValue);
-                            linkedElmCounter++;
+//                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+                            currentLinkedNodes[k].setAttribute('id', nextIdValue());
+//                            INTERMediator.linkedElmCounter++;
                         }
                         var nodeTag = currentLinkedNodes[k].tagName;
                         // get the tag name of the element
@@ -952,20 +972,22 @@ INTERMediator = {
                                 }
                             };
                             eventListenerPostAdding.push({
-                                'id':idValue,
+                                'id':currentIdValue(),
                                 'event':'change',
-                                'todo':valueChangeFunction(idValue)
+                                'todo':valueChangeFunction(currentIdValue())
                             });
-                            eventListenerPostAdding.push({
-                                'id':idValue,
-                                'event':'keydown',
-                                'todo':INTERMediator.keyDown
-                            });
-                            eventListenerPostAdding.push({
-                                'id':idValue,
-                                'event':'keyup',
-                                'todo':INTERMediator.keyUp
-                            });
+                            if ( nodeTag != 'SELECT' ) {
+                                eventListenerPostAdding.push({
+                                    'id':currentIdValue(),
+                                    'event':'keydown',
+                                    'todo':INTERMediator.keyDown
+                                });
+                                eventListenerPostAdding.push({
+                                    'id':currentIdValue(),
+                                    'event':'keyup',
+                                    'todo':INTERMediator.keyUp
+                                });
+                            }
                         }
 
                         for (var j = 0; j < linkInfoArray.length; j++) {
@@ -978,8 +1000,9 @@ INTERMediator = {
                             }
                             var curTarget = nInfo['target'];
                             // Store the key field value and current value for update
+
                             if (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA') {
-                                INTERMediator.updateRequiredObject[idValue] = {
+                                INTERMediator.updateRequiredObject[currentIdValue()] = {
                                     targetattribute:curTarget,
                                     initialvalue:curVal,
                                     name:currentContext['name'],
@@ -990,80 +1013,27 @@ INTERMediator = {
                                     'updatenodeid':parentNodeId};
                             }
 
-                            objectReference[nInfo['field']] = idValue;
+                            objectReference[nInfo['field']] = currentIdValue();
 
                             // Set data to the element.
                             if (setDataToElement(currentLinkedNodes[k], curTarget, curVal)) {
-                                postSetFields.push({'id':idValue, 'value':curVal});
+                                postSetFields.push({'id':currentIdValue(), 'value':curVal});
                             }
                         }
                     }
-
-                    // Handling Delete buttons
-                    if (currentContext['repeat-control'] != null && currentContext['repeat-control'].match(/delete/i)) {
-                        if (currentContext['relation'] != null || currentContext['records'] > 1) {
-                            var buttonNode = document.createElement('BUTTON');
-                            buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
-                            var thisId = 'IM_Button_' + buttonIdNum;
-                            buttonNode.setAttribute('id', thisId);
-                            buttonIdNum++;
-                            var deleteJSFunction = function (a, b, c, d, e) {
-                                var contextName = a;
-                                var keyField = b;
-                                var keyValue = c;
-                                var removeNodes = d;
-                                var confirming = e;
-                                return function () {
-                                    INTERMediator.deleteButton(
-                                        contextName, keyField, keyValue, removeNodes, confirming);
-                                };
-                            };
-                            eventListenerPostAdding.push({
-                                'id':thisId,
-                                'event':'click',
-                                'todo':deleteJSFunction(currentContext['name'], keyField, keyValue, shouldDeleteNodes,
-                                    currentContext['repeat-control'].match(/confirm-delete/i) ? true : false)
-                            });
-                            var endOfRepeaters = repeaters[repeaters.length - 1];
-                            switch (encNodeTag) {
-                                case 'TBODY':
-                                    var tdNodes = endOfRepeaters.getElementsByTagName('TD');
-                                    var tdNode = tdNodes[tdNodes.length - 1];
-                                    tdNode.appendChild(buttonNode);
-                                    break;
-                                case 'UL':
-                                case 'OL':
-                                    endOfRepeaters.appendChild(buttonNode);
-                                    break;
-                                case 'DIV':
-                                case 'SPAN':
-                                    if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
-                                        endOfRepeaters.appendChild(buttonNode);
-                                    }
-                                    break;
-                            }
-                        } else {
-                            deleteInsertOnNavi.push({
-                                kind:'DELETE',
-                                name:currentContext['name'],
-                                key:keyField,
-                                value:keyValue,
-                                confirm:currentContext['repeat-control'].match(/confirm-delete/i) ? true : false
-                            });
-                        }
-                    }
+                    setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1], currentContext, keyField, keyValue, shouldDeleteNodes);
 
                     var newlyAddedNodes = [];
-                    for (var i = 0; i < repeaters.length; i++) {
-                        var newNode = repeaters[i].cloneNode(true);
+                    for (var i = 0; i < repeatersOneRec.length; i++) {
+                        var newNode = repeatersOneRec[i].cloneNode(true);
                         var nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                         if (nodeClass != INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
                             newlyAddedNodes.push(newNode);
                             if (newNode.getAttribute('id') == null) {
-                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-                                newNode.setAttribute('id', idValue);
-                                linkedElmCounter++;
+//                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+                                newNode.setAttribute('id', nextIdValue());
+//                                INTERMediator.linkedElmCounter++;
                             }
                             seekEnclosureNode(
                                 newNode,
@@ -1088,87 +1058,8 @@ INTERMediator = {
                         INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
                             + currentContext['post-repeater'] + "' with the context: " + currentContext['name'], 2);
                     }
-
-                    // Event listener should add after adding node to document.
-                    for (var i = 0; i < eventListenerPostAdding.length; i++) {
-                        var theNode = document.getElementById(eventListenerPostAdding[i]['id']);
-                        if (theNode != null) {
-                            INTERMediatorLib.addEvent(
-                                theNode, eventListenerPostAdding[i]['event'], eventListenerPostAdding[i]['todo']);
-                        }
-                    }
                 }
-
-                if (currentContext['repeat-control'] != null && currentContext['repeat-control'].match(/insert/i)) {
-                    if (relationValue != null) {
-                        var buttonNode = document.createElement('BUTTON');
-                        buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
-                        var shouldRemove = [];
-                        switch (encNodeTag) {
-                            case 'TBODY':
-                                var enclosedNode = node.parentNode;
-                                var footNode = enclosedNode.getElementsByTagName('TFOOT')[0];
-                                if (footNode == null) {
-                                    footNode = document.createElement('TFOOT');
-                                    enclosedNode.appendChild(footNode);
-                                }
-                                var trNode = document.createElement('TR');
-                                var tdNode = document.createElement('TD');
-                                if (trNode.getAttribute('id') == null) {
-                                    idValue = 'IM' + INTERMediator.currentEncNumber + '-' + linkedElmCounter;
-                                    trNode.setAttribute('id', idValue);
-                                    linkedElmCounter++;
-                                }
-                                footNode.appendChild(trNode);
-                                trNode.appendChild(tdNode);
-                                tdNode.appendChild(buttonNode);
-                                shouldRemove = [trNode.getAttribute('id')];
-                                break;
-                            case 'UL':
-                            case 'OL':
-                                var liNode = document.createElement('LI');
-                                liNode.appendChild(buttonNode);
-                                node.appendChild(liNode);
-                                break;
-                            case 'DIV':
-                            case 'SPAN':
-                                if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
-                                    var divNode = document.createElement(repNodeTag);
-                                    divNode.appendChild(buttonNode);
-                                    node.appendChild(liNode);
-                                }
-                                break;
-                        }
-                        var insertJSFunction = function (a, b, c, d, e) {
-                            var contextName = a;
-                            var relationValue = b;
-                            var nodeId = c;
-                            var removeNodes = d;
-                            var confirming = e;
-                            return function () {
-                                INTERMediator.insertButton(contextName, relationValue, nodeId, removeNodes, confirming);
-                            }
-                        };
-
-                        INTERMediatorLib.addEvent(
-                            buttonNode,
-                            'click',
-                            insertJSFunction(
-                                currentContext['name'],
-                                relationValue,
-                                node.getAttribute('id'),
-                                shouldRemove,
-                                currentContext['repeat-control'].match(/confirm-insert/i) ? true : false)
-                        );
-                    } else {
-                        deleteInsertOnNavi.push({
-                            kind:'INSERT',
-                            name:currentContext['name'],
-                            key:currentContext['key'],
-                            confirm:currentContext['repeat-control'].match(/confirm-insert/i) ? true : false
-                        });
-                    }
-                }
+                setupInsertButton(currentContext, encNodeTag, repNodeTag, node, relationValue);
 
                 if (INTERMediatorOnPage.expandingEnclosureFinish != null) {
                     INTERMediatorOnPage.expandingEnclosureFinish(currentContext['name'], node);
@@ -1195,22 +1086,31 @@ INTERMediator = {
             currentLevel--;
         }
 
+        function nextIdValue()  {
+            INTERMediator.linkedElmCounter++;
+            return currentIdValue();
+        }
+        function currentIdValue()  {
+            return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+        }
+
         function seekLinkedElement(node) {
-            var nType = node.nodeType;
+            var nType, currentEnclosure, children, detectedEnclosure;
+            nType = node.nodeType;
             if (nType == 1) {
                 if (INTERMediatorLib.isLinkedElement(node)) {
-                    var currentEnclosure = INTERMediatorLib.getEnclosure(node);
-                    if (currentEnclosure == null) {
+                    currentEnclosure = INTERMediatorLib.getEnclosure(node);
+                    if (currentEnclosure === null) {
                         linkedNodes.push(node);
                     } else {
                         return currentEnclosure;
                     }
                 }
-                var childs = node.childNodes;
-                for (var i = 0; i < childs.length; i++) {
-                    var detectedEnclosure = seekLinkedElement(childs[i]);
-                    if (detectedEnclosure != null) {
-                        if (detectedEnclosure == childs[i]) {
+                children = node.childNodes;
+                for (var i = 0; i < children.length; i++) {
+                    detectedEnclosure = seekLinkedElement(children[i]);
+                    if (detectedEnclosure !== null) {
+                        if (detectedEnclosure == children[i]) {
                             return null;
                         } else {
                             return detectedEnclosure;
@@ -1258,6 +1158,7 @@ INTERMediator = {
         }
 
         function setDataToElement(element, curTarget, curVal) {
+            var nodeText, styleName, statement, currentValue, scriptNode, typeAttr, valueAttr;
             var needPostValueSet = false;
             // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
             var nodeTag = element.tagName;
@@ -1270,18 +1171,18 @@ INTERMediator = {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
                         }
                         element.innerHTML += curVal;
-                    } else if (curTarget == 'textNode') {
-                        var textNode = document.createTextNode(curVal);
+                    } else if (curTarget == 'textNode' || curTarget == 'script') {
+                        textNode = document.createTextNode(curVal);
                         if (nodeTag == "TEXTAREA") {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
                         element.appendChild(textNode);
                     } else if (curTarget.indexOf('style.') == 0) {
-                        var styleName = curTarget.substring(6, curTarget.length);
-                        var statement = "element.style." + styleName + "='" + curVal + "';";
+                        styleName = curTarget.substring(6, curTarget.length);
+                        statement = "element.style." + styleName + "='" + curVal + "';";
                         eval(statement);
                     } else {
-                        var currentValue = element.getAttribute(curTarget);
+                        currentValue = element.getAttribute(curTarget);
                         element.setAttribute(curTarget, currentValue + curVal);
                     }
                 }
@@ -1292,14 +1193,14 @@ INTERMediator = {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
                         }
                         element.innerHTML = element.innerHTML.replace("$", curVal);
-                    } else if (curTarget == 'textNode') {
+                    } else if (curTarget == 'textNode' || curTarget == 'script') {
                         if (nodeTag == "TEXTAREA") {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
                         element.innerHTML = element.innerHTML.replace("$", curVal);
                     } else if (curTarget.indexOf('style.') == 0) {
-                        var styleName = curTarget.substring(6, curTarget.length);
-                        var statement = "element.style." + styleName + "='" + curVal + "';";
+                        styleName = curTarget.substring(6, curTarget.length);
+                        statement = "element.style." + styleName + "='" + curVal + "';";
                         eval(statement);
                     } else {
                         var currentValue = element.getAttribute(curTarget);
@@ -1312,14 +1213,24 @@ INTERMediator = {
                         }
                         element.innerHTML = curVal;
                     } else if (curTarget == 'textNode') {
-                        var textNode = document.createTextNode(curVal);
+                        textNode = document.createTextNode(curVal);
                         if (nodeTag == "TEXTAREA") {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
                         element.appendChild(textNode);
+                    } else if (curTarget == 'script') {
+                        textNode = document.createTextNode(curVal);
+                        if (nodeTag == "SCRIPT") {
+                            element.appendChild(textNode);
+                        } else {
+                            scriptNode = document.createElement("script");
+                            scriptNode.type = "text/javascript";
+                            scriptNode.appendChild(textNode);
+                            element.appendChild(scriptNode);
+                        }
                     } else if (curTarget.indexOf('style.') == 0) {
-                        var styleName = curTarget.substring(6, curTarget.length);
-                        var statement = "element.style." + styleName + "='" + curVal + "';";
+                        styleName = curTarget.substring(6, curTarget.length);
+                        statement = "element.style." + styleName + "='" + curVal + "';";
                         eval(statement);
                     } else {
                         element.setAttribute(curTarget, curVal);
@@ -1327,9 +1238,9 @@ INTERMediator = {
                 }
             } else { // if the 'target' is not specified.
                 if (nodeTag == "INPUT") {
-                    var typeAttr = element.getAttribute('type');
+                    typeAttr = element.getAttribute('type');
                     if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
-                        var valueAttr = element.value;
+                        valueAttr = element.value;
                         if (valueAttr == curVal) {
                             if (INTERMediator.isIE) {
                                 element.setAttribute('checked', 'checked');
@@ -1362,6 +1273,141 @@ INTERMediator = {
             return needPostValueSet;
         }
 
+        function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContext, keyField, keyValue, shouldDeleteNodes)    {
+            // Handling Delete buttons
+            var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
+
+            if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/delete/i)) {
+                if ( currentContext['relation'] || currentContext['records'] > 1) {
+                    buttonNode = document.createElement('BUTTON');
+                    buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
+                    thisId = 'IM_Button_' + buttonIdNum;
+                    buttonNode.setAttribute('id', thisId);
+                    buttonIdNum++;
+                    deleteJSFunction = function (a, b, c, d, e) {
+                        var contextName = a;
+                        var keyField = b;
+                        var keyValue = c;
+                        var removeNodes = d;
+                        var confirming = e;
+                        return function () {
+                            INTERMediator.deleteButton(
+                                contextName, keyField, keyValue, removeNodes, confirming);
+                        };
+                    };
+                    eventListenerPostAdding.push({
+                        'id':thisId,
+                        'event':'click',
+                        'todo':deleteJSFunction(
+                            currentContext['name'],
+                            keyField,
+                            keyValue,
+                            shouldDeleteNodes,
+                            currentContext['repeat-control'].match(/confirm-delete/i) ? true : false)
+                    });
+//                    endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
+                    switch (encNodeTag) {
+                        case 'TBODY':
+                            tdNodes = endOfRepeaters.getElementsByTagName('TD');
+                            tdNode = tdNodes[tdNodes.length - 1];
+                            tdNode.appendChild(buttonNode);
+                            break;
+                        case 'UL':
+                        case 'OL':
+                            endOfRepeaters.appendChild(buttonNode);
+                            break;
+                        case 'DIV':
+                        case 'SPAN':
+                            if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
+                                endOfRepeaters.appendChild(buttonNode);
+                            }
+                            break;
+                    }
+                } else {
+                    deleteInsertOnNavi.push({
+                        kind:'DELETE',
+                        name:currentContext['name'],
+                        key:keyField,
+                        value:keyValue,
+                        confirm:currentContext['repeat-control'].match(/confirm-delete/i) ? true : false
+                    });
+                }
+            }
+        }
+
+        function setupInsertButton(currentContext, encNodeTag, repNodeTag, node, relationValue)    {
+            var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction;
+            if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
+                if (relationValue || ! currentContext['paging'] || currentContext['paging'] === false ) {
+                    buttonNode = document.createElement('BUTTON');
+                    buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
+                    shouldRemove = [];
+                    switch (encNodeTag) {
+                        case 'TBODY':
+                            enclosedNode = node.parentNode;
+                            footNode = enclosedNode.getElementsByTagName('TFOOT')[0];
+                            if (footNode == null) {
+                                footNode = document.createElement('TFOOT');
+                                enclosedNode.appendChild(footNode);
+                            }
+                            trNode = document.createElement('TR');
+                            tdNode = document.createElement('TD');
+                            if (trNode.getAttribute('id') == null) {
+//                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+                                trNode.setAttribute('id', nextIdValue());
+//                                INTERMediator.linkedElmCounter++;
+                            }
+                            footNode.appendChild(trNode);
+                            trNode.appendChild(tdNode);
+                            tdNode.appendChild(buttonNode);
+                            shouldRemove = [trNode.getAttribute('id')];
+                            break;
+                        case 'UL':
+                        case 'OL':
+                            liNode = document.createElement('LI');
+                            liNode.appendChild(buttonNode);
+                            node.appendChild(liNode);
+                            break;
+                        case 'DIV':
+                        case 'SPAN':
+                            if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
+                                divNode = document.createElement(repNodeTag);
+                                divNode.appendChild(buttonNode);
+                                node.appendChild(divNode);
+                            }
+                            break;
+                    }
+                    insertJSFunction = function (a, b, c, d, e) {
+                        var contextName = a;
+                        var relationValue = b;
+                        var nodeId = c;
+                        var removeNodes = d;
+                        var confirming = e;
+                        return function () {
+                            INTERMediator.insertButton(contextName, relationValue, nodeId, removeNodes, confirming);
+                        }
+                    };
+
+                    INTERMediatorLib.addEvent(
+                        buttonNode,
+                        'click',
+                        insertJSFunction(
+                            currentContext['name'],
+                            relationValue,
+                            node.getAttribute('id'),
+                            shouldRemove,
+                            currentContext['repeat-control'].match(/confirm-insert/i) ? true : false)
+                    );
+                } else {
+                    deleteInsertOnNavi.push({
+                        kind:'INSERT',
+                        name:currentContext['name'],
+                        key:currentContext['key'],
+                        confirm:currentContext['repeat-control'].match(/confirm-insert/i) ? true : false
+                    });
+                }
+            }
+        }
         /**
          * Create Navigation Bar to move previous/next page
          * @param target

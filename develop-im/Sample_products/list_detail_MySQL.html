@@ -16,10 +16,11 @@
     <link href="../sample.css" rel="stylesheet" type="text/css"/>
     <script src="contexts_MySQL.php"></script>
     <script type="text/javascript">
-        window.onload = function(){showList();};
         function showDetail(id) {
-            INTERMediator.additionalCondition['productlist'] = {field:'id',operator:'<',value:0};
-            INTERMediator.additionalCondition['productdetail'] = {field:'id',operator:'=',value:id};
+            INTERMediator.additionalCondition['productlist']
+                    = {field:'id',operator:'<',value:0};
+            INTERMediator.additionalCondition['productdetail']
+                    = {field:'id',operator:'=',value:id};
             INTERMediator.construct();
             document.getElementById("listarea").style.display = "none";
             document.getElementById("detailarea").style.display = "";
@@ -29,14 +30,15 @@
             if ( INTERMediator.additionalCondition['productlist'] ) {
             INTERMediator.additionalCondition['productlist'] = null;
             }
-            INTERMediator.additionalCondition['productdetail'] = {field:'id',operator:'<',value:0};
+            INTERMediator.additionalCondition['productdetail']
+                    = {field:'id',operator:'<',value:0};
             INTERMediator.construct();
             document.getElementById("listarea").style.display = "";
             document.getElementById("detailarea").style.display = "none";
         }
     </script>
 </head>
-<body>
+<body onload="showList()">
 <!-- Table for the list view -->
 <div id="listarea">
     <table border="1">
@@ -48,7 +50,8 @@
         <tbody>
         <tr>
             <td>
-                <button class="IM[productlist@id@$onclick]" onclick="showDetail($)">Detail</button>
+                <button class="IM[productlist@id@$onclick]"
+                        onclick="showDetail($)">Detail</button>
             </td>
             <td class="IM[productlist@name]"></td>
             <td style="text-align:right;" class="IM[productlist@unitprice]"></td>

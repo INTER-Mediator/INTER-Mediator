@@ -18,17 +18,25 @@
     <script src="include_FMS.php"></script>
     <script type="text/javascript">
 
-        INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
-            if (name === 'item') {
-                modLine(target);
-            }
-            if (name === 'invoice') {
-                calcTotal(target);
-            }
+        //        INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
+        //            if (name === 'item') {
+        //                modLine(target);
+        //            }
+        //            if (name === 'invoice') {
+        //                calcTotal(target);
+        //            }
+        //        };
+        //
+        //        INTERMediatorOnPage.doAfterValidationFailure = function (target, linkInfo) {
+        //            modLine(target);
+        //        };
+
+        INTERMediatorOnPage.invoiceExpanded = function (target) {
+            calcTotal(target);
         };
 
-        INTERMediatorOnPage.doAfterValidationFailure = function (target, linkInfo) {
-            modLine(target);
+        INTERMediatorOnPage.itemsExpanded = function (repeaters) {
+            modLine(repeaters[0]);
         };
 
         function modLine(target) {
@@ -39,23 +47,26 @@
             var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@unitprice", target);
             var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice", target);
             var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@amount", target);
-            if (qtyId || unitPriceId || productPriceId || amountId) {
-                return;
+            if (qtyId && unitPriceId && productPriceId && amountId) {
+                var unitPrice = new Number(document.getElementById(unitPriceId).value > 0 ?
+                        document.getElementById(unitPriceId).value :
+                        document.getElementById(productPriceId).innerHTML);
+                var amountPrice = unitPrice * document.getElementById(qtyId).value;
+                document.getElementById(amountId).innerHTML = INTERMediatorLib.numberFormat(amountPrice);
             }
-            var unitPrice = new Number(document.getElementById(unitPriceId).value > 0 ?
-                    document.getElementById(unitPriceId).value :
-                    document.getElementById(productPriceId).innerHTML);
-            var amountPrice = unitPrice * document.getElementById(qtyId).value;
-            document.getElementById(amountId).innerHTML = INTERMediatorLib.numberFormat(amountPrice);
         }
 
         function calcTotal(target) {
             var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition('item@amount', target);
-            var s = 0;
-            for (var i in nodes) {
-                s += INTERMediatorLib.toNumber(document.getElementById(nodes[i]).innerHTML);
+            if (nodes) {
+                var s = 0;
+                for (var i = 0; i < nodes.length; i++) {
+                    s += INTERMediatorLib.toNumber(document.getElementById(nodes[i]).innerHTML);
+                }
+                if (document.getElementById('total')) {
+                    document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat(s, 2);
+                }
             }
-            document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat(s);
         }
     </script>
 </head>

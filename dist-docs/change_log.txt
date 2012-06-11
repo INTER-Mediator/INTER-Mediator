@@ -12,7 +12,6 @@ To Do, that is left-over. Or Plan
 To Do List for the INTER-Mediator developer(s)
 - Showing as the alert box when any errors occurred ??
 - DIV._im_multivalue: Set muliti-line values to one field within the div element.
-- Change the password from login panel.
 - Users/Groups Administration user interface.
 - Samples by PostgreSQL, SQLite.
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
@@ -52,7 +51,15 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
+Ver.2.7 (Will be release soon.)
+
 Ver.2.6 (Will be release soon.)
+- In a link definition, the target "script" insert the text node has the type "text/javascript".
+  Ex. <span class="IM[table@field@script]">
+      ->  <span><script type="text/javascript">[Script of the field "field]</script></span>
+- Change password on the login panel.
+- [BUG FIX] A repeater having just one popup menu can work.
+- [BUG FIX] Insert/Delete buttons works better.
 
 Ver.2.5 (2012/6/4)
 - In a link definition, "$" shows replace with the data from database.

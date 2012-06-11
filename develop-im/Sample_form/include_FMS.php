@@ -26,7 +26,7 @@ IM_Entry(
         array(
             'name' => 'contact_to',
             'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
+            'repeat-control' => 'confirm-delete insert',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq')
             ),
@@ -68,7 +68,7 @@ IM_Entry(
 //        'transaction'=>'none',
     ),
     array('db-class' => 'FileMaker_FX'),
-    false
+    2
 );
 
 ?>

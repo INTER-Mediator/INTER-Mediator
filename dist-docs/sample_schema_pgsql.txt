@@ -1,4 +1,12 @@
 /*
+ *******************************************************
+ *
+ * ATTENTION! THIS FILE IS UNDER THE CONSTRUCTION.
+ * THIS DOES NOT WORK SO FAR.
+ * IF THIS WORKS FINE, IT WILL BE ANNOUNCED.
+ *
+ *******************************************************
+
  * INTER-Mediator
  * by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
  * 

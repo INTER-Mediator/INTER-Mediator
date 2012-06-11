@@ -24,6 +24,8 @@ INTERMediatorOnPage = {
     publickey:null,
     isNativeAuth:false,
 
+    isShowChangePassword: true,
+
     /*
      This method "getMessages" is going to be replaced valid one with the browser's language.
      Here is defined to prevent the warning of static check.
@@ -91,6 +93,10 @@ INTERMediatorOnPage = {
     },
 
     authenticating:function (doAfterAuth) {
+        var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, breakLine;
+        var passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton;
+        var newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, i;
+
         if (this.authCount > 10) {
             this.authenticationError();
             this.logout();
@@ -98,8 +104,8 @@ INTERMediatorOnPage = {
             return;
         }
 
-        var bodyNode = document.getElementsByTagName('BODY')[0];
-        var backBox = document.createElement('div');
+        bodyNode = document.getElementsByTagName('BODY')[0];
+        backBox = document.createElement('div');
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
         backBox.style.height = "100%";
         backBox.style.width = "100%";
@@ -115,8 +121,8 @@ INTERMediatorOnPage = {
         backBox.style.left = "0";
         backBox.style.zIndex = "999998";
 
-        var frontPanel = document.createElement('div');
-        frontPanel.style.width = "280px";
+        frontPanel = document.createElement('div');
+        frontPanel.style.width = "300px";
         frontPanel.style.backgroundColor = "#333333";
         frontPanel.style.color = "#DDDDAA";
         frontPanel.style.margin = "50px auto 0 auto";
@@ -125,35 +131,35 @@ INTERMediatorOnPage = {
         frontPanel.style.position = "relatvie";
         backBox.appendChild(frontPanel);
 
-        var labelWidth = "100px";
-        var userLabel = document.createElement('LABEL');
+        labelWidth = "110px";
+        userLabel = document.createElement('LABEL');
         frontPanel.appendChild(userLabel);
-        var userSpan = document.createElement('div');
+        userSpan = document.createElement('div');
         userSpan.style.width = labelWidth;
         userSpan.style.textAlign = "right";
         userSpan.style.cssFloat = "left";
         userLabel.appendChild(userSpan);
         userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2002)));
-        var userBox = document.createElement('INPUT');
+        userBox = document.createElement('INPUT');
         userBox.type = "text";
         userBox.value = INTERMediatorOnPage.authUser;
         userBox.id = "_im_username";
         userBox.size = "12";
         userLabel.appendChild(userBox);
 
-        var breakLine = document.createElement('BR');
+        breakLine = document.createElement('BR');
         breakLine.clear = "all";
         frontPanel.appendChild(breakLine);
 
-        var passwordLabel = document.createElement('LABEL');
+        passwordLabel = document.createElement('LABEL');
         frontPanel.appendChild(passwordLabel);
-        var passwordSpan = document.createElement('SPAN');
+        passwordSpan = document.createElement('SPAN');
         passwordSpan.style.minWidth = labelWidth;
         passwordSpan.style.textAlign = "right";
         passwordSpan.style.cssFloat = "left";
         passwordLabel.appendChild(passwordSpan);
         passwordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2003)));
-        var passwordBox = document.createElement('INPUT');
+        passwordBox = document.createElement('INPUT');
         passwordBox.type = "password";
         passwordBox.id = "_im_password";
         passwordBox.size = "12";
@@ -161,33 +167,27 @@ INTERMediatorOnPage = {
             if (event.keyCode == 13) {
                 authButton.onclick();
             }
-            ;
         };
         userBox.onkeydown = function (event) {
             if (event.keyCode == 13) {
                 passwordBox.focus();
             }
-            ;
         };
         passwordLabel.appendChild(passwordBox);
 
-//        var breakLine = document.createElement('BR');
-//        breakLine.clear = "all";
-//        frontPanel.appendChild( breakLine );
-
-        var authButton = document.createElement('BUTTON');
-//        authButton.style.marginLeft = labelWidth;
-        authButton.style.fontSize = "12pt";
+        authButton = document.createElement('BUTTON');
+//        authButton.style.fontSize = "12pt";
         authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2004)));
         authButton.onclick = function () {
-            var inputUsername = document.getElementById('_im_username').value;
-            var inputPassword = document.getElementById('_im_password').value;
+            var inputUsername,  inputPassword, challengeResult;
+            inputUsername = document.getElementById('_im_username').value;
+            inputPassword = document.getElementById('_im_password').value;
             INTERMediatorOnPage.authUser = inputUsername;
             bodyNode.removeChild(backBox);
             if (inputUsername != ''    // No usename and no challenge, get a challenge.
                 && (INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                 INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
-                var challengeResult = INTERMediator_DBAdapter.getChallenge();
+                challengeResult = INTERMediator_DBAdapter.getChallenge();
                 if (!challengeResult) {
                     INTERMediator.flushMessage();
                     return; // If it's failed to get a challenge, finish everything.
@@ -210,16 +210,87 @@ INTERMediatorOnPage = {
         };
         frontPanel.appendChild(authButton);
 
-        var breakLine = document.createElement('BR');
+        breakLine = document.createElement('BR');
         breakLine.clear = "all";
         frontPanel.appendChild(breakLine);
 
-        var chgpwButton = document.createElement('BUTTON');
-        chgpwButton.style.marginLeft = labelWidth;
-        chgpwButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2005)));
-        chgpwButton.onclick = function () {
-        };
-        frontPanel.appendChild(chgpwButton);
+        if ( this.isShowChangePassword && ! INTERMediatorOnPage.isNativeAuth )   {
+
+            breakLine = document.createElement('HR');
+            frontPanel.appendChild(breakLine);
+
+            newPasswordLabel = document.createElement('LABEL');
+            frontPanel.appendChild(newPasswordLabel);
+            newPasswordSpan = document.createElement('SPAN');
+            newPasswordSpan.style.minWidth = labelWidth;
+            newPasswordSpan.style.textAlign = "right";
+            newPasswordSpan.style.cssFloat = "left";
+            newPasswordLabel.appendChild(newPasswordSpan);
+            newPasswordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)));
+            newPasswordBox = document.createElement('INPUT');
+            newPasswordBox.type = "password";
+            newPasswordBox.id = "_im_newpassword";
+            newPasswordBox.size = "12";
+            newPasswordLabel.appendChild(newPasswordBox);
+            chgpwButton = document.createElement('BUTTON');
+            //chgpwButton.style.marginLeft = labelWidth;
+            chgpwButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2005)));
+            chgpwButton.onclick = function () {
+                var inputUsername,  inputPassword, inputNewPassword, challengeResult, params, result;
+                inputUsername = document.getElementById('_im_username').value;
+                inputPassword = document.getElementById('_im_password').value;
+                inputNewPassword = document.getElementById('_im_newpassword').value;
+                if ( inputUsername === '' || inputPassword === '' || inputNewPassword === '' )  {
+                    newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(2007);
+                    return;
+                }
+                INTERMediatorOnPage.authUser = inputUsername;
+                if (inputUsername != ''    // No usename and no challenge, get a challenge.
+                    && (INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 24 )) {
+                    INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
+                    challengeResult = INTERMediator_DBAdapter.getChallenge();
+                    if (!challengeResult) {
+                        newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(2008);
+                        INTERMediator.flushMessage();
+                        return; // If it's failed to get a challenge, finish everything.
+                    }
+                }
+                INTERMediatorOnPage.authHashedPassword
+                        = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
+                        + INTERMediatorOnPage.authUserHexSalt;
+
+                var numToHex,salt, saltHex, code, lowCode, highCode;
+                numToHex = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+                salt = "";
+                saltHex = "";
+                for( i = 0 ; i < 4 ; i++ )  {
+                    code = Math.floor(Math.random()*(128-32)+32);
+                    lowCode = code & 0xF;
+                    highCode = (code >> 4) & 0xF;
+                    salt += String.fromCharCode(code);
+                    saltHex += numToHex[highCode] + numToHex[lowCode];
+                }
+                params = "access=changepassword&newpass=" + encodeURIComponent(SHA1(inputNewPassword+salt)+saltHex);
+                try {
+                result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
+                } catch(e) {
+                    result = {newPasswordResult: false};
+                }
+                newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(
+                    result.newPasswordResult===true?2009:2010);
+
+                INTERMediator.flushMessage();
+            };
+            frontPanel.appendChild(chgpwButton);
+
+            newPasswordMessage = document.createElement('DIV');
+            newPasswordMessage.style.textAlign = "center";
+            newPasswordMessage.style.textSize = "10pt";
+            newPasswordMessage.style.color = "#994433";
+            frontPanel.appendChild(newPasswordMessage);
+
+
+        }
 
         window.scroll(0, 0);
         userBox.focus();

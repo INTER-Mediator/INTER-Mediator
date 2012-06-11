@@ -54,11 +54,18 @@ class MessageStrings
         1026 => 'Are you sure to create record?',
         1027 => "Get Challenge: ",
         1028 => "Connection Error in get_challenge=@1@/@2@",
+        1029 => "Change Passowrd Access: ",
+        1030 => "Connection Error on changing password=@1@/@2@",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
         2004 => 'Log In',
         2005 => 'Change Password',
+        2006 => 'New Password:',
+        2007 => 'Missing any of Username, old and new password.',
+        2008 => 'Failure to get a challenge from server.',
+        2009 => 'Succeed to change your password. Login with the new password.',
+        2010 => 'Failure to change your password. Maybe the old password is not correct.',
     );
 }
 

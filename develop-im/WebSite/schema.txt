@@ -57,6 +57,7 @@ CREATE TABLE Contents
     Article_id  INT,
     Ordering       INT,
     Language    CHAR(2),
+    NotShow        INT,
     Title       VARCHAR(500),
     Body        VARCHAR(65000)
 )		CHARACTER SET utf8,

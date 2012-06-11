@@ -137,8 +137,6 @@ INTERMediatorLib = {
         return false;
     },
 
-    detectedRepeater:null,
-
     getEnclosureSimple:function (node) {
         if (INTERMediatorLib.isEnclosure(node, true)) {
             return node;
@@ -147,13 +145,14 @@ INTERMediatorLib = {
     },
 
     getEnclosure:function (node) {
+        var currentNode, detectedRepeater;
 
-        var currentNode = node;
+        currentNode = node;
         while (currentNode != null) {
             if (INTERMediatorLib.isRepeater(currentNode)) {
-                INTERMediatorLib.detectedRepeater = currentNode;
-            } else if (isRepeaterOfEnclosure(INTERMediatorLib.detectedRepeater, currentNode)) {
-                INTERMediatorLib.detectedRepeater = null;
+                detectedRepeater = currentNode;
+            } else if (isRepeaterOfEnclosure(detectedRepeater, currentNode)) {
+                detectedRepeater = null;
                 return currentNode;
             }
             currentNode = currentNode.parentNode;
