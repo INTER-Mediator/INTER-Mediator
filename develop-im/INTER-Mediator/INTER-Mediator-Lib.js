@@ -14,6 +14,21 @@ INTERMediatorLib = {
     rollingRepeaterClassName:"_im_repeater",
     rollingEnclocureClassName:"_im_enclosure",
 
+    generatePasswordHash: function(password)    {
+        var numToHex,salt, saltHex, code, lowCode, highCode;
+        numToHex = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+        salt = "";
+        saltHex = "";
+        for( i = 0 ; i < 4 ; i++ )  {
+            code = Math.floor(Math.random()*(128-32)+32);
+            lowCode = code & 0xF;
+            highCode = (code >> 4) & 0xF;
+            salt += String.fromCharCode(code);
+            saltHex += numToHex[highCode] + numToHex[lowCode];
+        }
+        return encodeURIComponent(SHA1(password+salt)+saltHex);
+
+    },
     getParentRepeater:function (node) {
         var currentNode = node;
         while (currentNode != null) {
@@ -201,21 +216,21 @@ INTERMediatorLib = {
      */
 
     getLinkedElementInfo:function (node) {
+        var defs = [], eachDefs, i, classAttr, matched;
         if (INTERMediatorLib.isLinkedElement(node)) {
-            var defs = new Array();
             if (INTERMediator.titleAsLinkInfo) {
                 if (node.getAttribute('TITLE') != null) {
-                    var eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
-                    for (var i = 0; i < eachDefs.length; i++) {
+                    eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
+                    for ( i = 0; i < eachDefs.length; i++) {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
                 }
             }
             if (INTERMediator.classAsLinkInfo) {
-                var classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classAttr != null && classAttr.length > 0) {
-                    var matched = classAttr.match(/IM\[([^\]]*)\]/);
-                    var eachDefs = matched[1].split(INTERMediator.defDivider);
+                classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
+                if (classAttr !== null && classAttr.length > 0) {
+                    matched = classAttr.match(/IM\[([^\]]*)\]/);
+                    eachDefs = matched[1].split(INTERMediator.defDivider);
                     for (var i = 0; i < eachDefs.length; i++) {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
@@ -336,18 +351,20 @@ INTERMediatorLib = {
     },
 
     objectToString:function (obj) {
-        if (obj == null) {
+        var str, i, key;
+
+        if ( obj === null ) {
             return "null";
         }
         if (typeof obj == 'object') {
-            var str = '';
+            str = '';
             if (obj.constractor === Array) {
-                for (var i = 0; i < obj.length; i++) {
+                for ( i = 0; i < obj.length; i++) {
                     str += INTERMediatorLib.objectToString(obj[i]) + ", ";
                 }
                 return "[" + str + "]";
             } else {
-                for (var key in obj) {
+                for ( key in obj) {
                     str += "'" + key + "':" + INTERMediatorLib.objectToString(obj[key]) + ", ";
                 }
                 return "{" + str + "}"

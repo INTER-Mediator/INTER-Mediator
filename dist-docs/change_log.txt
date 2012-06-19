@@ -25,6 +25,7 @@ To Do List for the INTER-Mediator developer(s)
 - Multiple values within one field. (It may be required for FileMaker especially.)
 - HTML5's local database supporting.
 - Amazon Web Service supporting.
+- Progressing Display.
 
 Issues / Known bugs
 - Popup menu's default value; if there isn't the value of them, set first one.
@@ -52,8 +53,12 @@ Change Log
 =================================
 
 Ver.2.7 (Will be release soon.)
+- SQLite and PostgreSQL sample schema are included. The "Form" sample is supporting SQLite and PostgreSQL.
+- The 'sequence' setting in a context for specifying PostgreSQL's sequence object.
+- Users and Groups Management sample. You can manage accounts on the web page. See Auth_Support folder.
+- [BUG FIX] If any link nodes were existing with the SELECT tag element, they weren't detected.
 
-Ver.2.6 (Will be release soon.)
+Ver.2.6 (2012/6/11)
 - In a link definition, the target "script" insert the text node has the type "text/javascript".
   Ex. <span class="IM[table@field@script]">
       ->  <span><script type="text/javascript">[Script of the field "field]</script></span>

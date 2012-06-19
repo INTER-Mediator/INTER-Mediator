@@ -14,7 +14,7 @@ abstract class DB_UseSharedObjects
 
     function setUpSharedObjects( $obj = null )
     {
-        if ( $obj == null )    {
+        if ( $obj === null )    {
             $this->setSettings(new DB_Settings());
             $this->setLogger(new DB_Logger());
             $this->setFormatter(new DB_Formatters());

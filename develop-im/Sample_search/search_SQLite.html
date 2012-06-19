@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
+
+<html>
+<head>
+    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <script type="text/javascript" src="include_SQLite.php"></script>
+    <script type="text/javascript">
+        var searchCriteriaTown;
+        var searchCriteriaZip;
+        var whichSearch;
+        INTERMediator.navigationLabel = [null, null, null, null, null, null, null, null, false];
+        function doSearchFromTown(key, direction) {
+            searchCriteriaTown = document.getElementById('place').value;
+            searchCriteriaZip = document.getElementById('zipcode').value;
+            whichSearch = 1;
+            INTERMediator.additionalCondition["postalcode"]
+                    = {field:'f9', operator:'LIKE', value:'%' + searchCriteriaTown + '%'};
+            INTERMediator.additionalSortKey["postalcode"]
+                    = {field:key, direction:direction};
+            INTERMediator.startFrom = 0;
+            INTERMediator.construct(true);
+
+            document.getElementById('place').value = searchCriteriaTown;
+            document.getElementById('zipcode').value = searchCriteriaZip;
+        }
+        function doSearchFromZipcode(key, direction) {
+            searchCriteriaTown = document.getElementById('place').value;
+            searchCriteriaZip = document.getElementById('zipcode').value;
+            whichSearch = 2;
+            INTERMediator.additionalCondition["postalcode"]
+                    = {field:'f3', operator:'LIKE', value:searchCriteriaZip + '%'};
+            INTERMediator.additionalSortKey["postalcode"]
+                    = {field:key, direction:direction};
+            INTERMediator.startFrom = 0;
+            INTERMediator.construct(true);
+
+            document.getElementById('place').value = searchCriteriaTown;
+            document.getElementById('zipcode').value = searchCriteriaZip;
+        }
+//        INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
+//            if (name === 'postalcode') {
+//                document.getElementById('place').value = searchCriteriaTown;
+//                document.getElementById('zipcode').value = searchCriteriaZip;
+//            }
+//        }
+    </script>
+</head>
+<body>
+<div>
+    地名(Place Name):
+    <input type="text" id="place" value="落合"
+           onkeydown="if(event.keyCode==13){doSearchFromTown('f3','ASC')}"/>
+    <button onclick="doSearchFromTown('f3','ASC')">Search</button>
+    検索は住所の「町域名」に一部分でも含まれる文字列を検索します。
+</div>
+<div>
+    郵便番号(Zipcode):
+    <input type="text" id="zipcode" value="123"
+           onkeydown="if(event.keyCode==13){doSearchFromZipcode('f3','ASC')}"/>
+    <button onclick="doSearchFromZipcode('f3','ASC')">search</button>
+    郵便番号を前方一致で検索します。
+</div>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table border="1" id="resultTable">
+    <thead>
+    <tr>
+        <th>郵便番号
+            <a href="javascript:whichSearch==2
+                ?doSearchFromZipcode('f3','ASC'):doSearchFromTown('f3','ASC')">▼</a>
+            <a href="javascript:whichSearch==2
+                ?doSearchFromZipcode('f3','DESC'):doSearchFromTown('f3','DESC')">▲</a>
+        </th>
+        <th>都道府県</th>
+        <th>市区町村</th>
+        <th>町域名
+            <a href="javascript:whichSearch==2
+                ?doSearchFromZipcode('f9','ASC'):doSearchFromTown('f9','ASC')">▼</a>
+            <a href="javascript:whichSearch==2
+                ?doSearchFromZipcode('f9','DESC'):doSearchFromTown('f9','DESC')">▲</a>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <div class="IM[postalcode@f3]"></div>
+        </td>
+        <td>
+            <div class="IM[postalcode@f7]"></div>
+        </td>
+        <td>
+            <div class="IM[postalcode@f8]"></div>
+        </td>
+        <td>
+            <div class="IM[postalcode@f9]"></div>
+        </td>
+    </tr>
+    <tr class="_im_for_noresult_">
+        <td colspan="4">検索結果はありません。あるいは検索前です。</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -164,22 +164,18 @@ INTERMediator = {
         if (evt.keyCode == 16) {
             INTERMediator.isShiftKeyDown = true;
         }
-        ;
         if (evt.keyCode == 17) {
             INTERMediator.isControlKeyDown = true;
         }
-        ;
     },
 
     keyUp:function (evt) {
         if (evt.keyCode == 16) {
             INTERMediator.isShiftKeyDown = false;
         }
-        ;
         if (evt.keyCode == 17) {
             INTERMediator.isControlKeyDown = false;
         }
-        ;
     },
     /*
      valueChange
@@ -193,7 +189,6 @@ INTERMediator = {
             INTERMediator.isControlKeyDown = false;
             return;
         }
-        ;
         INTERMediator.isShiftKeyDown = false;
         INTERMediator.isControlKeyDown = false;
 
@@ -421,7 +416,7 @@ INTERMediator = {
         }
 
         for ( key in removeNodes) {
-             removeNode = document.getElementById(removeNodes[key]);
+            removeNode = document.getElementById(removeNodes[key]);
             removeNode.parentNode.removeChild(removeNode);
         }
         INTERMediator.flushMessage();
@@ -602,7 +597,6 @@ INTERMediator = {
     construct:function (indexOfKeyFieldObject) {
 
         var currentLevel = 0;
-        var linkedNodes;
         var postSetFields = [];
         var buttonIdNum = 1;
         var deleteInsertOnNavi = [];
@@ -801,59 +795,25 @@ INTERMediator = {
          */
 
         function expandEnclosure(node, currentRecord, currentTable, parentEnclosure, parentObjectInfo) {
+            var objectReference = {}, linkedNodes, encNodeTag, parentNodeId, repeatersOriginal, repeaters;
+            var linkDefs, voteResult, currentContext, fieldList, repNodeTag;
             currentLevel++;
             INTERMediator.currentEncNumber++;
-            var objectReference = {};
 
             if (!node.getAttribute('id')) {
-//                var idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
                 node.setAttribute('id', nextIdValue());
-//                INTERMediator.linkedElmCounter++;
             }
 
-            var encNodeTag = node.tagName;
-            //    var parentEnclosure = INTERMediatorLib.getEnclosure(node);
-            var parentNodeId = (parentEnclosure == null ? null : parentEnclosure.getAttribute('id'));
-            var repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
-            var repeatersOriginal = []; // Collecting repeaters to this array.
-            var repeaters = []; // Collecting repeaters to this array.
-            var children = node.childNodes; // Check all child node of the enclosure.
-            for (var i = 0; i < children.length; i++) {
-                if (children[i].nodeType == 1 && children[i].tagName == repNodeTag) {
-                    // If the element is a repeater.
-                    repeatersOriginal.push(children[i]); // Record it to the array.
-                }
-            }
-
-            for (var i = 0; i < repeatersOriginal.length; i++) {
-                var inDocNode = repeatersOriginal[i];
-                var parentOfRep = repeatersOriginal[i].parentNode;
-                var cloneNode = repeatersOriginal[i].cloneNode(true);
-                repeaters.push(cloneNode);
-//                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
-                cloneNode.setAttribute('id', nextIdValue());
-//                INTERMediator.linkedElmCounter++;
-                parentOfRep.removeChild(inDocNode);
-            }
-            linkedNodes = []; // Collecting linked elements to this array.
-            for (var i = 0; i < repeaters.length; i++) {
-                seekLinkedElement(repeaters[i]);
-            }
-            var currentLinkedNodes = linkedNodes; // Store in the local variable
-            // Collecting linked elements in array
-            var linkDefs = [];
-            for (var j = 0; j < linkedNodes.length; j++) {
-                var nodeDefs = INTERMediatorLib.getLinkedElementInfo(linkedNodes[j]);
-                if (nodeDefs != null) {
-                    for (var k = 0; k < nodeDefs.length; k++) {
-                        linkDefs.push(nodeDefs[k]);
-                    }
-                }
-            }
-
-            var voteResult = tableVoting(linkDefs);
-            var currentContext = voteResult.targettable;
-            var fieldList = voteResult.fieldlist; // Create field list for database fetch.
+            encNodeTag = node.tagName;
+            parentNodeId = (parentEnclosure == null ? null : parentEnclosure.getAttribute('id'));
+            repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
+            repeatersOriginal = collectRepeatersOriginal(node,repNodeTag); // Collecting repeaters to this array.
+            repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
+            linkedNodes = collectLinkedElement(repeaters);
+            linkDefs = collectLinkDefinitions(linkedNodes);
+            voteResult = tableVoting(linkDefs);
+            currentContext = voteResult.targettable;
+            fieldList = voteResult.fieldlist; // Create field list for database fetch.
 
             if (currentContext) {
                 var relationValue = null;
@@ -917,26 +877,11 @@ INTERMediator = {
                 }
 
                 var RecordCounter = 0;
-                // var currentEncNumber = currentLevel;
                 for (var ix in targetRecords.recordset) { // for each record
                     RecordCounter++;
-
-                    var shouldDeleteNodes = [];
-                    var repeatersOneRec = [];
-                    for (var i = 0; i < repeatersOriginal.length; i++) {
-                        repeatersOneRec.push(repeatersOriginal[i].cloneNode(true));
-                    }
-                    linkedNodes = [];
-                    for (var i = 0; i < repeatersOneRec.length; i++) {
-                        seekLinkedElement(repeatersOneRec[i]);
-                        if (repeatersOneRec[i].getAttribute('id') == null) {
-//                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
-                            repeatersOneRec[i].setAttribute('id', nextIdValue());
-//                            INTERMediator.linkedElmCounter++;
-                        }
-                        shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
-                    }
-                    var currentLinkedNodes = linkedNodes; // Store in the local variable
+                    var repeatersOneRec = cloneEveryNodes(repeatersOriginal);
+                    var currentLinkedNodes = collectLinkedElement(repeatersOneRec);
+                    var shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
                     var keyField = currentContext['key'];
                     var keyValue = targetRecords.recordset[ix][currentContext['key']];
                     var keyingValue = keyField + "=" + keyValue;
@@ -944,9 +889,7 @@ INTERMediator = {
                     for (var k = 0; k < currentLinkedNodes.length; k++) {
                         // for each linked element
                         if (currentLinkedNodes[k].getAttribute('id') == null) {
-//                            idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
                             currentLinkedNodes[k].setAttribute('id', nextIdValue());
-//                            INTERMediator.linkedElmCounter++;
                         }
                         var nodeTag = currentLinkedNodes[k].tagName;
                         // get the tag name of the element
@@ -1031,9 +974,7 @@ INTERMediator = {
                             node.appendChild(newNode);
                             newlyAddedNodes.push(newNode);
                             if (newNode.getAttribute('id') == null) {
-//                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
                                 newNode.setAttribute('id', nextIdValue());
-//                                INTERMediator.linkedElmCounter++;
                             }
                             seekEnclosureNode(
                                 newNode,
@@ -1090,44 +1031,94 @@ INTERMediator = {
             INTERMediator.linkedElmCounter++;
             return currentIdValue();
         }
+
         function currentIdValue()  {
             return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
         }
 
+        function collectRepeatersOriginal(node, repNodeTag) {
+            var i, repeatersOriginal = [];
+            var children = node.childNodes; // Check all child node of the enclosure.
+            for ( i = 0; i < children.length; i++) {
+                if (children[i].nodeType === 1 && children[i].tagName == repNodeTag) {
+                    // If the element is a repeater.
+                    repeatersOriginal.push(children[i]); // Record it to the array.
+                }
+            }
+            return repeatersOriginal;
+        }
+        function collectRepeaters(repeatersOriginal) {
+            var i, repeaters = [], inDocNode, parentOfRep, cloneNode;
+            for (i = 0; i < repeatersOriginal.length; i++) {
+                inDocNode = repeatersOriginal[i];
+                parentOfRep = repeatersOriginal[i].parentNode;
+                cloneNode = repeatersOriginal[i].cloneNode(true);
+                repeaters.push(cloneNode);
+                cloneNode.setAttribute('id', nextIdValue());
+                parentOfRep.removeChild(inDocNode);
+            }
+            return repeaters;
+        }
+
+        var linkedNodesCollection;
+
+        function collectLinkedElement(repeaters) {
+            var i;
+            linkedNodesCollection = []; // Collecting linked elements to this array.
+            for ( i = 0; i < repeaters.length; i++) {
+                seekLinkedElement(repeaters[i]);
+            }
+            return linkedNodesCollection;
+        }
+
         function seekLinkedElement(node) {
-            var nType, currentEnclosure, children, detectedEnclosure;
+            var nType, currentEnclosure, children, detectedEnclosure, i;
             nType = node.nodeType;
-            if (nType == 1) {
+            if (nType === 1) {
                 if (INTERMediatorLib.isLinkedElement(node)) {
                     currentEnclosure = INTERMediatorLib.getEnclosure(node);
                     if (currentEnclosure === null) {
-                        linkedNodes.push(node);
+                        linkedNodesCollection.push(node);
                     } else {
                         return currentEnclosure;
                     }
                 }
                 children = node.childNodes;
-                for (var i = 0; i < children.length; i++) {
+                for ( i = 0; i < children.length; i++) {
                     detectedEnclosure = seekLinkedElement(children[i]);
-                    if (detectedEnclosure !== null) {
-                        if (detectedEnclosure == children[i]) {
-                            return null;
-                        } else {
-                            return detectedEnclosure;
-                        }
-                    }
+//                    if (detectedEnclosure !== null) {
+//                        if (detectedEnclosure == children[i]) {
+//                            return null;
+//                        } else {
+//                            return detectedEnclosure;
+//                        }
+//                    }
                 }
             }
             return null;
         }
 
+        function collectLinkDefinitions(linkedNodes)   {
+            var linkDefs = [], nodeDefs, j,k;
+            for ( j = 0; j < linkedNodes.length; j++) {
+                nodeDefs = INTERMediatorLib.getLinkedElementInfo(linkedNodes[j]);
+                if (nodeDefs !== null) {
+                    for ( k = 0; k < nodeDefs.length; k++) {
+                        linkDefs.push(nodeDefs[k]);
+                    }
+                }
+            }
+            return linkDefs;
+        }
+
         function tableVoting(linkDefs) {
+            var j, nodeInfoArray, nodeInfoField, nodeInfoTable, maxVoted, maxTableName, tableName, context;
             var tableVote = [];    // Containing editable elements or not.
             var fieldList = []; // Create field list for database fetch.
-            for (var j = 0; j < linkDefs.length; j++) {
-                var nodeInfoArray = INTERMediatorLib.getNodeInfoArray(linkDefs[j]);
-                var nodeInfoField = nodeInfoArray['field'];
-                var nodeInfoTable = nodeInfoArray['table'];
+            for ( j = 0; j < linkDefs.length; j++) {
+                nodeInfoArray = INTERMediatorLib.getNodeInfoArray(linkDefs[j]);
+                nodeInfoField = nodeInfoArray['field'];
+                nodeInfoTable = nodeInfoArray['table'];
                 if (nodeInfoField != null && nodeInfoTable != null &&
                     nodeInfoField.length != 0 && nodeInfoTable.length != 0) {
                     if (fieldList[nodeInfoTable] == null) {
@@ -1145,16 +1136,35 @@ INTERMediator = {
                     //   return null;
                 }
             }
-            var maxVoted = -1;
-            var maxTableName = ''; // Which is the maximum voted table name.
-            for (var tableName in tableVote) {
+            maxVoted = -1;
+            maxTableName = ''; // Which is the maximum voted table name.
+            for ( tableName in tableVote) {
                 if (maxVoted < tableVote[tableName]) {
                     maxVoted = tableVote[tableName];
                     maxTableName = tableName;
                 }
             }
-            var context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName);
-            return {'targettable':context, 'fieldlist':fieldList[maxTableName]};
+            context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName);
+            return {targettable:context, fieldlist:fieldList[maxTableName]};
+        }
+
+        function cloneEveryNodes(originalNodes)  {
+            var i, clonedNodes = [];
+            for (var i = 0; i < originalNodes.length; i++) {
+                clonedNodes.push(originalNodes[i].cloneNode(true));
+            }
+            return clonedNodes;
+        }
+
+        function shouldDeleteNodeIds(repeatersOneRec)  {
+            var shouldDeleteNodes = [], i;
+            for (i = 0; i < repeatersOneRec.length; i++) {
+                if (repeatersOneRec[i].getAttribute('id') == null) {
+                    repeatersOneRec[i].setAttribute('id', nextIdValue());
+                }
+                shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
+            }
+            return shouldDeleteNodes;
         }
 
         function setDataToElement(element, curTarget, curVal) {
@@ -1278,7 +1288,7 @@ INTERMediator = {
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
 
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/delete/i)) {
-                if ( currentContext['relation'] || currentContext['records'] > 1) {
+                if ( currentContext['relation'] || currentContext['records'] === undefined || currentContext['records'] > 1) {
                     buttonNode = document.createElement('BUTTON');
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
                     thisId = 'IM_Button_' + buttonIdNum;
@@ -1303,7 +1313,7 @@ INTERMediator = {
                             keyField,
                             keyValue,
                             shouldDeleteNodes,
-                            currentContext['repeat-control'].match(/confirm-delete/i) ? true : false)
+                            currentContext['repeat-control'].match(/confirm-delete/i))
                     });
 //                    endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
                     switch (encNodeTag) {
@@ -1329,7 +1339,7 @@ INTERMediator = {
                         name:currentContext['name'],
                         key:keyField,
                         value:keyValue,
-                        confirm:currentContext['repeat-control'].match(/confirm-delete/i) ? true : false
+                        confirm:currentContext['repeat-control'].match(/confirm-delete/i)
                     });
                 }
             }
@@ -1396,35 +1406,36 @@ INTERMediator = {
                             relationValue,
                             node.getAttribute('id'),
                             shouldRemove,
-                            currentContext['repeat-control'].match(/confirm-insert/i) ? true : false)
+                            currentContext['repeat-control'].match(/confirm-insert/i))
                     );
                 } else {
                     deleteInsertOnNavi.push({
                         kind:'INSERT',
                         name:currentContext['name'],
                         key:currentContext['key'],
-                        confirm:currentContext['repeat-control'].match(/confirm-insert/i) ? true : false
+                        confirm:currentContext['repeat-control'].match(/confirm-insert/i)
                     });
                 }
             }
         }
+
         /**
          * Create Navigation Bar to move previous/next page
-         * @param target
          */
 
         function navigationSetup() {
-            var navigation = document.getElementById('IM_NAVIGATOR');
-            if (navigation != null) {
-                var sq = "'", comma = ',';
+            var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass,
+                prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction,onNaviDeleteFunction;
 
-                var insideNav = navigation.childNodes;
-                for (var i = 0; i < insideNav.length; i++) {
+            navigation = document.getElementById('IM_NAVIGATOR');
+            if (navigation != null) {
+                insideNav = navigation.childNodes;
+                for ( i = 0; i < insideNav.length; i++) {
                     navigation.removeChild(insideNav[i]);
                 }
                 navigation.innerHTML = '';
                 navigation.setAttribute('class', 'IM_NAV_panel');
-                var navLabel = INTERMediator.navigationLabel;
+                navLabel = INTERMediator.navigationLabel;
 
                 if (navLabel == null || navLabel[8] !== false) {
                     node = document.createElement('SPAN');
@@ -1438,11 +1449,11 @@ INTERMediator = {
                 }
 
                 if (navLabel == null || navLabel[4] !== false) {
-                    var start = Number(INTERMediator.startFrom);
-                    var pageSize = Number(INTERMediator.pagedSize);
-                    var allCount = Number(INTERMediator.pagedAllCount);
-                    var disableClass = " IM_NAV_disabled";
-                    var node = document.createElement('SPAN');
+                    start = Number(INTERMediator.startFrom);
+                    pageSize = Number(INTERMediator.pagedSize);
+                    allCount = Number(INTERMediator.pagedAllCount);
+                    disableClass = " IM_NAV_disabled";
+                    node = document.createElement('SPAN');
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(
                         ((navLabel == null || navLabel[4] == null) ? INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
@@ -1455,7 +1466,7 @@ INTERMediator = {
                 }
 
                 if (navLabel == null || navLabel[0] !== false) {
-                    var node = document.createElement('SPAN');
+                    node = document.createElement('SPAN');
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(
                         (navLabel == null || navLabel[0] == null) ? '<<' : navLabel[0]));
@@ -1470,7 +1481,7 @@ INTERMediator = {
                     node.appendChild(document.createTextNode(
                         (navLabel == null || navLabel[1] == null) ? '<' : navLabel[1]));
                     node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
-                    var prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
+                    prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
                     INTERMediatorLib.addEvent(node, 'click', function () {
                         INTERMediator.startFrom = prevPageCount;
                         INTERMediator.construct(true);
@@ -1481,7 +1492,7 @@ INTERMediator = {
                     node.appendChild(document.createTextNode(
                         (navLabel == null || navLabel[2] == null) ? '>' : navLabel[2]));
                     node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                    var nextPageCount
+                    nextPageCount
                         = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
                     INTERMediatorLib.addEvent(node, 'click', function () {
                         INTERMediator.startFrom = nextPageCount;
@@ -1493,14 +1504,14 @@ INTERMediator = {
                     node.appendChild(document.createTextNode(
                         (navLabel == null || navLabel[3] == null) ? '>>' : navLabel[3]));
                     node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                    var endPageCount = allCount - pageSize;
+                    endPageCount = allCount - pageSize;
                     INTERMediatorLib.addEvent(node, 'click', function () {
                         INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
                         INTERMediator.construct(true);
                     });
                 }
 
-                for (var i = 0; i < deleteInsertOnNavi.length; i++) {
+                for (i = 0; i < deleteInsertOnNavi.length; i++) {
                     switch (deleteInsertOnNavi[i]['kind']) {
                         case 'INSERT':
                             node = document.createElement('SPAN');
@@ -1508,7 +1519,7 @@ INTERMediator = {
                             node.appendChild(
                                 document.createTextNode(INTERMediatorOnPage.getMessages()[3] + ': ' + deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
-                            var onNaviInsertFunction = function (a, b, c) {
+                            onNaviInsertFunction = function (a, b, c) {
                                 var contextName = a;
                                 var keyValue = b;
                                 var confirming = c;
@@ -1531,7 +1542,7 @@ INTERMediator = {
                             node.appendChild(
                                 document.createTextNode(INTERMediatorOnPage.getMessages()[4] + ': ' + deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
-                            var onNaviDeleteFunction = function (a, b, c, d) {
+                            onNaviDeleteFunction = function (a, b, c, d) {
                                 var contextName = a;
                                 var keyName = b;
                                 var keyValue = c;
@@ -1579,19 +1590,21 @@ INTERMediator = {
         }
 
         function getEnclosedNode(rootNode, tableName, fieldName) {
+            var i, j, nodeInfo, nInfo, children, r;
+
             if (rootNode.nodeType == 1) {
-                var nodeInfo = INTERMediatorLib.getLinkedElementInfo(rootNode);
-                for (var j = 0; j < nodeInfo.length; j++) {
-                    var nInfo = INTERMediatorLib.getNodeInfoArray(nodeInfo[j]);
+                nodeInfo = INTERMediatorLib.getLinkedElementInfo(rootNode);
+                for ( j = 0; j < nodeInfo.length; j++) {
+                    nInfo = INTERMediatorLib.getNodeInfoArray(nodeInfo[j]);
                     if (nInfo['table'] == tableName && nInfo['field'] == fieldName) {
                         return rootNode;
                     }
                 }
             }
-            var childs = rootNode.childNodes; // Check all child node of the enclosure.
-            for (var i = 0; i < childs.length; i++) {
-                var r = getEnclosedNode(childs[i], tableName, fieldName);
-                if (r != null) {
+            children = rootNode.childNodes; // Check all child node of the enclosure.
+            for ( i = 0; i < children.length; i++) {
+                r = getEnclosedNode(children[i], tableName, fieldName);
+                if (r !== null) {
                     return r;
                 }
             }
@@ -1599,14 +1612,16 @@ INTERMediator = {
         }
 
         function appendCredit() {
+            var bodyNode, creditNode, cNode, spNode, aNode;
+
             if (document.getElementById('IM_CREDIT') == null) {
-                var bodyNode = document.getElementsByTagName('BODY')[0];
-                var creditNode = document.createElement('div');
+                bodyNode = document.getElementsByTagName('BODY')[0];
+                creditNode = document.createElement('div');
                 bodyNode.appendChild(creditNode);
                 creditNode.setAttribute('id', 'IM_CREDIT');
                 creditNode.setAttribute('class', 'IM_CREDIT');
 
-                var cNode = document.createElement('div');
+                cNode = document.createElement('div');
                 creditNode.appendChild(cNode);
                 cNode.style.backgroundColor = '#F6F7FF';
                 cNode.style.height = '2px';
@@ -1626,11 +1641,11 @@ INTERMediator = {
                 cNode.setAttribute('align', 'right');
                 cNode.style.backgroundColor = '#D7E4FF';
                 cNode.style.padding = '2px';
-                var spNode = document.createElement('span');
+                spNode = document.createElement('span');
                 cNode.appendChild(spNode);
                 cNode.style.color = '#666666';
                 cNode.style.fontSize = '7pt';
-                var aNode = document.createElement('a');
+                aNode = document.createElement('a');
                 aNode.appendChild(document.createTextNode('INTER-Mediator'));
                 aNode.setAttribute('href', 'http://inter-mediator.info/');
                 aNode.setAttribute('target', '_href');

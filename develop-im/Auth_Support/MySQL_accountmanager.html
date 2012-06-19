@@ -14,14 +14,25 @@
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
     <title>INTER-Mediator - Sample - Account Management System/MySQL</title>
     <script src="MySQL_contexts.php"></script>
-    <script type="text/javascript"></script>
+    <script type="text/javascript">
+        function setPassword(button){
+            var passwd, hashvalue, passwdField;
+            passwd = document.getElementById('inputpassword').value;
+            passwdField = INTERMediatorOnPage.getNodeIdFromIMDefinition("authuser@hashedpasswd", button);
+            document.getElementById(passwdField).value = INTERMediatorLib.generatePasswordHash(passwd);
+            INTERMediator.valueChange(passwdField);
+        }
+    </script>
 </head>
 <body onload="INTERMediator.construct(true);">
 <h1 style="font-weight:bold;color:blueviolet">Account Management System</h1>
+New Password: <input id="inputpassword" type="text" />
+Set the new password and click "Set" button on each user.
 <!--<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>-->
-<table border="1">
+<h2>User Accounts</h2>
+<table>
     <thead>
-    <tr><th>username</th><th>Password</th><th>Email</th><th>group</th><th></th></tr>
+    <tr><th>User Name</th><th>Hashed Password</th><th>Email</th><th>Groups</th><th>Belongings</th><th></th></tr>
     </thead>
     <tbody>
     <tr>
@@ -30,6 +41,7 @@
         </td>
         <td>
             <input class="IM[authuser@hashedpasswd]" type="text" />
+            <button onclick="setPassword(this)">Set</button>
         </td>
         <td>
             <input class="IM[authuser@email]" type="text" />
@@ -38,6 +50,30 @@
             <span class="_im_enclosure">
                 <span class="_im_repeater">
                 <select class="IM[belonggroup@dest_group_id]">
+                    <option class="IM[groupname@id@value|groupname@groupname]"></option>
+                </select>
+                </span>
+            </span>
+        </td>
+        <td><span class="IM[authuser@belonging]"></span></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
+<h2>Group Accounts</h2>
+<table>
+    <thead>
+    <tr><th>Group Name</th><th>Groups</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>
+            <input class="IM[authgroup@groupname]" type="text" />
+        </td>
+        <td>
+            <span class="_im_enclosure">
+                <span class="_im_repeater">
+                <select class="IM[groupingroup@dest_group_id]">
                     <option class="IM[groupname@id@value|groupname@groupname]"></option>
                 </select>
                 </span>

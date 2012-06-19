@@ -357,7 +357,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
 
-        $setClause = array();
+        $setColumnNames = array();
+        $setValues = array();
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -381,8 +382,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $value = $this->dbSettings->fieldsValues[$i];
             $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            $convertedValue = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
-            $setClause[] = "{$field}={$convertedValue}";
+            $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
+            $setColumnNames[] = $field;
         }
         if (isset($tableInfo['default-values'])) {
             foreach ($tableInfo['default-values'] as $itemDef) {
@@ -390,32 +391,41 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 $value = $itemDef['value'];
                 $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
                 $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                $convertedValue = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
-                $setClause[] = "{$field}={$convertedValue}";
+                $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
+                $setColumnNames[] = $field;
             }
         }
         if (isset($tableInfo['authentication'])) {
             $authInfoField = $this->getFieldForAuthorization("new");
             $authInfoTarget = $this->getTargetForAuthorization("new");
             if ($authInfoTarget == 'field-user') {
-                $setClause[] = "{$authInfoField}=" . $this->link->quote(
+                $setColumnNames[] = $authInfoField;
+                $setValues[] = $this->link->quote(
                     strlen($this->dbSettings->currentUser) == 0 ? randomString(10) : $this->dbSettings->currentUser);
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
-                $setClause[] = "{$authInfoField}=" . $this->link->quote(
+                $setColumnNames[] = $authInfoField;
+                $setValues[] = $this->link->quote(
                     strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
             }
         }
 
-        $setClause = (count($setClause) == 0) ? "{$tableInfo['key']}=DEFAULT" : implode(',', $setClause);
-        $sql = "INSERT {$tableName} SET {$setClause}";
+        if (strpos($this->dbSettings->getDbSpecDSN(),'mysql:') === 0)    {/**/
+            $setClause = (count($setColumnNames) == 0) ? "SET {$tableInfo['key']}=DEFAULT":
+                '('.implode(',', $setColumnNames).') VALUES('.implode(',', $setValues).')';
+        } else {  // sqlite, pgsql
+            $setClause = (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
+                '('.implode(',', $setColumnNames).') VALUES('.implode(',', $setValues).')';
+        }
+        $sql = "INSERT INTO {$tableName} {$setClause}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Insert:' . $sql);
             return false;
         }
-        $lastKeyValue = $this->link->lastInsertId($tableInfo['key']);
+        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
+        $lastKeyValue = $this->link->lastInsertId($seqObject);
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -430,7 +440,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
-
         return $lastKeyValue;
     }
 
@@ -706,7 +715,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     function authSupportGetGroupNameFromGroupId($groupid)
     {
         $groupTable = $this->dbSettings->getGroupTable();
-        if ($groupTable == null) {
+        if ($groupTable === null) {
             return null;
         }
 
@@ -740,6 +749,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->firstLevel = true;
         $this->belongGroups = array();
         $this->resolveGroup($userid);
+
         $this->candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
             $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
@@ -760,7 +770,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->firstLevel = false;
         } else {
             $sql = "select * from {$corrTable} where group_id = " . $this->link->quote($groupid);
-            $this->belongGroups[] = $groupid;
+        //    $this->belongGroups[] = $groupid;
         }
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
@@ -768,11 +778,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        if ( $result->columnCount() === 0 ) {
+            return false;
+        }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if (!in_array($row['dest_group_id'], $this->belongGroups)) {
-                if (!$this->resolveGroup($row['dest_group_id'])) {
-                    return false;
-                }
+                $this->belongGroups[] = $row['dest_group_id'];
+                $this->resolveGroup($row['dest_group_id']);
             }
         }
     }

@@ -41,12 +41,26 @@ IM_Entry(
             'foreign-key' => 'way_id',
             'join-field' => 'way'
         ),
-        array('name' => 'history',
+        array(
+            'name' => 'history',
             'key' => 'id',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
+            'authentication' => array(
+                'all' => array( /* load, update, new, delete*/
+                    'user' => array(),
+                    'group' => array(),
+                    'target' => 'table',
+                ),
+                'load' => array( /* load, update, new, delete*/
+                    'user' => array(),
+                    'group' => array(),
+                    'target' => 'record',
+                    'field' => 'username',
+                ),
+            ),
         ),
     ),
     array(
@@ -55,9 +69,21 @@ IM_Entry(
             'kindid' => 'cor_way_kindname@kind_id@value',
             'kindname' => 'cor_way_kindname@name_kind@innerHTML',
         ),
+        //    'transaction' => 'none',
+        'authentication' => array( // table only, for all operations
+            'user' => array('user1'), // Itemize permitted users
+            'group' => array('group2'), // Itemize permitted groups
+            'privilege' => array(), // Itemize permitted privileges
+            'user-table' => 'authuser', // Default values, or "_Native"
+            'group-table' => 'authgroup',
+            'corresponding-table' => 'authcor',
+            'challenge-table' => 'issuedhash',
+            'authexpired' => '300', // Set as seconds.
+            'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+        ),
     ),
     array('db-class' => 'PDO'),
-    1
+    2
 );
 
 ?>

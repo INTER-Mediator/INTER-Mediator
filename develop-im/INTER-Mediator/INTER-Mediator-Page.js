@@ -258,19 +258,19 @@ INTERMediatorOnPage = {
                 INTERMediatorOnPage.authHashedPassword
                         = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
                         + INTERMediatorOnPage.authUserHexSalt;
-
-                var numToHex,salt, saltHex, code, lowCode, highCode;
-                numToHex = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
-                salt = "";
-                saltHex = "";
-                for( i = 0 ; i < 4 ; i++ )  {
-                    code = Math.floor(Math.random()*(128-32)+32);
-                    lowCode = code & 0xF;
-                    highCode = (code >> 4) & 0xF;
-                    salt += String.fromCharCode(code);
-                    saltHex += numToHex[highCode] + numToHex[lowCode];
-                }
-                params = "access=changepassword&newpass=" + encodeURIComponent(SHA1(inputNewPassword+salt)+saltHex);
+//                var numToHex,salt, saltHex, code, lowCode, highCode;
+//                numToHex = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+//                salt = "";
+//                saltHex = "";
+//                for( i = 0 ; i < 4 ; i++ )  {
+//                    code = Math.floor(Math.random()*(128-32)+32);
+//                    lowCode = code & 0xF;
+//                    highCode = (code >> 4) & 0xF;
+//                    salt += String.fromCharCode(code);
+//                    saltHex += numToHex[highCode] + numToHex[lowCode];
+//                }
+//                params = "access=changepassword&newpass=" + encodeURIComponent(SHA1(inputNewPassword+salt)+saltHex);
+                params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(inputNewPassword);
                 try {
                 result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
                 } catch(e) {

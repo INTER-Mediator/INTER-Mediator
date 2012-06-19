@@ -56,7 +56,10 @@ IM_Entry(
             'kindname' => 'cor_way_kindname@name_kind@innerHTML',
         ),
     ),
-    array('db-class' => 'PDO'),
+    array(
+        'db-class' => 'PDO',
+        'dsn' => 'sqlite:/var/db/im/sample.sq3',
+    ),
     1
 );
 

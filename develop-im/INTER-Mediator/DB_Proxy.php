@@ -156,6 +156,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
             $this->logger->setDebugMode($debug);
         }
+        $this->dbSettings->currentProxy = $this;
+        $this->dbSettings->currentDataAccess = $this->dbClass;
+
         $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
 
         if (isset($context['extending-class'])) {

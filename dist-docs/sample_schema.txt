@@ -8,7 +8,7 @@
 This schema file is for the sample of INTER-Mediator using MySQL, encoded by UTF-8.
 
 Example:
-$ mysql -u root -p < sample_schema_mysql.txt
+$ mysql -u root -p < sample_schema.txt 
 Enter password: 
 
 */

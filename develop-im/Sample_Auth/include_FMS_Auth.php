@@ -1,12 +1,12 @@
 <?php
 /*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
-*
-*   This project started at the end of 2009.
-*   INTER-Mediator is supplied under MIT License.
-*/
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */
 require_once ('../INTER-Mediator/INTER-Mediator.php');
 
 IM_Entry(
@@ -26,7 +26,7 @@ IM_Entry(
         array(
             'name' => 'contact_to',
             'key' => 'id',
-            'repeat-control' => 'confirm-delete insert',
+            'repeat-control' => 'confirm-delete confirm-insert',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq')
             ),
@@ -57,9 +57,18 @@ IM_Entry(
             array('field' => 'history_to@startdate', 'converter-class' => 'FMDateTime'),
             array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
         ),
+        'authentication' => array( // table only, for all operations
+            'user' => 'database_native', // Itemize permitted users
+            'group' => array('group2'), // Itemize permitted groups
+            'user-table' => 'authuser', // Default values, or "_Native"
+            'group-table' => '', //'authgroup',
+            'challenge-table' => 'issuedhash',
+            'authexpired' => '300', // Set as seconds.
+            'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+        ),
     ),
     array('db-class' => 'FileMaker_FX'),
-    1
+    2
 );
 
 ?>

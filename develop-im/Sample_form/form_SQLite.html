@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <script src="include_SQLite.php"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            var nodeUnsupport = document.getElementById('nonsupportmessage');
+            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
+                INTERMediator.construct(true);
+            }
+        }
+    </script>
+</head>
+<body>
+<div id="nonsupportmessage" style="background-color:#333333">
+    <div style="text-align:center;color:yellow">
+        If you see this, you must use any unsupported web browser.
+        Or you should set to active for JavaScript.
+        In case of generating the page, Please wait a while.
+    </div>
+    <div style="text-align:center;color:yellow">
+        この表示が見えている場合、非対応ブラウザで参照されています。
+        あるいは、JavaScriptを使用しないように設定されています。
+        描画処理中の場合はしばらくお待ちください。
+    </div>
+</div>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table border="1">
+    <tbody>
+    <tr>
+        <th>id</th>
+        <td>
+            <div class="IM[person@id]"></div>
+        </td>
+        <th>category</th>
+        <td>
+            <select class="IM[person@category]">
+                <option value="101">Family</option>
+                <option value="102">ClassMate</option>
+                <option value="103">Collegue</option>
+            </select>
+        </td>
+        <th>check</th>
+        <td><input type="checkbox" title="person@checking" value="1"/></td>
+    </tr>
+    <tr>
+        <th>name</th>
+        <td colspan="5"><input type="text" class="IM[person@name]" value=""/></td>
+    </tr>
+    <tr>
+        <th>mail</th>
+        <td colspan="5"><input type="text" class="IM[person@mail]" value=""/></td>
+    </tr>
+    <tr>
+        <th>location</th>
+        <td colspan="5">
+            <input type="radio" name="radio1" title="person@location" value="201"/>Domestic
+            <input type="radio" name="radio1" title="person@location" value="202"/>International
+            <input type="radio" name="radio1" title="person@location" value="203"/>Neightbor
+            <input type="radio" name="radio1" title="person@location" value="204"/>Space
+        </td>
+    </tr>
+    <tr>
+        <th>memo</th>
+        <td colspan="5"><textarea title="person@address"></textarea></td>
+    </tr>
+    <tr>
+        <td colspan="6">
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>datetime</th>
+                    <th>summary</th>
+                    <th>important</th>
+                    <th>way</th>
+                    <th>kind</th>
+                    <th>description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><input type="text" class="IM[contact@datetime]"/></td>
+                    <td><input type="text" class="IM[contact@summary]"/></td>
+                    <td><input type="checkbox" class="IM[contact@important]" value="1"/></td>
+                    <td>
+                        <select class="IM[contact@way]">
+                            <option class="IM[contact_way@id@value|contact_way@name@innerHTML]"></option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="IM[contact@kind]">
+                            <option class="IM[kindid|kindname]"></option>
+                        </select>
+                    </td>
+                    <td><textarea class="IM[contact@description@innerHTML]"></textarea></td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="6">
+            <ul>
+                <li>
+                    <hr/>
+                    <input type="text" title="history@startdate"/></li>
+                <li><input type="text" title="history@enddate"/></li>
+                <li><input type="text" title="history@description"/></li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
+</body>
+</html>

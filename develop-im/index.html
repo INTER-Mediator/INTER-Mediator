@@ -28,24 +28,31 @@
         <th></th>
         <th>MySQL</th>
         <th>FileMaker Server</th>
-        <th>For Debugging</th>
+        <th>SQLite</th>
+        <th>PostgreSQL</th>
     </tr>
     <tr>
         <td>Master-Detail Style Page</td>
         <td><a href="Sample_form/form_MySQL.html">show</a></td>
         <td><a href="Sample_form/form_FMS.html">show</a></td>
-        <td></td>
+        <td><a href="Sample_form/form_SQLite.html">show</a></td>
+        <td><a href="Sample_form/form_PostgreSQL.html">show</a></td>
     </tr>
     <tr>
         <td>Search Page</td>
-        <td><a href="Sample_search/search_MySQL.html">show</a></td>
+        <td>
+            <a href="Sample_search/search_MySQL.html">show</a>
+            <a href="Sample_forDebugging/search_MySQL.html">debug</a>
+        </td>
         <td><a href="Sample_search/search_FMS.html">show</a></td>
-        <td><a href="Sample_forDebugging/search_MySQL.html">show</a></td>
+        <td><a href="Sample_search/search_SQLite.html">show</a></td>
+        <td><a href="Sample_search/search_PostgreSQL.html">show</a></td>
     </tr>
     <tr>
         <td>Client-Side Calculation Page</td>
         <td><a href="Sample_invoice/invoice_MySQL.html">show</a></td>
         <td><a href="Sample_invoice/invoice_FMS.html">show</a></td>
+        <td></td>
         <td></td>
     </tr>
     <tr>
@@ -59,17 +66,27 @@
             <a href="Sample_products/list_detail_FMS.html">show single file</a>
         </td>
         <td></td>
+        <td></td>
     </tr>
     <tr>
         <td>Authentication Pages</td>
         <td><a href="Sample_Auth/MySQL_form_auth.html">show</a></td>
         <td><a href="Sample_Auth/FMS_form_auth.html">show</a></td>
         <td></td>
+        <td></td>
     </tr>
     <tr>
         <td>Authorized Chat</td>
         <td><a href="Sample_chat/chat_MySQL.html">show</a></td>
         <td><a href="Sample_chat/chat_FMS.html">show</a></td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Account Manager</td>
+        <td><a href="Auth_Support/MySQL_accountmanager.html">show</a></td>
+        <td></td>
+        <td></td>
         <td></td>
     </tr>
     <tr>
@@ -80,21 +97,22 @@
         </td>
         <td></td>
         <td></td>
+        <td></td>
     </tr>
     <tr>
         <td>Web Site</td>
         <td><a href="WebSite">show</a><sup>*1</sup></td>
         <td></td>
-        <td>Previously it was used the FileMaker Server. See the 'previous_rsrc' folder.</td>
+        <td></td>
+        <td></td>
     </tr>
     <tr>
         <td>HTML5 Local DB</td>
-        <td><a href="sample_memo_html5.html">show</a></td>
-        <td></td>
-        <td>This don't work, just under construction.</td>
+        <td colspan="4"><a href="sample_memo_html5.html">show</a> This don't work, just under construction.</td>
     </tr>
 </table>
 <p><sup>*1</sup> Locally using the definition file and page file, but access to the database with internet.
-    This sample doesn't include image files, so image won't show correctly.</p>
+    This sample doesn't include image files, so image won't show correctly.
+    Previously it was used the FileMaker Server and its files are in the 'previous_rsrc' folder.</p>
 </body>
 </html>

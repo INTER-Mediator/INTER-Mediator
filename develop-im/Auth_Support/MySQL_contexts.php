@@ -13,7 +13,7 @@ IM_Entry(
     array(
         array(
         //    'paging' => true,
-            'records' => 10,
+        //    'records' => 10,
             'name' => 'authuser',
             'view' => 'authuser',
             'table' => 'authuser',
@@ -22,6 +22,7 @@ IM_Entry(
             'sort' => array(
                 array('field' => 'id', 'direction' => 'ASC'),
             ),
+            'extending-class'=>"UserList",
         ),
         array(
             'name' => 'belonggroup',
@@ -33,23 +34,44 @@ IM_Entry(
                 array('foreign-key' => 'user_id', 'join-field' => 'id', 'operator' => '='),
             ),
             'sort' => array(
-                array('field' => 'group_id', 'direction' => 'ASC'),
+                array('field' => 'dest_group_id', 'direction' => 'ASC'),
             ),
         ),
         array(
             'name' => 'groupname',
             'view' => 'authgroup',
             'sort' => array(
-                array('field' => 'groupname', 'direction' => 'ASC'),
+                array('field' => 'id', 'direction' => 'ASC'),
+            ),
+        ),
+        array(
+            //    'paging' => true,
+            //    'records' => 10,
+            'name' => 'authgroup',
+            'view' => 'authgroup',
+            'table' => 'authgroup',
+            'key' => 'id',
+            'repeat-control' => 'confirm-delete confirm-insert',
+            'sort' => array(
+                array('field' => 'id', 'direction' => 'ASC'),
+            ),
+        ),
+        array(
+            'name' => 'groupingroup',
+            'view' => 'authcor',
+            'table' => 'authcor',
+            'key' => 'id',
+            'repeat-control' => 'confirm-delete insert',
+            'relation' => array(
+                array('foreign-key' => 'group_id', 'join-field' => 'id', 'operator' => '='),
+            ),
+            'sort' => array(
+                array('field' => 'dest_group_id', 'direction' => 'ASC'),
             ),
         ),
     ),
     array(
         'authentication' => array( // table only, for all operations
-//            'group' => array('admin'), // Itemize permitted groups
-            'user-table' => 'authuser', // Default values, or "_Native"
-            'group-table' => '', //'authgroup',
-            'challenge-table' => 'issuedhash',
             'authexpired' => '300', // Set as seconds.
             'storing' => 'none', // 'cookie'(default), 'cookie-domainwide', 'none'
         ),
@@ -61,5 +83,5 @@ IM_Entry(
         'user' => 'web',
         'password' => 'password',
     ),
-    1
+    0
 );

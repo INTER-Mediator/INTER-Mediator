@@ -35,6 +35,9 @@ class DB_Settings
     var $accessUser = null;
     var $accessPassword = null;
 
+    var $currentProxy = null;
+    var $currentDataAccess = null;
+
     /* Database connection paramters */
     function setDbSpecServer($str)
     {
