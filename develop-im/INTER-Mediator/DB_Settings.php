@@ -182,12 +182,6 @@ class DB_Settings
         $this->currentUser = $str;
     }
 
-    /*
-        function setCurrentChallenge($str)
-        {
-            $this->currentChallenge = $str;
-        }
-    */
     function setDataSource($src)
     {
         $this->dataSource = $src;

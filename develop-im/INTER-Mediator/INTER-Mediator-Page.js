@@ -23,6 +23,9 @@ INTERMediatorOnPage = {
     isOnceAtStarting:true,
     publickey:null,
     isNativeAuth:false,
+    httpuser:null,
+    httppasswd:null,
+    mediaToken:null,
 
     isShowChangePassword: true,
 
@@ -53,10 +56,12 @@ INTERMediatorOnPage = {
                     case 'cookie-domainwide':
                         this.authUser = this.getCookie('_im_username');
                         this.authHashedPassword = this.getCookie('_im_crendential');
+                        this.mediaToken = this.getCookie('_im_mediatoken');
                         break;
                     default:
                         this.removeCookie('_im_username');
                         this.removeCookie('_im_crendential');
+                        this.removeCookie('_im_mediatoken');
                         break;
                 }
                 this.isOnceAtStarting = false;
@@ -77,6 +82,7 @@ INTERMediatorOnPage = {
         this.clientId = "";
         this.removeCookie('_im_username');
         this.removeCookie('_im_crendential');
+        this.removeCookie('_im_mediatoken');
     },
 
     storeCredencialsToCookie:function () {
@@ -84,18 +90,23 @@ INTERMediatorOnPage = {
             case 'cookie':
                 INTERMediatorOnPage.setCookie('_im_username', INTERMediatorOnPage.authUser);
                 INTERMediatorOnPage.setCookie('_im_crendential', INTERMediatorOnPage.authHashedPassword);
-                break;
+                if ( INTERMediatorOnPage.mediaToken )   {
+                    INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken);
+                }break;
             case 'cookie-domainwide':
                 INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser);
                 INTERMediatorOnPage.setCookieDomainWide('_im_crendential', INTERMediatorOnPage.authHashedPassword);
+                if ( INTERMediatorOnPage.mediaToken )   {
+                    INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken);
+                }
                 break;
         }
     },
 
     authenticating:function (doAfterAuth) {
-        var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, breakLine;
+        var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox;
         var passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton;
-        var newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, i;
+        var newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage;
 
         if (this.authCount > 10) {
             this.authenticationError();
@@ -226,7 +237,8 @@ INTERMediatorOnPage = {
             newPasswordSpan.style.textAlign = "right";
             newPasswordSpan.style.cssFloat = "left";
             newPasswordLabel.appendChild(newPasswordSpan);
-            newPasswordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)));
+            newPasswordSpan.appendChild(
+                document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)));
             newPasswordBox = document.createElement('INPUT');
             newPasswordBox.type = "password";
             newPasswordBox.id = "_im_newpassword";
@@ -256,23 +268,11 @@ INTERMediatorOnPage = {
                     }
                 }
                 INTERMediatorOnPage.authHashedPassword
-                        = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
-                        + INTERMediatorOnPage.authUserHexSalt;
-//                var numToHex,salt, saltHex, code, lowCode, highCode;
-//                numToHex = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
-//                salt = "";
-//                saltHex = "";
-//                for( i = 0 ; i < 4 ; i++ )  {
-//                    code = Math.floor(Math.random()*(128-32)+32);
-//                    lowCode = code & 0xF;
-//                    highCode = (code >> 4) & 0xF;
-//                    salt += String.fromCharCode(code);
-//                    saltHex += numToHex[highCode] + numToHex[lowCode];
-//                }
-//                params = "access=changepassword&newpass=" + encodeURIComponent(SHA1(inputNewPassword+salt)+saltHex);
+                    = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
+                    + INTERMediatorOnPage.authUserHexSalt;
                 params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(inputNewPassword);
                 try {
-                result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
+                    result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
                 } catch(e) {
                     result = {newPasswordResult: false};
                 }
@@ -429,6 +429,7 @@ INTERMediatorOnPage = {
     },
 
     getNodeIdsFromIMDefinition:function (imDefinition, fromNode) {
+        var children, i, thisClass, thisTitle;
         var enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
         if (enclosureNode != null) {
             var nodeIds = [];
@@ -440,14 +441,14 @@ INTERMediatorOnPage = {
             if (node.nodeType != 1) {
                 return null;
             }
-            var children = node.childNodes;
+            children = node.childNodes;
             if (children == null) {
                 return null;
             } else {
-                for (var i = 0; i < children.length; i++) {
+                for ( i = 0; i < children.length; i++) {
                     if (children[i].getAttribute != null) {
-                        var thisClass = children[i].getAttribute('class');
-                        var thisTitle = children[i].getAttribute('title');
+                        thisClass = children[i].getAttribute('class');
+                        thisTitle = children[i].getAttribute('title');
                         if ((thisClass != null && thisClass.indexOf(imDefinition) > -1)
                             || (thisTitle != null && thisTitle.indexOf(imDefinition) > -1)) {
                             nodeIds.push(children[i].getAttribute('id'));
@@ -482,9 +483,10 @@ INTERMediatorOnPage = {
     },
 
     setCookieWorker:function (key, val, isDomain) {
+        var cookieString;
         var expDate = new Date();
         expDate.setTime(expDate.getTime() + (INTERMediatorOnPage.authExpired * 1000));
-        var cookieString = key + "=" + encodeURIComponent(val)
+        cookieString = key + "=" + encodeURIComponent(val)
             + ( isDomain ? ";path=/" : "" )
             + ";expires=" + expDate.toGMTString();
         document.cookie = cookieString;

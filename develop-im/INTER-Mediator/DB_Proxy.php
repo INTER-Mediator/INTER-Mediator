@@ -11,8 +11,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
     var $dbClass = null;
     var $userExpanded = null;
-//    var $dbSettings = null;
-//    var $logger = null;
+
+    function __construct()  {
+        header('Content-Type: text/javascript; charset="UTF-8"');
+        header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
+        header('Expires: 0');
+    }
 
     function getFromDB($dataSourceName)
     {
@@ -222,6 +226,20 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
     }
 
+    /*
+    * POST
+    * ?access=select
+    * &name=<table name>
+    * &start=<record number to start>
+    * &records=<how many records should it return>
+    * &field_<N>=<field name>
+    * &value_<N>=<value of the field>
+    * &condition<N>field=<Extra criteria's field name>
+    * &condition<N>operator=<Extra criteria's operator>
+    * &condition<N>value=<Extra criteria's value>
+    * &parent_keyval=<value of the foreign key field>
+    */
+
     function processingRequest($options)
     {
         $generatedPrivateKey = '';
@@ -246,8 +264,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $requireAuthorization = false;
         $isDBNative = false;
         if (isset($options['authentication'])
-//            && (isset($options['authentication']['user'])
-//                || isset($options['authentication']['group']))
             || $access == 'challenge'
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all'])
@@ -361,6 +377,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if ($requireAuthentication) {
                 echo "requireAuth=true;"; // Force authentication to client
             }
+            if ( $tableInfo['authentication']['media-handling'] === true )  {
+                $generatedChallenge = $this->generateChallenge();
+                $this->saveChallenge( $paramAuthUser, $generatedChallenge, "_im_media");
+                echo "mediatoken='{$generatedChallenge}';";
+            }
         }
     }
 
@@ -428,6 +449,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // Database user mode is user_id=0
         $storedChallenge = $this->dbClass->authSupportRetrieveChallenge(0, $clientId);
         if (strlen($storedChallenge) == 24 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
+            $returnValue = true;
+        }
+        return $returnValue;
+    }
+
+    function checkMediaToken($user, $token)
+    {
+        $returnValue = false;
+        $this->dbClass->removeOutdatedChallenges();
+        // Database user mode is user_id=0
+        $storedChallenge = $this->dbClass->authSupportCheckMediaToken($user);
+        if (strlen($storedChallenge) == 24 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
         return $returnValue;

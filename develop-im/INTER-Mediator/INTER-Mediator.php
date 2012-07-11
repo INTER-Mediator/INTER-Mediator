@@ -18,32 +18,18 @@ require_once('DB_Settings.php');
 require_once('DB_UseSharedObjects.php');
 require_once('DB_Proxy.php');
 
-/*
- * GET
- * ?access=select
- * &name=<table name>
- * &start=<record number to start>
- * &records=<how many records should it return>
- * &field_<N>=<field name>
- * &value_<N>=<value of the field>
- * &condition<N>field=<Extra criteria's field name>
- * &condition<N>operator=<Extra criteria's operator>
- * &condition<N>value=<Extra criteria's value>
- * &parent_keyval=<value of the foreign key field>
- */
-
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-
-    header('Content-Type: text/javascript; charset="UTF-8"');
-    header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
-    header('Expires: 0');
-
     spl_autoload_register('loadClass');
 
-    if (!isset($_POST['access'])) {
+    if (!isset($_POST['access']) && !isset($_GET['media'])) {
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+    } else if (!isset($_POST['access']) && isset($_GET['media'])) {
+        $dbProxyInstance = new DB_Proxy();
+        $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
+        $mediaHandler = new MediaAccess();
+        $mediaHandler->processing($dbProxyInstance, $options['media-root-dir'], $_GET['media']);
     } else {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
@@ -53,6 +39,12 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 
 class GenerateJSCode
 {
+    function __construct()  {
+        header('Content-Type: text/javascript; charset="UTF-8"');
+        header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
+        header('Expires: 0');
+    }
+
     function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
     {
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
@@ -94,8 +86,10 @@ class GenerateJSCode
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
         }
 
+        $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
+                        . $_SERVER['SCRIPT_NAME'] . (isset($scriptPathSufix) ? $scriptPathSufix : '');
         $this->generateAssignJS(
-            "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$_SERVER['SCRIPT_NAME']}{$q};}");
+            "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ", arrayToJS($datasource, ''), ";}");
         $this->generateAssignJS(
@@ -109,11 +103,13 @@ class GenerateJSCode
         $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
         foreach ($clientLangArray as $oneLanguage) {
             $langCountry = explode(';', $oneLanguage);
-            $clientLang = explode('-', $langCountry[0]);
-            $messageClass = "MessageStrings_{$clientLang[0]}";
-            if (class_exists($messageClass)) {
-                $messageClass = new $messageClass();
-                break;
+            if ( strlen($langCountry[0]) > 0 )  {
+                $clientLang = explode('-', $langCountry[0]);
+                $messageClass = "MessageStrings_{$clientLang[0]}";
+                if (class_exists($messageClass)) {
+                    $messageClass = new $messageClass();
+                    break;
+                }
             }
         }
         if ($messageClass == null) {
@@ -129,9 +125,7 @@ class GenerateJSCode
             "INTERMediatorOnPage.browserCompatibility",
             "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
-            $this->generateAssignJS(
-                "INTERMediator.debugMode",
-                "false");
+            $this->generateAssignJS("INTERMediator.debugMode", "false");
         } else {
             $this->generateAssignJS(
                 "INTERMediator.debugMode", ($debug === false) ? "false" : $debug);
@@ -166,10 +160,12 @@ class GenerateJSCode
             "INTERMediatorOnPage.authExpired",
             (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
                 $options['authentication']['authexpired'] : '3600');
-        $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.publickey",
-            "new biRSAKeyPair('", bin2hex($keyArray['rsa']['e']), "','0','", bin2hex($keyArray['rsa']['n']), "')");
+        if(isset($generatedPrivateKey)) {
+            $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.publickey",
+                "new biRSAKeyPair('", bin2hex($keyArray['rsa']['e']), "','0','", bin2hex($keyArray['rsa']['n']), "')");
+        }
     }
 }
 

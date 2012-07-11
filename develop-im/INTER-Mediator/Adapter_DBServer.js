@@ -14,9 +14,18 @@ var INTERMediator_DBAdapter;
 INTERMediator_DBAdapter = {
 
     server_access:function (accessURL, debugMessageNumber, errorMessageNumber) {
-
+        var newRecordKeyValue = '';
+        var dbresult = '';
+        var resultCount = 0;
+        var challenge = null;
+        var clientid = null;
+        var requireAuth = false;
+        var myRequest = null;
+        var changePasswordResult = null;
+        var mediatoken = null;
         var appPath = INTERMediatorOnPage.getEntryPath();
         var authParams = '';
+
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams
                 = "&clientid=" + encodeURIComponent(INTERMediatorOnPage.clientId)
@@ -35,17 +44,9 @@ INTERMediator_DBAdapter = {
             INTERMediatorOnPage.getMessages()[debugMessageNumber]
                 + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
 
-        var newRecordKeyValue = '';
-        var dbresult = '';
-        var resultCount = 0;
-        var challenge = null;
-        var clientid = null;
-        var requireAuth = false;
-        var myRequest = null;
-        var changePasswordResult = null;
         try {
             myRequest = new XMLHttpRequest();
-            myRequest.open('POST', appPath, false);
+            myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
             myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             myRequest.send(accessURL + authParams);
             eval(myRequest.responseText);
@@ -56,7 +57,8 @@ INTERMediator_DBAdapter = {
                     + "Return: requireAuth=" + requireAuth
                     + ", challenge=" + challenge + ", clientid=" + clientid + "\n"
                     + "Return: newRecordKeyValue=" + newRecordKeyValue
-                    + ", changePasswordResult=" + changePasswordResult);
+                    + ", changePasswordResult=" + changePasswordResult + ", mediatoken=" + mediatoken
+                );
             }
             if (challenge !== null) {
                 INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
@@ -72,7 +74,9 @@ INTERMediator_DBAdapter = {
             if (clientid !== null) {
                 INTERMediatorOnPage.clientId = clientid;
             }
-
+            if ( mediatoken !== null )  {
+                INTERMediatorOnPage.mediaToken = mediatoken
+            }
         } catch (e) {
 
             INTERMediator.errorMessages.push(
@@ -123,7 +127,7 @@ INTERMediator_DBAdapter = {
      This function returns recordset of retrieved.
      */
     db_query:function (args) {
-        var noError = true;
+        var noError = true, i, index, params, counter;
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
             noError = false;
@@ -132,13 +136,16 @@ INTERMediator_DBAdapter = {
             return;
         }
 
-        var params = "access=select&name=" + encodeURIComponent(args['name']);
-        params += "&records=" + encodeURIComponent((args['records'] != null) ? args['records'] : 10000000);
-        for (var i = 0; i < args['fields'].length; i++) {
-            params += "&field_" + i + "=" + encodeURIComponent(args['fields'][i]);
+        params = "access=select&name=" + encodeURIComponent(args['name']);
+        params += "&records=" + encodeURIComponent(args['records'] ? args['records'] : 10000000);
+
+        if ( args['fields'] )   {
+            for ( i = 0; i < args['fields'].length; i++) {
+                params += "&field_" + i + "=" + encodeURIComponent(args['fields'][i]);
+            }
         }
-        var counter = 0;
-        if (args['parentkeyvalue'] != null) {
+        counter = 0;
+        if (args['parentkeyvalue']) {
             //noinspection JSDuplicatedDeclaration
             for (var index in args['parentkeyvalue']) {
                 if (args['parentkeyvalue'].hasOwnProperty(index)) {
@@ -154,36 +161,40 @@ INTERMediator_DBAdapter = {
             params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
         }
         var extCount = 0;
-        if (args['conditions'] != null) {
+        if (args['conditions']) {
             params += "&condition" + extCount + "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
             params += "&condition" + extCount + "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
             params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
             extCount++;
         }
         var criteriaObject = INTERMediator.additionalCondition[args['name']];
-        if (criteriaObject != null && criteriaObject["field"] != null) {
-            criteriaObject = [criteriaObject];
-        }
-        for (var index in criteriaObject) {
-            if (criteriaObject.hasOwnProperty(index)) {
-                params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
-                if (criteriaObject[index]["operator"] != null) {
-                    params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
+        if (criteriaObject) {
+            if ( criteriaObject["field"] ) {
+                criteriaObject = [criteriaObject];
+            }
+            for ( index in criteriaObject) {
+                if (criteriaObject.hasOwnProperty(index)) {
+                    params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
+                    if (criteriaObject[index]["operator"] != null) {
+                        params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
+                    }
+                    params += "&condition" + extCount + "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                    extCount++;
                 }
-                params += "&condition" + extCount + "value=" + encodeURIComponent(criteriaObject[index]["value"]);
-                extCount++;
             }
         }
 
         extCount = 0;
         var sortkeyObject = INTERMediator.additionalSortKey[args['name']];
-        if (sortkeyObject != null && sortkeyObject["field"] != null) {
-            sortkeyObject = [sortkeyObject];
-        }
-        for (var index in sortkeyObject) {
-            params += "&sortkey" + extCount + "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
-            params += "&sortkey" + extCount + "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
-            extCount++;
+        if (sortkeyObject){
+            if (sortkeyObject["field"]) {
+                sortkeyObject = [sortkeyObject];
+            }
+            for ( index in sortkeyObject) {
+                params += "&sortkey" + extCount + "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
+                params += "&sortkey" + extCount + "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
+                extCount++;
+            }
         }
 
         params += "&randkey" + Math.random();    // For ie...
@@ -232,7 +243,7 @@ INTERMediator_DBAdapter = {
                 }
             }
         }
-        completion();
+        completion(returnValue);
     },
 
     /*
@@ -297,7 +308,7 @@ INTERMediator_DBAdapter = {
                 }
             }
         }
-        completion();
+        completion(returnValue);
     },
 
     /*
@@ -351,7 +362,7 @@ INTERMediator_DBAdapter = {
                 }
             }
         }
-        completion();
+        completion(returnValue);
     },
     /*
      db_createRecord
@@ -397,6 +408,6 @@ INTERMediator_DBAdapter = {
                 }
             }
         }
-        completion();
+        completion(returnValue);
     }
 };

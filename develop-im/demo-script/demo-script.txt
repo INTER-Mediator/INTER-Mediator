@@ -1,18 +1,12 @@
 INTER-Mediator Demo Script:
 Masayuki Nii
 msyk@msyk.net
-2010/1/23
+2010/1/23 (Modified 2012/6/22)
 
-
-******* This script should be rewritten for the architecture after 0.6 *********
-
-
-These are demo materials for demonstrating INTER-Mediator's fundamental function.
+Materials for demonstrating INTER-Mediator's fundamental function are in this folder.
 
 The "demo-script" folder should be located as same directory as 'develop-im' folder.
 The demo database for MySQL with the distribution should be installed and working.
-
-** DEMO 1
 
 1. open demo1.html, show the source. And show by any browser. You can see just a table.
 

@@ -242,7 +242,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (isset($tableInfo['paging']) and $tableInfo['paging'] == true) {
             $skipParam = $this->dbSettings->start;
         }
-        $sql = "SELECT * FROM {$viewOrTableName} {$queryClause} {$sortClause} "
+        $fields = '*';
+        if (isset($tableInfo['specify-fields']))    {
+            $fields = implode( ',',$this->dbSettings->fieldsRequired);
+        }
+        $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$sortClause} "
             . " LIMIT {$limitParam} OFFSET {$skipParam}";
         $this->logger->setDebugMessage($sql);
 
@@ -544,7 +548,44 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportRetrieveChallenge($username, $clientId)
+    function authSupportCheckMediaToken($user) {
+        $hashTable = $this->dbSettings->getHashTable();
+        if ($hashTable == null) {
+            return false;
+        }
+        if ($user === 0) {
+            $uid = 0;
+        } else {
+            $uid = $this->authSupportGetUserIdFromUsername($user);
+            if ($uid === false) {
+                $this->logger->setDebugMessage("User '{$user}' does't exist.");
+                return false;
+            }
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "select id,hash,expired from {$hashTable} "
+            . "where user_id={$uid} and clienthost=" . $this->link->quote('_im_media');
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $expiredDT = new DateTime($row['expired']);
+            $hashValue = $row['hash'];
+            $intervalDT = $expiredDT->diff(new DateTime(), true);
+            $seconds = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
+            if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
+                return false;
+            }
+            return $hashValue;
+        }
+        return false;
+    }
+
+    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -573,14 +614,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $expiredDT = new DateTime($row['expired']);
             $hashValue = $row['hash'];
             $recordId = $row['id'];
-
-            $sql = "delete from {$hashTable} where id={$recordId}";
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Delete:' . $sql);
-                return false;
+            if ( $isDelete )    {
+                $sql = "delete from {$hashTable} where id={$recordId}";
+                $result = $this->link->query($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Delete:' . $sql);
+                    return false;
+                }
             }
-
             $intervalDT = $expiredDT->diff(new DateTime(), true);
             $seconds = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
@@ -787,6 +828,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 $this->resolveGroup($row['dest_group_id']);
             }
         }
+    }
+
+    function isExistToken($tokenValue)  {
+        return true;
     }
 }
 

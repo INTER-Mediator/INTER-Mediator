@@ -573,8 +573,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->logger->setDebugMessage($result['URL']);
         return true;
     }
+    function authSupportCheckMediaToken($user)
+    {
 
-    function authSupportRetrieveChallenge($username, $clientId)
+    }
+
+    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -601,12 +605,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
             $hashValue = $row['hash'][0];
-            $this->setupFXforAuth($hashTable, 1);
-            $this->fx->SetRecordID($recId);
-            $result = $this->fx->DoFxAction("delete", TRUE, TRUE, 'full');
-            if (!is_array($result)) {
-                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                return false;
+            if ( $isDelete )    {
+                $this->setupFXforAuth($hashTable, 1);
+                $this->fx->SetRecordID($recId);
+                $result = $this->fx->DoFxAction("delete", TRUE, TRUE, 'full');
+                if (!is_array($result)) {
+                    $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+                    return false;
+                }
             }
             return $hashValue;
         }

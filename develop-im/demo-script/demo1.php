@@ -12,7 +12,8 @@ IM_Entry(
         ),
     ),
     null,
-    array('db-class' => 'PDO'),
+    array('db-class' => 'FileMaker_FX'),
+//    array('db-class' => 'PDO'),
     false
 );
 ?>

@@ -56,4 +56,12 @@ GmmWk80j2KpciQIhAI/ybFa7x85Gl5EAS9F7jYy9ykjeyVyDHX0liK+V1355AiAG
 jU6zr1wG9awuXj8j5x37eFXnfD/p92GpteyHuIDpog==
 -----END RSA PRIVATE KEY-----
 EOL;
+
+//$httpAccounts = array('user'=>'testtest');
+//$httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
+
+// in case of $_SERVER['SCRIPT_NAME'] didn't return the valid path.
+// These are added before/after the path.
+//$scriptPathPrefix = "";
+//$scriptPathSufix = "";
 ?>

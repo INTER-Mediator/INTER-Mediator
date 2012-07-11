@@ -21,10 +21,11 @@ interface Auth_Interface_DB
     function authSupportStoreChallenge($username, $challenge, $clientId);
     function authSupportGetSalt($username);
     function removeOutdatedChallenges();
-    function authSupportRetrieveChallenge($username, $clientId);
+    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true);
     function authSupportRetrieveHashedPassword($username);
     function authSupportCreateUser($username, $hashedpassword);
     function authSupportChangePassword($username, $hashednewpassword);
+    function authSupportCheckMediaToken($user);
 }
 
 interface Auth_Interface_Communication
@@ -35,7 +36,7 @@ interface Auth_Interface_Communication
     function saveChallenge($username, $challenge, $clientId);
     function checkAuthorization($username, $hashedvalue, $clientId);
     function checkChallenge($challenge, $clientId);
-
+   function checkMediaToken($user, $token);
     function addUser($username, $password);
     function generateSalt();    // Use inside addUser
     function changePassword($username, $newpassword);
