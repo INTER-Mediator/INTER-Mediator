@@ -12,8 +12,6 @@ To Do, that is left-over. Or Plan
 To Do List for the INTER-Mediator developer(s)
 - Showing as the alert box when any errors occurred ??
 - DIV._im_multivalue: Set muliti-line values to one field within the div element.
-- Users/Groups Administration user interface.
-- Samples by PostgreSQL, SQLite.
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
 - Supports HTML5's datalist tag elements
 - Objective handling for the data in database.
@@ -52,7 +50,17 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.2.7 (Will be release soon.)
+Ver.2.9 (Will be release soon.)
+
+Ver.2.8 (2012/7/11)
+- Accessing media data with authentication is supported. The sample is in Sample_products_auth folder.
+- The location of the "demo-script" folder was moved in the "develop-im" folder.
+- The variables $scriptPathPrefix and $scriptPathSufix in the params.php file can modify the script path.
+  In some case of a provider or a tricky web server, the path to the definition file might take wrong one.
+  You can add strings both before and after current path.
+- Some Ver.5.3 only functions are replaced. INTER-Mediator supports PHP 5.2 surely.
+
+Ver.2.7 (2012/6/20)
 - SQLite and PostgreSQL sample schema are included. The "Form" sample is supporting SQLite and PostgreSQL.
 - The 'sequence' setting in a context for specifying PostgreSQL's sequence object.
 - Users and Groups Management sample. You can manage accounts on the web page. See Auth_Support folder.

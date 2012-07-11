@@ -191,6 +191,7 @@ INTERMediatorOnPage = {
         authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2004)));
         authButton.onclick = function () {
             var inputUsername,  inputPassword, challengeResult;
+
             inputUsername = document.getElementById('_im_username').value;
             inputPassword = document.getElementById('_im_password').value;
             INTERMediatorOnPage.authUser = inputUsername;
@@ -249,6 +250,7 @@ INTERMediatorOnPage = {
             chgpwButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2005)));
             chgpwButton.onclick = function () {
                 var inputUsername,  inputPassword, inputNewPassword, challengeResult, params, result;
+
                 inputUsername = document.getElementById('_im_username').value;
                 inputPassword = document.getElementById('_im_password').value;
                 inputNewPassword = document.getElementById('_im_newpassword').value;
@@ -298,8 +300,10 @@ INTERMediatorOnPage = {
     },
 
     authenticationError:function () {
-        var bodyNode = document.getElementsByTagName('BODY')[0];
-        var backBox = document.createElement('div');
+        var bodyNode, backBox, frontPanel;
+
+         bodyNode = document.getElementsByTagName('BODY')[0];
+         backBox = document.createElement('div');
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
         backBox.style.height = "100%";
         backBox.style.width = "100%";
@@ -316,7 +320,7 @@ INTERMediatorOnPage = {
         backBox.style.left = "0";
         backBox.style.zIndex = "999999";
 
-        var frontPanel = document.createElement('div');
+         frontPanel = document.createElement('div');
         frontPanel.style.width = "240px";
         frontPanel.style.backgroundColor = "#333333";
         frontPanel.style.color = "#DD6666";
@@ -334,15 +338,18 @@ INTERMediatorOnPage = {
     },
 
     INTERMediatorCheckBrowser:function (deleteNode) {
-        var positiveList = INTERMediatorOnPage.browserCompatibility();
-        var matchAgent = false;
-        var matchOS = false;
-        var versionStr;
-        for (var agent in  positiveList) {
+        var positiveList, matchAgent, matchOS, versionStr,agent, os, judge, specifiedVersion, versionNum;
+        var msieMark, dotPos, bodyNode;
+
+         positiveList = INTERMediatorOnPage.browserCompatibility();
+         matchAgent = false;
+         matchOS = false;
+         versionStr;
+        for ( agent in  positiveList) {
             if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
                 matchAgent = true;
                 if (positiveList[agent] instanceof Object) {
-                    for (var os in positiveList[agent]) {
+                    for ( os in positiveList[agent]) {
                         if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
                             matchOS = true;
                             versionStr = positiveList[agent][os];
@@ -356,19 +363,19 @@ INTERMediatorOnPage = {
                 }
             }
         }
-        var judge = false;
+         judge = false;
         if (matchAgent && matchOS) {
-            var specifiedVersion = parseInt(versionStr);
-            var versionNum;
+             specifiedVersion = parseInt(versionStr);
+             versionNum;
             if (navigator.appVersion.indexOf('MSIE') > -1) {
-                var msieMark = navigator.appVersion.indexOf('MSIE');
-                var dotPos = navigator.appVersion.indexOf('.', msieMark);
+                 msieMark = navigator.appVersion.indexOf('MSIE');
+                 dotPos = navigator.appVersion.indexOf('.', msieMark);
                 versionNum = parseInt(navigator.appVersion.substring(msieMark + 4, dotPos));
                 /*
                  As for the appVersion property of IE, refer http://msdn.microsoft.com/en-us/library/aa478988.aspx
                  */
             } else {
-                var dotPos = navigator.appVersion.indexOf('.');
+                 dotPos = navigator.appVersion.indexOf('.');
                 versionNum = parseInt(navigator.appVersion.substring(0, dotPos));
             }
             if (versionStr.indexOf('-') > -1) {
@@ -384,7 +391,7 @@ INTERMediatorOnPage = {
                 deleteNode.parentNode.removeChild(deleteNode);
             }
         } else {
-            var bodyNode = document.getElementsByTagName('BODY')[0];
+             bodyNode = document.getElementsByTagName('BODY')[0];
             bodyNode.innerHTML = '<div align="center"><font color="gray"><font size="+2">'
                 + INTERMediatorOnPage.getMessages()[1022] + '</font><br>'
                 + INTERMediatorOnPage.getMessages()[1023] + '<br>' + navigator.userAgent + '</font></div>';
@@ -429,10 +436,11 @@ INTERMediatorOnPage = {
     },
 
     getNodeIdsFromIMDefinition:function (imDefinition, fromNode) {
-        var children, i, thisClass, thisTitle;
-        var enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
+        var children, i, thisClass, thisTitle, enclosureNode, nodeIds;
+
+         enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
         if (enclosureNode != null) {
-            var nodeIds = [];
+             nodeIds = [];
             seekNode(enclosureNode, imDefinition);
         }
         return nodeIds;
@@ -462,8 +470,9 @@ INTERMediatorOnPage = {
     },
 
     getCookie:function (key) {
-        var s = document.cookie.split(';');
-        for (var i = 0; i < s.length; i++) {
+        var s, i;
+         s = document.cookie.split(';');
+        for ( i = 0; i < s.length; i++) {
             if (s[i].indexOf(key + '=') > -1) {
                 return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1));
             }
@@ -483,8 +492,8 @@ INTERMediatorOnPage = {
     },
 
     setCookieWorker:function (key, val, isDomain) {
-        var cookieString;
-        var expDate = new Date();
+        var cookieString, expDate;
+         expDate = new Date();
         expDate.setTime(expDate.getTime() + (INTERMediatorOnPage.authExpired * 1000));
         cookieString = key + "=" + encodeURIComponent(val)
             + ( isDomain ? ";path=/" : "" )

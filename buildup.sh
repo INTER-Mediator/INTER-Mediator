@@ -5,7 +5,7 @@
 
 YUICOMP="../yuicompressor-2.4.7.jar"
 
-version="2.7"
+version="2.8"
 
 dt=`date "+%Y-%m-%d"`
 versionInFilename=`echo "${version}" | tr '.' '_'`;
@@ -30,13 +30,23 @@ mkdir develop-im
 for DIR in `ls "${curpath}"/develop-im`
 do
     if [ -f "${curpath}/develop-im/${DIR}" ]; then
+        echo "${curpath}/develop-im/${DIR}"
         sed -f "${curpath}/sedrule" "${curpath}/develop-im/${DIR}" > "develop-im/${DIR}"
     else
         mkdir "develop-im/${DIR}"
         for FILE in `ls "${curpath}/develop-im/${DIR}"`
         do
             if [ -f "${curpath}/develop-im/${DIR}/${FILE}" ]; then
-            sed -f "${curpath}/sedrule" "${curpath}/develop-im/${DIR}/${FILE}" > "develop-im/${DIR}/${FILE}"
+                case "${FILE}" in
+                    *\.html | *\.php | *\.js | *\.css | *\.txt)
+                        echo "SED:${curpath}/develop-im/${DIR}/${FILE}"
+                        sed -f "${curpath}/sedrule" "${curpath}/develop-im/${DIR}/${FILE}" > "develop-im/${DIR}/${FILE}"
+                        ;;
+                    *)
+                        echo "CP:${curpath}/develop-im/${DIR}/${FILE}"
+                        cp "${curpath}/develop-im/${DIR}/${FILE}" "develop-im/${DIR}/${FILE}"
+                        ;;
+                esac
             fi
         done
     fi

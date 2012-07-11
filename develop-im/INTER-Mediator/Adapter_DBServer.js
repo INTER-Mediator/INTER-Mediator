@@ -127,7 +127,9 @@ INTERMediator_DBAdapter = {
      This function returns recordset of retrieved.
      */
     db_query:function (args) {
-        var noError = true, i, index, params, counter;
+        var noError = true, i, index, params, counter, extCount, criteriaObject, sortkeyObject;
+        var returnValue, result, ix;
+
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
             noError = false;
@@ -147,7 +149,7 @@ INTERMediator_DBAdapter = {
         counter = 0;
         if (args['parentkeyvalue']) {
             //noinspection JSDuplicatedDeclaration
-            for (var index in args['parentkeyvalue']) {
+            for ( index in args['parentkeyvalue']) {
                 if (args['parentkeyvalue'].hasOwnProperty(index)) {
                     params += "&foreign" + counter
                         + "field=" + encodeURIComponent(index);
@@ -160,14 +162,14 @@ INTERMediator_DBAdapter = {
         if (args['useoffset'] && INTERMediator.startFrom != null) {
             params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
         }
-        var extCount = 0;
+        extCount = 0;
         if (args['conditions']) {
             params += "&condition" + extCount + "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
             params += "&condition" + extCount + "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
             params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
             extCount++;
         }
-        var criteriaObject = INTERMediator.additionalCondition[args['name']];
+        criteriaObject = INTERMediator.additionalCondition[args['name']];
         if (criteriaObject) {
             if ( criteriaObject["field"] ) {
                 criteriaObject = [criteriaObject];
@@ -185,7 +187,7 @@ INTERMediator_DBAdapter = {
         }
 
         extCount = 0;
-        var sortkeyObject = INTERMediator.additionalSortKey[args['name']];
+        sortkeyObject = INTERMediator.additionalSortKey[args['name']];
         if (sortkeyObject){
             if (sortkeyObject["field"]) {
                 sortkeyObject = [sortkeyObject];
@@ -199,13 +201,13 @@ INTERMediator_DBAdapter = {
 
         params += "&randkey" + Math.random();    // For ie...
         // IE uses caches as the result in spite of several headers. So URL should be randomly.
-        var returnValue = {};
+        returnValue = {};
         try {
-            var result = this.server_access(params, 1012, 1004);
+            result = this.server_access(params, 1012, 1004);
             returnValue.recordset = result.dbresult;
             returnValue.totalCount = result.resultCount;
             returnValue.count = 0;
-            for (var ix in result.dbresult) {
+            for ( ix in result.dbresult) {
                 returnValue.count++;
             }
             if (( args['paging'] != null) && ( args['paging'] == true )) {
@@ -255,7 +257,8 @@ INTERMediator_DBAdapter = {
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
     db_update:function (args) {
-        var noError = true;
+        var noError = true, params, extCount, result;
+
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
             noError = false;
@@ -272,19 +275,19 @@ INTERMediator_DBAdapter = {
             return;
         }
 
-        var params = "access=update&name=" + encodeURIComponent(args['name']);
-        var extCount = 0;
+        params = "access=update&name=" + encodeURIComponent(args['name']);
+        extCount = 0;
         if (args['conditions'] != null) {
             params += "&condition" + extCount + "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
             params += "&condition" + extCount + "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
             params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
             extCount++;
         }
-        for (var extCount = 0; extCount < args['dataset'].length; extCount++) {
+        for ( extCount = 0; extCount < args['dataset'].length; extCount++) {
             params += "&field_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
             params += "&value_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
         }
-        var result = this.server_access(params, 1013, 1014);
+        result = this.server_access(params, 1013, 1014);
         return result.dbresult;
     },
 
@@ -319,7 +322,8 @@ INTERMediator_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
     db_delete:function (args) {
-        var noError = true;
+        var noError = true, params, i, result;
+
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
             noError = false;
@@ -332,13 +336,14 @@ INTERMediator_DBAdapter = {
             return;
         }
 
-        var params = "access=delete&name=" + encodeURIComponent(args['name']);
-        for (var i = 0; i < args['conditions'].length; i++) {
+        params = "access=delete&name=" + encodeURIComponent(args['name']);
+        for ( i = 0; i < args['conditions'].length; i++) {
             params += "&condition" + i + "field=" + encodeURIComponent(args['conditions'][i]['field']);
             params += "&condition" + i + "operator=" + encodeURIComponent(args['conditions'][i]['operator']);
             params += "&condition" + i + "value=" + encodeURIComponent(args['conditions'][i]['value']);
         }
-        var result = this.server_access(params, 1017, 1015);
+        result = this.server_access(params, 1017, 1015);
+        return result;
 //        INTERMediator.flushMessage();
     },
 
@@ -374,16 +379,18 @@ INTERMediator_DBAdapter = {
      This function returns the value of the key field of the new record.
      */
     db_createRecord:function (args) {
+        var params, i, result;
+
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return;
         }
-        var params = "access=new&name=" + encodeURIComponent(args['name']);
-        for (var i = 0; i < args['dataset'].length; i++) {
+        params = "access=new&name=" + encodeURIComponent(args['name']);
+        for ( i = 0; i < args['dataset'].length; i++) {
             params += "&field_" + i + "=" + encodeURIComponent(args['dataset'][i]['field']);
             params += "&value_" + i + "=" + encodeURIComponent(args['dataset'][i]['value']);
         }
-        var result = this.server_access(params, 1018, 1016);
+        result = this.server_access(params, 1018, 1016);
 //        INTERMediator.flushMessage();
         return result.newRecordKeyValue;
     },

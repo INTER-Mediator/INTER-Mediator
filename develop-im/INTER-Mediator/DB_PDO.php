@@ -153,7 +153,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 $authorizedGroups = $this->getAuthorizedGroups($currentOperation);
                 $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
                 if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
-                    && array_intersect($belongGroups, $authorizedGroups)
+                    && count(array_intersect($belongGroups, $authorizedGroups)) == 0
                 ) {
                     $queryClause = 'FALSE';
                 }
@@ -244,7 +244,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         $fields = '*';
         if (isset($tableInfo['specify-fields']))    {
-            $fields = implode( ',',$this->dbSettings->fieldsRequired);
+            $fields = implode( ',',array_unique($this->dbSettings->fieldsRequired));
         }
         $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$sortClause} "
             . " LIMIT {$limitParam} OFFSET {$skipParam}";
@@ -575,8 +575,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $expiredDT = new DateTime($row['expired']);
             $hashValue = $row['hash'];
-            $intervalDT = $expiredDT->diff(new DateTime(), true);
-            $seconds = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
+            // For 5.3
+//            $intervalDT = $expiredDT->diff(new DateTime(), true);
+//            $seconds = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
+            // For 5.2
+            $currentDT = new DateTime();
+            $seconds = $currentDT->format("U") - $expiredDT->format("U");
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
                 return false;
             }
@@ -622,8 +626,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     return false;
                 }
             }
-            $intervalDT = $expiredDT->diff(new DateTime(), true);
-            $seconds = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
+            // For 5.3
+//            $intervalDT = $expiredDT->diff(new DateTime(), true);
+//            $seconds = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
+            // For 5.2
+            $currentDT = new DateTime();
+            $seconds = $currentDT->format("U") - $expiredDT->format("U");
+            // End of version blanching.
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
                 return false;
             }
@@ -644,8 +653,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
 
         $currentDT = new DateTime();
-        $currentDT->sub(new DateInterval("PT" . $this->dbSettings->getExpiringSeconds() . "S"));
-        $currentDTStr = $this->link->quote($currentDT->format('Y-m-d H:i:s'));
+        // sub method and DateInterval class work on over 5.3
+    //    $currentDT->sub(new DateInterval("PT" . $this->dbSettings->getExpiringSeconds() . "S"));
+//        $currentDTStr = $this->link->quote($currentDT->format('Y-m-d H:i:s'));
+
+        // For 5.2
+        $timeValue = $currentDT->format("U");
+        $currentDTStr = $this->link->quote(date('Y-m-d H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds()));
+        // End of for 5.2
         $sql = "delete from {$hashTable} where expired < {$currentDTStr}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
