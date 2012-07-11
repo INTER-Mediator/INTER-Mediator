@@ -152,10 +152,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 $authorizedUsers = $this->getAuthorizedUsers($currentOperation);
                 $authorizedGroups = $this->getAuthorizedGroups($currentOperation);
                 $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
-                if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
-                    && count(array_intersect($belongGroups, $authorizedGroups)) == 0
-                ) {
-                    $queryClause = 'FALSE';
+                if ( count($authorizedUsers) > 0 || count($authorizedGroups) > 0 )  {
+                    if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
+                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
+                    ) {
+                        $queryClause = 'FALSE';
+                    }
                 }
             }
         }
@@ -831,7 +833,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
-            $this->errorMessageStore('Select:' . $sql);
+            $this->logger->setDebugMessage('Select:' . $sql);
             return false;
         }
         if ( $result->columnCount() === 0 ) {
