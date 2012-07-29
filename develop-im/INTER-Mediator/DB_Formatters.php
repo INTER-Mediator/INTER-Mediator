@@ -18,9 +18,8 @@ class DB_Formatters
                 if (!isset($this->formatter[$oneItem['field']])) {
                     $cvClassName = "DataConverter_{$oneItem['converter-class']}";
                     //    require_once("{$cvClassName}.php");
-                    $parameter = isset($oneItem['parameter']) ? $oneItem['parameter'] : '';
-                    $cvInstance = new $cvClassName($parameter);
-                    $this->formatter[$oneItem['field']] = $cvInstance;
+                    $this->formatter[$oneItem['field']]
+                        = new $cvClassName(isset($oneItem['parameter']) ? $oneItem['parameter'] : '');
                 }
             }
         }

@@ -106,13 +106,15 @@ class GenerateJSCode
             if ( strlen($langCountry[0]) > 0 )  {
                 $clientLang = explode('-', $langCountry[0]);
                 $messageClass = "MessageStrings_{$clientLang[0]}";
-                if (class_exists($messageClass)) {
+                if (file_exists("$messageClass.php")) {
                     $messageClass = new $messageClass();
                     break;
                 }
             }
+            $messageClass = null;
         }
         if ($messageClass == null) {
+            require_once('MessageStrings.php');
             $messageClass = new MessageStrings();
         }
         $this->generateAssignJS(
@@ -175,12 +177,13 @@ class GenerateJSCode
  */
 function loadClass($className)
 {
-    if (( include_once $className . '.php' ) === false ) {
+     if (( include_once $className . '.php' ) === false ) {
         $errorGenerator = new GenerateJSCode();
         if ( strpos( $className, "MessageStrings_" ) !== 0 )    {
             $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
         }
     }
+
 }
 
 /**

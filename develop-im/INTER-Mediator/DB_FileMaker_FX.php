@@ -227,11 +227,27 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     function setToDB($dataSourceName)
     {
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
+
+        if ( isset($tableInfo['query']) )   {
+            foreach ($tableInfo['query'] as $condition ) {
+                if ( ! $this->dbSettings->primaryKeyOnly || $condition['field'] == $primaryKey ) {
+                    $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
+                    $convertedValue = $this->formatter->formatterToDB(
+                        "{$dataSourceName}{$this->dbSettings->separator}{$condition['field']}", $condition['value']);
+                    $this->fx->AddDBParam($condition['field'], $convertedValue, $op);
+                }
+            }
+        }
+
         foreach ($this->dbSettings->extraCriteria as $value) {
-            $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-            $convertedValue = $this->formatter->formatterToDB(
-                "{$dataSourceName}{$this->dbSettings->separator}{$value['field']}", $value['value']);
-            $this->fx->AddDBParam($value['field'], $convertedValue, $op);
+            if ( ! $this->dbSettings->primaryKeyOnly || $value['field'] == $primaryKey ) {
+                $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
+                $convertedValue = $this->formatter->formatterToDB(
+                    "{$dataSourceName}{$this->dbSettings->separator}{$value['field']}", $value['value']);
+                $this->fx->AddDBParam($value['field'], $convertedValue, $op);
+            }
         }
         if (isset($context['authentication'])) {
             $authFailure = FALSE;
@@ -338,7 +354,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     function newToDB($dataSourceName)
     {
         $context = $this->dbSettings->getDataSourceTargetArray();
-        $keyFieldName = $context['key'];
+        $keyFieldName = isset($context['key']) ? $context['key'] : 'id';
 
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         $countFields = count($this->dbSettings->fieldsRequired);
@@ -346,9 +362,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $field = $this->dbSettings->fieldsRequired[$i];
             $value = $this->dbSettings->fieldsValues[$i];
             if ($field != $keyFieldName) {
-                $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->separator}{$field}";
-                $convVal = $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value);
-                $this->fx->AddDBParam($field, $this->formatter->formatterToDB($filedInForm, $convVal));
+                $this->fx->AddDBParam(
+                    $field,
+                    $this->formatter->formatterToDB(
+                        "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->separator}{$field}",
+                        $this->unifyCRLF((is_array($value)) ? implode("\r", $value) : $value)
+                    )
+                );
             }
         }
         if (isset($context['default-values'])) {

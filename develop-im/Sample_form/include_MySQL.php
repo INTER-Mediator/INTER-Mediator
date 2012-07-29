@@ -27,6 +27,9 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
+            'query' => array(
+                array( 'field'=>'datetime', 'value'=>'2005-01-01 00:00:00', 'operator'=>'>' ),
+            ),
         ),
         array(
             'name' => 'contact_way',

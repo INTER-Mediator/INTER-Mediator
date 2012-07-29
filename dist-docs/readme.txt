@@ -23,3 +23,12 @@ Thanks for nice works.
 * bi2php v0.1.113.alfa from http://code.google.com/p/bi2php/
   This library is based on the work of Dave Shapiro (http://www.ohdave.com/rsa/)
 
+==========================================
+Account Information for FileMaker Database
+------------------------------------------
+The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" have the administrator account as:
+
+ username: admin
+ password: 1234
+
+If you need to open them with FileMaker Pro/Advanced, please use it.

@@ -53,13 +53,13 @@ IM_Entry(
     ),
     array(
         'formatter' => array(
-            array('field' => 'contact_to@datetime', 'converter-class' => 'FMDateTime'),
             array('field' => 'history_to@startdate', 'converter-class' => 'FMDateTime'),
+            array('field' => 'contact_to@datetime', 'converter-class' => 'FMDateTime'),
             array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
         ),
     ),
     array('db-class' => 'FileMaker_FX'),
-    1
+    2
 );
 
 ?>

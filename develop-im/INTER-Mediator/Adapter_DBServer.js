@@ -14,17 +14,10 @@ var INTERMediator_DBAdapter;
 INTERMediator_DBAdapter = {
 
     server_access:function (accessURL, debugMessageNumber, errorMessageNumber) {
-        var newRecordKeyValue = '';
-        var dbresult = '';
-        var resultCount = 0;
-        var challenge = null;
-        var clientid = null;
-        var requireAuth = false;
-        var myRequest = null;
-        var changePasswordResult = null;
-        var mediatoken = null;
-        var appPath = INTERMediatorOnPage.getEntryPath();
-        var authParams = '';
+        var newRecordKeyValue = '',dbresult = '', resultCount = 0, challenge = null,
+            clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
+            mediatoken = null, appPath, authParams = '';
+        appPath = INTERMediatorOnPage.getEntryPath();
 
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams
@@ -117,18 +110,21 @@ INTERMediator_DBAdapter = {
      db_query
      Querying from database. The parameter of this function should be the object as below:
 
-     {   name:<name of the context>
+     {
+     name:<name of the context>
      records:<the number of retrieving records, could be null>
      fields:<the array of fields to retrieve, but this parameter is ignored so far.
      parentkeyvalue:<the value of foreign key field, could be null>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>
-     useoffset:<true/false whether the offset parameter is set on the query.>    }
+     useoffset:<true/false whether the offset parameter is set on the query.>
+     primaryKeyOnly: true/false
+     }
 
      This function returns recordset of retrieved.
      */
     db_query:function (args) {
-        var noError = true, i, index, params, counter, extCount, criteriaObject, sortkeyObject;
-        var returnValue, result, ix;
+        var noError = true, i, index, params, counter, extCount, criteriaObject, sortkeyObject,
+            returnValue, result, ix;
 
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
@@ -140,6 +136,10 @@ INTERMediator_DBAdapter = {
 
         params = "access=select&name=" + encodeURIComponent(args['name']);
         params += "&records=" + encodeURIComponent(args['records'] ? args['records'] : 10000000);
+
+        if ( args['primaryKeyOnly'] )   {
+            params += "&pkeyonly=true";
+        }
 
         if ( args['fields'] )   {
             for ( i = 0; i < args['fields'].length; i++) {
@@ -180,7 +180,9 @@ INTERMediator_DBAdapter = {
                     if (criteriaObject[index]["operator"] != null) {
                         params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
                     }
-                    params += "&condition" + extCount + "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                    if (criteriaObject[index]["value"]) {
+                        params += "&condition" + extCount + "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                    }
                     extCount++;
                 }
             }

@@ -40,6 +40,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $queryClause = '';
+        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
 
         $queryClauseArray = array();
         if ($includeContext && isset($tableInfo['query'][0])) {
@@ -54,8 +55,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         $insideOp = ' OR ';
                         $outsideOp = ' AND ';
                     }
-                } else {
-                    if (isset($condition['value'])) {
+                } else if ( ! $this->dbSettings->primaryKeyOnly || $condition['field'] == $primaryKey ) {
+                    if (isset($condition['value']) && $condition['value'] != null ) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             $queryClauseArray[$chunkCount][]
@@ -89,8 +90,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         $insideOp = ' OR ';
                         $outsideOp = ' AND ';
                     }
-                } else {
-                    if (isset($condition['value'])) {
+                } else if ( ! $this->dbSettings->primaryKeyOnly || $condition['field'] == $primaryKey ){
+                    if (isset($condition['value']) && $condition['value'] != null ) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             $queryClauseArray[$chunkCount][]
@@ -334,8 +335,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         $sql = "UPDATE {$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
-        $this->logger->setDebugMessage($prepSQL->queryString . " with " .
-            str_replace("\n", " ", var_export($setParameter, true)));
+
+        $this->logger->setDebugMessage(
+            $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true)));
+
         $result = $prepSQL->execute($setParameter);
         if ($result === false) {
             $this->errorMessageStore('Update:' + $prepSQL->erroInfo);
@@ -417,7 +420,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
 
         if (strpos($this->dbSettings->getDbSpecDSN(),'mysql:') === 0)    {/**/
-            $setClause = (count($setColumnNames) == 0) ? "SET {$tableInfo['key']}=DEFAULT":
+            $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
+            $setClause = (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT":
                 '('.implode(',', $setColumnNames).') VALUES('.implode(',', $setValues).')';
         } else {  // sqlite, pgsql
             $setClause = (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
@@ -656,7 +660,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
         $currentDT = new DateTime();
         // sub method and DateInterval class work on over 5.3
-    //    $currentDT->sub(new DateInterval("PT" . $this->dbSettings->getExpiringSeconds() . "S"));
+        //    $currentDT->sub(new DateInterval("PT" . $this->dbSettings->getExpiringSeconds() . "S"));
 //        $currentDTStr = $this->link->quote($currentDT->format('Y-m-d H:i:s'));
 
         // For 5.2
@@ -828,7 +832,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->firstLevel = false;
         } else {
             $sql = "select * from {$corrTable} where group_id = " . $this->link->quote($groupid);
-        //    $this->belongGroups[] = $groupid;
+            //    $this->belongGroups[] = $groupid;
         }
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);

@@ -16,41 +16,40 @@ IM_Entry(
             'view' => 'item_master',
             'query' => array(array('field' => 'id', 'operator' => '=', 'value' => '1'),),
             'records' => 1,
-            'extending-class' => "YearMonthGen",
         ),
         array(
             'name' => 'summary1',
             'view' => 'saleslog',
             'relation' => array(
-                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt',),
-                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt',),
+                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', ),
+                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', ),
             ),
-            'extending-class' => "SumForItems",
+            //    'records' => 10,
         ),
         array(
             'name' => 'summary2',
             'view' => 'saleslog',
             'relation' => array(
-                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt',),
-                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt',),
+                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', ),
+                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', ),
             ),
-            'extending-class' => "SumForCustomers",
+            //    'records' => 10,
         ),
         array(
             'name' => 'data',
             'view' => 'saleslog',
             'relation' => array(
-                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt',),
-                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt',),
+                array('foreign-key' => 'dt', 'operator' => '>=', 'join-field' => 'startdt', ),
+                array('foreign-key' => 'dt', 'operator' => '<', 'join-field' => 'enddt', ),
             ),
             'sort' => array(
                 array('field'=>'total', 'direction'=>'desc'),
             ),
-            'records' => 10,
+                'records' => 10,
         ),
     ),
     array(),
-    array('db-class' => 'PDO'),
-    2
+    array('db-class' => 'Extended_PDO'),
+    false
 );
 

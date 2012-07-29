@@ -23,7 +23,6 @@ To Do List for the INTER-Mediator developer(s)
 - Multiple values within one field. (It may be required for FileMaker especially.)
 - HTML5's local database supporting.
 - Amazon Web Service supporting.
-- Progressing Display.
 
 Issues / Known bugs
 - Popup menu's default value; if there isn't the value of them, set first one.
@@ -50,7 +49,15 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.2.9 (Will be release soon.)
+Ver.2.10 (Will be release soon.)
+
+Ver.2.9 (2012/7/29)
+- Progress indicator is supported. (It's shown when INTERMediator.construct method is called.)
+- When fields of existing records are updated, the query condition will be just for the primary key.
+  If the variable $prohibitIgnoreCondition in the params.php file is set to true, all conditions are applied.
+  This variable will be used for a security reason.
+- [BUG FIX] In case of the browser's language is English, no page was generated. Oh my...
+- [BUG FIX] Database updating has any minor bugs.
 
 Ver.2.8 (2012/7/11)
 - Accessing media data with authentication is supported. The sample is in Sample_products_auth folder.

@@ -38,6 +38,8 @@ class DB_Settings
     var $currentProxy = null;
     var $currentDataAccess = null;
 
+    var $primaryKeyOnly = false;
+
     /* Database connection paramters */
     function setDbSpecServer($str)
     {

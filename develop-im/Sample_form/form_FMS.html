@@ -21,6 +21,16 @@
                 INTERMediator.construct(true);
             }
         }
+
+        function test() {
+            INTERMediator_DBAdapter.db_createRecord({
+                name: "history_to",
+                dataset: [
+                    {field:"startdate",value:document.getElementById('startdate').value}
+                ]
+            });
+            INTERMediator.flushMessage();
+        }
     </script>
 </head>
 <body>
@@ -134,5 +144,6 @@
     </tbody>
 </table>
 <!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
+<input type="text" id="startdate"/><button onclick="test()">テスト</button>
 </body>
 </html>
