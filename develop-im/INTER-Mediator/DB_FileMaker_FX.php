@@ -647,10 +647,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
 
         $currentDT = new DateTime();
-        $currentDT->sub(new DateInterval("PT" . $this->dbSettings->getExpiringSeconds() . "S"));
+        $timeValue = $currentDT->format("U");
 
         $this->setupFXforAuth($hashTable, 100000000);
-        $this->fx->AddDBParam('expired', $currentDT->format('m/d/Y H:i:s'), 'lt');
+        $this->fx->AddDBParam('expired', date('Y-m-d H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds()));
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
