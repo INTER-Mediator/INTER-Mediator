@@ -164,9 +164,11 @@ class GenerateJSCode
                 $options['authentication']['authexpired'] : '3600');
         if(isset($generatedPrivateKey)) {
             $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
-            $this->generateAssignJS(
-                "INTERMediatorOnPage.publickey",
-                "new biRSAKeyPair('", bin2hex($keyArray['rsa']['e']), "','0','", bin2hex($keyArray['rsa']['n']), "')");
+            if (isset($keyArray['rsa'])) {
+                $this->generateAssignJS(
+                    "INTERMediatorOnPage.publickey",
+                    "new biRSAKeyPair('", bin2hex($keyArray['rsa']['e']), "','0','", bin2hex($keyArray['rsa']['n']), "')");
+            }
         }
     }
 }
