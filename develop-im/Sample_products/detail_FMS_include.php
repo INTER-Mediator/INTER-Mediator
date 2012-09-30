@@ -20,6 +20,6 @@ IM_Entry(
         ),
     ),
     null,
-    array('db-class' => 'FX_FileMaker'),
+    array('db-class' => 'FileMaker_FX'),
     false);
 ?>

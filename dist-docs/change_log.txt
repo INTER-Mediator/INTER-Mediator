@@ -23,6 +23,7 @@ To Do List for the INTER-Mediator developer(s)
 - Multiple values within one field. (It may be required for FileMaker especially.)
 - HTML5's local database supporting.
 - Amazon Web Service supporting.
+- Searching in PDFs or any kind of files.
 
 Issues / Known bugs
 - Popup menu's default value; if there isn't the value of them, set first one.

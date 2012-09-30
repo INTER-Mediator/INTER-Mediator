@@ -28,9 +28,11 @@ IM_Entry(
     ),
     array(
         'formatter' => array(
-            array('field' => 'product@unitprice',
+            array(
+                'field' => 'product@unitprice',
                 'converter-class' => 'Number',
-                'parameter' => '0'),
+                'parameter' => '0'
+            ),
         ),
         'authentication' => array( // table only, for all operations
 //            'user' => array('user1'), // Itemize permitted users
@@ -46,4 +48,5 @@ IM_Entry(
         'media-root-dir'=>'/Library/WebServer/Documents/im/Sample_products/images',
     ),
     array('db-class' => 'PDO'),
-    false);
+    2
+);

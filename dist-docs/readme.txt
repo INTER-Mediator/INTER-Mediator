@@ -20,6 +20,8 @@ Thanks for nice works.
 
 * Secure Hash Algorithm (SHA1) (http://www.webtoolkit.info/)
 
+* jsSHA by Brian Turek (http://caligatio.github.com/jsSHA/)
+
 * bi2php v0.1.113.alfa from http://code.google.com/p/bi2php/
   This library is based on the work of Dave Shapiro (http://www.ohdave.com/rsa/)
 

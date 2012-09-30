@@ -331,7 +331,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $requireAuthentication = true;
                     }
                     if (!$this->checkAuthorization($paramAuthUser, $paramResponse, $clientId)) {
-                        $this->logger->setDebugMessage("Authentication doesn't meet valid.{$paramAuthUser}/{$paramResponse}/{$clientId}");
+                        $this->logger->setDebugMessage(
+                            "Authentication doesn't meet valid.{$paramAuthUser}/{$paramResponse}/{$clientId}");
                         // Not Authenticated!
                         $access = "do nothing";
                         $requireAuthentication = true;
@@ -434,8 +435,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $hashedPassword = $this->dbClass->authSupportRetrieveHashedPassword($username);
             $this->logger->setDebugMessage("[checkAuthorization]hashedPassword={$hashedPassword}", 2);
             if (strlen($hashedPassword) > 0) {
-                if ($hashedvalue == sha1($storedChalenge . $hashedPassword)) {
-                    $returnValue = true;
+                if ($hashedvalue == hash_hmac('sha256', $hashedPassword, $storedChalenge)) {
+//                    if ($hashedvalue == sha1($storedChalenge . $hashedPassword)) {
+                        $returnValue = true;
                 }
             }
         }

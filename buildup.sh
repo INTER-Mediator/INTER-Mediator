@@ -5,7 +5,7 @@
 
 YUICOMP="../yuicompressor-2.4.7.jar"
 
-version="2.9"
+version="2.10"
 
 dt=`date "+%Y-%m-%d"`
 versionInFilename=`echo "${version}" | tr '.' '_'`;
@@ -56,7 +56,7 @@ cp -r "${curpath}"/develop-im/Sample_products/images develop-im/Sample_products/
 cp -r "${curpath}"/develop-im/INTER-Mediator/FX      develop-im/INTER-Mediator/
 cp -r "${curpath}"/develop-im/INTER-Mediator/js_lib  develop-im/INTER-Mediator/
 cp -r "${curpath}"/develop-im/INTER-Mediator/bi2php  develop-im/INTER-Mediator/
-cp -r "${curpath}"/develop-im/WebSite/previous_rsrcs  develop-im/WebSite/
+cp -r "${curpath}"/develop-im/WebSite/previous_rsrcs develop-im/WebSite/
 
 echo "######### Marge JavaScript program"
 cat develop-im/INTER-Mediator/Adapter_DBServer.js     > temp.js
@@ -64,6 +64,7 @@ cat develop-im/INTER-Mediator/INTER-Mediator-Lib.js  >> temp.js
 cat develop-im/INTER-Mediator/INTER-Mediator-Page.js >> temp.js
 cat develop-im/INTER-Mediator/INTER-Mediator.js      >> temp.js
 cat develop-im/INTER-Mediator/js_lib/sha1.js         >> temp.js
+cat develop-im/INTER-Mediator/js_lib/sha256.js       >> temp.js
 cat develop-im/INTER-Mediator/bi2php/biBigInt.js     >> temp.js
 cat develop-im/INTER-Mediator/bi2php/biMontgomery.js >> temp.js
 cat develop-im/INTER-Mediator/bi2php/biRSA.js        >> temp.js

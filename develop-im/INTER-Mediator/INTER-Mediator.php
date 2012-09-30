@@ -78,6 +78,7 @@ class GenerateJSCode
             echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
             echo file_get_contents($jsLibDir . 'sha1.js');
+            echo file_get_contents($jsLibDir . 'sha256.js');
             echo file_get_contents($bi2phpDir . 'biBigInt.js');
             echo file_get_contents($bi2phpDir . 'biMontgomery.js');
             echo file_get_contents($bi2phpDir . 'biRSA.js');

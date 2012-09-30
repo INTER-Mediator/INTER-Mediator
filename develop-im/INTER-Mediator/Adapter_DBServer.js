@@ -14,9 +14,9 @@ var INTERMediator_DBAdapter;
 INTERMediator_DBAdapter = {
 
     server_access:function (accessURL, debugMessageNumber, errorMessageNumber) {
-        var newRecordKeyValue = '',dbresult = '', resultCount = 0, challenge = null,
+        var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-            mediatoken = null, appPath, authParams = '';
+            mediatoken = null, appPath, authParams = '', shaObj, hmacValue;
         appPath = INTERMediatorOnPage.getEntryPath();
 
         if (INTERMediatorOnPage.authUser.length > 0) {
@@ -28,9 +28,16 @@ INTERMediator_DBAdapter = {
                     INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authHashedPassword
                         + "\n" + INTERMediatorOnPage.authChallenge));
             } else {
-                authParams += "&response=" + encodeURIComponent(
-                    SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword));
+                if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
+                    shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
+                    hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
+                    authParams += "&response=" + encodeURIComponent(hmacValue);
+                } else {
+                    authParams += "&response=dummy";
+                }
             }
+//                authParams += "&response=" + encodeURIComponent(
+//                    SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword));
         }
 
         INTERMediator.debugMessages.push(
@@ -67,7 +74,7 @@ INTERMediator_DBAdapter = {
             if (clientid !== null) {
                 INTERMediatorOnPage.clientId = clientid;
             }
-            if ( mediatoken !== null )  {
+            if (mediatoken !== null) {
                 INTERMediatorOnPage.mediaToken = mediatoken
             }
         } catch (e) {
@@ -137,19 +144,19 @@ INTERMediator_DBAdapter = {
         params = "access=select&name=" + encodeURIComponent(args['name']);
         params += "&records=" + encodeURIComponent(args['records'] ? args['records'] : 10000000);
 
-        if ( args['primaryKeyOnly'] )   {
+        if (args['primaryKeyOnly']) {
             params += "&pkeyonly=true";
         }
 
-        if ( args['fields'] )   {
-            for ( i = 0; i < args['fields'].length; i++) {
+        if (args['fields']) {
+            for (i = 0; i < args['fields'].length; i++) {
                 params += "&field_" + i + "=" + encodeURIComponent(args['fields'][i]);
             }
         }
         counter = 0;
         if (args['parentkeyvalue']) {
             //noinspection JSDuplicatedDeclaration
-            for ( index in args['parentkeyvalue']) {
+            for (index in args['parentkeyvalue']) {
                 if (args['parentkeyvalue'].hasOwnProperty(index)) {
                     params += "&foreign" + counter
                         + "field=" + encodeURIComponent(index);
@@ -171,16 +178,16 @@ INTERMediator_DBAdapter = {
         }
         criteriaObject = INTERMediator.additionalCondition[args['name']];
         if (criteriaObject) {
-            if ( criteriaObject["field"] ) {
+            if (criteriaObject["field"]) {
                 criteriaObject = [criteriaObject];
             }
-            for ( index in criteriaObject) {
+            for (index in criteriaObject) {
                 if (criteriaObject.hasOwnProperty(index)) {
                     params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
-                    if (criteriaObject[index]["operator"] != null) {
+                    if (criteriaObject[index]["operator"] !== null) {
                         params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
                     }
-                    if (criteriaObject[index]["value"]) {
+                    if (criteriaObject[index]["value"] !== null) {
                         params += "&condition" + extCount + "value=" + encodeURIComponent(criteriaObject[index]["value"]);
                     }
                     extCount++;
@@ -190,11 +197,11 @@ INTERMediator_DBAdapter = {
 
         extCount = 0;
         sortkeyObject = INTERMediator.additionalSortKey[args['name']];
-        if (sortkeyObject){
+        if (sortkeyObject) {
             if (sortkeyObject["field"]) {
                 sortkeyObject = [sortkeyObject];
             }
-            for ( index in sortkeyObject) {
+            for (index in sortkeyObject) {
                 params += "&sortkey" + extCount + "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
                 params += "&sortkey" + extCount + "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
                 extCount++;
@@ -209,7 +216,7 @@ INTERMediator_DBAdapter = {
             returnValue.recordset = result.dbresult;
             returnValue.totalCount = result.resultCount;
             returnValue.count = 0;
-            for ( ix in result.dbresult) {
+            for (ix in result.dbresult) {
                 returnValue.count++;
             }
             if (( args['paging'] != null) && ( args['paging'] == true )) {
@@ -285,7 +292,7 @@ INTERMediator_DBAdapter = {
             params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
             extCount++;
         }
-        for ( extCount = 0; extCount < args['dataset'].length; extCount++) {
+        for (extCount = 0; extCount < args['dataset'].length; extCount++) {
             params += "&field_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
             params += "&value_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
         }
@@ -339,7 +346,7 @@ INTERMediator_DBAdapter = {
         }
 
         params = "access=delete&name=" + encodeURIComponent(args['name']);
-        for ( i = 0; i < args['conditions'].length; i++) {
+        for (i = 0; i < args['conditions'].length; i++) {
             params += "&condition" + i + "field=" + encodeURIComponent(args['conditions'][i]['field']);
             params += "&condition" + i + "operator=" + encodeURIComponent(args['conditions'][i]['operator']);
             params += "&condition" + i + "value=" + encodeURIComponent(args['conditions'][i]['value']);
@@ -388,7 +395,7 @@ INTERMediator_DBAdapter = {
             return;
         }
         params = "access=new&name=" + encodeURIComponent(args['name']);
-        for ( i = 0; i < args['dataset'].length; i++) {
+        for (i = 0; i < args['dataset'].length; i++) {
             params += "&field_" + i + "=" + encodeURIComponent(args['dataset'][i]['field']);
             params += "&value_" + i + "=" + encodeURIComponent(args['dataset'][i]['value']);
         }
