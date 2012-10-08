@@ -349,7 +349,7 @@ var INTERMediatorLib = {
         f = n - Math.floor(n);
         //    if (f == 0) f = '';
         for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
-            if (n > 1000) {
+            if (n >= 1000) {
                 s.push(('000' + (n % 1000).toString()).substr(-3));
             } else {
                 s.push(n);
