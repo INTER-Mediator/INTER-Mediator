@@ -10,7 +10,7 @@ require_once('../INTER-Mediator/INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-            'records' => '10',
+            'records' => 10,
             'name' => 'productlist',
             'view' => 'product',
             'key' => 'id',
@@ -18,7 +18,7 @@ IM_Entry(
             'sort' => array(array('field' => 'name', 'direction' => 'ascend'),),
         ),
         array(
-            'records' => '1',
+            'records' => 1,
             'name' => 'productdetail',
             'view' => 'product',
             'key' => 'id',

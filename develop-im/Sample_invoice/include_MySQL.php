@@ -11,7 +11,7 @@ require_once('../INTER-Mediator/INTER-Mediator.php');
 $tableDefinitions = array(
     array(
         'name' => 'invoice',
-        'records' => '1',
+        'records' => 1,
         'paging' => true,
         'key' => 'id',
         'query' => array(

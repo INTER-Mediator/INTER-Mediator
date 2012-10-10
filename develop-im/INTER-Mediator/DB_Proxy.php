@@ -1,4 +1,12 @@
 <?php
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */
 /**
  * Created by JetBrains PhpStorm.
  * User: msyk
@@ -12,7 +20,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     var $dbClass = null;
     var $userExpanded = null;
 
-    function __construct()  {
+    function __construct()
+    {
         header('Content-Type: text/javascript; charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
         header('Expires: 0');
@@ -29,7 +38,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->logger->setDebugMessage("The method 'getFromDB' of the class '{$className}' is calling.", 2);
             $result = $this->dbClass->getFromDB($dataSourceName);
         }
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterGetFromDB" )) {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterGetFromDB")) {
             $this->logger->setDebugMessage("The method 'doAfterSetToDB' of the class '{$className}' is calling.", 2);
             $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
         }
@@ -38,7 +47,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     function countQueryResult($dataSourceName)
     {
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "countQueryResult" )) {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "countQueryResult")) {
             return $result = $this->userExpanded->countQueryResult($dataSourceName);
         }
         if ($this->dbClass !== null) {
@@ -52,7 +61,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->userExpanded->doBeforeSetToDB($dataSourceName);
         }
         if ($this->dbClass !== null) {
-             $result = $this->dbClass->setToDB($dataSourceName);
+            $result = $this->dbClass->setToDB($dataSourceName);
         }
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
             $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
@@ -156,7 +165,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             echo implode('', $this->logger->getMessagesForJS());
             return false;
         }
-        $this->dbClass->setUpSharedObjects( $this );
+        $this->dbClass->setUpSharedObjects($this);
         if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
             $this->logger->setDebugMode($debug);
         }
@@ -168,18 +177,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if (isset($context['extending-class'])) {
             $className = $context['extending-class'];
             $this->userExpanded = new $className();
-            if ( $this->userExpanded === null ) {
+            if ($this->userExpanded === null) {
                 $this->logger->setErrorMessage("The class '{$className}' wasn't instanciated.");
             } else {
                 $this->logger->setDebugMessage("The class '{$className}' was instanciated.", 2);
             }
-            if ( is_subclass_of( $this->userExpanded, 'DB_UseSharedObjects' ))   {
-                $this->userExpanded->setUpSharedObjects( $this );
+            if (is_subclass_of($this->userExpanded, 'DB_UseSharedObjects')) {
+                $this->userExpanded->setUpSharedObjects($this);
             }
         }
 
         $this->dbSettings->primaryKeyOnly = isset($_POST['pkeyonly']) &&
-            ! (isset($prohibitIgnoreCondition) ? $prohibitIgnoreCondition : false);
+            !(isset($prohibitIgnoreCondition) ? $prohibitIgnoreCondition : false);
 
         $this->dbSettings->setCurrentUser(isset($_POST['authuser']) ? $_POST['authuser'] : null);
         $this->dbSettings->authentication = isset($options['authentication']) ? $options['authentication'] : null;
@@ -217,13 +226,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if (!isset($_POST["field_{$i}"])) {
                 break;
             }
-            $this->dbSettings->setTargetFields($_POST["field_{$i}"]);
+            $this->dbSettings->setTargetField($_POST["field_{$i}"]);
         }
         for ($i = 0; $i < 1000; $i++) {
             if (!isset($_POST["value_{$i}"])) {
                 break;
             }
-            $this->dbSettings->setValues(get_magic_quotes_gpc() ? stripslashes($_POST["value_{$i}"]) : $_POST["value_{$i}"]);
+            $this->dbSettings->setValue(get_magic_quotes_gpc() ? stripslashes($_POST["value_{$i}"]) : $_POST["value_{$i}"]);
         }
     }
 
@@ -344,10 +353,34 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         switch ($access) {
             case 'select':
                 $result = $this->getFromDB($this->dbSettings->getTargetName());
+                if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {
+                    $recordCount = count($result);
+                    for ($index = 0; $index < $recordCount; $index++) {
+                        foreach ($result[$index] as $field => $value) {
+                            if (in_array($field, $tableInfo['protect-reading'])) {
+                                $result[$index][$field] = "[protected]";
+                            }
+                        }
+                    }
+                }
                 echo 'dbresult=' . arrayToJS($result, ''), ';',
                 "resultCount='{$this->countQueryResult($this->dbSettings->getTargetName())}';";
                 break;
             case 'update':
+                if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
+                    $fieldArray = array();
+                    $valueArray = array();
+                    $counter = 0;
+                    foreach ($this->dbSettings->fieldsRequired as $field) {
+                        if (! in_array($field, $tableInfo['protect-writing'])) {
+                            $fieldArray[] = $field;
+                            $valueArray[] = $this->dbSettings->fieldsValues[$counter];
+                        }
+                        $counter++;
+                    }
+                    $this->dbSettings->setTargetFields($fieldArray);
+                    $this->dbSettings->setValues($valueArray);
+                }
                 $this->setToDB($this->dbSettings->getTargetName());
                 break;
             case 'new':
@@ -360,9 +393,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             case 'challenge':
                 break;
             case 'changepassword':
-                if( isset($_POST['newpass'])) {
+                if (isset($_POST['newpass'])) {
                     $changeResult = $this->changePassword($paramAuthUser, $_POST['newpass']);
-                    echo "changePasswordResult=", $changeResult?"true":"false", ";";
+                    echo "changePasswordResult=", $changeResult ? "true" : "false", ";";
                 } else {
                     echo "changePasswordResult=false;";
                 }
@@ -379,9 +412,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if ($requireAuthentication) {
                 echo "requireAuth=true;"; // Force authentication to client
             }
-            if ( $tableInfo['authentication']['media-handling'] === true )  {
+            if ($tableInfo['authentication']['media-handling'] === true) {
                 $generatedChallenge = $this->generateChallenge();
-                $this->saveChallenge( $paramAuthUser, $generatedChallenge, "_im_media");
+                $this->saveChallenge($paramAuthUser, $generatedChallenge, "_im_media");
                 echo "mediatoken='{$generatedChallenge}';";
             }
         }
@@ -437,7 +470,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if (strlen($hashedPassword) > 0) {
                 if ($hashedvalue == hash_hmac('sha256', $hashedPassword, $storedChalenge)) {
 //                    if ($hashedvalue == sha1($storedChalenge . $hashedPassword)) {
-                        $returnValue = true;
+                    $returnValue = true;
                 }
             }
         }

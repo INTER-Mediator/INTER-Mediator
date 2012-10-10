@@ -11,7 +11,7 @@ IM_Entry(
     array(
         array(
             'name'=>'postalcode',
-//            'records'=>'10',
+//            'records'=>10,
 //            'paging'=>true,
 //            'key'=>'id',
 //            'query'=>array(

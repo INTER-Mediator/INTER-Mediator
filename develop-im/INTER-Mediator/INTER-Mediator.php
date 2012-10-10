@@ -1,5 +1,4 @@
 <?php
-
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
@@ -22,6 +21,17 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
     spl_autoload_register('loadClass');
 
+    if ($debug) {
+        $dc = new DefinitionChecker();
+        $defErrorMessage = $dc->checkDefinitions($datasource, $options, $dbspecification);
+        if (strlen($defErrorMessage) > 0) {
+            $generator = new GenerateJSCode();
+            $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+            $generator->generateErrorMessageJS($defErrorMessage);
+            return;
+        }
+    }
+
     if (!isset($_POST['access']) && !isset($_GET['media'])) {
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
@@ -37,142 +47,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     }
 }
 
-class GenerateJSCode
-{
-    function __construct()  {
-        header('Content-Type: text/javascript; charset="UTF-8"');
-        header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
-        header('Expires: 0');
-    }
 
-    function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
-    {
-        echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
-    }
-
-    function generateErrorMessageJS($message)
-    {
-        $q = '"';
-        echo "INTERMediator.errorMessages.push({$q}"
-            . str_replace("\n", " ", addslashes($message)) . "{$q});";
-    }
-
-    function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
-    {
-        $q = '"';
-        $generatedPrivateKey = null;
-        $passPhrase = null;
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
-        }
-
-        if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
-            $jsLibDir = $currentDir . 'js_lib' . DIRECTORY_SEPARATOR;
-            $bi2phpDir = $currentDir . 'bi2php' . DIRECTORY_SEPARATOR;
-            echo file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator.js');
-            echo file_get_contents($jsLibDir . 'sha1.js');
-            echo file_get_contents($jsLibDir . 'sha256.js');
-            echo file_get_contents($bi2phpDir . 'biBigInt.js');
-            echo file_get_contents($bi2phpDir . 'biMontgomery.js');
-            echo file_get_contents($bi2phpDir . 'biRSA.js');
-            echo file_get_contents($currentDir . 'Adapter_DBServer.js');
-        } else {
-            echo file_get_contents($currentDir . 'INTER-Mediator.js');
-        }
-
-        $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
-                        . $_SERVER['SCRIPT_NAME'] . (isset($scriptPathSufix) ? $scriptPathSufix : '');
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.getDataSources", "function(){return ", arrayToJS($datasource, ''), ";}");
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.getOptionsAliases",
-            "function(){return ", arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.getOptionsTransaction",
-            "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
-
-        $messageClass = null;
-        $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-        foreach ($clientLangArray as $oneLanguage) {
-            $langCountry = explode(';', $oneLanguage);
-            if ( strlen($langCountry[0]) > 0 )  {
-                $clientLang = explode('-', $langCountry[0]);
-                $messageClass = "MessageStrings_{$clientLang[0]}";
-                if (file_exists("$messageClass.php")) {
-                    $messageClass = new $messageClass();
-                    break;
-                }
-            }
-            $messageClass = null;
-        }
-        if ($messageClass == null) {
-            require_once('MessageStrings.php');
-            $messageClass = new MessageStrings();
-        }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.getMessages",
-            "function(){return ", arrayToJS($messageClass->getMessages(), ''), ";}");
-        if (isset($options['browser-compatibility'])) {
-            $browserCompatibility = $options['browser-compatibility'];
-        }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.browserCompatibility",
-            "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
-        if (isset($prohibitDebugMode) && $prohibitDebugMode) {
-            $this->generateAssignJS("INTERMediator.debugMode", "false");
-        } else {
-            $this->generateAssignJS(
-                "INTERMediator.debugMode", ($debug === false) ? "false" : $debug);
-        }
-
-        // Check Authentication
-        $boolValue = "false";
-        $requireAuthenticationContext = array();
-        if (isset($options['authentication'])) {
-            $boolValue = "true";
-        }
-        foreach ($datasource as $aContext) {
-            if (isset($aContext['authentication'])) {
-                $boolValue = "true";
-                $requireAuthenticationContext[] = $aContext['name'];
-            }
-        }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.requireAuthentication", $boolValue);
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.authRequiredContext", arrayToJS($requireAuthenticationContext, ''));
-
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.isNativeAuth",
-            (isset($options['authentication']) && isset($options['authentication']['user'])
-                && ($options['authentication']['user'] === 'database_native')) ? "true" : "false");
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.authStoring",
-            $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
-                $options['authentication']['storing'] : 'cookie', $q);
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.authExpired",
-            (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
-                $options['authentication']['authexpired'] : '3600');
-        if(isset($generatedPrivateKey)) {
-            $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
-            if (isset($keyArray['rsa'])) {
-                $this->generateAssignJS(
-                    "INTERMediatorOnPage.publickey",
-                    "new biRSAKeyPair('", bin2hex($keyArray['rsa']['e']), "','0','", bin2hex($keyArray['rsa']['n']), "')");
-            }
-        }
-    }
-}
 
 /**
  * Dynamic class loader
@@ -180,9 +55,9 @@ class GenerateJSCode
  */
 function loadClass($className)
 {
-     if (( include_once $className . '.php' ) === false ) {
+    if ((include_once $className . '.php') === false) {
         $errorGenerator = new GenerateJSCode();
-        if ( strpos( $className, "MessageStrings_" ) !== 0 )    {
+        if (strpos($className, "MessageStrings_") !== 0) {
             $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
         }
     }
@@ -320,30 +195,26 @@ function setLocaleAsBrowser($locType)
         $useMbstring = true;
         if ($isWindows) {
             setlocale($locType, 'jpn_jpn');
-        }
-        else {
+        } else {
             setlocale($locType, 'ja_JP');
         }
     } else if ($lstr == 'ja') {
         $useMbstring = true;
         if ($isWindows) {
             setlocale($locType, 'jpn_jpn');
-        }
-        else {
+        } else {
             setlocale($locType, 'ja_JP');
         }
     } else if ($lstr == 'en_US') {
         if ($isWindows) {
             setlocale($locType, 'jpn_jpn');
-        }
-        else {
+        } else {
             setlocale($locType, 'en_US');
         }
     } else if ($lstr == 'en') {
         if ($isWindows) {
             setlocale($locType, 'jpn_jpn');
-        }
-        else {
+        } else {
             setlocale($locType, 'en_US');
         }
     }

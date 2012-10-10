@@ -12,7 +12,7 @@ IM_Entry(
     array(
         array(
             'name' => 'invoice',
-            'records' => '1',
+            'records' => 1,
             'paging' => true,
             'key' => 'id',
             'sort' => array(

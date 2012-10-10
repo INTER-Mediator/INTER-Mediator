@@ -50,7 +50,13 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
+Ver.2.11 (Will be release soon.)
+
 Ver.2.10 (Will be release soon.)
+- The keys of protect-writing and protect-reading in a definiton file are supported.
+- Definition file keywords are checked and show the error message on debug mode if something not valid.
+- [Bug fix] for the FileMaker database class and so on. (Thanks for Atsushi Matsuo)
+- [Bug fix] for the "Sample_products" (Thanks for Miyuki Imaizumi)
 
 Ver.2.9 (2012/7/29)
 - Progress indicator is supported. (It's shown when INTERMediator.construct method is called.)

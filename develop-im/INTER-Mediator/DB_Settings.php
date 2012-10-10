@@ -1,4 +1,12 @@
 <?php
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */
 /**
  * Created by JetBrains PhpStorm.
  * User: msyk
@@ -214,14 +222,24 @@ class DB_Settings
         return $this->dataSourceName;
     }
 
-    function setTargetFields($field)
+    function setTargetField($field)
     {
         $this->fieldsRequired[] = $field;
     }
 
-    function setValues($value)
+    function setValue($value)
     {
         $this->fieldsValues[] = $value;
+    }
+
+    function setTargetFields($fields)
+    {
+        $this->fieldsRequired = $fields;
+    }
+
+    function setValues($values)
+    {
+        $this->fieldsValues = $values;
     }
 
     function setStart($st)

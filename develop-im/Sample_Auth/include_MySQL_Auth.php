@@ -38,8 +38,6 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'way_id', 'join-field' => 'way', 'operator' => '=')
             ),
-            'foreign-key' => 'way_id',
-            'join-field' => 'way'
         ),
         array(
             'name' => 'history',
