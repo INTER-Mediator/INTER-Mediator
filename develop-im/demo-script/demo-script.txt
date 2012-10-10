@@ -52,7 +52,7 @@ Uncomment the following lines in demo1.php
 5. Open demo2.html and it can show the postal codes in so many lines.
 
 6. Add below line in demo2.php.
-            'records'=>'10',
+            'records'=>10,
             'paging'=>true,
 
 7. Add below line in demo2.html, and show the demo2.html.
