@@ -78,6 +78,7 @@ class DataConverter_FMDateTime
         $dateComp = date_parse_from_format('m/d/Y H:i:s', $d);
         $dt = new DateTime();
         $dt->setDate($dateComp['year'], $dateComp['month'], $dateComp['day']);
+        $dt->setTime($dateComp['hour'], $dateComp['minute'], $dateComp['second']);
 
         $gengoName = '';
         $gengoYear = 0;
