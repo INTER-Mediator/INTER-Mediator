@@ -8,6 +8,8 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
+require_once('INTER-Mediator.php');
+
 class DataConverter_MySQLDateTime
 {
 
