@@ -19,6 +19,9 @@ class DefinitionChecker
 
     function checkDefinitions($datasource, $options, $dbspecification)
     {
+        if ($dbspecification['db-class'] == 'FileMaker_FX') {
+            require_once('DB_FileMaker_FX.php');
+        }
         $allMessage = '';
         $this->checkDefinition($datasource, $this->prohibitKeywordsForDataSource);
         if (strlen($this->message) > 0) {
