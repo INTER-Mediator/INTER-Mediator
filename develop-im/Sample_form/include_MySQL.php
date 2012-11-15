@@ -30,6 +30,9 @@ IM_Entry(
             'query' => array(
                 array( 'field'=>'datetime', 'value'=>'2005-01-01 00:00:00', 'operator'=>'>' ),
             ),
+            'default-values' => array(
+                array( 'field'=>'datetime', 'value'=>'2012-01-01 00:00:00' ),
+            )
         ),
         array(
             'name' => 'contact_way',
@@ -58,7 +61,7 @@ IM_Entry(
         ),
     ),
     array('db-class' => 'PDO'),
-    2
+    false
 );
 
 ?>

@@ -367,7 +367,6 @@ var INTERMediatorOnPage = {
         judge = false;
         if (matchAgent && matchOS) {
             specifiedVersion = parseInt(versionStr);
-            versionNum;
             if (navigator.appVersion.indexOf('MSIE') > -1) {
                 msieMark = navigator.appVersion.indexOf('MSIE');
                 dotPos = navigator.appVersion.indexOf('.', msieMark);

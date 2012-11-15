@@ -30,9 +30,9 @@ $dbPassword = 'password';
 $browserCompatibility = array(
     'msie' => '7+',
     'FireFox' => '2+',
+    'Chrome' => '1+',
     'Safari' => '4+',
 //    'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
-    'Chrome' => '1+',
     'Opera' => '1+'
 );
 

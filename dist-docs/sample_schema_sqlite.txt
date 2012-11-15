@@ -8,13 +8,13 @@
  *
  *******************************************************
 
- * INTEGERER-Mediator
+ * INTER-Mediator
  * by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
  * 
  * This project started at the end of 2009.
  * 
 
-This schema file is for the sample of INTEGERER-Mediator using SQLite3.
+This schema file is for the sample of INTER-Mediator using SQLite3.
 
 Example of making database file for UNIX (including Mac OS X):
 

@@ -48,5 +48,5 @@ IM_Entry(
         'media-root-dir'=>'/Library/WebServer/Documents/im/Sample_products/images',
     ),
     array('db-class' => 'PDO'),
-    2
+    false
 );

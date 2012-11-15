@@ -43,7 +43,6 @@ INTERMediator_DBAdapter = {
         INTERMediator.debugMessages.push(
             INTERMediatorOnPage.getMessages()[debugMessageNumber]
                 + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
-
         try {
             myRequest = new XMLHttpRequest();
             myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
@@ -184,10 +183,10 @@ INTERMediator_DBAdapter = {
             for (index in criteriaObject) {
                 if (criteriaObject.hasOwnProperty(index)) {
                     params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
-                    if (criteriaObject[index]["operator"] !== null) {
+                    if (criteriaObject[index]["operator"] !== undefined) {
                         params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
                     }
-                    if (criteriaObject[index]["value"] !== null) {
+                    if (criteriaObject[index]["value"] !== undefined) {
                         params += "&condition" + extCount + "value=" + encodeURIComponent(criteriaObject[index]["value"]);
                     }
                     extCount++;
