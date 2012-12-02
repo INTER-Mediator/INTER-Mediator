@@ -169,7 +169,7 @@ var INTERMediatorLib = {
 
         currentNode = node;
         while (currentNode != null) {
-            if (INTERMediatorLib.isRepeater(currentNode)) {
+            if (INTERMediatorLib.isRepeater(currentNode, true)) {
                 detectedRepeater = currentNode;
             } else if (isRepeaterOfEnclosure(detectedRepeater, currentNode)) {
                 detectedRepeater = null;

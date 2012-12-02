@@ -74,7 +74,7 @@ var INTERMediator = {
         if ( level === undefined )  {
             level = 1;
         }
-        if (INTERMediator.debugMode <= level) {
+        if (INTERMediator.debugMode >= level) {
             INTERMediator.debugMessages.push(message);
         }
     },

@@ -75,8 +75,9 @@ IM_Entry(
             'group-table' => 'authgroup',
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',
-            'authexpired' => '300', // Set as seconds.
+            'authexpired' => '60', // Set as seconds.
             'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+            'realm' => 'Sample_Auth/MySQL_definitions', //
         ),
     ),
     array('db-class' => 'PDO'),

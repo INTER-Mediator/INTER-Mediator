@@ -37,7 +37,7 @@ $browserCompatibility = array(
 );
 
 /* This statement set debug to false forcely. */
-//$prohibitDebugMode = true;
+$prohibitDebugMode = false;
 $prohibitSetCondition = true;
 $prohibitSetOrder = true;
 $prohibitSetWriteCriticalFields = true;

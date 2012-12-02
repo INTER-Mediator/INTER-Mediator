@@ -267,13 +267,30 @@ class DB_Settings
         $this->foreignFieldAndValue[] = array('field' => $field, 'value' => $value);
     }
 
+    function setGlobalInContext($contextName, $operation, $field, $value)
+    {
+        foreach ($this->dataSource as $index => $record) {
+            if ($record['name'] == $contextName) {
+                if (!isset($this->dataSource[$index]['global'])) {
+                    $this->dataSource[$index]['global'] = array();
+                }
+                $this->dataSource[$index]['global'][] = array(
+                    'db-operation' => $operation,
+                    'field' => $field,
+                    'value' => $value);
+
+                return;
+            }
+        }
+    }
+
     /* get the information for the 'name'. */
     function getDataSourceTargetArray()
     {
         if ($this->targetDataSource == null) {
             foreach ($this->dataSource as $record) {
                 if ($record['name'] == $this->dataSourceName) {
-                    $this->targetDataSource = $record;
+                //    $this->targetDataSource = $record;
                     return $record;
                 }
             }

@@ -23,6 +23,9 @@ class DefinitionChecker
             require_once('DB_FileMaker_FX.php');
         }
         $allMessage = '';
+        if ($datasource === NULL) {
+            $allMessage .= "*** The Data Sources of the Definition must be specified. ***";
+        }
         $this->checkDefinition($datasource, $this->prohibitKeywordsForDataSource);
         if (strlen($this->message) > 0) {
             $allMessage .= "The Data Sources of the Definition: " . $this->message;
@@ -40,6 +43,9 @@ class DefinitionChecker
 
     function checkDefinition($definition, $prohibit)
     {
+        if ( $definition === NULL ) {
+            return;
+        }
         $this->message = '';
         $this->path = array();
         $this->currentProhibit = $prohibit;
@@ -51,7 +57,7 @@ class DefinitionChecker
         $endPoint = $this->currentProhibit;
         $currentPath = '';
         foreach ($this->path as $value) {
-            $nextEndPoint = $endPoint[$value];
+            $nextEndPoint = isset($endPoint[$value]) ? $endPoint[$value] : null;
             if ($nextEndPoint === null && is_integer($value)) {
                 $nextEndPoint = $endPoint['*'];
             }
@@ -169,6 +175,7 @@ class DefinitionChecker
             'challenge-table' => 'string',
             'authexpired' => 'string',
             'storing' => 'string',
+            'realm' => 'string',
         ),
         'media-root-dir'=> 'string',
     );

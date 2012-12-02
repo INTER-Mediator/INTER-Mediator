@@ -10,6 +10,9 @@ To Do, that is left-over. Or Plan
 =================================
 
 To Do List for the INTER-Mediator developer(s)
+- Plug-in style extension for the page, and support such as "File Uploading" components, etc.
+- Working with the cloud infrastructures.
+- Generating the page on the server-side initially.
 - Showing as the alert box when any errors occurred ??
 - DIV._im_multivalue: Set muliti-line values to one field within the div element.
 - Media (Pictures, files etc.) Handling with Authentication/Authorization.
@@ -24,14 +27,8 @@ To Do List for the INTER-Mediator developer(s)
 - HTML5's local database supporting.
 - Amazon Web Service supporting.
 - Searching in PDFs or any kind of files.
-- Generating the page on the server-side initially.
-
-Issues / Known bugs
 - Popup menu's default value; if there isn't the value of them, set first one.
-- Check any HTML editor component.
-- OPTION tag doesn't expand as an enlosure/repeater in case of any enclosure tag inside of the option tag.
-- Check to mis-spelling terms in the definition file.
-- After clicking Inset button, sometimes two Insert buttons are shown.
+- Supporting any HTML editor component.
 
 Mostly Slogan at anytime: or Should be done:
 - Fulfilling documentation, including tutorials.
@@ -51,13 +48,26 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.2.11 (Will be release soon.)
+Ver.2.11 (2012/12/3)
+- [BUG FIX] DataConverter_FMDateTime's time issue.
+- [BUG FIX] Fixed the issue not to connect the FileMaker Server.
+- [BUG FIX] Using DataConverter class from external programs.
+  (Thanks to Atushi Matsuo, for above 3 fixes)
+- Fixes minor issues for the node detections.
+- Fixes the PHP warning in the DefinitionChecker class.
+- Fixes the setDebugMessage method of INTERMediator class.
+- The setGlobalInContext method of DB_Setting class can add the data to the global field on PHP program.
+- INTERMediatorOnPage.authCountLimit can be set the retrying count for authentication.
+- In the "authentication" section of the OPTION settings, the "realm" can be contained and
+  it's going to be shown in an auth panel.
+- The cookie name of the credential is combined with the "realm" string.
+- [BUG FIX] The functions for cookies were inappropriate.
 
-Ver.2.10 (Will be release soon.)
-- The keys of protect-writing and protect-reading in a definiton file are supported.
+Ver.2.10 (2012/10/10)
+- The keys of protect-writing and protect-reading in a definition file are supported.
 - Definition file keywords are checked and show the error message on debug mode if something not valid.
-- [Bug fix] for the FileMaker database class and so on. (Thanks for Atsushi Matsuo)
-- [Bug fix] for the "Sample_products" (Thanks for Miyuki Imaizumi)
+- [Bug fix] for the FileMaker database class and so on. (Thanks to Atsushi Matsuo)
+- [Bug fix] for the "Sample_products" (Thanks to Miyuki Imaizumi)
 
 Ver.2.9 (2012/7/29)
 - Progress indicator is supported. (It's shown when INTERMediator.construct method is called.)

@@ -141,6 +141,10 @@ class GenerateJSCode
             "INTERMediatorOnPage.authExpired",
             (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?
                 $options['authentication']['authexpired'] : '3600');
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.realm", $q,
+            (isset($options['authentication']) && isset($options['authentication']['realm'])) ?
+                $options['authentication']['realm'] : '', $q);
         if (isset($generatedPrivateKey)) {
             $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
             if (isset($keyArray['rsa'])) {

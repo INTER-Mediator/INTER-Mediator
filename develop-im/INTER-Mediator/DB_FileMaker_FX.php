@@ -11,8 +11,10 @@
 $currentEr = error_reporting();
 error_reporting(0);
 include_once('FX/FX.php');
-if (error_get_last() !== null) { // If FX.php isn't installed in valid directories, it shows error message and finishes.
+if (error_get_last() !== null) {
+// If FX.php isn't installed in valid directories, it shows error message and finishes.
     echo 'INTER-Mediator Error: Data Access Class "FileMaker_FX" requires FX.php on any right directory.';
+//    var_dump(error_get_last());
     return;
 }
 error_reporting($currentEr);

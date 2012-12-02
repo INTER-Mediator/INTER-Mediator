@@ -7,7 +7,10 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-var INTERMediatorOnPage = {
+var INTERMediatorOnPage;
+
+INTERMediatorOnPage = {
+    authCountLimit:4,
     authCount:0,
     authUser:'',
     authHashedPassword:'',
@@ -25,8 +28,9 @@ var INTERMediatorOnPage = {
     httpuser:null,
     httppasswd:null,
     mediaToken:null,
+    realm:'',
 
-    isShowChangePassword: true,
+    isShowChangePassword:true,
 
     /*
      This method "getMessages" is going to be replaced valid one with the browser's language.
@@ -89,13 +93,14 @@ var INTERMediatorOnPage = {
             case 'cookie':
                 INTERMediatorOnPage.setCookie('_im_username', INTERMediatorOnPage.authUser);
                 INTERMediatorOnPage.setCookie('_im_crendential', INTERMediatorOnPage.authHashedPassword);
-                if ( INTERMediatorOnPage.mediaToken )   {
-                    INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken);
-                }break;
+                if (INTERMediatorOnPage.mediaToken) {
+                    INTERMediatorOnPage.setCookie('_im_mediatoken', INTERMediatorOnPage.mediaToken);
+                }
+                break;
             case 'cookie-domainwide':
                 INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser);
                 INTERMediatorOnPage.setCookieDomainWide('_im_crendential', INTERMediatorOnPage.authHashedPassword);
-                if ( INTERMediatorOnPage.mediaToken )   {
+                if (INTERMediatorOnPage.mediaToken) {
                     INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken);
                 }
                 break;
@@ -105,9 +110,9 @@ var INTERMediatorOnPage = {
     authenticating:function (doAfterAuth) {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton,
-            newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage;
+            newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox;
 
-        if (this.authCount > 10) {
+        if (this.authCount > this.authCountLimit) {
             this.authenticationError();
             this.logout();
             INTERMediator.flushMessage();
@@ -140,6 +145,16 @@ var INTERMediatorOnPage = {
         frontPanel.style.borderRadius = "10px";
         frontPanel.style.position = "relatvie";
         backBox.appendChild(frontPanel);
+
+        if (INTERMediatorOnPage.realm.length > 0) {
+            realmBox = document.createElement('DIV');
+            realmBox.appendChild(document.createTextNode(INTERMediatorOnPage.realm));
+            realmBox.style.width = labelWidth;
+            realmBox.style.textAlign = "left";
+            frontPanel.appendChild(realmBox);
+            breakLine = document.createElement('HR');
+            frontPanel.appendChild(breakLine);
+        }
 
         labelWidth = "110px";
         userLabel = document.createElement('LABEL');
@@ -189,7 +204,7 @@ var INTERMediatorOnPage = {
 //        authButton.style.fontSize = "12pt";
         authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2004)));
         authButton.onclick = function () {
-            var inputUsername,  inputPassword, challengeResult;
+            var inputUsername, inputPassword, challengeResult;
 
             inputUsername = document.getElementById('_im_username').value;
             inputPassword = document.getElementById('_im_password').value;
@@ -225,7 +240,7 @@ var INTERMediatorOnPage = {
         breakLine.clear = "all";
         frontPanel.appendChild(breakLine);
 
-        if ( this.isShowChangePassword && ! INTERMediatorOnPage.isNativeAuth )   {
+        if (this.isShowChangePassword && !INTERMediatorOnPage.isNativeAuth) {
 
             breakLine = document.createElement('HR');
             frontPanel.appendChild(breakLine);
@@ -248,12 +263,12 @@ var INTERMediatorOnPage = {
             //chgpwButton.style.marginLeft = labelWidth;
             chgpwButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2005)));
             chgpwButton.onclick = function () {
-                var inputUsername,  inputPassword, inputNewPassword, challengeResult, params, result;
+                var inputUsername, inputPassword, inputNewPassword, challengeResult, params, result;
 
                 inputUsername = document.getElementById('_im_username').value;
                 inputPassword = document.getElementById('_im_password').value;
                 inputNewPassword = document.getElementById('_im_newpassword').value;
-                if ( inputUsername === '' || inputPassword === '' || inputNewPassword === '' )  {
+                if (inputUsername === '' || inputPassword === '' || inputNewPassword === '') {
                     newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(2007);
                     return;
                 }
@@ -274,11 +289,11 @@ var INTERMediatorOnPage = {
                 params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(inputNewPassword);
                 try {
                     result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
-                } catch(e) {
-                    result = {newPasswordResult: false};
+                } catch (e) {
+                    result = {newPasswordResult:false};
                 }
                 newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(
-                    result.newPasswordResult===true?2009:2010);
+                    result.newPasswordResult === true ? 2009 : 2010);
 
                 INTERMediator.flushMessage();
             };
@@ -339,18 +354,18 @@ var INTERMediatorOnPage = {
     },
 
     INTERMediatorCheckBrowser:function (deleteNode) {
-        var positiveList, matchAgent, matchOS, versionStr,agent, os, judge, specifiedVersion, versionNum,
+        var positiveList, matchAgent, matchOS, versionStr, agent, os, judge, specifiedVersion, versionNum,
             msieMark, dotPos, bodyNode;
 
         positiveList = INTERMediatorOnPage.browserCompatibility();
         matchAgent = false;
         matchOS = false;
         versionStr;
-        for ( agent in  positiveList) {
+        for (agent in  positiveList) {
             if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
                 matchAgent = true;
                 if (positiveList[agent] instanceof Object) {
-                    for ( os in positiveList[agent]) {
+                    for (os in positiveList[agent]) {
                         if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
                             matchOS = true;
                             versionStr = positiveList[agent][os];
@@ -453,7 +468,7 @@ var INTERMediatorOnPage = {
             if (children == null) {
                 return null;
             } else {
-                for ( i = 0; i < children.length; i++) {
+                for (i = 0; i < children.length; i++) {
                     if (children[i].getAttribute != null) {
                         thisClass = children[i].getAttribute('class');
                         thisTitle = children[i].getAttribute('title');
@@ -469,26 +484,34 @@ var INTERMediatorOnPage = {
         }
     },
 
+    getKeyWithRealm:function (str) {
+        if (INTERMediatorOnPage.realm.length > 0) {
+            return str + "_" + INTERMediatorOnPage.realm;
+        }
+        return str;
+    },
+
     getCookie:function (key) {
-        var s, i;
-        s = document.cookie.split(';');
-        for ( i = 0; i < s.length; i++) {
-            if (s[i].indexOf(key + '=') > -1) {
+        var s, i, targetKey;
+        s = document.cookie.split('; ');
+        targetKey = this.getKeyWithRealm(key);
+        for (i = 0; i < s.length; i++) {
+            if (s[i].indexOf(targetKey + '=') == 0) {
                 return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1));
             }
         }
         return '';
     },
     removeCookie:function (key) {
-        document.cookie = key + "=";
+        document.cookie = this.getKeyWithRealm(key) + "=";
     },
 
     setCookie:function (key, val) {
-        this.setCookieWorker(key, val, false);
+        this.setCookieWorker(this.getKeyWithRealm(key), val, false);
     },
 
     setCookieDomainWide:function (key, val) {
-        this.setCookieWorker(key, val, true);
+        this.setCookieWorker(this.getKeyWithRealm(key), val, true);
     },
 
     setCookieWorker:function (key, val, isDomain) {
@@ -504,7 +527,7 @@ var INTERMediatorOnPage = {
     hideProgress:function () {
         var frontPanel;
         frontPanel = document.getElementById('_im_progress');
-        if ( frontPanel )    {
+        if (frontPanel) {
             frontPanel.parentNode.removeChild(frontPanel);
         }
     },
@@ -513,10 +536,10 @@ var INTERMediatorOnPage = {
         var bodyNode, frontPanel, imageProgress, imageIM;
 
         frontPanel = document.getElementById('_im_progress');
-        if ( ! frontPanel ) {
+        if (!frontPanel) {
             bodyNode = document.getElementsByTagName('BODY')[0];
             frontPanel = document.createElement('div');
-            frontPanel.setAttribute('id','_im_progress');
+            frontPanel.setAttribute('id', '_im_progress');
             frontPanel.style.backgroundColor = "#000000";
             frontPanel.style.textAlign = "center";
             frontPanel.style.width = "130px";
@@ -530,7 +553,7 @@ var INTERMediatorOnPage = {
             frontPanel.style.borderRadius = "0 0 10px 0";
             frontPanel.style.borderRight = frontPanel.style.borderBottom = "solid 2px #779933"
             frontPanel.style.zIndex = "999999";
-            if ( bodyNode.firstChild )  {
+            if (bodyNode.firstChild) {
                 bodyNode.insertBefore(frontPanel, bodyNode.firstChild);
             } else {
                 bodyNode.appendChild(frontPanel);
