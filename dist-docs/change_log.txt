@@ -21,7 +21,7 @@ To Do List for the INTER-Mediator developer(s)
 - Server side processing with Ruby on Rails or kind of.
 - Single query can retrieve main and related tables simultaneously.
 - Caching the result of queries.
-- FileMaker's Find style database search. To do tha, the Recordset feature must be support for context.
+- FileMaker's Find style database search. To do that, the Record-set feature must be support for context.
 - Store NULL for empty string.
 - Multiple values within one field. (It may be required for FileMaker especially.)
 - HTML5's local database supporting.
@@ -29,6 +29,7 @@ To Do List for the INTER-Mediator developer(s)
 - Searching in PDFs or any kind of files.
 - Popup menu's default value; if there isn't the value of them, set first one.
 - Supporting any HTML editor component.
+- PayPal support or sort of.
 
 Mostly Slogan at anytime: or Should be done:
 - Fulfilling documentation, including tutorials.
@@ -47,6 +48,24 @@ It's hard to check all versions above browsers as you know. I hope you understan
 =================================
 Change Log
 =================================
+
+Ver.3 (2012/12/9)=========================================================
+
+[Major differences from Ver.2]
+- Validation is supported.
+- Definition file keywords checker on debug mode.
+- The new-style server-side extension.
+- Define the post repeater/enclosure method for each context.
+- In a link definition, "$" for replacing and "script" for the type "text/javascript".
+- SQLite and PostgreSQL are supported with PDO.
+- Accessing media data with authentication is supported.
+- Progress indicator is supported.
+==========================================================================
+
+Ver.3.0 (2012/12/9)
+- [BUG FIX] Authentication for media didn't work for the 'realm' was specified.
+- Read cache is supported but not well debugged. Moreover don't use cache for updating contexts.
+  This feature will complete on the way to Ver.4.0.
 
 Ver.2.11 (2012/12/3)
 - [BUG FIX] DataConverter_FMDateTime's time issue.

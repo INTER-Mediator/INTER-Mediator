@@ -44,9 +44,10 @@ IM_Entry(
 //            'challenge-table' => 'issuedhash',
 //            'authexpired' => '300', // Set as seconds.
             'storing' => 'cookie', // 'cookie'(default), 'cookie-domainwide', 'none'
+            'realm' => 'Sample_products_auth',
         ),
         'media-root-dir'=>'/Library/WebServer/Documents/im/Sample_products/images',
     ),
     array('db-class' => 'PDO'),
-    false
+    2
 );

@@ -829,7 +829,7 @@ var INTERMediator = {
                 relationDef, index, fieldName, thisKeyFieldObject, i, j, k, ix, targetRecords, newNode,
                 nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue,
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
-                curTarget, postCallFunc, newlyAddedNodes, keyingValue;
+                curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue, recordsValue;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -854,7 +854,7 @@ var INTERMediator = {
                 dependObject = [];
                 relationDef = currentContext['relation'];
                 if (relationDef) {
-                    relationValue = [];
+                    relationValue = {};
                     for ( index in relationDef) {
                         relationValue[ relationDef[index]['join-field'] ]
                             = currentRecord[relationDef[index]['join-field']];
@@ -880,18 +880,67 @@ var INTERMediator = {
                 INTERMediator.keyFieldObject.push(thisKeyFieldObject);
 
                 // Access database and get records
-                try {
-                    targetRecords = INTERMediator_DBAdapter.db_query({
-                        name:currentContext['name'],
-                        records:currentContext['records'],
-                        paging:currentContext['paging'],
-                        fields:fieldList,
-                        parentkeyvalue:relationValue,
-                        conditions:null,
-                        useoffset:true});
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        throw ex;
+                pagingValue = false;
+                if ( currentContext['paging'] ) {
+                    pagingValue = currentContext['paging'];
+                }
+                recordsValue = 10000000000;
+                if ( currentContext['records']) {
+                    recordsValue = currentContext['records'];
+                }
+                if ( currentContext['cache'] == true ) {
+                    if (! INTERMediatorOnPage.dbCache[currentContext['name']])    {
+                        INTERMediatorOnPage.dbCache[currentContext['name']] = INTERMediator_DBAdapter.db_query({
+                            name:currentContext['name'],
+                            records:null,
+                            paging:null,
+                            fields:fieldList,
+                            parentkeyvalue:null,
+                            conditions:null,
+                            useoffset:false});
+                    }
+                    if ( relationValue == null )    {
+                        targetRecords = INTERMediatorOnPage.dbCache[currentContext['name']];
+                    } else {
+                        targetRecords = {recordset:[],count:0};
+                        j = 0;
+                        for ( ix in INTERMediatorOnPage.dbCache[currentContext['name']].recordset )    {
+                            oneRecord = INTERMediatorOnPage.dbCache[currentContext['name']].recordset[ix];
+                            isMatch = true;
+                            i = 0;
+                            for ( var keyField in relationValue )   {
+                                var fieldName = currentContext['relation'][i]['foreign-key'];
+                                if ( oneRecord[fieldName] != relationValue[keyField] ) {
+                                    isMatch = false;
+                                    break;
+                                }
+                                i++;
+                            }
+                            if( isMatch && ( ! pagingValue || (pagingValue && (j >= INTERMediator.startFrom))))   {
+                                targetRecords.recordset.push(oneRecord);
+                                targetRecords.count++;
+                                if ( recordsValue <= targetRecords.count )  {
+                                    break;
+                                }
+                                j++;
+                            }
+                        }
+                    }
+                } else {
+
+                    try {
+                        targetRecords = INTERMediator_DBAdapter.db_query({
+                            name:currentContext['name'],
+                            records:currentContext['records'],
+                            paging:currentContext['paging'],
+                            fields:fieldList,
+                            parentkeyvalue:relationValue,
+                            conditions:null,
+                            useoffset:true});
+                    } catch (ex) {
+                        if (ex == "_im_requath_request_") {
+                            throw ex;
+                        }
                     }
                 }
 

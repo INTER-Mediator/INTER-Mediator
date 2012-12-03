@@ -29,6 +29,7 @@ INTERMediatorOnPage = {
     httppasswd:null,
     mediaToken:null,
     realm:'',
+    dbCache:{},
 
     isShowChangePassword:true,
 
@@ -251,6 +252,8 @@ INTERMediatorOnPage = {
             newPasswordSpan.style.minWidth = labelWidth;
             newPasswordSpan.style.textAlign = "right";
             newPasswordSpan.style.cssFloat = "left";
+            newPasswordSpan.style.fontSize = "0.7em";
+            newPasswordSpan.style.paddingTop = "4px";
             newPasswordLabel.appendChild(newPasswordSpan);
             newPasswordSpan.appendChild(
                 document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)));
@@ -551,7 +554,7 @@ INTERMediatorOnPage = {
             frontPanel.style.position = "absolute";
             frontPanel.style.padding = "6px";
             frontPanel.style.borderRadius = "0 0 10px 0";
-            frontPanel.style.borderRight = frontPanel.style.borderBottom = "solid 2px #779933"
+            frontPanel.style.borderRight = frontPanel.style.borderBottom = "solid 4px #779933"
             frontPanel.style.zIndex = "999999";
             if (bodyNode.firstChild) {
                 bodyNode.insertBefore(frontPanel, bodyNode.firstChild);

@@ -39,7 +39,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $dbProxyInstance = new DB_Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
         $mediaHandler = new MediaAccess();
-        $mediaHandler->processing($dbProxyInstance, $options['media-root-dir'], $_GET['media']);
+        $mediaHandler->processing($dbProxyInstance, $options, $_GET['media']);
     } else {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);

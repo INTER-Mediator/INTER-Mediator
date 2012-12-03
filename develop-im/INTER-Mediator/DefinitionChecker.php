@@ -285,6 +285,7 @@ class DefinitionChecker
             'port' => 'string',
             'protocol' => 'string',
             'datatype' => 'string',
+            'cache' => 'boolean',
         ),
     );
 

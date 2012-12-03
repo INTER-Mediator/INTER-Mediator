@@ -17,11 +17,19 @@
 
 class MediaAccess
 {
-    function processing($dbProxyInstance, $dir, $file)
+    function processing($dbProxyInstance, $options, $file)
     {
+        $dir = $options['media-root-dir'];
         $target = "$dir/$file";
 
-        if (! $dbProxyInstance->checkMediaToken($_COOKIE['_im_username'], $_COOKIE['_im_mediatoken']))    {
+        $cookieNameUser = '_im_username';
+        $cookieNameToken = '_im_mediatoken';
+        if(isset($options['authentication']['realm']))  {
+            $cookieNameUser .= '_' . $options['authentication']['realm'];
+            $cookieNameToken .= '_' . $options['authentication']['realm'];
+        }
+
+        if (! $dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken]))    {
             header( "HTTP/1.1 401 Unauthorized" );
             return;
         }
