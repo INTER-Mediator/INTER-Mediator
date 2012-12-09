@@ -34,6 +34,6 @@ IM_Entry(
         ),
     ),
     array('db-class' => 'FileMaker_FX'),
-    2 // debug
+    false // debug
 );
 ?>

@@ -21,8 +21,8 @@
             INTERMediator.additionalCondition['productlist'] = {field:'id',operator:'lt',value:0};
             INTERMediator.additionalCondition['productdetail'] = {field:'id',operator:'eq',value:id};
             INTERMediator.construct();
-            document.getElementById("listarea").style.display = "none";
-            document.getElementById("detailarea").style.display = "";
+//            document.getElementById("listarea").style.display = "none";
+//            document.getElementById("detailarea").style.display = "";
         }
 
         function showList() {
@@ -31,8 +31,8 @@
             }
             INTERMediator.additionalCondition['productdetail'] = {field:'id',operator:'lt',value:0};
             INTERMediator.construct();
-            document.getElementById("listarea").style.display = "";
-            document.getElementById("detailarea").style.display = "none";
+//            document.getElementById("listarea").style.display = "";
+//            document.getElementById("detailarea").style.display = "none";
         }
     </script>
 </head>

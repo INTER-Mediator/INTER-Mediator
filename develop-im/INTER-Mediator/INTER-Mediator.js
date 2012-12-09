@@ -827,7 +827,7 @@ var INTERMediator = {
             var objectReference = {}, linkedNodes, encNodeTag, parentNodeId, repeatersOriginal, repeaters,
                 linkDefs, voteResult, currentContext, fieldList, repNodeTag, relationValue, dependObject,
                 relationDef, index, fieldName, thisKeyFieldObject, i, j, k, ix, targetRecords, newNode,
-                nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue,
+                nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue, counter,
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue, recordsValue;
 
@@ -903,31 +903,32 @@ var INTERMediator = {
                         targetRecords = INTERMediatorOnPage.dbCache[currentContext['name']];
                     } else {
                         targetRecords = {recordset:[],count:0};
-                        j = 0;
+                        counter = 0;
                         for ( ix in INTERMediatorOnPage.dbCache[currentContext['name']].recordset )    {
                             oneRecord = INTERMediatorOnPage.dbCache[currentContext['name']].recordset[ix];
                             isMatch = true;
-                            i = 0;
-                            for ( var keyField in relationValue )   {
-                                var fieldName = currentContext['relation'][i]['foreign-key'];
+                            index = 0;
+                            for ( keyField in relationValue )   {
+                                fieldName = currentContext['relation'][index]['foreign-key'];
                                 if ( oneRecord[fieldName] != relationValue[keyField] ) {
                                     isMatch = false;
                                     break;
                                 }
-                                i++;
+                                index++;
                             }
-                            if( isMatch && ( ! pagingValue || (pagingValue && (j >= INTERMediator.startFrom))))   {
-                                targetRecords.recordset.push(oneRecord);
-                                targetRecords.count++;
-                                if ( recordsValue <= targetRecords.count )  {
-                                    break;
+                            if( isMatch ) {
+                                if ( ! pagingValue || (pagingValue && ( counter >= INTERMediator.startFrom )))   {
+                                    targetRecords.recordset.push(oneRecord);
+                                    targetRecords.count++;
+                                    if ( recordsValue <= targetRecords.count )  {
+                                        break;
+                                    }
                                 }
-                                j++;
+                                counter++;
                             }
                         }
                     }
-                } else {
-
+                } else {   // cache is not active.
                     try {
                         targetRecords = INTERMediator_DBAdapter.db_query({
                             name:currentContext['name'],
@@ -1268,7 +1269,7 @@ var INTERMediator = {
             var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
                 needPostValueSet = false, nodeTag;
             // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
-             nodeTag = element.tagName;
+            nodeTag = element.tagName;
 
             if (curTarget != null && curTarget.length > 0) { //target is specified
                 if (curTarget.charAt(0) == '#') { // Appending

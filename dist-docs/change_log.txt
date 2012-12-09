@@ -30,6 +30,8 @@ To Do List for the INTER-Mediator developer(s)
 - Popup menu's default value; if there isn't the value of them, set first one.
 - Supporting any HTML editor component.
 - PayPal support or sort of.
+- [BUG] After inserting the detail line, then select contextual popup, the "insert" button shows double/triple ...
+  on the form sample.
 
 Mostly Slogan at anytime: or Should be done:
 - Fulfilling documentation, including tutorials.
@@ -49,7 +51,7 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3 (2012/12/9)=========================================================
+Ver.3 (2012/12/10)=========================================================
 
 [Major differences from Ver.2]
 - Validation is supported.
@@ -62,10 +64,12 @@ Ver.3 (2012/12/9)=========================================================
 - Progress indicator is supported.
 ==========================================================================
 
-Ver.3.0 (2012/12/9)
-- [BUG FIX] Authentication for media didn't work for the 'realm' was specified.
+Ver.3.0 (2012/12/10)
 - Read cache is supported but not well debugged. Moreover don't use cache for updating contexts.
   This feature will complete on the way to Ver.4.0.
+- [BUG FIX] Authentication for media didn't work for the 'realm' was specified.
+- [BUG FIX] Sample_products/list_detail_FMS.html corrected.
+- [BUG FIX] Sample_products/list_detail_MySQL.html corrected.
 
 Ver.2.11 (2012/12/3)
 - [BUG FIX] DataConverter_FMDateTime's time issue.
