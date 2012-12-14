@@ -27,6 +27,9 @@ class DataConverter_MySQLDateTime
 
     function converterFromDBtoUser($str)
     {
+        if ( $str === NULL || $str === ''  || $str === '0000-00-00' ) {
+            return '';
+        }
         $sp = strpos($str, ' ');
         $slash = substr_count($str, '-');
         $colon = substr_count($str, ':');

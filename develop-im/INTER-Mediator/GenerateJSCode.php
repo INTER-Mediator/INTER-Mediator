@@ -84,8 +84,8 @@ class GenerateJSCode
             $langCountry = explode(';', $oneLanguage);
             if (strlen($langCountry[0]) > 0) {
                 $clientLang = explode('-', $langCountry[0]);
-                $messageClass = "MessageStrings_{$clientLang[0]}";
-                if (file_exists("$messageClass.php")) {
+                $messageClass = "MessageStrings_$clientLang[0]";
+                if (file_exists("$currentDir$messageClass.php")) {
                     $messageClass = new $messageClass();
                     break;
                 }

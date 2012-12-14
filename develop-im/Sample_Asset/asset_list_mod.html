@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <title>INTER-Mediator - Sample - Asset List</title>
+    <script src="contexts.php"></script>
+</head>
+<body onload="INTERMediator.construct()">
+<table>
+    <thead>
+        <tr><th></th><th>分類</th><th>名称</th><th>メーカー</th><th>型番</th><th>取得日</th><th>破棄日</th><th></th></tr>
+    </thead>
+    <tbody>
+        <tr>
+            <!-- Modification 2: Use the defferent context "asseteffect" -->
+            <!-- This table contains assets without discarding. -->
+            <td>
+                <button onclick="location.href = 'asset_detail.html?id=$';"
+                        class="IM[asseteffect@asset_id@$onclick]">
+                    詳細</button>
+            </td>
+            <td class="IM[asseteffect@category]"></td>
+            <td class="IM[asseteffect@name]"></td>
+            <td class="IM[asseteffect@manifacture]"></td>
+            <td class="IM[asseteffect@productinfo]"></td>
+            <td class="IM[asseteffect@purchase]"></td>
+            <td class="IM[asseteffect@discard]"></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -141,7 +141,7 @@ class DefinitionChecker
         $prohibitKeywordsForDBSpec = array(
         'db-class' => 'string',
         'dsn' => 'string',
-        'option' => 'string',
+        'option' => 'array',
         'database' => 'string',
         'user' => 'string',
         'password' => 'string',

@@ -53,4 +53,18 @@ td {
     margin: 4px;
 }
 
-;
+input   {
+    font-size: 14pt;;
+}
+
+textarea   {
+    font-size: 14pt;;
+}
+
+option   {
+    font-size: 14pt;;
+}
+
+button   {
+    font-size: 14pt;;
+}
