@@ -51,9 +51,15 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3.1
+Ver.3.2
+
+Ver.3.1 (2013/2/10)
+- Bridge for JavaScript Components is added. So far tinyMCE can be the link node of the page file.
+  If you want to use any kind of JS Components, you should make the wrap object as in INTER-Mediator-Parts.js.
+  The sample of the page file is in the Sample_webpage folder.
 - [BUG FIX] INTERMediator_DBAdapter.db_update had some serious bugs.
 - [BUG FIX] All messages weren't localised, ex. button names.
+- [BUG FIX] On the Ver.2.6, I've made bugs and some fields didn't work to update. I'm so sorry.
 
 Ver.3 (2012/12/10)=========================================================
 

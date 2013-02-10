@@ -157,6 +157,22 @@ var INTERMediatorLib = {
         return false;
     },
 
+    isWidgetElement:function (node) {
+        var classInfo, matched;
+
+        if (node != null) {
+            classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
+            if (classInfo != null) {
+                matched = classInfo.match(/IM_WIDGET\[.*\]/);
+                if (matched) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    },
+
     getEnclosureSimple:function (node) {
         if (INTERMediatorLib.isEnclosure(node, true)) {
             return node;
@@ -253,6 +269,22 @@ var INTERMediatorLib = {
             }
             return def;
         }
+    },
+
+    getWidgetInfo:function (node) {
+        var defs = [], eachDefs, i, classAttr, matched;
+        if (INTERMediatorLib.isWidgetElement(node)) {
+            classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
+            if (classAttr !== null && classAttr.length > 0) {
+                matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/);
+                eachDefs = matched[1].split(INTERMediator.defDivider);
+                for ( i = 0; i < eachDefs.length; i++) {
+                    defs.push(eachDefs[i]);
+                }
+            }
+            return defs;
+        }
+        return false;
     },
 
     /**

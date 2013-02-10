@@ -54,6 +54,7 @@ class GenerateJSCode
             $bi2phpDir = $currentDir . 'bi2php' . DIRECTORY_SEPARATOR;
             echo file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
             echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
             echo file_get_contents($jsLibDir . 'sha1.js');
             echo file_get_contents($jsLibDir . 'sha256.js');

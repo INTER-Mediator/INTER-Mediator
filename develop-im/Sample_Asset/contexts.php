@@ -14,7 +14,10 @@ IM_Entry(
         array(
             'name' => 'asset',
             'view' => 'asset',
+            'key' => 'asset_id',
             'repeat-control'=>'insert delete',
+            'records' => 5,
+            'paging' => true,
             'sort' => array(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
@@ -81,7 +84,7 @@ IM_Entry(
         'user' => 'web',
         'password' => 'password',
     ),
-    1
+    2
 );
 
 ?>
