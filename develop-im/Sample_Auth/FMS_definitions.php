@@ -68,7 +68,12 @@ IM_Entry(
             'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
         ),
     ),
-    array('db-class' => 'FileMaker_FX'),
+    array(
+        'db-class' => 'FileMaker_FX',
+        'external-db' => array(
+            'issuedhash' => 'sqlite:/var/db/im/sample.sq3',
+        ),
+    ),
     2
 );
 

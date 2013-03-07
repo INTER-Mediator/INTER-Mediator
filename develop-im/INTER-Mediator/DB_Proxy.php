@@ -17,8 +17,9 @@
 
 class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
-    var $dbClass = null;
+    var $dbClass = null;     // for Default context
     var $userExpanded = null;
+    var $dbClassForContext = array();
 
     function __construct()
     {

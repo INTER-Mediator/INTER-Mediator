@@ -51,7 +51,10 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3.2
+Ver.3.3
+
+Ver.3.2 (2013/3/7)
+- Post only page could be made without any programmings!　Refer the "Sample_easyToUnderstand" folder.
 
 Ver.3.1 (2013/2/10)
 - Bridge for JavaScript Components is added. So far tinyMCE can be the link node of the page file.

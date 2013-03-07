@@ -149,6 +149,7 @@ class DefinitionChecker
         'port' => 'string',
         'protocol' => 'string',
         'datatype' => 'string',
+        'external-db' => array( '#' => 'string' ),
     );
     var
         $prohibitKeywordsForOption = array(
@@ -286,6 +287,9 @@ class DefinitionChecker
             'protocol' => 'string',
             'datatype' => 'string',
             'cache' => 'boolean',
+            'post-reconstruct' => 'boolean',
+            'post-dismiss-message' => 'string',
+            'post-move-url' => 'string',
         ),
     );
 

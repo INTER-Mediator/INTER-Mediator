@@ -428,6 +428,8 @@ INTERMediator_DBAdapter = {
                 }
             }
         }
+        if ( completion )   {
         completion(returnValue);
+        }
     }
 };

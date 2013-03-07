@@ -30,6 +30,7 @@ var INTERMediator = {
     // Start from this number of record for "skipping" records.
     widgetElementIds:[],
 
+    waitSecondsAfterPostMessage: 4,
     pagedSize:0,
     pagedAllCount:0,
     currentEncNumber:0,
@@ -608,6 +609,81 @@ var INTERMediator = {
 
     linkedElmCounter:0,
 
+    clickPostOnlyButton: function(node) {
+        var i, j, fieldData,linkedNodes, elementInfo, comp, contextCount, selectedContext, contextInfo;
+        var target = node.parentNode;
+        while (! INTERMediatorLib.isEnclosure(target, true)) {
+            target = target.parentNode;
+            if (! target) {
+                return;
+            }
+        }
+        linkedNodes = INTERMediatorLib.getElementsByClassName(target, 'IM\\[[^\\]]+\\]');
+        linkedNodes.concat(INTERMediatorLib.getElementsByClassName(target, 'IM_WIDGET\\[.*\\]'));
+        contextCount = {};
+        for (i = 0 ; i < linkedNodes.length ; i++)  {
+            elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
+            for (j = 0 ; j < elementInfo.length ; j++)  {
+                comp = elementInfo[j].split(INTERMediator.separator);
+                if ( ! contextCount[comp[j]] ) {
+                    contextCount[comp[j]] = 0;
+                }
+                contextCount[comp[j]]++;
+            }
+        }
+        if ( contextCount.length < 1 )  {
+            return;
+        }
+        var maxCount = -100;
+        for(var contextName in contextCount)   {
+            if (maxCount < contextCount[contextName])  {
+                maxCount = contextCount[contextName];
+                selectedContext = contextName;
+            }
+        }
+        fieldData = [];
+        for (i = 0 ; i < linkedNodes.length ; i++)  {
+            elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
+            for (j = 0 ; j < elementInfo.length ; j++)  {
+                comp = elementInfo[j].split(INTERMediator.separator);
+                if ( comp[0] == selectedContext )   {
+                    fieldData.push({
+                        field: comp[1],
+                        value: linkedNodes[i].value});
+                }
+            }
+        }
+        contextInfo =  INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);
+        INTERMediator_DBAdapter.db_createRecordWithAuth(
+            {name:selectedContext, dataset:fieldData},
+            function(returnValue){
+                var newNode, parentOfTarget, targetNode = node, thisContext = contextInfo, isSetMsg = false;
+                INTERMediator.flushMessage();
+                if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
+                    INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode);
+                }
+                if(thisContext['post-dismiss-message']) {
+                    parentOfTarget = targetNode.parentNode;
+                    parentOfTarget.removeChild(targetNode);
+                    newNode = document.createElement('SPAN');
+                    INTERMediatorLib.setClassAttributeToNode(newNode, 'IM_POSTMESSAGE');
+                    newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']));
+                    parentOfTarget.appendChild(newNode);
+                    isSetMsg = true;
+                }
+                if(thisContext['post-reconstruct']) {
+                    setTimeout(function(){
+                        INTERMediator.construct(true);
+                    }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0);
+                }
+                if(thisContext['post-move-url']) {
+                    setTimeout(function(){
+                        location.href=thisContext['post-move-url'];
+                    }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0);
+                }
+            });
+    },
+
 //=================================
 // Construct Page
 //=================================
@@ -797,11 +873,16 @@ var INTERMediator = {
          */
 
         function seekEnclosureNode(node, currentRecord, currentTable, parentEnclosure, objectReference) {
-            var children,  i;
+            var children, className, i;
             if (node.nodeType === 1) { // Work for an element
                 try {
                     if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
-                        expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                        className = INTERMediatorLib.getClassAttributeFromNode(node);
+                        if ( className && className.match(/_im_post/)) {
+                            setupPostOnlyEnclosure(node);
+                        } else {
+                            expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                        }
                     } else {
                         children = node.childNodes; // Check all child nodes.
                         for ( i = 0; i < children.length; i++) {
@@ -825,6 +906,20 @@ var INTERMediator = {
             }
         }
 
+        function setupPostOnlyEnclosure(node)  {
+            var postNodes = INTERMediatorLib.getElementsByClassName(node, '_im_post');
+            for (var i=1 ; i < postNodes.length ; i++)   {
+                INTERMediatorLib.addEvent(
+                    postNodes[i],
+                    'click',
+                    (function(){
+                        var targetNode = postNodes[i];
+                        return function(){
+                            INTERMediator.clickPostOnlyButton(targetNode);
+                        }
+                    })());
+            }
+        }
         /**
          * Expanding an enclosure.
          */

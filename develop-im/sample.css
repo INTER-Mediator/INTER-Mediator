@@ -36,6 +36,10 @@ div.IM_CREDIT {
 
 }
 
+span.IM_POSTMESSAGE {
+    color: orange;
+}
+
 table {
     border-collapse: collapse;
     background-color: #EEEEEE;

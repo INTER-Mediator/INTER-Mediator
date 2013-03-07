@@ -532,5 +532,24 @@ var INTERMediatorLib = {
         } else {
             return INTERMediatorLib.getNodePath(node.parentNode) + "/" + node.tagName;
         }
+    },
+
+    getElementsByClassName: function(node, cName)   {
+        var nodes = [], reg = new RegExp(cName);
+        checkNode(node);
+        return nodes;
+
+        function checkNode(target)    {
+            if (target.nodeType == 1
+                && INTERMediatorLib.getClassAttributeFromNode(target)
+                && INTERMediatorLib.getClassAttributeFromNode(target).match(reg)) {
+                nodes.push(target);
+            }
+            for (var i = 0 ; i < target.children.length ; i++ )  {
+                if (target.children[i].nodeType == 1) {
+                    checkNode(target.children[i]);
+                }
+            }
+        }
     }
 };

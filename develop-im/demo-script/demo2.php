@@ -11,12 +11,15 @@ IM_Entry(
     array(
         array(
             'name'=>'postalcode',
-//            'records'=>10,
-//            'paging'=>true,
-//            'key'=>'id',
-//            'query'=>array(
-//                array('field'=>'f3','value'=>'160','operator'=>'bw')
-//            ),
+            'records'=>10,
+            'paging'=>true,
+            'query'=>array(
+                array(
+                    'field'=>'f3',
+                    'value'=>'160%',
+                    'operator'=>'like'
+                )
+            ),
         ),
 //        array(
 //            'name'=>'restaurant',
@@ -31,11 +34,11 @@ IM_Entry(
 //        'authentication'=>array(),
 //    ),
     array(
-        'db-class' => 'FileMaker_FX',
-//        'db-class' => 'PDO',
-//        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
-//        'user'=> 'web',
-//        'password' => 'password'
+//        'db-class' => 'FileMaker_FX',
+        'db-class' => 'PDO',
+        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
+        'user'=> 'web',
+        'password' => 'password'
     ),
     false
 );
