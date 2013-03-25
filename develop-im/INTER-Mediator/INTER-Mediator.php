@@ -35,6 +35,50 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     if (!isset($_POST['access']) && !isset($_GET['media'])) {
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+    } else if (isset($_POST['access']) && $_POST['access'] == 'uploadfile') {
+        /*
+                array(6) { ["_im_redirect"]=> string(54) "http://localhost/im/Sample_webpage/messages_MySQL.html" ["_im_contextname"]=> string(4) "chat" ["_im_field"]=> string(7) "message" ["_im_keyfield"]=> string(2) "id" ["_im_keyvalue"]=> string(2) "38" ["access"]=> string(10) "uploadfile" } array(1) { ["_im_uploadfile"]=> array(5) { ["name"]=> string(16) "ac0600_aoiro.pdf" ["type"]=> string(15) "application/pdf" ["tmp_name"]=> string(26) "/private/var/tmp/phpkk9RXn" ["error"]=> int(0) ["size"]=> int(77732) } }
+
+        */
+        foreach($_FILES as $fn=>$fileInfo)  {
+        }
+
+        $dbProxyInstance = new DB_Proxy();
+        $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug, $_POST["_im_contextname"]);
+        $dbProxyInstance->dbSettings->setExtraCriteria($_POST["_im_keyfield"], "=", $_POST["_im_keyvalue"]);
+        $dbProxyInstance->dbSettings->setTargetFields(array($_POST["_im_field"]));
+        $dbProxyInstance->dbSettings->setValues(array($fileInfo["name"]));
+
+        if (!isset($options['media-root-dir'])) {
+            $dbProxyInstance->logger->setErrorMessage("'media-root-dir' isn't specified");
+            $dbProxyInstance->processingRequest($options, "noop");
+            $dbProxyInstance->finishCommunication();
+            return;
+        }
+        $fileRoot = $options['media-root-dir'];
+        if ( substr($fileRoot, strlen($fileRoot)-1, 1) != '/' )    {
+            $fileRoot .= '/';
+        }
+        $filePathInfo = pathinfo($fileInfo["name"]);
+        $dirPath  = $fileRoot .  $_POST["_im_contextname"] . '/'
+            . $_POST["_im_keyfield"] . "=". $_POST["_im_keyvalue"] . '/' . $_POST["_im_field"];
+        $filePath  = $dirPath . $filePathInfo['basename'] . '_'
+            . rand (1000 , 9999 ). '.' . $filePathInfo['extension'];
+        if ( ! file_exists($dirPath))   {
+            mkdir($dirPath, 0744, true);
+        }
+        $result = move_uploaded_file($fileInfo["tmp_name"], $filePath);
+        if (!$result) {
+            $dbProxyInstance->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
+            $dbProxyInstance->processingRequest($options, "noop");
+            $dbProxyInstance->finishCommunication();
+            return;
+        }
+
+        $dbProxyInstance->processingRequest($options, "update");
+        $dbProxyInstance->finishCommunication();
+
+
     } else if (!isset($_POST['access']) && isset($_GET['media'])) {
         $dbProxyInstance = new DB_Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
@@ -44,6 +88,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
         $dbInstance->processingRequest($options);
+        $dbInstance->finishCommunication();
     }
 }
 

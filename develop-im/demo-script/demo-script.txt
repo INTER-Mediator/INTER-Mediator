@@ -109,3 +109,20 @@ select f3,f9,memo from postalcode where f3 like '14%' desc order by f3 limit 10;
                  </tr>
              </table>
          </td>
+
+** Demo 3
+
+1. Fields for Name, Age and Q1
+   In html, uncomment the SCRIPT tag of the header,
+   and replace BODY tag with unload attribute.
+
+2. Add class="_im_post" to TBODY, and new Button tag element.
+   Post the answer and verify the DB.
+
+3. Add Q2 as checkbox.
+
+4. Add Q3 for Radio Button
+
+5. Add Q4 for Checkbox set.
+
+6. After-post options.

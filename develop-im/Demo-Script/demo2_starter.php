@@ -17,6 +17,14 @@ IM_Entry(
 //            'query'=>array(
 //                array('field'=>'f3','value'=>'160','operator'=>'bw')
 //            ),
+//            'sort'=>array(
+//                array('field'=>'f3','direction'=>'descend')
+//            ),
+//            'repeat-control' => 'insert delete',
+//            'default-values' => array(
+//                array('field'=>'f3', 'value'=>'1600099'),
+//                array('field'=>'f7', 'value'=>'東京都'),
+//            )
         ),
 //        array(
 //            'name'=>'restaurant',
@@ -31,11 +39,16 @@ IM_Entry(
 //        'authentication'=>array(),
 //    ),
     array(
-        'db-class' => 'FileMaker_FX',
 //        'db-class' => 'PDO',
 //        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
-//        'user'=> 'web',
-//        'password' => 'password'
+        'db-class'=>'FileMaker_FX',
+        'server' => 'msyk.dyndns.org',
+        'port' =>'80',
+        'user' => 'web',
+        'password' => 'password',
+        'datatype' => 'FMPro7',
+        'database' => 'TestDB',
+        'protocol' => 'HTTP',
     ),
     false
 );

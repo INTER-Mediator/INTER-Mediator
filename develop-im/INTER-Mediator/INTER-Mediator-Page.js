@@ -138,7 +138,7 @@ INTERMediatorOnPage = {
         backBox.style.zIndex = "999998";
 
         frontPanel = document.createElement('div');
-        frontPanel.style.width = "330px";
+        frontPanel.style.width = "450px";
         frontPanel.style.backgroundColor = "#333333";
         frontPanel.style.color = "#DDDDAA";
         frontPanel.style.margin = "50px auto 0 auto";

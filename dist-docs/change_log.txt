@@ -10,12 +10,10 @@ To Do, that is left-over. Or Plan
 =================================
 
 To Do List for the INTER-Mediator developer(s)
-- Plug-in style extension for the page, and support such as "File Uploading" components, etc.
 - Working with the cloud infrastructures.
 - Generating the page on the server-side initially.
 - Showing as the alert box when any errors occurred ??
 - DIV._im_multivalue: Set muliti-line values to one field within the div element.
-- Media (Pictures, files etc.) Handling with Authentication/Authorization.
 - Supports HTML5's datalist tag elements
 - Objective handling for the data in database.
 - Server side processing with Ruby on Rails or kind of.
@@ -28,7 +26,6 @@ To Do List for the INTER-Mediator developer(s)
 - Amazon Web Service supporting.
 - Searching in PDFs or any kind of files.
 - Popup menu's default value; if there isn't the value of them, set first one.
-- Supporting any HTML editor component.
 - PayPal support or sort of.
 - [BUG] After inserting the detail line, then select contextual popup, the "insert" button shows double/triple ...
   on the form sample.
@@ -52,6 +49,8 @@ Change Log
 =================================
 
 Ver.3.3
+- FileMaker's checkbox set feature on the post only page.
+- File upload component and accept on a server.
 
 Ver.3.2 (2013/3/7)
 - Post only page could be made without any programmings!　Refer the "Sample_easyToUnderstand" folder.

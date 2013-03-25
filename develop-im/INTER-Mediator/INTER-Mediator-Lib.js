@@ -13,6 +13,7 @@ var INTERMediatorLib = {
     rollingRepeaterClassName:"_im_repeater",
     rollingEnclocureClassName:"_im_enclosure",
 
+
     generatePasswordHash: function(password)    {
         var numToHex,salt, saltHex, code, lowCode, highCode;
         numToHex = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
@@ -173,6 +174,22 @@ var INTERMediatorLib = {
         return false;
     },
 
+    isNamedElement:function (node) {
+        var nameInfo, matched;
+
+        if (node != null) {
+            nameInfo = node.getAttribute('name');
+            if (nameInfo != null) {
+                matched = nameInfo.match(/IM\[.*\]/);
+                if (matched) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    },
+
     getEnclosureSimple:function (node) {
         if (INTERMediatorLib.isEnclosure(node, true)) {
             return node;
@@ -277,6 +294,22 @@ var INTERMediatorLib = {
             classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
             if (classAttr !== null && classAttr.length > 0) {
                 matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/);
+                eachDefs = matched[1].split(INTERMediator.defDivider);
+                for ( i = 0; i < eachDefs.length; i++) {
+                    defs.push(eachDefs[i]);
+                }
+            }
+            return defs;
+        }
+        return false;
+    },
+
+    getNamedInfo:function (node) {
+        var defs = [], eachDefs, i, nameAttr, matched;
+        if (INTERMediatorLib.isNamedElement(node)) {
+            nameAttr = node.getAttribute('name');
+            if (nameAttr !== null && nameAttr.length > 0) {
+                matched = nameAttr.match(/IM\[([^\]]*)\]/);
                 eachDefs = matched[1].split(INTERMediator.defDivider);
                 for ( i = 0; i < eachDefs.length; i++) {
                     defs.push(eachDefs[i]);

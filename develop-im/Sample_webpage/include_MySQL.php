@@ -12,7 +12,7 @@ require_once ('../INTER-Mediator/INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-            'records' => 100000000,
+            'records' => 2,
             'name' => 'chat',
             'key' => 'id',
             'sort' => array(
@@ -28,6 +28,7 @@ IM_Entry(
         'formatter' => array(
             array('field' => 'chat@postdt', 'converter-class' => 'MySQLDateTime'),
         ),
+        'media-root-dir' => '/tmp',
     ),
     array('db-class' => 'PDO'),
     2

@@ -29,6 +29,8 @@ var INTERMediator = {
     startFrom:0,
     // Start from this number of record for "skipping" records.
     widgetElementIds:[],
+    radioNameMode: false,
+    dontSelectRadioCheck: false,
 
     waitSecondsAfterPostMessage: 4,
     pagedSize:0,
@@ -610,7 +612,9 @@ var INTERMediator = {
     linkedElmCounter:0,
 
     clickPostOnlyButton: function(node) {
-        var i, j, fieldData,linkedNodes, elementInfo, comp, contextCount, selectedContext, contextInfo;
+        var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo;
+        var mergedValues, inputNodes,typeAttr, k;
+        var linkedNodes, namedNodes;
         var target = node.parentNode;
         while (! INTERMediatorLib.isEnclosure(target, true)) {
             target = target.parentNode;
@@ -618,8 +622,11 @@ var INTERMediator = {
                 return;
             }
         }
-        linkedNodes = INTERMediatorLib.getElementsByClassName(target, 'IM\\[[^\\]]+\\]');
-        linkedNodes.concat(INTERMediatorLib.getElementsByClassName(target, 'IM_WIDGET\\[.*\\]'));
+        linkedNodes = []; // Collecting linked elements to this array.
+        namedNodes = [];
+        for ( i = 0; i < target.childNodes.length; i++) {
+            seekLinkedElement(target.childNodes[i]);
+        }
         contextCount = {};
         for (i = 0 ; i < linkedNodes.length ; i++)  {
             elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
@@ -641,18 +648,55 @@ var INTERMediator = {
                 selectedContext = contextName;
             }
         }
+
         fieldData = [];
         for (i = 0 ; i < linkedNodes.length ; i++)  {
             elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
             for (j = 0 ; j < elementInfo.length ; j++)  {
                 comp = elementInfo[j].split(INTERMediator.separator);
                 if ( comp[0] == selectedContext )   {
-                    fieldData.push({
-                        field: comp[1],
-                        value: linkedNodes[i].value});
+                    if (INTERMediatorLib.isWidgetElement(linkedNodes[i]))   {
+                        fieldData.push({field: comp[1], value: linkedNodes[i]._im_getValue()});
+                    } else if ( linkedNodes[i].tagName == 'SELECT' ) {
+                        fieldData.push({field: comp[1], value: linkedNodes[i].value});
+                    } else if ( linkedNodes[i].tagName == 'TEXTAREA' ) {
+                        fieldData.push({field: comp[1], value: linkedNodes[i].value});
+                    } else if ( linkedNodes[i].tagName == 'INPUT' ) {
+                        if (( linkedNodes[i].getAttribute('type') == 'radio' )
+                            || ( linkedNodes[i].getAttribute('type') == 'checkbox' )) {
+                            if ( linkedNodes[i].checked ){
+                                fieldData.push({field: comp[1], value: linkedNodes[i].value});
+                            }
+                        } else {
+                            fieldData.push({field: comp[1], value: linkedNodes[i].value});
+                        }
+                    }
                 }
             }
         }
+        for (i = 0 ; i < namedNodes.length ; i++)  {
+            elementInfo = INTERMediatorLib.getNamedInfo(namedNodes[i]);
+            for (j = 0 ; j < elementInfo.length ; j++)  {
+                comp = elementInfo[j].split(INTERMediator.separator);
+                if ( comp[0] == selectedContext )   {
+                    mergedValues = [];
+                    inputNodes = namedNodes[i].getElementsByTagName('INPUT');
+                    for ( k=0 ; k < inputNodes.length ;  k++ )  {
+                        typeAttr = inputNodes[k].getAttribute('type');
+                        if( typeAttr == 'radio' || typeAttr == 'checkbox' ) {
+                            if( inputNodes[k].checked )   {
+                                mergedValues.push(inputNodes[k].value);
+                            }
+                        } else {
+                            mergedValues.push(inputNodes[k].value);
+                        }
+                    }
+                    fieldData.push({field: comp[1],
+                        value: mergedValues.join("\n") + "\n"});
+                }
+            }
+        }
+
         contextInfo =  INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);
         INTERMediator_DBAdapter.db_createRecordWithAuth(
             {name:selectedContext, dataset:fieldData},
@@ -682,6 +726,26 @@ var INTERMediator = {
                     }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0);
                 }
             });
+
+        function seekLinkedElement(node) {
+            var children, i;
+            if (node.nodeType === 1) {
+                if (INTERMediatorLib.isLinkedElement(node)) {
+                    linkedNodes.push(node);
+                } else if (INTERMediatorLib.isWidgetElement(node)) {
+                    linkedNodes.push(node);
+                } else if (INTERMediatorLib.isNamedElement(node)) {
+                    namedNodes.push(node);
+                } else {
+                    children = node.childNodes;
+                    for ( i = 0; i < children.length; i++) {
+                        seekLinkedElement(children[i]);
+                    }
+                }
+            }
+        }
+
+
     },
 
 //=================================
@@ -707,7 +771,7 @@ var INTERMediator = {
 
     constructMain: function (indexOfKeyFieldObject)    {
         var i, theNode, currentLevel = 0, postSetFields = [], buttonIdNum = 1,
-            deleteInsertOnNavi = [], eventListenerPostAdding = [];
+            deleteInsertOnNavi = [], eventListenerPostAdding = [], isInsidePostOnly;
 
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
@@ -751,6 +815,8 @@ var INTERMediator = {
         function partialConstruct(indexOfKeyFieldObject) {
             var updateNode, originalNodes, i, beforeKeyFieldObjectCount, currentNode, currentID,
                 enclosure, field, targetNode;
+
+            isInsidePostOnly = false;
 
             updateNode = INTERMediator.keyFieldObject[indexOfKeyFieldObject]['node'];
             while (updateNode.firstChild) {
@@ -810,6 +876,7 @@ var INTERMediator = {
             INTERMediator.updateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
             INTERMediator.widgetElementIds = [];
+            isInsidePostOnly = false;
 
             // Detect Internet Explorer and its version.
             ua = navigator.userAgent;
@@ -907,6 +974,7 @@ var INTERMediator = {
         }
 
         function setupPostOnlyEnclosure(node)  {
+            var nodes;
             var postNodes = INTERMediatorLib.getElementsByClassName(node, '_im_post');
             for (var i=1 ; i < postNodes.length ; i++)   {
                 INTERMediatorLib.addEvent(
@@ -919,7 +987,34 @@ var INTERMediator = {
                         }
                     })());
             }
+            nodes = node.childNodes;
+            isInsidePostOnly = true;
+            for ( i = 0; i < nodes.length; i++) {
+                seekEnclosureInPostOnly(nodes[i]);
+            }
+            isInsidePostOnly = false;
+            // -------------------------------------------
+            function seekEnclosureInPostOnly(node)  {
+                var children, i;
+                if (node.nodeType === 1) { // Work for an element
+                    try {
+                        if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
+                            expandEnclosure(node, null, null, null, null);
+                        } else {
+                            children = node.childNodes; // Check all child nodes.
+                            for ( i = 0; i < children.length; i++) {
+                                seekEnclosureInPostOnly(children[i]);
+                            }
+                        }
+                    } catch (ex) {
+                        if (ex == "_im_requath_request_") {
+                            throw ex;
+                        }
+                    }
+                }
+            }
         }
+
         /**
          * Expanding an enclosure.
          */
@@ -931,7 +1026,7 @@ var INTERMediator = {
                 nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue, counter,
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
-                recordsValue, currentWidgetNodes, widgetSupport, nodeId;
+                recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1110,14 +1205,17 @@ var INTERMediator = {
                         // should be different for each group
                         if (typeAttr == 'radio') { // set the value to radio button
                             nameAttr = currentLinkedNodes[k].getAttribute('name');
+                            nameNumber = INTERMediator.radioNameMode ? currentLevel : RecordCounter;
                             if (nameAttr) {
-                                currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + RecordCounter);
+                                currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + nameNumber);
                             } else {
-                                currentLinkedNodes[k].setAttribute('name', 'IM-R-' + RecordCounter);
+                                currentLinkedNodes[k].setAttribute('name', 'IM-R-' + nameNumber);
                             }
+
                         }
 
-                        if (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA') {
+                        if ( ! isInsidePostOnly
+                            && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                             valueChangeFunction = function (targetId) {
                                 var theId = targetId;
                                 return function (evt) {
@@ -1480,7 +1578,7 @@ var INTERMediator = {
                     typeAttr = element.getAttribute('type');
                     if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                         valueAttr = element.value;
-                        if (valueAttr == curVal) {
+                        if (valueAttr == curVal && ! INTERMediator.dontSelectRadioCheck) {
                             if (INTERMediator.isIE) {
                                 element.setAttribute('checked', 'checked');
                             } else {
