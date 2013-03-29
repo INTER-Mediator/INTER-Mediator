@@ -319,6 +319,10 @@ var INTERMediator = {
                 newValue = changedObj.value;
             } else if (changedObj.tagName == 'SELECT') {
                 newValue = changedObj.value;
+                if (changedObj.firstChild.value == "") {
+                    // for compatibility with Firefox when the value of select tag is empty.
+                    changedObj.removeChild(changedObj.firstChild);
+                }
             } else if (changedObj.tagName == 'INPUT') {
 
                 if (objType != null) {
@@ -870,7 +874,7 @@ var INTERMediator = {
         }
 
         function pageConstruct() {
-            var ua, msiePos, i, c, bodyNode, currentNode,currentID,enclosure, targetNode;
+            var ua, msiePos, i, c, bodyNode, currentNode,currentID, enclosure, targetNode, emptyElement;
 
             INTERMediator.keyFieldObject = [];
             INTERMediator.updateRequiredObject = {};
@@ -911,6 +915,12 @@ var INTERMediator = {
 
             // After work to set up popup menus.
             for ( i = 0; i < postSetFields.length; i++) {
+                if (postSetFields[i]['value'] == "" && document.getElementById(postSetFields[i]['id']).tagName == "SELECT") {
+                    // for compatibility with Firefox when the value of select tag is empty.
+                    emptyElement = document.createElement('option');
+                    emptyElement.setAttribute("value", "");
+                    document.getElementById(postSetFields[i]['id']).insertBefore(emptyElement, document.getElementById(postSetFields[i]['id']).firstChild);
+                }
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
             for ( i = 0; i < INTERMediator.keyFieldObject.length; i++) {
