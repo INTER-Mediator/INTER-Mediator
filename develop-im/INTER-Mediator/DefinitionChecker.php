@@ -290,6 +290,7 @@ class DefinitionChecker
             'post-reconstruct' => 'boolean',
             'post-dismiss-message' => 'string',
             'post-move-url' => 'string',
+            'file-upload' => 'string',
         ),
     );
 

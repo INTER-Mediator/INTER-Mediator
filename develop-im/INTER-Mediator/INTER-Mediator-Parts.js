@@ -7,6 +7,10 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
+/**
+ * TinyMCE bridgeObject
+ * @type {{instanciate: Function, ids: Array, finish: Function}}
+ */
 var IMParts_tinymce = {
     instanciate: function(parentNode) {
         var newId = parentNode.getAttribute('id') + '-e';
@@ -69,6 +73,11 @@ var IMParts_tinymce = {
     }
 };
 
+/*********
+ *
+ * File Uploader
+ * @type {{html5DDSuported: boolean, instanciate: Function, ids: Array, finish: Function}}
+ */
 var IMParts_im_fileupload = {
     html5DDSuported: false,
     instanciate: function(parentNode) {
@@ -77,9 +86,16 @@ var IMParts_im_fileupload = {
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
         IMParts_im_fileupload.ids.push(newId);
-        if ( false /*newNode.hasOwnProperty('dropzone') */) {
+        if (new FileReader()) {
             IMParts_im_fileupload.html5DDSuported = true;
             newNode.dropzone = "copy";
+            newNode.style.width = "200px";
+            newNode.style.height = "150px";
+            newNode.style.paddingTop = "40px";
+            newNode.style.backgroundColor = "#AAAAAA";
+            newNode.style.border = "3px dotted #808080";
+            newNode.style.align = "center;"
+            newNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3101]));
         } else {
             IMParts_im_fileupload.html5DDSuported = false;
             var formNode = document.createElement( 'FORM' );
@@ -89,6 +105,7 @@ var IMParts_im_fileupload = {
             newNode.appendChild(formNode);
             var inputNode = document.createElement( 'INPUT' );
             inputNode.setAttribute('type', 'file');
+            inputNode.setAttribute('accept', '*/*');
             inputNode.setAttribute('name', '_im_uploadfile');
             formNode.appendChild(inputNode);
             var buttonNode = document.createElement( 'BUTTON' );
@@ -114,7 +131,7 @@ var IMParts_im_fileupload = {
         parentNode._im_setValue = function(str)    {
             var targetNode = newNode;
             if ( IMParts_im_fileupload.html5DDSuported )    {
-                targetNode.innerHTML = str;
+            //    targetNode.innerHTML = str;
             } else {
 
             }
@@ -126,17 +143,19 @@ var IMParts_im_fileupload = {
             for( var i = 0 ; i < IMParts_im_fileupload.ids.length ; i++ )    {
                 var targetNode = document.getElementById(IMParts_im_fileupload.ids[i]);
                 if (targetNode) {
-                    INTERMediatorLib.addEvent(targetNode, "dragenter",function(event){
-                        event.preventDefault();
-                        event.target.style.backgourndColor = "red";
-                    });
+                    var idmyself = (function(){
+                        var myid = IMParts_im_fileupload.ids[i];
+                        return function() {
+                            return myid;
+                        }
+                    })();
                     INTERMediatorLib.addEvent(targetNode, "dragleave",function(event){
                         event.preventDefault();
-                        event.target.style.backgourndColor = "blue";
+                        event.target.style.backgroundColor = "#AAAAAA";
                     });
                     INTERMediatorLib.addEvent(targetNode, "dragover",function(event){
                         event.preventDefault();
-                        event.target.style.backgourndColor = "green";
+                        event.target.style.backgroundColor = "#AAFFAA";
                     });
                     INTERMediatorLib.addEvent(targetNode, "drop",function(event){
                         event.preventDefault();
@@ -145,16 +164,31 @@ var IMParts_im_fileupload = {
 
                             if( data.kind == "file" ){
                                 var file = data.getAsFile();
-
-                                var fileName =document.createElement("DIV");
-                                fileName.appendChild( document.createTextNode("Draged File: " + file.name));
+                                var fileName = document.createElement("DIV");
+                                fileName.appendChild( document.createTextNode(
+                                    INTERMediatorOnPage.getMessages()[3102] + file.name));
+                                fileName.style.marginTop = "20px";
+                                fileName.style.backgroundColor = "#FFFFFF";
+                                fileName.style.textAlign = "center";
                                 event.target.appendChild(fileName);
                             }
                         }
+                        var dragedFileName = file.name;
                         var reader = new FileReader();
-                        var request = new XMLHttpRequest();
+                        reader.readAsBinaryString(file);
                         reader.onload = function(evt) {
-                            reader.readAsBinaryString(file);
+                            var updateInfo = INTERMediator.updateRequiredObject[idmyself()];
+                            INTERMediator_DBAdapter.uploadFile(
+                                '&_im_contextname=' + encodeURIComponent(updateInfo['name'])
+                                    + '&_im_field=' + encodeURIComponent(updateInfo['field'])
+                                    + '&_im_keyfield=' + encodeURIComponent(updateInfo['keying'].split("=")[0])
+                                    + '&_im_keyvalue=' + encodeURIComponent(updateInfo['keying'].split("=")[1])
+                                    + '&_im_contextnewrecord=' + encodeURIComponent('uploadfile'),
+                                {
+                                    fileName: dragedFileName,
+                                    content: evt.target.result
+                                });
+                            INTERMediator.flushMessage();
                         };
                     });
                 }
