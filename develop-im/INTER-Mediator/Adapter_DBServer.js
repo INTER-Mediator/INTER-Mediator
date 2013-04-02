@@ -13,7 +13,7 @@ var INTERMediator_DBAdapter;
 
 INTERMediator_DBAdapter = {
 
-    server_access:function (accessURL, debugMessageNumber, errorMessageNumber) {
+    server_access:function (accessURL, debugMessageNumber, errorMessageNumber, uploadingFile) {
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
             mediatoken = null, appPath, authParams = '', shaObj, hmacValue;
@@ -46,8 +46,32 @@ INTERMediator_DBAdapter = {
         try {
             myRequest = new XMLHttpRequest();
             myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
-            myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            myRequest.send(accessURL + authParams);
+            if ( uploadingFile )    {
+                var params = (accessURL + authParams).split('&');
+                var body = '';
+                var boundary = 'INTERMediatorBoundary' + Math.round(Math.random() * 10000000);
+                var CRLF =  "\r\n";
+                var twoDash = '--';
+
+                body += twoDash + boundary + CRLF;
+                body += 'Content-Disposition: form-data; name="_im_uploadfile"; filename="';
+                body += uploadingFile['fileName'] + '"' + CRLF;
+                body += 'Content-Type: video/x-dv' + CRLF + CRLF;
+                body += uploadingFile['content'] + CRLF + CRLF;
+
+                for (var i = 0 ; i < params.length ; i++ )  {
+                    var valueset = params[i].split('=');
+                    body += twoDash + boundary + CRLF;
+                    body += 'Content-Disposition: form-data; name="' + valueset[0] + '"' + CRLF + CRLF;
+                    body += decodeURIComponent(valueset[1]) + CRLF;
+                }
+                body += twoDash + boundary + twoDash + CRLF;
+                myRequest.setRequestHeader('Content-Type', 'multipart/form-data; boundary=' + boundary);
+                myRequest.send(body);
+            } else {
+                myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                myRequest.send(accessURL + authParams);
+            }
             eval(myRequest.responseText);
             if (INTERMediator.debugMode > 1) {
                 INTERMediator.debugMessages.push("myRequest.responseText=" + myRequest.responseText);
@@ -101,6 +125,20 @@ INTERMediator_DBAdapter = {
     getChallenge:function () {
         try {
             this.server_access("access=challenge", 1027, 1028);
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                throw ex;
+            }
+        }
+        if (INTERMediatorOnPage.authChallenge == null) {
+            return false;
+        }
+        return true;
+    },
+
+    uploadFile:function(parameters, uploadingFile)   {
+        try {
+            this.server_access("access=uploadfile" + parameters, 1031, 1032, uploadingFile);
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 throw ex;
@@ -429,7 +467,7 @@ INTERMediator_DBAdapter = {
             }
         }
         if ( completion )   {
-        completion(returnValue);
+            completion(returnValue);
         }
     }
 };

@@ -21,7 +21,15 @@ IM_Entry(
             'repeat-control'=>'insert delete',
             'default-values'=>array(
                 array('field'=>'postdt', 'value'=>date('Y-m-d H:i:s')),
-            )
+            ),
+            'file-upload' => 'fileupload',
+        ),
+        array(
+            'name' => 'fileupload',
+            'key' => 'id',
+            'relation' => array(
+                array('foreign-key' => 'f_id', 'join-field' => 'id', 'operator' => '=')
+            ),
         ),
     ),
     array(

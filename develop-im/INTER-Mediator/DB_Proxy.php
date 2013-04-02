@@ -20,6 +20,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     var $dbClass = null;     // for Default context
     var $userExpanded = null;
     var $dbClassForContext = array();
+    var $outputOfPrcessing = '';
 
     function __construct()
     {
@@ -253,6 +254,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     function processingRequest($options, $access = null)
     {
+        $this->outputOfPrcessing = '';
         $generatedPrivateKey = '';
         $passPhrase = '';
 
@@ -364,8 +366,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         }
                     }
                 }
-                echo 'dbresult=' . arrayToJS($result, ''), ';',
-                "resultCount='{$this->countQueryResult($this->dbSettings->getTargetName())}';";
+                $this->outputOfPrcessing = 'dbresult=' . arrayToJS($result, '') . ';'
+                    . "resultCount='{$this->countQueryResult($this->dbSettings->getTargetName())}';";
                 break;
             case 'update':
                 if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
@@ -386,7 +388,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             case 'new':
                 $result = $this->newToDB($this->dbSettings->getTargetName());
-                echo "newRecordKeyValue='{$result}';";
+                $this->outputOfPrcessing = "newRecordKeyValue='{$result}';";
                 break;
             case 'delete':
                 $this->deleteFromDB($this->dbSettings->getTargetName());
@@ -396,9 +398,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             case 'changepassword':
                 if (isset($_POST['newpass'])) {
                     $changeResult = $this->changePassword($this->paramAuthUser, $_POST['newpass']);
-                    echo "changePasswordResult=", $changeResult ? "true" : "false", ";";
+                    $this->outputOfPrcessing =  "changePasswordResult=" . $changeResult ? "true" : "false" . ";";
                 } else {
-                    echo "changePasswordResult=false;";
+                    $this->outputOfPrcessing = "changePasswordResult=false;";
                 }
                 break;
         }
@@ -410,24 +412,29 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     var $isDBNative;
     var $paramAuthUser;
 
-    function finishCommunication()
+    function finishCommunication($notFinish = false)
     {
+        echo $this->outputOfPrcessing;
         echo implode('', $this->logger->getMessagesForJS());
-        if ($this->requireAuthorization) {
-            $generatedChallenge = $this->generateChallenge();
-            $generatedUID = $this->generateClientId('');
-            $userSalt = $this->saveChallenge($this->isDBNative ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
-            echo "challenge='{$generatedChallenge}{$userSalt}';";
-            echo "clientid='{$generatedUID}';";
-            if ($this->requireAuthentication) {
+        if ( $notFinish )   {
+            return;
+        }
+        if (!$this->requireAuthorization) {
+            return;
+        }
+        $generatedChallenge = $this->generateChallenge();
+        $generatedUID = $this->generateClientId('');
+        $userSalt = $this->saveChallenge($this->isDBNative ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
+        echo "challenge='{$generatedChallenge}{$userSalt}';";
+        echo "clientid='{$generatedUID}';";
+        if ($this->requireAuthentication) {
             echo "requireAuth=true;"; // Force authentication to client
-            }
-            $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-            if ($tableInfo['authentication']['media-handling'] === true) {
-                $generatedChallenge = $this->generateChallenge();
-                $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
-                echo "mediatoken='{$generatedChallenge}';";
-            }
+        }
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        if ($tableInfo['authentication']['media-handling'] === true) {
+            $generatedChallenge = $this->generateChallenge();
+            $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
+            echo "mediatoken='{$generatedChallenge}';";
         }
     }
 

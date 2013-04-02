@@ -51,6 +51,7 @@ Change Log
 Ver.3.3
 - FileMaker's checkbox set feature on the post only page.
 - File upload component and accept on a server.
+- [BUG FIX] Update INTER-Mediator.js to fix compatibility with Firefox when the value of popup menu (select tag) is empty.
 
 Ver.3.2 (2013/3/7)
 - Post only page could be made without any programmings!　Refer the "Sample_easyToUnderstand" folder.

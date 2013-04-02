@@ -43,9 +43,10 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         foreach($_FILES as $fn=>$fileInfo)  {
         }
 
+        $dbKeyValue = $_POST["_im_keyvalue"];
         $dbProxyInstance = new DB_Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug, $_POST["_im_contextname"]);
-        $dbProxyInstance->dbSettings->setExtraCriteria($_POST["_im_keyfield"], "=", $_POST["_im_keyvalue"]);
+        $dbProxyInstance->dbSettings->setExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
         $dbProxyInstance->dbSettings->setTargetFields(array($_POST["_im_field"]));
         $dbProxyInstance->dbSettings->setValues(array($fileInfo["name"]));
 
@@ -76,6 +77,27 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
 
         $dbProxyInstance->processingRequest($options, "update");
+
+        $relatedContext = null;
+        $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+        if( isset($dbProxyContext['file-upload']))   {
+            $relatedContexName = $dbProxyContext['file-upload'];
+            $relatedContext = new DB_Proxy();
+            $relatedContext->initialize($datasource, $options, $dbspecification, $debug, $relatedContexName);
+            $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
+            $relatedContext->dbSettings->setTargetFields(
+                array($relatedContextInfo["relation"][0]["foreign-key"], "path"));
+            $relatedContext->dbSettings->setValues(
+                array($dbKeyValue, $filePath));
+            $relatedContext->processingRequest($options, "new");
+        }
+
+        if ( isset( $_POST["_im_redirect"] ))   {
+            header("Location: {$_POST["_im_redirect"]}");
+        }
+        if ( ! is_null( $relatedContext ))    {
+            $relatedContext->finishCommunication(true);
+        }
         $dbProxyInstance->finishCommunication();
 
 

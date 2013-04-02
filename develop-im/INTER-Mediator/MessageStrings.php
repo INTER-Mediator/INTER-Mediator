@@ -56,6 +56,8 @@ class MessageStrings
         1028 => "Connection Error in get_challenge=@1@/@2@",
         1029 => "Change Passowrd Access: ",
         1030 => "Connection Error on changing password=@1@/@2@",
+        1031 => "Change File Uploading: ",
+        1032 => "Connection Error on uploading file=@1@/@2@",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
@@ -66,6 +68,8 @@ class MessageStrings
         2008 => 'Failure to get a challenge from server.',
         2009 => 'Succeed to change your password. Login with the new password.',
         2010 => 'Failure to change your password. Maybe the old password is not correct.',
+        3101 => 'Drag Here.',
+        3102 => 'Dragged File: ',
     );
 }
 
