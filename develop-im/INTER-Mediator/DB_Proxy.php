@@ -116,7 +116,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
         $this->formatter->setFormatter(isset($options['formatter']) ? $options['formatter'] : null);
-        $this->dbSettings->setTargetName(is_null($target) ? $_POST['name'] : $target);
+        $this->dbSettings->setTargetName(! is_null($target) ? $target : ( isset($_POST['name']) ? $_POST['name'] : "_im_auth" ));
         $context = $this->dbSettings->getDataSourceTargetArray();
 
         $dbClassName = 'DB_' .
@@ -283,7 +283,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     || isset($tableInfo['authentication'][$access])))
         ) {
             $this->requireAuthorization = true;
-            $this->isDBNative = ($options['authentication']['user'] == 'database_native');
+            $this->isDBNative = false;
+            if ( isset($options['authentication']['user'] )
+                && $options['authentication']['user'] == 'database_native') {
+                $this->isDBNative = true;
+            }
         }
 
         if ($this->requireAuthorization) { // Authentication required
@@ -431,7 +435,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             echo "requireAuth=true;"; // Force authentication to client
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        if ($tableInfo['authentication']['media-handling'] === true) {
+        if (isset($tableInfo['authentication'])
+            && isset($tableInfo['authentication']['media-handling'])
+            && $tableInfo['authentication']['media-handling'] === true) {
             $generatedChallenge = $this->generateChallenge();
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
             echo "mediatoken='{$generatedChallenge}';";
