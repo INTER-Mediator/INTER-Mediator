@@ -48,9 +48,12 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3.3
+Ver.3.4
+
+Ver.3.3 (2013/4/6)
 - FileMaker's checkbox set feature on the post only page.
 - File upload component and accept on a server.
+- Compatibility for IE is improved.
 - [BUG FIX] Update INTER-Mediator.js to fix compatibility with Firefox when the value of popup menu (select tag) is empty.
 
 Ver.3.2 (2013/3/7)
