@@ -40,6 +40,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
                 array(6) { ["_im_redirect"]=> string(54) "http://localhost/im/Sample_webpage/messages_MySQL.html" ["_im_contextname"]=> string(4) "chat" ["_im_field"]=> string(7) "message" ["_im_keyfield"]=> string(2) "id" ["_im_keyvalue"]=> string(2) "38" ["access"]=> string(10) "uploadfile" } array(1) { ["_im_uploadfile"]=> array(5) { ["name"]=> string(16) "ac0600_aoiro.pdf" ["type"]=> string(15) "application/pdf" ["tmp_name"]=> string(26) "/private/var/tmp/phpkk9RXn" ["error"]=> int(0) ["size"]=> int(77732) } }
 
         */
+//        var_export($_POST);
         foreach($_FILES as $fn=>$fileInfo)  {
         }
 
@@ -61,9 +62,9 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             $fileRoot .= '/';
         }
         $filePathInfo = pathinfo($fileInfo["name"]);
-        $dirPath  = $fileRoot .  $_POST["_im_contextname"] . '/'
+        $dirPath  = $fileRoot . $_POST["_im_contextname"] . '/'
             . $_POST["_im_keyfield"] . "=". $_POST["_im_keyvalue"] . '/' . $_POST["_im_field"];
-        $filePath  = $dirPath . $filePathInfo['basename'] . '_'
+        $filePath  = $dirPath . '/' . $filePathInfo['filename'] . '_'
             . rand (1000 , 9999 ). '.' . $filePathInfo['extension'];
         if ( ! file_exists($dirPath))   {
             mkdir($dirPath, 0744, true);

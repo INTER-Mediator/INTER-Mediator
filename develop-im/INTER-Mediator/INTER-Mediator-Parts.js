@@ -86,8 +86,13 @@ var IMParts_im_fileupload = {
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
         IMParts_im_fileupload.ids.push(newId);
-        if (new FileReader()) {
-            IMParts_im_fileupload.html5DDSuported = true;
+        IMParts_im_fileupload.html5DDSuported = true;
+        try {
+            var x = new FileReader();
+        } catch(ex) {
+            IMParts_im_fileupload.html5DDSuported = false;
+        }
+        if (IMParts_im_fileupload.html5DDSuported) {
             newNode.dropzone = "copy";
             newNode.style.width = "200px";
             newNode.style.height = "150px";
@@ -97,7 +102,6 @@ var IMParts_im_fileupload = {
             newNode.style.align = "center;"
             newNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3101]));
         } else {
-            IMParts_im_fileupload.html5DDSuported = false;
             var formNode = document.createElement( 'FORM' );
             formNode.setAttribute('method','post');
             formNode.setAttribute('action',INTERMediatorOnPage.getEntryPath());
@@ -158,19 +162,20 @@ var IMParts_im_fileupload = {
                         event.target.style.backgroundColor = "#AAFFAA";
                     });
                     INTERMediatorLib.addEvent(targetNode, "drop",function(event){
+                        var file, fileNameNode;
                         event.preventDefault();
                         for(var i = 0 ; i < event.dataTransfer.items.length ; i++){
                             var data = event.dataTransfer.items[i];
 
                             if( data.kind == "file" ){
-                                var file = data.getAsFile();
-                                var fileName = document.createElement("DIV");
-                                fileName.appendChild( document.createTextNode(
+                                file = data.getAsFile();
+                                fileNameNode = document.createElement("DIV");
+                                fileNameNode.appendChild( document.createTextNode(
                                     INTERMediatorOnPage.getMessages()[3102] + file.name));
-                                fileName.style.marginTop = "20px";
-                                fileName.style.backgroundColor = "#FFFFFF";
-                                fileName.style.textAlign = "center";
-                                event.target.appendChild(fileName);
+                                fileNameNode.style.marginTop = "20px";
+                                fileNameNode.style.backgroundColor = "#FFFFFF";
+                                fileNameNode.style.textAlign = "center";
+                                event.target.appendChild(fileNameNode);
                             }
                         }
                         var dragedFileName = file.name;
@@ -189,6 +194,7 @@ var IMParts_im_fileupload = {
                                     content: evt.target.result
                                 });
                             INTERMediator.flushMessage();
+                            INTERMediator.construct(true);
                         };
                     });
                 }
@@ -230,12 +236,43 @@ var IMParts_im_fileupload = {
                     inputNode.setAttribute('name', '_im_contextnewrecord');
                     inputNode.setAttribute('value', 'uploadfile');
                     formNode.appendChild(inputNode);
+                    inputNode = document.createElement( 'INPUT' );
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', 'access');
                     inputNode.setAttribute('value', 'uploadfile');
                     formNode.appendChild(inputNode);
+                    inputNode = document.createElement( 'INPUT' );
+                    inputNode.setAttribute('type', 'hidden');
+                    inputNode.setAttribute('name', 'clientid');
+                    formNode.appendChild(inputNode);
+                    inputNode = document.createElement( 'INPUT' );
+                    inputNode.setAttribute('type', 'hidden');
+                    inputNode.setAttribute('name', 'authuser');
+                    formNode.appendChild(inputNode);
+                    inputNode = document.createElement( 'INPUT' );
+                    inputNode.setAttribute('type', 'hidden');
+                    inputNode.setAttribute('name', 'response');
+                    formNode.appendChild(inputNode);
 
                     INTERMediatorLib.addEvent(formNode, "submit",function(event){
+                        var thisForm = formNode;
+                        if (INTERMediatorOnPage.authUser.length > 0) {
+                            thisForm.elements["clientid"].value = INTERMediatorOnPage.clientId;
+                            thisForm.elements["authuser"].value = INTERMediatorOnPage.authUser;
+                            if (INTERMediatorOnPage.isNativeAuth) {
+                                thisForm.elements["response"].value = INTERMediatorOnPage.publickey.biEncryptedString(
+                                    INTERMediatorOnPage.authHashedPassword + "\n" + INTERMediatorOnPage.authChallenge);
+                            } else {
+                                if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
+                                    shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
+                                    hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
+                                    thisForm.elements["response"].value = hmacValue;
+                                } else {
+                                    thisForm.elements["response"].value = "dummy";
+                                }
+                            }
+                        }
+                        return true;
                     });
                 }
             }

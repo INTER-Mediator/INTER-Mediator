@@ -172,19 +172,21 @@ var INTERMediator = {
     isControlKeyDown:false,
 
     keyDown:function (evt) {
-        if (evt.keyCode == 16) {
+        var keyCode = (window.event) ? e.which : evt.keyCode;
+        if (keyCode == 16) {
             INTERMediator.isShiftKeyDown = true;
         }
-        if (evt.keyCode == 17) {
+        if (keyCode == 17) {
             INTERMediator.isControlKeyDown = true;
         }
     },
 
     keyUp:function (evt) {
-        if (evt.keyCode == 16) {
+        var keyCode = (window.event) ? e.which : evt.keyCode;
+        if (keyCode == 16) {
             INTERMediator.isShiftKeyDown = false;
         }
-        if (evt.keyCode == 17) {
+        if (keyCode == 17) {
             INTERMediator.isControlKeyDown = false;
         }
     },
@@ -294,6 +296,8 @@ var INTERMediator = {
                         );
                         return;
                     }
+                } else {
+                    INTERMediator.setErrorMessage("EXCEPTION-1"+ex.message);
                 }
             }
 
@@ -377,6 +381,8 @@ var INTERMediator = {
                             return;
                         }
                     }
+                } else {
+                    INTERMediator.setErrorMessage("EXCEPTION-2"+ex.message);
                 }
             }
 
@@ -419,19 +425,19 @@ var INTERMediator = {
             });
         } catch (ex) {
             if (ex == "_im_requath_request_") {
-                if (ex == "_im_requath_request_") {
-                    if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
-                        INTERMediatorOnPage.authenticating(
-                            function () {
-                                INTERMediator.deleteButton(
-                                    targetName, keyField, keyValue, removeNodes, false);
-                            }
-                        );
-                        return;
-                    }
+                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                    INTERMediatorOnPage.authChallenge = null;
+                    INTERMediatorOnPage.authHashedPassword = null;
+                    INTERMediatorOnPage.authenticating(
+                        function () {
+                            INTERMediator.deleteButton(
+                                targetName, keyField, keyValue, removeNodes, false);
+                        }
+                    );
+                    return;
                 }
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-3"+ex.message);
             }
         }
 
@@ -476,6 +482,8 @@ var INTERMediator = {
                 );
                 INTERMediator.flushMessage();
                 return;
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-4"+ex.message);
             }
         }
 
@@ -538,6 +546,8 @@ var INTERMediator = {
                         return;
                     }
                 }
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-5"+ex.message);
             }
         }
 
@@ -585,6 +595,8 @@ var INTERMediator = {
                 );
                 INTERMediator.flushMessage();
                 return;
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-6"+ex.message);
             }
         }
 
@@ -800,6 +812,8 @@ var INTERMediator = {
                         return;
                     }
                 }
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-7"+ex.message);
             }
         }
         INTERMediatorOnPage.hideProgress();
@@ -843,6 +857,8 @@ var INTERMediator = {
             } catch (ex) {
                 if (ex == "_im_requath_request_") {
                     throw ex;
+                } else {
+                    INTERMediator.setErrorMessage("EXCEPTION-8"+ex.message);
                 }
             }
 
@@ -909,6 +925,8 @@ var INTERMediator = {
             } catch (ex) {
                 if (ex == "_im_requath_request_") {
                     throw ex;
+                } else {
+                    INTERMediator.setErrorMessage("EXCEPTION-9"+ex.message);
                 }
             }
 
@@ -958,25 +976,39 @@ var INTERMediator = {
                         if ( className && className.match(/_im_post/)) {
                             setupPostOnlyEnclosure(node);
                         } else {
-                            expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                            if ( INTERMediator.isIE ){
+                                try {
+                                    expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                                } catch(ex) {
+                                    if (ex == "_im_requath_request_") {
+                                        throw ex;
+                                    }
+                                }
+                            } else {
+                                expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                            }
                         }
                     } else {
                         children = node.childNodes; // Check all child nodes.
-                        for ( i = 0; i < children.length; i++) {
-                            if (children[i].nodeType === 1) {
-                                seekEnclosureNode(
-                                    children[i],
-                                    currentRecord,
-                                    currentTable,
-                                    parentEnclosure,
-                                    objectReference
-                                );
+                        if ( children ) {
+                            for ( i = 0; i < children.length; i++) {
+                                if (children[i].nodeType === 1) {
+                                    seekEnclosureNode(
+                                        children[i],
+                                        currentRecord,
+                                        currentTable,
+                                        parentEnclosure,
+                                        objectReference
+                                    );
+                                }
                             }
                         }
                     }
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
                         throw ex;
+                    } else {
+                        INTERMediator.setErrorMessage("EXCEPTION-10"+ex.message);
                     }
                 }
 
@@ -1019,6 +1051,8 @@ var INTERMediator = {
                     } catch (ex) {
                         if (ex == "_im_requath_request_") {
                             throw ex;
+                        } else {
+                            INTERMediator.setErrorMessage("EXCEPTION-11"+ex.message);
                         }
                     }
                 }
@@ -1150,6 +1184,8 @@ var INTERMediator = {
                     } catch (ex) {
                         if (ex == "_im_requath_request_") {
                             throw ex;
+                        } else {
+                            INTERMediator.setErrorMessage("EXCEPTION-12"+ex.message);
                         }
                     }
                 }
@@ -1300,42 +1336,67 @@ var INTERMediator = {
                                 currentContext['name'], node, objectReference);
                         }
                     }
+                    try {
+                        if (INTERMediatorOnPage.expandingRecordFinish != null) {
+                            INTERMediatorOnPage.expandingRecordFinish(currentContext['name'], newlyAddedNodes);
+                            INTERMediator.setDebugMessage(
+                                "Call INTERMediatorOnPage.expandingRecordFinish with the context: "
+                                    + currentContext['name'], 2);
+                        }
 
-                    if (INTERMediatorOnPage.expandingRecordFinish != null) {
-                        INTERMediatorOnPage.expandingRecordFinish(currentContext['name'], newlyAddedNodes);
-                        INTERMediator.setDebugMessage(
-                            "Call INTERMediatorOnPage.expandingRecordFinish with the context: "
-                                + currentContext['name'], 2);
+                        if (currentContext['post-repeater']) {
+                            postCallFunc = new Function("arg",
+                                "INTERMediatorOnPage." + currentContext['post-repeater'] + "(arg)");
+                            postCallFunc(newlyAddedNodes);
+                            INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
+                                + currentContext['post-repeater'] + "' with the context: " + currentContext['name'], 2);
+                        }
+                    } catch (ex) {
+                        if (ex == "_im_requath_request_") {
+                            throw ex;
+                        } else {
+                            INTERMediator.setErrorMessage("EXCEPTION-23"+ex.message);
+                        }
                     }
 
-                    if (currentContext['post-repeater']) {
-                        postCallFunc = new Function("arg",
-                            "INTERMediatorOnPage." + currentContext['post-repeater'] + "(arg)");
-                        postCallFunc(newlyAddedNodes);
-                        INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
-                            + currentContext['post-repeater'] + "' with the context: " + currentContext['name'], 2);
-                    }
                 }
                 setupInsertButton(currentContext, encNodeTag, repNodeTag, node, relationValue);
 
                 for ( var pName in widgetSupport )  {
-                    (widgetSupport[pName].finish).apply(
-                        (widgetSupport[pName].plugin), null );
+//                    (widgetSupport[pName].finish).apply(
+//                        (widgetSupport[pName].plugin), null );
+                    widgetSupport[pName].plugin.finish();
+                }
+                try{
+                    if (INTERMediatorOnPage.expandingEnclosureFinish != null) {
+                        INTERMediatorOnPage.expandingEnclosureFinish(currentContext['name'], node);
+                        INTERMediator.setDebugMessage(
+                            "Call INTERMediatorOnPage.expandingEnclosureFinish with the context: "
+                                + currentContext['name'], 2);
+                    }
+                } catch (ex) {
+                    if (ex == "_im_requath_request_") {
+                        throw ex;
+                    } else {
+                        INTERMediator.setErrorMessage("EXCEPTION-21"+ex.message);
+                    }
                 }
 
-                if (INTERMediatorOnPage.expandingEnclosureFinish != null) {
-                    INTERMediatorOnPage.expandingEnclosureFinish(currentContext['name'], node);
-                    INTERMediator.setDebugMessage(
-                        "Call INTERMediatorOnPage.expandingEnclosureFinish with the context: "
-                            + currentContext['name'], 2);
-                }
-                if (currentContext['post-enclosure']) {
-                    postCallFunc = new Function("arg",
-                        "INTERMediatorOnPage." + currentContext['post-enclosure'] + "(arg)");
-                    postCallFunc(node);
-                    INTERMediator.setDebugMessage(
-                        "Call the post enclosure method 'INTERMediatorOnPage." + currentContext['post-enclosure']
-                            + "' with the context: " + currentContext['name'], 2);
+                try {
+                    if (currentContext['post-enclosure']) {
+                        postCallFunc = new Function("arg",
+                            "INTERMediatorOnPage." + currentContext['post-enclosure'] + "(arg)");
+                        postCallFunc(node);
+                        INTERMediator.setDebugMessage(
+                            "Call the post enclosure method 'INTERMediatorOnPage." + currentContext['post-enclosure']
+                                + "' with the context: " + currentContext['name'], 2);
+                    }
+                } catch (ex) {
+                    if (ex == "_im_requath_request_") {
+                        throw ex;
+                    } else {
+                        INTERMediator.setErrorMessage("EXCEPTION-22"+ex.message);
+                    }
                 }
 
             } else {

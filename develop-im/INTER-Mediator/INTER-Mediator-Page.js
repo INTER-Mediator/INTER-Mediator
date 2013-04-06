@@ -7,6 +7,19 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
+
+if(!Array.indexOf){
+    Array.prototype.indexOf = function(target){
+        var i;
+        for(i = 0; i < this.length; i++){
+            if(this[i] === target){
+                return i;
+            }
+        }
+        return -1;
+    }
+}
+
 var INTERMediatorOnPage;
 
 INTERMediatorOnPage = {
@@ -111,7 +124,7 @@ INTERMediatorOnPage = {
     authenticating:function (doAfterAuth) {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton,
-            newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox;
+            newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode;
 
         if (this.authCount > this.authCountLimit) {
             this.authenticationError();
@@ -144,13 +157,13 @@ INTERMediatorOnPage = {
         frontPanel.style.margin = "50px auto 0 auto";
         frontPanel.style.padding = "20px";
         frontPanel.style.borderRadius = "10px";
-        frontPanel.style.position = "relatvie";
+        frontPanel.style.position = "relative";
         backBox.appendChild(frontPanel);
 
         if (INTERMediatorOnPage.realm.length > 0) {
             realmBox = document.createElement('DIV');
             realmBox.appendChild(document.createTextNode(INTERMediatorOnPage.realm));
-            realmBox.style.width = labelWidth;
+//            realmBox.style.width = labelWidth;
             realmBox.style.textAlign = "left";
             frontPanel.appendChild(realmBox);
             breakLine = document.createElement('HR');
@@ -190,12 +203,14 @@ INTERMediatorOnPage = {
         passwordBox.id = "_im_password";
         passwordBox.size = "12";
         passwordBox.onkeydown = function (event) {
-            if (event.keyCode == 13) {
+            keyCode = (window.event) ? window.event.which : event.keyCode;
+            if (keyCode == 13) {
                 authButton.onclick();
             }
         };
         userBox.onkeydown = function (event) {
-            if (event.keyCode == 13) {
+            keyCode = (window.event) ? window.event.which : event.keyCode;
+            if (keyCode == 13) {
                 passwordBox.focus();
             }
         };

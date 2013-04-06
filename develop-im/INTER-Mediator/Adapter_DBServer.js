@@ -128,6 +128,8 @@ INTERMediator_DBAdapter = {
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 throw ex;
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-19"+ex.message);
             }
         }
         if (INTERMediatorOnPage.authChallenge == null) {
@@ -142,6 +144,8 @@ INTERMediator_DBAdapter = {
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 throw ex;
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-18"+ex.message);
             }
         }
         if (INTERMediatorOnPage.authChallenge == null) {
@@ -263,6 +267,8 @@ INTERMediator_DBAdapter = {
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 throw ex;
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-17"+ex.message);
             }
             returnValue.recordset = null;
             returnValue.totalCount = 0;
@@ -289,6 +295,8 @@ INTERMediator_DBAdapter = {
                         return;
                     }
                 }
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-16"+ex.message);
             }
         }
         completion(returnValue);
@@ -360,6 +368,8 @@ INTERMediator_DBAdapter = {
                         return;
                     }
                 }
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-15"+ex.message);
             }
         }
         completion(returnValue);
@@ -416,6 +426,8 @@ INTERMediator_DBAdapter = {
                         return;
                     }
                 }
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-14"+ex.message);
             }
         }
         completion(returnValue);
@@ -464,6 +476,8 @@ INTERMediator_DBAdapter = {
                         return;
                     }
                 }
+            } else {
+                INTERMediator.setErrorMessage("EXCEPTION-13"+ex.message);
             }
         }
         if ( completion )   {
