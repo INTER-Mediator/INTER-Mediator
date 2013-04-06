@@ -420,10 +420,13 @@ INTERMediatorOnPage = {
     /*
      Seek nodes from the repeater of "fromNode" parameter.
      */
-    getNodeIdFromIMDefinition:function (imDefinition, fromNode) {
+    getNodeIdFromIMDefinition:function (imDefinition, fromNode, justFromNode) {
         var repeaterNode;
-
-        repeaterNode = INTERMediatorLib.getParentRepeater(fromNode);
+        if ( justFromNode ) {
+            repeaterNode = fromNode;
+        } else {
+            repeaterNode = INTERMediatorLib.getParentRepeater(fromNode);
+        }
         return seekNode(repeaterNode, imDefinition);
 
         function seekNode(node, imDefinition) {
@@ -453,10 +456,14 @@ INTERMediatorOnPage = {
         }
     },
 
-    getNodeIdsFromIMDefinition:function (imDefinition, fromNode) {
+    getNodeIdsFromIMDefinition:function (imDefinition, fromNode, justFromNode) {
         var children, i, thisClass, thisTitle, enclosureNode, nodeIds;
 
-        enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
+        if ( justFromNode ) {
+            enclosureNode = fromNode;
+        } else {
+            enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
+        }
         if (enclosureNode != null) {
             nodeIds = [];
             seekNode(enclosureNode, imDefinition);
