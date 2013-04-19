@@ -933,11 +933,13 @@ var INTERMediator = {
 
             // After work to set up popup menus.
             for ( i = 0; i < postSetFields.length; i++) {
-                if (postSetFields[i]['value'] == "" && document.getElementById(postSetFields[i]['id']).tagName == "SELECT") {
+                if (postSetFields[i]['value'] == ""
+                    && document.getElementById(postSetFields[i]['id']).tagName == "SELECT") {
                     // for compatibility with Firefox when the value of select tag is empty.
                     emptyElement = document.createElement('option');
                     emptyElement.setAttribute("value", "");
-                    document.getElementById(postSetFields[i]['id']).insertBefore(emptyElement, document.getElementById(postSetFields[i]['id']).firstChild);
+                    document.getElementById(postSetFields[i]['id']).insertBefore(
+                        emptyElement, document.getElementById(postSetFields[i]['id']).firstChild);
                 }
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
@@ -978,14 +980,16 @@ var INTERMediator = {
                         } else {
                             if ( INTERMediator.isIE ){
                                 try {
-                                    expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                                    expandEnclosure(
+                                        node, currentRecord, currentTable, parentEnclosure, objectReference);
                                 } catch(ex) {
                                     if (ex == "_im_requath_request_") {
                                         throw ex;
                                     }
                                 }
                             } else {
-                                expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                                expandEnclosure(
+                                    node, currentRecord, currentTable, parentEnclosure, objectReference);
                             }
                         }
                     } else {
@@ -1016,8 +1020,10 @@ var INTERMediator = {
         }
 
         function setupPostOnlyEnclosure(node)  {
-            var nodes;
+            var nodes, widgetSupport = {};
             var postNodes = INTERMediatorLib.getElementsByClassName(node, '_im_post');
+            INTERMediator.currentEncNumber++;
+
             for (var i=1 ; i < postNodes.length ; i++)   {
                 INTERMediatorLib.addEvent(
                     postNodes[i],
@@ -1034,12 +1040,34 @@ var INTERMediator = {
             for ( i = 0; i < nodes.length; i++) {
                 seekEnclosureInPostOnly(nodes[i]);
             }
+            for ( var pName in widgetSupport )  {
+                widgetSupport[pName].plugin.finish();
+            }
+
             isInsidePostOnly = false;
+
             // -------------------------------------------
             function seekEnclosureInPostOnly(node)  {
                 var children, i;
                 if (node.nodeType === 1) { // Work for an element
                     try {
+                        if ( INTERMediatorLib.isWidgetElement(node))    {
+                            if (node.getAttribute('id') == null) {
+                                node.setAttribute('id', nextIdValue());
+                            }
+                            var wInfo = INTERMediatorLib.getWidgetInfo(node);
+                            if ( wInfo[0] ) {
+                                if ( ! widgetSupport[wInfo[0]])   {
+                                    var targetName = "IMParts_" + wInfo[0];
+                                    widgetSupport[wInfo[0]] = {
+                                        plugin: eval( targetName ),
+                                        instanciate: eval( targetName + ".instanciate" ),
+                                        finish:  eval( targetName + ".finish" )};
+                                }
+                                (widgetSupport[wInfo[0]].instanciate).apply(
+                                    (widgetSupport[wInfo[0]].plugin), [node] );
+                            }
+                        }
                         if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
                             expandEnclosure(node, null, null, null, null);
                         } else {
@@ -1363,8 +1391,6 @@ var INTERMediator = {
                 setupInsertButton(currentContext, encNodeTag, repNodeTag, node, relationValue);
 
                 for ( var pName in widgetSupport )  {
-//                    (widgetSupport[pName].finish).apply(
-//                        (widgetSupport[pName].plugin), null );
                     widgetSupport[pName].plugin.finish();
                 }
                 try{

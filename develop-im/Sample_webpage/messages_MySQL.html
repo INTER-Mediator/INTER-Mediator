@@ -65,23 +65,28 @@
 </head>
 <body>
 <h1>JavaScript Component Test</h1>
-<textarea>test</textarea>
+<table>
+    <tbody class="_im_post">
+    <tr>
+        <td><div class="IM[testtable@text1] IM_WIDGET[tinymce]"></div></td>
+        <td><div class="IM[testtable@vc1] IM_WIDGET[im_fileupload]"></div></td>
+        <td><button class="_im_post">追加</button></td>
+    </tr>
+    </tbody>
+</table>
 <table>
     <thead>
     <tr>
         <th>Date and Time</th>
-        <th>User</th>
-        <th>Group</th>
-        <th>Message</th><th></th>
+        <th>Message</th>
+        <th>File</th><th></th>
     </tr>
     </thead>
     <tbody>
     <tr>
-        <td class="IM[chat@postdt]"></td>
-        <td class="IM[chat@user]"></td>
-        <td class="IM[chat@groupname]"></td>
-        <td class="IM[chat@message] IM_WIDGET[tinymce]"></td>
-        <td class="IM[chat@message] IM_WIDGET[im_fileupload]"></td>
+        <td class="IM[testtable@dt1]"></td>
+        <td class="IM[testtable@text1] IM_WIDGET[tinymce]"></td>
+        <td class="IM[testtable@vc1] IM_WIDGET[im_fileupload]"></td>
         <td></td>
     </tr>
     </tbody>

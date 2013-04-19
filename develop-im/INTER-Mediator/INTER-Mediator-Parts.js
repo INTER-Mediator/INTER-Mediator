@@ -81,6 +81,7 @@ var IMParts_tinymce = {
 var IMParts_im_fileupload = {
     html5DDSuported: false,
     instanciate: function(parentNode) {
+        var dataNode;
         var newId = parentNode.getAttribute('id') + '-e';
         var newNode = document.createElement( 'DIV' );
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
@@ -101,6 +102,12 @@ var IMParts_im_fileupload = {
             newNode.style.border = "3px dotted #808080";
             newNode.style.align = "center;"
             newNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3101]));
+            dataNode = document.createElement('DIV');
+            INTERMediatorLib.setClassAttributeToNode(dataNode, '_im_FilePath');
+            dataNode.style.marginTop = "20px";
+            dataNode.style.backgroundColor = "#FFFFFF";
+            dataNode.style.textAlign = "center";
+            newNode.appendChild(dataNode);
         } else {
             var formNode = document.createElement( 'FORM' );
             formNode.setAttribute('method','post');
@@ -133,9 +140,9 @@ var IMParts_im_fileupload = {
         };
 
         parentNode._im_setValue = function(str)    {
-            var targetNode = newNode;
             if ( IMParts_im_fileupload.html5DDSuported )    {
-            //    targetNode.innerHTML = str;
+                var dataNode = INTERMediatorLib.getElementsByClassName(this, '_im_FilePath');
+                dataNode[0].appendChild(document.createTextNode(str));
             } else {
 
             }
@@ -147,42 +154,49 @@ var IMParts_im_fileupload = {
             for( var i = 0 ; i < IMParts_im_fileupload.ids.length ; i++ )    {
                 var targetNode = document.getElementById(IMParts_im_fileupload.ids[i]);
                 if (targetNode) {
-                    var idmyself = (function(){
-                        var myid = IMParts_im_fileupload.ids[i];
+//                    var idmyself = (function(){
+//                        var myid = IMParts_im_fileupload.ids[i];
+//                        return function() {
+//                            return myid;
+//                        }
+//                    })();
+                    var thisUpdateInfo = INTERMediator.updateRequiredObject[IMParts_im_fileupload.ids[i]];
+                    targetNode.updateInfo = (function(){
+                        var info = thisUpdateInfo;
                         return function() {
-                            return myid;
+                            return info;
                         }
                     })();
-                    INTERMediatorLib.addEvent(targetNode, "dragleave",function(event){
+                    INTERMediatorLib.addEvent(targetNode, "dragleave", function(event){
                         event.preventDefault();
                         event.target.style.backgroundColor = "#AAAAAA";
                     });
-                    INTERMediatorLib.addEvent(targetNode, "dragover",function(event){
+                    INTERMediatorLib.addEvent(targetNode, "dragover", function(event){
                         event.preventDefault();
                         event.target.style.backgroundColor = "#AAFFAA";
                     });
-                    INTERMediatorLib.addEvent(targetNode, "drop",function(event){
-                        var file, fileNameNode;
+                    INTERMediatorLib.addEvent(targetNode, "drop", function(event){
+                        var file, fileNameNode, targetNode;
+                        targetNode = event.currentTarget;
                         event.preventDefault();
                         for(var i = 0 ; i < event.dataTransfer.items.length ; i++){
                             var data = event.dataTransfer.items[i];
 
                             if( data.kind == "file" ){
                                 file = data.getAsFile();
-                                fileNameNode = document.createElement("DIV");
-                                fileNameNode.appendChild( document.createTextNode(
+                                var dataNode = INTERMediatorLib.getElementsByClassName(
+                                    event.target, '_im_FilePath');
+                                dataNode[0].innerHTML = '';
+                                dataNode[0].appendChild(document.createTextNode(
                                     INTERMediatorOnPage.getMessages()[3102] + file.name));
-                                fileNameNode.style.marginTop = "20px";
-                                fileNameNode.style.backgroundColor = "#FFFFFF";
-                                fileNameNode.style.textAlign = "center";
-                                event.target.appendChild(fileNameNode);
                             }
                         }
                         var dragedFileName = file.name;
                         var reader = new FileReader();
                         reader.readAsBinaryString(file);
                         reader.onload = function(evt) {
-                            var updateInfo = INTERMediator.updateRequiredObject[idmyself()];
+                        //    var updateInfo = INTERMediator.updateRequiredObject[idmyself()];
+                            var updateInfo = targetNode.updateInfo();
                             INTERMediator_DBAdapter.uploadFile(
                                 '&_im_contextname=' + encodeURIComponent(updateInfo['name'])
                                     + '&_im_field=' + encodeURIComponent(updateInfo['field'])
@@ -194,7 +208,7 @@ var IMParts_im_fileupload = {
                                     content: evt.target.result
                                 });
                             INTERMediator.flushMessage();
-                            INTERMediator.construct(true);
+                        //    INTERMediator.construct(true);
                         };
                     });
                 }

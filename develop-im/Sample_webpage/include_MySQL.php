@@ -13,16 +13,16 @@ IM_Entry(
     array(
         array(
             'records' => 2,
-            'name' => 'chat',
+            'name' => 'testtable',
             'key' => 'id',
             'sort' => array(
-                array('field' => 'postdt', 'direction' => 'desc'),
+                array('field' => 'dt1', 'direction' => 'desc'),
             ),
             'repeat-control'=>'insert delete',
             'default-values'=>array(
-                array('field'=>'postdt', 'value'=>date('Y-m-d H:i:s')),
+                array('field'=>'dt1', 'value'=>date('Y-m-d H:i:s')),
             ),
-            'file-upload' => 'fileupload',
+        //    'file-upload' => 'fileupload',
         ),
         array(
             'name' => 'fileupload',
