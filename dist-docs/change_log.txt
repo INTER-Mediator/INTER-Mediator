@@ -49,6 +49,7 @@ Change Log
 =================================
 
 Ver.3.4
+- Login/Logout issues were fixed. JS Cookie handling was modified by using the "max-age" key.
 
 Ver.3.3 (2013/4/6)
 - FileMaker's checkbox set feature on the post only page.

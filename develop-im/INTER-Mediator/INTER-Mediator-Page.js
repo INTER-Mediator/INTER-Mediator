@@ -163,7 +163,6 @@ INTERMediatorOnPage = {
         if (INTERMediatorOnPage.realm.length > 0) {
             realmBox = document.createElement('DIV');
             realmBox.appendChild(document.createTextNode(INTERMediatorOnPage.realm));
-//            realmBox.style.width = labelWidth;
             realmBox.style.textAlign = "left";
             frontPanel.appendChild(realmBox);
             breakLine = document.createElement('HR');
@@ -173,10 +172,11 @@ INTERMediatorOnPage = {
         labelWidth = "110px";
         userLabel = document.createElement('LABEL');
         frontPanel.appendChild(userLabel);
-        userSpan = document.createElement('div');
+        userSpan = document.createElement('SPAN');
         userSpan.style.width = labelWidth;
         userSpan.style.textAlign = "right";
         userSpan.style.cssFloat = "left";
+        userSpan.style.marginRight = "4px";
         userLabel.appendChild(userSpan);
         userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2002)));
         userBox = document.createElement('INPUT');
@@ -196,6 +196,7 @@ INTERMediatorOnPage = {
         passwordSpan.style.minWidth = labelWidth;
         passwordSpan.style.textAlign = "right";
         passwordSpan.style.cssFloat = "left";
+        passwordSpan.style.marginRight = "4px";
         passwordLabel.appendChild(passwordSpan);
         passwordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2003)));
         passwordBox = document.createElement('INPUT');
@@ -528,8 +529,8 @@ INTERMediatorOnPage = {
         return '';
     },
     removeCookie:function (key) {
-        document.cookie = this.getKeyWithRealm(key) + "=;path=/;max-age=0";
-        document.cookie = this.getKeyWithRealm(key) + "=;max-age=0";
+        document.cookie = this.getKeyWithRealm(key) + "=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;";
+        document.cookie = this.getKeyWithRealm(key) + "=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;";
     },
 
     setCookie:function (key, val) {
@@ -541,11 +542,12 @@ INTERMediatorOnPage = {
     },
 
     setCookieWorker:function (key, val, isDomain) {
-        var cookieString;
-        cookieString = key + "=" + encodeURIComponent(val)
+        var d = new Date();
+        var oldStyle = INTERMediator.isIE && (INTERMediator.ieVersion < 9);
+        d.setTime(d.getTime() + INTERMediatorOnPage.authExpired * 1000);
+        document.cookie = key + "=" + encodeURIComponent(val)
             + ( isDomain ? ";path=/" : "" )
-            + ";max-age=" + INTERMediatorOnPage.authExpired;
-        document.cookie = cookieString;
+            + ( oldStyle ? ";expires="+ d.toGMTString() : ";max-age=" + INTERMediatorOnPage.authExpired);
     },
 
     hideProgress:function () {
