@@ -528,7 +528,8 @@ INTERMediatorOnPage = {
         return '';
     },
     removeCookie:function (key) {
-        document.cookie = this.getKeyWithRealm(key) + "=";
+        document.cookie = this.getKeyWithRealm(key) + "=;path=/;max-age=0";
+        document.cookie = this.getKeyWithRealm(key) + "=;max-age=0";
     },
 
     setCookie:function (key, val) {
@@ -540,12 +541,10 @@ INTERMediatorOnPage = {
     },
 
     setCookieWorker:function (key, val, isDomain) {
-        var cookieString, expDate;
-        expDate = new Date();
-        expDate.setTime(expDate.getTime() + (INTERMediatorOnPage.authExpired * 1000));
+        var cookieString;
         cookieString = key + "=" + encodeURIComponent(val)
             + ( isDomain ? ";path=/" : "" )
-            + ";expires=" + expDate.toGMTString();
+            + ";max-age=" + INTERMediatorOnPage.authExpired;
         document.cookie = cookieString;
     },
 
