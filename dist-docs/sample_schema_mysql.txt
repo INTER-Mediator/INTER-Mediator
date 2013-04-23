@@ -245,7 +245,6 @@ CREATE TABLE fileupload (
 		COLLATE utf8_unicode_ci
 		ENGINE=InnoDB;
 
-CREATE TABLE fileupload (id	INT AUTO_INCREMENT,f_id	INT,path VARCHAR(1000),PRIMARY KEY(id))CHARACTER SET utf8,COLLATE utf8_unicode_ci ENGINE=InnoDB;
 #
 #
 #
