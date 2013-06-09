@@ -21,6 +21,9 @@ IM_Entry(
             'sort' => array(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
+            'default-values'=>array(
+                array('field'=>'purchase', 'value'=> strftime('%Y-%m-%d')),
+            )
         ),
         // Modification 2: Modification for contexts
         // - This context is copied from the above one, and modified.
@@ -33,6 +36,9 @@ IM_Entry(
             'query' => array(
                 array('field' => 'discard', 'operator' => '<', 'value'=>'1990-1-1'),
             ),
+            'repeat-control'=>'insert delete',
+            'records' => 5,
+            'paging' => true,
         ),
         // [END OF] Modification 2
         array(
@@ -72,7 +78,7 @@ IM_Entry(
         // Modification 3: Modification for a data in single field.
         // - This context is copied from the above one, and modified.
         'formatter' => array(
-            array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
+             array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
             array('field' => 'asset@discard', 'converter-class' => 'MySQLDateTime'),
         ),
         // [END OF] Modification 3

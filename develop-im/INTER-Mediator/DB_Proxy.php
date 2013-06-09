@@ -71,13 +71,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return $result;
     }
 
-    function newToDB($dataSourceName)
+    function newToDB($dataSourceName, $bypassAuth)
     {
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeNewToDB")) {
             $this->userExpanded->doBeforeNewToDB($dataSourceName);
         }
         if ($this->dbClass !== null) {
-            $result = $this->dbClass->newToDB($dataSourceName);
+            $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
         }
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
             $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
@@ -252,7 +252,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     * &parent_keyval=<value of the foreign key field>
     */
 
-    function processingRequest($options, $access = null)
+    function processingRequest($options, $access = null, $bypassAuth = false)
     {
         $this->outputOfPrcessing = '';
         $generatedPrivateKey = '';
@@ -277,10 +277,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->requireAuthorization = false;
         $this->isDBNative = false;
         if (isset($options['authentication'])
-            || $access == 'challenge'
+            || $access == 'challenge' || $access == 'changepassword'
             || (isset($tableInfo['authentication'])
-                && (isset($tableInfo['authentication']['all'])
-                    || isset($tableInfo['authentication'][$access])))
+                && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
             $this->requireAuthorization = true;
             $this->isDBNative = false;
@@ -290,7 +289,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
         }
 
-        if ($this->requireAuthorization) { // Authentication required
+        if (! $bypassAuth && $this->requireAuthorization) { // Authentication required
             if (strlen($this->paramAuthUser) == 0 || strlen($paramResponse) == 0) {
                 // No username or password
                 $access = "do nothing";
@@ -391,7 +390,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->setToDB($this->dbSettings->getTargetName());
                 break;
             case 'new':
-                $result = $this->newToDB($this->dbSettings->getTargetName());
+                $result = $this->newToDB($this->dbSettings->getTargetName(), $bypassAuth);
                 $this->outputOfPrcessing = "newRecordKeyValue='{$result}';";
                 break;
             case 'delete':
@@ -402,7 +401,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             case 'changepassword':
                 if (isset($_POST['newpass'])) {
                     $changeResult = $this->changePassword($this->paramAuthUser, $_POST['newpass']);
-                    $this->outputOfPrcessing =  "changePasswordResult=" . $changeResult ? "true" : "false" . ";";
+                    $this->outputOfPrcessing =  "changePasswordResult=" . ($changeResult ? "true;" : "false;");
                 } else {
                     $this->outputOfPrcessing = "changePasswordResult=false;";
                 }
@@ -415,6 +414,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     var $requireAuthentication;
     var $isDBNative;
     var $paramAuthUser;
+
+    var $previousChallenge;
+    var $previousClientid;
 
     function finishCommunication($notFinish = false)
     {
@@ -429,6 +431,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $generatedChallenge = $this->generateChallenge();
         $generatedUID = $this->generateClientId('');
         $userSalt = $this->saveChallenge($this->isDBNative ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
+        $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
+        $this->previousClientid = "{$generatedUID}";
         echo "challenge='{$generatedChallenge}{$userSalt}';";
         echo "clientid='{$generatedUID}';";
         if ($this->requireAuthentication) {
@@ -481,6 +485,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     function checkAuthorization($username, $hashedvalue, $clientId)
     {
+        $this->logger->setDebugMessage("[checkAuthorization]paramResponse={$hashedvalue}", 2);
         $returnValue = false;
 
         $this->dbClass->removeOutdatedChallenges();
@@ -520,6 +525,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->dbClass->removeOutdatedChallenges();
         // Database user mode is user_id=0
         $storedChallenge = $this->dbClass->authSupportCheckMediaToken($user);
+
         if (strlen($storedChallenge) == 24 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
@@ -540,5 +546,41 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return $returnValue;
     }
 
+    function resetPasswordSequenceStart($email)
+    {
+        if( $email === false || $email == '' )    {
+            return false;
+        }
+        $userid = $this->dbClass->authSupportGetUserIdFromEmail($email);
+        $username = $this->dbClass->authSupportGetUsernameFromUserId($userid);
+        if( $username === false || $username == '' )    {
+            return false;
+        }
+        $clienthost = $this->generateChallenge();
+        $hash = sha1($clienthost . $email . $username);
+//        var_export($clienthost);
+//        var_export($email);
+//        var_export($userid);
+//        var_export($username);
+//        var_export($hash);
+        if ( $this->dbClass->authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash) )  {
+            return array('randdata'=>$clienthost, 'username'=>$username);
+        }
+        return false;
+    }
 
+    function resetPasswordSequenceReturnBack($username, $email, $randdata, $newpassword)
+    {
+        if( $email === false || $email == '' || $username === false || $username == '' )    {
+            return false;
+        }
+        $userid = $this->dbClass->authSupportGetUserIdFromUsername($username);
+        $hash = sha1($randdata . $email . $username);
+        if ($this->dbClass->authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)){
+            if ($this->changePassword($username, $newpassword)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

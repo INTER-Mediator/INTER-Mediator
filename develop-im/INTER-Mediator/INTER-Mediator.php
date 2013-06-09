@@ -17,8 +17,11 @@ require_once('DB_Settings.php');
 require_once('DB_UseSharedObjects.php');
 require_once('DB_Proxy.php');
 
+$g_dbInstance = null;
+
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
+    global $g_dbInstance, $g_serverSideCall;
     spl_autoload_register('loadClass');
 
     if ($debug) {
@@ -31,14 +34,108 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             return;
         }
     }
-
-    if (!isset($_POST['access']) && !isset($_GET['media'])) {
+    if (isset($g_serverSideCall) && $g_serverSideCall) {
+        $dbInstance = new DB_Proxy();
+        $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
+        $dbInstance->processingRequest($options, "NON");
+        $g_dbInstance = $dbInstance;
+    } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else if (isset($_POST['access']) && $_POST['access'] == 'uploadfile') {
-        $uploader = new FileUploader();
-        $uploader->processing($datasource, $options, $dbspecification, $debug);
-        $uploader->finishCommunication();
+
+        foreach ($_FILES as $fn => $fileInfo) {
+        }
+
+        $dbKeyValue = $_POST["_im_keyvalue"];
+        $dbProxyInstance = new DB_Proxy();
+        $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug, $_POST["_im_contextname"]);
+        $dbProxyInstance->dbSettings->setExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
+        $dbProxyInstance->dbSettings->setTargetFields(array($_POST["_im_field"]));
+        $dbProxyInstance->dbSettings->setValues(array($fileInfo["name"]));
+
+        if (!isset($options['media-root-dir'])) {
+            $dbProxyInstance->logger->setErrorMessage("'media-root-dir' isn't specified");
+            $dbProxyInstance->processingRequest($options, "noop");
+            $dbProxyInstance->finishCommunication();
+            return;
+        }
+        $fileRoot = $options['media-root-dir'];
+        if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
+            $fileRoot .= '/';
+        }
+        $filePathInfo = pathinfo($fileInfo["name"]);
+        $dirPath = $fileRoot . $_POST["_im_contextname"] . '/'
+            . $_POST["_im_keyfield"] . "=" . $_POST["_im_keyvalue"] . '/' . $_POST["_im_field"];
+        $filePath = $dirPath . '/' . $filePathInfo['filename'] . '_'
+            . rand(1000, 9999) . '.' . $filePathInfo['extension'];
+        if (!file_exists($dirPath)) {
+            mkdir($dirPath, 0744, true);
+        }
+        $result = move_uploaded_file($fileInfo["tmp_name"], $filePath);
+        if (!$result) {
+            $dbProxyInstance->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
+            $dbProxyInstance->processingRequest($options, "noop");
+            $dbProxyInstance->finishCommunication();
+            return;
+        }
+        $fileContent = file_get_contents($filePath, false, null, 0, 30);
+        $headerTop = strpos($fileContent, "data:");
+        $endOfHeader = strpos($fileContent, ",");
+        if ($headerTop === 0 && $endOfHeader > 0) {
+            $tempFilePath = $filePath . ".temp";
+            rename ($filePath , $tempFilePath);
+            $step = 1024;
+            if (strpos($fileContent, ";base64") !== false) {
+                $fw = fopen($filePath, "w");
+                $fp = fopen($tempFilePath, "r");
+                fread($fp, $endOfHeader + 1);
+                while ($str = fread($fp, $step)) {
+                    fwrite($fw, base64_decode($str));
+                }
+            }
+            fclose($fp);
+            fclose($fw);
+            unlink($tempFilePath);
+        }
+
+        $dbProxyInstance->processingRequest($options, "update");
+
+        $relatedContext = null;
+        $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+
+        if (isset($dbProxyContext['file-upload'])) {
+            foreach ($dbProxyContext['file-upload'] as $item) {
+                if ($item['field'] == $_POST["_im_field"]) {
+                    $relatedContext = new DB_Proxy();
+                    $relatedContext->initialize($datasource, $options, $dbspecification, $debug, $item['context']);
+                    $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
+                    $fields = array();
+                    $values = array();
+                    foreach ($relatedContextInfo["query"] as $cItem) {
+                        $fields[] = $cItem['field'];
+                        $values[] = $cItem['value'];
+                    }
+                    foreach ($relatedContextInfo["relation"] as $cItem) {
+                        $fields[] = $cItem['foreign-key'];
+                        $values[] = $dbKeyValue;
+                    }
+                    $fields[] = "path";
+                    $values[] = $filePath;
+                    $relatedContext->dbSettings->setTargetFields($fields);
+                    $relatedContext->dbSettings->setValues($values);
+                    $relatedContext->processingRequest($options, "new", true);
+                    $relatedContext->finishCommunication(true);
+                }
+            }
+        }
+
+        echo "dbresult='{$filePath}';";
+        $dbProxyInstance->finishCommunication();
+        if (isset($_POST["_im_redirect"])) {
+            header("Location: {$_POST["_im_redirect"]}");
+        }
+
     } else if (!isset($_POST['access']) && isset($_GET['media'])) {
         $dbProxyInstance = new DB_Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspecification, $debug);
@@ -51,7 +148,6 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $dbInstance->finishCommunication();
     }
 }
-
 
 
 /**

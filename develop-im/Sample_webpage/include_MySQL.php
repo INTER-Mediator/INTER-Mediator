@@ -12,7 +12,7 @@ require_once ('../INTER-Mediator/INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-            'records' => 2,
+            'records' => 10000,
             'name' => 'testtable',
             'key' => 'id',
             'sort' => array(
@@ -22,7 +22,7 @@ IM_Entry(
             'default-values'=>array(
                 array('field'=>'dt1', 'value'=>date('Y-m-d H:i:s')),
             ),
-        //    'file-upload' => 'fileupload',
+            'file-upload' => 'fileupload',
         ),
         array(
             'name' => 'fileupload',

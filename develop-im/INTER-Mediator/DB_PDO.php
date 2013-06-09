@@ -127,7 +127,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
 
         //$currentOperation = 'load';
-        if (isset($tableInfo['authentication'])) {
+        if (isset($context['authentication'])
+            && ( isset($context['authentication']['all']) || isset($context['authentication'][$currentOperation]))) {
             $authInfoField = $this->getFieldForAuthorization($currentOperation);
             $authInfoTarget = $this->getTargetForAuthorization($currentOperation);
             if ($authInfoTarget == 'field-user') {
@@ -361,7 +362,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function newToDB($dataSourceName)
+    function newToDB($dataSourceName, $bypassAuth)
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
@@ -404,7 +405,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 $setColumnNames[] = $field;
             }
         }
-        if (isset($tableInfo['authentication'])) {
+        if (! $bypassAuth && isset($tableInfo['authentication'])) {
             $authInfoField = $this->getFieldForAuthorization("new");
             $authInfoTarget = $this->getTargetForAuthorization("new");
             if ($authInfoTarget == 'field-user') {

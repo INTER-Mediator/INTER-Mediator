@@ -13,7 +13,7 @@ var INTERMediator_DBAdapter;
 
 INTERMediator_DBAdapter = {
 
-    server_access:function (accessURL, debugMessageNumber, errorMessageNumber, uploadingFile) {
+    server_access: function (accessURL, debugMessageNumber, errorMessageNumber, uploadingFile) {
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
             mediatoken = null, appPath, authParams = '', shaObj, hmacValue;
@@ -46,28 +46,17 @@ INTERMediator_DBAdapter = {
         try {
             myRequest = new XMLHttpRequest();
             myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
-            if ( uploadingFile )    {
+            myRequest.setRequestHeader("charset", "utf-8");
+            if (uploadingFile) {
                 var params = (accessURL + authParams).split('&');
-                var body = '';
-                var boundary = 'INTERMediatorBoundary' + Math.round(Math.random() * 10000000);
-                var CRLF =  "\r\n";
-                var twoDash = '--';
 
-                body += twoDash + boundary + CRLF;
-                body += 'Content-Disposition: form-data; name="_im_uploadfile"; filename="';
-                body += uploadingFile['fileName'] + '"' + CRLF;
-                body += 'Content-Type: video/x-dv' + CRLF + CRLF;
-                body += uploadingFile['content'] + CRLF + CRLF;
-
-                for (var i = 0 ; i < params.length ; i++ )  {
+                var fd = new FormData();
+                for (var i = 0; i < params.length; i++) {
                     var valueset = params[i].split('=');
-                    body += twoDash + boundary + CRLF;
-                    body += 'Content-Disposition: form-data; name="' + valueset[0] + '"' + CRLF + CRLF;
-                    body += decodeURIComponent(valueset[1]) + CRLF;
+                    fd.append(valueset[0], decodeURIComponent(valueset[1]));
                 }
-                body += twoDash + boundary + twoDash + CRLF;
-                myRequest.setRequestHeader('Content-Type', 'multipart/form-data; boundary=' + boundary);
-                myRequest.send(body);
+                fd.append("_im_uploadfile", uploadingFile['content']);
+                myRequest.send(fd);
             } else {
                 myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 myRequest.send(accessURL + authParams);
@@ -116,20 +105,43 @@ INTERMediator_DBAdapter = {
             INTERMediatorOnPage.authCount = 0;
         }
         INTERMediatorOnPage.storeCredencialsToCookie();
-        return {dbresult:dbresult,
-            resultCount:resultCount,
-            newRecordKeyValue:newRecordKeyValue,
-            newPasswordResult:changePasswordResult};
+        return {dbresult: dbresult,
+            resultCount: resultCount,
+            newRecordKeyValue: newRecordKeyValue,
+            newPasswordResult: changePasswordResult};
     },
 
-    getChallenge:function () {
+    changePassowrd: function (username, oldpassword, newpassword) {
+        INTERMediatorOnPage.authUser = username;
+        if (username != ''    // No usename and no challenge, get a challenge.
+            && (INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 24 )) {
+            INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
+            challengeResult = INTERMediator_DBAdapter.getChallenge();
+            if (!challengeResult) {
+                INTERMediator.flushMessage();
+                return false; // If it's failed to get a challenge, finish everything.
+            }
+        }
+        INTERMediatorOnPage.authHashedPassword
+            = SHA1(oldpassword + INTERMediatorOnPage.authUserSalt)
+            + INTERMediatorOnPage.authUserHexSalt;
+        params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(newpassword);
+        try {
+            result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
+        } catch (e) {
+            return false;
+        }
+        return (result.newPasswordResult && result.newPasswordResult === true);
+    },
+
+    getChallenge: function () {
         try {
             this.server_access("access=challenge", 1027, 1028);
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-19"+ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-19" + ex.message);
             }
         }
         if (INTERMediatorOnPage.authChallenge == null) {
@@ -138,20 +150,20 @@ INTERMediator_DBAdapter = {
         return true;
     },
 
-    uploadFile:function(parameters, uploadingFile)   {
+    uploadFile: function (parameters, uploadingFile) {
         try {
-            this.server_access("access=uploadfile" + parameters, 1031, 1032, uploadingFile);
+            var result = this.server_access("access=uploadfile" + parameters, 1031, 1032, uploadingFile);
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-18"+ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-18" + ex.message);
             }
         }
         if (INTERMediatorOnPage.authChallenge == null) {
             return false;
         }
-        return true;
+        return result;
     },
 
     /*
@@ -170,7 +182,7 @@ INTERMediator_DBAdapter = {
 
      This function returns recordset of retrieved.
      */
-    db_query:function (args) {
+    db_query: function (args) {
         var noError = true, i, index, params, counter, extCount, criteriaObject, sortkeyObject,
             returnValue, result, ix;
 
@@ -268,7 +280,7 @@ INTERMediator_DBAdapter = {
             if (ex == "_im_requath_request_") {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-17"+ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-17" + ex.message);
             }
             returnValue.recordset = null;
             returnValue.totalCount = 0;
@@ -277,7 +289,7 @@ INTERMediator_DBAdapter = {
         return returnValue;
     },
 
-    db_queryWithAuth:function (args, completion) {
+    db_queryWithAuth: function (args, completion) {
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
@@ -296,7 +308,7 @@ INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-16"+ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-16" + ex.message);
             }
         }
         completion(returnValue);
@@ -310,7 +322,7 @@ INTERMediator_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records>
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
-    db_update:function (args) {
+    db_update: function (args) {
         var noError = true, params, extCount, result;
 
         if (args['name'] == null) {
@@ -336,7 +348,7 @@ INTERMediator_DBAdapter = {
                 params += encodeURIComponent(args['conditions'][extCount]['field']);
                 params += "&condition" + extCount + "operator=";
                 params += encodeURIComponent(args['conditions'][extCount]['operator']);
-                if ( args['conditions'][extCount]['value'] )    {
+                if (args['conditions'][extCount]['value']) {
                     params += "&condition" + extCount + "value=";
                     params += encodeURIComponent(args['conditions'][extCount]['value']);
                 }
@@ -350,7 +362,7 @@ INTERMediator_DBAdapter = {
         return result.dbresult;
     },
 
-    db_updateWithAuth:function (args, completion) {
+    db_updateWithAuth: function (args, completion) {
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
@@ -369,7 +381,7 @@ INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-15"+ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-15" + ex.message);
             }
         }
         completion(returnValue);
@@ -382,7 +394,7 @@ INTERMediator_DBAdapter = {
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
-    db_delete:function (args) {
+    db_delete: function (args) {
         var noError = true, params, i, result;
 
         if (args['name'] == null) {
@@ -408,7 +420,7 @@ INTERMediator_DBAdapter = {
 //        INTERMediator.flushMessage();
     },
 
-    db_deleteWithAuth:function (args, completion) {
+    db_deleteWithAuth: function (args, completion) {
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
@@ -427,7 +439,7 @@ INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-14"+ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-14" + ex.message);
             }
         }
         completion(returnValue);
@@ -441,24 +453,56 @@ INTERMediator_DBAdapter = {
 
      This function returns the value of the key field of the new record.
      */
-    db_createRecord:function (args) {
-        var params, i, result;
+    db_createRecord: function (args) {
+        var params, i, result,index;
 
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return;
         }
+
+        ds = INTERMediatorOnPage.getDataSources(); // Get DataSource parameters
+        var targetKey = null;
+        for (key in ds) { // Search this table from DataSource
+            if (ds[key]['name'] == args['name']) {
+                targetKey = key;
+                break;
+            }
+        }
+        if (targetKey === null) {
+            alert("no targetname :" + args['name']);
+            return;
+        }
+
         params = "access=new&name=" + encodeURIComponent(args['name']);
+        var counter = 0;
+
+        for (index in ds[targetKey]['default-values']) {
+            params += "&field_" + counter + "="
+                + encodeURIComponent(ds[targetKey]['default-values'][index]['field']);
+            params += "&value_" + counter + "="
+                + encodeURIComponent(ds[targetKey]['default-values'][index]['value']);
+            counter++;
+        }
+
+        for (i = 0; i < INTERMediator.additionalFieldValueOnNewRecord.length; i++) {
+            var oneDefinition = INTERMediator.additionalFieldValueOnNewRecord[i];
+            params += "&field_" + counter + "=" + encodeURIComponent(oneDefinition['field']);
+            params += "&value_" + counter + "=" + encodeURIComponent(oneDefinition['value']);
+            counter++;
+        }
+
         for (i = 0; i < args['dataset'].length; i++) {
-            params += "&field_" + i + "=" + encodeURIComponent(args['dataset'][i]['field']);
-            params += "&value_" + i + "=" + encodeURIComponent(args['dataset'][i]['value']);
+            params += "&field_" + counter + "=" + encodeURIComponent(args['dataset'][i]['field']);
+            params += "&value_" + counter + "=" + encodeURIComponent(args['dataset'][i]['value']);
+            counter++;
         }
         result = this.server_access(params, 1018, 1016);
 //        INTERMediator.flushMessage();
         return result.newRecordKeyValue;
     },
 
-    db_createRecordWithAuth:function (args, completion) {
+    db_createRecordWithAuth: function (args, completion) {
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
@@ -477,10 +521,10 @@ INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-13"+ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-13" + ex.message);
             }
         }
-        if ( completion )   {
+        if (completion) {
             completion(returnValue);
         }
     }

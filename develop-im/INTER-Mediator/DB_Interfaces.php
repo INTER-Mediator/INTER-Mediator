@@ -20,7 +20,7 @@ interface DB_Interface
     function getFromDB($dataSourceName);
     function countQueryResult($dataSourceName);
     function setToDB($dataSourceName);
-    function newToDB($dataSourceName);
+    function newToDB($dataSourceName, $bypassAuth);
     function deleteFromDB($dataSourceName);
 }
 
@@ -44,7 +44,7 @@ interface Auth_Interface_Communication
     function saveChallenge($username, $challenge, $clientId);
     function checkAuthorization($username, $hashedvalue, $clientId);
     function checkChallenge($challenge, $clientId);
-   function checkMediaToken($user, $token);
+    function checkMediaToken($user, $token);
     function addUser($username, $password);
     function generateSalt();    // Use inside addUser
     function changePassword($username, $newpassword);

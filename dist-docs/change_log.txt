@@ -49,7 +49,17 @@ Change Log
 =================================
 
 Ver.3.4
-- Login/Logout issues were fixed. JS Cookie handling was modified by using the "max-age" key.
+- Login Panel customizing. You could use the isShowChangePassword, defaultBackgroundImage,
+  defaultBackgroundColor and loginPanelHTML properties of the INTERMediatorOnPage.
+- INTERMediatorOnPage.doAfterConstruct = function(){}; will call after constructing the page.
+- [BUG FIX] Login/Logout issues were fixed. JS Cookie handling was modified by using the "max-age" key.
+- [BUG FIX] Fix the error in spite of the password was collrectly changed.
+- [BUG FIX] Authentication for the individual actions didn't affect collrectly.
+- [BUG FIX] On radio buttons, the alert of edited by anyone showed after second click. It was gone.
+- [BUG FIX] Deleting records on FileMaker Server wasn't affected to multiple records.
+- [BUG FIX] default-values key affected twice for both PDO and FileMaker.
+- [BUG FIX] FileMaker's media authentication method wasn't wrote anymore.
+- [BUG FIX] File uploader supports Firefox.
 
 Ver.3.3 (2013/4/6)
 - FileMaker's checkbox set feature on the post only page.

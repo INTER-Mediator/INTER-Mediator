@@ -48,6 +48,15 @@ class DB_Logger
         return $returnData;
     }
 
+    function getAllErrorMessages()
+    {
+        $returnData = "";
+        foreach ($this->errorMessage as $oneError) {
+            $returnData .= "{$oneError}\n";
+        }
+        return $returnData;
+    }
+
     function setDebugMode($val)
     {
         if ($val === true) {

@@ -14,7 +14,7 @@ include_once('FX/FX.php');
 if (error_get_last() !== null) {
 // If FX.php isn't installed in valid directories, it shows error message and finishes.
     echo 'INTER-Mediator Error: Data Access Class "FileMaker_FX" requires FX.php on any right directory.';
-//    var_dump(error_get_last());
+    var_dump(error_get_last());
     return;
 }
 error_reporting($currentEr);
@@ -22,6 +22,7 @@ error_reporting($currentEr);
 class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 {
     var $fx = null;
+    var $mainTableCount = 0;
 
     function setupFXforAuth($layoutName, $recordCount)
     {
@@ -37,6 +38,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     function setupFX_Impl($layoutName, $recordCount, $user, $password)
     {
+//       echo "#", $this->dbSettings->getDbSpecServer();
+//        echo "#",  $this->dbSettings->getDbSpecPort();
+//        echo "#",  $this->dbSettings->getDbSpecDataType();
+//        echo "#",  $this->dbSettings->getDbSpecProtocol();
+//        echo "#",  $user, $password;
+//        echo "#",  $this->dbSettings->getDbSpecDatabase();
+//        echo "#",  $layoutName;
+//        echo "#",  $recordCount;
+
         $this->fx = new FX(
             $this->dbSettings->getDbSpecServer(),
             $this->dbSettings->getDbSpecPort(),
@@ -115,7 +125,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
-        if (isset($context['authentication'])) {
+        if (isset($context['authentication'])
+            && ( isset($context['authentication']['all']) || isset($context['authentication']['load']))) {
             $authFailure = FALSE;
             $authInfoField = $this->getFieldForAuthorization("load");
             $authInfoTarget = $this->getTargetForAuthorization("load");
@@ -190,7 +201,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->fxResult = $this->fx->DoFxAction("show_all", TRUE, TRUE, 'full');
         }
 
-        //var_dump($this->fxResult);
         if (!is_array($this->fxResult)) {
             $this->logger->setErrorMessage(
                 get_class($this->fxResult) . ': ' . $this->fxResult->getDebugInfo() . var_export($this->fx, true));
@@ -202,7 +212,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return null;
         }
         $this->logger->setDebugMessage($this->fxResult['URL']);
-        //$this->logger->setDebugMessage( arrayToJS( $this->fxResult['data'], '' ));
         $this->mainTableCount = $this->fxResult['foundCount'];
 
         $returnArray = array();
@@ -251,7 +260,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $this->fx->AddDBParam($value['field'], $convertedValue, $op);
             }
         }
-        if (isset($context['authentication'])) {
+        if (isset($tableInfo['authentication'])
+            && ( isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication']['update']))) {
             $authFailure = FALSE;
             $authInfoField = $this->getFieldForAuthorization("update");
             $authInfoTarget = $this->getTargetForAuthorization("update");
@@ -340,7 +350,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
                 if ($result['errorCode'] > 0) {
                     $this->logger->setErrorMessage(
-                        "FX reports error at edit action: table={$this->getEntityForUpdate()}, "
+                        "FX reports error at edit action: table={$this->dbSettings->getEntityForUpdate()}, "
                             . "code={$result['errorCode']}, url={$result['URL']}<hr>");
                     return false;
                 }
@@ -353,7 +363,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function newToDB($dataSourceName)
+    function newToDB($dataSourceName, $bypassAuth)
     {
         $context = $this->dbSettings->getDataSourceTargetArray();
         $keyFieldName = isset($context['key']) ? $context['key'] : 'id';
@@ -384,14 +394,17 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
-        if (isset($context['authentication'])) {
+        if (! $bypassAuth && isset($context['authentication'])
+            && ( isset($context['authentication']['all']) || isset($context['authentication']['new']))) {
             $authInfoField = $this->getFieldForAuthorization("new");
             $authInfoTarget = $this->getTargetForAuthorization("new");
             if ($authInfoTarget == 'field-user') {
-                $this->fx->AddDBParam($authInfoField, strlen($this->dbSettings->currentUser) == 0 ? randomString(10) : $this->dbSettings->currentUser);
+                $this->fx->AddDBParam($authInfoField,
+                    strlen($this->dbSettings->currentUser) == 0 ? randomString(10) : $this->dbSettings->currentUser);
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->getGroupsOfUser($this->dbSettings->currentUser);
-                $this->fx->AddDBParam($authInfoField, strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
+                $this->fx->AddDBParam($authInfoField,
+                    strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
             } else {
                 $authorizedUsers = $this->getAuthorizedUsers("new");
                 $authorizedGroups = $this->getAuthorizedGroups("new");
@@ -442,12 +455,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     function deleteFromDB($dataSourceName)
     {
         $context = $this->dbSettings->getDataSourceTargetArray();
-        $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+        $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 100000000);
         foreach ($this->dbSettings->extraCriteria as $value) {
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
             $this->fx->AddDBParam($value['field'], $value['value'], $op);
         }
-        if (isset($context['authentication'])) {
+        if (isset($context['authentication'])
+            && ( isset($context['authentication']['all']) || isset($context['authentication']['delete']))) {
             $authFailure = FALSE;
             $authInfoField = $this->getFieldForAuthorization("delete");
             $authInfoTarget = $this->getTargetForAuthorization("delete");
@@ -523,15 +537,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
                 if ($result['errorCode'] > 0) {
                     $this->logger->setErrorMessage(
-                        "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>");
+                        "FX reports error at delete action: code={$result['errorCode']}, url={$result['URL']}<hr>");
                     return false;
                 }
                 $this->logger->setDebugMessage($result['URL']);
-                return true;
-                break;
             }
         }
-        return false;
+        return true;
     }
 
     function authSupportStoreChallenge($username, $challenge, $clientId)
@@ -562,9 +574,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
-//            $this->fx->setCharacterEncoding('UTF-8');
-//            $this->fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
-//            $this->fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
             $this->setupFXforAuth($hashTable, 1);
             $this->fx->SetRecordID($recId);
             $this->fx->AddDBParam('hash', $challenge);
@@ -580,9 +589,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return true;
         }
         $this->setupFXforAuth($hashTable, 1);
-//        $this->fx->setCharacterEncoding('UTF-8');
-//        $this->fx->setDBUserPass($this->getDbSpecUser(), $this->getDbSpecPassword());
-//        $this->fx->setDBData($this->getDbSpecDatabase(), $hashTable, 1);
         $this->fx->AddDBParam('hash', $challenge);
         $this->fx->AddDBParam('expired', $currentDTFormat);
         $this->fx->AddDBParam('clienthost', $clientId);
@@ -595,9 +601,42 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->logger->setDebugMessage($result['URL']);
         return true;
     }
+
     function authSupportCheckMediaToken($user)
     {
-
+        $hashTable = $this->dbSettings->getHashTable();
+        if ($hashTable == null) {
+            return false;
+        }
+        if ($user === 0) {
+            $uid = 0;
+        } else {
+            $uid = $this->authSupportGetUserIdFromUsername($user);
+            if ($uid === false) {
+                $this->logger->setDebugMessage("User '{$user}' does't exist.");
+                return false;
+            }
+        }
+        $this->setupFXforAuth($hashTable, 1);
+        $this->fx->AddDBParam('user_id', $uid, 'eq');
+        $this->fx->AddDBParam('clienthost', '_im_media', 'eq');
+        $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+            return false;
+        }
+        $this->logger->setDebugMessage($result['URL']);
+        foreach ($result['data'] as $key => $row) {
+            $expiredDT = new DateTime($row['expired'][0]);
+            $hashValue = $row['hash'][0];
+            $currentDT = new DateTime();
+            $seconds = $currentDT->format("U") - $expiredDT->format("U");
+            if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
+                return false;
+            }
+            return $hashValue;
+        }
+        return false;
     }
 
     function authSupportRetrieveChallenge($username, $clientId, $isDelete = true)
@@ -652,7 +691,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $timeValue = $currentDT->format("U");
 
         $this->setupFXforAuth($hashTable, 100000000);
-        $this->fx->AddDBParam('expired', date('Y-m-d H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds()));
+        $this->fx->AddDBParam('expired', date('m/d/Y H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds()), 'lt');
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
@@ -774,6 +813,54 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    function authSupportGetUsernameFromUserId($userid)
+    {
+        $userTable = $this->dbSettings->getUserTable();
+        if ($userTable == null) {
+            return false;
+        }
+        if ($userid === 0) {
+            return 0;
+        }
+
+        $this->setupFXforAuth($userTable, 1);
+        $this->fx->AddDBParam('id', $userid, "eq");
+        $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+            return false;
+        }
+        $this->logger->setDebugMessage($result['URL']);
+        foreach ($result['data'] as $row) {
+            return $row['username'][0];
+        }
+        return false;
+    }
+
+    function authSupportGetUserIdFromEmail($email)
+    {
+        $userTable = $this->dbSettings->getUserTable();
+        if ($userTable == null) {
+            return false;
+        }
+        if ($email === 0) {
+            return 0;
+        }
+
+        $this->setupFXforAuth($userTable, 1);
+        $this->fx->AddDBParam('email', str_replace("@", "\\@", $email), "eq");
+        $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
+            return false;
+        }
+        $this->logger->setDebugMessage($result['URL']);
+        foreach ($result['data'] as $row) {
+            return $row['id'][0];
+        }
+        return false;
+    }
+
     function authSupportGetGroupNameFromGroupId($groupid)
     {
         $groupTable = $this->dbSettings->getGroupTable();
@@ -784,8 +871,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->setupFXforAuth($groupTable, 1);
         $this->fx->AddDBParam('id', $groupid);
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+         if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
         }
         $this->logger->setDebugMessage($result['URL']);
@@ -839,6 +926,63 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
+    }
+
+    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
+    {
+        $hashTable = $this->dbSettings->getHashTable();
+        if ($hashTable == null) {
+            return false;
+        }
+        $currentDT = new DateTime();
+        $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
+        $this->setupFXforAuth($hashTable, 1);
+        $this->fx->AddDBParam('hash', $hash);
+        $this->fx->AddDBParam('expired', $currentDTFormat);
+        $this->fx->AddDBParam('clienthost', $clienthost);
+        $this->fx->AddDBParam('user_id', $userid);
+        $result = $this->fx->DoFxAction("new", TRUE, TRUE, 'full');
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+            return false;
+        }
+        $this->logger->setDebugMessage($result['URL']);
+        return true;
+    }
+
+    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
+    {
+        $hashTable = $this->dbSettings->getHashTable();
+        if ($hashTable == null) {
+            return false;
+        }
+        $this->setupFXforAuth($hashTable, 1);
+        $this->fx->AddDBParam('user_id', $userid, 'eq');
+        $this->fx->AddDBParam('clienthost', $randdata, 'eq');
+        $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+            return false;
+        }
+        $this->logger->setDebugMessage($result['URL']);
+        foreach ($result['data'] as $key => $row) {
+            $hashValue = $row['hash'][0];
+            $expiredDT = $row['expired'][0];
+
+            $expired = strptime($expiredDT, "%m/%d/%Y %H:%M:%S");
+            $expiredValue = mktime($expired['tm_hour'], $expired['tm_min'], $expired['tm_sec'],
+                $expired['tm_mon']+1, $expired['tm_mday'], $expired['tm_year']+1900);
+            $currentDT = new DateTime();
+            $timeValue = $currentDT->format("U");
+            if ( $timeValue > $expiredValue + 3600)  {
+                return false;
+            }
+            if ( $hash == $hashValue )  {
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 }
 

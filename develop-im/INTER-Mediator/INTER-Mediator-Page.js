@@ -8,11 +8,11 @@
  */
 
 
-if(!Array.indexOf){
-    Array.prototype.indexOf = function(target){
+if (!Array.indexOf) {
+    Array.prototype.indexOf = function (target) {
         var i;
-        for(i = 0; i < this.length; i++){
-            if(this[i] === target){
+        for (i = 0; i < this.length; i++) {
+            if (this[i] === target) {
                 return i;
             }
         }
@@ -23,39 +23,39 @@ if(!Array.indexOf){
 var INTERMediatorOnPage;
 
 INTERMediatorOnPage = {
-    authCountLimit:4,
-    authCount:0,
-    authUser:'',
-    authHashedPassword:'',
-    authUserSalt:'',
-    authUserHexSalt:'',
-    authChallenge:'',
-    requireAuthentication:false,
-    clientId:null,
-    authRequiredContext:null,
-    authStoring:'cookie',
-    authExpired:3600,
-    isOnceAtStarting:true,
-    publickey:null,
-    isNativeAuth:false,
-    httpuser:null,
-    httppasswd:null,
-    mediaToken:null,
-    realm:'',
-    dbCache:{},
+    authCountLimit: 4,
+    authCount: 0,
+    authUser: '',
+    authHashedPassword: '',
+    authUserSalt: '',
+    authUserHexSalt: '',
+    authChallenge: '',
+    requireAuthentication: false,
+    clientId: null,
+    authRequiredContext: null,
+    authStoring: 'cookie',
+    authExpired: 3600,
+    isOnceAtStarting: true,
+    publickey: null,
+    isNativeAuth: false,
+    httpuser: null,
+    httppasswd: null,
+    mediaToken: null,
+    realm: '',
+    dbCache: {},
 
-    isShowChangePassword:true,
+    isShowChangePassword: true,
 
     /*
      This method "getMessages" is going to be replaced valid one with the browser's language.
      Here is defined to prevent the warning of static check.
      */
-    getMessages:function () {
+    getMessages: function () {
         return null;
     },
 
 
-    isComplementAuthData:function () {
+    isComplementAuthData: function () {
         if (this.authUser != null && this.authUser.length > 0
             && this.authHashedPassword != null && this.authHashedPassword.length > 0
             && this.authUserSalt != null && this.authUserSalt.length > 0
@@ -65,19 +65,19 @@ INTERMediatorOnPage = {
         return false;
     },
 
-    retrieveAuthInfo:function () {
+    retrieveAuthInfo: function () {
         if (this.requireAuthentication) {
             if (this.isOnceAtStarting) {
                 switch (this.authStoring) {
                     case 'cookie':
                     case 'cookie-domainwide':
                         this.authUser = this.getCookie('_im_username');
-                        this.authHashedPassword = this.getCookie('_im_crendential');
+                        this.authHashedPassword = this.getCookie('_im_credential');
                         this.mediaToken = this.getCookie('_im_mediatoken');
                         break;
                     default:
                         this.removeCookie('_im_username');
-                        this.removeCookie('_im_crendential');
+                        this.removeCookie('_im_credential');
                         this.removeCookie('_im_mediatoken');
                         break;
                 }
@@ -91,29 +91,29 @@ INTERMediatorOnPage = {
         }
     },
 
-    logout:function () {
+    logout: function () {
         this.authUser = "";
         this.authHashedPassword = "";
         this.authUserSalt = "";
         this.authChallenge = "";
         this.clientId = "";
         this.removeCookie('_im_username');
-        this.removeCookie('_im_crendential');
+        this.removeCookie('_im_credential');
         this.removeCookie('_im_mediatoken');
     },
 
-    storeCredencialsToCookie:function () {
+    storeCredencialsToCookie: function () {
         switch (INTERMediatorOnPage.authStoring) {
             case 'cookie':
                 INTERMediatorOnPage.setCookie('_im_username', INTERMediatorOnPage.authUser);
-                INTERMediatorOnPage.setCookie('_im_crendential', INTERMediatorOnPage.authHashedPassword);
+                INTERMediatorOnPage.setCookie('_im_credential', INTERMediatorOnPage.authHashedPassword);
                 if (INTERMediatorOnPage.mediaToken) {
                     INTERMediatorOnPage.setCookie('_im_mediatoken', INTERMediatorOnPage.mediaToken);
                 }
                 break;
             case 'cookie-domainwide':
                 INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser);
-                INTERMediatorOnPage.setCookieDomainWide('_im_crendential', INTERMediatorOnPage.authHashedPassword);
+                INTERMediatorOnPage.setCookieDomainWide('_im_credential', INTERMediatorOnPage.authHashedPassword);
                 if (INTERMediatorOnPage.mediaToken) {
                     INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken);
                 }
@@ -121,7 +121,17 @@ INTERMediatorOnPage = {
         }
     },
 
-    authenticating:function (doAfterAuth) {
+    defaultBackgroundImage: "url(data:image/png;base64,"
+        + "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA"
+        + "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ"
+        + "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA"
+        + "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        + "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
+
+    defaultBackgroundColor: null,
+    loginPanelHTML: null,
+
+    authenticating: function (doAfterAuth) {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode;
@@ -138,88 +148,130 @@ INTERMediatorOnPage = {
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
         backBox.style.height = "100%";
         backBox.style.width = "100%";
-        backBox.style.backgroundImage = "url(data:image/png;base64,"
-            + "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA"
-            + "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ"
-            + "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA"
-            + "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-            + "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)";
+        if (INTERMediatorOnPage.defaultBackgroundImage) {
+            backBox.style.backgroundImage = INTERMediatorOnPage.defaultBackgroundImage;
+        }
+        if (INTERMediatorOnPage.defaultBackgroundColor) {
+            backBox.style.backgroundColor = INTERMediatorOnPage.defaultBackgroundColor;
+        }
         backBox.style.position = "absolute";
         backBox.style.padding = " 50px 0 0 0";
         backBox.style.top = "0";
         backBox.style.left = "0";
         backBox.style.zIndex = "999998";
 
-        frontPanel = document.createElement('div');
-        frontPanel.style.width = "450px";
-        frontPanel.style.backgroundColor = "#333333";
-        frontPanel.style.color = "#DDDDAA";
-        frontPanel.style.margin = "50px auto 0 auto";
-        frontPanel.style.padding = "20px";
-        frontPanel.style.borderRadius = "10px";
-        frontPanel.style.position = "relative";
-        backBox.appendChild(frontPanel);
+        if (INTERMediatorOnPage.loginPanelHTML) {
+            backBox.innerHTML = INTERMediatorOnPage.loginPanelHTML;
+            passwordBox = document.getElementById('_im_password');
+            userBox = document.getElementById('_im_username');
+            authButton = document.getElementById('_im_authbutton');
+            chgpwButton = document.getElementById('_im_changebutton');
+        } else {
+            frontPanel = document.createElement('div');
+            frontPanel.style.width = "450px";
+            frontPanel.style.backgroundColor = "#333333";
+            frontPanel.style.color = "#DDDDAA";
+            frontPanel.style.margin = "50px auto 0 auto";
+            frontPanel.style.padding = "20px";
+            frontPanel.style.borderRadius = "10px";
+            frontPanel.style.position = "relative";
+            backBox.appendChild(frontPanel);
 
-        if (INTERMediatorOnPage.realm.length > 0) {
-            realmBox = document.createElement('DIV');
-            realmBox.appendChild(document.createTextNode(INTERMediatorOnPage.realm));
-            realmBox.style.textAlign = "left";
-            frontPanel.appendChild(realmBox);
-            breakLine = document.createElement('HR');
+            if (INTERMediatorOnPage.realm.length > 0) {
+                realmBox = document.createElement('DIV');
+                realmBox.appendChild(document.createTextNode(INTERMediatorOnPage.realm));
+                realmBox.style.textAlign = "left";
+                frontPanel.appendChild(realmBox);
+                breakLine = document.createElement('HR');
+                frontPanel.appendChild(breakLine);
+            }
+
+            labelWidth = "110px";
+            userLabel = document.createElement('LABEL');
+            frontPanel.appendChild(userLabel);
+            userSpan = document.createElement('div');
+            userSpan.style.width = labelWidth;
+            userSpan.style.textAlign = "right";
+            userSpan.style.cssFloat = "left";
+            userLabel.appendChild(userSpan);
+            userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2002)));
+            userBox = document.createElement('INPUT');
+            userBox.type = "text";
+            userBox.id = "_im_username";
+            userBox.size = "12";
+            userLabel.appendChild(userBox);
+
+            breakLine = document.createElement('BR');
+            breakLine.clear = "all";
             frontPanel.appendChild(breakLine);
+
+            passwordLabel = document.createElement('LABEL');
+            frontPanel.appendChild(passwordLabel);
+            passwordSpan = document.createElement('SPAN');
+            passwordSpan.style.minWidth = labelWidth;
+            passwordSpan.style.textAlign = "right";
+            passwordSpan.style.cssFloat = "left";
+            passwordLabel.appendChild(passwordSpan);
+            passwordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2003)));
+            passwordBox = document.createElement('INPUT');
+            passwordBox.type = "password";
+            passwordBox.id = "_im_password";
+            passwordBox.size = "12";
+            passwordLabel.appendChild(passwordBox);
+
+            authButton = document.createElement('BUTTON');
+            authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2004)));
+            frontPanel.appendChild(authButton);
+
+            breakLine = document.createElement('BR');
+            breakLine.clear = "all";
+            frontPanel.appendChild(breakLine);
+
+            if (this.isShowChangePassword && !INTERMediatorOnPage.isNativeAuth) {
+
+                breakLine = document.createElement('HR');
+                frontPanel.appendChild(breakLine);
+
+                newPasswordLabel = document.createElement('LABEL');
+                frontPanel.appendChild(newPasswordLabel);
+                newPasswordSpan = document.createElement('SPAN');
+                newPasswordSpan.style.minWidth = labelWidth;
+                newPasswordSpan.style.textAlign = "right";
+                newPasswordSpan.style.cssFloat = "left";
+                newPasswordSpan.style.fontSize = "0.7em";
+                newPasswordSpan.style.paddingTop = "4px";
+                newPasswordLabel.appendChild(newPasswordSpan);
+                newPasswordSpan.appendChild(
+                    document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)));
+                newPasswordBox = document.createElement('INPUT');
+                newPasswordBox.type = "password";
+                newPasswordBox.id = "_im_newpassword";
+                newPasswordBox.size = "12";
+                newPasswordLabel.appendChild(newPasswordBox);
+                chgpwButton = document.createElement('BUTTON');
+                chgpwButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2005)));
+                frontPanel.appendChild(chgpwButton);
+
+                newPasswordMessage = document.createElement('DIV');
+                newPasswordMessage.style.textAlign = "center";
+                newPasswordMessage.style.textSize = "10pt";
+                newPasswordMessage.style.color = "#994433";
+                frontPanel.appendChild(newPasswordMessage);
+            }
         }
-
-        labelWidth = "110px";
-        userLabel = document.createElement('LABEL');
-        frontPanel.appendChild(userLabel);
-        userSpan = document.createElement('SPAN');
-        userSpan.style.width = labelWidth;
-        userSpan.style.textAlign = "right";
-        userSpan.style.cssFloat = "left";
-        userSpan.style.marginRight = "4px";
-        userLabel.appendChild(userSpan);
-        userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2002)));
-        userBox = document.createElement('INPUT');
-        userBox.type = "text";
-        userBox.value = INTERMediatorOnPage.authUser;
-        userBox.id = "_im_username";
-        userBox.size = "12";
-        userLabel.appendChild(userBox);
-
-        breakLine = document.createElement('BR');
-        breakLine.clear = "all";
-        frontPanel.appendChild(breakLine);
-
-        passwordLabel = document.createElement('LABEL');
-        frontPanel.appendChild(passwordLabel);
-        passwordSpan = document.createElement('SPAN');
-        passwordSpan.style.minWidth = labelWidth;
-        passwordSpan.style.textAlign = "right";
-        passwordSpan.style.cssFloat = "left";
-        passwordSpan.style.marginRight = "4px";
-        passwordLabel.appendChild(passwordSpan);
-        passwordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2003)));
-        passwordBox = document.createElement('INPUT');
-        passwordBox.type = "password";
-        passwordBox.id = "_im_password";
-        passwordBox.size = "12";
         passwordBox.onkeydown = function (event) {
             keyCode = (window.event) ? window.event.which : event.keyCode;
             if (keyCode == 13) {
                 authButton.onclick();
             }
         };
+        userBox.value = INTERMediatorOnPage.authUser;
         userBox.onkeydown = function (event) {
             keyCode = (window.event) ? window.event.which : event.keyCode;
             if (keyCode == 13) {
                 passwordBox.focus();
             }
         };
-        passwordLabel.appendChild(passwordBox);
-
-        authButton = document.createElement('BUTTON');
-//        authButton.style.fontSize = "12pt";
-        authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2004)));
         authButton.onclick = function () {
             var inputUsername, inputPassword, challengeResult;
 
@@ -251,36 +303,7 @@ INTERMediatorOnPage = {
             doAfterAuth();  // Retry.
             INTERMediator.flushMessage();
         };
-        frontPanel.appendChild(authButton);
-
-        breakLine = document.createElement('BR');
-        breakLine.clear = "all";
-        frontPanel.appendChild(breakLine);
-
-        if (this.isShowChangePassword && !INTERMediatorOnPage.isNativeAuth) {
-
-            breakLine = document.createElement('HR');
-            frontPanel.appendChild(breakLine);
-
-            newPasswordLabel = document.createElement('LABEL');
-            frontPanel.appendChild(newPasswordLabel);
-            newPasswordSpan = document.createElement('SPAN');
-            newPasswordSpan.style.minWidth = labelWidth;
-            newPasswordSpan.style.textAlign = "right";
-            newPasswordSpan.style.cssFloat = "left";
-            newPasswordSpan.style.fontSize = "0.7em";
-            newPasswordSpan.style.paddingTop = "4px";
-            newPasswordLabel.appendChild(newPasswordSpan);
-            newPasswordSpan.appendChild(
-                document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)));
-            newPasswordBox = document.createElement('INPUT');
-            newPasswordBox.type = "password";
-            newPasswordBox.id = "_im_newpassword";
-            newPasswordBox.size = "12";
-            newPasswordLabel.appendChild(newPasswordBox);
-            chgpwButton = document.createElement('BUTTON');
-            //chgpwButton.style.marginLeft = labelWidth;
-            chgpwButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2005)));
+        if (chgpwButton) {
             chgpwButton.onclick = function () {
                 var inputUsername, inputPassword, inputNewPassword, challengeResult, params, result;
 
@@ -309,22 +332,13 @@ INTERMediatorOnPage = {
                 try {
                     result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
                 } catch (e) {
-                    result = {newPasswordResult:false};
+                    result = {newPasswordResult: false};
                 }
                 newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(
                     result.newPasswordResult === true ? 2009 : 2010);
 
                 INTERMediator.flushMessage();
-            };
-            frontPanel.appendChild(chgpwButton);
-
-            newPasswordMessage = document.createElement('DIV');
-            newPasswordMessage.style.textAlign = "center";
-            newPasswordMessage.style.textSize = "10pt";
-            newPasswordMessage.style.color = "#994433";
-            frontPanel.appendChild(newPasswordMessage);
-
-
+            }
         }
 
         window.scroll(0, 0);
@@ -332,7 +346,7 @@ INTERMediatorOnPage = {
         INTERMediatorOnPage.authCount++;
     },
 
-    authenticationError:function () {
+    authenticationError: function () {
         var bodyNode, backBox, frontPanel;
 
         INTERMediatorOnPage.hideProgress();
@@ -372,7 +386,7 @@ INTERMediatorOnPage = {
         frontPanel.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2001)));
     },
 
-    INTERMediatorCheckBrowser:function (deleteNode) {
+    INTERMediatorCheckBrowser: function (deleteNode) {
         var positiveList, matchAgent, matchOS, versionStr, agent, os, judge, specifiedVersion, versionNum,
             msieMark, dotPos, bodyNode;
 
@@ -436,9 +450,9 @@ INTERMediatorOnPage = {
     /*
      Seek nodes from the repeater of "fromNode" parameter.
      */
-    getNodeIdFromIMDefinition:function (imDefinition, fromNode, justFromNode) {
+    getNodeIdFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         var repeaterNode;
-        if ( justFromNode ) {
+        if (justFromNode) {
             repeaterNode = fromNode;
         } else {
             repeaterNode = INTERMediatorLib.getParentRepeater(fromNode);
@@ -472,10 +486,42 @@ INTERMediatorOnPage = {
         }
     },
 
-    getNodeIdsFromIMDefinition:function (imDefinition, fromNode, justFromNode) {
+    getNodeIdFromIMDefinitionOnEnclosure: function (imDefinition, fromNode) {
+        var repeaterNode;
+        repeaterNode = INTERMediatorLib.getParentEnclosure(fromNode);
+        return seekNode(repeaterNode, imDefinition);
+
+        function seekNode(node, imDefinition) {
+            var children, i, nodeDefs, returnValue;
+            if (node.nodeType != 1) {
+                return null;
+            }
+            children = node.childNodes;
+            if (children) {
+                for (i = 0; i < children.length; i++) {
+                    if (children[i].nodeType == 1) {
+                        if (INTERMediatorLib.isLinkedElement(children[i])) {
+                            nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
+                            if (nodeDefs.indexOf(imDefinition) > -1) {
+                                returnValue = children[i].getAttribute('id');
+                                return returnValue;
+                            }
+                        }
+                        returnValue = seekNode(children[i], imDefinition);
+                        if (returnValue !== null) {
+                            return returnValue;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+    },
+
+    getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         var children, i, thisClass, thisTitle, enclosureNode, nodeIds;
 
-        if ( justFromNode ) {
+        if (justFromNode) {
             enclosureNode = fromNode;
         } else {
             enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
@@ -510,14 +556,14 @@ INTERMediatorOnPage = {
         }
     },
 
-    getKeyWithRealm:function (str) {
+    getKeyWithRealm: function (str) {
         if (INTERMediatorOnPage.realm.length > 0) {
             return str + "_" + INTERMediatorOnPage.realm;
         }
         return str;
     },
 
-    getCookie:function (key) {
+    getCookie: function (key) {
         var s, i, targetKey;
         s = document.cookie.split('; ');
         targetKey = this.getKeyWithRealm(key);
@@ -528,29 +574,30 @@ INTERMediatorOnPage = {
         }
         return '';
     },
-    removeCookie:function (key) {
+    removeCookie: function (key) {
         document.cookie = this.getKeyWithRealm(key) + "=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;";
         document.cookie = this.getKeyWithRealm(key) + "=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;";
     },
 
-    setCookie:function (key, val) {
+    setCookie: function (key, val) {
         this.setCookieWorker(this.getKeyWithRealm(key), val, false);
     },
 
-    setCookieDomainWide:function (key, val) {
+    setCookieDomainWide: function (key, val) {
         this.setCookieWorker(this.getKeyWithRealm(key), val, true);
     },
 
-    setCookieWorker:function (key, val, isDomain) {
+    setCookieWorker: function (key, val, isDomain) {
+        var cookieString;
         var d = new Date();
-        var oldStyle = INTERMediator.isIE && (INTERMediator.ieVersion < 9);
         d.setTime(d.getTime() + INTERMediatorOnPage.authExpired * 1000);
         document.cookie = key + "=" + encodeURIComponent(val)
             + ( isDomain ? ";path=/" : "" )
-            + ( oldStyle ? ";expires="+ d.toGMTString() : ";max-age=" + INTERMediatorOnPage.authExpired);
+            + ";max-age=" + INTERMediatorOnPage.authExpired
+            + ";expires=" + d.toGMTString() + ';';
     },
 
-    hideProgress:function () {
+    hideProgress: function () {
         var frontPanel;
         frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
@@ -558,7 +605,7 @@ INTERMediatorOnPage = {
         }
     },
 
-    showProgress:function () {
+    showProgress: function () {
         var bodyNode, frontPanel, imageProgress, imageIM;
 
         frontPanel = document.getElementById('_im_progress');
