@@ -48,7 +48,9 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3.4
+Ver.3.5
+
+Ver.3.4 (2013/6/9)
 - Login Panel customizing. You could use the isShowChangePassword, defaultBackgroundImage,
   defaultBackgroundColor and loginPanelHTML properties of the INTERMediatorOnPage.
 - INTERMediatorOnPage.doAfterConstruct = function(){}; will call after constructing the page.
