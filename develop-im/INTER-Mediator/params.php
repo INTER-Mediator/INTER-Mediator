@@ -8,12 +8,16 @@
 *   INTER-Mediator is supplied under MIT License.
 */
 
+/*
+ * common settings for DB_FileMaker_FX and DB_PDO:
+ */
+$dbUser = 'web';
+$dbPassword = 'password';
+
 /* DB_FileMaker_FX awares below:
  */
 $dbServer = '127.0.0.1';
 $dbPort = '80';
-$dbUser = 'web';
-$dbPassword = 'password';
 $dbDataType = 'FMPro7';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
@@ -22,8 +26,6 @@ $dbProtocol = 'HTTP';
  */
 $dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;';
 $dbOption = array();
-$dbUser = 'web';
-$dbPassword = 'password';
 
 /* Browser Compatibility Check:
  */
