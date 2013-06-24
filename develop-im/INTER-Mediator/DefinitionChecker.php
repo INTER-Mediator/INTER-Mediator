@@ -177,8 +177,10 @@ class DefinitionChecker
             'authexpired' => 'string',
             'storing' => 'string',
             'realm' => 'string',
+            'email-as-username' => 'boolean',
         ),
         'media-root-dir'=> 'string',
+        'media-context'=> 'string',
     );
     var
         $prohibitKeywordsForDataSource = array(

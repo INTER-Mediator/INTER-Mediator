@@ -8,7 +8,7 @@
  *
  */
 
-require_once('PHPUnit/Framework/TestCase.php');
+//require_once('PHPUnit/Framework/TestCase.php');
 require_once('../INTER-Mediator/DB_Interfaces.php');
 require_once('../INTER-Mediator/DB_UseSharedObjects.php');
 require_once('../INTER-Mediator/DB_AuthCommon.php');
@@ -25,10 +25,10 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
-        $this->db_proxy = new DB_Proxy();
+        $this->db_proxy = new DB_Proxy(true);
         $this->db_proxy->initialize(array(),
             array(
-                'authentication'=> array( // table only, for all operations
+                'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
                     'group' => array('group2'), // Itemize permitted groups
                     'privilege' => array(), // Itemize permitted privileges
@@ -41,10 +41,10 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
                 ),
             ),
             array(
-                'db-class'=>'PDO',
-                'dsn'=>'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
-                'user'=>'web',
-                'password'=> 'password',
+                'db-class' => 'PDO',
+                'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
+                'user' => 'web',
+                'password' => 'password',
             ),
             false);
     }
@@ -79,87 +79,88 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
     {
         $testName = "Salt retrieving";
         $username = 'user1';
-        $retrievedSalt = $this->db_proxy->dbClass->authSupportGetSalt($username);
+        $retrievedSalt = $this->db_proxy->authSupportGetSalt($username);
         $this->assertEquals('54455354', $retrievedSalt, $testName);
 
     }
 
-        public function testAuthUser4()
-        {
-            $testName = "Generate Challenge and Retrieve it";
-            $username = 'user1';
-            $challenge = $this->db_proxy->authCommon->generateChallenge();
-            $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-            $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
-            $challenge = $this->db_proxy->authCommon->generateChallenge();
-            $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-            $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
-            $challenge = $this->db_proxy->authCommon->generateChallenge();
-            $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-            $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+    public function testAuthUser4()
+    {
+        $testName = "Generate Challenge and Retrieve it";
+        $username = 'user1';
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
 
-        }
+    }
 
-        public function testAuthUser5()
-        {
-            $testName = "Simulation of Authentication";
-            $username = 'user1';
-            $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+    public function testAuthUser5()
+    {
+        $testName = "Simulation of Authentication";
+        $username = 'user1';
+        $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
-            $challenge = $this->db_proxy->authCommon->generateChallenge();
-            $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
 
-    //        $challenge = $this->db_pdo->authSupportRetrieveChallenge($username, "TEST");
-            $retrievedHexSalt = $this->db_proxy->dbClass->authSupportGetSalt($username);
-            $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
+        //        $challenge = $this->db_pdo->authSupportRetrieveChallenge($username, "TEST");
+        $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
+        $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
-            $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-            $calcuratedHash = sha1($challenge . $hashedvalue);
-            $this->assertTrue(
-                $this->db_proxy->authCommon->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
-        }
+        $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
+        $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
 
-        public function testAuthUser6()
-        {
-            $testName = "Create New User and Authenticate";
-            $username = "testuser2";
-            $password = "testuser2";
-//                $this->assertTrue($this->db_proxy->authCommon->addUser( $username, $password ));
+        $this->assertTrue(
+            $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
+    }
 
-            $retrievedHexSalt = $this->db_proxy->dbClass->authSupportGetSalt($username);
-            $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
+    public function testAuthUser6()
+    {
+        $testName = "Create New User and Authenticate";
+        $username = "testuser3";
+        $password = "testuser3";
+    //    $this->assertTrue($this->db_proxy->addUser( $username, $password ));
 
-            $clientId = "TEST";
-            $challenge = $this->db_proxy->authCommon->generateChallenge();
-            $this->db_proxy->authCommon->saveChallenge($username, $challenge, $clientId);
+        $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
+        $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
-            $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-            echo $hashedvalue;
+        $clientId = "TEST";
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
-            $this->assertTrue(
-                $this->db_proxy->authCommon->checkAuthorization($username, sha1($challenge . $hashedvalue), $clientId),
-                $testName);
-        }
+        $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
+        echo $hashedvalue;
 
-        function testUserGroup()
-        {
-            $testName = "Resolve containing group";
-            $groupArray = $this->db_proxy->dbClass->getGroupsOfUser('user1');
-            echo var_export($groupArray);
-            $this->assertTrue(count($groupArray) > 0, $testName);
-        }
+        $this->assertTrue(
+            $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
+            $testName);
+    }
 
-        public function testNativeUser()
-        {
-            $testName = "Native User Challenge Check";
-            $cliendId = "12345";
+    function testUserGroup()
+    {
+        $testName = "Resolve containing group";
+        $groupArray = $this->db_proxy->dbClass->authSupportGetGroupsOfUser('user1');
+        echo var_export($groupArray);
+        $this->assertTrue(count($groupArray) > 0, $testName);
+    }
 
-            $challenge = $this->db_proxy->authCommon->generateChallenge();
-            echo "\ngenerated=", $challenge;
-            $this->db_proxy->dbClass->authSupportStoreChallenge(0, $challenge, $cliendId);
+    public function testNativeUser()
+    {
+        $testName = "Native User Challenge Check";
+        $cliendId = "12345";
 
-            $this->assertTrue(
-                $this->db_proxy->authCommon->checkChallenge($challenge, $cliendId), $testName);
-        }
+        $challenge = $this->db_proxy->generateChallenge();
+        echo "\ngenerated=", $challenge;
+        $this->db_proxy->dbClass->authSupportStoreChallenge(0, $challenge, $cliendId);
+
+        $this->assertTrue(
+            $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
+    }
 
 }

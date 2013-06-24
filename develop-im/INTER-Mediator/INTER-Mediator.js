@@ -840,7 +840,9 @@ var INTERMediator = {
             }
         }
 
-        INTERMediatorOnPage.doAfterConstruct();
+        if (INTERMediatorOnPage.doAfterConstruct) {
+            INTERMediatorOnPage.doAfterConstruct();
+        }
 
         INTERMediator.flushMessage(); // Show messages
 

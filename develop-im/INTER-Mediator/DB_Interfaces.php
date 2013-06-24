@@ -27,13 +27,21 @@ interface DB_Interface
 interface Auth_Interface_DB
 {
     function authSupportStoreChallenge($username, $challenge, $clientId);
-    function authSupportGetSalt($username);
-    function removeOutdatedChallenges();
+    function authSupportRemoveOutdatedChallenges();
     function authSupportRetrieveChallenge($username, $clientId, $isDelete = true);
     function authSupportRetrieveHashedPassword($username);
     function authSupportCreateUser($username, $hashedpassword);
     function authSupportChangePassword($username, $hashednewpassword);
     function authSupportCheckMediaToken($user);
+    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue);
+    function authSupportGetUserIdFromEmail($email);
+    function authSupportGetUserIdFromUsername($username);
+    function authSupportGetUsernameFromUserId($userid);
+    function authSupportGetGroupNameFromGroupId($groupid);
+    function authSupportGetGroupsOfUser($user);
+    function authSupportUnifyUsernameAndEmail($username);
+    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash);
+    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash);
 }
 
 interface Auth_Interface_Communication
@@ -46,6 +54,7 @@ interface Auth_Interface_Communication
     function checkChallenge($challenge, $clientId);
     function checkMediaToken($user, $token);
     function addUser($username, $password);
+    function authSupportGetSalt($username);
     function generateSalt();    // Use inside addUser
     function changePassword($username, $newpassword);
 }

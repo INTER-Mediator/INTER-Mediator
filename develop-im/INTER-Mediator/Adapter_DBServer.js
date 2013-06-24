@@ -13,12 +13,8 @@ var INTERMediator_DBAdapter;
 
 INTERMediator_DBAdapter = {
 
-    server_access: function (accessURL, debugMessageNumber, errorMessageNumber, uploadingFile) {
-        var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
-            clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-            mediatoken = null, appPath, authParams = '', shaObj, hmacValue;
-        appPath = INTERMediatorOnPage.getEntryPath();
-
+    generate_authParams: function () {
+        var authParams = '', shaObj, hmacValue;
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams
                 = "&clientid=" + encodeURIComponent(INTERMediatorOnPage.clientId)
@@ -39,7 +35,47 @@ INTERMediator_DBAdapter = {
 //                authParams += "&response=" + encodeURIComponent(
 //                    SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword));
         }
+        return authParams;
+    },
 
+    store_challenge: function (challenge) {
+        if (challenge !== null) {
+            INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
+            INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
+            INTERMediatorOnPage.authUserSalt = String.fromCharCode(
+                parseInt(challenge.substr(24, 2), 16),
+                parseInt(challenge.substr(26, 2), 16),
+                parseInt(challenge.substr(28, 2), 16),
+                parseInt(challenge.substr(30, 2), 16));
+        }
+    },
+
+    logging_comAction: function (appPath, accessURL, authParams) {
+        INTERMediator.debugMessages.push(
+            INTERMediatorOnPage.getMessages()[1031]
+                + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
+    },
+
+    logging_comResult: function (myRequest, resultCount, dbresult, requireAuth,
+                                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
+        if (INTERMediator.debugMode > 1) {
+            INTERMediator.debugMessages.push("myRequest.responseText=" + myRequest.responseText);
+            INTERMediator.debugMessages.push("Return: resultCount=" + resultCount
+                + ", dbresult=" + INTERMediatorLib.objectToString(dbresult) + "\n"
+                + "Return: requireAuth=" + requireAuth
+                + ", challenge=" + challenge + ", clientid=" + clientid + "\n"
+                + "Return: newRecordKeyValue=" + newRecordKeyValue
+                + ", changePasswordResult=" + changePasswordResult + ", mediatoken=" + mediatoken
+            );
+        }
+    },
+    server_access: function (accessURL, debugMessageNumber, errorMessageNumber) {
+        var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
+            clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
+            mediatoken = null, appPath, authParams;
+        appPath = INTERMediatorOnPage.getEntryPath();
+        authParams = INTERMediator_DBAdapter.generate_authParams();
+        INTERMediator_DBAdapter.logging_comAction(appPath, accessURL, authParams)
         INTERMediator.debugMessages.push(
             INTERMediatorOnPage.getMessages()[debugMessageNumber]
                 + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
@@ -47,42 +83,12 @@ INTERMediator_DBAdapter = {
             myRequest = new XMLHttpRequest();
             myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
             myRequest.setRequestHeader("charset", "utf-8");
-            if (uploadingFile) {
-                var params = (accessURL + authParams).split('&');
-
-                var fd = new FormData();
-                for (var i = 0; i < params.length; i++) {
-                    var valueset = params[i].split('=');
-                    fd.append(valueset[0], decodeURIComponent(valueset[1]));
-                }
-                fd.append("_im_uploadfile", uploadingFile['content']);
-                myRequest.send(fd);
-            } else {
-                myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                myRequest.send(accessURL + authParams);
-            }
+            myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            myRequest.send(accessURL + authParams);
             eval(myRequest.responseText);
-            if (INTERMediator.debugMode > 1) {
-                INTERMediator.debugMessages.push("myRequest.responseText=" + myRequest.responseText);
-                INTERMediator.debugMessages.push("Return: resultCount=" + resultCount
-                    + ", dbresult=" + INTERMediatorLib.objectToString(dbresult) + "\n"
-                    + "Return: requireAuth=" + requireAuth
-                    + ", challenge=" + challenge + ", clientid=" + clientid + "\n"
-                    + "Return: newRecordKeyValue=" + newRecordKeyValue
-                    + ", changePasswordResult=" + changePasswordResult + ", mediatoken=" + mediatoken
-                );
-            }
-            if (challenge !== null) {
-                INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
-                //    if ( ! INTERMediatorOnPage.isNativeAuth ) {
-                INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
-                INTERMediatorOnPage.authUserSalt = String.fromCharCode(
-                    parseInt(challenge.substr(24, 2), 16),
-                    parseInt(challenge.substr(26, 2), 16),
-                    parseInt(challenge.substr(28, 2), 16),
-                    parseInt(challenge.substr(30, 2), 16));
-                //    }
-            }
+            INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
+                challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
+            INTERMediator_DBAdapter.store_challenge(challenge);
             if (clientid !== null) {
                 INTERMediatorOnPage.clientId = clientid;
             }
@@ -150,20 +156,58 @@ INTERMediator_DBAdapter = {
         return true;
     },
 
-    uploadFile: function (parameters, uploadingFile) {
+    uploadFile: function (parameters, uploadingFile, doItOnFinish) {
+        var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
+            clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
+            mediatoken = null, appPath, authParams, accessURL;
+        //           var result = this.server_access("access=uploadfile" + parameters, 1031, 1032, uploadingFile);
+        appPath = INTERMediatorOnPage.getEntryPath();
+        authParams = INTERMediator_DBAdapter.generate_authParams();
+        accessURL = "access=uploadfile" + parameters;
+        INTERMediator_DBAdapter.logging_comAction(appPath, accessURL, authParams)
         try {
-            var result = this.server_access("access=uploadfile" + parameters, 1031, 1032, uploadingFile);
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                throw ex;
-            } else {
-                INTERMediator.setErrorMessage("EXCEPTION-18" + ex.message);
+            myRequest = new XMLHttpRequest();
+            myRequest.open('POST', appPath, true, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
+            myRequest.setRequestHeader("charset", "utf-8");
+            var params = (accessURL + authParams).split('&');
+            var fd = new FormData();
+            for (var i = 0; i < params.length; i++) {
+                var valueset = params[i].split('=');
+                fd.append(valueset[0], decodeURIComponent(valueset[1]));
             }
+            fd.append("_im_uploadfile", uploadingFile['content']);
+            myRequest.onreadystatechange = function () {
+                switch (myRequest.readyState) {
+                    case 3:
+                        break;
+                    case 4:
+                        eval(myRequest.responseText);
+                        INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
+                            challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
+                        INTERMediator_DBAdapter.store_challenge(challenge);
+                        if (clientid !== null) {
+                            INTERMediatorOnPage.clientId = clientid;
+                        }
+                        if (mediatoken !== null) {
+                            INTERMediatorOnPage.mediaToken = mediatoken
+                        }
+                        if (requireAuth) {
+                            INTERMediator.debugMessages.push("Authentication Required, user/password panel should be show.");
+                            INTERMediatorOnPage.authHashedPassword = null;
+                            throw "_im_requath_request_"
+                        }
+                        INTERMediatorOnPage.authCount = 0;
+                        INTERMediatorOnPage.storeCredencialsToCookie();
+                        doItOnFinish();
+                        break;
+                }
+            }
+            myRequest.send(fd);
+        } catch (e) {
+            INTERMediator.errorMessages.push(
+                INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[1032], [e, myRequest.responseText]));
         }
-        if (INTERMediatorOnPage.authChallenge == null) {
-            return false;
-        }
-        return result;
     },
 
     /*
@@ -454,7 +498,7 @@ INTERMediator_DBAdapter = {
      This function returns the value of the key field of the new record.
      */
     db_createRecord: function (args) {
-        var params, i, result,index;
+        var params, i, result, index;
 
         if (args['name'] == null) {
             INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
@@ -477,14 +521,14 @@ INTERMediator_DBAdapter = {
         params = "access=new&name=" + encodeURIComponent(args['name']);
         var counter = 0;
 
-        for (index in ds[targetKey]['default-values']) {
-            params += "&field_" + counter + "="
-                + encodeURIComponent(ds[targetKey]['default-values'][index]['field']);
-            params += "&value_" + counter + "="
-                + encodeURIComponent(ds[targetKey]['default-values'][index]['value']);
-            counter++;
-        }
-
+//        for (index in ds[targetKey]['default-values']) {
+//            params += "&field_" + counter + "="
+//                + encodeURIComponent(ds[targetKey]['default-values'][index]['field']);
+//            params += "&value_" + counter + "="
+//                + encodeURIComponent(ds[targetKey]['default-values'][index]['value']);
+//            counter++;
+//        }
+//
         for (i = 0; i < INTERMediator.additionalFieldValueOnNewRecord.length; i++) {
             var oneDefinition = INTERMediator.additionalFieldValueOnNewRecord[i];
             params += "&field_" + counter + "=" + encodeURIComponent(oneDefinition['field']);

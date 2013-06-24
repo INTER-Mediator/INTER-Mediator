@@ -78,6 +78,7 @@ IM_Entry(
             'authexpired' => '60', // Set as seconds.
             'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
             'realm' => 'Sample_Auth/MySQL_definitions', //
+            'email-as-username' => true,
         ),
     ),
     array('db-class' => 'PDO'),

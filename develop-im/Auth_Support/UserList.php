@@ -12,7 +12,7 @@ class UserList extends DB_UseSharedObjects implements Extending_Interface_AfterG
     {
         $resultArray = array();
         foreach( $result as $record )   {
-            $groups = $this->dbSettings->currentDataAccess->getGroupsOfUser($record['username']);
+            $groups = $this->dbSettings->currentDataAccess->authSupportGetGroupsOfUser($record['username']);
             sort($groups);
             $record['belonging'] = implode(', ', $groups);
             $resultArray[] = $record;

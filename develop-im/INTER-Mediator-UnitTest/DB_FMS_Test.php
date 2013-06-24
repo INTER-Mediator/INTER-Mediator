@@ -108,13 +108,13 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
     {
         $testName = "Generate Challenge and Retrieve it";
         $username = 'user1';
-        $challenge = $this->db_proxy->authCommon->generateChallenge();
+        $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
-        $challenge = $this->db_proxy->authCommon->generateChallenge();
+        $challenge = $this->db_proxy-->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
-        $challenge = $this->db_proxy->authCommon->generateChallenge();
+        $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
 
@@ -126,7 +126,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
-        $challenge = $this->db_proxy->authCommon->generateChallenge();
+        $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
 
         //        $challenge = $this->db_pdo->authSupportRetrieveChallenge($username, "TEST");
@@ -134,9 +134,9 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        $calcuratedHash = sha1($challenge . $hashedvalue);
+        $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
         $this->assertTrue(
-            $this->db_proxy->authCommon->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
+            $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
     }
 
     public function testAuthUser6()
@@ -144,27 +144,27 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $testName = "Create New User and Authenticate";
         $username = "testuser2";
         $password = "testuser2";
-                $this->assertTrue($this->db_proxy->authCommon->addUser( $username, $password ));
+                $this->assertTrue($this->db_proxy->addUser( $username, $password ));
 
         $retrievedHexSalt = $this->db_proxy->dbClass->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
         $clientId = "TEST";
-        $challenge = $this->db_proxy->authCommon->generateChallenge();
-        $this->db_proxy->authCommon->saveChallenge($username, $challenge, $clientId);
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         echo $hashedvalue;
 
         $this->assertTrue(
-            $this->db_proxy->authCommon->checkAuthorization($username, sha1($challenge . $hashedvalue), $clientId),
+            $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
             $testName);
     }
 
     function testUserGroup()
     {
         $testName = "Resolve containing group";
-        $groupArray = $this->db_proxy->dbClass->getGroupsOfUser('user1');
+        $groupArray = $this->db_proxy->dbClass->authSupportGetGroupsOfUser('user1');
         echo var_export($groupArray);
         $this->assertTrue(count($groupArray) > 0, $testName);
     }
@@ -174,12 +174,12 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $testName = "Native User Challenge Check";
         $cliendId = "12345";
 
-        $challenge = $this->db_proxy->authCommon->generateChallenge();
+        $challenge = $this->db_proxy->generateChallenge();
         echo "\ngenerated=", $challenge;
         $this->db_proxy->dbClass->authSupportStoreChallenge(0, $challenge, $cliendId);
 
         $this->assertTrue(
-            $this->db_proxy->authCommon->checkChallenge($challenge, $cliendId), $testName);
+            $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
     }
 
 }

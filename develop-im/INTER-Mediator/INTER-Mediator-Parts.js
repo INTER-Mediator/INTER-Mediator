@@ -80,40 +80,90 @@ var IMParts_tinymce = {
  */
 var IMParts_im_fileupload = {
     html5DDSuported: false,
+    progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
+    forceOldStyleForm: false,
+    uploadId: "sign" + Math.random(),
     instanciate: function (parentNode) {
+        var inputNode, formNode, buttonNode;
         var newId = parentNode.getAttribute('id') + '-e';
         var newNode = document.createElement('DIV');
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
         IMParts_im_fileupload.ids.push(newId);
-        IMParts_im_fileupload.html5DDSuported = true;
-        try {
-            var x = new FileReader();
-            var y = new FormData();
-        } catch (ex) {
-            IMParts_im_fileupload.html5DDSuported = false;
+         if (IMParts_im_fileupload.forceOldStyleForm)   {
+             IMParts_im_fileupload.html5DDSuported = false;
+        } else {
+             IMParts_im_fileupload.html5DDSuported = true;
+             try {
+                 var x = new FileReader();
+                 var y = new FormData();
+             } catch (ex) {
+                 IMParts_im_fileupload.html5DDSuported = false;
+             }
         }
         if (IMParts_im_fileupload.html5DDSuported) {
             newNode.dropzone = "copy";
             newNode.style.width = "200px";
-            newNode.style.height = "50px";
-            newNode.style.paddingTop = "30px";
+            newNode.style.height = "100px";
+            newNode.style.paddingTop = "20px";
             newNode.style.backgroundColor = "#AAAAAA";
             newNode.style.border = "3px dotted #808080";
-            newNode.style.align = "center"
+            newNode.style.textAlign = "center";
             newNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3101]));
+            if (IMParts_im_fileupload.progressSupported) {
+                inputNode = document.createElement('iframe');
+                inputNode.setAttribute('id', 'upload_frame' + (IMParts_im_fileupload.ids.length - 1));
+                inputNode.setAttribute('name', 'upload_frame');
+                inputNode.setAttribute('frameborder', '0');
+                inputNode.setAttribute('border', '0');
+                inputNode.setAttribute('scrolling', 'no');
+                inputNode.setAttribute('scrollbar', 'no');
+                inputNode.style.width = "100%";
+                inputNode.style.height = "24px";
+                newNode.appendChild(inputNode);
+            }
         } else {
-            var formNode = document.createElement('FORM');
+            formNode = document.createElement('FORM');
             formNode.setAttribute('method', 'post');
-            formNode.setAttribute('action', INTERMediatorOnPage.getEntryPath());
+            formNode.setAttribute('action', INTERMediatorOnPage.getEntryPath()+"?access=uploadfile");
             formNode.setAttribute('enctype', 'multipart/form-data');
             newNode.appendChild(formNode);
-            var inputNode = document.createElement('INPUT');
+
+            if (IMParts_im_fileupload.progressSupported) {
+                inputNode = document.createElement('INPUT');
+                inputNode.setAttribute('type', 'hidden');
+                inputNode.setAttribute('name', 'APC_UPLOAD_PROGRESS');
+                inputNode.setAttribute('id', 'progress_key');
+                inputNode.setAttribute('value',
+                    IMParts_im_fileupload.uploadId + (IMParts_im_fileupload.ids.length - 1));
+                formNode.appendChild(inputNode);
+            }
+
+            inputNode = document.createElement('INPUT');
+            inputNode.setAttribute('type', 'hidden');
+            inputNode.setAttribute('name', '_im_redirect');
+            inputNode.setAttribute('value', location.href);
+            formNode.appendChild(inputNode);
+
+            inputNode = document.createElement('INPUT');
+            inputNode.setAttribute('type', 'hidden');
+            inputNode.setAttribute('name', '_im_contextnewrecord');
+            inputNode.setAttribute('value', 'uploadfile');
+            formNode.appendChild(inputNode);
+
+            inputNode = document.createElement('INPUT');
+            inputNode.setAttribute('type', 'hidden');
+            inputNode.setAttribute('name', 'access');
+            inputNode.setAttribute('value', 'uploadfile');
+            formNode.appendChild(inputNode);
+
+            inputNode = document.createElement('INPUT');
             inputNode.setAttribute('type', 'file');
             inputNode.setAttribute('accept', '*/*');
             inputNode.setAttribute('name', '_im_uploadfile');
             formNode.appendChild(inputNode);
-            var buttonNode = document.createElement('BUTTON');
+
+            buttonNode = document.createElement('BUTTON');
             buttonNode.setAttribute('type', 'submit');
             buttonNode.appendChild(document.createTextNode('送信'));
             formNode.appendChild(buttonNode);
@@ -158,34 +208,70 @@ var IMParts_im_fileupload = {
                         event.preventDefault();
                         event.target.style.backgroundColor = "#AADDFF";
                     });
-                    INTERMediatorLib.addEvent(targetNode, "drop", function (event) {
-                        var file, fileNameNode;
-                        event.preventDefault();
-                        var eventTarget = event.currentTarget;
+                    INTERMediatorLib.addEvent(targetNode, "drop", (function () {
+                        var iframeId = i;
+                        return function (event) {
+                            var file, fileNameNode;
+                            event.preventDefault();
+                            var eventTarget = event.currentTarget;
                             for (var i = 0; i < event.dataTransfer.files.length; i++) {
                                 file = event.dataTransfer.files[i];
-                                    fileNameNode = document.createElement("DIV");
-                                    fileNameNode.appendChild(document.createTextNode(
-                                        INTERMediatorOnPage.getMessages()[3102] + file.name));
-                                    fileNameNode.style.marginTop = "20px";
-                                    fileNameNode.style.backgroundColor = "#FFFFFF";
-                                    fileNameNode.style.textAlign = "center";
-                                    event.target.appendChild(fileNameNode);
+                                fileNameNode = document.createElement("DIV");
+                                fileNameNode.appendChild(document.createTextNode(
+                                    INTERMediatorOnPage.getMessages()[3102] + file.name));
+                                fileNameNode.style.marginTop = "20px";
+                                fileNameNode.style.backgroundColor = "#FFFFFF";
+                                fileNameNode.style.textAlign = "center";
+                                event.target.appendChild(fileNameNode);
                             }
-                        var updateInfo = INTERMediator.updateRequiredObject[eventTarget.getAttribute('id')];
-                        INTERMediator_DBAdapter.uploadFile(
-                            '&_im_contextname=' + encodeURIComponent(updateInfo['name'])
-                                + '&_im_field=' + encodeURIComponent(updateInfo['field'])
-                                + '&_im_keyfield=' + encodeURIComponent(updateInfo['keying'].split("=")[0])
-                                + '&_im_keyvalue=' + encodeURIComponent(updateInfo['keying'].split("=")[1])
-                                + '&_im_contextnewrecord=' + encodeURIComponent('uploadfile'),
-                            {
-                                fileName: file.name,
-                                content: file
-                            });
-                        INTERMediator.construct(true);
-//                        INTERMediator.flushMessage();
-                    });
+                            var updateInfo = INTERMediator.updateRequiredObject[eventTarget.getAttribute('id')];
+
+                            if (IMParts_im_fileupload.progressSupported) {
+                                var iframeNode = document.getElementById('upload_frame' + iframeId);
+                                iframeNode.style.display = "block";
+                                setTimeout(function () {
+                                    var infoURL = selfURL() + '?uploadprocess='
+                                        + IMParts_im_fileupload.uploadId + iframeId;
+                                    iframeNode.setAttribute('src', infoURL);
+                                });
+                            }
+
+                            INTERMediator_DBAdapter.uploadFile(
+                                '&_im_contextname=' + encodeURIComponent(updateInfo['name'])
+                                    + '&_im_field=' + encodeURIComponent(updateInfo['field'])
+                                    + '&_im_keyfield=' + encodeURIComponent(updateInfo['keying'].split("=")[0])
+                                    + '&_im_keyvalue=' + encodeURIComponent(updateInfo['keying'].split("=")[1])
+                                    + '&_im_contextnewrecord=' + encodeURIComponent('uploadfile')
+                                    + (IMParts_im_fileupload.progressSupported ?
+                                    ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(
+                                        IMParts_im_fileupload.uploadId + iframeId)) : ""),
+                                {
+                                    fileName: file.name,
+                                    content: file
+                                },
+                                function () {
+                                    var indexContext = true;
+                                    var context = INTERMediatorLib.getNamedObject(
+                                        INTERMediatorOnPage.getDataSources(), 'name', updateInfo['name']);
+                                    if (context['file-upload']) {
+                                        var relatedContextName = '';
+                                        for (var i = 0; i < context['file-upload'].length; i++) {
+                                            if (context['file-upload'][i]['field'] == updateInfo['field']) {
+                                                relatedContextName = context['file-upload'][i]['context'];
+                                                break;
+                                            }
+                                        }
+                                        for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
+                                            if (INTERMediator.keyFieldObject[i]['name'] == relatedContextName) {
+                                                indexContext = i;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    INTERMediator.construct(indexContext);
+                                });
+                        }
+                    })());
                 }
             }
 
@@ -197,39 +283,28 @@ var IMParts_im_fileupload = {
                     var formNode = targetNode.getElementsByTagName('FORM')[0];
                     var inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
-                    inputNode.setAttribute('name', '_im_redirect');
-                    inputNode.setAttribute('value', location.href);
-                    formNode.appendChild(inputNode);
-                    inputNode = document.createElement('INPUT');
-                    inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_contextname');
                     inputNode.setAttribute('value', updateInfo['name']);
                     formNode.appendChild(inputNode);
+
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_field');
                     inputNode.setAttribute('value', updateInfo['field']);
                     formNode.appendChild(inputNode);
+
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_keyfield');
                     inputNode.setAttribute('value', updateInfo['keying'].split("=")[0]);
                     formNode.appendChild(inputNode);
+
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_keyvalue');
                     inputNode.setAttribute('value', updateInfo['keying'].split("=")[1]);
                     formNode.appendChild(inputNode);
-                    inputNode = document.createElement('INPUT');
-                    inputNode.setAttribute('type', 'hidden');
-                    inputNode.setAttribute('name', '_im_contextnewrecord');
-                    inputNode.setAttribute('value', 'uploadfile');
-                    formNode.appendChild(inputNode);
-                    inputNode = document.createElement('INPUT');
-                    inputNode.setAttribute('type', 'hidden');
-                    inputNode.setAttribute('name', 'access');
-                    inputNode.setAttribute('value', 'uploadfile');
-                    formNode.appendChild(inputNode);
+
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', 'clientid');
@@ -254,7 +329,8 @@ var IMParts_im_fileupload = {
                         } else {
                             if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
                                 shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
-                                hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
+                                hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
+                                    "ASCII", "SHA-256", "HEX");
                                 inputNode.value = hmacValue;
                             } else {
                                 inputNode.value = "dummy";
@@ -262,29 +338,45 @@ var IMParts_im_fileupload = {
                         }
                     }
                     formNode.appendChild(inputNode);
+                    if (IMParts_im_fileupload.progressSupported) {
 
-                    INTERMediatorLib.addEvent(formNode, "submit", function (event) {
-//                        var thisForm = formNode;
-//                        if (INTERMediatorOnPage.authUser.length > 0) {
-//                            thisForm.elements["clientid"].value = INTERMediatorOnPage.clientId;
-//                            thisForm.elements["authuser"].value = INTERMediatorOnPage.authUser;
-//                            if (INTERMediatorOnPage.isNativeAuth) {
-//                                thisForm.elements["response"].value = INTERMediatorOnPage.publickey.biEncryptedString(
-//                                    INTERMediatorOnPage.authHashedPassword + "\n" + INTERMediatorOnPage.authChallenge);
-//                            } else {
-//                                if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
-//                                    shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
-//                                    hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
-//                                    thisForm.elements["response"].value = hmacValue;
-//                                } else {
-//                                    thisForm.elements["response"].value = "dummy";
-//                                }
-//                            }
-//                        }
-                        return true;
-                    });
+                        inputNode = document.createElement('iframe');
+                        inputNode.setAttribute('id', 'upload_frame' + i);
+                        inputNode.setAttribute('name', 'upload_frame');
+                        inputNode.setAttribute('frameborder', '0');
+                        inputNode.setAttribute('border', '0');
+                        inputNode.setAttribute('scrolling', 'no');
+                        inputNode.setAttribute('scrollbar', 'no');
+                        formNode.appendChild(inputNode);
+
+                        INTERMediatorLib.addEvent(formNode, "submit", (function () {
+                            var iframeId = i;
+                            return function (event) {
+
+                                var iframeNode = document.getElementById('upload_frame' + iframeId);
+                                iframeNode.style.display = "block";
+                                setTimeout(function () {
+                                    var infoURL = selfURL() + '?uploadprocess='
+                                        + IMParts_im_fileupload.uploadId + iframeId;
+                                    iframeNode.setAttribute('src', infoURL);
+                                });
+                                return true;
+                            }
+                        })());
+                    }
                 }
             }
+        }
+
+        function selfURL()  {
+            var nodes = document.getElementsByTagName("SCRIPT");
+            for (var i = 0; i<nodes.length; i++)    {
+                var srcAttr = nodes[i].getAttribute("src");
+                if (srcAttr.match(/\.php/)) {
+                    return srcAttr;
+                }
+            }
+            return null;
         }
 
         function createRecordOnRelatedTable(updateInfo, path) {

@@ -47,6 +47,7 @@ class DB_Settings
     var $currentDataAccess = null;
 
     var $primaryKeyOnly = false;
+    var $emailAsAccount = false;
 
     /* Database connection paramters */
     function setDbSpecServer($str)

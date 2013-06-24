@@ -48,7 +48,14 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3.5
+Ver.3.5 (2013/6/25)
+- File Upload component supports its progress bar.
+- Prevent to show the password in an URL for the FileMaker_FX data class.
+- On the authentication, an email can be used as a user name with the second parameter of IM_Entry function.
+- Password resetting supporting, but it should make pages with the .php extension.
+- DataConverter_HTMLString can change the link text for an url strings with setting 'parameter'=>true.
+- DB_PDO_Test class was rewritten for the current architecture.
+- [BUG FIX] INTERMediatorOnPage.getNodeIdsFromIMDefinition method didn't work correctly.
 
 Ver.3.4 (2013/6/9)
 - Login Panel customizing. You could use the isShowChangePassword, defaultBackgroundImage,

@@ -33,11 +33,61 @@ class MediaAccess
             header( "HTTP/1.1 401 Unauthorized" );
             return;
         }
+        if (isset($options['media-context']))  {
+            $dbProxyInstance->dbSettings->setTargetName($options['media-context']);
+            $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+            if (isset($context['authentication'])
+                && ( isset($context['authentication']['all']) || isset($context['authentication']['load']))) {
+                $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("load");
+                $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("load");
+                $pathComponents = explode('/', $target);
+                $indexKeying = -1;
+                foreach($pathComponents as $index => $dname)  {
+                    if (strpos($dname, '=') !== false)  {
+                        $indexKeying = $index;
+                        $fieldComponents = explode('=', $dname);
+                        $keyField = $fieldComponents[0];
+                        $keyValue = $fieldComponents[1];
+                    }
+                }
+                if ($indexKeying == -1 )  {
+                    header( "HTTP/1.1 401 Unauthorized" );
+                    return;
+                }
+                $contextName = $pathComponents[$indexKeying - 1];
+                if ($contextName != $options['media-context'])  {
+                    header( "HTTP/1.1 401 Unauthorized" );
+                    return;
+                }
+                $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
+                if ($authInfoTarget == 'field-user') {
+                    if (! $dbProxyInstance->dbClass->authSupportCheckMediaPrivilege(
+                        $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $keyField, $keyValue))   {
+                        header( "HTTP/1.1 401 Unauthorized" );
+                        return;
+                    }
+                } else if ($authInfoTarget == 'field-group') {
+                    //
+                } else {
+                    $authorizedUsers = $dbProxyInstance->dbClass->getAuthorizedUsers("load");
+                    $authorizedGroups = $dbProxyInstance->dbClass->getAuthorizedGroups("load");
+                    $belongGroups = $dbProxyInstance->dbClass->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
+                    if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
+                        && array_intersect($belongGroups, $authorizedGroups)
+                    ) {
+                        header( "HTTP/1.1 401 Unauthorized" );
+                        return;
+                    }
+                }
+            }
+        }
         if ( file_exists($target)) {
             $content = file_get_contents($target);
             if ($content !== false) {
                 header("Content-Type: " . $this->getMimeType($target));
                 header("Content-Length: " . strlen($content));
+                $fileName = basename($file);
+                header("Content-Disposition: inline; filename=\"{$fileName}\"");
                 echo $content;
             } else {
                 header( "HTTP/1.1 500 Internal Server Error" );

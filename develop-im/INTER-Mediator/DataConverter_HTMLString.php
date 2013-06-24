@@ -10,6 +10,12 @@
 
 class DataConverter_HTMLString
 {
+    var $linking;
+
+    function __construct($uselink = false)
+    {
+        $this->linking = $uselink;
+    }
 
     function converterFromUserToDB($str)
     {
@@ -18,12 +24,17 @@ class DataConverter_HTMLString
 
     function converterFromDBtoUser($str)
     {
-        return str_replace("\n", "<br/>",
+        $str = str_replace("\n", "<br/>",
             str_replace("\r", "<br/>",
                 str_replace("\r\n", "<br/>",
                     str_replace(">", "&gt;",
                         str_replace("<", "&lt;",
                             str_replace("&", "&amp;", $str))))));
+        if ($this->linking) {
+            $str = mb_ereg_replace ( "(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)" ,
+                "<a href=\"\\0\" target='_blank'>\\0</a>" , $str ,"i");
+        }
+        return $str;
     }
 }
 

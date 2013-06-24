@@ -519,7 +519,7 @@ INTERMediatorOnPage = {
     },
 
     getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
-        var children, i, thisClass, thisTitle, enclosureNode, nodeIds;
+        var enclosureNode, nodeIds;
 
         if (justFromNode) {
             enclosureNode = fromNode;
@@ -533,13 +533,12 @@ INTERMediatorOnPage = {
         return nodeIds;
 
         function seekNode(node, imDefinition) {
+            var thisClass, thisTitle, children, i;
             if (node.nodeType != 1) {
-                return null;
+                return;
             }
             children = node.childNodes;
-            if (children == null) {
-                return null;
-            } else {
+            if (children) {
                 for (i = 0; i < children.length; i++) {
                     if (children[i].getAttribute != null) {
                         thisClass = children[i].getAttribute('class');
@@ -548,11 +547,10 @@ INTERMediatorOnPage = {
                             || (thisTitle != null && thisTitle.indexOf(imDefinition) > -1)) {
                             nodeIds.push(children[i].getAttribute('id'));
                         }
-                        seekNode(children[i], imDefinition);
                     }
+                    seekNode(children[i], imDefinition);
                 }
             }
-            return null;
         }
     },
 

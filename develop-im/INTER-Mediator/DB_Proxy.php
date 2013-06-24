@@ -17,16 +17,18 @@
 
 class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
-    var $dbClass = null;     // for Default context
+    var $dbClass = null; // for Default context
     var $userExpanded = null;
     var $dbClassForContext = array();
     var $outputOfPrcessing = '';
 
-    function __construct()
+    function __construct($testmode = false)
     {
-        header('Content-Type: text/javascript;charset="UTF-8"');
-        header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
-        header('Expires: 0');
+        if (!$testmode) {
+            header('Content-Type: text/javascript;charset="UTF-8"');
+            header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
+            header('Expires: 0');
+        }
     }
 
     function getFromDB($dataSourceName)
@@ -116,7 +118,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
         $this->formatter->setFormatter(isset($options['formatter']) ? $options['formatter'] : null);
-        $this->dbSettings->setTargetName(! is_null($target) ? $target : ( isset($_POST['name']) ? $_POST['name'] : "_im_auth" ));
+        $this->dbSettings->setTargetName(!is_null($target) ? $target : (isset($_POST['name']) ? $_POST['name'] : "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
 
         $dbClassName = 'DB_' .
@@ -236,6 +238,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             $this->dbSettings->setValue(get_magic_quotes_gpc() ? stripslashes($_POST["value_{$i}"]) : $_POST["value_{$i}"]);
         }
+        if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
+            $this->dbSettings->emailAsAccount = $options['authentication']['email-as-username'];
+        }
     }
 
     /*
@@ -283,13 +288,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         ) {
             $this->requireAuthorization = true;
             $this->isDBNative = false;
-            if ( isset($options['authentication']['user'] )
-                && $options['authentication']['user'] == 'database_native') {
+            if (isset($options['authentication']['user'])
+                && $options['authentication']['user'] == 'database_native'
+            ) {
                 $this->isDBNative = true;
             }
         }
 
-        if (! $bypassAuth && $this->requireAuthorization) { // Authentication required
+        if (!$bypassAuth && $this->requireAuthorization) { // Authentication required
             if (strlen($this->paramAuthUser) == 0 || strlen($paramResponse) == 0) {
                 // No username or password
                 $access = "do nothing";
@@ -320,20 +326,21 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     }
                 } else {
                     $noAuthorization = true;
-                    $authorizedUsers = $this->dbClass->getAuthorizedUsers($access);
                     $authorizedGroups = $this->dbClass->getAuthorizedGroups($access);
+                    $authorizedUsers = $this->dbClass->getAuthorizedUsers($access);
                     $this->logger->setDebugMessage(
                         "authorizedUsers=" . var_export($authorizedUsers, true)
-                            . "/authorizedGroups=" . var_export($authorizedGroups, true)
+                        . "/authorizedGroups=" . var_export($authorizedGroups, true)
                         , 2);
                     if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
                         $noAuthorization = false;
                     } else {
-                        if (in_array($this->dbSettings->currentUser, $authorizedUsers)) {
+                        $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($this->dbSettings->currentUser);
+                        if (in_array($signedUser, $authorizedUsers)) {
                             $noAuthorization = false;
                         } else {
                             if (count($authorizedGroups) > 0) {
-                                $belongGroups = $this->dbClass->getGroupsOfUser($this->dbSettings->currentUser);
+                                $belongGroups = $this->dbClass->authSupportGetGroupsOfUser($signedUser);
                                 if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
                                     $noAuthorization = false;
                                 }
@@ -378,7 +385,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $valueArray = array();
                     $counter = 0;
                     foreach ($this->dbSettings->fieldsRequired as $field) {
-                        if (! in_array($field, $tableInfo['protect-writing'])) {
+                        if (!in_array($field, $tableInfo['protect-writing'])) {
                             $fieldArray[] = $field;
                             $valueArray[] = $this->dbSettings->fieldsValues[$counter];
                         }
@@ -401,7 +408,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             case 'changepassword':
                 if (isset($_POST['newpass'])) {
                     $changeResult = $this->changePassword($this->paramAuthUser, $_POST['newpass']);
-                    $this->outputOfPrcessing =  "changePasswordResult=" . ($changeResult ? "true;" : "false;");
+                    $this->outputOfPrcessing = "changePasswordResult=" . ($changeResult ? "true;" : "false;");
                 } else {
                     $this->outputOfPrcessing = "changePasswordResult=false;";
                 }
@@ -422,7 +429,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         echo $this->outputOfPrcessing;
         echo implode('', $this->logger->getMessagesForJS());
-        if ( $notFinish )   {
+        if ($notFinish) {
             return;
         }
         if (!$this->requireAuthorization) {
@@ -441,7 +448,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         if (isset($tableInfo['authentication'])
             && isset($tableInfo['authentication']['media-handling'])
-            && $tableInfo['authentication']['media-handling'] === true) {
+            && $tableInfo['authentication']['media-handling'] === true
+        ) {
             $generatedChallenge = $this->generateChallenge();
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
             echo "mediatoken='{$generatedChallenge}';";
@@ -474,13 +482,19 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return $str;
     }
 
+    function authSupportGetSalt($username)
+    {
+        $hashedpw = $this->dbClass->authSupportRetrieveHashedPassword($username);
+        return substr($hashedpw, -8);
+    }
+
     /* returns user's hash salt.
 
     */
     function saveChallenge($username, $challenge, $clientId)
     {
         $this->dbClass->authSupportStoreChallenge($username, $challenge, $clientId);
-        return $username === 0 ? "" : $this->dbClass->authSupportGetSalt($username);
+        return $username === 0 ? "" : $this->authSupportGetSalt($username);
     }
 
     function checkAuthorization($username, $hashedvalue, $clientId)
@@ -488,7 +502,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->logger->setDebugMessage("[checkAuthorization]paramResponse={$hashedvalue}", 2);
         $returnValue = false;
 
-        $this->dbClass->removeOutdatedChallenges();
+        $this->dbClass->authSupportRemoveOutdatedChallenges();
 
         $storedChalenge = $this->dbClass->authSupportRetrieveChallenge($username, $clientId);
         $this->logger->setDebugMessage("[checkAuthorization]storedChalenge={$storedChalenge}", 2);
@@ -510,7 +524,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function checkChallenge($challenge, $clientId)
     {
         $returnValue = false;
-        $this->dbClass->removeOutdatedChallenges();
+        $this->dbClass->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
         $storedChallenge = $this->dbClass->authSupportRetrieveChallenge(0, $clientId);
         if (strlen($storedChallenge) == 24 && $storedChallenge == $challenge) { // ex.fc0d54312ce33c2fac19d758
@@ -522,7 +536,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function checkMediaToken($user, $token)
     {
         $returnValue = false;
-        $this->dbClass->removeOutdatedChallenges();
+        $this->dbClass->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
         $storedChallenge = $this->dbClass->authSupportCheckMediaToken($user);
 
@@ -548,12 +562,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     function resetPasswordSequenceStart($email)
     {
-        if( $email === false || $email == '' )    {
+        if ($email === false || $email == '') {
             return false;
         }
         $userid = $this->dbClass->authSupportGetUserIdFromEmail($email);
         $username = $this->dbClass->authSupportGetUsernameFromUserId($userid);
-        if( $username === false || $username == '' )    {
+        if ($username === false || $username == '') {
             return false;
         }
         $clienthost = $this->generateChallenge();
@@ -563,20 +577,20 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 //        var_export($userid);
 //        var_export($username);
 //        var_export($hash);
-        if ( $this->dbClass->authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash) )  {
-            return array('randdata'=>$clienthost, 'username'=>$username);
+        if ($this->dbClass->authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)) {
+            return array('randdata' => $clienthost, 'username' => $username);
         }
         return false;
     }
 
     function resetPasswordSequenceReturnBack($username, $email, $randdata, $newpassword)
     {
-        if( $email === false || $email == '' || $username === false || $username == '' )    {
+        if ($email === false || $email == '' || $username === false || $username == '') {
             return false;
         }
         $userid = $this->dbClass->authSupportGetUserIdFromUsername($username);
         $hash = sha1($randdata . $email . $username);
-        if ($this->dbClass->authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)){
+        if ($this->dbClass->authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)) {
             if ($this->changePassword($username, $newpassword)) {
                 return true;
             }

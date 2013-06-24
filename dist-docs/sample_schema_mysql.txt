@@ -237,8 +237,8 @@ CREATE TABLE chat (
 
 
 CREATE TABLE fileupload (
-	id			INT AUTO_INCREMENT,
-	f_id		INT,
+	id	     INT AUTO_INCREMENT,
+	f_id    INT,
 	path        VARCHAR(1000),
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8,
@@ -320,8 +320,8 @@ CREATE TABLE issuedhash (
 		ENGINE=InnoDB;
 
 CREATE TABLE testtable (
- id INT AUTO_INCREMENT,
- num1 INT,
+    id INT AUTO_INCREMENT,
+    num1 INT,
 	num2 INT,
 	num3 INT,
 	dt1 DateTime,
