@@ -78,6 +78,8 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.getDBSpecification", "function(){return ", arrayToJS($dbspecification, ''), ";}");
 
         $messageClass = null;
         $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
