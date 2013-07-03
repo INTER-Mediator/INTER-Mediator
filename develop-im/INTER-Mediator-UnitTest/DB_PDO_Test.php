@@ -42,7 +42,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
+                'dsn' => 'mysql://root:@127.0.0.1/test_db;',
                 'user' => 'web',
                 'password' => 'password',
             ),
