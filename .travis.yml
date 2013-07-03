@@ -6,4 +6,8 @@ php:
   - 5.3
   - 5.2
 
-script: phpunit develop-im/INTER-Mediator-UnitTest/DB_PDO_Test.php develop-im/INTER-Mediator-UnitTest/RSA_Test.php
+before_script:
+  - cd develop-im/INTER-Mediator-UnitTest
+
+script:
+  - phpunit DB_PDO_Test.php
