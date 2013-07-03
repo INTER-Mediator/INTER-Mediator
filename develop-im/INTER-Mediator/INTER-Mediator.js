@@ -32,6 +32,8 @@ var INTERMediator = {
     radioNameMode: false,
     dontSelectRadioCheck: false,
     ignoreOptimisticLocking: false,
+    supressDebugMessageOnPage: false,
+    supressErrorMessageOnPage: false,
     additionalFieldValueOnNewRecord: [],
     waitSecondsAfterPostMessage: 4,
     pagedSize: 0,
@@ -82,17 +84,20 @@ var INTERMediator = {
         }
         if (INTERMediator.debugMode >= level) {
             INTERMediator.debugMessages.push(message);
+            console.log("INTER-Mediator[DEBUG:%s]: %s",new Date(),message);
         }
     },
 
     setErrorMessage: function (message) {
         INTERMediator.errorMessages.push(message);
+        console.error("INTER-Mediator[ERROR]: %s",message);
     },
 
     flushMessage: function () {
         var debugNode, title, body, i, j, lines, clearButton, tNode, target;
 
-        if (INTERMediator.errorMessages.length > 0) {
+        if (! INTERMediator.supressErrorMessageOnPage
+            && INTERMediator.errorMessages.length > 0) {
             debugNode = document.getElementById('_im_error_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
@@ -119,7 +124,9 @@ var INTERMediator = {
                 debugNode.appendChild(document.createElement('hr'));
             }
         }
-        if (INTERMediator.debugMode && INTERMediator.debugMessages.length > 0) {
+        if (! INTERMediator.supressDebugMessageOnPage
+            && INTERMediator.debugMode
+            && INTERMediator.debugMessages.length > 0) {
             debugNode = document.getElementById('_im_debug_panel_4873643897897');
             if (debugNode == null) {
                 debugNode = document.createElement('div');
@@ -199,7 +206,7 @@ var INTERMediator = {
         var changedObj, linkInfo, matched, context, i, index, checkFunction, target, value, result;
 
         if (INTERMediator.isShiftKeyDown && INTERMediator.isControlKeyDown) {
-            INTERMediator.debugMessages.push("Canceled to update the value with shift+control keys.");
+            INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
             INTERMediator.flushMessage();
             INTERMediator.isShiftKeyDown = false;
             INTERMediator.isControlKeyDown = false;
@@ -1563,7 +1570,7 @@ var INTERMediator = {
                         ++tableVote[nodeInfoTable];
                     }
                 } else {
-                    INTERMediator.errorMessages.push(
+                    INTERMediator.setErrorMessage(
                         INTERMediatorLib.getInsertedStringFromErrorNumber(1006, [linkDefs[j]]));
                     //   return null;
                 }

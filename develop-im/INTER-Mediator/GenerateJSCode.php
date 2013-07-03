@@ -31,7 +31,7 @@ class GenerateJSCode
     function generateErrorMessageJS($message)
     {
         $q = '"';
-        echo "INTERMediator.errorMessages.push({$q}"
+        echo "INTERMediator.setErrorMessage({$q}"
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 

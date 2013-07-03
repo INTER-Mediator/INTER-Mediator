@@ -21,7 +21,6 @@ To Do List for the INTER-Mediator developer(s)
 - Caching the result of queries.
 - FileMaker's Find style database search. To do that, the Record-set feature must be support for context.
 - Store NULL for empty string.
-- Multiple values within one field. (It may be required for FileMaker especially.)
 - HTML5's local database supporting.
 - Amazon Web Service supporting.
 - Searching in PDFs or any kind of files.
@@ -48,8 +47,12 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3.6 (????/?/??)
-- Support FileMaker's checkbox set feature.
+Ver.3.6
+- Support FileMaker's checkbox set feature. (Thanks to Atushi Matsuo)
+- Debug messages are written to the browser's JS console too.
+- 'INTERMediator.supressDebugMessageOnPage = true;' can suppress the debug message on a page.
+  'INTERMediator.supressErrorMessageOnPage = true;' can suppress the error message on a page.
+  If you wanna check messages just on the console of the browser, this is sutabile. Both of defaults are false.
 
 Ver.3.5 (2013/6/25)
 - File Upload component supports its progress bar.

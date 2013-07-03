@@ -126,6 +126,37 @@ function arrayToJS($ar, $prefix)
 }
 
 /**
+ * Create JavaScript source from array
+ * @param array ar parameter array
+ * @param string prefix strings for the prefix for key
+ * @param array exarray array containing excluding keys
+ * @return string JavaScript source
+ */
+function arrayToJSExcluding($ar, $prefix, $exarray)
+{
+    if (is_array($ar)) {
+        $items = array();
+        foreach ($ar as $key => $value) {
+            $items[] = arrayToJSExcluding($value, $key, $exarray);
+        }
+        $currentKey = (string)$prefix;
+         if ($currentKey == '')
+            $returnStr = "{" . implode(',', $items) . '}';
+        else if (! in_array($exarray, $currentKey))    {
+            $returnStr = "'{$currentKey}':{" . implode(',', $items) . '}';
+        }
+    } else {
+        $currentKey = (string)$prefix;
+        if ($currentKey == '') {
+            $returnStr = "'" . valueForJSInsert($ar) . "'";
+        } else  if (! in_array($exarray, $currentKey))    {
+            $returnStr = "'{$prefix}':'" . valueForJSInsert($ar) . "'";
+        }
+    }
+    return $returnStr;
+}
+
+/**
  * Create parameter strng from array
  * @param array ar parameter array
  * @param string prefix strings for the prefix for key

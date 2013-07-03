@@ -38,11 +38,11 @@ class DB_Logger
         $q = '"';
         $returnData = array();
         foreach ($this->errorMessage as $oneError) {
-            $returnData[] = "INTERMediator.errorMessages.push({$q}"
+            $returnData[] = "INTERMediator.setErrorMessage({$q}"
                 . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         foreach ($this->debugMessage as $oneError) {
-            $returnData[] = "INTERMediator.debugMessages.push({$q}"
+            $returnData[] = "INTERMediator.setDebugMessage({$q}"
                 . str_replace("\n", " ", addslashes($oneError)) . "{$q});";
         }
         return $returnData;

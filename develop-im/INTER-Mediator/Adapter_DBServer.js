@@ -50,17 +50,23 @@ INTERMediator_DBAdapter = {
         }
     },
 
-    logging_comAction: function (appPath, accessURL, authParams) {
-        INTERMediator.debugMessages.push(
-            INTERMediatorOnPage.getMessages()[1031]
+    logging_comAction: function (debugMessageNumber, appPath, accessURL, authParams) {
+        INTERMediator.setDebugMessage(
+            INTERMediatorOnPage.getMessages()[debugMessageNumber]
                 + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
     },
 
     logging_comResult: function (myRequest, resultCount, dbresult, requireAuth,
                                  challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
+        var responseTextTrancated;
         if (INTERMediator.debugMode > 1) {
-            INTERMediator.debugMessages.push("myRequest.responseText=" + myRequest.responseText);
-            INTERMediator.debugMessages.push("Return: resultCount=" + resultCount
+            if (myRequest.responseText.length > 1000)   {
+                responseTextTrancated = myRequest.responseText.substr(0, 1000) + " ...[trancated]";
+            } else {
+                responseTextTrancated = myRequest.responseText;
+            }
+            INTERMediator.setDebugMessage("myRequest.responseText=" + responseTextTrancated);
+            INTERMediator.setDebugMessage("Return: resultCount=" + resultCount
                 + ", dbresult=" + INTERMediatorLib.objectToString(dbresult) + "\n"
                 + "Return: requireAuth=" + requireAuth
                 + ", challenge=" + challenge + ", clientid=" + clientid + "\n"
@@ -75,10 +81,7 @@ INTERMediator_DBAdapter = {
             mediatoken = null, appPath, authParams;
         appPath = INTERMediatorOnPage.getEntryPath();
         authParams = INTERMediator_DBAdapter.generate_authParams();
-        INTERMediator_DBAdapter.logging_comAction(appPath, accessURL, authParams)
-        INTERMediator.debugMessages.push(
-            INTERMediatorOnPage.getMessages()[debugMessageNumber]
-                + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
+        INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams)
         try {
             myRequest = new XMLHttpRequest();
             myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
@@ -97,13 +100,13 @@ INTERMediator_DBAdapter = {
             }
         } catch (e) {
 
-            INTERMediator.errorMessages.push(
+            INTERMediator.setErrorMessage(
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
 
         }
         if (requireAuth) {
-            INTERMediator.debugMessages.push("Authentication Required, user/password panel should be show.");
+            INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
             INTERMediatorOnPage.authHashedPassword = null;
             throw "_im_requath_request_"
         }
@@ -164,7 +167,7 @@ INTERMediator_DBAdapter = {
         appPath = INTERMediatorOnPage.getEntryPath();
         authParams = INTERMediator_DBAdapter.generate_authParams();
         accessURL = "access=uploadfile" + parameters;
-        INTERMediator_DBAdapter.logging_comAction(appPath, accessURL, authParams)
+        INTERMediator_DBAdapter.logging_comAction(1031, appPath, accessURL, authParams);
         try {
             myRequest = new XMLHttpRequest();
             myRequest.open('POST', appPath, true, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
@@ -192,7 +195,7 @@ INTERMediator_DBAdapter = {
                             INTERMediatorOnPage.mediaToken = mediatoken
                         }
                         if (requireAuth) {
-                            INTERMediator.debugMessages.push("Authentication Required, user/password panel should be show.");
+                            INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
                             INTERMediatorOnPage.authHashedPassword = null;
                             throw "_im_requath_request_"
                         }
@@ -204,7 +207,7 @@ INTERMediator_DBAdapter = {
             }
             myRequest.send(fd);
         } catch (e) {
-            INTERMediator.errorMessages.push(
+            INTERMediator.setErrorMessage(
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1032], [e, myRequest.responseText]));
         }
@@ -231,7 +234,7 @@ INTERMediator_DBAdapter = {
             returnValue, result, ix;
 
         if (args['name'] == null) {
-            INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
+            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
             noError = false;
         }
         if (!noError) {
@@ -370,7 +373,7 @@ INTERMediator_DBAdapter = {
         var noError = true, params, extCount, result;
 
         if (args['name'] == null) {
-            INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
+            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
             noError = false;
         }
 //        if (args['conditions'] == null) {
@@ -378,7 +381,7 @@ INTERMediator_DBAdapter = {
 //            noError = false;
 //        }
         if (args['dataset'] == null) {
-            INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1011));
+            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1011));
             noError = false;
         }
         if (!noError) {
@@ -442,11 +445,11 @@ INTERMediator_DBAdapter = {
         var noError = true, params, i, result;
 
         if (args['name'] == null) {
-            INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
+            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
             noError = false;
         }
         if (args['conditions'] == null) {
-            INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
+            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
             noError = false;
         }
         if (!noError) {
@@ -501,7 +504,7 @@ INTERMediator_DBAdapter = {
         var params, i, result, index;
 
         if (args['name'] == null) {
-            INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
+            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return;
         }
 

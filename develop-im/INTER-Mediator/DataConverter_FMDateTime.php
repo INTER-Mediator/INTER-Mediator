@@ -60,12 +60,15 @@ class DataConverter_FMDateTime
         $dtAr = date_parse($str);
         if ($dtAr === false) return $str;
         $dt = '';
-        if ($dtAr['year'] !== false && $dtAr['hour'] !== false)
-            $dt = "{$dtAr['month']}/{$dtAr['day']}/{$dtAr['year']} {$dtAr['hour']}:{$dtAr['minute']}:{$dtAr['second']}";
-        else if ($dtAr['year'] !== false)
-            $dt = "{$dtAr['month']}/{$dtAr['day']}/{$dtAr['year']}";
-        else if ($dtAr['hour'] !== false)
-            $dt = "{$dtAr['hour']}:{$dtAr['minute']}:{$dtAr['second']}";
+        $dateStr = "{$dtAr['month']}/{$dtAr['day']}/{$dtAr['year']}";
+        $timeStr = "{$dtAr['hour']}:{$dtAr['minute']}:{$dtAr['second']}";
+        if ($dtAr['year'] !== false && $dtAr['hour'] !== false) {
+            $dt = "{$dateStr} {$timeStr}";
+        } else if ($dtAr['year'] !== false) {
+            $dt = $dateStr;
+        } else if ($dtAr['hour'] !== false) {
+            $dt = $timeStr;
+        }
         return $dt;
     }
 
@@ -74,7 +77,8 @@ class DataConverter_FMDateTime
         if ($d == '') {
             return '';
         }
-        $jYearStartDate = array('1989-1-8' => '平成', '1925-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
+        $jYearStartDate = array(
+            '1989-1-8' => '平成', '1925-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
         $wStrArray = array('日', '月', '火', '水', '木', '金', '土');
 
         $dateComp = date_parse_from_format('m/d/Y H:i:s', $d);
@@ -106,11 +110,10 @@ class DataConverter_FMDateTime
             'weekdayName' => $wStrArray[$dt->format('w')],
             'weekday' => $dt->format('w'),
             'longdate' => $dt->format('Y/m/d'),
-            'jlongdate' => $gengoName . ' ' . $gengoYear . $dt->format(' 年 n 月 j 日 ') . $wStrArray[$dt->format('w')] . '曜日',
+            'jlongdate' => $gengoName . ' ' . $gengoYear . $dt->format(' 年 n 月 j 日 ')
+            . $wStrArray[$dt->format('w')] . '曜日',
         );
     }
-
-
 }
 
 ?>
