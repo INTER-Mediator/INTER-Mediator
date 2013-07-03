@@ -258,7 +258,8 @@ var INTERMediator = {
 
     updateDB: function (idValue) {
         var newValue = null, changedObj, objType, objectSpec, keyingComp, keyingField, keyingValue, currentVal,
-            response, isDiffrentOnDB, valueAttr, criteria, updateNodeId, needUpdate, i, j, checkQueryParameter;
+            response, isDiffrentOnDB, valueAttr, criteria, updateNodeId, needUpdate, i, j, k, checkQueryParameter,
+            dbspec, mergedValues, targetNodes;
 
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
@@ -336,13 +337,26 @@ var INTERMediator = {
 
                 if (objType != null) {
                     if (objType == 'checkbox') {
-                        valueAttr = changedObj.getAttribute('value');
-                        if (changedObj.checked) {
-                            newValue = valueAttr;
-                            isDiffrentOnDB = (valueAttr == currentVal);
+                        dbspec = INTERMediatorOnPage.getDBSpecification();
+                        if (dbspec['db-class'] != null && dbspec['db-class'] == 'FileMaker_FX') {
+                            mergedValues = [];
+                            targetNodes = changedObj.parentNode.getElementsByTagName('INPUT');
+                            for (k = 0; k < targetNodes.length; k++) {
+                                if (targetNodes[k].checked) {
+                                    mergedValues.push(targetNodes[k].getAttribute('value'));
+                                }
+                            }
+                            newValue = mergedValues.join("\n");
+                            isDiffrentOnDB = (newValue == currentVal);
                         } else {
-                            newValue = '';
-                            isDiffrentOnDB = (valueAttr != currentVal);
+                            valueAttr = changedObj.getAttribute('value');
+                            if (changedObj.checked) {
+                                newValue = valueAttr;
+                                isDiffrentOnDB = (valueAttr == currentVal);
+                            } else {
+                                newValue = '';
+                                isDiffrentOnDB = (valueAttr != currentVal);
+                            }
                         }
                     } else if (objType == 'radio') {
                         newValue = changedObj.value;
@@ -1587,7 +1601,7 @@ var INTERMediator = {
 
         function setDataToElement(element, curTarget, curVal) {
             var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-                needPostValueSet = false, nodeTag;
+                needPostValueSet = false, nodeTag, curValues, i;
             // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
             nodeTag = element.tagName;
 
@@ -1673,14 +1687,28 @@ var INTERMediator = {
                     typeAttr = element.getAttribute('type');
                     if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                         valueAttr = element.value;
-                        if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
-                            if (INTERMediator.isIE) {
-                                element.setAttribute('checked', 'checked');
-                            } else {
-                                element.checked = true;
+                        curValues = curVal.split("\n");
+                        if (typeAttr == 'checkbox' && curValues.length > 1) {
+                            element.checked = false;
+                            for (i = 0; i < curValues.length; i++) {
+                                if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
+                                    if (INTERMediator.isIE) {
+                                        element.setAttribute('checked', 'checked');
+                                    } else {
+                                        element.checked = true;
+                                    }
+                                }
                             }
                         } else {
-                            element.checked = false;
+                            if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
+                                if (INTERMediator.isIE) {
+                                    element.setAttribute('checked', 'checked');
+                                } else {
+                                    element.checked = true;
+                                }
+                            } else {
+                                element.checked = false;
+                            }
                         }
                     } else { // this node must be text field
                         element.value = curVal;

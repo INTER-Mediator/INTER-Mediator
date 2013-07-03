@@ -48,6 +48,9 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
+Ver.3.6 (????/?/??)
+- Support FileMaker's checkbox set feature.
+
 Ver.3.5 (2013/6/25)
 - File Upload component supports its progress bar.
 - Prevent to show the password in an URL for the FileMaker_FX data class.
