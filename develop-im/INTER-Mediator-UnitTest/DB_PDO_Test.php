@@ -56,10 +56,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $currentDate = new DateTime('2012-02-14 11:32:51');
         //    $expiredDT = new DateTime('2012-02-13 00:00:00');
         //    $currentDate = new DateTime('2013-04-13 01:02:03');
-        $intervalDT = $expiredDT->diff($currentDate, true);
-        // var_export($intervalDT);
-        $calc = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
-        echo $calc;
+        $calc = $currentDate->format('U') - $expiredDT->format('U');
         $this->assertTrue($calc === (11 + 3600 * 24), $testName);
     }
 
