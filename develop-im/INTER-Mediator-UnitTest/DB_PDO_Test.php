@@ -125,7 +125,8 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $testName = "Create New User and Authenticate";
         $username = "testuser3";
         $password = "testuser3";
-    //    $this->assertTrue($this->db_proxy->addUser( $username, $password ));
+
+        $this->assertTrue($this->db_proxy->addUser( $username, $password ));
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
