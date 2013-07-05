@@ -13,7 +13,6 @@ To Do List for the INTER-Mediator developer(s)
 - Working with the cloud infrastructures.
 - Generating the page on the server-side initially.
 - Showing as the alert box when any errors occurred ??
-- DIV._im_multivalue: Set muliti-line values to one field within the div element.
 - Supports HTML5's datalist tag elements
 - Objective handling for the data in database.
 - Server side processing with Ruby on Rails or kind of.
@@ -47,8 +46,9 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3.6
-- Support FileMaker's checkbox set feature. (Thanks to Atushi Matsuo)
+Ver.3.6 (2013/7/5)
+- Support the FileMaker's checkbox set feature. (Thanks to Atushi Matsuo)
+- Get started CI ! with TravisCI.
 - Debug messages are written to the browser's JS console too.
 - 'INTERMediator.supressDebugMessageOnPage = true;' can suppress the debug message on a page.
   'INTERMediator.supressErrorMessageOnPage = true;' can suppress the error message on a page.
