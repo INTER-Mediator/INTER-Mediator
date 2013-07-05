@@ -46,6 +46,9 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
+Ver.3.7
+- Check required PHP extensions (mstring and OpenSSL), especially on Windows.
+
 Ver.3.6 (2013/7/5)
 - Support the FileMaker's checkbox set feature. (Thanks to Atushi Matsuo)
 - Get started CI ! with TravisCI.
