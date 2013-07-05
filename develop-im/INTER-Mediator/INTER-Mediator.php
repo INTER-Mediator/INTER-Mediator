@@ -8,7 +8,9 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-mb_internal_encoding('UTF-8');
+if (function_exists('mb_internal_encoding')) {
+    mb_internal_encoding('UTF-8');
+}
 date_default_timezone_set('Asia/Tokyo');
 
 require_once('DB_Interfaces.php');
@@ -23,6 +25,17 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
     global $g_dbInstance, $g_serverSideCall;
     spl_autoload_register('loadClass');
+
+    // check required PHP extensions
+    $requiredFunctions = array('mbstring' => 'mb_internal_encoding', 'OpenSSL' => 'openssl_pkey_get_private');
+    foreach ($requiredFunctions as $key => $value) {
+        if (!function_exists($value)) {
+            $generator = new GenerateJSCode();
+            $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+            $generator->generateErrorMessageJS("PHP extension \"" . $key . "\" is required for running INTER-Mediator.");
+            return;
+        }
+    }
 
     if ($debug) {
         $dc = new DefinitionChecker();
@@ -306,5 +319,3 @@ function randomString($digit)
     }
     return $resultStr;
 }
-
-?>
