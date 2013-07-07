@@ -47,7 +47,7 @@ Change Log
 =================================
 
 Ver.3.7
-- Check required PHP extensions (mstring and OpenSSL), especially on Windows.
+- Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
 - MediaAccess class can work for a non-authentication settings.
 - FileMaker's object field supported.
 
