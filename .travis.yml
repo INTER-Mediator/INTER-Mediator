@@ -10,7 +10,7 @@ env:
   - DB=mysql
 
 before_script:
-  - composer install
+  - pear install pear/Crypt_RSA
   - sh -c "if [ '$DB' = 'mysql' ]; then mysql -u root < ./dist-docs/sample_schema_mysql.txt; fi"
   - cd develop-im/INTER-Mediator-UnitTest
 
