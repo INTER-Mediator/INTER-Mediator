@@ -1,5 +1,11 @@
 {
+    "repositories": [
+        {
+            "type": "pear",
+            "url": "http://pear.php.net/"
+        }
+    ],
     "require": {
-        "phpseclib/phpseclib": ">=0.3.5"
+        "pear-pear.php.net/Crypt_RSA" : "*",
     }
 }
