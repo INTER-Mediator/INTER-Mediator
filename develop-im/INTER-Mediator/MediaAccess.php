@@ -19,25 +19,46 @@ class MediaAccess
 {
     function processing($dbProxyInstance, $options, $file)
     {
-        $dir = $options['media-root-dir'];
-        $target = "$dir/$file";
-
-        $cookieNameUser = '_im_username';
-        $cookieNameToken = '_im_mediatoken';
-        if(isset($options['authentication']['realm']))  {
-            $cookieNameUser .= '_' . $options['authentication']['realm'];
-            $cookieNameToken .= '_' . $options['authentication']['realm'];
+        $schema = array("https:", "http:");
+        $isURL = false;
+        foreach ($schema as $scheme)    {
+            if (strpos($file, $scheme) === 0)   {
+                $isURL = true;
+                break;
+            }
+        }
+        if (strpos($file,"/fmi/xml/cnt/") === 0)    {
+            $file = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
+                . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
+                . urlencode($dbProxyInstance->dbSettings->getDbSpecPassword()) . "@"
+                . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
+                . $dbProxyInstance->dbSettings->getDbSpecPort() . $file;
+            foreach( $_GET as $key => $value)   {
+                if ($key !== 'media')   {
+                    $file .= "&" . $key . "=" . urlencode($value);
+                }
+            }
+            $isURL = true;
         }
 
-        if (! $dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken]))    {
-            header( "HTTP/1.1 401 Unauthorized" );
-            return;
-        }
+        $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
+
         if (isset($options['media-context']))  {
             $dbProxyInstance->dbSettings->setTargetName($options['media-context']);
             $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
             if (isset($context['authentication'])
                 && ( isset($context['authentication']['all']) || isset($context['authentication']['load']))) {
+                $cookieNameUser = '_im_username';
+                $cookieNameToken = '_im_mediatoken';
+                if(isset($options['authentication']['realm']))  {
+                    $cookieNameUser .= '_' . $options['authentication']['realm'];
+                    $cookieNameToken .= '_' . $options['authentication']['realm'];
+                }
+
+                if (! $dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken]))    {
+                    header( "HTTP/1.1 401 Unauthorized" );
+                    return;
+                }
                 $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("load");
                 $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("load");
                 $pathComponents = explode('/', $target);
@@ -81,19 +102,23 @@ class MediaAccess
                 }
             }
         }
-        if ( file_exists($target)) {
+        if ( !$isURL && !file_exists($target) ) {
+            header( "HTTP/1.1 500 Internal Server Error" );
+        } else {
             $content = file_get_contents($target);
-            if ($content !== false) {
+            if ($content === false) {
+                header( "HTTP/1.1 500 Internal Server Error" );
+            } else {
                 header("Content-Type: " . $this->getMimeType($target));
                 header("Content-Length: " . strlen($content));
                 $fileName = basename($file);
+                $qPos = strpos($fileName, "?");
+                if ($qPos !== false)    {
+                    $fileName = substr($fileName, 0, $qPos);
+                }
                 header("Content-Disposition: inline; filename=\"{$fileName}\"");
                 echo $content;
-            } else {
-                header( "HTTP/1.1 500 Internal Server Error" );
             }
-        } else {
-            header( "HTTP/1.1 500 Internal Server Error" );
         }
     }
 

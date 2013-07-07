@@ -105,6 +105,7 @@ class RetrieveFM7Data extends RetrieveFMXML
             $layRequest = "";
         }
         if ($this->FX->currentSkip > 0) { // Set up the skip size portion of the query.
+
             $skipRequest = "&-skip={$this->FX->currentSkip}";
         } else {
             $skipRequest = "";

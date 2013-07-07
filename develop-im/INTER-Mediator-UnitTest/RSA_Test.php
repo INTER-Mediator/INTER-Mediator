@@ -7,8 +7,8 @@
  * To change this template use File | Settings | File Templates.
  */
 
-require_once('PHPUnit/Framework/TestCase.php');
-require_once('Crypt/RSA.php');
+//require_once('PHPUnit/Framework/TestCase.php');
+//require_once('Crypt/RSA.php');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {
