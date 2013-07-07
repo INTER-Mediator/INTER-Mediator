@@ -102,12 +102,26 @@ class MediaAccess
                 }
             }
         }
-        if ( !$isURL && !file_exists($target) ) {
-            header( "HTTP/1.1 500 Internal Server Error" );
+        if (!$isURL) {
+            if (!empty($file) && !file_exists($target)) {
+                header("HTTP/1.1 500 Internal Server Error");
+            }
         } else {
-            $content = file_get_contents($target);
+            if (intval(get_cfg_var('allow_url_fopen')) === 1) {
+                $content = file_get_contents($target);
+            } else {
+                if (function_exists('curl_init')) {
+                    $session = curl_init($target);
+                    curl_setopt($session, CURLOPT_HEADER, false);
+                    curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                    $content = curl_exec($session);
+                    curl_close($session);
+                } else {
+                    header("HTTP/1.1 500 Internal Server Error");
+                }
+            }
             if ($content === false) {
-                header( "HTTP/1.1 500 Internal Server Error" );
+                header("HTTP/1.1 500 Internal Server Error");
             } else {
                 header("Content-Type: " . $this->getMimeType($target));
                 header("Content-Length: " . strlen($content));

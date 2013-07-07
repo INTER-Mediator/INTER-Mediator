@@ -49,7 +49,7 @@ Change Log
 Ver.3.7
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
 - MediaAccess class can work for a non-authentication settings.
-- FileMaker's object field supported.
+- FileMaker's container fields supported.
 
 Ver.3.6 (2013/7/5)
 - Support the FileMaker's checkbox set feature. (Thanks to Atushi Matsuo)
