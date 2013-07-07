@@ -6,8 +6,11 @@ php:
   - 5.3
   - 5.2
 
+env:
+  - DB=mysql
+
 before_script:
-  - mysql -u root < ./dist-docs/sample_schema_mysql.txt
+  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -u root < ./dist-docs/sample_schema_mysql.txt; fi"
   - cd develop-im/INTER-Mediator-UnitTest
 
 script:
