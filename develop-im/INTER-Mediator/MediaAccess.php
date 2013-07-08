@@ -19,6 +19,13 @@ class MediaAccess
 {
     function processing($dbProxyInstance, $options, $file)
     {
+        // It the $file ('media'parameter) isn't specified, it doesn't respond an error.
+        if ( strlen($file) === 0 )  {
+            header( "HTTP/1.1 204 No Content" );
+            return;
+        }
+
+        // If the media parameter is an URL, the variable isURL will be set to true.
         $schema = array("https:", "http:");
         $isURL = false;
         foreach ($schema as $scheme)    {
@@ -27,7 +34,7 @@ class MediaAccess
                 break;
             }
         }
-        if (strpos($file,"/fmi/xml/cnt/") === 0)    {
+        if (strpos($file,"/fmi/xml/cnt/") === 0)    {   // FileMaker's object field storing an image.
             $file = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
                 . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
                 . urlencode($dbProxyInstance->dbSettings->getDbSpecPassword()) . "@"
@@ -40,6 +47,10 @@ class MediaAccess
             }
             $isURL = true;
         }
+        /*
+         * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
+         * style URL. In case of an image, $file is just the path info as like above.
+         */
 
         $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
 
@@ -123,13 +134,13 @@ class MediaAccess
             if ($content === false) {
                 header("HTTP/1.1 500 Internal Server Error");
             } else {
-                header("Content-Type: " . $this->getMimeType($target));
-                header("Content-Length: " . strlen($content));
                 $fileName = basename($file);
                 $qPos = strpos($fileName, "?");
                 if ($qPos !== false)    {
                     $fileName = substr($fileName, 0, $qPos);
                 }
+                header("Content-Type: " . $this->getMimeType($fileName));
+                header("Content-Length: " . strlen($content));
                 header("Content-Disposition: inline; filename=\"{$fileName}\"");
                 echo $content;
             }
