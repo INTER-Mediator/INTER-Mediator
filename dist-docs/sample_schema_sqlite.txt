@@ -19,7 +19,7 @@ This schema file is for the sample of INTER-Mediator using SQLite3.
 Example of making database file for UNIX (including Mac OS X):
 
 $ mkdir /var/db/im
-$ sudo sqlite3 -init sample_schema_sqlite.txt /var/db/im/sample.sq3
+$ sudo sqlite3 /var/db/im/sample.sq3 < sample_schema_sqlite.txt
 $ sudo chown _www /var/db/im
 $ sudo chown _www /var/db/im/sample.sq3
 
