@@ -48,6 +48,9 @@ class DB_Settings
 
     var $primaryKeyOnly = false;
     var $emailAsAccount = false;
+    var $isDBNative = false;
+    var $requireAuthorization = false;
+    var $requireAuthentication = false;
 
     /* Database connection paramters */
     function setDbSpecServer($str)

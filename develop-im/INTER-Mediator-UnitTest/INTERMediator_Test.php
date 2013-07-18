@@ -30,7 +30,7 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
                     'user' => array('user1'), // Itemize permitted users
                     'group' => array('group2'), // Itemize permitted groups
                     'privilege' => array(), // Itemize permitted privileges
-                    'user-table' => 'authuser', // Default values, or "_Native"
+                    'user-table' => 'authuser', // Default value
                     'group-table' => 'authgroup',
                     'corresponding-table' => 'authcor',
                     'challenge-table' => 'issuedhash',
@@ -79,6 +79,30 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $this->assertTrue(strlen($str) == 0, $testName);
 
     }
+    function test_getLocaleFromBrowser()    {
+        $testName = "Check getLocaleFromBrowser function in INTER-Mediator.php.";
+        $headerStr = "ja";
+        $locStr = getLocaleFromBrowser($headerStr);
+        $this->assertTrue($locStr == "ja", $testName);
+        $headerStr = "ja_JP";
+        $locStr = getLocaleFromBrowser($headerStr);
+        $this->assertTrue($locStr == "ja_JP", $testName);
+        $headerStr = "en_US";
+        $locStr = getLocaleFromBrowser($headerStr);
+        $this->assertTrue($locStr == "en_US", $testName);
+        $headerStr = "ja, en";
+        $locStr = getLocaleFromBrowser($headerStr);
+        $this->assertTrue($locStr == "ja", $testName);
+        $headerStr = "en, ja";
+        $locStr = getLocaleFromBrowser($headerStr);
+        $this->assertTrue($locStr == "en", $testName);
+        $headerStr = "ja; q=1.0, en; q=0.1";
+        $locStr = getLocaleFromBrowser($headerStr);
+        $this->assertTrue($locStr == "ja", $testName);
+//        $headerStr = "ja; q=0.1, en; q=1.0";
+//        $locStr = getLocaleFromBrowser($headerStr);
+//        $this->assertTrue($locStr == "en", $testName);
+    }
 /*
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 function loadClass($className)
@@ -89,6 +113,5 @@ function arrayToQuery($ar, $prefix)
 function getRelativePath()
 function setLocaleAsBrowser($locType)
 function getLocaleFromBrowser()
-function hex2bin_for53($str)
 */
 }

@@ -216,7 +216,7 @@ function getRelativePath()
 //function getErrorMessageClass()
 //{
 //    $currentDir = dirname(__FILE__);
-//    $lang = getLocaleFromBrowser();
+//    $lang = getLocaleFromBrowser($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 //    $candClassName = 'MessageStrings_' . $lang;
 //    if (!file_exists($currentDir . DIRECTORY_SEPARATOR . $candClassName . '.php')) {
 //        if (strpos($lang, '_') !== false) {
@@ -240,7 +240,7 @@ function getRelativePath()
  */
 function setLocaleAsBrowser($locType)
 {
-    $lstr = getLocaleFromBrowser();
+    $lstr = getLocaleFromBrowser($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 
     // Detect server platform, Windows or Unix
     $isWindows = false;
@@ -282,11 +282,12 @@ function setLocaleAsBrowser($locType)
 
 /**
  * Get the locale string (ex. 'ja_JP') from HTTP header from a browser.
+ * @param string $accept   $_SERVER['HTTP_ACCEPT_LANGUAGE']
  * @return string Most prior locale identifier
  */
-function getLocaleFromBrowser()
+function getLocaleFromBrowser($accept)
 {
-    $lstr = strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+    $lstr = strtolower($accept);
     // Extracting first item and cutting the priority infos.
     if (strpos($lstr, ',') !== false) $lstr = substr($lstr, 0, strpos($lstr, ','));
     if (strpos($lstr, ';') !== false) $lstr = substr($lstr, 0, strpos($lstr, ';'));

@@ -135,7 +135,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.isNativeAuth",
             (isset($options['authentication']) && isset($options['authentication']['user'])
-                && ($options['authentication']['user'] === 'database_native')) ? "true" : "false");
+                && ($options['authentication']['user'][0] === 'database_native')) ? "true" : "false");
         $this->generateAssignJS(
             "INTERMediatorOnPage.authStoring",
             $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?

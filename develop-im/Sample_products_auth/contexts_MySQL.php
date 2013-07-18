@@ -38,7 +38,7 @@ IM_Entry(
 //            'user' => array('user1'), // Itemize permitted users
 //            'group' => array('group2'), // Itemize permitted groups
 //            'privilege' => array(), // Itemize permitted privileges
-//            'user-table' => 'authuser', // Default values, or "_Native"
+//            'user-table' => 'authuser', // Default value
 //            'group-table' => 'authgroup',
 //            'corresponding-table' => 'authcor',
 //            'challenge-table' => 'issuedhash',

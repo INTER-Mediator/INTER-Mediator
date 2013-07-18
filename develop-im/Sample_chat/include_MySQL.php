@@ -40,7 +40,7 @@ IM_Entry(
         'authentication' => array( // table only, for all operations
             'user' => array('user1'), // Itemize permitted users
             'group' => array('group2'), // Itemize permitted groups
-            'user-table' => 'authuser', // Default values, or "_Native"
+            'user-table' => 'authuser', // Default values
             'group-table' => 'authgroup',
             'corresponding-table' => 'authcor',
             'challenge-table' => 'issuedhash',

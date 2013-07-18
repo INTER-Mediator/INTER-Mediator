@@ -12,6 +12,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 {
     var $link = null;
     var $mainTableCount = 0;
+    var $fieldInfo = null;
 
     private function errorMessageStore($str)
     {
@@ -192,6 +193,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     function getFromDB($dataSourceName)
     {
+        $this->fieldInfo = null;
         $this->mainTableCount = 0;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForRetrieve();
@@ -263,13 +265,18 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return array();
         }
         $sqlResult = array();
+        $isFirstRow = true;
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $rowArray = array();
             foreach ($row as $field => $val) {
+                if ( $isFirstRow )  {
+                    $this->fieldInfo[] = $field;
+                }
                 $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
                 $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
             }
             $sqlResult[] = $rowArray;
+            $isFirstRow = false;
         }
 
         if (isset($tableInfo['script'])) {
@@ -289,6 +296,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return $sqlResult;
     }
 
+    function getFieldInfo($dataSourceName)
+    {
+        return $this->fieldInfo;
+    }
+
     function countQueryResult($dataSourceName)
     {
         return $this->mainTableCount;
@@ -296,6 +308,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     function setToDB($dataSourceName)
     {
+        $this->fieldInfo = null;
         $tableName = $this->dbSettings->getEntityForUpdate();
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->currentUser);
@@ -368,6 +381,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     function newToDB($dataSourceName, $bypassAuth)
     {
+        $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
 
@@ -464,6 +478,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     function deleteFromDB($dataSourceName)
     {
+        $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->currentUser);

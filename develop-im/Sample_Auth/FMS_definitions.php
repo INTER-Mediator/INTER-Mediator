@@ -59,9 +59,9 @@ IM_Entry(
         ),
         'authentication' => array( // table only, for all operations
 //            'user' => array('user1'), // Itemize permitted users
-//            'user' => 'database_native', // Itemize permitted users
+           // 'user' => array('database_native'), // Use DB-Native users.
 //            'group' => array('group2'), // Itemize permitted groups
-//            'user-table' => 'authuser', // Default values, or "_Native"
+//            'user-table' => 'authuser', // Default value "authuser"
 //            'group-table' => '', //'authgroup',
 //            'challenge-table' => 'issuedhash',
             'authexpired' => '3600', // Set as seconds.

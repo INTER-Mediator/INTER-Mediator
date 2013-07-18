@@ -58,9 +58,9 @@ IM_Entry(
             array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
         ),
         'authentication' => array( // table only, for all operations
-//            'user' => 'database_native', // Itemize permitted users
+//            'user' => array('database_native'), // Itemize permitted users, or Native as like this.
 //            'group' => array('group2'), // Itemize permitted groups
-//            'user-table' => 'authuser', // Default values, or "_Native"
+//            'user-table' => 'authuser', // Default value
 //            'group-table' => '', //'authgroup',
 //            'challenge-table' => 'issuedhash',
             'authexpired' => '3600', // Set as seconds.

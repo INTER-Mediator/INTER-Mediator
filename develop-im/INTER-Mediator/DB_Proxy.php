@@ -21,6 +21,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     var $userExpanded = null;
     var $dbClassForContext = array();
     var $outputOfPrcessing = '';
+//    var $requireAuthorization;
+//    var $requireAuthentication;
+//    var $isDBNative;
+    var $paramAuthUser;
+
+    var $previousChallenge;
+    var $previousClientid;
+
 
     function __construct($testmode = false)
     {
@@ -97,6 +105,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
             $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);
+        }
+        return $result;
+    }
+
+    function getFieldInfo($dataSourceName)
+    {
+        if ($this->dbClass !== null) {
+            $result = $this->dbClass->getFieldInfo($dataSourceName);
         }
         return $result;
     }
@@ -272,57 +288,74 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             include($currentDirParam);
         }
 
+        $messageClass = null;
+        $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+        foreach ($clientLangArray as $oneLanguage) {
+            $langCountry = explode(';', $oneLanguage);
+            if (strlen($langCountry[0]) > 0) {
+                $clientLang = explode('-', $langCountry[0]);
+                $messageClass = "MessageStrings_$clientLang[0]";
+                if (file_exists("{$currentDir}{$messageClass}.php")) {
+                    $messageClass = new $messageClass();
+                    break;
+                }
+            }
+            $messageClass = null;
+        }
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $access = is_null($access) ? $_POST['access'] : $access;
         $clientId = isset($_POST['clientid']) ? $_POST['clientid'] : $_SERVER['REMOTE_ADDR'];
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
         $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
 
-        $this->requireAuthentication = false;
-        $this->requireAuthorization = false;
-        $this->isDBNative = false;
+        $this->dbSettings->requireAuthentication = false;
+        $this->dbSettings->requireAuthorization = false;
+        $this->dbSettings->isDBNative = false;
         if (isset($options['authentication'])
             || $access == 'challenge' || $access == 'changepassword'
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
-            $this->requireAuthorization = true;
-            $this->isDBNative = false;
+            $this->dbSettings->requireAuthorization = true;
+            $this->dbSettings->isDBNative = false;
             if (isset($options['authentication']['user'])
-                && $options['authentication']['user'] == 'database_native'
+                && $options['authentication']['user'][0] == 'database_native'
             ) {
-                $this->isDBNative = true;
+                $this->dbSettings->isDBNative = true;
             }
         }
 
-        if (!$bypassAuth && $this->requireAuthorization) { // Authentication required
+        if (!$bypassAuth && $this->dbSettings->requireAuthorization) { // Authentication required
             if (strlen($this->paramAuthUser) == 0 || strlen($paramResponse) == 0) {
                 // No username or password
                 $access = "do nothing";
-                $this->requireAuthentication = true;
+                $this->dbSettings->requireAuthentication = true;
             }
             // User and Password are suppried but...
             if ($access != 'challenge') { // Not accessing getting a challenge.
-                if ($this->isDBNative) {
+                if ($this->dbSettings->isDBNative) {
                     $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
                     require_once('bi2php/biRSA.php');
                     $keyDecrypt = new biRSAKeyPair('0', bin2hex($keyArray['rsa']['d']), bin2hex($keyArray['rsa']['n']));
                     $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
+                    $this->logger->setDebugMessage("#### {$decrypted} ###");
                     if ($decrypted !== false) {
                         $nlPos = strpos($decrypted, "\n");
                         $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
                         $password = substr($decrypted, 0, $nlPos);
+                        $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
                         $challenge = substr($decrypted, $nlPos + 1);
-                        if (!$this->dbClass->checkChallenge($challenge, $clientId)) {
+                        if (!$this->checkChallenge($challenge, $clientId)) {
                             $access = "do nothing";
-                            $this->requireAuthentication = true;
+                            $this->dbSettings->requireAuthentication = true;
                         } else {
                             $this->dbSettings->setUserAndPaswordForAccess($this->paramAuthUser, $password);
                         }
                     } else {
                         $this->logger->setDebugMessage("Can't decrypt.");
                         $access = "do nothing";
-                        $this->requireAuthentication = true;
+                        $this->dbSettings->requireAuthentication = true;
                     }
                 } else {
                     $noAuthorization = true;
@@ -350,14 +383,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     if ($noAuthorization) {
                         $this->logger->setDebugMessage("Authorization doesn't meet the settings.");
                         $access = "do nothing";
-                        $this->requireAuthentication = true;
+                        $this->dbSettings->requireAuthentication = true;
                     }
                     if (!$this->checkAuthorization($this->paramAuthUser, $paramResponse, $clientId)) {
                         $this->logger->setDebugMessage(
                             "Authentication doesn't meet valid.{$this->paramAuthUser}/{$paramResponse}/{$clientId}");
                         // Not Authenticated!
                         $access = "do nothing";
-                        $this->requireAuthentication = true;
+                        $this->dbSettings->requireAuthentication = true;
                     }
                 }
             }
@@ -414,16 +447,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
                 break;
         }
-//        $this->finishCommunication();
+
+        if ($this->logger->debugLevel !== false) {
+            $fInfo = $this->getFieldInfo($this->dbSettings->getTargetName());
+            if ($fInfo != null) {
+                foreach ($this->dbSettings->fieldsRequired as $fieldName) {
+                    if (!in_array($fieldName, $fInfo)) {
+                        $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
+                    }
+                }
+            }
+        }
     }
-
-    var $requireAuthorization;
-    var $requireAuthentication;
-    var $isDBNative;
-    var $paramAuthUser;
-
-    var $previousChallenge;
-    var $previousClientid;
 
     function finishCommunication($notFinish = false)
     {
@@ -432,17 +467,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if ($notFinish) {
             return;
         }
-        if (!$this->requireAuthorization) {
+        if (!$this->dbSettings->requireAuthorization) {
             return;
         }
         $generatedChallenge = $this->generateChallenge();
         $generatedUID = $this->generateClientId('');
-        $userSalt = $this->saveChallenge($this->isDBNative ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
+        $userSalt = $this->saveChallenge(
+            $this->dbSettings->isDBNative ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
         $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
         $this->previousClientid = "{$generatedUID}";
         echo "challenge='{$generatedChallenge}{$userSalt}';";
         echo "clientid='{$generatedUID}';";
-        if ($this->requireAuthentication) {
+        if ($this->dbSettings->requireAuthentication) {
             echo "requireAuth=true;"; // Force authentication to client
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();

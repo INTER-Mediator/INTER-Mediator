@@ -15,6 +15,17 @@ class MessageStrings_ja
         return $this->messages;
     }
 
+    function getMessageAs($num, $appending)
+    {
+        $msg = $this->messages[$num];
+        $index = 1;
+        foreach ($appending as $keyword)    {
+            $msg = str_replace("@{$index}@", $keyword, $msg);
+            $index++;
+        }
+        return $msg;
+    }
+
     var $messages = array(
         1 => 'レコード番号',
         2 => '更新',
@@ -57,6 +68,7 @@ class MessageStrings_ja
         1030 => "パスワード変更時の通信時のエラー=@1@/@2@",
         1031 => "ファイルアップロード: ",
         1032 => "ファイルアップロード時の通信時のエラー=@1@/@2@",
+        1033 => "ページファイルに指定したフィールド名「@1@」は、指定したコンテキストには存在しません",
         2001 => '認証エラー!',
         2002 => 'ユーザー名:',
         2003 => 'パスワード:',

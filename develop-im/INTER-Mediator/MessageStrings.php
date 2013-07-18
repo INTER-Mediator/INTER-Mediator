@@ -16,6 +16,17 @@ class MessageStrings
         return $this->messages;
     }
 
+    function getMessageAs($num, $appending)
+    {
+        $msg = $this->messages[$num];
+        $index = 1;
+        foreach ($appending as $keyword)    {
+            $msg = str_replace("@{$index}@", $keyword, $msg);
+            $index++;
+        }
+        return $msg;
+    }
+
     var $messages = array(
         1 => 'Record #',
         2 => 'Refresh',
@@ -58,6 +69,7 @@ class MessageStrings
         1030 => "Connection Error on changing password=@1@/@2@",
         1031 => "Change File Uploading: ",
         1032 => "Connection Error on uploading file=@1@/@2@",
+        1033 => "The field name specified in the page file doesn't exist [folder=@1@]",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
