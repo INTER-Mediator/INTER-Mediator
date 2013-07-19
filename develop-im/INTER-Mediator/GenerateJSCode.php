@@ -21,6 +21,7 @@ class GenerateJSCode
         header('Content-Type: text/javascript;charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
         header('Expires: 0');
+        header('X-Frame-Options: SAMEORIGIN');
     }
 
     function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')

@@ -36,6 +36,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             header('Content-Type: text/javascript;charset="UTF-8"');
             header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
             header('Expires: 0');
+            header('X-Content-Type-Options: nosniff');
+            header('X-Frame-Options: SAMEORIGIN');
         }
     }
 
