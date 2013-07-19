@@ -142,6 +142,7 @@ class MediaAccess
                 header("Content-Type: " . $this->getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: inline; filename=\"{$fileName}\"");
+                header('X-Frame-Options: SAMEORIGIN');
                 echo $content;
             }
         }
