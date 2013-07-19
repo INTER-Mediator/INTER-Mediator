@@ -13,7 +13,7 @@
  * This project started at the end of 2009.
  * 
 
-This schema file is for the sample of INTER-Mediator using MySQL, encoded by UTF-8.
+This schema file is for the sample of INTER-Mediator using PostgreSQL, encoded by UTF-8.
 
 Example:
 $ psql -U postgres -f sample_schema_pgsql.txt test_db
