@@ -388,7 +388,7 @@ INTERMediatorOnPage = {
 
     INTERMediatorCheckBrowser: function (deleteNode) {
         var positiveList, matchAgent, matchOS, versionStr, agent, os, judge, specifiedVersion, versionNum,
-            msieMark, dotPos, bodyNode;
+            msieMark, dotPos, bodyNode, elm, childElm, grandChildElm, i;
 
         positiveList = INTERMediatorOnPage.browserCompatibility();
         matchAgent = false;
@@ -440,9 +440,23 @@ INTERMediatorOnPage = {
             }
         } else {
             bodyNode = document.getElementsByTagName('BODY')[0];
-            bodyNode.innerHTML = '<div align="center"><font color="gray"><font size="+2">'
-                + INTERMediatorOnPage.getMessages()[1022] + '</font><br>'
-                + INTERMediatorOnPage.getMessages()[1023] + '<br>' + navigator.userAgent + '</font></div>';
+            elm = document.createElement("div");
+            elm.setAttribute("align", "center");
+            childElm = document.createElement("font");
+            childElm.setAttribute("color", "gray");
+            grandChildElm = document.createElement("font");
+            grandChildElm.setAttribute("size", "+2");
+            grandChildElm.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[1022]));
+            childElm.appendChild(grandChildElm);
+            childElm.appendChild(document.createElement("br"));
+            childElm.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[1023]));
+            childElm.appendChild(document.createElement("br"));
+            childElm.appendChild(document.createTextNode(navigator.userAgent));
+            elm.appendChild(childElm);
+            for (i = bodyNode.childNodes.length-1; i >= 0; i--) {
+                bodyNode.removeChild(bodyNode.childNodes[i]);
+            }
+            bodyNode.appendChild(elm);
         }
         return judge;
     },
