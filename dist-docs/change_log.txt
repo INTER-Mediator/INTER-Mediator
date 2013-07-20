@@ -48,6 +48,7 @@ Change Log
 =================================
 
 Ver.3.7
+- [SECURITY FIX] Fix DOM based XSS security issue in INTERMediatorCheckBrowser function.
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
 - MediaAccess class can work for a non-authentication settings.
 - FileMaker's container fields supported.
