@@ -27,4 +27,5 @@ before_script:
 
 script:
   - phpunit DB_PDO_Test.php
+  - phpunit DB_Proxy_Test.php
   - phpunit INTERMediator_Test.php
