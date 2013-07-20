@@ -45,15 +45,16 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
      */
     function test___construct()    {
         $testName = "Check __construct function in DB_Proxy.php.";
-        
-        ob_start();
-        $this->db_proxy->__construct();
-        $headers = xdebug_get_headers();
-        header_remove();
-        ob_clean();
-        
-        $this->assertContains('X-Content-Type-Options: nosniff', $headers);
-        $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+        if (function_exists('xdebug_get_headers')) {
+            ob_start();
+            $this->db_proxy->__construct();
+            $headers = xdebug_get_headers();
+            header_remove();
+            ob_clean();
+            
+            $this->assertContains('X-Content-Type-Options: nosniff', $headers);
+            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+        }
     }
 
 }
