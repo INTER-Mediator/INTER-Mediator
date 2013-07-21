@@ -341,7 +341,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     require_once('bi2php/biRSA.php');
                     $keyDecrypt = new biRSAKeyPair('0', bin2hex($keyArray['rsa']['d']), bin2hex($keyArray['rsa']['n']));
                     $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
-                    $this->logger->setDebugMessage("#### {$decrypted} ###");
+//                    $this->logger->setDebugMessage("#### {$decrypted} ###");
                     if ($decrypted !== false) {
                         $nlPos = strpos($decrypted, "\n");
                         $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;

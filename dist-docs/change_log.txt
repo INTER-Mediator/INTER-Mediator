@@ -54,7 +54,7 @@ Ver.3.7
 - FileMaker's container fields supported.
 - Check non-exists field name in a page file on the debug mode and a query access.
 - Output X-Frame-Options and X-Content-Type-Options response headers.
-- [BUG FIX] FileMaker Native Authentication bugs fixed
+- [BUG FIX] FileMaker Native Authentication bugs fixed.
 
 Ver.3.6 (2013/7/5)
 - Support the FileMaker's checkbox set feature. (Thanks to Atushi Matsuo)
