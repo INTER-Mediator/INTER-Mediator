@@ -18,9 +18,15 @@ require_once('DB_Logger.php');
 require_once('DB_Settings.php');
 require_once('DB_UseSharedObjects.php');
 require_once('DB_Proxy.php');
-require_once('phpseclib/Crypt/RSA.php');
-require_once('phpseclib/Crypt/Hash.php');
-require_once('phpseclib/Math/BigInteger.php');
+if (!class_exists('Crypt_RSA')) {
+    require_once('phpseclib/Crypt/RSA.php');
+}
+if (!class_exists('Crypt_Hash')) {
+    require_once('phpseclib/Crypt/Hash.php');
+}
+if (!class_exists('Math_BigInteger')) {
+    require_once('phpseclib/Math/BigInteger.php');
+}
 
 $g_dbInstance = null;
 
