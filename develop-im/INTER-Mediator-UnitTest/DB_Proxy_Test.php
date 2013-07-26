@@ -42,6 +42,7 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 
     /**
      * @runInSeparateProcess
+     * @preserveGlobalState disabled
      */
     function test___construct()    {
         $testName = "Check __construct function in DB_Proxy.php.";

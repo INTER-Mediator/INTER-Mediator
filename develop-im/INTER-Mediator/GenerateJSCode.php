@@ -150,12 +150,14 @@ class GenerateJSCode
             (isset($options['authentication']) && isset($options['authentication']['realm'])) ?
                 $options['authentication']['realm'] : '', $q);
         if (isset($generatedPrivateKey) && function_exists('openssl_pkey_get_private')) {
-            $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
-            if (isset($keyArray['rsa'])) {
-                $this->generateAssignJS(
-                    "INTERMediatorOnPage.publickey",
-                    "new biRSAKeyPair('", bin2hex($keyArray['rsa']['e']), "','0','", bin2hex($keyArray['rsa']['n']), "')");
-            }
+            $rsa = new Crypt_RSA();
+            $rsa->setPassword($passPhrase);
+            $rsa->loadKey($generatedPrivateKey);
+            $rsa->setPassword();
+            $publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.publickey",
+                "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
     }
 }
