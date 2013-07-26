@@ -337,9 +337,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             // User and Password are suppried but...
             if ($access != 'challenge') { // Not accessing getting a challenge.
                 if ($this->dbSettings->isDBNative) {
-                    $keyArray = openssl_pkey_get_details(openssl_pkey_get_private($generatedPrivateKey, $passPhrase));
+                    $rsa = new Crypt_RSA();
+                    $rsa->setPassword($passPhrase);
+                    $rsa->loadKey($generatedPrivateKey);
+                    $rsa->setPassword();
+                    $privatekey = $rsa->getPrivateKey();
+                    $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
                     require_once('bi2php/biRSA.php');
-                    $keyDecrypt = new biRSAKeyPair('0', bin2hex($keyArray['rsa']['d']), bin2hex($keyArray['rsa']['n']));
+                    $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
                     $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
 //                    $this->logger->setDebugMessage("#### {$decrypted} ###");
                     if ($decrypted !== false) {
