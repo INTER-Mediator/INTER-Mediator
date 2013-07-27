@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /*
 The MIT License
 
@@ -78,7 +78,7 @@ class biRSAKeyPair
 
     function biDecryptedString($s, $utf8_decoded = FALSE)
     {
-        $blocks = split(",", $s);
+        $blocks = explode(",", $s);
         $result = "";
         for ($i = 0; $i < count($blocks); $i++) {
             $block = bcpowmod(self::biFromHex($blocks[$i]), $this->d, $this->m);
