@@ -52,11 +52,12 @@ do
     fi
 done
 
-cp -r "${curpath}"/develop-im/Sample_products/images develop-im/Sample_products/
-cp -r "${curpath}"/develop-im/INTER-Mediator/FX      develop-im/INTER-Mediator/
-cp -r "${curpath}"/develop-im/INTER-Mediator/js_lib  develop-im/INTER-Mediator/
-cp -r "${curpath}"/develop-im/INTER-Mediator/bi2php  develop-im/INTER-Mediator/
-cp -r "${curpath}"/develop-im/WebSite/previous_rsrcs develop-im/WebSite/
+cp -r "${curpath}"/develop-im/Sample_products/images   develop-im/Sample_products/
+cp -r "${curpath}"/develop-im/INTER-Mediator/FX        develop-im/INTER-Mediator/
+cp -r "${curpath}"/develop-im/INTER-Mediator/js_lib    develop-im/INTER-Mediator/
+cp -r "${curpath}"/develop-im/INTER-Mediator/bi2php    develop-im/INTER-Mediator/
+cp -r "${curpath}"/develop-im/INTER-Mediator/phpseclib develop-im/INTER-Mediator/
+cp -r "${curpath}"/develop-im/WebSite/previous_rsrcs   develop-im/WebSite/
 
 echo "######### Marge JavaScript program"
 cat develop-im/INTER-Mediator/Adapter_DBServer.js      > temp.js
@@ -75,7 +76,10 @@ rm develop-im/INTER-Mediator/INTER-Mediator-Page.js
 rm develop-im/INTER-Mediator/INTER-Mediator-Parts.js
 rm develop-im/INTER-Mediator/INTER-Mediator.js
 rm -rf develop-im/INTER-Mediator/js_lib
-rm -rf develop-im/INTER-Mediator/bi2php
+rm -rf develop-im/INTER-Mediator/bi2php/biBigInt.js
+rm -rf develop-im/INTER-Mediator/bi2php/biMontgomery.js
+rm -rf develop-im/INTER-Mediator/bi2php/biRSA.js
+rm -rf develop-im/INTER-Mediator/bi2php/testbi2php.html
 
 echo "######### Compress INTER-Mediator.js"
 java -jar ${YUICOMP} temp.js -v --charset UTF-8 -o develop-im/INTER-Mediator/INTER-Mediator.js
