@@ -335,7 +335,7 @@ var INTERMediatorLib = {
     },
 
     getNodeInfoArray: function (nodeInfo) {
-        var comps, tableName;
+        var comps, tableName, fieldName, targetName;
 
         comps = nodeInfo.split(INTERMediator.separator);
         tableName = '', fieldName = '', targetName = '';
@@ -352,7 +352,8 @@ var INTERMediatorLib = {
         return {
             'table': tableName,
             'field': fieldName,
-            'target': targetName
+            'target': targetName,
+            'tableindex': "_im_index_" + tableName
         };
     },
 
