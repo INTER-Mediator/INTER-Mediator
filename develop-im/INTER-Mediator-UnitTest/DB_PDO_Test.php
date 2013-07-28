@@ -79,12 +79,12 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
         $result = $db_proxy->getFromDB("person");
         $recordCount = $db_proxy->countQueryResult("person");
-        var_export($db_proxy->logger->errorMessage);
-        var_export($db_proxy->logger->debugMessage);
-        var_export($result);
+//        var_export($db_proxy->logger->errorMessage);
+//        var_export($db_proxy->logger->debugMessage);
+//        var_export($result);
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
-        $this->assertTrue($result[0]["id"] === 1, "Field value is not same as the definition.");
+        $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
     }
 
     public function testQuery2_multipleRecord()    {
@@ -106,13 +106,13 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
         $result = $db_proxy->getFromDB("person");
         $recordCount = $db_proxy->countQueryResult("person");
-        var_export($db_proxy->logger->errorMessage);
-        var_export($db_proxy->logger->debugMessage);
-        var_export($result);
+//        var_export($db_proxy->logger->errorMessage);
+//        var_export($db_proxy->logger->debugMessage);
+//        var_export($result);
         $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
-        $this->assertTrue($result[2]["id"] === 3, "Field value is not same as the definition.");
+        $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
 
         // INSERT person SET id=3,name='Anyone',address='Osaka, Japan',mail='msyk@msyk.net';
 
@@ -136,9 +136,9 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $db_proxy = new DB_Proxy(true);
         $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
         $newKeyValue = $db_proxy->newToDB("person", true);
-        var_export($db_proxy->logger->errorMessage);
-        var_export($db_proxy->logger->debugMessage);
-        var_export($newKeyValue);
+//        var_export($db_proxy->logger->errorMessage);
+//        var_export($db_proxy->logger->debugMessage);
+//        var_export($newKeyValue);
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
 
         $contexts = array(
@@ -167,9 +167,9 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $db_proxy->dbSettings->setTargetField("address");
         $db_proxy->dbSettings->setValue($addressValue);
         $result = $db_proxy->setToDB("person", true);
-        var_export($db_proxy->logger->errorMessage);
-        var_export($db_proxy->logger->debugMessage);
-        var_export($result);
+//        var_export($db_proxy->logger->errorMessage);
+//        var_export($db_proxy->logger->debugMessage);
+//        var_export($result);
         $this->assertTrue($result, "Update should be successful.");
 
         $contexts = array(
@@ -195,9 +195,9 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
         $result = $db_proxy->getFromDB("person");
         $recordCount = $db_proxy->countQueryResult("person");
-        var_export($db_proxy->logger->errorMessage);
-        var_export($db_proxy->logger->debugMessage);
-        var_export($result);
+//        var_export($db_proxy->logger->errorMessage);
+//        var_export($db_proxy->logger->debugMessage);
+//        var_export($result);
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");

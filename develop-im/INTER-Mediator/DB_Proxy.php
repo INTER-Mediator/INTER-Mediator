@@ -310,10 +310,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $messageClass = new MessageStrings();
         }
 
+        $this->logger->setDebugMessage("###".var_export($_POST,true));
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $access = is_null($access) ? $_POST['access'] : $access;
         $clientId = isset($_POST['clientid']) ? $_POST['clientid'] :
-            isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client";
+            (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
         $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
 
@@ -548,7 +550,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     function checkAuthorization($username, $hashedvalue, $clientId)
     {
-        $this->logger->setDebugMessage("[checkAuthorization]paramResponse={$hashedvalue}", 2);
+        $this->logger->setDebugMessage("[checkAuthorization]user=${username}, paramResponse={$hashedvalue}, clientid={$clientId}", 2);
         $returnValue = false;
 
         $this->dbClass->authSupportRemoveOutdatedChallenges();

@@ -45,7 +45,7 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
-Ver.3.7
+Ver.3.7 (2013/7/28)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
 - MediaAccess class can work for a non-authentication settings.
 - FileMaker's container fields supported.
