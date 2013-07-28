@@ -291,23 +291,29 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
 
         $messageClass = null;
-        $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-        foreach ($clientLangArray as $oneLanguage) {
-            $langCountry = explode(';', $oneLanguage);
-            if (strlen($langCountry[0]) > 0) {
-                $clientLang = explode('-', $langCountry[0]);
-                $messageClass = "MessageStrings_$clientLang[0]";
-                if (file_exists("{$currentDir}{$messageClass}.php")) {
-                    $messageClass = new $messageClass();
-                    break;
+        if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
+            $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+            foreach ($clientLangArray as $oneLanguage) {
+                $langCountry = explode(';', $oneLanguage);
+                if (strlen($langCountry[0]) > 0) {
+                    $clientLang = explode('-', $langCountry[0]);
+                    $messageClass = "MessageStrings_$clientLang[0]";
+                    if (file_exists("{$currentDir}{$messageClass}.php")) {
+                        $messageClass = new $messageClass();
+                        break;
+                    }
                 }
+                $messageClass = null;
             }
-            $messageClass = null;
+        }
+        if ($messageClass == null) {
+            $messageClass = new MessageStrings();
         }
 
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $access = is_null($access) ? $_POST['access'] : $access;
-        $clientId = isset($_POST['clientid']) ? $_POST['clientid'] : $_SERVER['REMOTE_ADDR'];
+        $clientId = isset($_POST['clientid']) ? $_POST['clientid'] :
+            isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client";
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
         $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
 

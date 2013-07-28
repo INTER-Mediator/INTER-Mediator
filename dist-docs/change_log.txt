@@ -30,8 +30,6 @@ To Do List for the INTER-Mediator developer(s)
 - Searching in PDFs or any kind of files.
 - Popup menu's default value; if there isn't the value of them, set first one.
 - PayPal support or sort of.
-- [BUG] After inserting the detail line, then select contextual popup, the "insert" button shows double/triple ...
-  on the form sample.
 
 =================================
 Known Issues for Browsers:
@@ -48,13 +46,24 @@ Change Log
 =================================
 
 Ver.3.7
-- [SECURITY FIX] Fix DOM based XSS security issue in INTERMediatorCheckBrowser function.
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
 - MediaAccess class can work for a non-authentication settings.
 - FileMaker's container fields supported.
 - Check non-exists field name in a page file on the debug mode and a query access.
 - Output X-Frame-Options and X-Content-Type-Options response headers.
+- Native Authentication doesn't require the OpenSSL module, and works on PHP 5.2.
+- The 'phpseclib(http://phpseclib.sourceforge.net/)' is contained in the INTER-Mediator
+- The Definition File Editor gets started to develop, but it can show the contents so far.
+  You can see the link to the def-file editor at the top of debug messages.
+- The "Insert" button can be placed at the top of repeaters by "insert-top"/"insert-top-confirm".
+- [SECURITY FIX] Fix DOM based XSS security issue in INTERMediatorCheckBrowser function.
 - [BUG FIX] FileMaker Native Authentication bugs fixed.
+- [BUG FIX] DB_PDO class didn't affect the limitation number of querying.
+- [BUG FIX] If the name of context was same as JS function name, the error happened.
+- [BUG FIX] The "Insert" button might be placed the inside table.
+            (The following long time bug comes from the same readon.)
+- [BUG FIX] After inserting the detail line, then select contextual popup, the "insert" button shows double/triple ...
+  on the form sample.
 
 Ver.3.6 (2013/7/5)
 - Support the FileMaker's checkbox set feature. (Thanks to Atushi Matsuo)

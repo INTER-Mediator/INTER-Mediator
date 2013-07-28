@@ -155,7 +155,11 @@ var INTERMediator = {
                 }
             }
             debugNode.appendChild(document.createTextNode(
-                "============DEBUG INFO on " + new Date() + "============"));
+                "============DEBUG INFO on " + new Date() + "============ "));
+            var aLink = document.createElement('a');
+            aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath());
+            aLink.appendChild(document.createTextNode('Definition File Editor'));
+            debugNode.appendChild(aLink);
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.debugMessages.length; i++) {
                 lines = INTERMediator.debugMessages[i].split("\n");
@@ -309,7 +313,7 @@ var INTERMediator = {
                             return;
                         }
                     } else {
-                        INTERMediator.setErrorMessage("EXCEPTION-1" + ex.message);
+                        INTERMediator.setErrorMessage("EXCEPTION-1: " + ex.message);
                     }
                 }
 
@@ -412,7 +416,7 @@ var INTERMediator = {
                         }
                     }
                 } else {
-                    INTERMediator.setErrorMessage("EXCEPTION-2" + ex.message);
+                    INTERMediator.setErrorMessage("EXCEPTION-2: " + ex.message);
                 }
             }
 
@@ -477,7 +481,7 @@ var INTERMediator = {
                     return;
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-3" + ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-3: " + ex.message);
             }
         }
 
@@ -523,7 +527,7 @@ var INTERMediator = {
                 INTERMediator.flushMessage();
                 return;
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-4" + ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-4: " + ex.message);
             }
         }
 
@@ -581,7 +585,7 @@ var INTERMediator = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-5" + ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-5: " + ex.message);
             }
         }
 
@@ -630,7 +634,7 @@ var INTERMediator = {
                 INTERMediator.flushMessage();
                 return;
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-6" + ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-6: " + ex.message);
             }
         }
 
@@ -847,7 +851,7 @@ var INTERMediator = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-7" + ex.message);
+                INTERMediator.setErrorMessage("EXCEPTION-7: " + ex.message);
             }
         }
         INTERMediatorOnPage.hideProgress();
@@ -896,7 +900,7 @@ var INTERMediator = {
                 if (ex == "_im_requath_request_") {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage("EXCEPTION-8" + ex.message);
+                    INTERMediator.setErrorMessage("EXCEPTION-8: " + ex.message);
                 }
             }
 
@@ -964,7 +968,7 @@ var INTERMediator = {
                 if (ex == "_im_requath_request_") {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage("EXCEPTION-9" + ex.message);
+                    INTERMediator.setErrorMessage("EXCEPTION-9: " + ex.message);
                 }
             }
 
@@ -1046,7 +1050,7 @@ var INTERMediator = {
                     if (ex == "_im_requath_request_") {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage("EXCEPTION-10" + ex.message);
+                        INTERMediator.setErrorMessage("EXCEPTION-10: " + ex.message);
                     }
                 }
 
@@ -1090,7 +1094,7 @@ var INTERMediator = {
                         if (ex == "_im_requath_request_") {
                             throw ex;
                         } else {
-                            INTERMediator.setErrorMessage("EXCEPTION-11" + ex.message);
+                            INTERMediator.setErrorMessage("EXCEPTION-11: " + ex.message);
                         }
                     }
                 }
@@ -1223,7 +1227,7 @@ var INTERMediator = {
                         if (ex == "_im_requath_request_") {
                             throw ex;
                         } else {
-                            INTERMediator.setErrorMessage("EXCEPTION-12" + ex.message);
+                            INTERMediator.setErrorMessage("EXCEPTION-12: " + ex.message);
                         }
                     }
                 }
@@ -1399,7 +1403,7 @@ var INTERMediator = {
                         if (ex == "_im_requath_request_") {
                             throw ex;
                         } else {
-                            INTERMediator.setErrorMessage("EXCEPTION-23" + ex.message);
+                            INTERMediator.setErrorMessage("EXCEPTION-23: " + ex.message);
                         }
                     }
 
@@ -1422,7 +1426,7 @@ var INTERMediator = {
                     if (ex == "_im_requath_request_") {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage("EXCEPTION-21" + ex.message);
+                        INTERMediator.setErrorMessage("EXCEPTION-21: " + ex.message);
                     }
                 }
 
@@ -1439,7 +1443,7 @@ var INTERMediator = {
                     if (ex == "_im_requath_request_") {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage("EXCEPTION-22:[" + ex.message + "] hint: post-enclosure of " + currentContext.name);
+                        INTERMediator.setErrorMessage("EXCEPTION-22: [" + ex.message + "] hint: post-enclosure of " + currentContext.name);
                     }
                 }
 
@@ -1550,7 +1554,8 @@ var INTERMediator = {
         }
 
         function tableVoting(linkDefs) {
-            var j, nodeInfoArray, nodeInfoField, nodeInfoTable, maxVoted, maxTableName, tableName, context,
+            var j, nodeInfoArray, nodeInfoField, nodeInfoTable, maxVoted, maxTableName, tableName,
+                nodeInfoTableIndex, context,
                 tableVote = [],    // Containing editable elements or not.
                 fieldList = []; // Create field list for database fetch.
 
@@ -1558,16 +1563,17 @@ var INTERMediator = {
                 nodeInfoArray = INTERMediatorLib.getNodeInfoArray(linkDefs[j]);
                 nodeInfoField = nodeInfoArray['field'];
                 nodeInfoTable = nodeInfoArray['table'];
+                nodeInfoTableIndex = nodeInfoArray['tableindex'];   // Table name added "_im_index_" as the prefix.
                 if (nodeInfoField != null && nodeInfoTable != null &&
                     nodeInfoField.length != 0 && nodeInfoTable.length != 0) {
-                    if (fieldList[nodeInfoTable] == null) {
-                        fieldList[nodeInfoTable] = [];
+                    if (fieldList[nodeInfoTableIndex] == null) {
+                        fieldList[nodeInfoTableIndex] = [];
                     }
-                    fieldList[nodeInfoTable].push(nodeInfoField);
-                    if (tableVote[nodeInfoTable] == null) {
-                        tableVote[nodeInfoTable] = 1;
+                    fieldList[nodeInfoTableIndex].push(nodeInfoField);
+                    if (tableVote[nodeInfoTableIndex] == null) {
+                        tableVote[nodeInfoTableIndex] = 1;
                     } else {
-                        ++tableVote[nodeInfoTable];
+                        ++tableVote[nodeInfoTableIndex];
                     }
                 } else {
                     INTERMediator.setErrorMessage(
@@ -1580,11 +1586,11 @@ var INTERMediator = {
             for (tableName in tableVote) {
                 if (maxVoted < tableVote[tableName]) {
                     maxVoted = tableVote[tableName];
-                    maxTableName = tableName;
+                    maxTableName = tableName.substring(10);
                 }
             }
             context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName);
-            return {targettable: context, fieldlist: fieldList[maxTableName]};
+            return {targettable: context, fieldlist: fieldList["_im_index_" + maxTableName]};
         }
 
         function cloneEveryNodes(originalNodes) {
@@ -1800,7 +1806,8 @@ var INTERMediator = {
         }
 
         function setupInsertButton(currentContext, encNodeTag, repNodeTag, node, relationValue) {
-            var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction;
+            var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
+                firstLevelNodes, targetNodeTag;
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
                 if (relationValue || !currentContext['paging'] || currentContext['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
@@ -1808,18 +1815,27 @@ var INTERMediator = {
                     shouldRemove = [];
                     switch (encNodeTag) {
                         case 'TBODY':
+                            targetNodeTag = "TFOOT";
+                            if ( currentContext['repeat-control'].match(/top/i) )    {
+                                targetNodeTag = "THEAD";
+                            }
                             enclosedNode = node.parentNode;
-                            footNode = enclosedNode.getElementsByTagName('TFOOT')[0];
+                            firstLevelNodes = enclosedNode.childNodes;
+                            footNode = null;
+                            for ( i = 0 ; i < firstLevelNodes.length ; i++ )    {
+                                if ( firstLevelNodes[i].tagName === targetNodeTag)    {
+                                    footNode = firstLevelNodes[i];
+                                    break;
+                                }
+                            }
                             if (footNode == null) {
-                                footNode = document.createElement('TFOOT');
+                                footNode = document.createElement(targetNodeTag);
                                 enclosedNode.appendChild(footNode);
                             }
                             trNode = document.createElement('TR');
                             tdNode = document.createElement('TD');
                             if (trNode.getAttribute('id') == null) {
-//                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
                                 trNode.setAttribute('id', nextIdValue());
-//                                INTERMediator.linkedElmCounter++;
                             }
                             footNode.appendChild(trNode);
                             trNode.appendChild(tdNode);
@@ -1830,14 +1846,22 @@ var INTERMediator = {
                         case 'OL':
                             liNode = document.createElement('LI');
                             liNode.appendChild(buttonNode);
-                            node.appendChild(liNode);
+                            if ( currentContext['repeat-control'].match(/top/i) )    {
+                                node.insertBefore(liNode, node.firstChild);
+                            } else {
+                                node.appendChild(liNode);
+                            }
                             break;
                         case 'DIV':
                         case 'SPAN':
                             if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                                 divNode = document.createElement(repNodeTag);
                                 divNode.appendChild(buttonNode);
-                                node.appendChild(divNode);
+                                if ( currentContext['repeat-control'].match(/top/i) )    {
+                                    node.insertBefore(liNode, node.firstChild);
+                                } else {
+                                    node.appendChild(liNode);
+                                }
                             }
                             break;
                     }

@@ -240,11 +240,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
         // Create SQL
         $limitParam = 100000000;
-        if (isset($tableInfo['records'])) {
-            $limitParam = $tableInfo['records'];
-        }
         if ($this->dbSettings->recordCount > 0) {
             $limitParam = $this->dbSettings->recordCount;
+        }
+        if (isset($tableInfo['records'])) {
+            $limitParam = $tableInfo['records'];
         }
         $skipParam = 0;
         if (isset($tableInfo['paging']) and $tableInfo['paging'] == true) {

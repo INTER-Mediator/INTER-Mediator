@@ -54,6 +54,20 @@ INTERMediatorOnPage = {
         return null;
     },
 
+    getURLParametersAsArray: function() {
+        var i, params, eqPos, result, key, value;
+        result = {};
+        params = location.search.substring(1).split('&');
+        for (i = 0; i < params.length; i++) {
+            eqPos = params[i].indexOf("=");
+            if (eqPos > 0) {
+                key = params[i].substring(0, eqPos);
+                value = params[i].substring(eqPos+1)
+                result[key] = decodeURIComponent(value);
+            }
+        }
+        return result;
+    },
 
     isComplementAuthData: function () {
         if (this.authUser != null && this.authUser.length > 0

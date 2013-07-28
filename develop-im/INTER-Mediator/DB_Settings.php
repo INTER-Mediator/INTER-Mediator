@@ -231,14 +231,14 @@ class DB_Settings
         $this->fieldsRequired[] = $field;
     }
 
-    function setValue($value)
-    {
-        $this->fieldsValues[] = $value;
-    }
-
     function setTargetFields($fields)
     {
         $this->fieldsRequired = $fields;
+    }
+
+    function setValue($value)
+    {
+        $this->fieldsValues[] = $value;
     }
 
     function setValues($values)
@@ -261,6 +261,24 @@ class DB_Settings
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);
     }
 
+    function getCriteriaValue($targetField) {
+        foreach($this->extraCriteria as $ar)  {
+            if($targetField == $ar["field"]){
+                return $ar["value"];
+            }
+        }
+        return null;
+    }
+
+    function getCriteriaOperator($targetField) {
+        foreach($this->extraCriteria as $ar)  {
+            if($targetField == $ar["field"]){
+                return $ar["operator"];
+            }
+        }
+        return null;
+    }
+
     function setExtraSortKey($field, $direction)
     {
         $this->extraSortKey[] = array('field' => $field, 'direction' => $direction);
@@ -269,6 +287,15 @@ class DB_Settings
     function setForeignValue($field, $value)
     {
         $this->foreignFieldAndValue[] = array('field' => $field, 'value' => $value);
+    }
+
+    function getForeignKeysValue($targetField) {
+        foreach($this->foreignFieldAndValue as $ar)  {
+            if($targetField == $ar["field"]){
+                return $ar["value"];
+            }
+        }
+        return null;
     }
 
     function setGlobalInContext($contextName, $operation, $field, $value)
@@ -282,20 +309,27 @@ class DB_Settings
                     'db-operation' => $operation,
                     'field' => $field,
                     'value' => $value);
-
                 return;
             }
         }
     }
 
     /* get the information for the 'name'. */
-    function getDataSourceTargetArray()
+    function getDataSourceTargetArray($isAssociative = false)
     {
         if ($this->targetDataSource == null) {
             foreach ($this->dataSource as $record) {
                 if ($record['name'] == $this->dataSourceName) {
-                //    $this->targetDataSource = $record;
-                    return $record;
+                    //    $this->targetDataSource = $record;
+                    if ( $isAssociative )   {
+                        $resultArray = array();
+                        foreach($record as $key=>$value)    {
+                            $resultArray[$key] = $value;
+                        }
+                        return $resultArray;
+                    } else {
+                        return $record;
+                    }
                 }
             }
         } else {

@@ -17,6 +17,8 @@ require_once('../INTER-Mediator/DB_Settings.php');
 require_once('../INTER-Mediator/DB_Formatters.php');
 require_once('../INTER-Mediator/DB_Proxy.php');
 require_once('../INTER-Mediator/DB_Logger.php');
+require_once('../INTER-Mediator/MessageStrings.php');
+require_once('../INTER-Mediator/INTER-Mediator.php');
 
 class DB_PDO_Test extends PHPUnit_Framework_TestCase
 {
@@ -26,7 +28,16 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         date_default_timezone_set('Asia/Tokyo');
 
         $this->db_proxy = new DB_Proxy(true);
-        $this->db_proxy->initialize(array(),
+        $this->db_proxy->initialize(array(
+                array(
+                    'records' => 1,
+                    'paging' => true,
+                    'name' => 'person',
+                    'key' => 'id',
+                    'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
+                    'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
+                )
+            ),
             array(
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
@@ -47,6 +58,150 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
                 'password' => 'password',
             ),
             false);
+    }
+
+    public function testQuery1_singleRecord()    {
+        $contexts = array(
+            array(
+                'records' => 1,
+                'name' => 'person',
+                'key' => 'id',
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $db_proxy = new DB_Proxy(true);
+        $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
+        $result = $db_proxy->getFromDB("person");
+        $recordCount = $db_proxy->countQueryResult("person");
+        var_export($db_proxy->logger->errorMessage);
+        var_export($db_proxy->logger->debugMessage);
+        var_export($result);
+        $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
+        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertTrue($result[0]["id"] === 1, "Field value is not same as the definition.");
+    }
+
+    public function testQuery2_multipleRecord()    {
+        $contexts = array(
+            array(
+                'records' => 100000,
+                'name' => 'person',
+                'key' => 'id',
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $db_proxy = new DB_Proxy(true);
+        $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
+        $result = $db_proxy->getFromDB("person");
+        $recordCount = $db_proxy->countQueryResult("person");
+        var_export($db_proxy->logger->errorMessage);
+        var_export($db_proxy->logger->debugMessage);
+        var_export($result);
+        $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
+        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
+        $this->assertTrue($result[2]["id"] === 3, "Field value is not same as the definition.");
+
+        // INSERT person SET id=3,name='Anyone',address='Osaka, Japan',mail='msyk@msyk.net';
+
+    }
+
+    public function testInsertAndUpdateRecord()    {
+        $contexts = array(
+            array(
+                'records' => 100000,
+                'name' => 'person',
+                'key' => 'id',
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $db_proxy = new DB_Proxy(true);
+        $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
+        $newKeyValue = $db_proxy->newToDB("person", true);
+        var_export($db_proxy->logger->errorMessage);
+        var_export($db_proxy->logger->debugMessage);
+        var_export($newKeyValue);
+        $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
+
+        $contexts = array(
+            array(
+                'records' => 100000,
+                'name' => 'person',
+                'key' => 'id',
+                'query' => array(
+                    'field'=>'id', 'value'=>$newKeyValue, 'operator'=>'='
+                )
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $nameValue ="unknown, oh mygod!";
+        $addressValue ="anyplace, who knows!";
+        $db_proxy = new DB_Proxy(true);
+        $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
+        $db_proxy->dbSettings->setTargetField("name");
+        $db_proxy->dbSettings->setValue($nameValue);
+        $db_proxy->dbSettings->setTargetField("address");
+        $db_proxy->dbSettings->setValue($addressValue);
+        $result = $db_proxy->setToDB("person", true);
+        var_export($db_proxy->logger->errorMessage);
+        var_export($db_proxy->logger->debugMessage);
+        var_export($result);
+        $this->assertTrue($result, "Update should be successful.");
+
+        $contexts = array(
+            array(
+                'records' => 1,
+                'name' => 'person',
+                'key' => 'id',
+                'query' => array(
+                    'field'=>'id', 'value'=>$newKeyValue, 'operator'=>'='
+                )
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $nameValue ="unknown, oh mygod!";
+        $addressValue ="anyplace, who knows!";
+        $db_proxy = new DB_Proxy(true);
+        $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
+        $result = $db_proxy->getFromDB("person");
+        $recordCount = $db_proxy->countQueryResult("person");
+        var_export($db_proxy->logger->errorMessage);
+        var_export($db_proxy->logger->debugMessage);
+        var_export($result);
+        $this->assertTrue(count($result) == 1, "It should be just one record.");
+        $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
+        $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
+
     }
 
     public function testAuthUser1()

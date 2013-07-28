@@ -67,6 +67,20 @@ class GenerateJSCode
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
         }
 
+        $relativeToDefFile = '';
+        $editorPath = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
+        $defFilePath = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME'];
+        while( strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1 )    {
+            $editorPath = dirname($editorPath);
+            $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;
+        }
+        $relativeToDefFile .= substr($defFilePath, strlen($editorPath)+1);
+        $editorPath = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR
+            . 'INTER-Mediator-Support' . DIRECTORY_SEPARATOR . 'defedit.html';
+        $relativeToEditor = substr($editorPath, strlen($_SERVER['DOCUMENT_ROOT']));
+        $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
+            "function(){return {$q}{$relativeToEditor}?target=$relativeToDefFile{$q};}");
+
         $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
             . $_SERVER['SCRIPT_NAME'] . (isset($scriptPathSufix) ? $scriptPathSufix : '');
         $this->generateAssignJS(
