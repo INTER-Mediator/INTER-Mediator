@@ -90,7 +90,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
         $retrievedPasswd = $this->db_proxy->dbClass->authSupportRetrieveHashedPassword($username);
-        echo var_export($this->db_proxy->logger->debugMessage, true);
+        echo var_export($this->db_proxy->logger->getDebugMessage(), true);
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
 
     }

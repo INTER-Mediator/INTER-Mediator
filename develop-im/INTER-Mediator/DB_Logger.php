@@ -66,6 +66,11 @@ class DB_Logger
         }
     }
 
+    function getDebugMessage()
+    {
+        return $this->debugMessage;
+    }
+
     function getDebugLevel()
     {
         return $this->debugLevel;
