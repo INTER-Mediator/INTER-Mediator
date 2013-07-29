@@ -206,7 +206,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
         if (!is_array($this->fxResult)) {
             if ($this->dbSettings->isDBNative()) {
-                $this->dbSettings->requireAuthentication = true;
+                $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
                         $this->stringWithoutPassword(get_class($this->fxResult)
@@ -317,7 +317,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             if ($this->dbSettings->isDBNative()) {
-                $this->dbSettings->requireAuthentication = true;
+                $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
                     $this->stringWithoutPassword(get_class($result) . ': ' . $result->getDebugInfo()));
@@ -476,7 +476,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $result = $this->fx->DoFxAction("new", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             if ($this->dbSettings->isDBNative()) {
-                $this->dbSettings->requireAuthentication = true;
+                $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->errorMessage[] = get_class($result) . ': ' . $result->getDebugInfo();
             }
@@ -547,7 +547,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             if ($this->dbSettings->isDBNative()) {
-                $this->dbSettings->requireAuthentication = true;
+                $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->errorMessage[] = get_class($result) . ': ' . $result->getDebugInfo();
             }
@@ -586,7 +586,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $result = $this->fx->DoFxAction("delete", TRUE, TRUE, 'full');
                 if (!is_array($result)) {
                     if ($this->dbSettings->isDBNative()) {
-                        $this->dbSettings->requireAuthentication = true;
+                        $this->dbSettings->setRequireAuthentication(true);
                     } else {
 
                         $this->logger->setErrorMessage($this->stringWithoutPassword(
