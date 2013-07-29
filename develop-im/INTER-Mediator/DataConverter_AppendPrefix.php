@@ -11,7 +11,7 @@
 class DataConverter_AppendPrefix
 {
 
-    var $appendStr;
+    private $appendStr;
 
     function __construct($str = '')
     {

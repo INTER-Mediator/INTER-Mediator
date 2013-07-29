@@ -13,10 +13,10 @@ require_once('INTER-Mediator.php');
 class DataConverter_MySQLDateTime
 {
 
-    var $tz = 'Asia/Tokyo'; // Should be custimizable.
+    private $tz = 'Asia/Tokyo'; // Should be custimizable.
 
-    var $useMbstring;
-    var $fmt;
+    private $useMbstring;
+    private $fmt;
 
     function __construct($format = '')
     {

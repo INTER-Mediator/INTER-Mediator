@@ -10,9 +10,9 @@
 
 class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 {
-    var $link = null;
-    var $mainTableCount = 0;
-    var $fieldInfo = null;
+    private $link = null;
+    private $mainTableCount = 0;
+    private $fieldInfo = null;
 
     private function errorMessageStore($str)
     {
@@ -56,7 +56,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         $insideOp = ' OR ';
                         $outsideOp = ' AND ';
                     }
-                } else if (!$this->dbSettings->primaryKeyOnly || $condition['field'] == $primaryKey) {
+                } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     if (isset($condition['value']) && $condition['value'] != null) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
@@ -79,19 +79,20 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
 
         $queryClauseArray = array();
-        if ($includeExtra && isset($this->dbSettings->extraCriteria[0])) {
+        $exCriteria = $this->dbSettings->getExtraCriteria();
+        if ($includeExtra && isset($exCriteria[0])) {
             $chunkCount = 0;
             $oneClause = array();
             $insideOp = ' AND ';
             $outsideOp = ' OR ';
-            foreach ($this->dbSettings->extraCriteria as $condition) {
+            foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if ($condition['field'] == '__operation__') {
                     $chunkCount++;
                     if ($condition['operator'] == 'ex') {
                         $insideOp = ' OR ';
                         $outsideOp = ' AND ';
                     }
-                } else if (!$this->dbSettings->primaryKeyOnly || $condition['field'] == $primaryKey) {
+                } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     if (isset($condition['value']) && $condition['value'] != null) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
@@ -114,9 +115,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 . '(' . implode($outsideOp, $oneClause) . ')';
         }
 
-        if (count($this->dbSettings->foreignFieldAndValue) > 0) {
+        if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
             foreach ($tableInfo['relation'] as $relDef) {
-                foreach ($this->dbSettings->foreignFieldAndValue as $foreignDef) {
+                foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
                     if ($relDef['join-field'] == $foreignDef['field']) {
                         $escapedValue = $this->link->quote($foreignDef['value']);
                         $op = isset($relDef['operator']) ? $relDef['operator'] : '=';
@@ -174,8 +175,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $sortClause = array();
-        if (count($this->dbSettings->extraSortKey) > 0) {
-            foreach ($this->dbSettings->extraSortKey as $condition) {
+        if (count($this->dbSettings->getExtraSortKey()) > 0) {
+            foreach ($this->dbSettings->getExtraSortKey() as $condition) {
                 if (isset($condition['direction'])) {
                     $sortClause[] = "{$condition['field']} {$condition['direction']}";
                 } else {
@@ -197,7 +198,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->mainTableCount = 0;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForRetrieve();
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->currentUser);
+        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -240,19 +241,19 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
         // Create SQL
         $limitParam = 100000000;
-        if ($this->dbSettings->recordCount > 0) {
-            $limitParam = $this->dbSettings->recordCount;
+        if ($this->dbSettings->getRecordCount() > 0) {
+            $limitParam = $this->dbSettings->getRecordCount();
         }
         if (isset($tableInfo['records'])) {
             $limitParam = $tableInfo['records'];
         }
         $skipParam = 0;
         if (isset($tableInfo['paging']) and $tableInfo['paging'] == true) {
-            $skipParam = $this->dbSettings->start;
+            $skipParam = $this->dbSettings->getStart();
         }
         $fields = '*';
         if (isset($tableInfo['specify-fields'])) {
-            $fields = implode(',', array_unique($this->dbSettings->fieldsRequired));
+            $fields = implode(',', array_unique($this->dbSettings->getFieldsRequired()));
         }
         $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$sortClause} "
             . " LIMIT {$limitParam} OFFSET {$skipParam}";
@@ -272,7 +273,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 if ( $isFirstRow )  {
                     $this->fieldInfo[] = $field;
                 }
-                $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
+                $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
                 $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
             }
             $sqlResult[] = $rowArray;
@@ -311,7 +312,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
         $tableName = $this->dbSettings->getEntityForUpdate();
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->currentUser);
+        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -333,8 +334,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $setClause = array();
         $setParameter = array();
         $counter = 0;
-        foreach ($this->dbSettings->fieldsRequired as $field) {
-            $value = $this->dbSettings->fieldsValues[$counter];
+        $fieldValues = $this->dbSettings->getValue();
+        foreach ($this->dbSettings->getFieldsRequired() as $field) {
+            $value = $fieldValues[$counter];
             $counter++;
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
             $convertedValue = $this->formatter->formatterToDB($field, $convertedValue);
@@ -386,7 +388,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $tableName = $this->dbSettings->getEntityForUpdate();
 
         if (!$bypassAuth && isset($tableInfo['authentication'])) {
-            $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->currentUser);
+            $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
         }
 
         $setColumnNames = array();
@@ -408,11 +410,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
-        $countFields = count($this->dbSettings->fieldsRequired);
+        $requiredFields = $this->dbSettings->getFieldsRequired();
+        $countFields = count($requiredFields);
+        $fieldValues = $this->dbSettings->getValue();
         for ($i = 0; $i < $countFields; $i++) {
-            $field = $this->dbSettings->fieldsRequired[$i];
-            $value = $this->dbSettings->fieldsValues[$i];
-            $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
+            $field = $requiredFields[$i];
+            $value = $fieldValues[$i];
+            $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
             $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
             $setColumnNames[] = $field;
@@ -421,7 +425,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             foreach ($tableInfo['default-values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
-                $filedInForm = "{$tableName}{$this->dbSettings->separator}{$field}";
+                $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
                 $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
                 $setColumnNames[] = $field;
@@ -481,7 +485,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->currentUser);
+        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
 
         if (!$this->setupConnection()) { //Establish the connection
@@ -842,7 +846,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
 
         $userid = $this->authSupportGetUserIdFromUsername($user);
-        if ($userid === false && $this->dbSettings->emailAsAccount) {
+        if ($userid === false && $this->dbSettings->getEmailAsAccount()) {
             $userid = $this->authSupportGetUserIdFromEmail($user);
         }
         if (!$this->setupConnection()) { //Establish the connection
@@ -962,7 +966,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     function authSupportUnifyUsernameAndEmail($username)
     {
-        if (! $this->dbSettings->emailAsAccount || strlen($username) == 0)  {
+        if (! $this->dbSettings->getEmailAsAccount() || strlen($username) == 0)  {
             return $username;
         }
         $userTable = $this->dbSettings->getUserTable();

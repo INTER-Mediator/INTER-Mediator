@@ -16,41 +16,204 @@
  */
 class DB_Settings
 {
-    var $dbSpecServer = null;
-    var $dbSpecPort = null;
-    var $dbSpecUser = null;
-    var $dbSpecPassword = null;
-    var $dbSpecDatabase = null;
-    var $dbSpecDataType = null;
-    var $dbSpecProtocol = null;
-    var $dbSpecDSN = null;
-    var $dbSpecOption = null;
+    private $dbSpecServer = null;
+    private $dbSpecPort = null;
+    private $dbSpecUser = null;
+    private $dbSpecPassword = null;
+    private $dbSpecDatabase = null;
+    private $dbSpecDataType = null;
+    private $dbSpecProtocol = null;
+    private $dbSpecDSN = null;
+    private $dbSpecOption = null;
 
-    var $dataSource = null;
-    var $targetDataSource = null;
-    var $extraCriteria = array();
-    var $extraSortKey = array();
-    var $fieldsRequired = array();
-    var $fieldsValues = array();
-    var $separator = null;
-    var $start = 0;
-    var $dataSourceName = '';
-    var $foreignFieldAndValue = array();
-    var $recordCount = 0;
+    private $dataSource = null;
+    private $targetDataSource = null;
+    private $dataSourceName = '';
+    private $recordCount = 0;
+    private $start = 0;
+    private $separator = null;
 
-    var $currentUser = null;
-    var $authentication = null;
-    var $accessUser = null;
-    var $accessPassword = null;
+    private $extraCriteria = array();
+    private $extraSortKey = array();
+    private $fieldsRequired = array();
+    private $fieldsValues = array();
+    private $foreignFieldAndValue = array();
+    private $currentDataAccess = null;
 
-    var $currentProxy = null;
-    var $currentDataAccess = null;
+    private $currentUser = null;
+    private $authentication = null;
+    private $accessUser = null;
+    private $accessPassword = null;
+    private $primaryKeyOnly = false;
+    private $isDBNative = false;
+    private $requireAuthorization = false;
+    private $requireAuthentication = false;
 
-    var $primaryKeyOnly = false;
-    var $emailAsAccount = false;
-    var $isDBNative = false;
-    var $requireAuthorization = false;
-    var $requireAuthentication = false;
+
+    /**
+     * @param string $dataSourceName
+     */
+    public function setDataSourceName($dataSourceName)
+    {
+        $this->dataSourceName = $dataSourceName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDataSourceName()
+    {
+        return $this->dataSourceName;
+    }
+
+    /**
+     * @param array $fieldsRequired
+     */
+    public function setFieldsRequired($fieldsRequired)
+    {
+        $this->fieldsRequired = $fieldsRequired;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFieldsRequired()
+    {
+        return $this->fieldsRequired;
+    }
+
+    /**
+     * @return array
+     */
+    public function getValue()
+    {
+        return $this->fieldsValues;
+    }
+
+    /**
+     * @param array $foreignFieldAndValue
+     */
+    public function setForeignFieldAndValue($foreignFieldAndValue)
+    {
+        $this->foreignFieldAndValue = $foreignFieldAndValue;
+    }
+
+    /**
+     * @return array
+     */
+    public function getForeignFieldAndValue()
+    {
+        return $this->foreignFieldAndValue;
+    }
+
+    /**
+     * @param boolean $isDBNative
+     */
+    public function setDBNative($isDBNative)
+    {
+        $this->isDBNative = $isDBNative;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDBNative()
+    {
+        return $this->isDBNative;
+    }
+
+    /**
+     * @param boolean $requireAuthentication
+     */
+    public function setRequireAuthentication($requireAuthentication)
+    {
+        $this->requireAuthentication = $requireAuthentication;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getRequireAuthentication()
+    {
+        return $this->requireAuthentication;
+    }
+
+    /**
+     * @param boolean $requireAuthorization
+     */
+    public function setRequireAuthorization($requireAuthorization)
+    {
+        $this->requireAuthorization = $requireAuthorization;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getRequireAuthorization()
+    {
+        return $this->requireAuthorization;
+    }
+
+    /**
+     * @param null $targetDataSource
+     */
+    public function setTargetDataSource($targetDataSource)
+    {
+        $this->targetDataSource = $targetDataSource;
+    }
+
+    /**
+     * @return null
+     */
+    public function getTargetDataSource()
+    {
+        return $this->targetDataSource;
+    }
+
+
+     /**
+     * @param boolean $primaryKeyOnly
+     */
+    public function setPrimaryKeyOnly($primaryKeyOnly)
+    {
+        $this->primaryKeyOnly = $primaryKeyOnly;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getPrimaryKeyOnly()
+    {
+        return $this->primaryKeyOnly;
+    }
+
+    private $emailAsAccount = false;
+
+    /**
+     * @param boolean $emailAsAccount
+     */
+    public function setEmailAsAccount($emailAsAccount)
+    {
+        $this->emailAsAccount = $emailAsAccount;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getEmailAsAccount()
+    {
+        return $this->emailAsAccount;
+    }
+
+    function getCurrentDataAccess()
+    {
+        return $this->currentDataAccess;
+    }
+
+    function setCurrentDataAccess($dbaccess)
+    {
+        $this->currentDataAccess = $dbaccess;
+    }
 
     /* Database connection paramters */
     function setDbSpecServer($str)
@@ -161,39 +324,70 @@ class DB_Settings
 
     /* Call on INTER-Mediator.php */
 
+    /**
+     * @param array $authentication
+     */
+    public function setAuthentication($authentication)
+    {
+        $this->authentication = $authentication;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAuthentication()
+    {
+        return $this->authentication;
+    }
+
+    public function getAuthenticationItem($key)
+    {
+        if (isset($this->authentication[$key])) {
+            return $this->authentication[$key];
+        }
+        switch($key)    {
+            case 'user-table':          return 'authuser';      break;
+            case 'group-table':         return 'authgroup';     break;
+            case 'corresponding-table': return 'authcor';       break;
+            case 'challenge-table':     return 'issuedhash';    break;
+            case 'authexpired':         return 3600 * 8;        break;
+        }
+        return null;
+    }
+
     function getUserTable()
     {
-        return isset($this->authentication['user-table'])
-            ? $this->authentication['user-table'] : 'authuser';
+        return $this->getAuthenticationItem('user-table');
     }
 
     function getGroupTable()
     {
-        return isset($this->authentication['group-table'])
-            ? $this->authentication['group-table'] : 'authgroup';
+        return $this->getAuthenticationItem('group-table');
     }
 
     function getCorrTable()
     {
-        return isset($this->authentication['corresponding-table'])
-            ? $this->authentication['corresponding-table'] : 'authcor';
+        return $this->getAuthenticationItem('corresponding-table');
     }
 
     function getHashTable()
     {
-        return isset($this->authentication['challenge-table'])
-            ? $this->authentication['challenge-table'] : 'issuedhash';
+        return $this->getAuthenticationItem('challenge-table');
     }
 
     function getExpiringSeconds()
     {
-        return isset($this->authentication['authexpired'])
-            ? $this->authentication['authexpired'] : 3600 * 8;
+        return $this->getAuthenticationItem('authexpired');
     }
 
     function setCurrentUser($str)
     {
         $this->currentUser = $str;
+    }
+
+    function getCurrentUser()
+    {
+        return $this->currentUser;
     }
 
     function setDataSource($src)
@@ -216,6 +410,11 @@ class DB_Settings
         $this->separator = $sep;
     }
 
+    function getSeparator()
+    {
+        return $this->separator;
+    }
+
     function setTargetName($val)
     {
         $this->dataSourceName = $val;
@@ -226,7 +425,7 @@ class DB_Settings
         return $this->dataSourceName;
     }
 
-    function setTargetField($field)
+    function addTargetField($field)
     {
         $this->fieldsRequired[] = $field;
     }
@@ -236,12 +435,12 @@ class DB_Settings
         $this->fieldsRequired = $fields;
     }
 
-    function setValue($value)
+    function addValue($value)
     {
         $this->fieldsValues[] = $value;
     }
 
-    function setValues($values)
+    function setValue($values)
     {
         $this->fieldsValues = $values;
     }
@@ -251,47 +450,70 @@ class DB_Settings
         $this->start = $st;
     }
 
+    function getStart()
+    {
+        return $this->start;
+    }
+
+    function getRecordCount()
+    {
+        return $this->recordCount;
+    }
+
     function setRecordCount($sk)
     {
         $this->recordCount = $sk;
     }
 
-    function setExtraCriteria($field, $operator, $value)
+    function getExtraCriteria()
+    {
+        return $this->extraCriteria;
+    }
+
+    function addExtraCriteria($field, $operator, $value)
     {
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);
     }
 
-    function getCriteriaValue($targetField) {
-        foreach($this->extraCriteria as $ar)  {
-            if($targetField == $ar["field"]){
+    function getCriteriaValue($targetField)
+    {
+        foreach ($this->getExtraCriteria() as $ar) {
+            if ($targetField == $ar["field"]) {
                 return $ar["value"];
             }
         }
         return null;
     }
 
-    function getCriteriaOperator($targetField) {
-        foreach($this->extraCriteria as $ar)  {
-            if($targetField == $ar["field"]){
+    function getCriteriaOperator($targetField)
+    {
+        foreach ($this->getExtraCriteria() as $ar) {
+            if ($targetField == $ar["field"]) {
                 return $ar["operator"];
             }
         }
         return null;
     }
 
-    function setExtraSortKey($field, $direction)
+    function addExtraSortKey($field, $direction)
     {
         $this->extraSortKey[] = array('field' => $field, 'direction' => $direction);
     }
 
-    function setForeignValue($field, $value)
+    function getExtraSortKey()
+    {
+        return $this->extraSortKey;
+    }
+
+    function addForeignValue($field, $value)
     {
         $this->foreignFieldAndValue[] = array('field' => $field, 'value' => $value);
     }
 
-    function getForeignKeysValue($targetField) {
-        foreach($this->foreignFieldAndValue as $ar)  {
-            if($targetField == $ar["field"]){
+    function getForeignKeysValue($targetField)
+    {
+        foreach ($this->foreignFieldAndValue as $ar) {
+            if ($targetField == $ar["field"]) {
                 return $ar["value"];
             }
         }
@@ -321,9 +543,9 @@ class DB_Settings
             foreach ($this->dataSource as $record) {
                 if ($record['name'] == $this->dataSourceName) {
                     //    $this->targetDataSource = $record;
-                    if ( $isAssociative )   {
+                    if ($isAssociative) {
                         $resultArray = array();
-                        foreach($record as $key=>$value)    {
+                        foreach ($record as $key => $value) {
                             $resultArray[$key] = $value;
                         }
                         return $resultArray;

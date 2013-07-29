@@ -70,4 +70,12 @@ EOL;
 // These are added before/after the path.
 //$scriptPathPrefix = "";
 //$scriptPathSufix = "";
+// ** Both variables are unsupported until ver.3.8. Move to below.**
+
+// INTER-Mediator client should call the definition file to work fine.
+// Usually $_SERVER['SCRIPT_NAME'] is the url to request from client.
+// In case of using INTER-Mediator with other frameworks, you might specify any special URL to call.
+// So you can set the another url to the $callURL variables and it can be replaced with $_SERVER['SCRIPT_NAME'].
+//$callURL = "http://yourdomai/your/path/to/definition-file.php"
+
 ?>

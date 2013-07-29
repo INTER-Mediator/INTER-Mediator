@@ -45,6 +45,12 @@ It's hard to check all versions above browsers as you know. I hope you understan
 Change Log
 =================================
 
+Ver.3.8
+- $scriptPathPrefix and $scriptPathSufix in params.php are obsoleted. Use $callURL to specify the url directly.
+- Instance variables in PHP classes are defined with private/protected/public instead of var.
+- [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
+- Some exceptions prints a stack trace to JavaScript console if possible.
+
 Ver.3.7 (2013/7/28)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
 - MediaAccess class can work for a non-authentication settings.

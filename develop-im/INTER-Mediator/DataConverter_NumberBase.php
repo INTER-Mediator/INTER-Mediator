@@ -13,10 +13,10 @@ require_once('INTER-Mediator.php');
 class DataConverter_NumberBase
 {
 
-    var $decimalMark = null;
-    var $thSepMark = null;
-    var $currencyMark = null;
-    var $useMbstring;
+    protected $decimalMark = null;
+    protected $thSepMark = null;
+    protected $currencyMark = null;
+    protected $useMbstring;
 
     function __construct()
     {

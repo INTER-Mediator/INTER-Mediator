@@ -16,9 +16,9 @@
  */
 abstract class DB_UseSharedObjects
 {
-    var $dbSettings = null;
-    var $logger = null;
-    var $formatter = null;
+    public $dbSettings = null;
+    public $logger = null;
+    public $formatter = null;
 
     function setUpSharedObjects( $obj = null )
     {

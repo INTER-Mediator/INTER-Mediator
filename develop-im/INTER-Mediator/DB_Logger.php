@@ -17,9 +17,9 @@
 class DB_Logger
 {
     /* Debug and Messages */
-    var $debugLevel = false;
-    var $errorMessage = array();
-    var $debugMessage = array();
+    private $debugLevel = false;
+    private $errorMessage = array();
+    private $debugMessage = array();
 
     function setDebugMessage($str, $level = 1)
     {
@@ -64,5 +64,10 @@ class DB_Logger
         } else {
             $this->debugLevel = $val;
         }
+    }
+
+    function getDebugLevel()
+    {
+        return $this->debugLevel;
     }
 }

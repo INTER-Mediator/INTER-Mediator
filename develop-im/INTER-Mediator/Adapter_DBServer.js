@@ -100,7 +100,7 @@ INTERMediator_DBAdapter = {
             }
         } catch (e) {
 
-            INTERMediator.setErrorMessage(
+            INTERMediator.setErrorMessage(e,
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
 
@@ -150,7 +150,7 @@ INTERMediator_DBAdapter = {
             if (ex == "_im_requath_request_") {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-19: " + ex.message);
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-19");
             }
         }
         if (INTERMediatorOnPage.authChallenge == null) {
@@ -207,7 +207,7 @@ INTERMediator_DBAdapter = {
             }
             myRequest.send(fd);
         } catch (e) {
-            INTERMediator.setErrorMessage(
+            INTERMediator.setErrorMessage( e,
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1032], [e, myRequest.responseText]));
         }
@@ -327,7 +327,7 @@ INTERMediator_DBAdapter = {
             if (ex == "_im_requath_request_") {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-17: " + ex.message);
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-17");
             }
             returnValue.recordset = null;
             returnValue.totalCount = 0;
@@ -355,7 +355,7 @@ INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-16: " + ex.message);
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-16");
             }
         }
         completion(returnValue);
@@ -428,7 +428,7 @@ INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-15: " + ex.message);
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-15");
             }
         }
         completion(returnValue);
@@ -486,7 +486,7 @@ INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-14: " + ex.message);
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-14");
             }
         }
         completion(returnValue);
@@ -568,7 +568,7 @@ INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage("EXCEPTION-13: " + ex.message);
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-13");
             }
         }
         if (completion) {

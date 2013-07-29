@@ -10,7 +10,7 @@
 
 class DataConverter_HTMLString
 {
-    var $linking;
+    private $linking;
 
     function __construct($uselink = false)
     {

@@ -27,7 +27,7 @@ class MessageStrings
         return $msg;
     }
 
-    var $messages = array(
+    private $messages = array(
         1 => 'Record #',
         2 => 'Refresh',
         3 => 'Add Record',

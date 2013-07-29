@@ -25,6 +25,8 @@ Thanks for nice works.
 * bi2php v0.1.113.alfa from http://code.google.com/p/bi2php/
   This library is based on the work of Dave Shapiro (http://www.ohdave.com/rsa/)
 
+* phpseclib (http://phpseclib.sourceforge.net/)
+
 ==========================================
 Account Information for FileMaker Database
 ------------------------------------------

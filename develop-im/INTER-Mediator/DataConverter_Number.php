@@ -13,7 +13,7 @@ require_once('DataConverter_NumberBase.php');
 class DataConverter_Number extends DataConverter_NumberBase
 {
 
-    var $d = null;
+    private $d = null;
 
     /**
      *

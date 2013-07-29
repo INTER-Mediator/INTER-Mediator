@@ -81,8 +81,7 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
             "function(){return {$q}{$relativeToEditor}?target=$relativeToDefFile{$q};}");
 
-        $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
-            . $_SERVER['SCRIPT_NAME'] . (isset($scriptPathSufix) ? $scriptPathSufix : '');
+        $pathToMySelf = isset($callURL) ? $callURL : $_SERVER['SCRIPT_NAME'];
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
         $this->generateAssignJS(

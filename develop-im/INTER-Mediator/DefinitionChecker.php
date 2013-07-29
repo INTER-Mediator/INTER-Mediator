@@ -67,8 +67,6 @@ class DefinitionChecker
             $endPoint = $nextEndPoint;
             $currentPath .= "[{$value}]";
         }
-//        $this->message .= "######Checked - $currentPath/endpoint=" . var_export($endPoint, true);
-
         if (is_array($endPoint)) {
             if (is_array($items)) {
                 foreach ($items as $key => $value) {
@@ -131,13 +129,13 @@ class DefinitionChecker
     }
 
 
-    var
+    private
         $message;
-    var
+    private
         $path;
-    var
+    private
         $currentProhibit;
-    var
+    private
         $prohibitKeywordsForDBSpec = array(
         'db-class' => 'string',
         'dsn' => 'string',
@@ -151,7 +149,7 @@ class DefinitionChecker
         'datatype' => 'string',
         'external-db' => array( '#' => 'string' ),
     );
-    var
+    private
         $prohibitKeywordsForOption = array(
         'separator' => 'string',
         'formatter' => array(
@@ -182,7 +180,7 @@ class DefinitionChecker
         'media-root-dir'=> 'string',
         'media-context'=> 'string',
     );
-    var
+    private
         $prohibitKeywordsForDataSource = array(
         '*' => array(
             'name' => 'string',

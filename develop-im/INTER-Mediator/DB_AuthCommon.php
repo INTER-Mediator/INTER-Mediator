@@ -47,8 +47,8 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $usersArray = array();
-        if (isset($this->dbSettings->authentication['user'])) {
-            $usersArray = array_merge($usersArray, $this->dbSettings->authentication['user']);
+        if ($this->dbSettings->getAuthenticationItem('user')) {
+            $usersArray = array_merge($usersArray, $this->dbSettings->getAuthenticationItem('user'));
         }
         if (isset($tableInfo['authentication']['all']['user'])) {
             $usersArray = array_merge($usersArray, $tableInfo['authentication']['all']['user']);
@@ -63,8 +63,8 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $groupsArray = array();
-        if (isset($this->dbSettings->authentication['group'])) {
-            $groupsArray = array_merge($groupsArray, $this->dbSettings->authentication['group']);
+        if ($this->dbSettings->getAuthenticationItem('group')) {
+            $groupsArray = array_merge($groupsArray, $this->dbSettings->getAuthenticationItem('group'));
         }
         if (isset($tableInfo['authentication']['all']['group'])) {
             $groupsArray = array_merge($groupsArray, $tableInfo['authentication']['all']['group']);

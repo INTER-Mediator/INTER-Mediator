@@ -104,7 +104,7 @@ class MediaAccess
                     $authorizedUsers = $dbProxyInstance->dbClass->getAuthorizedUsers("load");
                     $authorizedGroups = $dbProxyInstance->dbClass->getAuthorizedGroups("load");
                     $belongGroups = $dbProxyInstance->dbClass->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
-                    if (!in_array($this->dbSettings->currentUser, $authorizedUsers)
+                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
                         && array_intersect($belongGroups, $authorizedGroups)
                     ) {
                         header( "HTTP/1.1 401 Unauthorized" );

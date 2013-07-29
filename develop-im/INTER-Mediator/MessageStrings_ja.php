@@ -26,7 +26,7 @@ class MessageStrings_ja
         return $msg;
     }
 
-    var $messages = array(
+    private $messages = array(
         1 => 'レコード番号',
         2 => '更新',
         3 => 'レコード追加',

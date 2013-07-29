@@ -18,17 +18,13 @@
 class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
     var $dbClass = null; // for Default context
-    var $userExpanded = null;
+    private $userExpanded = null;
     var $dbClassForContext = array();
-    var $outputOfPrcessing = '';
-//    var $requireAuthorization;
-//    var $requireAuthentication;
-//    var $isDBNative;
-    var $paramAuthUser;
+    private $outputOfPrcessing = '';
+    private $paramAuthUser;
 
-    var $previousChallenge;
-    var $previousClientid;
-
+    private $previousChallenge;
+    private $previousClientid;
 
     function __construct($testmode = false)
     {
@@ -191,8 +187,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
             $this->logger->setDebugMode($debug);
         }
-        $this->dbSettings->currentProxy = $this;
-        $this->dbSettings->currentDataAccess = $this->dbClass;
+//        $this->dbSettings->currentProxy = $this;
+        $this->dbSettings->setCurrentDataAccess($this->dbClass);
 
         $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
 
@@ -209,18 +205,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
         }
 
-        $this->dbSettings->primaryKeyOnly = isset($_POST['pkeyonly']) &&
-            !(isset($prohibitIgnoreCondition) ? $prohibitIgnoreCondition : false);
+        $this->dbSettings->setPrimaryKeyOnly( isset($_POST['pkeyonly']) &&
+            !(isset($prohibitIgnoreCondition) ? $prohibitIgnoreCondition : false));
 
         $this->dbSettings->setCurrentUser(isset($_POST['authuser']) ? $_POST['authuser'] : null);
-        $this->dbSettings->authentication = isset($options['authentication']) ? $options['authentication'] : null;
+        $this->dbSettings->setAuthentication(isset($options['authentication']) ? $options['authentication'] : null);
 
         $this->dbSettings->setStart(isset($_POST['start']) ? $_POST['start'] : 0);
         $this->dbSettings->setRecordCount(isset($_POST['records']) ? $_POST['records'] : 10000000);
 
         for ($count = 0; $count < 10000; $count++) {
             if (isset($_POST["condition{$count}field"])) {
-                $this->dbSettings->setExtraCriteria(
+                $this->dbSettings->addExtraCriteria(
                     $_POST["condition{$count}field"],
                     isset($_POST["condition{$count}operator"]) ? $_POST["condition{$count}operator"] : '=',
                     isset($_POST["condition{$count}value"]) ? $_POST["condition{$count}value"] : null);
@@ -230,7 +226,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
         for ($count = 0; $count < 10000; $count++) {
             if (isset($_POST["sortkey{$count}field"])) {
-                $this->dbSettings->setExtraSortKey($_POST["sortkey{$count}field"], $_POST["sortkey{$count}direction"]);
+                $this->dbSettings->addExtraSortKey($_POST["sortkey{$count}field"], $_POST["sortkey{$count}direction"]);
             } else {
                 break;
             }
@@ -239,7 +235,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if (!isset($_POST["foreign{$count}field"])) {
                 break;
             }
-            $this->dbSettings->setForeignValue(
+            $this->dbSettings->addForeignValue(
                 $_POST["foreign{$count}field"],
                 $_POST["foreign{$count}value"]);
         }
@@ -248,16 +244,16 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if (!isset($_POST["field_{$i}"])) {
                 break;
             }
-            $this->dbSettings->setTargetField($_POST["field_{$i}"]);
+            $this->dbSettings->addTargetField($_POST["field_{$i}"]);
         }
         for ($i = 0; $i < 1000; $i++) {
             if (!isset($_POST["value_{$i}"])) {
                 break;
             }
-            $this->dbSettings->setValue(get_magic_quotes_gpc() ? stripslashes($_POST["value_{$i}"]) : $_POST["value_{$i}"]);
+            $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($_POST["value_{$i}"]) : $_POST["value_{$i}"]);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
-            $this->dbSettings->emailAsAccount = $options['authentication']['email-as-username'];
+            $this->dbSettings->setEmailAsAccount($options['authentication']['email-as-username']);
         }
     }
 
@@ -310,8 +306,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $messageClass = new MessageStrings();
         }
 
-        $this->logger->setDebugMessage("###".var_export($_POST,true));
-
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $access = is_null($access) ? $_POST['access'] : $access;
         $clientId = isset($_POST['clientid']) ? $_POST['clientid'] :
@@ -319,32 +313,32 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
         $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
 
-        $this->dbSettings->requireAuthentication = false;
-        $this->dbSettings->requireAuthorization = false;
-        $this->dbSettings->isDBNative = false;
+        $this->dbSettings->setRequireAuthentication(false);
+        $this->dbSettings->setRequireAuthorization(false);
+        $this->dbSettings->setDBNative(false);
         if (isset($options['authentication'])
             || $access == 'challenge' || $access == 'changepassword'
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
-            $this->dbSettings->requireAuthorization = true;
-            $this->dbSettings->isDBNative = false;
+            $this->dbSettings->setRequireAuthorization(true);
+            $this->dbSettings->setDBNative(false);
             if (isset($options['authentication']['user'])
                 && $options['authentication']['user'][0] == 'database_native'
             ) {
-                $this->dbSettings->isDBNative = true;
+                $this->dbSettings->setDBNative(true);
             }
         }
 
-        if (!$bypassAuth && $this->dbSettings->requireAuthorization) { // Authentication required
+        if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
             if (strlen($this->paramAuthUser) == 0 || strlen($paramResponse) == 0) {
                 // No username or password
                 $access = "do nothing";
-                $this->dbSettings->requireAuthentication = true;
+                $this->dbSettings->setRequireAuthentication(true);
             }
             // User and Password are suppried but...
             if ($access != 'challenge') { // Not accessing getting a challenge.
-                if ($this->dbSettings->isDBNative) {
+                if ($this->dbSettings->isDBNative()) {
                     $rsa = new Crypt_RSA();
                     $rsa->setPassword($passPhrase);
                     $rsa->loadKey($generatedPrivateKey);
@@ -354,7 +348,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     require_once('bi2php/biRSA.php');
                     $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
                     $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
-//                    $this->logger->setDebugMessage("#### {$decrypted} ###");
                     if ($decrypted !== false) {
                         $nlPos = strpos($decrypted, "\n");
                         $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
@@ -363,14 +356,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $challenge = substr($decrypted, $nlPos + 1);
                         if (!$this->checkChallenge($challenge, $clientId)) {
                             $access = "do nothing";
-                            $this->dbSettings->requireAuthentication = true;
+                            $this->dbSettings->setRequireAuthentication(true);
                         } else {
                             $this->dbSettings->setUserAndPaswordForAccess($this->paramAuthUser, $password);
                         }
                     } else {
                         $this->logger->setDebugMessage("Can't decrypt.");
                         $access = "do nothing";
-                        $this->dbSettings->requireAuthentication = true;
+                        $this->dbSettings->setRequireAuthentication(true);
                     }
                 } else {
                     $noAuthorization = true;
@@ -383,7 +376,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
                         $noAuthorization = false;
                     } else {
-                        $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($this->dbSettings->currentUser);
+                        $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                         if (in_array($signedUser, $authorizedUsers)) {
                             $noAuthorization = false;
                         } else {
@@ -398,14 +391,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     if ($noAuthorization) {
                         $this->logger->setDebugMessage("Authorization doesn't meet the settings.");
                         $access = "do nothing";
-                        $this->dbSettings->requireAuthentication = true;
+                        $this->dbSettings->setRequireAuthentication(true);
                     }
                     if (!$this->checkAuthorization($this->paramAuthUser, $paramResponse, $clientId)) {
                         $this->logger->setDebugMessage(
                             "Authentication doesn't meet valid.{$this->paramAuthUser}/{$paramResponse}/{$clientId}");
                         // Not Authenticated!
                         $access = "do nothing";
-                        $this->dbSettings->requireAuthentication = true;
+                        $this->dbSettings->setRequireAuthentication(true);
                     }
                 }
             }
@@ -432,15 +425,16 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $fieldArray = array();
                     $valueArray = array();
                     $counter = 0;
-                    foreach ($this->dbSettings->fieldsRequired as $field) {
+                    $fieldValues = $this->dbSettings->getValue();
+                    foreach ($this->dbSettings->getFieldsRequired() as $field) {
                         if (!in_array($field, $tableInfo['protect-writing'])) {
                             $fieldArray[] = $field;
-                            $valueArray[] = $this->dbSettings->fieldsValues[$counter];
+                            $valueArray[] = $fieldValues[$counter];
                         }
                         $counter++;
                     }
                     $this->dbSettings->setTargetFields($fieldArray);
-                    $this->dbSettings->setValues($valueArray);
+                    $this->dbSettings->setValue($valueArray);
                 }
                 $this->setToDB($this->dbSettings->getTargetName());
                 break;
@@ -463,10 +457,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
         }
 
-        if ($this->logger->debugLevel !== false) {
+        if ($this->logger->getDebugLevel() !== false) {
             $fInfo = $this->getFieldInfo($this->dbSettings->getTargetName());
             if ($fInfo != null) {
-                foreach ($this->dbSettings->fieldsRequired as $fieldName) {
+                foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
                     if (!in_array($fieldName, $fInfo)) {
                         $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
                     }
@@ -482,18 +476,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if ($notFinish) {
             return;
         }
-        if (!$this->dbSettings->requireAuthorization) {
+        if (!$this->dbSettings->getRequireAuthorization()) {
             return;
         }
         $generatedChallenge = $this->generateChallenge();
         $generatedUID = $this->generateClientId('');
         $userSalt = $this->saveChallenge(
-            $this->dbSettings->isDBNative ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
+            $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
         $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
         $this->previousClientid = "{$generatedUID}";
         echo "challenge='{$generatedChallenge}{$userSalt}';";
         echo "clientid='{$generatedUID}';";
-        if ($this->dbSettings->requireAuthentication) {
+        if ($this->dbSettings->getRequireAuthentication()) {
             echo "requireAuth=true;"; // Force authentication to client
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();

@@ -9,7 +9,7 @@
  */
 class FileUploader
 {
-    var $db;
+    private $db;
 
     function finishCommunication()
     {
@@ -85,9 +85,9 @@ class FileUploader
         $dbKeyValue = $_POST["_im_keyvalue"];
         $dbProxyInstance = new DB_Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
-        $dbProxyInstance->dbSettings->setExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
+        $dbProxyInstance->dbSettings->addExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
         $dbProxyInstance->dbSettings->setTargetFields(array($_POST["_im_field"]));
-        $dbProxyInstance->dbSettings->setValues(array($filePath));
+        $dbProxyInstance->dbSettings->setValue(array($filePath));
 
         $fileContent = file_get_contents($filePath, false, null, 0, 30);
         $headerTop = strpos($fileContent, "data:");
@@ -133,7 +133,7 @@ class FileUploader
                     $fields[] = "path";
                     $values[] = $filePartialPath;
                     $relatedContext->dbSettings->setTargetFields($fields);
-                    $relatedContext->dbSettings->setValues($values);
+                    $relatedContext->dbSettings->setValue($values);
                     $relatedContext->processingRequest($options, "new", true);
                     $relatedContext->finishCommunication(true);
                 }

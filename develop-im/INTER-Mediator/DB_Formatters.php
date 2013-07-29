@@ -16,7 +16,7 @@
  */
 class DB_Formatters
 {
-    var $formatter = null;
+    private $formatter = null;
     /* Formatter processing */
     function setFormatter($fmt)
     {
