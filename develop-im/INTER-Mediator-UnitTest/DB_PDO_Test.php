@@ -36,6 +36,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
                     'key' => 'id',
                     'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
                     'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
+                    'sequence' => 'im_sample.serial',
                 )
             ),
             array(
@@ -60,12 +61,14 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
             false);
     }
 
-    public function testQuery1_singleRecord()    {
+    public function testQuery1_singleRecord()
+    {
         $contexts = array(
             array(
                 'records' => 1,
                 'name' => 'person',
                 'key' => 'id',
+                'sequence' => 'im_sample.serial',
             )
         );
         $options = null;
@@ -87,7 +90,8 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
     }
 
-    public function testQuery2_multipleRecord()    {
+    public function testQuery2_multipleRecord()
+    {
         $contexts = array(
             array(
                 'records' => 100000,
@@ -118,7 +122,8 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
 
     }
 
-    public function testInsertAndUpdateRecord()    {
+    public function testInsertAndUpdateRecord()
+    {
         $contexts = array(
             array(
                 'records' => 100000,
@@ -147,7 +152,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
                 'name' => 'person',
                 'key' => 'id',
                 'query' => array(
-                    'field'=>'id', 'value'=>$newKeyValue, 'operator'=>'='
+                    'field' => 'id', 'value' => $newKeyValue, 'operator' => '='
                 )
             )
         );
@@ -158,8 +163,8 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
             'user' => 'web',
             'password' => 'password',
         );
-        $nameValue ="unknown, oh mygod!";
-        $addressValue ="anyplace, who knows!";
+        $nameValue = "unknown, oh mygod!";
+        $addressValue = "anyplace, who knows!";
         $db_proxy = new DB_Proxy(true);
         $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
         $db_proxy->dbSettings->addTargetField("name");
@@ -178,7 +183,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
                 'name' => 'person',
                 'key' => 'id',
                 'query' => array(
-                    'field'=>'id', 'value'=>$newKeyValue, 'operator'=>'='
+                    'field' => 'id', 'value' => $newKeyValue, 'operator' => '='
                 )
             )
         );
@@ -189,8 +194,8 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
             'user' => 'web',
             'password' => 'password',
         );
-        $nameValue ="unknown, oh mygod!";
-        $addressValue ="anyplace, who knows!";
+        $nameValue = "unknown, oh mygod!";
+        $addressValue = "anyplace, who knows!";
         $db_proxy = new DB_Proxy(true);
         $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
         $result = $db_proxy->getFromDB("person");
@@ -278,7 +283,7 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $username = "testuser3";
         $password = "testuser3";
 
-        $this->assertTrue($this->db_proxy->addUser( $username, $password ));
+        $this->assertTrue($this->db_proxy->addUser($username, $password));
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
