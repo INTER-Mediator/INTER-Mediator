@@ -162,10 +162,10 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $addressValue ="anyplace, who knows!";
         $db_proxy = new DB_Proxy(true);
         $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
-        $db_proxy->dbSettings->setTargetField("name");
-        $db_proxy->dbSettings->setValue($nameValue);
-        $db_proxy->dbSettings->setTargetField("address");
-        $db_proxy->dbSettings->setValue($addressValue);
+        $db_proxy->dbSettings->addTargetField("name");
+        $db_proxy->dbSettings->addValue($nameValue);
+        $db_proxy->dbSettings->addTargetField("address");
+        $db_proxy->dbSettings->addValue($addressValue);
         $result = $db_proxy->setToDB("person", true);
 //        var_export($db_proxy->logger->errorMessage);
 //        var_export($db_proxy->logger->debugMessage);
