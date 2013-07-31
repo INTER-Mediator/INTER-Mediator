@@ -1,0 +1,19 @@
+{
+    "name" : "INTER-Mediator",
+    "version" : "3.7.0",
+    "description" : "Web Development Framework",
+    "author" : "Masayuki Nii",
+    "contributors": [{
+        "name": "Atsushi Matsuo"
+    }],
+    "scripts" : {
+        "test" : "node_modules/.bin/buster-test -r specification"
+    },
+    "devDependencies" : {
+        "buster" : "~0.6",
+        "phantomjs" : ">=1.0.0"
+    },
+    "engines" : {
+        "node" : "~0.8"
+    }
+}
