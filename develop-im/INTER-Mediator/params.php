@@ -78,4 +78,7 @@ EOL;
 // So you can set the another url to the $callURL variables and it can be replaced with $_SERVER['SCRIPT_NAME'].
 //$callURL = "http://yourdomai/your/path/to/definition-file.php"
 
+
+//$defaultTimezone = 'Asia/Tokyo';
+
 ?>

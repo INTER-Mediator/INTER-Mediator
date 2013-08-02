@@ -8,25 +8,43 @@
  *
  */
 
-//require_once('PHPUnit/Framework/TestCase.php');
-require_once('../INTER-Mediator/DB_Interfaces.php');
-require_once('../INTER-Mediator/DB_UseSharedObjects.php');
-require_once('../INTER-Mediator/DB_AuthCommon.php');
-require_once('../INTER-Mediator/DB_PDO.php');
-require_once('../INTER-Mediator/DB_Settings.php');
-require_once('../INTER-Mediator/DB_Formatters.php');
-require_once('../INTER-Mediator/DB_Proxy.php');
-require_once('../INTER-Mediator/DB_Logger.php');
-require_once('../INTER-Mediator/MessageStrings.php');
-require_once('../INTER-Mediator/INTER-Mediator.php');
+require_once('DB_PDO_Test_Common.php');
 
-class DB_PDO_Test extends PHPUnit_Framework_TestCase
+class DB_PDO_Test extends DB_PDO_Test_Common
 {
     function setUp()
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
+    }
+
+    function dbProxySetupForAccess($contextName, $maxRecord)
+    {
+        $contexts = array(
+            array(
+                'records' => $maxRecord,
+                'name' => $contextName,
+                'key' => 'id',
+                'sort' => array(
+                    array('field'=>'id','direction'=>'asc'),
+                ),
+                'sequence' => 'im_sample.serial',
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'PDO',
+            'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
+    }
+
+    function dbProxySetupForAuth()
+    {
         $this->db_proxy = new DB_Proxy(true);
         $this->db_proxy->initialize(array(
                 array(
@@ -60,26 +78,9 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
             ),
             false);
     }
-
+    /*
     public function testQuery1_singleRecord()
     {
-        $contexts = array(
-            array(
-                'records' => 1,
-                'name' => 'person',
-                'key' => 'id',
-                'sequence' => 'im_sample.serial',
-            )
-        );
-        $options = null;
-        $dbSettings = array(
-            'db-class' => 'PDO',
-            'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
-            'user' => 'web',
-            'password' => 'password',
-        );
-        $db_proxy = new DB_Proxy(true);
-        $db_proxy->initialize($contexts, $options, $dbSettings, 2, "person");
         $result = $db_proxy->getFromDB("person");
         $recordCount = $db_proxy->countQueryResult("person");
 //        var_export($db_proxy->logger->errorMessage);
@@ -320,5 +321,5 @@ class DB_PDO_Test extends PHPUnit_Framework_TestCase
         $this->assertTrue(
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
     }
-
+    */
 }

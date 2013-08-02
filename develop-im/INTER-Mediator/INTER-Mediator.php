@@ -11,7 +11,6 @@
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
-date_default_timezone_set('Asia/Tokyo');
 
 require_once('DB_Interfaces.php');
 require_once('DB_Logger.php');
@@ -27,6 +26,21 @@ if (!class_exists('Crypt_Hash')) {
 if (!class_exists('Math_BigInteger')) {
     require_once('phpseclib/Math/BigInteger.php');
 }
+
+$currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+$currentDirParam = $currentDir . 'params.php';
+$parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+if (file_exists($parentDirParam)) {
+    include($parentDirParam);
+} else if (file_exists($currentDirParam)) {
+    include($currentDirParam);
+}
+if (isset($defaultTimezone)) {
+    date_default_timezone_set($defaultTimezone);
+} else if (ini_get('date.timezone') == null) {
+    date_default_timezone_set('UCT');
+}
+
 
 $g_dbInstance = null;
 
@@ -71,7 +85,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $mediaHandler = new MediaAccess();
         $mediaHandler->processing($dbProxyInstance, $options, $_GET['media']);
     } else if ((isset($_POST['access']) && $_POST['access'] == 'uploadfile')
-        || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')) {
+        || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
+    ) {
         $fileUploader = new FileUploader();
         $fileUploader->processing($datasource, $options, $dbspecification, $debug);
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
@@ -162,16 +177,16 @@ function arrayToJSExcluding($ar, $prefix, $exarray)
             $items[] = arrayToJSExcluding($value, $key, $exarray);
         }
         $currentKey = (string)$prefix;
-         if ($currentKey == '')
+        if ($currentKey == '')
             $returnStr = "{" . implode(',', $items) . '}';
-        else if (! in_array($exarray, $currentKey))    {
+        else if (!in_array($exarray, $currentKey)) {
             $returnStr = "'{$currentKey}':{" . implode(',', $items) . '}';
         }
     } else {
         $currentKey = (string)$prefix;
         if ($currentKey == '') {
             $returnStr = "'" . valueForJSInsert($ar) . "'";
-        } else  if (! in_array($exarray, $currentKey))    {
+        } else if (!in_array($exarray, $currentKey)) {
             $returnStr = "'{$prefix}':'" . valueForJSInsert($ar) . "'";
         }
     }

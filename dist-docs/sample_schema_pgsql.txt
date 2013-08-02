@@ -22,7 +22,7 @@ Password for user postgres:
 */
 
 /***************************** ATTENTION *****************************
- * If you execute this schema twice or more, remove # of the following 'DROP USER' line.
+ * If you execute this schema twice or more, remove /* */ of the following lines.
  *********************************************************************/
 /*
 DROP USER 'web'@'localhost';

@@ -50,6 +50,7 @@ Ver.3.8
 - Instance variables in PHP classes are defined with private/protected/public instead of var.
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
 - Some exceptions prints a stack trace to JavaScript console if possible.
+- The default timezone can be customized with the variable $defaultTimezone in the params.php file.
 
 Ver.3.7 (2013/7/28)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
