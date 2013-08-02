@@ -10,7 +10,7 @@
 
 require_once('DB_PDO_Test_Common.php');
 
-class DB_PDO_Test extends DB_PDO_Test_Common
+class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
     function setUp()
     {
@@ -21,6 +21,7 @@ class DB_PDO_Test extends DB_PDO_Test_Common
 
     function dbProxySetupForAccess($contextName, $maxRecord)
     {
+        $this->schemaName = "";
         $contexts = array(
             array(
                 'records' => $maxRecord,
@@ -29,7 +30,6 @@ class DB_PDO_Test extends DB_PDO_Test_Common
                 'sort' => array(
                     array('field'=>'id','direction'=>'asc'),
                 ),
-                'sequence' => 'im_sample.serial',
             )
         );
         $options = null;
