@@ -122,6 +122,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         echo var_export($this->db_proxy->logger->getDebugMessage(), true);
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
 
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testAuthUser3()
@@ -133,6 +135,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $retrievedSalt = $this->db_proxy->authSupportGetSalt($username);
         $this->assertEquals('54455354', $retrievedSalt, $testName);
 
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testAuthUser4()
@@ -144,17 +148,18 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $retrieved = $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST");
-        var_export($challenge);
-        var_export($retrieved);
+        $this->assertEquals($challenge, $retrieved, $testName);
+
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+
         var_export($this->db_proxy->logger->getAllErrorMessages());
         var_export($this->db_proxy->logger->getDebugMessage());
-//        $this->assertEquals($challenge, $retrieved, $testName);
-//        $challenge = $this->db_proxy->generateChallenge();
-//        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-//        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
-//        $challenge = $this->db_proxy->generateChallenge();
-//        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-//        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
 
     }
 
@@ -178,6 +183,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testAuthUser6()
@@ -185,8 +192,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAuth();
 
         $testName = "Create New User and Authenticate";
-        $username = "testuser3";
-        $password = "testuser3";
+        $username = "testuser4";
+        $password = "testuser4";
 
         $this->assertTrue($this->db_proxy->addUser($username, $password));
 
@@ -203,6 +210,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
             $testName);
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     function testUserGroup()

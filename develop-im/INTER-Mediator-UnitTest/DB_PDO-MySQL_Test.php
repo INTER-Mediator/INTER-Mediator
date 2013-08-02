@@ -76,7 +76,7 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
                 'user' => 'web',
                 'password' => 'password',
             ),
-            false);
+            2);
     }
     /*
     public function testQuery1_singleRecord()

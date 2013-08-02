@@ -565,12 +565,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
  //       $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
 
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $sql = "update {$hashTable} set hash=" . $this->link->quote($challenge)
+            $sql = "UPDATE {$hashTable} SET hash=" . $this->link->quote($challenge)
                 . ",expired=" . $this->link->quote($currentDTFormat)
-                . " where id={$row['id']}";
+                . " WHERE id={$row['id']}";
             $result = $this->link->query($sql);
             if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
+                $this->errorMessageStore('UPDATE:' . $sql);
                 return false;
             }
             return true;
@@ -579,8 +579,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 //            . $this->link->quote($clientId)
 //            . ",hash=" . $this->link->quote($challenge)
 //            . ",expired=" . $this->link->quote($currentDTFormat);
-        $sql = "insert into {$hashTable} (user_id, clienthost, hash, expired) "
-            . "values ({$uid},{$this->link->quote($clientId)},{$this->link->quote($challenge)},{$this->link->quote($currentDTFormat)})";
+        $sql = "INSERT INTO {$hashTable} (user_id, clienthost, hash, expired) "
+            . "VALUES ({$uid},{$this->link->quote($clientId)},"
+            . "{$this->link->quote($challenge)},{$this->link->quote($currentDTFormat)})";
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -609,8 +610,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select id,hash,expired from {$hashTable} "
-            . "where user_id={$uid} and clienthost=" . $this->link->quote('_im_media');
+        $sql = "SELECT id,hash,expired FROM {$hashTable} "
+            . "WHERE user_id={$uid} and clienthost=" . $this->link->quote('_im_media');
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -653,8 +654,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select id,hash,expired from {$hashTable} "
-            . "where user_id={$uid} and clienthost=" . $this->link->quote($clientId) . " order by expired desc";
+        $sql = "SELECT id,hash,expired FROM {$hashTable} "
+            . "WHERE user_id={$uid} AND clienthost=" . $this->link->quote($clientId) . " ORDER BY expired DESC";
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -729,7 +730,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select hashedpasswd from {$userTable} where username=" . $this->link->quote($signedUser);
+        $sql = "SELECT hashedpasswd FROM {$userTable} WHERE username=" . $this->link->quote($signedUser);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -758,8 +759,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $userTable = $this->dbSettings->getUserTable();
-        $sql = "insert {$userTable} set username=" . $this->link->quote($username)
-            . ",hashedpasswd='{$hashedpassword}'";
+        $sql = "INSERT INTO {$userTable} (username, hashedpasswd) "
+            . "VALUES ({$this->link->quote($username)}, {$this->link->quote($hashedpassword)})";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -781,8 +782,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "update {$userTable} set hashedpasswd=" . $this->link->quote($hashednewpassword)
-            . " where username=" . $this->link->quote($signedUser);
+        $sql = "UPDATE {$userTable} SET hashedpasswd=" . $this->link->quote($hashednewpassword)
+            . " WHERE username=" . $this->link->quote($signedUser);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -805,7 +806,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select id from {$userTable} where username=" . $this->link->quote($username);
+        $sql = "SELECT id FROM {$userTable} WHERE username=" . $this->link->quote($username);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -828,7 +829,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select groupname from {$groupTable} where id=" . $this->link->quote($groupid);
+        $sql = "SELECT groupname FROM {$groupTable} WHERE id=" . $this->link->quote($groupid);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -875,10 +876,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $corrTable = $this->dbSettings->getCorrTable();
 
         if ($this->firstLevel) {
-            $sql = "select * from {$corrTable} where user_id = " . $this->link->quote($groupid);
+            $sql = "SELECT * FROM {$corrTable} WHERE user_id = " . $this->link->quote($groupid);
             $this->firstLevel = false;
         } else {
-            $sql = "select * from {$corrTable} where group_id = " . $this->link->quote($groupid);
+            $sql = "SELECT * FROM {$corrTable} WHERE group_id = " . $this->link->quote($groupid);
             //    $this->belongGroups[] = $groupid;
         }
         $this->logger->setDebugMessage($sql);
@@ -903,8 +904,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select groupname from {$tableName} where {$userField}="
-            . $this->link->quote($user) . " and {$keyField}=" . $this->link->quote($keyValue);
+        $sql = "SELECT groupname FROM {$tableName} WHERE {$userField}="
+            . $this->link->quote($user) . " AND {$keyField}=" . $this->link->quote($keyValue);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -929,7 +930,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select id from {$userTable} where email=" . $this->link->quote($email);
+        $sql = "SELECT id FROM {$userTable} WHERE email=" . $this->link->quote($email);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -954,7 +955,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select id from {$userTable} where id=" . $this->link->quote($userid);
+        $sql = "SELECT id FROM {$userTable} WHERE id=" . $this->link->quote($userid);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -979,7 +980,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select username,email from {$userTable} where username=" .
+        $sql = "SELECT username,email FROM {$userTable} WHERE username=" .
             $this->link->quote($username) . " or email=" . $this->link->quote($username);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
@@ -1031,9 +1032,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "select hash,expired from {$hashTable} where"
+        $sql = "SELECT hash,expired FROM {$hashTable} WHERE"
             . " user_id=" . $this->link->quote($userid)
-            . " and clienthost=" . $this->link->quote($randdata);
+            . " AND clienthost=" . $this->link->quote($randdata);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
