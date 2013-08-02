@@ -39,12 +39,11 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person", 1);
         $result = $this->db_proxy->getFromDB("person");
         $recordCount = $this->db_proxy->countQueryResult("person");
-//        var_export($db_proxy->logger->errorMessage);
-//        var_export($db_proxy->logger->debugMessage);
-//        var_export($result);
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testQuery2_multipleRecord()
@@ -52,25 +51,19 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person", 1000000);
         $result = $this->db_proxy->getFromDB("person");
         $recordCount = $this->db_proxy->countQueryResult("person");
-//        var_export($db_proxy->logger->errorMessage);
-//        var_export($db_proxy->logger->debugMessage);
-//        var_export($result);
         $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
         $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
 
-        // INSERT person SET id=3,name='Anyone',address='Osaka, Japan',mail='msyk@msyk.net';
-
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testInsertAndUpdateRecord()
     {
         $this->dbProxySetupForAccess("person", 1000000);
         $newKeyValue = $this->db_proxy->newToDB("person", true);
-//        var_export($db_proxy->logger->errorMessage);
-//        var_export($db_proxy->logger->debugMessage);
-        var_export($newKeyValue);
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
 
         $nameValue = "unknown, oh mygod!";
@@ -81,21 +74,18 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->db_proxy->dbSettings->addTargetField("address");
         $this->db_proxy->dbSettings->addValue($addressValue);
         $result = $this->db_proxy->setToDB("person", true);
-//        var_export($db_proxy->logger->errorMessage);
-//        var_export($db_proxy->logger->debugMessage);
-        var_export($result);
         $this->assertTrue($result, "Update should be successful.");
 
         $this->dbProxySetupForAccess("person", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
         $result = $this->db_proxy->getFromDB("person");
         $recordCount = $this->db_proxy->countQueryResult("person");
-//        var_export($db_proxy->logger->errorMessage);
-//        var_export($db_proxy->logger->debugMessage);
-        var_export($result);
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
+
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
 
     }
 
@@ -192,10 +182,13 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAuth();
 
         $testName = "Create New User and Authenticate";
-        $username = "testuser4";
-        $password = "testuser4";
+        $username = "testuser1";
+        $password = "testuser1";
 
-        $this->assertTrue($this->db_proxy->addUser($username, $password));
+        $addUserResult = $this->db_proxy->addUser($username, $password);
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
+        $this->assertTrue($addUserResult);
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
