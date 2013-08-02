@@ -651,7 +651,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $sql = "select id,hash,expired from {$hashTable} "
-            . "where user_id={$uid} and clienthost=" . $this->link->quote($clientId);
+            . "where user_id={$uid} and clienthost=" . $this->link->quote($clientId) . " order by expired desc";
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
