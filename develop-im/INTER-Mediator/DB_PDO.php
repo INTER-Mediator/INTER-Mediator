@@ -562,6 +562,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('c');
+ //       $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
 
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $sql = "update {$hashTable} set hash=" . $this->link->quote($challenge)
@@ -574,10 +575,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             }
             return true;
         }
-        $sql = "insert {$hashTable} set user_id={$uid},clienthost="
-            . $this->link->quote($clientId)
-            . ",hash=" . $this->link->quote($challenge)
-            . ",expired=" . $this->link->quote($currentDTFormat);
+//        $sql = "insert {$hashTable} set user_id={$uid},clienthost="
+//            . $this->link->quote($clientId)
+//            . ",hash=" . $this->link->quote($challenge)
+//            . ",expired=" . $this->link->quote($currentDTFormat);
+        $sql = "insert into {$hashTable} (user_id, clienthost, hash, expired) "
+            . "values ({$uid},{$this->link->quote($clientId)},{$this->link->quote($challenge)},{$this->link->quote($currentDTFormat)})";
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
