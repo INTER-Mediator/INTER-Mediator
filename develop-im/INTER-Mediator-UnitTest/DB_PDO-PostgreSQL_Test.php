@@ -65,10 +65,10 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                     'user' => array('user1'), // Itemize permitted users
                     'group' => array('group2'), // Itemize permitted groups
                     'privilege' => array(), // Itemize permitted privileges
-                    'user-table' => 'authuser', // Default value
-                    'group-table' => 'authgroup',
-                    'corresponding-table' => 'authcor',
-                    'challenge-table' => 'issuedhash',
+                    'user-table' => 'im_sample.authuser', // Default value
+                    'group-table' => 'im_sample.authgroup',
+                    'corresponding-table' => 'im_sample.authcor',
+                    'challenge-table' => 'im_sample.issuedhash',
                     'authexpired' => '300', // Set as seconds.
                     'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
                 ),
