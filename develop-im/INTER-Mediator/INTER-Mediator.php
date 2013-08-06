@@ -38,7 +38,7 @@ if (file_exists($parentDirParam)) {
 if (isset($defaultTimezone)) {
     date_default_timezone_set($defaultTimezone);
 } else if (ini_get('date.timezone') == null) {
-    date_default_timezone_set('UCT');
+    date_default_timezone_set('UTC');
 }
 
 
