@@ -50,7 +50,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     spl_autoload_register('loadClass');
 
     // check required PHP extensions
-    $requiredFunctions = array('mbstring' => 'mb_internal_encoding', 'OpenSSL' => 'openssl_pkey_get_private');
+    $requiredFunctions = array('mbstring' => 'mb_internal_encoding');
     foreach ($requiredFunctions as $key => $value) {
         if (!function_exists($value)) {
             $generator = new GenerateJSCode();
