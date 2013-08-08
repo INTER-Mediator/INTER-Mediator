@@ -51,6 +51,7 @@ Ver.3.8
 - Some exceptions prints a stack trace to JavaScript console if possible.
 - The default timezone can be customized with the variable $defaultTimezone in the params.php file.
 - Remove checking OpenSSL PHP extension (because phpseclib doesn't require OpenSSL).
+- Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
 
 Ver.3.7 (2013/7/28)
