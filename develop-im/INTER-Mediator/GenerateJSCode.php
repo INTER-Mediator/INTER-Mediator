@@ -162,7 +162,7 @@ class GenerateJSCode
             "INTERMediatorOnPage.realm", $q,
             (isset($options['authentication']) && isset($options['authentication']['realm'])) ?
                 $options['authentication']['realm'] : '', $q);
-        if (isset($generatedPrivateKey) && function_exists('openssl_pkey_get_private')) {
+        if (isset($generatedPrivateKey)) {
             $rsa = new Crypt_RSA();
             $rsa->setPassword($passPhrase);
             $rsa->loadKey($generatedPrivateKey);
