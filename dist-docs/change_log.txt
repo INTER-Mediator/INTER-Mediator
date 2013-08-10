@@ -52,6 +52,7 @@ Change Log
 =================================
 
 Ver.3.8
+- The official INTER-Mediator site is http://inter-mediator.org/.
 - $scriptPathPrefix and $scriptPathSufix in params.php are obsoleted. Use $callURL to specify the url directly.
 - Instance variables in PHP classes are defined with private/protected/public instead of var.
 - Some exceptions prints a stack trace to JavaScript console if possible.

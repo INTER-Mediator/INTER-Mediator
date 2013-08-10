@@ -15,7 +15,7 @@ IM_Entry(
 //            'key'=>'survey_id',
 //            'post-reconstruct' => true,
 //            'post-dismiss-message' => '送信しました',
-//            'post-move-url' => 'http://inter-mediator.info/',
+//            'post-move-url' => 'http://inter-mediator.org/',
         ),
     ),
     array(),
