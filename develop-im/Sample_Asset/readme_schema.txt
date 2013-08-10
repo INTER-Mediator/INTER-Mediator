@@ -69,6 +69,16 @@ CREATE TABLE staff	(
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX staff_id ON staff (staff_id);
 
+DROP TABLE IF EXISTS category;
+CREATE TABLE category	(
+	category_id	INT  AUTO_INCREMENT,
+	name		VARCHAR(20),
+	PRIMARY     KEY(category_id)
+)		CHARACTER SET utf8,
+		COLLATE utf8_unicode_ci
+		ENGINE=InnoDB;
+CREATE UNIQUE INDEX category_id ON category (category_id);
+
 INSERT asset SET asset_id=11,category='個人用',name='MacBook Air[1]',manifacture='Apple',productinfo='2012/250GB/4GB',purchase='2012-8-1',discard='';
 INSERT asset SET asset_id=12,category='個人用',name='MacBook Air[2]',manifacture='Apple',productinfo='2012/250GB/4GB',purchase='2012-8-1',discard='';
 INSERT asset SET asset_id=13,category='個人用',name='MacBook Air[3]',manifacture='Apple',productinfo='2012/250GB/4GB',purchase='2012-8-1',discard='';
@@ -123,3 +133,6 @@ INSERT rent	SET asset_id=16,staff_id=101,rentdate='2011-12-2',backdate='2011-12-
 INSERT rent	SET asset_id=16,staff_id=108,rentdate='2012-1-29',backdate='2012-1-31';
 INSERT rent	SET asset_id=16,staff_id=108,rentdate='2012-4-29',backdate='2012-5-10';
 INSERT rent	SET asset_id=16,staff_id=109,rentdate='2012-6-29',backdate='2012-7-29';
+
+INSERT category SET category_id=1,name='個人用';
+INSERT category SET category_id=2,name='共用';

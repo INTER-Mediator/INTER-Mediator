@@ -4,7 +4,7 @@
  2012/5/18, Masayuki Nii
 
  This is partial file. The full records file is:
- http://inter-mediator.info/files/schema_data.txt
+ http://inter-mediator.org/files/schema_data.txt
 */
 
 SET NAMES 'utf8';

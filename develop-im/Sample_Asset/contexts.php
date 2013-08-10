@@ -73,6 +73,9 @@ IM_Entry(
                 array('field' => 'backdate', 'operator' => 'IS NULL'),
             ),
         ),
+        array(
+            'name' => 'category',
+        ),
     ),
     array(
         // Modification 3: Modification for a data in single field.

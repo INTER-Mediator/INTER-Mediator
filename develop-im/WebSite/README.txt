@@ -12,7 +12,7 @@ About "WebSite" folder.
 May 25, 2011
 
 This is the INTER-Mediator web site materials.
-You could see the site "inter-mediator.info" is driven by INTER-Mediator.
+You could see the site "inter-mediator.org" is driven by INTER-Mediator.
 I will update the site day by day, so this folder might not be complete same as site.
 Although you could see here as the sample of how to build the "Read-Only" site.
 
