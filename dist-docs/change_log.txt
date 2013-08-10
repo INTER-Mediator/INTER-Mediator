@@ -54,10 +54,12 @@ Change Log
 Ver.3.8
 - $scriptPathPrefix and $scriptPathSufix in params.php are obsoleted. Use $callURL to specify the url directly.
 - Instance variables in PHP classes are defined with private/protected/public instead of var.
-- [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
 - Some exceptions prints a stack trace to JavaScript console if possible.
 - The default timezone can be customized with the variable $defaultTimezone in the params.php file.
 - PDO Test cases for each database engine.
+- Remove checking OpenSSL PHP extension (because phpseclib doesn't require OpenSSL).
+- [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
+- [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
 
 Ver.3.7 (2013/7/28)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.

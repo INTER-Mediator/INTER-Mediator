@@ -84,7 +84,9 @@ var INTERMediator = {
         }
         if (INTERMediator.debugMode >= level) {
             INTERMediator.debugMessages.push(message);
-            console.log("INTER-Mediator[DEBUG:%s]: %s", new Date(), message);
+            if (typeof console != 'undefined') {
+                console.log("INTER-Mediator[DEBUG:%s]: %s", new Date(), message);
+            }
         }
     },
 
@@ -92,13 +94,17 @@ var INTERMediator = {
         moreMessage = moreMessage === undefined ? "" : (" - " + moreMessage);
         if ((typeof ex == 'string' || ex instanceof String)) {
             INTERMediator.errorMessages.push(ex + moreMessage);
-            console.error("INTER-Mediator[ERROR]: %s", ex + moreMessage);
+            if (typeof console != 'undefined') {
+                console.error("INTER-Mediator[ERROR]: %s", ex + moreMessage);
+            }
         } else {
             if (ex.message) {
                 INTERMediator.errorMessages.push(ex.message + moreMessage);
-                console.error("INTER-Mediator[ERROR]: %s", ex.message + moreMessage);
+                if (typeof console != 'undefined') {
+                    console.error("INTER-Mediator[ERROR]: %s", ex.message + moreMessage);
+                }
             }
-            if (ex.stack) {
+            if (ex.stack && typeof console != 'undefined') {
                 console.error(ex.stack);
             }
         }
