@@ -11,7 +11,7 @@ You just describe table and field names in any HTML elements.
 If you want to implement more complex logic, you could write progarms both client and server sides.
 
 All information will show at: 
-http://inter-mediator.com/
+http://inter-mediator.org/
 
 Sample pages with this archived file are published at below.
 You don't have to deploy the samples if you just want to just a glance.
