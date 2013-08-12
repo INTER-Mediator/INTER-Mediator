@@ -232,10 +232,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             isset($context['option']) ? $context['option'] :
                 (isset($dbspec['option']) ? $dbspec['option'] :
                     (isset ($dbOption) ? $dbOption : '')));
-        $this->dbSettings->setDbSpecDSN(
-            isset($context['dsn']) ? $context['dsn'] :
-                (isset($dbspec['dsn']) ? $dbspec['dsn'] :
-                    (isset ($dbDSN) ? $dbDSN : '')));
+        if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
+            $this->dbSettings->setDbSpecDSN($options['authentication']['issuedhash-dsn']);
+        } else {
+            $this->dbSettings->setDbSpecDSN(
+                isset($context['dsn']) ? $context['dsn'] :
+                    (isset($dbspec['dsn']) ? $dbspec['dsn'] :
+                        (isset ($dbDSN) ? $dbDSN : '')));
+        }
 
         require_once("{$dbClassName}.php");
         $this->dbClass = new $dbClassName();
@@ -249,9 +253,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->logger->setDebugMode($debug);
         }
 
-        if ( isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn']))  {
+        if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             require_once("DB_PDO.php");
-            $this->authDbClass = new DB_PDO();
+            if (isset($options['authentication']['issuedhash-dsn'])) {
+                $this->authDbClass = new DB_PDO($options['authentication']['issuedhash-dsn']);
+            } else {
+                $this->authDbClass = new DB_PDO();
+            }
             $this->authDbClass->setUpSharedObjects($this);
         } else {
             $this->authDbClass = $this->dbClass;

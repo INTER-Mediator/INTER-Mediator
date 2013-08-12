@@ -65,7 +65,7 @@ IM_Entry(
 //            'group-table' => '', //'authgroup',
 //            'challenge-table' => 'issuedhash',
             'authexpired' => '3600', // Set as seconds.
-            'email-as-username' => true,
+            'email-as-username' => false,
             'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
             'issuedhash-dsn' => 'sqlite:/var/db/im/sample.sq3',
         ),
