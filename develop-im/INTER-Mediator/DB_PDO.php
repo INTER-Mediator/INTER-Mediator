@@ -26,6 +26,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      */
     private $fieldInfo = null;
 
+    private $isAlreadySetup = false;
+
     /**
      * @param $str
      */
@@ -38,8 +40,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     /**
      * @return bool
      */
-    private function setupConnection()
+    public function setupConnection()
     {
+        if ( $this->isAlreadySetup )    {
+            return true;
+        }
         try {
             $this->link = new PDO($this->dbSettings->getDbSpecDSN(),
                 $this->dbSettings->getDbSpecUser(),
@@ -49,6 +54,22 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage());
             return false;
         }
+        $this->isAlreadySetup = true;
+        return true;
+    }
+
+    public function setupWithDSN($dsnString)
+    {
+        if ( $this->isAlreadySetup )    {
+            return true;
+        }
+        try {
+            $this->link = new PDO($dsnString);
+        } catch (PDOException $ex) {
+            $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage());
+            return false;
+        }
+        $this->isAlreadySetup = true;
         return true;
     }
 
@@ -606,15 +627,15 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      */
     function authSupportStoreChallenge($username, $challenge, $clientId)
     {
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
 
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
             return false;
         }
-        if ($signedUser === 0) {
+        if ($username === 0) {
             $uid = 0;
         } else {
+            $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
             $uid = $this->authSupportGetUserIdFromUsername($signedUser);
             if ($uid === false) {
                 $this->logger->setDebugMessage("[authSupportStoreChallenge] User '{$signedUser}' does't exist.");
@@ -630,6 +651,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
+
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('c');
  //       $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
@@ -643,6 +666,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 $this->errorMessageStore('UPDATE:' . $sql);
                 return false;
             }
+            $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
             return true;
         }
 //        $sql = "insert {$hashTable} set user_id={$uid},clienthost="
@@ -657,6 +681,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
         return true;
     }
 
@@ -720,15 +745,16 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      */
     function authSupportRetrieveChallenge($username, $clientId, $isDelete = true)
     {
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
+//        $this->logger->setDebugMessage("[authSupportRetrieveChallenge] username={$username}.");
 
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
             return false;
         }
-        if ($signedUser === 0) {
+        if ($username === 0) {
             $uid = 0;
         } else {
+            $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
             $uid = $this->authSupportGetUserIdFromUsername($signedUser);
             if ($uid === false) {
                 $this->logger->setDebugMessage("[authSupportRetrieveChallenge] User '{$signedUser}' does't exist.");
@@ -745,6 +771,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+
+//        $this->logger->setDebugMessage("[authSupportRetrieveChallenge] sql={$sql}.");
+
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $expiredDT = new DateTime($row['expired']);
             $hashValue = $row['hash'];
@@ -767,6 +796,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
                 return false;
             }
+//            $this->logger->setDebugMessage("[authSupportRetrieveChallenge] return={$hashValue}.");
             return $hashValue;
         }
         return false;
