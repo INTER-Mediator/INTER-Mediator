@@ -30,13 +30,23 @@ $dbOption = array();
 /* Browser Compatibility Check:
  */
 $browserCompatibility = array(
-    'msie' => '7+',
-    'FireFox' => '2+',
     'Chrome' => '1+',
+    'FireFox' => '2+',
+    'msie' => '7+',
+    'Opera' => '1+',
     'Safari' => '4+',
 //    'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
-    'Opera' => '1+'
+    'Trident' => '4+',
+    // Trident/4.0(Internet Explorer 8)
+    // Trident/5.0(Internet Explorer 9)
+    // Trident/6.0(Internet Explorer 10)
+    // Trident/7.0(Internet Explorer 11)
+    // Before IE 7, 'Trident' token doesn't exist.
 );
+/*
+ * The list of User Agents, it's a wonderful site!
+ * http://www.openspc2.org/userAgent/
+ */
 
 /* This statement set debug to false forcely. */
 $prohibitDebugMode = false;

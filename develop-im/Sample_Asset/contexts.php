@@ -76,6 +76,13 @@ IM_Entry(
         array(
             'name' => 'category',
         ),
+        array(
+            'name' => 'category-in-list',
+            'view' => 'category',
+            'relation' => array (
+                array('foreign-key' => 'category_id', 'join-field'=> 'category', 'operator' => '=')
+            )
+        ),
     ),
     array(
         // Modification 3: Modification for a data in single field.

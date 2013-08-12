@@ -30,6 +30,7 @@ To Do List for the INTER-Mediator developer(s)
 - Searching in PDFs or any kind of files.
 - Popup menu's default value; if there isn't the value of them, set first one.
 - PayPal support or sort of.
+- The Observer Architecture for both client and server.
  (Followings are from INTER-Mediator Study Meeting 2003#1)
 - Customizable Navigation Bar.
 - Calendar Component Support.
@@ -50,6 +51,8 @@ It's hard to check all versions above browsers as you know. I hope you understan
 =================================
 Change Log
 =================================
+
+Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.3.8
 - The official INTER-Mediator site is http://inter-mediator.org/.
@@ -78,7 +81,7 @@ Ver.3.7 (2013/7/28)
 - [BUG FIX] DB_PDO class didn't affect the limitation number of querying.
 - [BUG FIX] If the name of context was same as JS function name, the error happened.
 - [BUG FIX] The "Insert" button might be placed the inside table.
-            (The following long time bug comes from the same readon.)
+            (The following long time bug comes from the same reason.)
 - [BUG FIX] After inserting the detail line, then select contextual popup, the "insert" button shows double/triple ...
   on the form sample.
 

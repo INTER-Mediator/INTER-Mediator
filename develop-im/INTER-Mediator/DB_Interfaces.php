@@ -25,24 +25,24 @@ interface DB_Interface
     function getFieldInfo($dataSourceName);
 }
 
-interface Auth_Interface_DB
+interface Auth_Interface_DB					// with using table for authentication/authorization
 {
-    function authSupportStoreChallenge($username, $challenge, $clientId);
-    function authSupportRemoveOutdatedChallenges();
-    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true);
-    function authSupportRetrieveHashedPassword($username);
-    function authSupportCreateUser($username, $hashedpassword);
-    function authSupportChangePassword($username, $hashednewpassword);
-    function authSupportCheckMediaToken($user);
-    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue);
-    function authSupportGetUserIdFromEmail($email);
-    function authSupportGetUserIdFromUsername($username);
-    function authSupportGetUsernameFromUserId($userid);
-    function authSupportGetGroupNameFromGroupId($groupid);
-    function authSupportGetGroupsOfUser($user);
-    function authSupportUnifyUsernameAndEmail($username);
-    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash);
-    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash);
+    function authSupportStoreChallenge($username, $challenge, $clientId);	// issuedhash
+    function authSupportRemoveOutdatedChallenges();							// issuedhash
+    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true);	// issuedhash
+    function authSupportCheckMediaToken($user);								// issuedhash
+    function authSupportRetrieveHashedPassword($username);					// authuser
+    function authSupportCreateUser($username, $hashedpassword);				// authuser
+    function authSupportChangePassword($username, $hashednewpassword);		// authuser
+    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue);	// (any table)
+    function authSupportGetUserIdFromEmail($email);							// authuser
+    function authSupportGetUserIdFromUsername($username);					// authuser
+    function authSupportGetUsernameFromUserId($userid);						// authuser
+    function authSupportGetGroupNameFromGroupId($groupid);					// authgroup
+    function authSupportGetGroupsOfUser($user);								// authcor
+    function authSupportUnifyUsernameAndEmail($username);					// authuser
+    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash);	// issuedhash
+    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash);		// issuedhash
 }
 
 interface Auth_Interface_Communication

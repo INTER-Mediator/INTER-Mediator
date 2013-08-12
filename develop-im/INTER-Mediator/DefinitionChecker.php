@@ -176,6 +176,7 @@ class DefinitionChecker
             'storing' => 'string',
             'realm' => 'string',
             'email-as-username' => 'boolean',
+            'issuedhash-dsn' => 'string',
         ),
         'media-root-dir'=> 'string',
         'media-context'=> 'string',

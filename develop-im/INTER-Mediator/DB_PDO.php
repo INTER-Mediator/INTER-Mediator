@@ -8,18 +8,36 @@
 *   INTER-Mediator is supplied under MIT License.
 */
 
+/**
+ * Class DB_PDO
+ */
 class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 {
+    /**
+     * @var null
+     */
     private $link = null;
+    /**
+     * @var int
+     */
     private $mainTableCount = 0;
+    /**
+     * @var null
+     */
     private $fieldInfo = null;
 
+    /**
+     * @param $str
+     */
     private function errorMessageStore($str)
     {
         $errorInfo = var_export($this->link->errorInfo(), true);
         $this->logger->setErrorMessage("Query Error: [{$str}] Code={$this->link->errorCode()} Info ={$errorInfo}");
     }
 
+    /**
+     * @return bool
+     */
     private function setupConnection()
     {
         try {
@@ -34,8 +52,24 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
+    /**
+     * @param $fname
+     * @return mixed
+     */
+    private function sanitizeFieldName($fname)
+    {
+        return $fname;
+    }
+
     /*
      * Generate SQL style WHERE clause.
+     */
+    /**
+     * @param $currentOperation
+     * @param bool $includeContext
+     * @param bool $includeExtra
+     * @param string $signedUser
+     * @return string
      */
     private function getWhereClause($currentOperation, $includeContext = true, $includeExtra = true, $signedUser = '')
     {
@@ -171,6 +205,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
 
     /* Genrate SQL Sort and Where clause */
+    /**
+     * @return string
+     */
     private function getSortClause()
     {
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -192,6 +229,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return implode(',', $sortClause);
     }
 
+    /**
+     * @param $dataSourceName
+     * @return array|bool
+     */
     function getFromDB($dataSourceName)
     {
         $this->fieldInfo = null;
@@ -297,16 +338,28 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return $sqlResult;
     }
 
+    /**
+     * @param $dataSourceName
+     * @return null
+     */
     function getFieldInfo($dataSourceName)
     {
         return $this->fieldInfo;
     }
 
+    /**
+     * @param $dataSourceName
+     * @return int
+     */
     function countQueryResult($dataSourceName)
     {
         return $this->mainTableCount;
     }
 
+    /**
+     * @param $dataSourceName
+     * @return bool
+     */
     function setToDB($dataSourceName)
     {
         $this->fieldInfo = null;
@@ -381,6 +434,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
+    /**
+     * @param $dataSourceName
+     * @param $bypassAuth
+     * @return bool
+     */
     function newToDB($dataSourceName, $bypassAuth)
     {
         $this->fieldInfo = null;
@@ -480,6 +538,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return $lastKeyValue;
     }
 
+    /**
+     * @param $dataSourceName
+     * @return bool
+     */
     function deleteFromDB($dataSourceName)
     {
         $this->fieldInfo = null;
@@ -534,6 +596,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
+    /**
+     * @param $username
+     * @param $challenge
+     * @param $clientId
+     * @return bool
+     *
+     * Using 'issuedhash'
+     */
     function authSupportStoreChallenge($username, $challenge, $clientId)
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
@@ -590,6 +660,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
+    /**
+     * @param $user
+     * @return bool
+     *
+     * Using 'issuedhash'
+     */
     function authSupportCheckMediaToken($user)
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($user);
@@ -634,6 +710,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    /**
+     * @param $username
+     * @param $clientId
+     * @param bool $isDelete
+     * @return bool
+     *
+     * Using 'issuedhash'
+     */
     function authSupportRetrieveChallenge($username, $clientId, $isDelete = true)
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
@@ -688,6 +772,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    /**
+     * @return bool
+     *
+     * Using 'issuedhash'
+     */
     function authSupportRemoveOutdatedChallenges()
     {
         $hashTable = $this->dbSettings->getHashTable();
@@ -718,6 +807,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
+    /**
+     * @param $username
+     * @return bool
+     *
+     * Using 'authuser'
+     */
     function authSupportRetrieveHashedPassword($username)
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
@@ -749,6 +844,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 //        return substr($hashedpw, -8);
 //    }
 //
+    /**
+     * @param $username
+     * @param $hashedpassword
+     * @return bool
+     *
+     * Using 'authuser'
+     */
     function authSupportCreateUser($username, $hashedpassword)
     {
         if ($this->authSupportRetrieveHashedPassword($username) !== false) {
@@ -771,6 +873,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     }
 
+    /**
+     * @param $username
+     * @param $hashednewpassword
+     * @return bool
+     *
+     * Using 'authuser'
+     */
     function authSupportChangePassword($username, $hashednewpassword)
     {
         $signedUser = $this->authSupportUnifyUsernameAndEmail($username);
@@ -793,6 +902,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
+    /**
+     * @param $username
+     * @return bool|int
+     *
+     * Using 'authuser'
+     */
     function authSupportGetUserIdFromUsername($username)
     {
         $userTable = $this->dbSettings->getUserTable();
@@ -819,6 +934,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    /**
+     * @param $groupid
+     * @return bool|null
+     *
+     * Using 'authgroup'
+     */
     function authSupportGetGroupNameFromGroupId($groupid)
     {
         $groupTable = $this->dbSettings->getGroupTable();
@@ -842,6 +963,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    /**
+     * @param $user
+     * @return array|bool
+     *
+     * Using 'authcor'
+     */
     function authSupportGetGroupsOfUser($user)
     {
         $corrTable = $this->dbSettings->getCorrTable();
@@ -867,11 +994,26 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return $this->candidateGroups;
     }
 
-    var $candidateGroups;
-    var $belongGroups;
-    var $firstLevel;
+    /**
+     * @var
+     */
+    private $candidateGroups;
+    /**
+     * @var
+     */
+    private $belongGroups;
+    /**
+     * @var
+     */
+    private $firstLevel;
 
-    function resolveGroup($groupid)
+    /**
+     * @param $groupid
+     * @return bool
+     *
+     * Using 'authcor'
+     */
+    private function resolveGroup($groupid)
     {
         $corrTable = $this->dbSettings->getCorrTable();
 
@@ -899,6 +1041,16 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
+    /**
+     * @param $tableName
+     * @param $userField
+     * @param $user
+     * @param $keyField
+     * @param $keyValue
+     * @return bool
+     *
+     * Using any table.
+     */
     function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
     {
         if (!$this->setupConnection()) { //Establish the connection
@@ -918,6 +1070,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    /**
+     * @param $email
+     * @return bool|int
+     *
+     * Using 'authuser'
+     */
     function authSupportGetUserIdFromEmail($email)
     {
         $userTable = $this->dbSettings->getUserTable();
@@ -943,6 +1101,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    /**
+     * @param $userid
+     * @return bool|int
+     *
+     * Using 'authuser'
+     */
     function authSupportGetUsernameFromUserId($userid)
     {
         $userTable = $this->dbSettings->getUserTable();
@@ -968,6 +1132,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    /**
+     * @param $username
+     * @return bool|string
+     *
+     * Using 'authuser'
+     */
     function authSupportUnifyUsernameAndEmail($username)
     {
         if (! $this->dbSettings->getEmailAsAccount() || strlen($username) == 0)  {
@@ -1000,6 +1170,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return $usernameCandidate;
     }
 
+    /**
+     * @param $userid
+     * @param $clienthost
+     * @param $hash
+     * @return bool
+     *
+     * Using 'issuedhash'
+     */
     function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
@@ -1023,6 +1201,15 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+
+    /**
+     * @param $userid
+     * @param $randdata
+     * @param $hash
+     * @return bool
+     *
+     * Using 'issuedhash'
+     */
     function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();

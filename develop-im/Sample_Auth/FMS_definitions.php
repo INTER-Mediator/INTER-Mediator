@@ -67,13 +67,14 @@ IM_Entry(
             'authexpired' => '3600', // Set as seconds.
             'email-as-username' => true,
             'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+            'issuedhash-dsn' => 'sqlite:/var/db/im/sample.sq3',
         ),
     ),
     array(
         'db-class' => 'FileMaker_FX',
-        'external-db' => array(
-            'issuedhash' => 'sqlite:/var/db/im/sample.sq3',
-        ),
+//        'external-db' => array(
+//            'issuedhash' => 'sqlite:/var/db/im/sample.sq3',
+//        ),
     ),
     2
 );
