@@ -25,6 +25,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $mainTableCount = 0;
     private $fieldInfo = null;
 
+    public function setupConnection()
+    {
+
+    }
+
     function setupFXforAuth($layoutName, $recordCount)
     {
         $this->setupFX_Impl($layoutName, $recordCount,
@@ -73,7 +78,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     function getFromDB($dataSourceName)
     {
         $this->fieldInfo = null;
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         $context = $this->dbSettings->getDataSourceTargetArray();
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(),
@@ -134,6 +138,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
+                    $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     $this->fx->AddDBParam($authInfoField, $signedUser, "eq");
                     $hasFindParams = true;
                 }
@@ -160,6 +165,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
             if ($authFailure) {
+                $this->logger->setErrorMessage("Authorization Error.");
                 return null;
             }
         }
@@ -206,6 +212,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
         if (!is_array($this->fxResult)) {
             if ($this->dbSettings->isDBNative()) {
+                $this->logger->setErrorMessage(
+                    $this->stringWithoutPassword(get_class($this->fxResult)
+                    . ': ' . $this->fxResult->getDebugInfo()));
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
@@ -252,7 +261,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     function setToDB($dataSourceName)
     {
         $this->fieldInfo = null;
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -287,6 +295,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
+                    $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     $this->fx->AddDBParam($authInfoField, $signedUser, "eq");
                 }
             } else if ($authInfoTarget == 'field-group') {
@@ -394,7 +403,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     function newToDB($dataSourceName, $bypassAuth)
     {
         $this->fieldInfo = null;
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         $context = $this->dbSettings->getDataSourceTargetArray();
         $keyFieldName = isset($context['key']) ? $context['key'] : 'id';
@@ -433,6 +441,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $authInfoField = $this->getFieldForAuthorization("new");
             $authInfoTarget = $this->getTargetForAuthorization("new");
             if ($authInfoTarget == 'field-user') {
+                $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                 $this->fx->AddDBParam($authInfoField,
                     strlen($this->dbSettings->getCurrentUser()) == 0 ? randomString(10) : $signedUser);
             } else if ($authInfoTarget == 'field-group') {
@@ -497,7 +506,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     function deleteFromDB($dataSourceName)
     {
         $this->fieldInfo = null;
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         $context = $this->dbSettings->getDataSourceTargetArray();
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 100000000);
@@ -515,6 +523,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
+                    $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     $this->fx->AddDBParam($authInfoField, $signedUser, "eq");
                     $hasFindParams = true;
                 }
