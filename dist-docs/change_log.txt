@@ -62,6 +62,8 @@ Ver.3.8
 - The default timezone can be customized with the variable $defaultTimezone in the params.php file.
 - PDO Test cases for each database engine.
 - Remove checking OpenSSL PHP extension (because phpseclib doesn't require OpenSSL).
+- The 'issuedhash' table for storing challenges of authentication can be use another database.
+  This means you can use SQLite for the issuedhash table with FileMaker Server, and accessing can be faster than ever.
 - [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
 

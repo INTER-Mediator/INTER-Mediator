@@ -14,7 +14,7 @@
 $dbUser = 'web';
 $dbPassword = 'password';
 
-/* DB_FileMaker_FX awares below:
+/* DB_FileMaker_FX aware below:
  */
 $dbServer = '127.0.0.1';
 $dbPort = '80';

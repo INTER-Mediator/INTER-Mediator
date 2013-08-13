@@ -416,7 +416,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
         }
 
-        $this->logger->setDebugMessage("dbNative={$this->dbSettings->isDBNative()}", 2);
+//        $this->logger->setDebugMessage("dbNative={$this->dbSettings->isDBNative()}", 2);
 
         if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
             if (strlen($this->paramAuthUser) == 0 || strlen($paramResponse) == 0) {
@@ -437,7 +437,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
                     $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
 
-                    $this->logger->setDebugMessage("decrypted={$decrypted}", 2);
+//                    $this->logger->setDebugMessage("decrypted={$decrypted}", 2);
 
                     if ($decrypted !== false) {
                         $nlPos = strpos($decrypted, "\n");
@@ -446,8 +446,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
                         $challenge = substr($decrypted, $nlPos + 1);
 
-                        $this->logger->setDebugMessage("password={$password}", 2);
-                        $this->logger->setDebugMessage("paramAuthUser={$this->paramAuthUser}", 2);
+//                        $this->logger->setDebugMessage("password={$password}", 2);
+//                        $this->logger->setDebugMessage("paramAuthUser={$this->paramAuthUser}", 2);
 
                         if (!$this->checkChallenge($challenge, $clientId)) {
                             $access = "do nothing";
@@ -499,9 +499,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
             }
         }
-        $this->logger->setDebugMessage("requireAuthentication={$this->dbSettings->getRequireAuthentication()}", 2);
-        $this->logger->setDebugMessage("requireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
-        $this->logger->setDebugMessage("access={$access}, target={$this->dbSettings->getTargetName()}", 2);
+//        $this->logger->setDebugMessage("requireAuthentication={$this->dbSettings->getRequireAuthentication()}", 2);
+//        $this->logger->setDebugMessage("requireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
+//        $this->logger->setDebugMessage("access={$access}, target={$this->dbSettings->getTargetName()}", 2);
         // Come here access=challenge or authenticated access
         switch ($access) {
             case 'select':
@@ -556,8 +556,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
         }
 
-        $this->logger->setDebugMessage("requireAuthentication={$this->dbSettings->getRequireAuthentication()}", 2);
-        $this->logger->setDebugMessage("requireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
+//        $this->logger->setDebugMessage("requireAuthentication={$this->dbSettings->getRequireAuthentication()}", 2);
+//        $this->logger->setDebugMessage("requireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
 
         if ($this->logger->getDebugLevel() !== false) {
             $fInfo = $this->getFieldInfo($this->dbSettings->getTargetName());
@@ -589,9 +589,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $userSalt = $this->saveChallenge(
             $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
 
-        $this->logger->setDebugMessage("requireAuthentication={$this->dbSettings->getRequireAuthentication()}", 2);
-        $this->logger->setDebugMessage("requireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
-        echo implode('', $this->logger->getMessagesForJS());
+//        $this->logger->setDebugMessage("requireAuthentication={$this->dbSettings->getRequireAuthentication()}", 2);
+//        $this->logger->setDebugMessage("requireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
+//        echo implode('', $this->logger->getMessagesForJS());
 
         $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
         $this->previousClientid = "{$generatedUID}";
