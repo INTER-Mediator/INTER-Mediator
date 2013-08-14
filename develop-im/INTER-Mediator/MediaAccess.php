@@ -34,12 +34,22 @@ class MediaAccess
                 break;
             }
         }
-        if (strpos($file,"/fmi/xml/cnt/") === 0)    {   // FileMaker's object field storing an image.
-            $file = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
-                . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
-                . urlencode($dbProxyInstance->dbSettings->getDbSpecPassword()) . "@"
-                . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
-                . $dbProxyInstance->dbSettings->getDbSpecPort() . $file;
+        if (strpos($file,"/fmi/xml/cnt/") === 0)    {   // FileMaker's container field storing an image.
+            if (isset($options['authentication']['user'][0]) && $options['authentication']['user'][0] == 'database_native') {
+                $cookieNameUser = '_im_username';
+                $cookieNamePassword = '_im_credential';
+                $file = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
+                    . urlencode($_COOKIE[$cookieNameUser]) . ":"
+                    . urlencode($_COOKIE[$cookieNamePassword]) . "@"
+                    . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
+                    . $dbProxyInstance->dbSettings->getDbSpecPort() . $file;
+            } else {
+                $file = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
+                    . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
+                    . urlencode($dbProxyInstance->dbSettings->getDbSpecPassword()) . "@"
+                    . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
+                    . $dbProxyInstance->dbSettings->getDbSpecPort() . $file;
+            }
             foreach( $_GET as $key => $value)   {
                 if ($key !== 'media')   {
                     $file .= "&" . $key . "=" . urlencode($value);
