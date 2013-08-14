@@ -256,10 +256,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
 
         $challengeDSN = null;
-        if (isset($issuedHashDSN))  {
-            $challengeDSN = $issuedHashDSN;
-        } else if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
+        if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $challengeDSN = $options['authentication']['issuedhash-dsn'];
+        } else if (isset($issuedHashDSN)) {
+            $challengeDSN = $issuedHashDSN;
         }
         if ( ! is_null($challengeDSN) ) {
             require_once("DB_PDO.php");
