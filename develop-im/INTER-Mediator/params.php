@@ -88,7 +88,10 @@ EOL;
 // So you can set the another url to the $callURL variables and it can be replaced with $_SERVER['SCRIPT_NAME'].
 //$callURL = "http://yourdomai/your/path/to/definition-file.php"
 
-
+// If you don't set the default timezone in the php.ini file,
+//      activate the line below and specify suitable timezone name.
 //$defaultTimezone = 'Asia/Tokyo';
+
+$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
 ?>

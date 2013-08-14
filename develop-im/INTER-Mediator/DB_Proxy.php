@@ -255,17 +255,19 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
         $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
 
-        if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
+        $challengeDSN = null;
+        if (isset($issuedHashDSN))  {
+            $challengeDSN = $issuedHashDSN;
+        } else if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
+            $challengeDSN = $options['authentication']['issuedhash-dsn'];
+        }
+        if ( ! is_null($challengeDSN) ) {
             require_once("DB_PDO.php");
-//            if (isset($options['authentication']['issuedhash-dsn'])) {
-//                $this->authDbClass = new DB_PDO($options['authentication']['issuedhash-dsn']);
-//            } else {
-                $this->authDbClass = new DB_PDO();
-//            }
+            $this->authDbClass = new DB_PDO();
             $this->authDbClass->setUpSharedObjects($this);
-            $this->authDbClass->setupWithDSN($options['authentication']['issuedhash-dsn']);
-            $this->logger->setDebugMessage("The class 'DB_PDO' was instanciated for " .
-                "issuedhash with {$options['authentication']['issuedhash-dsn']}.", 2);
+            $this->authDbClass->setupWithDSN($challengeDSN);
+            $this->logger->setDebugMessage(
+                "The class 'DB_PDO' was instanciated for issuedhash with {$challengeDSN}.", 2);
         } else {
             $this->authDbClass = $this->dbClass;
         }

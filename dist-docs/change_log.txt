@@ -32,10 +32,8 @@ To Do List for the INTER-Mediator developer(s)
 - PayPal support or sort of.
 - The Observer Architecture for both client and server.
  (Followings are from INTER-Mediator Study Meeting 2003#1)
-- Customizable Navigation Bar.
 - Calendar Component Support.
 - Tab Component Support.
-- Operating the issuedhash table with SQLite db on the server.
 - [BUG] The field for radio buttons reports "Anyone changed this field" message.
 
 =================================
@@ -64,6 +62,10 @@ Ver.3.8
 - Remove checking OpenSSL PHP extension (because phpseclib doesn't require OpenSSL).
 - The 'issuedhash' table for storing challenges of authentication can be use another database.
   This means you can use SQLite for the issuedhash table with FileMaker Server, and accessing can be faster than ever.
+  The key to specify the DNS is 'issuedhash-dsn' in 'authentication' key, or $issuedHashDSN in params.php.
+- Customize the navigation bar with INTERMediator.navigationSetup = function(){...}.
+  You can modify the already existing method as you like.
+- The moving page control to the navigation bar (Thanks to Mr. Ito).
 - [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
 

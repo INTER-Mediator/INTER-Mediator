@@ -13,6 +13,11 @@
     margin: 4px 0 4px 0;
 }
 
+.IM_PAGE_JUMP   {
+    width: 50px;
+    text-align: right;
+}
+
 span.IM_NAV_info {
     font-size: 9pt;
     color: #333333;

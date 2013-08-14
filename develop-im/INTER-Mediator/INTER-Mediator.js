@@ -72,6 +72,7 @@ var INTERMediator = {
     // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
     errorMessages: [],
     debugMessages: [],
+    deleteInsertOnNavi: [],
 
 
     //=================================
@@ -842,8 +843,9 @@ var INTERMediator = {
 
     constructMain: function (indexOfKeyFieldObject) {
         var i, theNode, currentLevel = 0, postSetFields = [], buttonIdNum = 1,
-            deleteInsertOnNavi = [], eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1;
+            eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1;
 
+        INTERMediator.deleteInsertOnNavi = [];
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
             if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
@@ -1018,7 +1020,7 @@ var INTERMediator = {
                     }
                 }
             }
-            navigationSetup();
+            INTERMediator.navigationSetup();
             appendCredit();
         }
 
@@ -1847,7 +1849,7 @@ var INTERMediator = {
                             break;
                     }
                 } else {
-                    deleteInsertOnNavi.push({
+                    INTERMediator.deleteInsertOnNavi.push({
                         kind: 'DELETE',
                         name: currentContext['name'],
                         key: keyField,
@@ -1946,177 +1948,12 @@ var INTERMediator = {
                             currentContext['repeat-control'].match(/confirm-insert/i))
                     );
                 } else {
-                    deleteInsertOnNavi.push({
+                    INTERMediator.deleteInsertOnNavi.push({
                         kind: 'INSERT',
                         name: currentContext['name'],
                         key: currentContext['key'] ? currentContext['key'] : 'id',
                         confirm: currentContext['repeat-control'].match(/confirm-insert/i)
                     });
-                }
-            }
-        }
-
-        /**
-         * Create Navigation Bar to move previous/next page
-         */
-
-        function navigationSetup() {
-            var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass,
-                prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction;
-
-            navigation = document.getElementById('IM_NAVIGATOR');
-            if (navigation != null) {
-                insideNav = navigation.childNodes;
-                for (i = 0; i < insideNav.length; i++) {
-                    navigation.removeChild(insideNav[i]);
-                }
-                navigation.innerHTML = '';
-                navigation.setAttribute('class', 'IM_NAV_panel');
-                navLabel = INTERMediator.navigationLabel;
-
-                if (navLabel == null || navLabel[8] !== false) {
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(
-                        ((navLabel == null || navLabel[8] == null) ? INTERMediatorOnPage.getMessages()[2] : navLabel[8])));
-                    node.setAttribute('class', 'IM_NAV_button');
-                    INTERMediatorLib.addEvent(node, 'click', function () {
-                        location.reload();
-                    });
-                }
-
-                if (navLabel == null || navLabel[4] !== false) {
-                    start = Number(INTERMediator.startFrom);
-                    pageSize = Number(INTERMediator.pagedSize);
-                    allCount = Number(INTERMediator.pagedAllCount);
-                    disableClass = " IM_NAV_disabled";
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(
-                        ((navLabel == null || navLabel[4] == null) ? INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
-                            + ((Math.min(start + pageSize, allCount) - start > 2) ?
-                            (((navLabel == null || navLabel[5] == null) ? "-" : navLabel[5])
-                                + Math.min(start + pageSize, allCount)) : '')
-                            + ((navLabel == null || navLabel[6] == null) ? " / " : navLabel[6]) + (allCount)
-                            + ((navLabel == null || navLabel[7] == null) ? "" : navLabel[7])));
-                    node.setAttribute('class', 'IM_NAV_info');
-                }
-
-                if (navLabel == null || navLabel[0] !== false) {
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(
-                        (navLabel == null || navLabel[0] == null) ? '<<' : navLabel[0]));
-                    node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
-                    INTERMediatorLib.addEvent(node, 'click', function () {
-                        INTERMediator.startFrom = 0;
-                        INTERMediator.constructMain(true);
-                    });
-
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(
-                        (navLabel == null || navLabel[1] == null) ? '<' : navLabel[1]));
-                    node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
-                    prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
-                    INTERMediatorLib.addEvent(node, 'click', function () {
-                        INTERMediator.startFrom = prevPageCount;
-                        INTERMediator.constructMain(true);
-                    });
-
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(
-                        (navLabel == null || navLabel[2] == null) ? '>' : navLabel[2]));
-                    node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                    nextPageCount
-                        = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
-                    INTERMediatorLib.addEvent(node, 'click', function () {
-                        INTERMediator.startFrom = nextPageCount;
-                        INTERMediator.constructMain(true);
-                    });
-
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(
-                        (navLabel == null || navLabel[3] == null) ? '>>' : navLabel[3]));
-                    node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                    endPageCount = allCount - pageSize;
-                    INTERMediatorLib.addEvent(node, 'click', function () {
-                        INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
-                        INTERMediator.constructMain(true);
-                    });
-                }
-
-                for (i = 0; i < deleteInsertOnNavi.length; i++) {
-                    switch (deleteInsertOnNavi[i]['kind']) {
-                        case 'INSERT':
-                            node = document.createElement('SPAN');
-                            navigation.appendChild(node);
-                            node.appendChild(
-                                document.createTextNode(INTERMediatorOnPage.getMessages()[3] + ': ' + deleteInsertOnNavi[i]['name']));
-                            node.setAttribute('class', 'IM_NAV_button');
-                            onNaviInsertFunction = function (a, b, c) {
-                                var contextName = a, keyValue = b, confirming = c;
-                                return function () {
-                                    INTERMediator.insertRecordFromNavi(contextName, keyValue, confirming);
-                                };
-                            };
-                            INTERMediatorLib.addEvent(
-                                node,
-                                'click',
-                                onNaviInsertFunction(
-                                    deleteInsertOnNavi[i]['name'],
-                                    deleteInsertOnNavi[i]['key'],
-                                    deleteInsertOnNavi[i]['confirm'] ? true : false)
-                            );
-                            break;
-                        case 'DELETE':
-                            node = document.createElement('SPAN');
-                            navigation.appendChild(node);
-                            node.appendChild(
-                                document.createTextNode(INTERMediatorOnPage.getMessages()[4] + ': ' + deleteInsertOnNavi[i]['name']));
-                            node.setAttribute('class', 'IM_NAV_button');
-                            onNaviDeleteFunction = function (a, b, c, d) {
-                                var contextName = a, keyName = b, keyValue = c, confirming = d;
-                                return function () {
-                                    INTERMediator.deleteRecordFromNavi(contextName, keyName, keyValue, confirming);
-                                };
-                            }
-                            INTERMediatorLib.addEvent(
-                                node,
-                                'click',
-                                onNaviDeleteFunction(
-                                    deleteInsertOnNavi[i]['name'],
-                                    deleteInsertOnNavi[i]['key'],
-                                    deleteInsertOnNavi[i]['value'],
-                                    deleteInsertOnNavi[i]['confirm'] ? true : false));
-                            break;
-                    }
-                }
-                if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[7]));
-                    node.setAttribute('class', 'IM_NAV_button');
-                    INTERMediatorLib.addEvent(node, 'click', INTERMediator.saveRecordFromNavi);
-                }
-                if (INTERMediatorOnPage.requireAuthentication) {
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(
-                        INTERMediatorOnPage.getMessages()[8] + INTERMediatorOnPage.authUser));
-                    node.setAttribute('class', 'IM_NAV_info');
-
-                    node = document.createElement('SPAN');
-                    navigation.appendChild(node);
-                    node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[9]));
-                    node.setAttribute('class', 'IM_NAV_button');
-                    INTERMediatorLib.addEvent(node, 'click',
-                        function () {
-                            INTERMediatorOnPage.logout();
-                            location.reload();
-                        });
                 }
             }
         }
@@ -2184,6 +2021,200 @@ var INTERMediator = {
                 spNode.appendChild(document.createTextNode('Generated by '));
                 spNode.appendChild(aNode);
                 spNode.appendChild(document.createTextNode(' Ver.@@@@2@@@@(@@@@1@@@@)'));
+            }
+        }
+    },
+    /**
+     * Create Navigation Bar to move previous/next page
+     */
+
+    navigationSetup: function () {
+        var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
+            prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction;
+
+        navigation = document.getElementById('IM_NAVIGATOR');
+        if (navigation != null) {
+            insideNav = navigation.childNodes;
+            for (i = 0; i < insideNav.length; i++) {
+                navigation.removeChild(insideNav[i]);
+            }
+            navigation.innerHTML = '';
+            navigation.setAttribute('class', 'IM_NAV_panel');
+            navLabel = INTERMediator.navigationLabel;
+
+            if (navLabel == null || navLabel[8] !== false) {
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(
+                    ((navLabel == null || navLabel[8] == null) ? INTERMediatorOnPage.getMessages()[2] : navLabel[8])));
+                node.setAttribute('class', 'IM_NAV_button');
+                INTERMediatorLib.addEvent(node, 'click', function () {
+                    location.reload();
+                });
+            }
+
+            if (navLabel == null || navLabel[4] !== false) {
+                start = Number(INTERMediator.startFrom);
+                pageSize = Number(INTERMediator.pagedSize);
+                allCount = Number(INTERMediator.pagedAllCount);
+                disableClass = " IM_NAV_disabled";
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(
+                    ((navLabel == null || navLabel[4] == null) ?
+                        INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
+                        + ((Math.min(start + pageSize, allCount) - start > 2) ?
+                        (((navLabel == null || navLabel[5] == null) ? "-" : navLabel[5])
+                            + Math.min(start + pageSize, allCount)) : '')
+                        + ((navLabel == null || navLabel[6] == null) ? " / " : navLabel[6]) + (allCount)
+                        + ((navLabel == null || navLabel[7] == null) ? "" : navLabel[7])));
+                node.setAttribute('class', 'IM_NAV_info');
+            }
+
+            if (navLabel == null || navLabel[0] !== false) {
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(
+                    (navLabel == null || navLabel[0] == null) ? '<<' : navLabel[0]));
+                node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
+                INTERMediatorLib.addEvent(node, 'click', function () {
+                    INTERMediator.startFrom = 0;
+                    INTERMediator.constructMain(true);
+                });
+
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(
+                    (navLabel == null || navLabel[1] == null) ? '<' : navLabel[1]));
+                node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
+                prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
+                INTERMediatorLib.addEvent(node, 'click', function () {
+                    INTERMediator.startFrom = prevPageCount;
+                    INTERMediator.constructMain(true);
+                });
+
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(
+                    (navLabel == null || navLabel[2] == null) ? '>' : navLabel[2]));
+                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
+                nextPageCount
+                    = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
+                INTERMediatorLib.addEvent(node, 'click', function () {
+                    INTERMediator.startFrom = nextPageCount;
+                    INTERMediator.constructMain(true);
+                });
+
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(
+                    (navLabel == null || navLabel[3] == null) ? '>>' : navLabel[3]));
+                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
+                endPageCount = allCount - pageSize;
+                INTERMediatorLib.addEvent(node, 'click', function () {
+                    INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
+                    INTERMediator.constructMain(true);
+                });
+
+                // Get from http://agilmente.com/blog/2013/08/04/inter-mediator_pagenation_1/
+                node = document.createElement("SPAN");
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[10]));
+                c_node = document.createElement("INPUT");
+                c_node.setAttribute("class", 'IM_PAGE_JUMP');
+                c_node.setAttribute("type", 'text');
+                c_node.setAttribute("value", ( INTERMediator.startFrom / pageSize ) + 1 );
+                node.appendChild(c_node);
+                node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[11]));
+                INTERMediatorLib.addEvent(
+                    c_node,
+                    "change",
+                    function(){
+                        if( this.value < 1){this.value = 1;}
+                        var max_page = Math.ceil( allCount / pageSize );
+                        if( max_page < this.value ){
+                            this.value = max_page;
+                        }
+                        INTERMediator.startFrom = ( ~~this.value - 1 ) * pageSize;
+                        INTERMediator.constructMain(true);
+                    }
+                )
+                // ---------
+            }
+
+            for (i = 0; i < INTERMediator.deleteInsertOnNavi.length; i++) {
+                switch (INTERMediator.deleteInsertOnNavi[i]['kind']) {
+                    case 'INSERT':
+                        node = document.createElement('SPAN');
+                        navigation.appendChild(node);
+                        node.appendChild(
+                            document.createTextNode(
+                                INTERMediatorOnPage.getMessages()[3] + ': '
+                                    + INTERMediator.deleteInsertOnNavi[i]['name']));
+                        node.setAttribute('class', 'IM_NAV_button');
+                        onNaviInsertFunction = function (a, b, c) {
+                            var contextName = a, keyValue = b, confirming = c;
+                            return function () {
+                                INTERMediator.insertRecordFromNavi(contextName, keyValue, confirming);
+                            };
+                        };
+                        INTERMediatorLib.addEvent(
+                            node,
+                            'click',
+                            onNaviInsertFunction(
+                                INTERMediator.deleteInsertOnNavi[i]['name'],
+                                INTERMediator.deleteInsertOnNavi[i]['key'],
+                                INTERMediator.deleteInsertOnNavi[i]['confirm'] ? true : false)
+                        );
+                        break;
+                    case 'DELETE':
+                        node = document.createElement('SPAN');
+                        navigation.appendChild(node);
+                        node.appendChild(
+                            document.createTextNode(
+                                INTERMediatorOnPage.getMessages()[4] + ': '
+                                    + INTERMediator.deleteInsertOnNavi[i]['name']));
+                        node.setAttribute('class', 'IM_NAV_button');
+                        onNaviDeleteFunction = function (a, b, c, d) {
+                            var contextName = a, keyName = b, keyValue = c, confirming = d;
+                            return function () {
+                                INTERMediator.deleteRecordFromNavi(contextName, keyName, keyValue, confirming);
+                            };
+                        }
+                        INTERMediatorLib.addEvent(
+                            node,
+                            'click',
+                            onNaviDeleteFunction(
+                                INTERMediator.deleteInsertOnNavi[i]['name'],
+                                INTERMediator.deleteInsertOnNavi[i]['key'],
+                                INTERMediator.deleteInsertOnNavi[i]['value'],
+                                INTERMediator.deleteInsertOnNavi[i]['confirm'] ? true : false));
+                        break;
+                }
+            }
+            if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[7]));
+                node.setAttribute('class', 'IM_NAV_button');
+                INTERMediatorLib.addEvent(node, 'click', INTERMediator.saveRecordFromNavi);
+            }
+            if (INTERMediatorOnPage.requireAuthentication) {
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(
+                    INTERMediatorOnPage.getMessages()[8] + INTERMediatorOnPage.authUser));
+                node.setAttribute('class', 'IM_NAV_info');
+
+                node = document.createElement('SPAN');
+                navigation.appendChild(node);
+                node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[9]));
+                node.setAttribute('class', 'IM_NAV_button');
+                INTERMediatorLib.addEvent(node, 'click',
+                    function () {
+                        INTERMediatorOnPage.logout();
+                        location.reload();
+                    });
             }
         }
     }
