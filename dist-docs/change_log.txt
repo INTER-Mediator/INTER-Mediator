@@ -66,6 +66,7 @@ Ver.3.8
 - Customize the navigation bar with INTERMediator.navigationSetup = function(){...}.
   You can modify the already existing method as you like.
 - The moving page control to the navigation bar (Thanks to Mr. Ito).
+- Prevent to show the password in an URL for the FileMaker_FX data class on the debug mode.
 - MediaAccess class can work for the FileMaker Native Authentication.
 - [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.

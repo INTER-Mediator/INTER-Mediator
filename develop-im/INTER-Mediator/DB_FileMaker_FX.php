@@ -229,7 +229,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 . "code={$this->fxResult['errorCode']}, url={$this->fxResult['URL']}"));
             return null;
         }
-        $this->logger->setDebugMessage($this->fxResult['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($this->fxResult['URL']));
         $this->mainTableCount = $this->fxResult['foundCount'];
 
         $isFirstRecord = true;
@@ -333,7 +333,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
 
         if ($result['errorCode'] > 0) {
             $this->logger->setErrorMessage($this->stringWithoutPassword(
@@ -391,7 +391,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         . "code={$result['errorCode']}, url={$result['URL']}<hr>"));
                     return false;
                 }
-                $this->logger->setDebugMessage($result['URL']);
+                $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
                 break;
             }
         } else {
@@ -491,7 +491,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         if ($result['errorCode'] > 0 && $result['errorCode'] != 401) {
             $this->logger->setErrorMessage($this->stringWithoutPassword(
                 "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>"));
@@ -562,7 +562,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         if ($result['errorCode'] > 0) {
             $this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
             return false;
@@ -608,7 +608,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         "FX reports error at delete action: code={$result['errorCode']}, url={$result['URL']}<hr>"));
                     return false;
                 }
-                $this->logger->setDebugMessage($result['URL']);
+                $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
             }
         }
         return true;
@@ -642,7 +642,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
         foreach ($result['data'] as $key => $row) {
@@ -658,7 +658,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
                 return false;
             }
-            $this->logger->setDebugMessage($result['URL']);
+            $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
             return true;
         }
         $this->setupFXforAuth($hashTable, 1);
@@ -671,7 +671,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         return true;
     }
 
@@ -703,7 +703,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $expiredDT = new DateTime($row['expired'][0]);
             $hashValue = $row['hash'][0];
@@ -745,7 +745,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
             $hashValue = $row['hash'][0];
@@ -780,7 +780,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
 
@@ -805,12 +805,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->setupFXforAuth($userTable, 1);
         $this->fx->AddDBParam('username', $username, 'eq');
         $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         if ((!is_array($result) || count($result['data']) < 1) && $this->dbSettings->getEmailAsAccount()) {
             $this->setupFXforAuth($userTable, 1);
             $this->fx->AddDBParam('email', str_replace("@", "\\@", $username), 'eq');
             $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
-            $this->logger->setDebugMessage($result['URL']);
+            $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         }
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
@@ -843,7 +843,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         return true;
     }
 
@@ -866,7 +866,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 return false;
             }
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
 
@@ -900,7 +900,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $row) {
             return $row['id'][0];
         }
@@ -924,7 +924,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $row) {
             return $row['username'][0];
         }
@@ -948,7 +948,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $row) {
             return $row['id'][0];
         }
@@ -978,7 +978,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         $usernameCandidate = '';
         foreach ($result['data'] as $row) {
             if ($row['username'][0] == $username) {
@@ -1005,7 +1005,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $key => $row) {
             return $row['groupname'][0];
         }
@@ -1079,7 +1079,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         return true;
     }
 
@@ -1097,7 +1097,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $hashValue = $row['hash'][0];
             $expiredDT = $row['expired'][0];
@@ -1128,12 +1128,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($result['URL']);
+        $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $key => $row) {
             return true;
         }
         return false;
     }
 }
-
-?>
