@@ -69,6 +69,7 @@ Ver.3.8
 - MediaAccess class can work for the FileMaker Native Authentication.
 - [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
+- [BUG FIX] Fix missing selected attribute of option tag to modify compatibility with Firefox.
 
 Ver.3.7 (2013/7/28)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
