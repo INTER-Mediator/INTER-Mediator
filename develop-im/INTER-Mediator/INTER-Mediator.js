@@ -1131,7 +1131,8 @@ var INTERMediator = {
                 nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue, counter,
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
-                recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable;
+                recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
+                selectedNode;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1506,6 +1507,15 @@ var INTERMediator = {
                 repeaters = [];
                 for (i = 0; i < repeatersOriginal.length; i++) {
                     newNode = node.appendChild(repeatersOriginal[i]);
+
+                    // for compatibility with Firefox
+                    if (repeatersOriginal[i].getAttribute("selected") != null) {
+                        selectedNode = newNode;
+                    }
+                    if (selectedNode !== undefined) {
+                        selectedNode.selected = true;
+                    }
+
                     seekEnclosureNode(newNode, null, null, node, null);
                 }
             }
