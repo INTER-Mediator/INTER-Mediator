@@ -455,7 +455,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                             $access = "do nothing";
                             $this->dbSettings->setRequireAuthentication(true);
                         } else {
-                            $this->dbSettings->setUserAndPaswordForAccess($this->paramAuthUser, $password);
+                            $this->dbSettings->setUserAndPasswordForAccess($this->paramAuthUser, $password);
                             $this->logger->setDebugMessage("[checkChallenge] returns true.", 2);
                         }
                     } else {
