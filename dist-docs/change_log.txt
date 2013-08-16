@@ -67,6 +67,7 @@ Ver.3.8
   You can modify the already existing method as you like.
 - The moving page control to the navigation bar (Thanks to Mr. Ito).
 - Prevent to show the password in an URL for the FileMaker_FX data class on the debug mode.
+- Enable editing a correct record when displaying multiple records and an id attribute of the linked element in the repeaters is existing.
 - MediaAccess class can work for the FileMaker Native Authentication.
 - [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
