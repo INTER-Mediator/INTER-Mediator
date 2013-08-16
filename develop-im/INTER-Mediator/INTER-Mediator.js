@@ -28,6 +28,7 @@ var INTERMediator = {
     // Navigation is controlled by this parameter.
     startFrom: 0,
     // Start from this number of record for "skipping" records.
+    elementIds: [],
     widgetElementIds: [],
     radioNameMode: false,
     dontSelectRadioCheck: false,
@@ -956,6 +957,7 @@ var INTERMediator = {
             INTERMediator.keyFieldObject = [];
             INTERMediator.updateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
+            INTERMediator.elementIds = [];
             INTERMediator.widgetElementIds = [];
             isInsidePostOnly = false;
 
@@ -1280,6 +1282,11 @@ var INTERMediator = {
 //                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
                                 newNode.setAttribute('id', nextIdValue());
 //                                INTERMediator.linkedElmCounter++;
+                            } else {
+                                if (INTERMediator.elementIds.indexOf(newNode.getAttribute('id')) >= 0) {
+                                    newNode.setAttribute('id', nextIdValue());
+                                }
+                                INTERMediator.elementIds.push(newNode.getAttribute('id'));
                             }
                         }
                     }
@@ -1301,6 +1308,11 @@ var INTERMediator = {
                             // for each linked element
                             if (currentLinkedNodes[k].getAttribute('id') == null) {
                                 currentLinkedNodes[k].setAttribute('id', nextIdValue());
+                            } else {
+                                if (INTERMediator.elementIds.indexOf(currentLinkedNodes[k].getAttribute('id')) >= 0) {
+                                    currentLinkedNodes[k].setAttribute('id', nextIdValue());
+                                }
+                                INTERMediator.elementIds.push(currentLinkedNodes[k].getAttribute('id'));
                             }
                         }
                         for (k = 0; k < currentWidgetNodes.length; k++) {
@@ -1435,6 +1447,11 @@ var INTERMediator = {
                             newlyAddedNodes.push(newNode);
                             if (newNode.getAttribute('id') == null) {
                                 newNode.setAttribute('id', nextIdValue());
+                            } else {
+                                if (INTERMediator.elementIds.indexOf(newNode.getAttribute('id')) >= 0) {
+                                    newNode.setAttribute('id', nextIdValue());
+                                }
+                                INTERMediator.elementIds.push(newNode.getAttribute('id'));
                             }
                             seekEnclosureNode(newNode, targetRecords.recordset[ix],
                                 currentContext['name'], node, objectReference);
@@ -1671,6 +1688,11 @@ var INTERMediator = {
             for (i = 0; i < repeatersOneRec.length; i++) {
                 if (repeatersOneRec[i].getAttribute('id') == null) {
                     repeatersOneRec[i].setAttribute('id', nextIdValue());
+                } else {
+                    if (INTERMediator.elementIds.indexOf(repeatersOneRec[i].getAttribute('id')) >= 0) {
+                        repeatersOneRec[i].setAttribute('id', nextIdValue());
+                    }
+                    INTERMediator.elementIds.push(repeatersOneRec[i].getAttribute('id'));
                 }
                 shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
             }
@@ -1904,6 +1926,11 @@ var INTERMediator = {
                                 tdNode = document.createElement('TD');
                                 if (trNode.getAttribute('id') == null) {
                                     trNode.setAttribute('id', nextIdValue());
+                                } else {
+                                    if (INTERMediator.elementIds.indexOf(trNode.getAttribute('id')) >= 0) {
+                                        trNode.setAttribute('id', nextIdValue());
+                                    }
+                                    INTERMediator.elementIds.push(trNode.getAttribute('id'));
                                 }
                                 footNode.appendChild(trNode);
                                 trNode.appendChild(tdNode);
