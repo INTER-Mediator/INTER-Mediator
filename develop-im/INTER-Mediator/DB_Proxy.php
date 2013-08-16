@@ -444,7 +444,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     if ($decrypted !== false) {
                         $nlPos = strpos($decrypted, "\n");
                         $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
-                        $password = substr($decrypted, 0, $nlPos);
+                        $password = $keyDecrypt->biDecryptedString(substr($decrypted, 0, $nlPos));
                         $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
                         $challenge = substr($decrypted, $nlPos + 1);
 

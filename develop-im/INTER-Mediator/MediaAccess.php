@@ -36,11 +36,29 @@ class MediaAccess
         }
         if (strpos($file,"/fmi/xml/cnt/") === 0)    {   // FileMaker's container field storing an image.
             if (isset($options['authentication']['user'][0]) && $options['authentication']['user'][0] == 'database_native') {
+                $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+                $currentDirParam = $currentDir . 'params.php';
+                $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+                if (file_exists($parentDirParam)) {
+                    include($parentDirParam);
+                } else if (file_exists($currentDirParam)) {
+                    include($currentDirParam);
+                }
+
+                $rsa = new Crypt_RSA();
+                $rsa->setPassword($passPhrase);
+                $rsa->loadKey($generatedPrivateKey);
+                $rsa->setPassword();
+                $privatekey = $rsa->getPrivateKey();
+                $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+                require_once('bi2php/biRSA.php');
+                $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
+
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_credential';
                 $file = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
                     . urlencode($_COOKIE[$cookieNameUser]) . ":"
-                    . urlencode($_COOKIE[$cookieNamePassword]) . "@"
+                    . urlencode($keyDecrypt->biDecryptedString($_COOKIE[$cookieNamePassword])) . "@"
                     . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
                     . $dbProxyInstance->dbSettings->getDbSpecPort() . $file;
             } else {
