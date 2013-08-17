@@ -1278,16 +1278,7 @@ var INTERMediator = {
                         nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                         if (nodeClass == INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
-                            if (newNode.getAttribute('id') == null) {
-//                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
-                                newNode.setAttribute('id', nextIdValue());
-//                                INTERMediator.linkedElmCounter++;
-                            } else {
-                                if (INTERMediator.elementIds.indexOf(newNode.getAttribute('id')) >= 0) {
-                                    newNode.setAttribute('id', nextIdValue());
-                                }
-                                INTERMediator.elementIds.push(newNode.getAttribute('id'));
-                            }
+                            setIdValue(newNode);
                         }
                     }
                 }
@@ -1306,14 +1297,7 @@ var INTERMediator = {
 
                         for (k = 0; k < currentLinkedNodes.length; k++) {
                             // for each linked element
-                            if (currentLinkedNodes[k].getAttribute('id') == null) {
-                                currentLinkedNodes[k].setAttribute('id', nextIdValue());
-                            } else {
-                                if (INTERMediator.elementIds.indexOf(currentLinkedNodes[k].getAttribute('id')) >= 0) {
-                                    currentLinkedNodes[k].setAttribute('id', nextIdValue());
-                                }
-                                INTERMediator.elementIds.push(currentLinkedNodes[k].getAttribute('id'));
-                            }
+                            setIdValue(currentLinkedNodes[k]);
                         }
                         for (k = 0; k < currentWidgetNodes.length; k++) {
                             var wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
@@ -1445,14 +1429,7 @@ var INTERMediator = {
                         if (nodeClass != INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
                             newlyAddedNodes.push(newNode);
-                            if (newNode.getAttribute('id') == null) {
-                                newNode.setAttribute('id', nextIdValue());
-                            } else {
-                                if (INTERMediator.elementIds.indexOf(newNode.getAttribute('id')) >= 0) {
-                                    newNode.setAttribute('id', nextIdValue());
-                                }
-                                INTERMediator.elementIds.push(newNode.getAttribute('id'));
-                            }
+                            setIdValue(newNode);
                             seekEnclosureNode(newNode, targetRecords.recordset[ix],
                                 currentContext['name'], node, objectReference);
                         }
@@ -1537,6 +1514,18 @@ var INTERMediator = {
                 }
             }
             currentLevel--;
+        }
+
+        function setIdValue(node) {
+            if (node.getAttribute('id') == null) {
+                node.setAttribute('id', nextIdValue());
+            } else {
+                if (INTERMediator.elementIds.indexOf(node.getAttribute('id')) >= 0) {
+                    node.setAttribute('id', nextIdValue());
+                }
+                INTERMediator.elementIds.push(node.getAttribute('id'));
+            }
+            return node;
         }
 
         function nextIdValue() {
@@ -1686,14 +1675,7 @@ var INTERMediator = {
         function shouldDeleteNodeIds(repeatersOneRec) {
             var shouldDeleteNodes = [], i;
             for (i = 0; i < repeatersOneRec.length; i++) {
-                if (repeatersOneRec[i].getAttribute('id') == null) {
-                    repeatersOneRec[i].setAttribute('id', nextIdValue());
-                } else {
-                    if (INTERMediator.elementIds.indexOf(repeatersOneRec[i].getAttribute('id')) >= 0) {
-                        repeatersOneRec[i].setAttribute('id', nextIdValue());
-                    }
-                    INTERMediator.elementIds.push(repeatersOneRec[i].getAttribute('id'));
-                }
+                setIdValue(repeatersOneRec[i]);
                 shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
             }
             return shouldDeleteNodes;
@@ -1924,14 +1906,7 @@ var INTERMediator = {
                             if (existingButtons.length == 0) {
                                 trNode = document.createElement('TR');
                                 tdNode = document.createElement('TD');
-                                if (trNode.getAttribute('id') == null) {
-                                    trNode.setAttribute('id', nextIdValue());
-                                } else {
-                                    if (INTERMediator.elementIds.indexOf(trNode.getAttribute('id')) >= 0) {
-                                        trNode.setAttribute('id', nextIdValue());
-                                    }
-                                    INTERMediator.elementIds.push(trNode.getAttribute('id'));
-                                }
+                                setIdValue(trNode);
                                 footNode.appendChild(trNode);
                                 trNode.appendChild(tdNode);
                                 tdNode.appendChild(buttonNode);
