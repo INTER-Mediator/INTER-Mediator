@@ -314,7 +314,7 @@ INTERMediatorOnPage = {
                 }
             }
             if (INTERMediatorOnPage.isNativeAuth) {
-                INTERMediatorOnPage.authHashedPassword = inputPassword;
+                INTERMediatorOnPage.authHashedPassword = INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
             } else {
                 INTERMediatorOnPage.authHashedPassword
                     = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
@@ -628,10 +628,14 @@ INTERMediatorOnPage = {
         var cookieString;
         var d = new Date();
         d.setTime(d.getTime() + INTERMediatorOnPage.authExpired * 1000);
-        document.cookie = key + "=" + encodeURIComponent(val)
+        cookieString = key + "=" + encodeURIComponent(val)
             + ( isDomain ? ";path=/" : "" )
             + ";max-age=" + INTERMediatorOnPage.authExpired
             + ";expires=" + d.toGMTString() + ';';
+        if (document.URL.substring(0, 8) == "https://") {
+            cookieString += "secure;";
+        }
+        document.cookie = cookieString;
     },
 
     hideProgress: function () {

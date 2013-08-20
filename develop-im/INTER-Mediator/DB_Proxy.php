@@ -256,10 +256,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
 
         $challengeDSN = null;
-        if (isset($issuedHashDSN))  {
-            $challengeDSN = $issuedHashDSN;
-        } else if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
+        if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $challengeDSN = $options['authentication']['issuedhash-dsn'];
+        } else if (isset($issuedHashDSN)) {
+            $challengeDSN = $issuedHashDSN;
         }
         if ( ! is_null($challengeDSN) ) {
             require_once("DB_PDO.php");
@@ -445,7 +445,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     if ($decrypted !== false) {
                         $nlPos = strpos($decrypted, "\n");
                         $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
-                        $password = substr($decrypted, 0, $nlPos);
+                        $password = $keyDecrypt->biDecryptedString(substr($decrypted, 0, $nlPos));
                         $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
                         $challenge = substr($decrypted, $nlPos + 1);
 
@@ -456,7 +456,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                             $access = "do nothing";
                             $this->dbSettings->setRequireAuthentication(true);
                         } else {
-                            $this->dbSettings->setUserAndPaswordForAccess($this->paramAuthUser, $password);
+                            $this->dbSettings->setUserAndPasswordForAccess($this->paramAuthUser, $password);
                             $this->logger->setDebugMessage("[checkChallenge] returns true.", 2);
                         }
                     } else {

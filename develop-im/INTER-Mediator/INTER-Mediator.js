@@ -28,6 +28,7 @@ var INTERMediator = {
     // Navigation is controlled by this parameter.
     startFrom: 0,
     // Start from this number of record for "skipping" records.
+    elementIds: [],
     widgetElementIds: [],
     radioNameMode: false,
     dontSelectRadioCheck: false,
@@ -978,6 +979,7 @@ var INTERMediator = {
             INTERMediator.keyFieldObject = [];
             INTERMediator.updateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
+            INTERMediator.elementIds = [];
             INTERMediator.widgetElementIds = [];
             isInsidePostOnly = false;
 
@@ -1153,7 +1155,8 @@ var INTERMediator = {
                 nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue, counter,
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
-                recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable;
+                recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
+                selectedNode;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1297,11 +1300,7 @@ var INTERMediator = {
                         nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                         if (nodeClass == INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
-                            if (newNode.getAttribute('id') == null) {
-//                                idValue = 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
-                                newNode.setAttribute('id', nextIdValue());
-//                                INTERMediator.linkedElmCounter++;
-                            }
+                            setIdValue(newNode);
                         }
                     }
                 }
@@ -1320,9 +1319,7 @@ var INTERMediator = {
 
                         for (k = 0; k < currentLinkedNodes.length; k++) {
                             // for each linked element
-                            if (currentLinkedNodes[k].getAttribute('id') == null) {
-                                currentLinkedNodes[k].setAttribute('id', nextIdValue());
-                            }
+                            setIdValue(currentLinkedNodes[k]);
                         }
                         for (k = 0; k < currentWidgetNodes.length; k++) {
                             var wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
@@ -1454,9 +1451,7 @@ var INTERMediator = {
                         if (nodeClass != INTERMediator.noRecordClassName) {
                             node.appendChild(newNode);
                             newlyAddedNodes.push(newNode);
-                            if (newNode.getAttribute('id') == null) {
-                                newNode.setAttribute('id', nextIdValue());
-                            }
+                            setIdValue(newNode);
                             seekEnclosureNode(newNode, targetRecords.recordset[ix],
                                 currentContext['name'], node, objectReference);
                         }
@@ -1528,10 +1523,31 @@ var INTERMediator = {
                 repeaters = [];
                 for (i = 0; i < repeatersOriginal.length; i++) {
                     newNode = node.appendChild(repeatersOriginal[i]);
+
+                    // for compatibility with Firefox
+                    if (repeatersOriginal[i].getAttribute("selected") != null) {
+                        selectedNode = newNode;
+                    }
+                    if (selectedNode !== undefined) {
+                        selectedNode.selected = true;
+                    }
+
                     seekEnclosureNode(newNode, null, null, node, null);
                 }
             }
             currentLevel--;
+        }
+
+        function setIdValue(node) {
+            if (node.getAttribute('id') == null) {
+                node.setAttribute('id', nextIdValue());
+            } else {
+                if (INTERMediator.elementIds.indexOf(node.getAttribute('id')) >= 0) {
+                    node.setAttribute('id', nextIdValue());
+                }
+                INTERMediator.elementIds.push(node.getAttribute('id'));
+            }
+            return node;
         }
 
         function nextIdValue() {
@@ -1681,9 +1697,7 @@ var INTERMediator = {
         function shouldDeleteNodeIds(repeatersOneRec) {
             var shouldDeleteNodes = [], i;
             for (i = 0; i < repeatersOneRec.length; i++) {
-                if (repeatersOneRec[i].getAttribute('id') == null) {
-                    repeatersOneRec[i].setAttribute('id', nextIdValue());
-                }
+                setIdValue(repeatersOneRec[i]);
                 shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
             }
             return shouldDeleteNodes;
@@ -1914,9 +1928,7 @@ var INTERMediator = {
                             if (existingButtons.length == 0) {
                                 trNode = document.createElement('TR');
                                 tdNode = document.createElement('TD');
-                                if (trNode.getAttribute('id') == null) {
-                                    trNode.setAttribute('id', nextIdValue());
-                                }
+                                setIdValue(trNode);
                                 footNode.appendChild(trNode);
                                 trNode.appendChild(tdNode);
                                 tdNode.appendChild(buttonNode);

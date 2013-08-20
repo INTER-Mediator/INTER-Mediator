@@ -336,7 +336,7 @@ class DB_Settings
         return $this->accessPassword != null ? $this->accessPassword : $this->dbSpecPassword;
     }
 
-    function setUserAndPaswordForAccess($user, $pass)
+    function setUserAndPasswordForAccess($user, $pass)
     {
         $this->accessUser = $user;
         $this->accessPassword = $pass;
