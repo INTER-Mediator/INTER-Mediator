@@ -19,20 +19,21 @@ abstract class DB_UseSharedObjects
     public $dbSettings = null;
     public $logger = null;
     public $formatter = null;
+    public $dbClass = null;
+    public $proxyObject = null;
 
-    function setUpSharedObjects( $obj = null )
+    public function setUpSharedObjects( $obj = null )
     {
         if ( $obj === null )    {
-//            require_once('DB_Settings.php');
             $this->setSettings(new DB_Settings());
-//            require_once('DB_Logger.php');
             $this->setLogger(new DB_Logger());
-//            require_once('DB_Formatters.php');
             $this->setFormatter(new DB_Formatters());
         } else {
             $this->setSettings($obj->dbSettings);
             $this->setLogger($obj->logger);
             $this->setFormatter($obj->formatter);
+            $this->dbClass = $obj->dbClass;
+            $this->proxyObject = $obj;
         }
     }
 

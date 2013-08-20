@@ -90,6 +90,26 @@ class DB_Settings
         return $this->fieldsValues;
     }
 
+    public function getValuesWithFields()
+    {
+        $result = array();
+        $requiredFields = $this->getFieldsRequired();
+        $countFields = count($requiredFields);
+        $fieldValues = $this->getValue();
+        for ($i = 0; $i < $countFields; $i++) {
+            $field = $requiredFields[$i];
+            $value = $fieldValues[$i];
+            $result[$field] = $value;
+        }
+        return $result;
+    }
+
+    public function addValueWithField($field, $value)
+    {
+        $this->fieldsValues[] = $value;
+        $this->fieldsRequired[] = $field;
+    }
+
     /**
      * @param array $foreignFieldAndValue
      */

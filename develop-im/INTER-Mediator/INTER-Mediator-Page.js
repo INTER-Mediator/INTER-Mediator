@@ -69,6 +69,17 @@ INTERMediatorOnPage = {
         return result;
     },
 
+    getContextInfo: function(contextName)   {
+        var dataSources, oneSource;
+        dataSources = INTERMediatorOnPage.getDataSources();
+        for (index in dataSources)    {
+            if ( dataSources[index].name == contextName )   {
+                return dataSources[index];
+            }
+        }
+        return null;
+    },
+
     isComplementAuthData: function () {
         if (this.authUser != null && this.authUser.length > 0
             && this.authHashedPassword != null && this.authHashedPassword.length > 0

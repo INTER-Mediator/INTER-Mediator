@@ -183,12 +183,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
-        //$currentOperation = 'load';
-        if (isset($context['authentication'])
-            && (isset($context['authentication']['all']) || isset($context['authentication'][$currentOperation]))
+        $this->logger->setDebugMessage("#####".var_export($tableInfo['authentication'],true));
+
+        $keywordAuth = ($currentOperation == "select") ? "load" : $currentOperation;
+        if (isset($tableInfo['authentication'])
+            && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$keywordAuth]))
         ) {
-            $authInfoField = $this->getFieldForAuthorization($currentOperation);
-            $authInfoTarget = $this->getTargetForAuthorization($currentOperation);
+            $authInfoField = $this->getFieldForAuthorization($keywordAuth);
+            $authInfoTarget = $this->getTargetForAuthorization($keywordAuth);
             if ($authInfoTarget == 'field-user') {
                 if (strlen($signedUser) == 0) {
                     $queryClause = 'FALSE';
@@ -209,8 +211,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         . "(" . implode(' OR ', $groupCriteria) . ")";
                 }
             } else {
-                $authorizedUsers = $this->getAuthorizedUsers($currentOperation);
-                $authorizedGroups = $this->getAuthorizedGroups($currentOperation);
+                $authorizedUsers = $this->getAuthorizedUsers($keywordAuth);
+                $authorizedGroups = $this->getAuthorizedGroups($keywordAuth);
                 $belongGroups = $this->authSupportGetGroupsOfUser($signedUser);
                 if (count($authorizedUsers) > 0 || count($authorizedGroups) > 0) {
                     if (!in_array($signedUser, $authorizedUsers)
@@ -1272,6 +1274,94 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             }
             if ($hash == $hashValue) {
                 return true;
+            }
+        }
+        return false;
+    }
+
+    function authSupportUserEnrollmentStart($userid, $hash)
+    {
+        $hashTable = $this->dbSettings->getHashTable();
+        if ($hashTable == null) {
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        // For PHP 5.3
+//        $currentDT = new DateTime();
+//        $currentDT->add(new DateInterval('P1H'));
+//        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
+
+        // For PHP 5.2
+        $currentDT = time() + 3600;
+        $currentDTFormat = date('Y-m-d H:i:s', $currentDT);
+
+        $sql = "INSERT INTO {$hashTable} (hash,expired,user_id) VALUES(" . implode(',', array(
+                $this->link->quote($hash),
+                $this->link->quote($currentDTFormat),
+                $this->link->quote($userid))) . ')';
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        return true;
+    }
+
+    function authSupportUserEnrollmentActivateUser($hash, $password)
+    {
+        $hashTable = $this->dbSettings->getHashTable();
+        $userTable = $this->dbSettings->getUserTable();
+        if ($hashTable == null || $userTable == null) {
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        // For PHP 5.3
+//        $currentDT = new DateTime();
+//        $currentDT->add(new DateInterval('P1H'));
+//        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
+
+        // For PHP 5.2
+        $currentDT = time();
+        $currentDTFormat = date('Y-m-d H:i:s', $currentDT);
+
+        $sql = "SELECT user_id FROM {$hashTable} WHERE hash = " . $this->link->quote($hash) .
+            " AND clienthost IS NULL AND expired > " . $this->link->quote($currentDTFormat);
+        $this->logger->setDebugMessage($sql);
+        $resultHash = $this->link->query($sql);
+        if ($resultHash === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        foreach ($resultHash->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $userID = $row['user_id'];
+            if ($userID < 1 )   {
+                return false;
+            }
+            $resultArray = array('user_id'=>$userID);
+            $sql = "UPDATE {$userTable} SET hashedpasswd=" . $this->link->quote($password)
+                . " WHERE id=" . $this->link->quote($userID);
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Update:' . $sql);
+                return false;
+            }
+            $sql = "SELECT email,realname FROM {$userTable} WHERE id=" . $this->link->quote($userID);
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+                return false;
+            }
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $userRow) {
+                $resultArray['email'] = $userRow['email'];
+                $resultArray['realname'] = $userRow['realname'];
+                return $resultArray;
             }
         }
         return false;

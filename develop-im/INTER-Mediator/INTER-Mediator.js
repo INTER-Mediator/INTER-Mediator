@@ -684,20 +684,20 @@ var INTERMediator = {
     linkedElmCounter: 0,
 
     clickPostOnlyButton: function (node) {
-        var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo;
-        var mergedValues, inputNodes, typeAttr, k;
+        var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
+        var mergedValues, inputNodes, typeAttr, k, target, value, result;
         var linkedNodes, namedNodes;
-        var target = node.parentNode;
-        while (!INTERMediatorLib.isEnclosure(target, true)) {
-            target = target.parentNode;
-            if (!target) {
+        var targetNode = node.parentNode;
+        while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
+            targetNode = targetNode.parentNode;
+            if (!targetNode) {
                 return;
             }
         }
         linkedNodes = []; // Collecting linked elements to this array.
         namedNodes = [];
-        for (i = 0; i < target.childNodes.length; i++) {
-            seekLinkedElement(target.childNodes[i]);
+        for (i = 0; i < targetNode.childNodes.length; i++) {
+            seekLinkedElement(targetNode.childNodes[i]);
         }
         contextCount = {};
         for (i = 0; i < linkedNodes.length; i++) {
@@ -718,6 +718,7 @@ var INTERMediator = {
             if (maxCount < contextCount[contextName]) {
                 maxCount = contextCount[contextName];
                 selectedContext = contextName;
+                contextInfo = INTERMediatorOnPage.getContextInfo(contextName);
             }
         }
 
@@ -727,6 +728,23 @@ var INTERMediator = {
             for (j = 0; j < elementInfo.length; j++) {
                 comp = elementInfo[j].split(INTERMediator.separator);
                 if (comp[0] == selectedContext) {
+                    if (contextInfo.validation) {
+                        for (index in contextInfo.validation) {
+                            validationInfo = contextInfo.validation[index];
+                            if (validationInfo.field == comp[1]) {
+                                if (validationInfo) {
+                                    target = linkedNodes[i];
+                                    value = linkedNodes[i].value;
+                                    result = false;
+                                    eval("result = " + validationInfo.rule);
+                                    if (!result) {
+                                        alert(validationInfo.message);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
                         fieldData.push({field: comp[1], value: linkedNodes[i]._im_getValue()});
                     } else if (linkedNodes[i].tagName == 'SELECT') {
@@ -766,6 +784,12 @@ var INTERMediator = {
                     fieldData.push({field: comp[1],
                         value: mergedValues.join("\n") + "\n"});
                 }
+            }
+        }
+
+        if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
+            if ( ! INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
+                return;
             }
         }
 
@@ -816,8 +840,6 @@ var INTERMediator = {
                 }
             }
         }
-
-
     },
 
 //=================================
@@ -2123,16 +2145,18 @@ var INTERMediator = {
                 c_node = document.createElement("INPUT");
                 c_node.setAttribute("class", 'IM_PAGE_JUMP');
                 c_node.setAttribute("type", 'text');
-                c_node.setAttribute("value", ( INTERMediator.startFrom / pageSize ) + 1 );
+                c_node.setAttribute("value", ( INTERMediator.startFrom / pageSize ) + 1);
                 node.appendChild(c_node);
                 node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[11]));
                 INTERMediatorLib.addEvent(
                     c_node,
                     "change",
-                    function(){
-                        if( this.value < 1){this.value = 1;}
-                        var max_page = Math.ceil( allCount / pageSize );
-                        if( max_page < this.value ){
+                    function () {
+                        if (this.value < 1) {
+                            this.value = 1;
+                        }
+                        var max_page = Math.ceil(allCount / pageSize);
+                        if (max_page < this.value) {
                             this.value = max_page;
                         }
                         INTERMediator.startFrom = ( ~~this.value - 1 ) * pageSize;

@@ -35,6 +35,7 @@ To Do List for the INTER-Mediator developer(s)
 - Calendar Component Support.
 - Tab Component Support.
 - [BUG] The field for radio buttons reports "Anyone changed this field" message.
+- [BUG] File uploader doesn't respond on the message and progress
 
 =================================
 Known Issues for Browsers:

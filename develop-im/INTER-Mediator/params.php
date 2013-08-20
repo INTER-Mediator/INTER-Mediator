@@ -81,6 +81,7 @@ EOL;
 //$scriptPathPrefix = "";
 //$scriptPathSufix = "";
 // ** Both variables are unsupported until ver.3.8. Move to below.**
+$scriptPathPrefix = "/server.msyk.net";
 
 // INTER-Mediator client should call the definition file to work fine.
 // Usually $_SERVER['SCRIPT_NAME'] is the url to request from client.
@@ -92,6 +93,6 @@ EOL;
 //      activate the line below and specify suitable timezone name.
 //$defaultTimezone = 'Asia/Tokyo';
 
-$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
+//$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
 ?>

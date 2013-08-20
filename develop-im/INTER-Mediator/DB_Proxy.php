@@ -404,10 +404,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);
         $this->dbSettings->setDBNative(false);
+        $keywordAuth = ($access == "select") ? "load" : $access;
         if (isset($options['authentication'])
             || $access == 'challenge' || $access == 'changepassword'
             || (isset($tableInfo['authentication'])
-                && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
+                && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$keywordAuth])))
         ) {
             $this->dbSettings->setRequireAuthorization(true);
             $this->dbSettings->setDBNative(false);
@@ -491,9 +492,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $access = "do nothing";
                         $this->dbSettings->setRequireAuthentication(true);
                     }
-                    if (!$this->checkAuthorization($this->paramAuthUser, $paramResponse, $clientId)) {
+                    $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
+                    if (!$this->checkAuthorization($signedUser, $paramResponse, $clientId)) {
                         $this->logger->setDebugMessage(
-                            "Authentication doesn't meet valid.{$this->paramAuthUser}/{$paramResponse}/{$clientId}");
+                            "Authentication doesn't meet valid.{$signedUser}/{$paramResponse}/{$clientId}");
                         // Not Authenticated!
                         $access = "do nothing";
                         $this->dbSettings->setRequireAuthentication(true);
@@ -643,12 +645,17 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $str = '';
         for ($i = 0; $i < 4; $i++) {
-            $n = rand(1, 255);
+            $n = rand(33, 126);
             $str .= chr($n);
         }
         return $str;
     }
 
+    function getHashedPassword($pw)
+    {
+        $salt = $this->generateSalt();
+        return sha1($pw . $salt) . bin2hex($salt);
+    }
     /**
      * @param $username
      * @return string
@@ -693,6 +700,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if (strlen($storedChalenge) == 24) { // ex.fc0d54312ce33c2fac19d758
             $hashedPassword = $this->dbClass->authSupportRetrieveHashedPassword($username);
             $this->logger->setDebugMessage("[checkAuthorization]hashedPassword={$hashedPassword}", 2);
+            $this->logger->setDebugMessage("[checkAuthorization]hmac_value=".hash_hmac('sha256', $hashedPassword, $storedChalenge), 2);
             if (strlen($hashedPassword) > 0) {
                 if ($hashedvalue == hash_hmac('sha256', $hashedPassword, $storedChalenge)) {
 //                    if ($hashedvalue == sha1($storedChalenge . $hashedPassword)) {
@@ -815,4 +823,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
         return false;
     }
+
+    function userEnrollmentStart($userID)
+    {
+        $hash = $this->generateChallenge();
+        $this->authDbClass->authSupportUserEnrollmentStart($userID, $hash);
+        return $hash;
+    }
+
+    function userEnrollmentActivateUser($challenge, $password)
+    {
+        $hashednewpassword = $this->getHashedPassword($password);
+        return $this->authDbClass->authSupportUserEnrollmentActivateUser($challenge, $hashednewpassword);
+    }
+
 }
