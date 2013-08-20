@@ -2155,7 +2155,7 @@ var INTERMediator = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[10]));
                 c_node = document.createElement("INPUT");
-                c_node.setAttribute("class", 'IM_NUV_JUMP');
+                c_node.setAttribute("class", 'IM_NAV_JUMP');
                 c_node.setAttribute("type", 'text');
                 c_node.setAttribute("value", ( INTERMediator.startFrom / pageSize ) + 1);
                 node.appendChild(c_node);
