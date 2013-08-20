@@ -69,6 +69,7 @@ Ver.3.8
 - The moving page control to the navigation bar (Thanks to Mr. Ito).
 - [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
+- [BUG FIX] Fix some issue in case of email address using an account on PDO.
 
 Ver.3.7 (2013/7/28)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
