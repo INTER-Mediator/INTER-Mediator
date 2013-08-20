@@ -2097,7 +2097,7 @@ var INTERMediator = {
                 node.appendChild(document.createTextNode(
                     ((navLabel == null || navLabel[4] == null) ?
                         INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
-                        + ((Math.min(start + pageSize, allCount) - start > 2) ?
+                        + ((Math.min(start + pageSize, allCount) - start > 1) ?
                         (((navLabel == null || navLabel[5] == null) ? "-" : navLabel[5])
                             + Math.min(start + pageSize, allCount)) : '')
                         + ((navLabel == null || navLabel[6] == null) ? " / " : navLabel[6]) + (allCount)

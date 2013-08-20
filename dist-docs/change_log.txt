@@ -76,6 +76,7 @@ Ver.3.8
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
 - [BUG FIX] Fix some issue in case of email address using an account on PDO.
 - [BUG FIX] Fix missing selected attribute of option tag to modify compatibility with Firefox.
+- [BUG FIX] Fix the case the navigation displays uncorrect records information on last page.
 
 Ver.3.7 (2013/7/28)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
