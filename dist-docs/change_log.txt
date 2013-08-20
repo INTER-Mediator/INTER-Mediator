@@ -74,11 +74,8 @@ Ver.3.8
 - Set the secure attribute of the cookie when using HTTPS.
 - [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
-<<<<<<< HEAD
 - [BUG FIX] Fix some issue in case of email address using an account on PDO.
-=======
 - [BUG FIX] Fix missing selected attribute of option tag to modify compatibility with Firefox.
->>>>>>> master
 
 Ver.3.7 (2013/7/28)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.

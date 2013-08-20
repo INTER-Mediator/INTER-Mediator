@@ -93,11 +93,5 @@ $scriptPathPrefix = "/server.msyk.net";
 //      activate the line below and specify suitable timezone name.
 //$defaultTimezone = 'Asia/Tokyo';
 
-<<<<<<< HEAD
-//$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
-
-?>
-=======
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
->>>>>>> master
