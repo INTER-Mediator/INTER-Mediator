@@ -47,6 +47,15 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
             false);
     }
 
+    public function test_params() {
+        $testName = "Check parameters in params.php.";
+        
+        include('../INTER-Mediator/params.php');
+        
+        $this->assertFalse(isset($issuedHashDSN), $testName);
+        $this->assertFalse(isset($scriptPathPrefix), $testName);
+    }
+    
     function test_hex2bin_for53()    {
         $testName = "Check hex2bin_for53 function in INTER-Mediator.php.";
 
