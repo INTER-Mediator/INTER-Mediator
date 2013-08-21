@@ -183,9 +183,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
-        if (isset($tableInfo['authentication'])) {
-            $this->logger->setDebugMessage("#####".var_export($tableInfo['authentication'],true));
-        }
+//        if (isset($tableInfo['authentication'])) {
+//            $this->logger->setDebugMessage("#####".var_export($tableInfo['authentication'],true));
+//        }
 
         $keywordAuth = ($currentOperation == "select") ? "load" : $currentOperation;
         if (isset($tableInfo['authentication'])

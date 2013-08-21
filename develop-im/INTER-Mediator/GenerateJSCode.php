@@ -83,9 +83,9 @@ class GenerateJSCode
 
         if (isset($callURL)) {
             $pathToMySelf = $callURL;
-        } else if (isset($scriptPathPrefix) || isset($scriptPathSufix)) {
+        } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
             $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
-                . $_SERVER['SCRIPT_NAME'] . (isset($scriptPathSufix) ? $scriptPathSufix : '');
+                . $_SERVER['SCRIPT_NAME'] . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
         } else {
             $pathToMySelf = $_SERVER['SCRIPT_NAME'];
         }

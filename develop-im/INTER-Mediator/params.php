@@ -79,8 +79,7 @@ EOL;
 // in case of $_SERVER['SCRIPT_NAME'] didn't return the valid path.
 // These are added before/after the path.
 //$scriptPathPrefix = "";
-//$scriptPathSufix = "";
-// ** Both variables are unsupported until ver.3.8. Move to below.**
+//$scriptPathSuffix = "";
 
 // INTER-Mediator client should call the definition file to work fine.
 // Usually $_SERVER['SCRIPT_NAME'] is the url to request from client.
