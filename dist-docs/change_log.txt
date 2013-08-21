@@ -72,6 +72,7 @@ Ver.3.8
 - MediaAccess class can work for the FileMaker Native Authentication.
 - Encrypt the password in the cookie when using the Native Authentication.
 - Set the secure attribute of the cookie when using HTTPS.
+- On the post only mode, every entered data will be validated with the settings of the context.
 - [BUG FIX] Fix compatibility with Internet Explorer 8 which can't always call console.log() and console.error().
 - [BUG FIX] "Insert" button for SPAN/DIV repeaters didn't appear.
 - [BUG FIX] Fix some issue in case of email address using an account on PDO.

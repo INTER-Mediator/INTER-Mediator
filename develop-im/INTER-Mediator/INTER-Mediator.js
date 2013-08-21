@@ -686,7 +686,7 @@ var INTERMediator = {
 
     clickPostOnlyButton: function (node) {
         var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
-        var mergedValues, inputNodes, typeAttr, k, target, value, result;
+        var mergedValues, inputNodes, typeAttr, k, target, value, result, alertmessage;
         var linkedNodes, namedNodes;
         var targetNode = node.parentNode;
         while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
@@ -723,6 +723,7 @@ var INTERMediator = {
             }
         }
 
+        alertmessage = '';
         fieldData = [];
         for (i = 0; i < linkedNodes.length; i++) {
             elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
@@ -739,8 +740,8 @@ var INTERMediator = {
                                     result = false;
                                     eval("result = " + validationInfo.rule);
                                     if (!result) {
-                                        alert(validationInfo.message);
-                                        return;
+                                        alertmessage += validationInfo.message;
+                                        alertmessage += "\n";
                                     }
                                 }
                             }
@@ -786,6 +787,11 @@ var INTERMediator = {
                         value: mergedValues.join("\n") + "\n"});
                 }
             }
+        }
+
+        if (alertmessage.length > 0)    {
+            window.alert(alertmessage);
+            return;
         }
 
         if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
