@@ -1,6 +1,6 @@
 <?php
 /*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+* INTER-Mediator Ver.3.8 Released 2013-08-22
 *
 *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
 *
@@ -82,6 +82,7 @@ class MessageStrings
         2008 => 'Failure to get a challenge from server.',
         2009 => 'Succeed to change your password. Login with the new password.',
         2010 => 'Failure to change your password. Maybe the old password is not correct.',
+        2011 => 'User(Mail Assress):',
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
     );

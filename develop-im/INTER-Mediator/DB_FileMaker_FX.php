@@ -1,6 +1,6 @@
 <?php
 /*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+* INTER-Mediator Ver.3.8 Released 2013-08-22
 *
 *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
 *
@@ -218,8 +218,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
-                        $this->stringWithoutPassword(get_class($this->fxResult)
-                        . ': ' . $this->fxResult->getDebugInfo()));
+                    $this->stringWithoutPassword(get_class($this->fxResult)
+                    . ': ' . $this->fxResult->getDebugInfo()));
             }
             return null;
         }
@@ -817,7 +817,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         foreach ($result['data'] as $key => $row) {
-            return $row['hashedpasswd'][0];
+            if ($row['username'][0] == $username || $row['email'][0] == $username) {
+                return $row['hashedpasswd'][0];
+            }
         }
         return false;
     }
@@ -950,7 +952,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
         foreach ($result['data'] as $row) {
-            return $row['id'][0];
+            if ($row['email'][0] == $email) {
+                return $row['id'][0];
+            }
         }
         return false;
     }

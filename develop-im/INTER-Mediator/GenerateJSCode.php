@@ -1,6 +1,6 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.3.8 Released 2013-08-22
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
  *
@@ -102,6 +102,11 @@ class GenerateJSCode
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDBSpecification", "function(){return ", arrayToJS($dbspecification, ''), ";}");
+        $isEmailAsUsernae = isset($options['authentication'])
+            && isset($options['authentication']['email-as-username'])
+            && $options['authentication']['email-as-username'] === true;
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.isEmailAsUsername", $isEmailAsUsernae ? "true" : "false");
 
         $messageClass = null;
         $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);

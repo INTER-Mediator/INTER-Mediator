@@ -43,6 +43,7 @@ INTERMediatorOnPage = {
     mediaToken: null,
     realm: '',
     dbCache: {},
+    isEmailAsUsername: false,
 
     isShowChangePassword: true,
 
@@ -157,7 +158,7 @@ INTERMediatorOnPage = {
     loginPanelHTML: null,
 
     authenticating: function (doAfterAuth) {
-        var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox,
+        var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode;
 
@@ -211,7 +212,7 @@ INTERMediatorOnPage = {
                 frontPanel.appendChild(breakLine);
             }
 
-            labelWidth = "110px";
+            labelWidth = "200px";
             userLabel = document.createElement('LABEL');
             frontPanel.appendChild(userLabel);
             userSpan = document.createElement('div');
@@ -219,11 +220,12 @@ INTERMediatorOnPage = {
             userSpan.style.textAlign = "right";
             userSpan.style.cssFloat = "left";
             userLabel.appendChild(userSpan);
-            userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2002)));
+            msgNumber = INTERMediatorOnPage.isEmailAsUsername ? 2011 : 2002;
+            userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(msgNumber)));
             userBox = document.createElement('INPUT');
             userBox.type = "text";
             userBox.id = "_im_username";
-            userBox.size = "12";
+            userBox.size = "24";
             userLabel.appendChild(userBox);
 
             breakLine = document.createElement('BR');
@@ -241,7 +243,7 @@ INTERMediatorOnPage = {
             passwordBox = document.createElement('INPUT');
             passwordBox.type = "password";
             passwordBox.id = "_im_password";
-            passwordBox.size = "12";
+            passwordBox.size = "24";
             passwordLabel.appendChild(passwordBox);
 
             authButton = document.createElement('BUTTON');
@@ -314,7 +316,7 @@ INTERMediatorOnPage = {
                 }
             }
             if (INTERMediatorOnPage.isNativeAuth) {
-                INTERMediatorOnPage.authHashedPassword = INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
+                INTERMediatorOnPage.authHashedPassword = inputPassword;
             } else {
                 INTERMediatorOnPage.authHashedPassword
                     = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
@@ -628,14 +630,10 @@ INTERMediatorOnPage = {
         var cookieString;
         var d = new Date();
         d.setTime(d.getTime() + INTERMediatorOnPage.authExpired * 1000);
-        cookieString = key + "=" + encodeURIComponent(val)
+        document.cookie = key + "=" + encodeURIComponent(val)
             + ( isDomain ? ";path=/" : "" )
             + ";max-age=" + INTERMediatorOnPage.authExpired
             + ";expires=" + d.toGMTString() + ';';
-        if (document.URL.substring(0, 8) == "https://") {
-            cookieString += "secure;";
-        }
-        document.cookie = cookieString;
     },
 
     hideProgress: function () {

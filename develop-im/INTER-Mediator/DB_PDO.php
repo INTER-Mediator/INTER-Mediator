@@ -1,6 +1,6 @@
 <?php
 /*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+* INTER-Mediator Ver.3.8 Released 2013-08-22
 *
 *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
 *
@@ -1014,6 +1014,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if ($userid === false && $this->dbSettings->getEmailAsAccount()) {
             $userid = $this->authSupportGetUserIdFromEmail($user);
         }
+
+        $this->logger->setDebugMessage("###{$user}#{$userid}");
+
+
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -1021,17 +1025,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->belongGroups = array();
         $this->resolveGroup($userid);
 
-        $this->candidateGroups = array();
+        $candidateGroups = array();
         foreach ($this->belongGroups as $groupid) {
-            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
+            $candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
         }
-        return $this->candidateGroups;
+        return $candidateGroups;
     }
 
-    /**
-     * @var
-     */
-    private $candidateGroups;
     /**
      * @var
      */
@@ -1090,7 +1090,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT groupname FROM {$tableName} WHERE {$userField}="
+        $user = $this->authSupportUnifyUsernameAndEmail($user);
+        $sql = "SELECT * FROM {$tableName} WHERE {$userField}="
             . $this->link->quote($user) . " AND {$keyField}=" . $this->link->quote($keyValue);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
@@ -1099,7 +1100,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            return true;
+            return $row;
         }
         return false;
     }
@@ -1153,7 +1154,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id FROM {$userTable} WHERE id=" . $this->link->quote($userid);
+        $sql = "SELECT username FROM {$userTable} WHERE id=" . $this->link->quote($userid);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -1232,7 +1233,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->errorMessageStore('Insert:' . $sql);
             return false;
         }
-        return false;
+        return true;
     }
 
 
@@ -1266,7 +1267,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $hashValue = $row['hash'];
             $expiredDT = $row['expired'];
 
-            $expired = strptime($expiredDT, "%m/%d/%Y %H:%M:%S");
+            $expired = strptime($expiredDT, "%Y-%m-%d %H:%M:%S");
             $expiredValue = mktime($expired['tm_hour'], $expired['tm_min'], $expired['tm_sec'],
                 $expired['tm_mon'] + 1, $expired['tm_mday'], $expired['tm_year'] + 1900);
             $currentDT = new DateTime();
@@ -1367,6 +1368,48 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             }
         }
         return false;
+    }
+
+    function authSupportCountUniqueKey($uniquekey)
+    {
+        $corrTable = $this->dbSettings->getCorrTable();
+
+        $sql = "SELECT * FROM {$corrTable} WHERE privname = " . $this->link->quote($uniquekey);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->logger->setDebugMessage('Select:' . $sql);
+            return false;
+        }
+        return $result->rowCount();
+    }
+
+    function authSupportAddUserCor($userid, $group_id, $uniquekey)
+    {
+        if ($userid === false || $userid == '' || $group_id === false || $group_id == '') {
+            return false;
+        }
+        $corrTable = $this->dbSettings->getCorrTable();
+        if ( $uniquekey != '' ) {
+            $sql = "INSERT INTO {$corrTable} (user_id,dest_group_id,privname) VALUES(" . implode(',', array(
+                    $this->link->quote($userid),
+                    $this->link->quote($group_id),
+                    $this->link->quote($uniquekey))) . ')';
+        } else {
+            $sql = "INSERT INTO {$corrTable} (user_id,dest_group_id) VALUES(" . implode(',', array(
+                    $this->link->quote($userid),
+                    $this->link->quote($group_id))) . ')';
+       }
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        return $this->link->lastInsertId();
+        /*
+         * In case of PostgreSQL, above line should modify to use the Sequence object.
+         */
     }
 }
 

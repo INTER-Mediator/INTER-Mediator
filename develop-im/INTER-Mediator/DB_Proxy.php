@@ -1,6 +1,6 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.3.8 Released 2013-08-22
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
  *
@@ -249,7 +249,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             return false;
         }
         $this->dbClass->setUpSharedObjects($this);
-        $this->dbClass->setupConnection();
         if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
             $this->logger->setDebugMode($debug);
         }
@@ -296,6 +295,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $this->dbSettings->setStart(isset($_POST['start']) ? $_POST['start'] : 0);
         $this->dbSettings->setRecordCount(isset($_POST['records']) ? $_POST['records'] : 10000000);
+
+        $this->dbClass->setupConnection();
 
         for ($count = 0; $count < 10000; $count++) {
             if (isset($_POST["condition{$count}field"])) {
@@ -475,15 +476,19 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
                         $noAuthorization = false;
                     } else {
-                        $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                        $this->logger->setDebugMessage("getCurrentUser={$this->dbSettings->getCurrentUser()}");
+                        $signedUser = $this->dbSettings->getCurrentUser();
+                            //    $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+                        $this->logger->setDebugMessage("signedUser={$signedUser}");
                         if (in_array($signedUser, $authorizedUsers)) {
                             $noAuthorization = false;
                         } else {
                             if (count($authorizedGroups) > 0) {
                                 $belongGroups = $this->dbClass->authSupportGetGroupsOfUser($signedUser);
-                                if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
+                                $this->logger->setDebugMessage("belongGroups={$belongGroups}");
+                                //if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
                                     $noAuthorization = false;
-                                }
+                                //}
                             }
                         }
                     }
@@ -784,6 +789,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
         $userid = $this->dbClass->authSupportGetUserIdFromEmail($email);
         $username = $this->dbClass->authSupportGetUsernameFromUserId($userid);
+//        var_export($userid);
+//        var_export($username);
         if ($username === false || $username == '') {
             return false;
         }
@@ -811,6 +818,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function resetPasswordSequenceReturnBack($username, $email, $randdata, $newpassword)
     {
+        if ($username === false || $username == '') {
+            $userid = $this->dbClass->authSupportGetUserIdFromEmail($email);
+            $username = $this->dbClass->authSupportGetUsernameFromUserId($userid);
+        }
         if ($email === false || $email == '' || $username === false || $username == '') {
             return false;
         }
@@ -837,4 +848,19 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return $this->authDbClass->authSupportUserEnrollmentActivateUser($challenge, $hashednewpassword);
     }
 
+    function addUserToGroupWithUniqueKey($username, $group_id, $uniquekey)
+    {
+        if ($username === false || $username == '' || $group_id === false || $group_id == '') {
+            return false;
+        }
+        if ( $uniquekey != '' ) {
+            $countKey = $this->dbClass->authSupportCountUniqueKey($uniquekey);
+            if($countKey === false || $countKey > 0) {
+                return false;
+            }
+        }
+        $username = $this->dbClass->authSupportUnifyUsernameAndEmail($username);
+        $userid = $this->dbClass->authSupportGetUserIdFromUsername($username);
+        return $this->dbClass->authSupportAddUserCor($userid, $group_id, $uniquekey);
+    }
 }

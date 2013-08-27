@@ -1,6 +1,6 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.3.8 Released 2013-08-22
  * 
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
  * 
@@ -74,7 +74,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     if (isset($g_serverSideCall) && $g_serverSideCall) {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        $dbInstance->processingRequest($options, "NON");
+        $dbInstance->processingRequest($options, "NON",true);
         $g_dbInstance = $dbInstance;
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
