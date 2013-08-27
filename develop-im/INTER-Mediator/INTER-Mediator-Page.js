@@ -316,7 +316,7 @@ INTERMediatorOnPage = {
                 }
             }
             if (INTERMediatorOnPage.isNativeAuth) {
-                INTERMediatorOnPage.authHashedPassword = inputPassword;
+                INTERMediatorOnPage.authHashedPassword = INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
             } else {
                 INTERMediatorOnPage.authHashedPassword
                     = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
