@@ -2178,7 +2178,7 @@ var INTERMediator = {
                             this.value = max_page;
                         }
                         INTERMediator.startFrom = ( ~~this.value - 1 ) * pageSize;
-                        INTERMediator.constructMain(true);
+                        INTERMediator.construct(true);
                     }
                 )
                 // ---------
