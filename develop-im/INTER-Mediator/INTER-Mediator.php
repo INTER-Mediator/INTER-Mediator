@@ -74,7 +74,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     if (isset($g_serverSideCall) && $g_serverSideCall) {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        $dbInstance->processingRequest($options, "NON",true);
+        $dbInstance->processingRequest($options, "NON");
         $g_dbInstance = $dbInstance;
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
@@ -96,7 +96,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
         $dbInstance->processingRequest($options);
-        $dbInstance->finishCommunication();
+        $dbInstance->finishCommunication(false);
     }
 }
 

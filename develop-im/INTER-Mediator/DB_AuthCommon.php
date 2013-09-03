@@ -1,6 +1,6 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.3.8 Released 2013-08-22
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
  *
@@ -19,6 +19,8 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
 
     function getFieldForAuthorization($operation)
     {
+        $operation = ($operation == 'select') ? 'load' : $operation;
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $authInfoField = null;
         if (isset($tableInfo['authentication']['all']['field'])) {
@@ -45,6 +47,8 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
 
     function getAuthorizedUsers($operation = null)
     {
+        $operation = ($operation == 'select') ? 'load' : $operation;
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $usersArray = array();
         if ($this->dbSettings->getAuthenticationItem('user')) {
@@ -61,6 +65,8 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
 
     function getAuthorizedGroups($operation = null)
     {
+        $operation = ($operation == 'select') ? 'load' : $operation;
+
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $groupsArray = array();
         if ($this->dbSettings->getAuthenticationItem('group')) {

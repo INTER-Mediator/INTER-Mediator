@@ -1,6 +1,6 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.3.8 Released 2013-08-22
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
  *
@@ -27,9 +27,9 @@ interface DB_Interface
 
 interface Auth_Interface_DB					// with using table for authentication/authorization
 {
-    function authSupportStoreChallenge($username, $challenge, $clientId);	// issuedhash
+    function authSupportStoreChallenge($uid, $challenge, $clientId);	// issuedhash
     function authSupportRemoveOutdatedChallenges();							// issuedhash
-    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true);	// issuedhash
+    function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true);	// issuedhash
     function authSupportCheckMediaToken($user);								// issuedhash
     function authSupportRetrieveHashedPassword($username);					// authuser
     function authSupportCreateUser($username, $hashedpassword);				// authuser
