@@ -160,9 +160,10 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $testName = "Simulation of Authentication";
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+        $uid = $this->db_proxy->authSupportGetUserIdFromUsername($username);
 
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->db_proxy->dbClass->authSupportStoreChallenge($uid, $challenge, "TEST");
 
         //        $challenge = $this->db_pdo->authSupportRetrieveChallenge($username, "TEST");
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
