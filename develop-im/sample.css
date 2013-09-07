@@ -45,6 +45,26 @@ span.IM_POSTMESSAGE {
     color: orange;
 }
 
+#_im_authpanel{
+    width: 350px;
+    background-color: #333333;
+    color: #DDDDAA;
+    margin: 50px auto 0 auto;
+    padding: 20px;
+    border-radius: 10px;
+    position: relative;
+}
+._im_authlabel   {
+    width: 100px;
+    text-align: right;
+    float: left;
+}
+
+#_im_password{}
+#_im_username{}
+#_im_authbutton{}
+#_im_changebutton{}
+
 table {
     border-collapse: collapse;
     background-color: #EEEEEE;

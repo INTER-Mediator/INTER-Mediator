@@ -341,6 +341,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
+        $this->logger->setDebugMessage($this->stringWithoutPassword(var_export($this->dbSettings->getFieldsRequired(),true)));
 
         if ($result['errorCode'] > 0) {
             $this->logger->setErrorMessage($this->stringWithoutPassword(
@@ -671,27 +672,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportCheckMediaToken($user)
+    function authSupportCheckMediaToken($uid)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
             return false;
         }
-        if ($user === 0) {
+        if ($uid < 1) {
             $uid = 0;
-        } else {
-            $uid = $this->authSupportGetUserIdFromUsername($user);
-            if ($uid === false) {
-                if ($this->dbSettings->getEmailAsAccount()) {
-                    $uid = $this->authSupportGetUserIdFromEmail($user);
-                }
-                if ($uid === false) {
-                    $this->logger->setDebugMessage("User '{$user}' does't exist.");
-                    return false;
-                }
-            }
-        }
-        $this->setupFXforAuth($hashTable, 1);
+        }$this->setupFXforAuth($hashTable, 1);
         $this->fxAuth->AddDBParam('user_id', $uid, 'eq');
         $this->fxAuth->AddDBParam('clienthost', '_im_media', 'eq');
         $result = $this->fxAuth->DoFxAction("perform_find", TRUE, TRUE, 'full');
@@ -1119,5 +1108,20 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return true;
         }
         return false;
+    }
+
+    function authSupportUserEnrollmentStart($userid, $hash)
+    {
+        // TODO: Implement authSupportUserEnrollmentStart() method.
+    }
+
+    function authSupportUserEnrollmentActivateUser($userInfo, $password)
+    {
+        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
+    }
+
+    function authSupportUserEnrollmentCheckHash($hash)
+    {
+        // TODO: Implement authSupportUserEnrollmentCheckHash() method.
     }
 }

@@ -42,7 +42,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      */
     public function setupConnection()
     {
-        if ( $this->isAlreadySetup )    {
+        if ($this->isAlreadySetup) {
             return true;
         }
         try {
@@ -60,7 +60,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     public function setupWithDSN($dsnString)
     {
-        if ( $this->isAlreadySetup )    {
+        if ($this->isAlreadySetup) {
             return true;
         }
         try {
@@ -336,7 +336,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $rowArray = array();
             foreach ($row as $field => $val) {
-                if ( $isFirstRow )  {
+                if ($isFirstRow) {
                     $this->fieldInfo[] = $field;
                 }
                 $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
@@ -653,7 +653,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('c');
- //       $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
+        //       $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
 
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $sql = "UPDATE {$hashTable} SET hash=" . $this->link->quote($challenge)
@@ -689,24 +689,16 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      *
      * Using 'issuedhash'
      */
-    function authSupportCheckMediaToken($user)
+    function authSupportCheckMediaToken($uid)
     {
-        $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$user}");
-
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($user);
+        $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$uid}", 2);
 
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
             return false;
         }
-        if ($signedUser === 0) {
+        if ($uid < 0) {
             $uid = 0;
-        } else {
-            $uid = $this->authSupportGetUserIdFromUsername($signedUser);
-            if ($uid === false) {
-                $this->logger->setDebugMessage("[authSupportCheckMediaToken] User '{$signedUser}' does't exist.");
-                return false;
-            }
         }
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -1163,7 +1155,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      */
     function authSupportUnifyUsernameAndEmail($username)
     {
-        if (! $this->dbSettings->getEmailAsAccount() || strlen($username) == 0)  {
+        if (!$this->dbSettings->getEmailAsAccount() || strlen($username) == 0) {
             return $username;
         }
         $userTable = $this->dbSettings->getUserTable();
@@ -1301,11 +1293,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportUserEnrollmentActivateUser($hash, $password)
+    function authSupportUserEnrollmentCheckHash($hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
-        $userTable = $this->dbSettings->getUserTable();
-        if ($hashTable == null || $userTable == null) {
+        if ($hashTable == null) {
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
@@ -1330,30 +1321,42 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         foreach ($resultHash->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $userID = $row['user_id'];
-            if ($userID < 1 )   {
+            if ($userID < 1) {
                 return false;
             }
-            $resultArray = array('user_id'=>$userID);
-            $sql = "UPDATE {$userTable} SET hashedpasswd=" . $this->link->quote($password)
-                . " WHERE id=" . $this->link->quote($userID);
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Update:' . $sql);
-                return false;
-            }
-            $sql = "SELECT email,realname FROM {$userTable} WHERE id=" . $this->link->quote($userID);
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-                return false;
-            }
-            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $userRow) {
-                $resultArray['email'] = $userRow['email'];
-                $resultArray['realname'] = $userRow['realname'];
-                return $resultArray;
-            }
+        }
+        return $userID;
+    }
+
+    function authSupportUserEnrollmentActivateUser($userID, $password)
+    {
+        $userTable = $this->dbSettings->getUserTable();
+        if ($userTable == null) {
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $resultArray = array('user_id' => $userID);
+        $sql = "UPDATE {$userTable} SET hashedpasswd=" . $this->link->quote($password)
+            . " WHERE id=" . $this->link->quote($userID);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Update:' . $sql);
+            return false;
+        }
+        $sql = "SELECT email,realname FROM {$userTable} WHERE id=" . $this->link->quote($userID);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $userRow) {
+            $resultArray['email'] = $userRow['email'];
+            $resultArray['realname'] = $userRow['realname'];
+            return $resultArray;
         }
         return false;
     }

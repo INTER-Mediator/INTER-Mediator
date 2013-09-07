@@ -789,13 +789,13 @@ var INTERMediator = {
             }
         }
 
-        if (alertmessage.length > 0)    {
+        if (alertmessage.length > 0) {
             window.alert(alertmessage);
             return;
         }
 
         if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
-            if ( ! INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
+            if (!INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
                 return;
             }
         }
@@ -2184,79 +2184,89 @@ var INTERMediator = {
                 // ---------
             }
 
-            for (i = 0; i < INTERMediator.deleteInsertOnNavi.length; i++) {
-                switch (INTERMediator.deleteInsertOnNavi[i]['kind']) {
-                    case 'INSERT':
-                        node = document.createElement('SPAN');
-                        navigation.appendChild(node);
-                        node.appendChild(
-                            document.createTextNode(
-                                INTERMediatorOnPage.getMessages()[3] + ': '
-                                    + INTERMediator.deleteInsertOnNavi[i]['name']));
-                        node.setAttribute('class', 'IM_NAV_button');
-                        onNaviInsertFunction = function (a, b, c) {
-                            var contextName = a, keyValue = b, confirming = c;
-                            return function () {
-                                INTERMediator.insertRecordFromNavi(contextName, keyValue, confirming);
+            if (navLabel == null || navLabel[9] !== false) {
+                for (i = 0; i < INTERMediator.deleteInsertOnNavi.length; i++) {
+                    switch (INTERMediator.deleteInsertOnNavi[i]['kind']) {
+                        case 'INSERT':
+                            node = document.createElement('SPAN');
+                            navigation.appendChild(node);
+                            node.appendChild(
+                                document.createTextNode(
+                                    INTERMediatorOnPage.getMessages()[3] + ': '
+                                        + INTERMediator.deleteInsertOnNavi[i]['name']));
+                            node.setAttribute('class', 'IM_NAV_button');
+                            onNaviInsertFunction = function (a, b, c) {
+                                var contextName = a, keyValue = b, confirming = c;
+                                return function () {
+                                    INTERMediator.insertRecordFromNavi(contextName, keyValue, confirming);
+                                };
                             };
-                        };
-                        INTERMediatorLib.addEvent(
-                            node,
-                            'click',
-                            onNaviInsertFunction(
-                                INTERMediator.deleteInsertOnNavi[i]['name'],
-                                INTERMediator.deleteInsertOnNavi[i]['key'],
-                                INTERMediator.deleteInsertOnNavi[i]['confirm'] ? true : false)
-                        );
-                        break;
-                    case 'DELETE':
-                        node = document.createElement('SPAN');
-                        navigation.appendChild(node);
-                        node.appendChild(
-                            document.createTextNode(
-                                INTERMediatorOnPage.getMessages()[4] + ': '
-                                    + INTERMediator.deleteInsertOnNavi[i]['name']));
-                        node.setAttribute('class', 'IM_NAV_button');
-                        onNaviDeleteFunction = function (a, b, c, d) {
-                            var contextName = a, keyName = b, keyValue = c, confirming = d;
-                            return function () {
-                                INTERMediator.deleteRecordFromNavi(contextName, keyName, keyValue, confirming);
-                            };
-                        }
-                        INTERMediatorLib.addEvent(
-                            node,
-                            'click',
-                            onNaviDeleteFunction(
-                                INTERMediator.deleteInsertOnNavi[i]['name'],
-                                INTERMediator.deleteInsertOnNavi[i]['key'],
-                                INTERMediator.deleteInsertOnNavi[i]['value'],
-                                INTERMediator.deleteInsertOnNavi[i]['confirm'] ? true : false));
-                        break;
+                            INTERMediatorLib.addEvent(
+                                node,
+                                'click',
+                                onNaviInsertFunction(
+                                    INTERMediator.deleteInsertOnNavi[i]['name'],
+                                    INTERMediator.deleteInsertOnNavi[i]['key'],
+                                    INTERMediator.deleteInsertOnNavi[i]['confirm'] ? true : false)
+                            );
+                            break;
+                        case 'DELETE':
+                            node = document.createElement('SPAN');
+                            navigation.appendChild(node);
+                            node.appendChild(
+                                document.createTextNode(
+                                    INTERMediatorOnPage.getMessages()[4] + ': '
+                                        + INTERMediator.deleteInsertOnNavi[i]['name']));
+                            node.setAttribute('class', 'IM_NAV_button');
+                            onNaviDeleteFunction = function (a, b, c, d) {
+                                var contextName = a, keyName = b, keyValue = c, confirming = d;
+                                return function () {
+                                    INTERMediator.deleteRecordFromNavi(contextName, keyName, keyValue, confirming);
+                                };
+                            }
+                            INTERMediatorLib.addEvent(
+                                node,
+                                'click',
+                                onNaviDeleteFunction(
+                                    INTERMediator.deleteInsertOnNavi[i]['name'],
+                                    INTERMediator.deleteInsertOnNavi[i]['key'],
+                                    INTERMediator.deleteInsertOnNavi[i]['value'],
+                                    INTERMediator.deleteInsertOnNavi[i]['confirm'] ? true : false));
+                            break;
+                    }
                 }
             }
-            if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
-                node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[7]));
-                node.setAttribute('class', 'IM_NAV_button');
-                INTERMediatorLib.addEvent(node, 'click', INTERMediator.saveRecordFromNavi);
+            if (navLabel == null || navLabel[10] !== false) {
+                if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        (navLabel == null || navLabel[10] == null) ?
+                            INTERMediatorOnPage.getMessages()[7] : navLabel[10] ));
+                    node.setAttribute('class', 'IM_NAV_button');
+                    INTERMediatorLib.addEvent(node, 'click', INTERMediator.saveRecordFromNavi);
+                }
             }
-            if (INTERMediatorOnPage.requireAuthentication) {
-                node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode(
-                    INTERMediatorOnPage.getMessages()[8] + INTERMediatorOnPage.authUser));
-                node.setAttribute('class', 'IM_NAV_info');
+            if (navLabel == null || navLabel[11] !== false) {
+                if (INTERMediatorOnPage.requireAuthentication) {
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        INTERMediatorOnPage.getMessages()[8] + INTERMediatorOnPage.authUser));
+                    node.setAttribute('class', 'IM_NAV_info');
 
-                node = document.createElement('SPAN');
-                navigation.appendChild(node);
-                node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[9]));
-                node.setAttribute('class', 'IM_NAV_button');
-                INTERMediatorLib.addEvent(node, 'click',
-                    function () {
-                        INTERMediatorOnPage.logout();
-                        location.reload();
-                    });
+                    node = document.createElement('SPAN');
+                    navigation.appendChild(node);
+                    node.appendChild(document.createTextNode(
+                        (navLabel == null || navLabel[11] == null) ?
+                            INTERMediatorOnPage.getMessages()[9] : navLabel[11] ));
+                    node.setAttribute('class', 'IM_NAV_button');
+                    INTERMediatorLib.addEvent(node, 'click',
+                        function () {
+                            INTERMediatorOnPage.logout();
+                            location.reload();
+                        });
+                }
             }
         }
     }

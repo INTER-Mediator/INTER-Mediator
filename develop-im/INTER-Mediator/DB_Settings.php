@@ -1,6 +1,6 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator Ver.3.8 Released 2013-08-22
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
  *
@@ -559,6 +559,9 @@ class DB_Settings
     /* get the information for the 'name'. */
     function getDataSourceTargetArray($isAssociative = false)
     {
+        if ($this->dataSource == null)  {
+            return null;
+        }
         if ($this->targetDataSource == null) {
             foreach ($this->dataSource as $record) {
                 if ($record['name'] == $this->dataSourceName) {

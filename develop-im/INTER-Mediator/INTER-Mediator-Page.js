@@ -46,6 +46,7 @@ INTERMediatorOnPage = {
     isEmailAsUsername: false,
 
     isShowChangePassword: true,
+    isSetDefaultStyle: true,
 
     /*
      This method "getMessages" is going to be replaced valid one with the browser's language.
@@ -55,7 +56,7 @@ INTERMediatorOnPage = {
         return null;
     },
 
-    getURLParametersAsArray: function() {
+    getURLParametersAsArray: function () {
         var i, params, eqPos, result, key, value;
         result = {};
         params = location.search.substring(1).split('&');
@@ -63,18 +64,18 @@ INTERMediatorOnPage = {
             eqPos = params[i].indexOf("=");
             if (eqPos > 0) {
                 key = params[i].substring(0, eqPos);
-                value = params[i].substring(eqPos+1)
+                value = params[i].substring(eqPos + 1)
                 result[key] = decodeURIComponent(value);
             }
         }
         return result;
     },
 
-    getContextInfo: function(contextName)   {
+    getContextInfo: function (contextName) {
         var dataSources, oneSource;
         dataSources = INTERMediatorOnPage.getDataSources();
-        for (index in dataSources)    {
-            if ( dataSources[index].name == contextName )   {
+        for (index in dataSources) {
+            if (dataSources[index].name == contextName) {
                 return dataSources[index];
             }
         }
@@ -194,13 +195,16 @@ INTERMediatorOnPage = {
             chgpwButton = document.getElementById('_im_changebutton');
         } else {
             frontPanel = document.createElement('div');
-            frontPanel.style.width = "450px";
-            frontPanel.style.backgroundColor = "#333333";
-            frontPanel.style.color = "#DDDDAA";
-            frontPanel.style.margin = "50px auto 0 auto";
-            frontPanel.style.padding = "20px";
-            frontPanel.style.borderRadius = "10px";
-            frontPanel.style.position = "relative";
+            if (INTERMediatorOnPage.isSetDefaultStyle) {
+                frontPanel.style.width = "450px";
+                frontPanel.style.backgroundColor = "#333333";
+                frontPanel.style.color = "#DDDDAA";
+                frontPanel.style.margin = "50px auto 0 auto";
+                frontPanel.style.padding = "20px";
+                frontPanel.style.borderRadius = "10px";
+                frontPanel.style.position = "relative";
+            }
+            frontPanel.id = "_im_authpanel";
             backBox.appendChild(frontPanel);
 
             if (INTERMediatorOnPage.realm.length > 0) {
@@ -215,10 +219,13 @@ INTERMediatorOnPage = {
             labelWidth = "200px";
             userLabel = document.createElement('LABEL');
             frontPanel.appendChild(userLabel);
-            userSpan = document.createElement('div');
-            userSpan.style.width = labelWidth;
-            userSpan.style.textAlign = "right";
-            userSpan.style.cssFloat = "left";
+            userSpan = document.createElement('span');
+            if (INTERMediatorOnPage.isSetDefaultStyle) {
+                userSpan.style.width = labelWidth;
+                userSpan.style.textAlign = "right";
+                userSpan.style.cssFloat = "left";
+            }
+            INTERMediatorLib.setClassAttributeToNode(userSpan, "_im_authlabel");
             userLabel.appendChild(userSpan);
             msgNumber = INTERMediatorOnPage.isEmailAsUsername ? 2011 : 2002;
             userSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(msgNumber)));
@@ -235,9 +242,12 @@ INTERMediatorOnPage = {
             passwordLabel = document.createElement('LABEL');
             frontPanel.appendChild(passwordLabel);
             passwordSpan = document.createElement('SPAN');
-            passwordSpan.style.minWidth = labelWidth;
-            passwordSpan.style.textAlign = "right";
-            passwordSpan.style.cssFloat = "left";
+            if (INTERMediatorOnPage.isSetDefaultStyle) {
+                passwordSpan.style.minWidth = labelWidth;
+                passwordSpan.style.textAlign = "right";
+                passwordSpan.style.cssFloat = "left";
+            }
+            INTERMediatorLib.setClassAttributeToNode(passwordSpan, "_im_authlabel");
             passwordLabel.appendChild(passwordSpan);
             passwordSpan.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2003)));
             passwordBox = document.createElement('INPUT');
@@ -262,11 +272,14 @@ INTERMediatorOnPage = {
                 newPasswordLabel = document.createElement('LABEL');
                 frontPanel.appendChild(newPasswordLabel);
                 newPasswordSpan = document.createElement('SPAN');
-                newPasswordSpan.style.minWidth = labelWidth;
-                newPasswordSpan.style.textAlign = "right";
-                newPasswordSpan.style.cssFloat = "left";
-                newPasswordSpan.style.fontSize = "0.7em";
-                newPasswordSpan.style.paddingTop = "4px";
+                if (INTERMediatorOnPage.isSetDefaultStyle) {
+                    newPasswordSpan.style.minWidth = labelWidth;
+                    newPasswordSpan.style.textAlign = "right";
+                    newPasswordSpan.style.cssFloat = "left";
+                    newPasswordSpan.style.fontSize = "0.7em";
+                    newPasswordSpan.style.paddingTop = "4px";
+                }
+                INTERMediatorLib.setClassAttributeToNode(newPasswordSpan, "_im_authlabel");
                 newPasswordLabel.appendChild(newPasswordSpan);
                 newPasswordSpan.appendChild(
                     document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)));
@@ -480,7 +493,7 @@ INTERMediatorOnPage = {
             childElm.appendChild(document.createElement("br"));
             childElm.appendChild(document.createTextNode(navigator.userAgent));
             elm.appendChild(childElm);
-            for (i = bodyNode.childNodes.length-1; i >= 0; i--) {
+            for (i = bodyNode.childNodes.length - 1; i >= 0; i--) {
                 bodyNode.removeChild(bodyNode.childNodes[i]);
             }
             bodyNode.appendChild(elm);

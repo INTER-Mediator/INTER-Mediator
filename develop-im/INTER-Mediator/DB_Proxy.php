@@ -652,13 +652,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $str = '';
         for ($i = 0; $i < 4; $i++) {
-            $n = rand(33, 126);
+            $n = rand(33, 126); // They should be an ASCII character for JS SHA1 lib.
             $str .= chr($n);
         }
         return $str;
     }
 
-    function getHashedPassword($pw)
+    function convertHashedPassword($pw)
     {
         $salt = $this->generateSalt();
         return sha1($pw . $salt) . bin2hex($salt);
@@ -753,7 +753,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $returnValue = false;
         $this->authDbClass->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
-        $storedChallenge = $this->authDbClass->authSupportCheckMediaToken($user);
+        $uid = $this->dbClass->authSupportGetUserIdFromUsername($user);
+        $storedChallenge = $this->authDbClass->authSupportCheckMediaToken($uid);
 
         if (strlen($storedChallenge) == 24 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
@@ -845,8 +846,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     function userEnrollmentActivateUser($challenge, $password)
     {
-        $hashednewpassword = $this->getHashedPassword($password);
-        return $this->authDbClass->authSupportUserEnrollmentActivateUser($challenge, $hashednewpassword);
+        $userInfo = null;
+        $userID = $this->authDbClass->authSupportUserEnrollmentActivateUser($challenge);
+        if ($userID !== false)   {
+            $hashednewpassword = $this->convertHashedPassword($password);
+            $userInfo = authSupportUserEnrollmentCheckHash($userID, $hashednewpassword);
+        }
+        return $userInfo;
     }
 
 }

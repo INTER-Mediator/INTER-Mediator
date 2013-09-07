@@ -56,11 +56,10 @@ INTERMediator_DBAdapter = {
                 + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
     },
 
-    logging_comResult: function (myRequest, resultCount, dbresult, requireAuth,
-                                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
+    logging_comResult: function (myRequest, resultCount, dbresult, requireAuth, challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
         var responseTextTrancated;
         if (INTERMediator.debugMode > 1) {
-            if (myRequest.responseText.length > 1000)   {
+            if (myRequest.responseText.length > 1000) {
                 responseTextTrancated = myRequest.responseText.substr(0, 1000) + " ...[trancated]";
             } else {
                 responseTextTrancated = myRequest.responseText;
@@ -121,22 +120,36 @@ INTERMediator_DBAdapter = {
     },
 
     changePassowrd: function (username, oldpassword, newpassword) {
-        INTERMediatorOnPage.authUser = username;
-        if (username != ''    // No usename and no challenge, get a challenge.
-            && (INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 24 )) {
-            INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
-            challengeResult = INTERMediator_DBAdapter.getChallenge();
-            if (!challengeResult) {
-                INTERMediator.flushMessage();
-                return false; // If it's failed to get a challenge, finish everything.
+        if (username && oldpassword) {
+            INTERMediatorOnPage.authUser = username;
+            if (username != ''    // No usename and no challenge, get a challenge.
+                && (INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 24 )) {
+                INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
+                challengeResult = INTERMediator_DBAdapter.getChallenge();
+                if (!challengeResult) {
+                    INTERMediator.flushMessage();
+                    return false; // If it's failed to get a challenge, finish everything.
+                }
             }
+            INTERMediatorOnPage.authHashedPassword
+                = SHA1(oldpassword + INTERMediatorOnPage.authUserSalt)
+                + INTERMediatorOnPage.authUserHexSalt;
+        } else {
+            INTERMediatorOnPage.retrieveAuthInfo();
         }
-        INTERMediatorOnPage.authHashedPassword
-            = SHA1(oldpassword + INTERMediatorOnPage.authUserSalt)
-            + INTERMediatorOnPage.authUserHexSalt;
         params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(newpassword);
         try {
             result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
+            if(result.newPasswordResult && result.newPasswordResult === true)  {
+                if (INTERMediatorOnPage.isNativeAuth) {
+                    INTERMediatorOnPage.authHashedPassword = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
+                } else {
+                    INTERMediatorOnPage.authHashedPassword
+                        = SHA1(newpassword + INTERMediatorOnPage.authUserSalt)
+                        + INTERMediatorOnPage.authUserHexSalt;
+                }
+                INTERMediatorOnPage.storeCredencialsToCookie();
+            }
         } catch (e) {
             return false;
         }
@@ -207,7 +220,7 @@ INTERMediator_DBAdapter = {
             }
             myRequest.send(fd);
         } catch (e) {
-            INTERMediator.setErrorMessage( e,
+            INTERMediator.setErrorMessage(e,
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1032], [e, myRequest.responseText]));
         }

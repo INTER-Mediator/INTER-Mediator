@@ -54,6 +54,7 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.3.9-dev
+- Customize the login panel by CSS definitions.
 - [BUG FIX] Fix display unnecessary insert button and delete button on the navigation bar after pressing an "enter" key in the text box of the moving page control on the navigation bar (WebKit browsers only).
 - [BUG FIX] Authentication and Authorization for groups.
 - [BUG FIX] FileMaker_FX class isolates the FX object to data and auth.

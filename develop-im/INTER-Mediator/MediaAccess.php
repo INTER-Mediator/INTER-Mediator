@@ -200,7 +200,9 @@ class MediaAccess
             }
             $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("load");
             $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("load");
-            $pathComponents = explode('/', $target);
+            $endOfPath = strpos($target, "?");
+            $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
+            $pathComponents = explode('/', substr($target, 0, $endOfPath));
             $indexKeying = -1;
             foreach ($pathComponents as $index => $dname) {
                 if (strpos($dname, '=') !== false) {
