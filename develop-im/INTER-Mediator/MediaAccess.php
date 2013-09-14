@@ -41,9 +41,7 @@ class MediaAccess
              * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
              * style URL. In case of an image, $file is just the path info as like above.
              */
-
             $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
-
             if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
             }
@@ -130,7 +128,8 @@ class MediaAccess
     public function checkForFileMakerMedia($dbProxyInstance, $options, $file, $isURL)
     {
         if (strpos($file, "/fmi/xml/cnt/") === 0) { // FileMaker's container field storing an image.
-            if (isset($options['authentication']['user'][0]) && $options['authentication']['user'][0] == 'database_native') {
+            if (isset($options['authentication']['user'][0])
+                && $options['authentication']['user'][0] == 'database_native') {
                 $passPhrase = '';
                 $generatedPrivateKey = ''; // avoid errors for defined in params.php.
                 $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
@@ -200,27 +199,27 @@ class MediaAccess
             }
             $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("load");
             $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("load");
-            $endOfPath = strpos($target, "?");
-            $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
-            $pathComponents = explode('/', substr($target, 0, $endOfPath));
-            $indexKeying = -1;
-            foreach ($pathComponents as $index => $dname) {
-                if (strpos($dname, '=') !== false) {
-                    $indexKeying = $index;
-                    $fieldComponents = explode('=', $dname);
-                    $keyField = $fieldComponents[0];
-                    $keyValue = $fieldComponents[1];
-                }
-            }
-            if ($indexKeying == -1) {
-                $this->exitAsError(401);
-            }
-            $contextName = $pathComponents[$indexKeying - 1];
-            if ($contextName != $options['media-context']) {
-                $this->exitAsError(401);
-            }
-            $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
             if ($authInfoTarget == 'field-user') {
+                $endOfPath = strpos($target, "?");
+                $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
+                $pathComponents = explode('/', substr($target, 0, $endOfPath));
+                $indexKeying = -1;
+                foreach ($pathComponents as $index => $dname) {
+                    if (strpos($dname, '=') !== false) {
+                        $indexKeying = $index;
+                        $fieldComponents = explode('=', $dname);
+                        $keyField = $fieldComponents[0];
+                        $keyValue = $fieldComponents[1];
+                    }
+                }
+                if ($indexKeying == -1) {
+                    $this->exitAsError(401);
+                }
+                $contextName = $pathComponents[$indexKeying - 1];
+                if ($contextName != $options['media-context']) {
+                    $this->exitAsError(401);
+                }
+                $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                 $this->contextRecord = $dbProxyInstance->dbClass->authSupportCheckMediaPrivilege(
                     $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $keyField, $keyValue);
                 if ( $this->contextRecord === false ) {
@@ -232,8 +231,8 @@ class MediaAccess
                 $authorizedUsers = $dbProxyInstance->dbClass->getAuthorizedUsers("load");
                 $authorizedGroups = $dbProxyInstance->dbClass->getAuthorizedGroups("load");
                 $belongGroups = $dbProxyInstance->dbClass->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
-                if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
-                    && array_intersect($belongGroups, $authorizedGroups)
+                if (!in_array($dbProxyInstance->dbClass->dbSettings->getCurrentUser(), $authorizedUsers)
+                    && count(array_intersect($belongGroups, $authorizedGroups)) == 0
                 ) {
                     $this->exitAsError(400);
                 }
@@ -278,5 +277,4 @@ class MediaAccess
         }
         return $type;
     }
-
 }

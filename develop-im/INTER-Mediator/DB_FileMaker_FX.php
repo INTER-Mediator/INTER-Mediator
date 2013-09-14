@@ -160,7 +160,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $authorizedGroups = $this->getAuthorizedGroups("load");
                     $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                     if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
-                        && array_intersect($belongGroups, $authorizedGroups)
+                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
                     ) {
                         $authFailure = true;
                     }
@@ -1108,20 +1108,5 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return true;
         }
         return false;
-    }
-
-    function authSupportUserEnrollmentStart($userid, $hash)
-    {
-        // TODO: Implement authSupportUserEnrollmentStart() method.
-    }
-
-    function authSupportUserEnrollmentActivateUser($userInfo, $password)
-    {
-        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
-    }
-
-    function authSupportUserEnrollmentCheckHash($hash)
-    {
-        // TODO: Implement authSupportUserEnrollmentCheckHash() method.
     }
 }

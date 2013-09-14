@@ -43,9 +43,6 @@ interface Auth_Interface_DB					// with using table for authentication/authoriza
     function authSupportUnifyUsernameAndEmail($username);					// authuser
     function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash);	// issuedhash
     function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash);		// issuedhash
-    function authSupportUserEnrollmentStart($userid, $hash);	// issuedhash
-    function authSupportUserEnrollmentCheckHash($hash);         	// issuedhash
-    function authSupportUserEnrollmentActivateUser($userID, $password);	// authuser
 }
 
 interface Auth_Interface_Communication
@@ -53,7 +50,6 @@ interface Auth_Interface_Communication
     // The followings are used in DB_Proxy::processingRequest.
     function generateClientId($prefix);
     function generateChallenge();
-    function convertHashedPassword($pw);
     function saveChallenge($username, $challenge, $clientId);
     function checkAuthorization($username, $hashedvalue, $clientId);
     function checkChallenge($challenge, $clientId);
@@ -62,9 +58,6 @@ interface Auth_Interface_Communication
     function authSupportGetSalt($username);
     function generateSalt();    // Use inside addUser
     function changePassword($username, $newpassword);
-    function resetPasswordSequenceReturnBack($username, $email, $randdata, $newpassword);
-    function userEnrollmentStart($userID);
-    function userEnrollmentActivateUser($challenge, $password);
 }
 
 interface Auth_Interface_CommonDB
