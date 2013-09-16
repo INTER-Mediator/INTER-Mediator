@@ -10,11 +10,9 @@ require_once('RetrieveFXData.class.php');
 #########################################################################
 
 // Do not use this class directly -- it is designed to be appropriately extended
-class RetrieveFXSQLData extends RetrieveFXData
-{
+class RetrieveFXSQLData extends RetrieveFXData {
 
-    function BuildSQLSorts()
-    {
+    function BuildSQLSorts () {
         $currentOrderBy = '';
 
         if (count($this->FX->sortParams) > 0) {
@@ -39,8 +37,7 @@ class RetrieveFXSQLData extends RetrieveFXData
         }
     }
 
-    function BuildSQLQuery($action)
-    {
+    function BuildSQLQuery ($action) {
         $currentLOP = 'AND';
         $logicalOperators = array();
         $LOPCount = 0;
@@ -195,8 +192,7 @@ class RetrieveFXSQLData extends RetrieveFXData
         return $currentQuery;
     }
 
-    function cleanUp()
-    {
+    function cleanUp() {
         // Clean up SQL queries here
     }
 

@@ -9,11 +9,9 @@ require_once('RetrieveFXSQLData.class.php');
 #                                                                       #
 #########################################################################
 
-class RetrieveFXPostgreSQLData extends RetrieveFXSQLData
-{
+class RetrieveFXPostgreSQLData extends RetrieveFXSQLData {
 
-    function doQuery($action)
-    {
+    function doQuery ($action) {
         $connectString = '';
         $unsupportedActions = array('-dbnames', '-layoutnames', '-scriptnames', '-dbopen', '-dbclose');
 
@@ -43,7 +41,7 @@ class RetrieveFXPostgreSQLData extends RetrieveFXSQLData
             return new FX_Error("Unable to connect to PostgreSQL server. (" . pg_last_error($postresql_res) . ")");
         }
         $theResult = pg_query($postresql_res, "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name ='{$this->FX->layout}'");
-        if (!$theResult) {
+        if (! $theResult) {
             return new FX_Error('Unable to access PostgreSQL column data: ' . pg_last_error($postresql_res));
         }
         $counter = 0;
@@ -67,7 +65,7 @@ class RetrieveFXPostgreSQLData extends RetrieveFXSQLData
                 }
             case '-sqlquery': // note that there is no preceding break, as we don't want to build a query
                 $theResult = pg_query($this->FX->dataQuery);
-                if (!$theResult) {
+                if (! $theResult) {
                     return new FX_Error('Invalid query: ' . pg_last_error($postresql_res));
                 }
                 if (substr_count($action, '-find') > 0 || substr_count($this->FX->dataQuery, 'SELECT ') > 0) {

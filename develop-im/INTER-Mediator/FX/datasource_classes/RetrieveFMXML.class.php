@@ -10,8 +10,7 @@ require_once('RetrieveFXData.class.php');
 #########################################################################
 
 // Do not use this class directly -- it is designed to be appropriately extended
-class RetrieveFMXML extends RetrieveFXData
-{
+class RetrieveFMXML extends RetrieveFXData {
 
     var $currentFlag = '';
     var $currentValueList = '';
@@ -20,7 +19,7 @@ class RetrieveFMXML extends RetrieveFXData
     var $currentSubrecordIndex;
     var $currentField = '';
     var $currentFieldIndex;
-    var $columnCounter = -1; // columnCounter is ++ed BEFORE looping
+    var $columnCounter = -1;                                              // columnCounter is ++ed BEFORE looping
     var $dataURL = '';
     var $dataURLParams = '';
     var $invalidXMLChars = array("\x0B", "\x0C", "\x12");
@@ -60,40 +59,37 @@ class RetrieveFMXML extends RetrieveFXData
         "\$this->FX->BuildExtendedChar('\\1','\\2','\\3','\\4')"
     );
 
-    function getTOCName($fieldName)
-    {
-        $p = strpos($fieldName, '::');
-        if ($p === false) {
+    function getTOCName($fieldName) {
+        $p = strpos($fieldName,'::');
+        if ( $p === false ) {
             return 'ERROR-TOC name is conflicted.';
         }
-        $tocName = substr($fieldName, 0, $p);
-        if ($this->FX->remainNamesReverse[$tocName] !== true) {
+        $tocName = substr($fieldName,0,$p);
+        if ($this->FX->remainNamesReverse[$tocName] !== true)   {
             return $this->FX->remainNamesReverse[$tocName];
         }
         return $tocName;
     }
 
     // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010, Move to hear Feb 6, 2012
-    function isRemainName($fieldName)
-    {
-        foreach ($this->FX->remainNames as $fName) {
-            if (strpos($fieldName, $fName) === 0) {
+    function isRemainName($fieldName) {
+        foreach($this->FX->remainNames as $fName) {
+            if (strpos($fieldName,$fName) === 0) {
                 return true;
             }
         }
         return false;
     }
 
-    function StartElement($parser, $name, $attrs)
-    { // The functions to start XML parsing begin here
-        switch (strtolower($name)) {
-            case "data":
+    function StartElement($parser, $name, $attrs) {                      // The functions to start XML parsing begin here
+        switch(strtolower($name)) {
+             case "data":
                 $this->currentFlag = "parseData";
                 if ($this->FX->useInnerArray) {
                     $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] = "";
                 } else {
-                    if ($this->isRemainName($this->currentField)) {
-                        if ($this->FX->portalAsRecord) {
+                    if ($this->isRemainName($this->currentField))    {
+                        if ($this->FX->portalAsRecord ) {
                             $this->FX->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] = '';
                         } else {
                             $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] = "";
@@ -110,7 +106,7 @@ class RetrieveFMXML extends RetrieveFXData
                 if ($this->FX->useInnerArray) {
                     $this->FX->currentData[$this->currentRecord][$this->currentField] = array();
                 } else if ($this->isRemainName($this->currentField)) {
-                    if ($this->FX->portalAsRecord) {
+                    if ( $this->FX->portalAsRecord ) {
                         $this->currentSubrecordIndex = 0;
                     } else {
                         $this->FX->currentData[$this->currentRecord][$this->currentField] = array();
@@ -127,11 +123,11 @@ class RetrieveFMXML extends RetrieveFXData
                     $modid = count($this->FX->currentData);
                 }
                 $this->currentRecord = $recordid . '.' . $modid;
-                $this->FX->currentData[$this->currentRecord] = !$this->FX->portalAsRecord ? array() :
-                    array('-recid' => $recordid, '-modid' => $modid);
+                $this->FX->currentData[$this->currentRecord] = ! $this->FX->portalAsRecord ? array() :
+                    array( '-recid' => $recordid, '-modid' => $modid );
                 break;
             case "field":
-                if ($this->FX->charSet != '' && defined('MB_OVERLOAD_STRING')) {
+                if ($this->FX->charSet != '' && function_exists('mb_convert_encoding')) {
                     foreach ($attrs as $key => $value) {
                         $key = strtolower($key);
                         $this->FX->fieldInfo[$this->FX->fieldCount][$key] = mb_convert_encoding($value, $this->FX->charSet, 'UTF-8');
@@ -155,10 +151,10 @@ class RetrieveFMXML extends RetrieveFXData
                 break;
             case "resultset":
                 foreach ($attrs as $key => $value) {
-                    switch (strtolower($key)) {
+                    switch(strtolower($key)) {
                         case "found":
-                            $this->FX->foundCount = (int)$value;
-                            break;
+                          $this->FX->foundCount = (int)$value;
+                          break;
                     }
                 }
                 break;
@@ -181,16 +177,16 @@ class RetrieveFMXML extends RetrieveFXData
                 break;
             case "database":
                 foreach ($attrs as $key => $value) {
-                    switch (strtolower($key)) {
+                    switch(strtolower($key)) {
                         case "dateformat":
-                            $this->FX->dateFormat = $value;
-                            break;
+                          $this->FX->dateFormat = $value;
+                          break;
                         case "records":
-                            $this->FX->totalRecordCount = $value;
-                            break;
+                          $this->FX->totalRecordCount = $value;
+                          break;
                         case "timeformat":
-                            $this->FX->timeFormat = $value;
-                            break;
+                          $this->FX->timeFormat = $value;
+                          break;
                     }
                 }
                 break;
@@ -199,16 +195,15 @@ class RetrieveFMXML extends RetrieveFXData
         }
     }
 
-    function ElementContents($parser, $data)
-    {
-        switch ($this->currentFlag) {
+    function ElementContents($parser, $data) {
+        switch($this->currentFlag) {
             case "parseData":
-                if ($this->FX->dataParamsEncoding != '' && defined('MB_OVERLOAD_STRING')) {
+                if ($this->FX->dataParamsEncoding != '' && function_exists('mb_convert_encoding')) {
                     if ($this->FX->useInnerArray) {
                         $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= mb_convert_encoding($data, $this->FX->charSet, 'UTF-8');
                     } else {
-                        if ($this->isRemainName($this->currentField)) {
-                            if ($this->FX->portalAsRecord) {
+                        if ($this->isRemainName($this->currentField))    {
+                            if ( $this->FX->portalAsRecord )    {
                                 $this->FX->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= mb_convert_encoding($data, $this->FX->charSet, 'UTF-8');
                             } else {
                                 $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= mb_convert_encoding($data, $this->FX->charSet, 'UTF-8');
@@ -223,9 +218,9 @@ class RetrieveFMXML extends RetrieveFXData
                     } else {
                         if ($this->isRemainName($this->currentField)) {
                             if ($this->FX->portalAsRecord) {
-                                $this->FX->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
-                            } else {
-                                $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                                   $this->FX->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                               } else {
+                                   $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
                             }
                         } else {
                             $this->FX->currentData[$this->currentRecord][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
@@ -237,14 +232,21 @@ class RetrieveFMXML extends RetrieveFXData
                 $this->FX->fxError = $data;
                 break;
             case "values":
-                $this->FX->valueLists[$this->currentValueList][$this->currentValueListElement] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                if ($this->FX->charSet != '' && function_exists('mb_convert_encoding')) {
+                    $this->FX->valueLists[$this->currentValueList][$this->currentValueListElement] .= mb_convert_encoding($data, $this->FX->charSet, 'UTF-8');
+                }
+                // Modified by Masayuki Nii informed from Naoki Hori, July 24, 2012. To avoid the multi-byte character corruptions.
+                // Modified by Masayuki Nii, Sept 11, 2012. Abobe code is just applied when the setCharacterEncoding('UTF-8') is written.
+                //  The below code is applied in case of the default status and it doesn't require the mb_string module.
+                else {
+                    $this->FX->valueLists[$this->currentValueList][$this->currentValueListElement] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                }
                 break;
         }
     }
 
-    function EndElement($parser, $name)
-    {
-        switch (strtolower($name)) {
+    function EndElement($parser, $name) {
+        switch(strtolower($name)) {
             case "data":
                 $this->currentFieldIndex++;
                 $this->currentFlag = "";
@@ -255,18 +257,18 @@ class RetrieveFMXML extends RetrieveFXData
             case "row":
                 if (strlen(trim($this->FX->customPrimaryKey)) > 0) {
                     if ($this->FX->useInnerArray) {
-                        $this->FX->currentData[$this->FX->currentData[$this->currentRecord][$this->FX->customPrimaryKey][0]]
+                        $this->FX->currentData[$this->FX->currentData[$this->currentRecord][$this->FX->customPrimaryKey][0]] 
                             = $this->FX->currentData[$this->currentRecord];
                     } else {
                         if ($this->isRemainName($this->currentField)) {
                             if ($this->FX->portalAsRecord) {
                                 //
                             } else {
-                                $this->FX->currentData[$this->FX->currentData[$this->currentRecord][$this->FX->customPrimaryKey][0]]
+                                $this->FX->currentData[$this->FX->currentData[$this->currentRecord][$this->FX->customPrimaryKey][0]] 
                                     = $this->FX->currentData[$this->currentRecord];
                             }
                         } else {
-                            $this->FX->currentData[$this->FX->currentData[$this->currentRecord][$this->FX->customPrimaryKey]]
+                            $this->FX->currentData[$this->FX->currentData[$this->currentRecord][$this->FX->customPrimaryKey]] 
                                 = $this->FX->currentData[$this->currentRecord];
                         }
                     }
@@ -284,25 +286,28 @@ class RetrieveFMXML extends RetrieveFXData
                 $this->currentFlag = "";
                 break;
         }
-    } // XML Parsing Functions End Here
+    }                                                                       // XML Parsing Functions End Here
 
-    function AssembleCurrentQuery($layRequest, $skipRequest, $currentSort, $currentSearch, $action, $FMV = 6)
+    function AssembleCurrentQuery ($layRequest, $skipRequest, $currentSort, $currentSearch, $action, $FMV=6)
     {
         $tempSearch = '';
 
-        $tempSearch = '-db=' . urlencode($this->FX->database); // add the name of the database...
-        $tempSearch .= $layRequest; // and any layout specified...
-        if ($FMV < 7) {
-            $tempSearch .= '&-format=-fmp_xml'; // then set the FileMaker XML format to use...
+        if ($action != '-dbnames') {
+            $tempSearch = '-db=' . urlencode($this->FX->database);       // add the name of the database...
         }
-        $tempSearch .= "&-max={$this->FX->groupSize}{$skipRequest}"; // add the set size and skip size data...
-        $tempSearch .= $currentSort . $currentSearch . '&' . $action; // finally, add sorting, search parameters, and action data.
+        $tempSearch .= $layRequest;                                      // and any layout specified...
+        if ($FMV < 7) {
+            $tempSearch .= '&-format=-fmp_xml';                          // then set the FileMaker XML format to use...
+        }
+        if (!in_array($action, array('-dbnames', '-layoutnames', '-scriptnames'))) {
+            $tempSearch .= "&-max={$this->FX->groupSize}{$skipRequest}"; // add the set size and skip size data...
+        }
+        $tempSearch .= $currentSort . $currentSearch . '&' . $action;    // finally, add sorting, search parameters, and action data.
         return $tempSearch;
     }
 
     // Method to clean up after retrieval
-    function cleanUp()
-    {
+    function cleanUp() {
         // Pass through assembled data as appropriate
         $this->FX->lastURL = $this->dataURL;
         // Clear the flags and temp variables used during retrieval and parsing

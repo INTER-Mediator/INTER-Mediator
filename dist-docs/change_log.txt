@@ -55,6 +55,8 @@ Latest changes might exist on the GitHub repository. Please check https://github
 
 Ver.3.9-dev
 - Customize the login panel by CSS definitions.
+- Update FX.php to fix compatibility with FileMaker Server 12.
+- Enable omitting to place the primary key field object on a layout when using FileMaker Server.
 - [BUG FIX] Fix display unnecessary insert button and delete button on the navigation bar after pressing an "enter" key in the text box of the moving page control on the navigation bar (WebKit browsers only).
 - [BUG FIX] Authentication and Authorization for groups.
 - [BUG FIX] FileMaker_FX class isolates the FX object to data and auth.

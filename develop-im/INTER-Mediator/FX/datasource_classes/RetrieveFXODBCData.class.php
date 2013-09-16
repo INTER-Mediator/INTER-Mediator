@@ -9,14 +9,12 @@ require_once('RetrieveFXSQLData.class.php');
 #                                                                       #
 #########################################################################
 
-class RetrieveFXODBCData extends RetrieveFXSQLData
-{
+class RetrieveFXODBCData extends RetrieveFXSQLData {
 
-    function doQuery($action)
-    {
+    function doQuery ($action) {
         $availableActions = array('-delete', '-edit', '-find', '-findall', '-new', '-sqlquery');
 
-        if (!in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under ODBC
+        if (! in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under ODBC
             return new FX_Error("The action requested ({$action}) is not supported under ODBC via FX.php.");
         }
         $odbc_res = odbc_connect($this->FX->database, $this->FX->DBUser, $this->FX->DBPassword); // although username and password are optional for this function, FX.php expects them to be set
@@ -35,7 +33,7 @@ class RetrieveFXODBCData extends RetrieveFXSQLData
                 }
             case '-sqlquery': // note that there is no preceding break, as we don't want to build a query
                 $odbc_result = odbc_exec($odbc_res, $this->FX->dataQuery);
-                if (!$odbc_result) {
+                if (! $odbc_result) {
                     $tempErrorText = odbc_errormsg($odbc_res);
                     odbc_close($odbc_res);
                     return new FX_Error("Unsuccessful query: $this->FX->dataQuery ({$tempErrorText})");
@@ -48,7 +46,7 @@ class RetrieveFXODBCData extends RetrieveFXSQLData
                     return new FX_Error("Unable to access field count for current ODBC query.  ({$tempErrorText})");
                 }
                 $odbc_columns = odbc_columns($odbc_res);
-                if (!$odbc_columns) {
+                if (! $odbc_columns) {
                     $tempErrorText = odbc_errormsg($odbc_res);
                     odbc_close($odbc_res);
                     return new FX_Error("Unable to retrieve column data via ODBC.  ({$tempErrorText})");
@@ -65,7 +63,7 @@ class RetrieveFXODBCData extends RetrieveFXSQLData
                     $tempRow = array();
                     for ($i = 1; $i <= $fieldCount; ++$i) {
                         $theResult = odbc_result($odbc_result, $i);
-                        if (!$this->FX->useInnerArray) {
+                        if (! $this->FX->useInnerArray) {
                             $tempRow[$this->FX->fieldInfo[$i]['name']] = $theResult;
                         } else {
                             $tempRow[$this->FX->fieldInfo[$i]['name']] = array($theResult);

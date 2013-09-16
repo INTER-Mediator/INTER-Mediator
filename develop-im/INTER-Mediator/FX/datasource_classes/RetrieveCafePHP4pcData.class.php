@@ -9,17 +9,15 @@ require_once('RetrieveFXSQLData.class.php');
 #                                                                       #
 #########################################################################
 
-class RetrieveCafePHP4pcData extends RetrieveFXSQLData
-{
+class RetrieveCafePHP4pcData extends RetrieveFXSQLData {
 
-    function doQuery($action)
-    {
+    function doQuery ($action) {
         // Note that because of the way in which CAFEphp and FileMaker are implemented, CAFEphp must be running on the same
         // machine that is serving as the web server.  (You'll note that PHP creates a COM object which looks for a locally
         // running application.)  For this same reason, the server IP and port are irrelevant.
         $availableActions = array('-delete', '-edit', '-find', '-findall', '-new', '-sqlquery');
 
-        if (!in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under CAFEphp
+        if (! in_array(strtolower($action), $availableActions)) { // first off, toss out any requests for actions NOT supported under CAFEphp
             return new FX_Error("The action requested ({$action}) is not supported in CAFEphp.");
         }
         $CAFEphp_res = new COM('CAFEphp.Application'); // although username and password are optional for this function, FX.php expects them to be set
@@ -137,7 +135,7 @@ class RetrieveCafePHP4pcData extends RetrieveFXSQLData
                                 $CAFEphp_res->EndConnection();
                                 return new FX_Error("CAFEphp returned an unknown error while retieving the value of field {$i} for record {$j}.");
                             }
-                            if (!$this->FX->useInnerArray) {
+                            if (! $this->FX->useInnerArray) {
                                 $tempRow[$this->FX->fieldInfo[$j]['name']] = $theResult;
                             } else {
                                 $tempRow[$this->FX->fieldInfo[$j]['name']] = array($theResult);
