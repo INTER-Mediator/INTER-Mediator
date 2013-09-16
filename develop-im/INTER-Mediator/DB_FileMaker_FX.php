@@ -1,12 +1,12 @@
 <?php
 /*
-* INTER-Mediator Ver.3.8 Released 2013-08-22
-*
-*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
-*
-*   This project started at the end of 2009.
-*   INTER-Mediator is supplied under MIT License.
-*/
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */
 
 $currentEr = error_reporting();
 error_reporting(0);
@@ -243,8 +243,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $isFirstRecord = true;
         $returnArray = array();
         if (isset($this->fxResult['data'])) {
-            foreach ($this->fxResult['data'] as $oneRecord) {
+            foreach ($this->fxResult['data'] as $key => $oneRecord) {
                 $oneRecordArray = array();
+                
+                $recId = substr($key, 0, strpos($key, '.'));
+                $oneRecordArray['-recid'] = $recId;
+                
                 foreach ($oneRecord as $field => $dataArray) {
                     if ($isFirstRecord) {
                         $this->fieldInfo[] = $field;
