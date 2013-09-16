@@ -9,12 +9,14 @@ require_once('RetrieveFMXML.class.php');
 #                                                                       #
 #########################################################################
 
-class RetrieveFM7Data extends RetrieveFMXML
-{
+class RetrieveFM7Data extends RetrieveFMXML {
 
+    var $fmDataFile = 'FMPXMLRESULT.xml';
+    var $xmlStartHandler = 'StartElement';
+    var $xmlContentHandler = 'ElementContents';
+    var $xmlEndHandler = 'EndElement';
 
-    function CreateCurrentSort()
-    {
+    function CreateCurrentSort () {
         $currentSort = "";
 
         foreach ($this->FX->sortParams as $key1 => $value1) {
@@ -24,17 +26,16 @@ class RetrieveFM7Data extends RetrieveFMXML
                 $$key2 = $value2;
             }
             if ($sortOrder == '') {
-                $currentSort .= "&-sortfield.{$key1}=" . str_replace('%3A%3A', '::', rawurlencode($field));
+                $currentSort .= "&-sortfield.{$key1}=" . str_replace ('%3A%3A', '::', rawurlencode($field));
             }
             else {
-                $currentSort .= "&-sortfield.{$key1}=" . str_replace("%3A%3A", "::", rawurlencode($field)) . "&-sortorder.{$key1}=" . $sortOrder;
+                $currentSort .= "&-sortfield.{$key1}=" . str_replace ("%3A%3A", "::", rawurlencode($field)) . "&-sortorder.{$key1}=" . $sortOrder;
             }
         }
         return $currentSort;
     }
 
-    function CreateCurrentSearch()
-    {
+    function CreateCurrentSearch () {
         $currentSearch = '';
 
         foreach ($this->FX->dataParams as $key1 => $value1) {
@@ -45,7 +46,7 @@ class RetrieveFM7Data extends RetrieveFMXML
                 $$key2 = $value2;
             }
             if ($op == '' && $this->FX->defaultOperator == 'bw') {
-                $currentSearch .= '&' . str_replace('%3A%3A', '::', urlencode($name)) . '=' . urlencode($value);
+                $currentSearch .= '&' . str_replace ('%3A%3A', '::', urlencode($name)) . '=' . urlencode($value);
             } else {
                 if ($op == '') {
                     $op = $this->FX->defaultOperator;
@@ -57,31 +58,35 @@ class RetrieveFM7Data extends RetrieveFMXML
         return $currentSearch;
     }
 
-    function doQuery($action)
-    {
+    function doQuery ($action) {
         // if section added by Nick Salonen for findquery
-        if ($action == '-findquery') {
+        if ($action == '-findquery')
+        {
             $queryExists = false;
             $tempcount = count($this->FX->dataParams);
-            foreach ($this->FX->dataParams as $key => $row) // for each dataParam
+            foreach($this->FX->dataParams as $key=>$row) // for each dataParam
             {
                 if ($queryExists) continue;
                 // check to see if the field/value pair exists in the dataParams already. if so, use it via foundFlagQNumber.
-                if ($row['name'] === '-query') {
+                if ($row['name'] === '-query')
+                {
                     $queryExists = true;
                 }
             }
-            if ($queryExists) {
+            if ($queryExists)
+            {
                 // continue
             } else {
-                if ($this->FX->findquerystring == '') {
+                if ($this->FX->findquerystring == '')
+                {
                     if ((defined("DEBUG") and DEBUG) or DEBUG_FUZZY) {
                         $currentDebugString = "<p>FindQuery Finds must have a -query parameter</p>\n";
                         $this->lastDebugMessage .= $currentDebugString;
                     }
                     return new FX_Error("FindQuery Finds must have a -query parameter.");
                 } else {
-                    if (strpos($this->FX->findquerystring, ';') === 0) {
+                    if (strpos($this->FX->findquerystring, ';') === 0)
+                    {
                         $this->FX->findquerystring = substr($this->FX->findquerystring, 1);
                     }
                     // would just need this section if using all of the FX->FindQuery_Append command, etc. and no manual entering.
@@ -89,13 +94,13 @@ class RetrieveFM7Data extends RetrieveFMXML
                     // continue
                 }
             }
-
+            
         }
         $data = '';
-        if ($this->FX->DBPassword != '' || $this->FX->DBUser != 'FX') { // Assemble the Password Data
+        if ($this->FX->DBPassword != '' || $this->FX->DBUser != 'FX') {     // Assemble the Password Data
             $this->FX->userPass = rawurlencode($this->FX->DBUser) . ':' . rawurlencode($this->FX->DBPassword) . '@';
         }
-        if ($this->FX->layout != '') { // Set up the layout portion of the query.
+        if ($this->FX->layout != '') {                                      // Set up the layout portion of the query.
             $layRequest = '&-lay=' . urlencode($this->FX->layout);
             if ($this->FX->responseLayout != '') {
                 $layRequest .= '&-lay.response=' . urlencode($this->FX->responseLayout);
@@ -104,8 +109,7 @@ class RetrieveFM7Data extends RetrieveFMXML
         else {
             $layRequest = "";
         }
-        if ($this->FX->currentSkip > 0) { // Set up the skip size portion of the query.
-
+        if ($this->FX->currentSkip > 0) {                                   // Set up the skip size portion of the query.
             $skipRequest = "&-skip={$this->FX->currentSkip}";
         } else {
             $skipRequest = "";
@@ -115,7 +119,7 @@ class RetrieveFM7Data extends RetrieveFMXML
         if ($action == '-view') {
             $FMFile = 'FMPXMLLAYOUT.xml';
         } else {
-            $FMFile = 'FMPXMLRESULT.xml';
+            $FMFile = $this->fmDataFile;
         }
         $this->dataURL = "{$this->FX->urlScheme}://{$this->FX->userPass}{$this->FX->dataServer}{$this->FX->dataPortSuffix}/fmi/xml/{$FMFile}"; // First add the server info to the URL...
         $this->dataURLParams = $this->AssembleCurrentQuery($layRequest, $skipRequest, $currentSort, $currentSearch, $action, 7);
@@ -131,23 +135,23 @@ class RetrieveFM7Data extends RetrieveFMXML
 
         if (defined("HAS_PHPCACHE") and defined("FX_USE_PHPCACHE") and strlen($this->dataURLParams) <= 510 and (substr_count($this->dataURLParams, '-find') > 0 || substr_count($this->dataURLParams, '-view') > 0 || substr_count($this->dataURLParams, '-dbnames') > 0 || substr_count($this->dataURLParams, '-layoutnames') > 0)) {
             $data = get_url_cached($this->dataURL);
-            if (!$data) {
+            if (! $data) {
                 return new FX_Error("Failed to retrieve cached URL in RetrieveFM7Data()");
             }
             $data = $data["Body"];
-        } elseif ($this->FX->isFOpenQuery) {
-            /*
-            Amendment by G G Thorsen -> ggt667@gmail.com, this function is written to read files exported using File Export in FMSA 10 and newer
-            This function is particularly written for huge queries of data that are less likely to change often and that would otherwise choke FM WPE
-            */
-            $f = fopen($this->FX->dataServer, 'rb');
+        } elseif( $this->FX->isFOpenQuery ) {
+/*
+Amendment by G G Thorsen -> ggt667@gmail.com, this function is written to read files exported using File Export in FMSA 10 and newer
+This function is particularly written for huge queries of data that are less likely to change often and that would otherwise choke FM WPE
+*/
+            $f = fopen( $this->FX->dataServer, 'rb' );
             $data = '';
-            if (!$f) {
-                return new FX_Error("Failed to retrieve FOpen( '" . $this->FX->dataServer . "', 'rb' ) File not found?");
+            if( ! $f ) {
+                return new FX_Error( "Failed to retrieve FOpen( '" . $this->FX->dataServer . "', 'rb' ) File not found?" );
             } else {
-                while (!feof($f))
-                    $data .= fread($f, 4096);
-                fclose($f);
+                while( ! feof( $f ) )
+                    $data .= fread( $f, 4096 );
+                fclose( $f );
             }
         } elseif ($this->FX->isPostQuery) {
             if ($this->FX->useCURL && defined("CURLOPT_TIMEVALUE")) {
@@ -155,13 +159,14 @@ class RetrieveFM7Data extends RetrieveFMXML
                 curl_setopt($curlHandle, CURLOPT_PORT, $this->FX->dataPort);
                 curl_setopt($curlHandle, CURLOPT_HEADER, 0);
                 curl_setopt($curlHandle, CURLOPT_POST, 1);
+                if ($this->FX->verifyPeer == false) curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER,false);
                 curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $this->dataURLParams);
                 if ($this->FX->DBPassword != '' || $this->FX->DBUser != 'FX') {
                     curl_setopt($curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-                    curl_setopt($curlHandle, CURLOPT_USERPWD, rawurlencode($this->FX->DBUser) . ':' . rawurlencode($this->FX->DBPassword));
+                    curl_setopt($curlHandle, CURLOPT_USERPWD, $this->FX->DBUser . ':' . $this->FX->DBPassword);
                 }
                 ob_start();
-                if (!curl_exec($curlHandle)) {
+                if (! curl_exec($curlHandle)) {
                     $this->FX->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                     $this->FX->lastDebugMessage .= "You should also double check the user name and password used, the server address, and WPE configuration.</p>\n";
                     return new FX_Error("cURL could not retrieve Post data in RetrieveFM7Data(). A bad URL is the most likely reason.");
@@ -207,13 +212,13 @@ class RetrieveFM7Data extends RetrieveFMXML
                     }
                 }
 
-                $fp = fsockopen($protocol . $this->FX->dataServer, $this->FX->dataPort, $this->FX->errorTracking, $this->FX->fxError, 30);
-                if (!$fp) {
+                $fp = fsockopen ($protocol . $this->FX->dataServer, $this->FX->dataPort, $this->FX->errorTracking, $this->FX->fxError, 30);
+                if (! $fp) {
                     $this->FX->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                     $this->FX->lastDebugMessage .= "You should also double check the user name and password used, the server address, and WPE configuration.</p>\n";
-                    return new FX_Error("Could not fsockopen the URL in retrieveFM7Data");
+                    return new FX_Error( "Could not fsockopen the URL in retrieveFM7Data" );
                 }
-                fputs($fp, $socketData);
+                fputs ($fp, $socketData);
                 while (!feof($fp)) {
                     $data .= fgets($fp, 128);
                 }
@@ -223,7 +228,7 @@ class RetrieveFM7Data extends RetrieveFMXML
             }
         } else {
             $fp = fopen($this->dataURL, "r");
-            if (!$fp) {
+            if (! $fp) {
                 $this->FX->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                 $this->FX->lastDebugMessage .= "You should also double check the user name and password used, the server address, and WPE configuration.</p>\n";
                 return new FX_Error("Could not fopen URL in RetrieveFM7Data.");
@@ -240,20 +245,20 @@ class RetrieveFM7Data extends RetrieveFMXML
         // Parse the XML
         $xml_parser = xml_parser_create("UTF-8");
         xml_set_object($xml_parser, $this);
-        xml_set_element_handler($xml_parser, "StartElement", "EndElement");
-        xml_set_character_data_handler($xml_parser, "ElementContents");
+        xml_set_element_handler($xml_parser, $this->xmlStartHandler, $this->xmlEndHandler);
+        xml_set_character_data_handler($xml_parser, $this->xmlContentHandler);
         $xmlParseResult = xml_parse($xml_parser, $data, true);
-        if (!$xmlParseResult) {
-            /* Masayuki Nii added at Oct 9, 2009 */
-            $this->columnCounter = -1;
+        if (! $xmlParseResult) {
+/* Masayuki Nii added at Oct 9, 2009 */
+            $this->columnCounter = -1; 
             xml_parser_free($xml_parser);
             $xml_parser = xml_parser_create("UTF-8");
             xml_set_object($xml_parser, $this);
             xml_set_element_handler($xml_parser, "StartElement", "EndElement");
             xml_set_character_data_handler($xml_parser, "ElementContents");
-            $xmlParseResult = xml_parse($xml_parser, $this->ConvertSurrogatePair($data), true);
-            if (!$xmlParseResult) {
-                /* ==============End of the addition */
+            $xmlParseResult = xml_parse($xml_parser, $this->ConvertSurrogatePair( $data ), true);
+            if (! $xmlParseResult) {
+/* ==============End of the addition */
                 $theMessage = sprintf("ExecuteQuery XML error: %s at line %d",
                     xml_error_string(xml_get_error_code($xml_parser)),
                     xml_get_current_line_number($xml_parser));
@@ -262,33 +267,32 @@ class RetrieveFM7Data extends RetrieveFMXML
                 $this->FX->lastDebugMessage .= "You should also double check the <strong>user name</strong> and <strong>password</strong> used, the <strong>server address and port</strong>, and <strong>WPE configuration</strong>.<br />\n";
                 $this->FX->lastDebugMessage .= "Finally, be sure that you have specified the correct <strong>data type</strong> (e.g. FileMaker 5 or 6 versus 7 or 8.)</p>\n";
                 return new FX_Error($theMessage);
-                /* Masayuki Nii added at Oct 9, 2009 */
+/* Masayuki Nii added at Oct 9, 2009 */
             }
-            /* ==============End of the addition */
+/* ==============End of the addition */
         }
         xml_parser_free($xml_parser);
         return true;
 
     }
 
-    /* Convert wrong surrogated-pair character to light code sequence in UTF-8
-    * Masayuki Nii (msyk@msyk.net) Oct 9, 2009, Moved here on Feb 6,2012
-    * Refered http://www.nii.ac.jp/CAT-ILL/about/system/vista.html
-    */
-    function ConvertSurrogatePair($data)
-    {
+/* Convert wrong surrogated-pair character to light code sequence in UTF-8
+ * Masayuki Nii (msyk@msyk.net) Oct 9, 2009, Moved here on Feb 6,2012
+ * Refered http://www.nii.ac.jp/CAT-ILL/about/system/vista.html
+ */
+    function ConvertSurrogatePair($data) {
         $altData = '';
-        for ($i = 0; $i < strlen($data); $i++) {
-            $c = substr($data, $i, 1);
-            if ((ord($c) == 0xed) && ((ord(substr($data, $i + 1, 1)) & 0xF0) == 0xA0)) {
-                for ($j = 0; $j < 6; $j++)
-                    $utfSeq[] = ord(substr($data, $i + $j, 1));
+        for ($i=0; $i<strlen($data); $i++) {
+            $c = substr( $data, $i, 1 );
+            if (( ord($c) == 0xed )&&( (ord(substr( $data, $i+1, 1 )) & 0xF0) == 0xA0 )) {
+                for ( $j = 0; $j < 6 ; $j++ )
+                    $utfSeq[] = ord(substr($data, $i+$j,1));
                 $convSeq[3] = $utfSeq[5];
                 $convSeq[2] = $utfSeq[4] & 0x0F | (($utfSeq[2] & 0x03) << 4) | 0x80;
                 $topDigit = ($utfSeq[1] & 0x0F) + 1;
                 $convSeq[1] = (($utfSeq[2] >> 2) & 0x0F) | (($topDigit & 0x03) << 4) | 0x80;
                 $convSeq[0] = (($topDigit >> 2) & 0x07) | 0xF0;
-                $c = chr($convSeq[0]) . chr($convSeq[1]) . chr($convSeq[2]) . chr($convSeq[3]);
+                $c = chr( $convSeq[0] ).chr( $convSeq[1] ).chr( $convSeq[2] ).chr( $convSeq[3] );
                 $i += 5;
             }
             $altData .= $c;

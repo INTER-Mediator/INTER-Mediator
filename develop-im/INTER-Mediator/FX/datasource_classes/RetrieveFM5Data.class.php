@@ -9,12 +9,10 @@ require_once('RetrieveFMXML.class.php');
 #                                                                       #
 #########################################################################
 
-class RetrieveFM5Data extends RetrieveFMXML
-{
+class RetrieveFM5Data extends RetrieveFMXML {
 
 
-    function CreateCurrentSort()
-    {
+    function CreateCurrentSort () {
         $currentSort = '';
 
         foreach ($this->FX->sortParams as $key1 => $value1) {
@@ -27,14 +25,13 @@ class RetrieveFM5Data extends RetrieveFMXML
                 $currentSort .= '&-sortfield=' . str_replace('%3A%3A', '::', rawurlencode($field));
             }
             else {
-                $currentSort .= '&-sortfield=' . str_replace('%3A%3A', '::', rawurlencode($field)) . '&-sortorder=' . $sortOrder;
+                $currentSort .= '&-sortfield=' . str_replace ('%3A%3A', '::', rawurlencode($field)) . '&-sortorder=' . $sortOrder;
             }
         }
         return $currentSort;
     }
 
-    function CreateCurrentSearch()
-    {
+    function CreateCurrentSearch () {
         $currentSearch = '';
 
         foreach ($this->FX->dataParams as $key1 => $value1) {
@@ -45,7 +42,7 @@ class RetrieveFM5Data extends RetrieveFMXML
                 $$key2 = $value2;
             }
             if ($op == '' && $this->FX->defaultOperator == 'bw') {
-                $currentSearch .= '&' . str_replace('%3A%3A', '::', urlencode($name)) . '=' . urlencode($value);
+                $currentSearch .= '&' . str_replace ('%3A%3A', '::', urlencode($name)) . '=' . urlencode($value);
             } else {
                 if ($op == '') {
                     $op = $this->FX->defaultOperator;
@@ -56,19 +53,18 @@ class RetrieveFM5Data extends RetrieveFMXML
         return $currentSearch;
     }
 
-    function doQuery($action)
-    {
+    function doQuery ($action) {
         $data = '';
-        if ($this->FX->DBPassword != '') { // Assemble the Password Data
+        if ($this->FX->DBPassword != '') {                                      // Assemble the Password Data
             $this->FX->userPass = rawurlencode($this->FX->DBUser) . ':' . rawurlencode($this->FX->DBPassword) . '@';
         }
-        if ($this->FX->layout != '') { // Set up the layout portion of the query.
+        if ($this->FX->layout != '') {                                          // Set up the layout portion of the query.
             $layRequest = '&-lay=' . urlencode($this->FX->layout);
         }
         else {
             $layRequest = '';
         }
-        if ($this->FX->currentSkip > 0) { // Set up the skip size portion of the query.
+        if ($this->FX->currentSkip > 0) {                                       // Set up the skip size portion of the query.
             $skipRequest = '&-skip=' . $this->FX->currentSkip;
         } else {
             $skipRequest = '';
@@ -89,7 +85,7 @@ class RetrieveFM5Data extends RetrieveFMXML
 
         if (defined("HAS_PHPCACHE") and defined("FX_USE_PHPCACHE") and strlen($this->dataURLParams) <= 510 and (substr_count($this->dataURLParams, '-find') > 0 || substr_count($this->dataURLParams, '-view') > 0 || substr_count($this->dataURLParams, '-dbnames') > 0 || substr_count($this->dataURLParams, '-layoutnames') > 0)) {
             $data = get_url_cached($this->dataURL);
-            if (!$data) {
+            if (! $data) {
                 return new FX_Error("Failed to retrieve cached URL in RetrieveFMData()");
             }
             $data = $data["Body"];
@@ -99,7 +95,7 @@ class RetrieveFM5Data extends RetrieveFMXML
                 curl_setopt($curlHandle, CURLOPT_POST, 1);
                 curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $this->dataURLParams);
                 ob_start();
-                if (!curl_exec($curlHandle)) {
+                if (! curl_exec($curlHandle)) {
                     $this->FX->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                     $this->FX->lastDebugMessage .= "You should also double check the user name and password used, the server address, and Web Companion configuration.</p>\n";
                     return new FX_Error("cURL could not retrieve Post data in RetrieveFMData(). A bad URL is the most likely reason.");
@@ -123,13 +119,13 @@ class RetrieveFM5Data extends RetrieveFMXML
                 // $socketData .= "Connection: close{$dataDelimiter}";
                 $socketData .= $dataDelimiter . $this->dataURLParams;
 
-                $fp = fsockopen($this->FX->dataServer, $this->FX->dataPort, $this->FX->errorTracking, $this->FX->fxError, 30);
-                if (!$fp) {
+                $fp = fsockopen ($this->FX->dataServer, $this->FX->dataPort, $this->FX->errorTracking, $this->FX->fxError, 30);
+                if (! $fp) {
                     $this->FX->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                     $this->FX->lastDebugMessage .= "You should also double check the user name and password used, the server address, and Web Companion configuration.</p>\n";
-                    return new FX_Error("Could not fsockopen the URL in retrieveFMData");
+                    return new FX_Error( "Could not fsockopen the URL in retrieveFMData" );
                 }
-                fputs($fp, $socketData);
+                fputs ($fp, $socketData);
                 while (!feof($fp)) {
                     $data .= fgets($fp, 128);
                 }
@@ -139,7 +135,7 @@ class RetrieveFM5Data extends RetrieveFMXML
             }
         } else {
             $fp = fopen($this->dataURL, "r");
-            if (!$fp) {
+            if (! $fp) {
                 $this->FX->lastDebugMessage .= "<p>Unable to connect to FileMaker.  Use the DEBUG constant and try connecting with the resulting URL manually.<br />\n";
                 $this->FX->lastDebugMessage .= "You should also double check the user name and password used, the server address, and Web Companion configuration.</p>\n";
                 return new FX_Error("Could not fopen URL in RetrieveFMData.");
@@ -158,7 +154,7 @@ class RetrieveFM5Data extends RetrieveFMXML
         xml_set_element_handler($xml_parser, "StartElement", "EndElement");
         xml_set_character_data_handler($xml_parser, "ElementContents");
         $xmlParseResult = xml_parse($xml_parser, $data, true);
-        if (!$xmlParseResult) {
+        if (! $xmlParseResult) {
             $theMessage = sprintf("ExecuteQuery XML error: %s at line %d",
                 xml_error_string(xml_get_error_code($xml_parser)),
                 xml_get_current_line_number($xml_parser));
