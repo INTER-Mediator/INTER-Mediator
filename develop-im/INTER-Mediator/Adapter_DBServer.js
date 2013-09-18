@@ -283,7 +283,7 @@ INTERMediator_DBAdapter = {
             params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
         }
         extCount = 0;
-        if (args['conditions']) {
+        while (args['conditions'] && args['conditions'][extCount]) {
             params += "&condition" + extCount + "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
             params += "&condition" + extCount + "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
             params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
