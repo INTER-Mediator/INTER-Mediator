@@ -47,6 +47,7 @@ INTERMediatorOnPage = {
 
     isShowChangePassword: true,
     isSetDefaultStyle: true,
+    authPanelTitle: null,
 
     /*
      This method "getMessages" is going to be replaced valid one with the browser's language.
@@ -160,7 +161,7 @@ INTERMediatorOnPage = {
 
     authenticating: function (doAfterAuth) {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
-            passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton,
+            passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode;
 
         if (this.authCount > this.authCountLimit) {
@@ -207,9 +208,15 @@ INTERMediatorOnPage = {
             frontPanel.id = "_im_authpanel";
             backBox.appendChild(frontPanel);
 
-            if (INTERMediatorOnPage.realm.length > 0) {
+            panelTitle = '';
+            if (INTERMediatorOnPage.authPanelTitle && INTERMediatorOnPage.authPanelTitle.length > 0) {
+                panelTitle = INTERMediatorOnPage.authPanelTitle;
+            } else if (INTERMediatorOnPage.realm && INTERMediatorOnPage.realm.length > 0) {
+                panelTitle = INTERMediatorOnPage.realm;
+            }
+            if (panelTitle && panelTitle.length > 0) {
                 realmBox = document.createElement('DIV');
-                realmBox.appendChild(document.createTextNode(INTERMediatorOnPage.realm));
+                realmBox.appendChild(document.createTextNode(panelTitle));
                 realmBox.style.textAlign = "left";
                 frontPanel.appendChild(realmBox);
                 breakLine = document.createElement('HR');

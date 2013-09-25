@@ -17,7 +17,7 @@ var INTERMediator = {
     // This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
     defDivider: '|',
     // Same as the "separator".
-    additionalCondition: [],
+    additionalCondition: {},
     // This array should be [{tableName: [{field:xxx,operator:xxx,value:xxxx}]}, ... ]
     additionalSortKey: [],
     // This array should be [{tableName: [{field:xxx,direction:xxx}]}, ... ]
@@ -35,7 +35,9 @@ var INTERMediator = {
     ignoreOptimisticLocking: false,
     supressDebugMessageOnPage: false,
     supressErrorMessageOnPage: false,
-    additionalFieldValueOnNewRecord: [],
+    additionalFieldValueOnNewRecord: {},
+    additionalFieldValueOnUpdate: {},
+    additionalFieldValueOnDelete: {},
     waitSecondsAfterPostMessage: 4,
     pagedSize: 0,
     pagedAllCount: 0,

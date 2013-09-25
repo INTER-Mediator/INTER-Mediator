@@ -455,6 +455,11 @@ class DB_Settings
         $this->fieldsRequired = $fields;
     }
 
+    function getFieldOfIndex($ix)
+    {
+        return $this->fieldsRequired[$ix];
+    }
+
     function addValue($value)
     {
         $this->fieldsValues[] = $value;
@@ -463,6 +468,18 @@ class DB_Settings
     function setValue($values)
     {
         $this->fieldsValues = $values;
+    }
+
+    function getValueOfField($targetField)
+    {
+        $counter = 0;
+        foreach ($this->fieldsRequired as $field) {
+            if ($targetField == $field) {
+                return $this->fieldsValues[$counter];
+            }
+            $counter++;
+        }
+        return null;
     }
 
     function setStart($st)
