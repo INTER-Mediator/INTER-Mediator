@@ -855,4 +855,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return $userInfo;
     }
 
+    public function setupConnection()
+    {
+        // TODO: Implement setupConnection() method.
+    }
 }

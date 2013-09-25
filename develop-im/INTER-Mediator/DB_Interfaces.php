@@ -23,6 +23,7 @@ interface DB_Interface
     function newToDB($dataSourceName, $bypassAuth);
     function deleteFromDB($dataSourceName);
     function getFieldInfo($dataSourceName);
+    public function setupConnection();
 }
 
 interface Auth_Interface_DB					// with using table for authentication/authorization

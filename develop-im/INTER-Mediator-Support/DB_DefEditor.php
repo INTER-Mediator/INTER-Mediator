@@ -784,4 +784,9 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     {
         // TODO: Implement authSupportCheckIssuedHashForResetPassword() method.
     }
+
+    public function setupConnection()
+    {
+        // TODO: Implement setupConnection() method.
+    }
 }
