@@ -140,7 +140,7 @@ IM_Entry(
     array(
         'db-class' => 'DefEditor',
     ),
-    2
+    false
 );
 
 ?>

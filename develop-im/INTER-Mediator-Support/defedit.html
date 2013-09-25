@@ -24,13 +24,25 @@
                     'script', 'global', 'file-upload', 'options', 'aliases', 'browser-compatibility',
                     'formatter', 'dbsettings', 'external-db', 'debug'];
                 for (var i = 0; i < contextsArray.length; i++) {
-                    INTERMediator.additionalCondition[contextsArray[i]] = {field: 'target', value: params.target};
+                    INTERMediator.additionalCondition[contextsArray[i]]
+                            = {field: 'target', value: params.target};
+                    INTERMediator.additionalFieldValueOnNewRecord[contextsArray[i]]
+                            = {field: 'target', value: params.target};
+                    INTERMediator.additionalFieldValueOnUpdate[contextsArray[i]]
+                            = {field: 'target', value: params.target};
+                    INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
+                            = {field: 'target', value: params.target};
                 }
+                document.getElementById('deffile').appendChild(document.createTextNode(params.target));
+                INTERMediator.ignoreOptimisticLocking = true;
+                INTERMediator.construct(true);
             }
-            document.getElementById('deffile').appendChild(document.createTextNode(params.target));
-            INTERMediator.construct(true);
         }
     </script>
+    <style>
+        INPUT{font-size: 14pt;}
+        TH{color: #666666;}
+    </style>
 </head>
 <body>
 <div id="nonsupportmessage" style="background-color:#333333">
@@ -45,11 +57,7 @@
         描画処理中の場合はしばらくお待ちください。
     </div>
 </div>
-<div style="border: 2px solid red">
-    The Definition File Editor is just under construction.<br>
-    It can show the most of settings so far (but some are won't do). <br>
-    The perfect editor that can edit, add and delete will be any up-coming release.<br>
-</div>
+<h1>Definition File Editor</h1>
 <h2>Target Definition File</h2>
 
 <p id="deffile"></p>
@@ -276,7 +284,7 @@
     <th>protect-writing</th>
     <td><input type="text" class="IM[contexts@protect-writing]"/></td>
     <th>protect-reading</th>
-    <td><input type="text" class="IM[contexts@protect-reading]"/></td>
+    <td><input type="text" class="IM[contexts@dprotect-reading]"/></td>
 </tr>
 <tr>
     <th></th>
@@ -495,6 +503,7 @@
 </table>
 
 <h2>Debug</h2>
+
 <div class="_im_enclosure">
     <div class="_im_repeater">
         <input type="text" class="IM[debug@debug]"/>
