@@ -672,31 +672,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'browser-compatibility':
             case 'formatter':
                 $recordID = $contextID % 10000;
-                foreach ($allKeysOptions[$dataSourceName] as $key) {
-                    $fieldValue = $this->dbSettings->getValueOfField($key);
-                    if (!is_null($fieldValue)) {
-                        $globalOptions[$dataSourceName][$recordID][$key] = $fieldValue;
-                        break;
-                    }
-                }
-                break;
-            case 'dbsettings':
-                $theKey = $this->dbSettings->getFieldOfIndex(1);
-                $globalDBSpecs[$theKey] = $this->dbSettings->getValueOfField($theKey);
-                break;
-            case 'external-db':
-                $recordID = $contextID % 10000;
-                $fieldValue = $this->dbSettings->getValueOfField('db');
-                if (!is_null($fieldValue)) {
-                    $globalDBSpecs[$dataSourceName][$recordID]['db'] = $fieldValue;
-                }
-                break;
-                if (!isset($globalDBSpecs['external-db'])) {
-                    $globalDBSpecs['external-db'] = array();
-                }
-                $globalDBSpecs['external-db'][] = array(
-                    'db' => '= new value =',
-                );
+                unset($globalOptions[$dataSourceName][$recordID]);
                 break;
             case 'debug':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
