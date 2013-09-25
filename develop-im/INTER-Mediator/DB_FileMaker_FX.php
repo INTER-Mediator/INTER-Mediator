@@ -940,10 +940,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
 
         $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
-            return false;
-        }
-        if ($username === 0) {
+        if ($userTable == null || is_null($username) || $username === 0 || $username === '') {
             return false;
         }
 

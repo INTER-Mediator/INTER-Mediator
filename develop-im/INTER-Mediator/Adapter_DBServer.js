@@ -140,7 +140,7 @@ INTERMediator_DBAdapter = {
         params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(newpassword);
         try {
             result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
-            if(result.newPasswordResult && result.newPasswordResult === true)  {
+            if (result.newPasswordResult && result.newPasswordResult === true) {
                 if (INTERMediatorOnPage.isNativeAuth) {
                     INTERMediatorOnPage.authHashedPassword = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
                 } else {
@@ -283,7 +283,7 @@ INTERMediator_DBAdapter = {
             params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
         }
         extCount = 0;
-        if (args['conditions']) {
+        while (args['conditions'] && args['conditions'][extCount]) {
             params += "&condition" + extCount + "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
             params += "&condition" + extCount + "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
             params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
@@ -383,7 +383,7 @@ INTERMediator_DBAdapter = {
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
     db_update: function (args) {
-        var noError = true, params, extCount, result;
+        var noError = true, params, extCount, result, counter, index, addedObject;
 
         if (args['name'] == null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
@@ -402,6 +402,22 @@ INTERMediator_DBAdapter = {
         }
 
         params = "access=update&name=" + encodeURIComponent(args['name']);
+
+        counter = 0;
+        if (INTERMediator.additionalFieldValueOnUpdate
+            && INTERMediator.additionalFieldValueOnUpdate[args['name']]) {
+            addedObject = INTERMediator.additionalFieldValueOnUpdate[args['name']];
+            if (addedObject["field"]) {
+                addedObject = [addedObject];
+            }
+            for (index in addedObject) {
+                var oneDefinition = addedObject[index];
+                params += "&field_" + counter + "=" + encodeURIComponent(oneDefinition['field']);
+                params += "&value_" + counter + "=" + encodeURIComponent(oneDefinition['value']);
+                counter++;
+            }
+        }
+
         if (args['conditions'] != null) {
             for (extCount = 0; extCount < args['conditions'].length; extCount++) {
                 params += "&condition" + extCount + "field=";
@@ -415,8 +431,8 @@ INTERMediator_DBAdapter = {
             }
         }
         for (extCount = 0; extCount < args['dataset'].length; extCount++) {
-            params += "&field_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
-            params += "&value_" + extCount + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
+            params += "&field_" + (counter+extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
+            params += "&value_" + (counter+extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
         }
         result = this.server_access(params, 1013, 1014);
         return result.dbresult;
@@ -455,7 +471,7 @@ INTERMediator_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
     db_delete: function (args) {
-        var noError = true, params, i, result;
+        var noError = true, params, i, result, counter, index, addedObject;
 
         if (args['name'] == null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
@@ -470,6 +486,21 @@ INTERMediator_DBAdapter = {
         }
 
         params = "access=delete&name=" + encodeURIComponent(args['name']);
+        counter = 0;
+        if (INTERMediator.additionalFieldValueOnDelete
+            && INTERMediator.additionalFieldValueOnDelete[args['name']]) {
+            addedObject = INTERMediator.additionalFieldValueOnDelete[args['name']];
+            if (addedObject["field"]) {
+                addedObject = [addedObject];
+            }
+            for (index in addedObject) {
+                var oneDefinition = addedObject[index];
+                params += "&field_" + counter + "=" + encodeURIComponent(oneDefinition['field']);
+                params += "&value_" + counter + "=" + encodeURIComponent(oneDefinition['value']);
+                counter++;
+            }
+        }
+
         for (i = 0; i < args['conditions'].length; i++) {
             params += "&condition" + i + "field=" + encodeURIComponent(args['conditions'][i]['field']);
             params += "&condition" + i + "operator=" + encodeURIComponent(args['conditions'][i]['operator']);
@@ -514,7 +545,7 @@ INTERMediator_DBAdapter = {
      This function returns the value of the key field of the new record.
      */
     db_createRecord: function (args) {
-        var params, i, result, index;
+        var params, i, result, index, addedObject, counter, targetKey;
 
         if (args['name'] == null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
@@ -522,7 +553,7 @@ INTERMediator_DBAdapter = {
         }
 
         ds = INTERMediatorOnPage.getDataSources(); // Get DataSource parameters
-        var targetKey = null;
+        targetKey = null;
         for (key in ds) { // Search this table from DataSource
             if (ds[key]['name'] == args['name']) {
                 targetKey = key;
@@ -535,21 +566,20 @@ INTERMediator_DBAdapter = {
         }
 
         params = "access=new&name=" + encodeURIComponent(args['name']);
-        var counter = 0;
 
-//        for (index in ds[targetKey]['default-values']) {
-//            params += "&field_" + counter + "="
-//                + encodeURIComponent(ds[targetKey]['default-values'][index]['field']);
-//            params += "&value_" + counter + "="
-//                + encodeURIComponent(ds[targetKey]['default-values'][index]['value']);
-//            counter++;
-//        }
-//
-        for (i = 0; i < INTERMediator.additionalFieldValueOnNewRecord.length; i++) {
-            var oneDefinition = INTERMediator.additionalFieldValueOnNewRecord[i];
-            params += "&field_" + counter + "=" + encodeURIComponent(oneDefinition['field']);
-            params += "&value_" + counter + "=" + encodeURIComponent(oneDefinition['value']);
-            counter++;
+        counter = 0;
+        if (INTERMediator.additionalFieldValueOnNewRecord
+            && INTERMediator.additionalFieldValueOnNewRecord[args['name']]) {
+            addedObject = INTERMediator.additionalFieldValueOnNewRecord[args['name']];
+            if (addedObject["field"]) {
+                addedObject = [addedObject];
+            }
+            for (index in addedObject) {
+                var oneDefinition = addedObject[index];
+                params += "&field_" + counter + "=" + encodeURIComponent(oneDefinition['field']);
+                params += "&value_" + counter + "=" + encodeURIComponent(oneDefinition['value']);
+                counter++;
+            }
         }
 
         for (i = 0; i < args['dataset'].length; i++) {

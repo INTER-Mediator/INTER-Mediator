@@ -109,18 +109,12 @@ var IMParts_im_fileupload = {
             newNode.style.backgroundColor = "#AAAAAA";
             newNode.style.border = "3px dotted #808080";
             newNode.style.textAlign = "center";
-            newNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3101]));
-            if (IMParts_im_fileupload.progressSupported) {
-                inputNode = document.createElement('iframe');
-                inputNode.setAttribute('id', 'upload_frame' + (IMParts_im_fileupload.ids.length - 1));
-                inputNode.setAttribute('name', 'upload_frame');
-                inputNode.setAttribute('frameborder', '0');
-                inputNode.setAttribute('border', '0');
-                inputNode.setAttribute('scrolling', 'no');
-                inputNode.setAttribute('scrollbar', 'no');
-                inputNode.style.width = "100%";
-                inputNode.style.height = "24px";
-                newNode.appendChild(inputNode);
+            var eachLine = INTERMediatorOnPage.getMessages()[3101].split(/\n/);
+            for (var i = 0; i < eachLine.length; i++) {
+                if(i > 0)   {
+                    newNode.appendChild(document.createElement("BR"));
+                }
+                newNode.appendChild(document.createTextNode(eachLine[i]));
             }
         } else {
             formNode = document.createElement('FORM');
@@ -214,6 +208,18 @@ var IMParts_im_fileupload = {
                             var file, fileNameNode;
                             event.preventDefault();
                             var eventTarget = event.currentTarget;
+                            if (IMParts_im_fileupload.progressSupported) {
+                                var infoFrame = document.createElement('iframe');
+                                infoFrame.setAttribute('id', 'upload_frame' + (IMParts_im_fileupload.ids.length - 1));
+                                infoFrame.setAttribute('name', 'upload_frame');
+                                infoFrame.setAttribute('frameborder', '0');
+                                infoFrame.setAttribute('border', '0');
+                                infoFrame.setAttribute('scrolling', 'no');
+                                infoFrame.setAttribute('scrollbar', 'no');
+                                infoFrame.style.width = "100%";
+                                infoFrame.style.height = "24px";
+                                eventTarget.appendChild(infoFrame);
+                            }
                             for (var i = 0; i < event.dataTransfer.files.length; i++) {
                                 file = event.dataTransfer.files[i];
                                 fileNameNode = document.createElement("DIV");

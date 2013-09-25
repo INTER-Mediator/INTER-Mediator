@@ -121,7 +121,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($globalDataSource[$contextID]['relation'])) {
                     foreach ($globalDataSource[$contextID]['relation'] as $rel) {
                         $result[] = array(
-                            'id' => $seq,
+                            'id' => $seq + $contextID * 10000,
                             'foreign-key' => getValueFromArray($rel, 'foreign-key'),
                             'join-field' => getValueFromArray($rel, 'join-field'),
                             'operator' => getValueFromArray($rel, 'operator'),
@@ -135,7 +135,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($globalDataSource[$contextID]['query'])) {
                     foreach ($globalDataSource[$contextID]['query'] as $rel) {
                         $result[] = array(
-                            'id' => $seq,
+                            'id' => $seq + $contextID * 10000,
                             'field' => getValueFromArray($rel, 'field'),
                             'value' => getValueFromArray($rel, 'value'),
                             'operator' => getValueFromArray($rel, 'operator'),
@@ -149,7 +149,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($globalDataSource[$contextID]['sort'])) {
                     foreach ($globalDataSource[$contextID]['sort'] as $rel) {
                         $result[] = array(
-                            'id' => $seq,
+                            'id' => $seq + $contextID * 10000,
                             'field' => getValueFromArray($rel, 'field'),
                             'direction' => getValueFromArray($rel, 'direction'),
                         );
@@ -162,7 +162,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($globalDataSource[$contextID]['default-values'])) {
                     foreach ($globalDataSource[$contextID]['default-values'] as $rel) {
                         $result[] = array(
-                            'id' => $seq,
+                            'id' => $seq + $contextID * 10000,
                             'field' => getValueFromArray($rel, 'field'),
                             'value' => getValueFromArray($rel, 'value'),
                         );
@@ -175,7 +175,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($globalDataSource[$contextID]['validation'])) {
                     foreach ($globalDataSource[$contextID]['validation'] as $rel) {
                         $result[] = array(
-                            'id' => $seq,
+                            'id' => $seq + $contextID * 10000,
                             'field' => getValueFromArray($rel, 'field'),
                             'rule' => getValueFromArray($rel, 'rule'),
                             'message' => getValueFromArray($rel, 'message'),
@@ -189,7 +189,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($globalDataSource[$contextID]['script'])) {
                     foreach ($globalDataSource[$contextID]['script'] as $rel) {
                         $result[] = array(
-                            'id' => $seq,
+                            'id' => $seq + $contextID * 10000,
                             'db-operation' => getValueFromArray($rel, 'db-operation'),
                             'situation' => getValueFromArray($rel, 'situation'),
                             'definition' => getValueFromArray($rel, 'definition'),
@@ -203,7 +203,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($globalDataSource[$contextID]['global'])) {
                     foreach ($globalDataSource[$contextID]['global'] as $rel) {
                         $result[] = array(
-                            'id' => $seq,
+                            'id' => $seq + $contextID * 10000,
                             'db-operation' => getValueFromArray($rel, 'db-operation'),
                             'field' => getValueFromArray($rel, 'field'),
                             'value' => getValueFromArray($rel, 'value'),
@@ -217,7 +217,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($globalDataSource[$contextID]['file-upload'])) {
                     foreach ($globalDataSource[$contextID]['file-upload'] as $rel) {
                         $result[] = array(
-                            'id' => $seq,
+                            'id' => $seq + $contextID * 10000,
                             'field' => getValueFromArray($rel, 'field'),
                             'context' => getValueFromArray($rel, 'context'),
                         );
@@ -323,17 +323,405 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
     function setToDB($dataSourceName)
     {
-        // TODO: Implement setToDB() method.
+        global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
+
+        $filePath = $this->dbSettings->getValueOfField('target');
+        $contextID = $this->dbSettings->getCriteriaValue('id');
+
+        $fileContent = file_get_contents($filePath);
+        if ($fileContent === false) {
+            $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+            return null;
+        }
+        $funcStartPos = strpos($fileContent, "IM_Entry");
+        eval(str_replace("<?php", "", str_replace("?>", "", str_replace("IM_Entry", "IM_Dummy_Entry", $fileContent))));
+
+        $allKeys = array(
+            'relation' => array('foreign-key', 'join-field', 'operator'),
+            'query' => array('field', 'value', 'operator'),
+            'sort' => array('field', 'direction'),
+            'default-values' => array('field', 'value'),
+            'validation' => array('field', 'rule', 'message'),
+            'script' => array('db-operation', 'situation', 'definition'),
+            'global' => array('db-operation', 'field', 'value'),
+            'file-upload' => array('field', 'context'),
+        );
+        $allKeysOptions = array(
+            'aliases' => array('alias', 'original'),
+            'browser-compatibility' => array('browserdef'),
+            'formatter' => array('field', 'converter-class', 'parameter'),
+        );
+
+        switch ($dataSourceName) {
+            case 'contexts':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
+                if ($theKey == "authentication-media-handling") {
+                    if (!isset($globalDataSource[$contextID]["authentication"])) {
+                        $globalDataSource[$contextID]["authentication"] = array();
+                    }
+                    $globalDataSource[$contextID]["authentication"]["media-handling"]
+                        = $this->dbSettings->getValueOfField($theKey);
+                } else if (strpos($theKey, "authentication-") === 0) {
+                    $authKeyArray = explode("-", $theKey);
+                    if (!isset($globalDataSource[$contextID][$authKeyArray[0]])) {
+                        $globalDataSource[$contextID][$authKeyArray[0]] = array();
+                    }
+                    if (!isset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]])) {
+                        $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]] = array();
+                    }
+                    $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]]
+                        = $this->dbSettings->getValueOfField($theKey);
+                } else {
+                    $globalDataSource[$contextID][$theKey] = $this->dbSettings->getValueOfField($theKey);
+                }
+                break;
+            case 'relation':
+            case 'query':
+            case 'sort':
+            case 'default-values':
+            case 'validation':
+            case 'global':
+            case 'script':
+            case 'file-upload':
+                $recordID = $contextID % 10000;
+                $contextID = floor($contextID / 10000);
+                foreach ($allKeys[$dataSourceName] as $key) {
+                    $fieldValue = $this->dbSettings->getValueOfField($key);
+                    if (!is_null($fieldValue)) {
+                        $globalDataSource[$contextID][$dataSourceName][$recordID][$key] = $fieldValue;
+                        break;
+                    }
+                }
+                break;
+            case 'options':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
+                if (strpos($theKey, "authentication-") === 0) {
+                    $authKey = substr($theKey, 15);
+                    if (!isset($globalOptions["authentication"][$authKey])) {
+                        $globalOptions["authentication"][$authKey] = array();
+                    }
+                    $globalOptions["authentication"][$authKey]
+                        = $this->dbSettings->getValueOfField($theKey);
+                } else {
+                    $globalOptions[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                }
+                break;
+            case 'aliases':
+            case 'browser-compatibility':
+            case 'formatter':
+                $recordID = $contextID % 10000;
+                foreach ($allKeysOptions[$dataSourceName] as $key) {
+                    $fieldValue = $this->dbSettings->getValueOfField($key);
+                    if (!is_null($fieldValue)) {
+                        $globalOptions[$dataSourceName][$recordID][$key] = $fieldValue;
+                        break;
+                    }
+                }
+                break;
+            case 'dbsettings':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
+                $globalDBSpecs[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                break;
+            case 'external-db':
+                $recordID = $contextID % 10000;
+                $fieldValue = $this->dbSettings->getValueOfField('db');
+                if (!is_null($fieldValue)) {
+                    $globalDBSpecs[$dataSourceName][$recordID]['db'] = $fieldValue;
+                }
+                break;
+                if (!isset($globalDBSpecs['external-db'])) {
+                    $globalDBSpecs['external-db'] = array();
+                }
+                $globalDBSpecs['external-db'][] = array(
+                    'db' => '= new value =',
+                );
+                break;
+            case 'debug':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
+                $globalDebug = $this->dbSettings->getValueOfField($theKey);
+                break;
+            default:
+                break;
+        }
+
+        $newFileContent = substr($fileContent, 0, $funcStartPos);
+        $newFileContent .= "IM_Entry(";
+        $newFileContent .= var_export($globalDataSource, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalOptions, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalDBSpecs, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalDebug, true);
+        $newFileContent .= ");\n?>";
+
+        $fileWriteResult = file_put_contents($filePath, $newFileContent);
+        if ($fileWriteResult === false) {
+            $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
+            return null;
+        }
     }
 
     function newToDB($dataSourceName, $bypassAuth)
     {
-        // TODO: Implement newToDB() method.
+        global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
+
+        // $this->logger->setErrorMessage(var_export($this->dbSettings, true));
+        $filePath = $this->dbSettings->getValueOfField('target');
+        $contextID = $this->dbSettings->getValueOfField('context_id');
+
+        $fileContent = file_get_contents($filePath);
+        if ($fileContent === false) {
+            $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+            return null;
+        }
+        $funcStartPos = strpos($fileContent, "IM_Entry");
+        eval(str_replace("<?php", "", str_replace("?>", "", str_replace("IM_Entry", "IM_Dummy_Entry", $fileContent))));
+
+        switch ($dataSourceName) {
+            case 'contexts':
+                $globalDataSource[] = array('name' => '= new context =');
+                break;
+            case 'relation':
+                if (!isset($globalDataSource[$contextID]['relation'])) {
+                    $globalDataSource[$contextID]['relation'] = array();
+                }
+                $globalDataSource[$contextID]['relation'][] = array(
+                    'foreign-key' => '= new value =',
+                    'join-field' => '= new value =',
+                    'operator' => '= new value =',
+                );
+                break;
+            case 'query':
+                if (!isset($globalDataSource[$contextID]['query'])) {
+                    $globalDataSource[$contextID]['query'] = array();
+                }
+                $globalDataSource[$contextID]['query'][] = array(
+                    'field' => '= new value =',
+                    'value' => '= new value =',
+                    'operator' => '= new value =',
+                );
+                break;
+            case 'sort':
+                if (!isset($globalDataSource[$contextID]['sort'])) {
+                    $globalDataSource[$contextID]['sort'] = array();
+                }
+                $globalDataSource[$contextID]['sort'][] = array(
+                    'field' => '= new value =',
+                    'direction' => '= new value =',
+                );
+                break;
+            case 'default-values':
+                if (!isset($globalDataSource[$contextID]['default-values'])) {
+                    $globalDataSource[$contextID]['default-values'] = array();
+                }
+                $globalDataSource[$contextID]['default-values'][] = array(
+                    'field' => '= new value =',
+                    'value' => '= new value =',
+                );
+                break;
+            case 'validation':
+                if (!isset($globalDataSource[$contextID]['validation'])) {
+                    $globalDataSource[$contextID]['validation'] = array();
+                }
+                $globalDataSource[$contextID]['validation'][] = array(
+                    'field' => '= new value =',
+                    'rule' => '= new value =',
+                    'message' => '= new value =',
+                );
+                break;
+            case 'script':
+                if (!isset($globalDataSource[$contextID]['script'])) {
+                    $globalDataSource[$contextID]['script'] = array();
+                }
+                $globalDataSource[$contextID]['script'][] = array(
+                    'db-operation' => '= new value =',
+                    'situation' => '= new value =',
+                    'definition' => '= new value =',
+                );
+                break;
+            case 'global':
+                if (!isset($globalDataSource[$contextID]['global'])) {
+                    $globalDataSource[$contextID]['global'] = array();
+                }
+                $globalDataSource[$contextID]['global'][] = array(
+                    'db-operation' => '= new value =',
+                    'field' => '= new value =',
+                    'value' => '= new value =',
+                );
+                break;
+            case 'file-upload':
+                if (!isset($globalDataSource[$contextID]['file-upload'])) {
+                    $globalDataSource[$contextID]['file-upload'] = array();
+                }
+                $globalDataSource[$contextID]['file-upload'][] = array(
+                    'field' => '= new value =',
+                    'context' => '= new value =',
+                );
+                break;
+            case 'options':
+                break;
+            case 'aliases':
+                if (!isset($globalOptions['aliases'])) {
+                    $globalOptions['aliases'] = array();
+                }
+                $globalOptions['aliases'][] = array(
+                    'alias' => '= new value =',
+                    'original' => '= new value =',
+                );
+                break;
+            case 'browser-compatibility':
+                if (!isset($globalOptions['browser-compatibility'])) {
+                    $globalOptions['browser-compatibility'] = array();
+                }
+                $globalOptions['browser-compatibility'][] = array(
+                    'browserdef' => '= new value =',
+                );
+                break;
+            case 'formatter':
+                if (!isset($globalOptions['formatter'])) {
+                    $globalOptions['formatter'] = array();
+                }
+                $globalOptions['formatter'][] = array(
+                    'field' => '= new value =',
+                    'converter-class' => '= new value =',
+                    'parameter' => '= new value =',
+                );
+                break;
+            case 'dbsettings':
+                break;
+            case 'external-db':
+                if (!isset($globalDBSpecs['external-db'])) {
+                    $globalDBSpecs['external-db'] = array();
+                }
+                $globalDBSpecs['external-db'][] = array(
+                    'db' => '= new value =',
+                );
+                break;
+            case 'debug':
+                break;
+        }
+
+        $newFileContent = substr($fileContent, 0, $funcStartPos);
+        $newFileContent .= "IM_Entry(";
+        $newFileContent .= var_export($globalDataSource, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalOptions, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalDBSpecs, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalDebug, true);
+        $newFileContent .= ");\n?>";
+
+        $fileWriteResult = file_put_contents($filePath, $newFileContent);
+        if ($fileWriteResult === false) {
+            $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
+            return null;
+        }
     }
 
     function deleteFromDB($dataSourceName)
     {
-        // TODO: Implement deleteFromDB() method.
+        global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
+
+        $filePath = $this->dbSettings->getValueOfField('target');
+        $contextID = $this->dbSettings->getCriteriaValue('id');
+
+        $fileContent = file_get_contents($filePath);
+        if ($fileContent === false) {
+            $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+            return null;
+        }
+        $funcStartPos = strpos($fileContent, "IM_Entry");
+        eval(str_replace("<?php", "", str_replace("?>", "", str_replace("IM_Entry", "IM_Dummy_Entry", $fileContent))));
+
+        switch ($dataSourceName) {
+            case 'contexts':
+                unset($globalDataSource[$contextID]);
+                break;
+            case 'relation':
+            case 'query':
+            case 'sort':
+            case 'default-values':
+            case 'validation':
+            case 'global':
+            case 'script':
+            case 'file-upload':
+                $recordID = $contextID % 10000;
+                $contextID = floor($contextID / 10000);
+                if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
+                    unset($globalDataSource[$contextID][$dataSourceName]);
+                } else {
+                    unset($globalDataSource[$contextID][$dataSourceName][$recordID]);
+                }
+                break;
+            case 'options':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
+                if (strpos($theKey, "authentication-") === 0) {
+                    $authKey = substr($theKey, 15);
+                    if (!isset($globalOptions["authentication"][$authKey])) {
+                        $globalOptions["authentication"][$authKey] = array();
+                    }
+                    $globalOptions["authentication"][$authKey]
+                        = $this->dbSettings->getValueOfField($theKey);
+                } else {
+                    $globalOptions[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                }
+                break;
+            case 'aliases':
+            case 'browser-compatibility':
+            case 'formatter':
+                $recordID = $contextID % 10000;
+                foreach ($allKeysOptions[$dataSourceName] as $key) {
+                    $fieldValue = $this->dbSettings->getValueOfField($key);
+                    if (!is_null($fieldValue)) {
+                        $globalOptions[$dataSourceName][$recordID][$key] = $fieldValue;
+                        break;
+                    }
+                }
+                break;
+            case 'dbsettings':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
+                $globalDBSpecs[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                break;
+            case 'external-db':
+                $recordID = $contextID % 10000;
+                $fieldValue = $this->dbSettings->getValueOfField('db');
+                if (!is_null($fieldValue)) {
+                    $globalDBSpecs[$dataSourceName][$recordID]['db'] = $fieldValue;
+                }
+                break;
+                if (!isset($globalDBSpecs['external-db'])) {
+                    $globalDBSpecs['external-db'] = array();
+                }
+                $globalDBSpecs['external-db'][] = array(
+                    'db' => '= new value =',
+                );
+                break;
+            case 'debug':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
+                $globalDebug = $this->dbSettings->getValueOfField($theKey);
+                break;
+            default:
+                break;
+        }
+
+        $newFileContent = substr($fileContent, 0, $funcStartPos);
+        $newFileContent .= "IM_Entry(";
+        $newFileContent .= var_export($globalDataSource, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalOptions, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalDBSpecs, true);
+        $newFileContent .= ",\n";
+        $newFileContent .= var_export($globalDebug, true);
+        $newFileContent .= ");\n?>";
+
+        $fileWriteResult = file_put_contents($filePath, $newFileContent);
+        if ($fileWriteResult === false) {
+            $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
+            return null;
+        }
     }
 
     function getFieldInfo($dataSourceName)
