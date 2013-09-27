@@ -509,8 +509,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 "FX reports error at edit action: code={$result['errorCode']}, url={$result['URL']}<hr>"));
             return false;
         }
-        foreach ($result['data'] as $row) {
-            $keyValue = $row[$keyFieldName][0];
+        foreach ($result['data'] as $key => $row) {
+            if ($keyFieldName == '-recid') {
+                $recId = substr($key, 0, strpos($key, '.'));
+                $keyValue = $recId;
+            } else {
+                $keyValue = $row[$keyFieldName][0];
+            }
         }
         return $keyValue;
     }
