@@ -1,5 +1,5 @@
 /*
- * INTER-Mediator Ver.0.7.6 Released 2011-09-18
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
  *
