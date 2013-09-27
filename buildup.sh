@@ -53,9 +53,9 @@ do
 done
 
 # Invalid the definition file of the DefEditor.
-defeditdeffile="${curpath}"/develop-im/INTER-Mediator-Support/defedit.php
+defeditdeffile="develop-im/INTER-Mediator-Support/defedit.php"
 sed 's|IM_Entry|/* IM_Entry|' "${defeditdeffile}" > /tmp/defedit.php
-cp /tmp/defedit.php > "${defeditdeffile}"
+cp /tmp/defedit.php "${defeditdeffile}"
 
 cp -r "${curpath}"/develop-im/Sample_products/images   develop-im/Sample_products/
 cp -r "${curpath}"/develop-im/INTER-Mediator/FX        develop-im/INTER-Mediator/
