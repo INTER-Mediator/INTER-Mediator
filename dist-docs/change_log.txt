@@ -55,7 +55,7 @@ Ver.3.9-dev
 - The definition file editor works reading/writing. You can call it at the start of logs on debug mode.
 - Customize the login panel by CSS definitions.
 - Update FX.php to fix compatibility with FileMaker Server 12.
-- Enable omitting to place the primary key field object on a layout when using FileMaker Server.
+- Enable omitting to place the primary key field object on a layout when using FileMaker Server (by specifying 'key' => '-recid').
 - The title of the login panel can be set to property as like "INTERMediatorOnPage.authPanelTitle = "title";".
 - MediaAccess can choose inline or attachment.
 - [BUG FIX] Fix display unnecessary insert button and delete button on the navigation bar after pressing an "enter" key in the text box of the moving page control on the navigation bar (WebKit browsers only).
