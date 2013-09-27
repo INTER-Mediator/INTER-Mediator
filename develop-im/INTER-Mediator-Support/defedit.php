@@ -16,7 +16,6 @@ IM_Entry(
             'records' => 100000,
             'key' => 'id',
             'repeat-control' => 'confirm-delete confirm-top-insert',
-            'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
         ),
         array(
             'name' => 'relation',

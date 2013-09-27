@@ -38,6 +38,10 @@
                 INTERMediator.construct(true);
             }
         }
+        INTERMediatorOnPage.doAfterConstruct = function()   {
+            var node = document.getElementById('container');
+            node.style.display = "block"
+        }
     </script>
     <style>
         INPUT{font-size: 14pt;}
@@ -47,16 +51,20 @@
 <body>
 <div id="nonsupportmessage" style="background-color:#333333">
     <div style="text-align:center;color:yellow">
-        If you see this, you must use any unsupported web browser.
-        Or you should set to active for JavaScript.
-        In case of generating the page, Please wait a while.
+        The definition file editor doesn't work initially for security reasons.<br>
+        If you want to use it, remove the comment before the IM_Entry function call of the defedit.php file.<br>
+        You shouldn't these files to be able to access from any client.<br>
+        The authentication is suitable way.
+        One typical setting is to set the .htaccess file in the INTER-Mediator-Support folder.
     </div>
     <div style="text-align:center;color:yellow">
-        この表示が見えている場合、非対応ブラウザで参照されています。
-        あるいは、JavaScriptを使用しないように設定されています。
-        描画処理中の場合はしばらくお待ちください。
+        定義ファイルエディタは、セキュリティ上の理由から既定値では機能しないようになっています。<br>
+        機能させるためには、defedit.phpファイルのIM_Entry関数の前にコメントを消してください。<br>
+        その場合は、何らかの方法で、認証をかけるようにすべきです。たとえば、INTER-Mediator-Supportフォルダ内に<br>
+        .htaccessファイルを配置して、Web認証を機能させるなどの手段が利用できます。<br>
     </div>
 </div>
+<div id="container" style="display:none;;">
 <h1>Definition File Editor</h1>
 <h2>Target Definition File</h2>
 
@@ -508,6 +516,7 @@
     <div class="_im_repeater">
         <input type="text" class="IM[debug@debug]"/>
     </div>
+</div>
 </div>
 </body>
 </html>

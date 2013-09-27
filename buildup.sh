@@ -5,7 +5,7 @@
 
 YUICOMP="../yuicompressor-2.4.7.jar"
 
-version="3.8"
+version="3.9"
 
 dt=`date "+%Y-%m-%d"`
 versionInFilename=`echo "${version}" | tr '.' '_'`;
@@ -51,6 +51,11 @@ do
         done
     fi
 done
+
+# Invalid the definition file of the DefEditor.
+defeditdeffile="${curpath}"/develop-im/INTER-Mediator-Support/defedit.php
+sed 's|IM_Entry|/* IM_Entry|' "${defeditdeffile}" > /tmp/defedit.php
+cp /tmp/defedit.php > "${defeditdeffile}"
 
 cp -r "${curpath}"/develop-im/Sample_products/images   develop-im/Sample_products/
 cp -r "${curpath}"/develop-im/INTER-Mediator/FX        develop-im/INTER-Mediator/

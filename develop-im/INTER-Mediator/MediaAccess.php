@@ -18,6 +18,12 @@
 class MediaAccess
 {
     private $contextRecord = null;
+    private $disposition = "inline";
+
+    function asAttachment()
+    {
+        $this->disposition = "attachment";
+    }
 
     function processing($dbProxyInstance, $options, $file)
     {
@@ -45,25 +51,25 @@ class MediaAccess
             if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
             }
-
+            //    var_export($file);var_export($target);return;
             $content = false;
-            if (!$isURL) {  // File path.
+            $dq = '"';
+            if (!$isURL) { // File path.
                 if (!empty($file) && !file_exists($target)) {
                     $this->exitAsError(500);
-                } else {
-                    $content = file_get_contents($target);
-                    $fileName = basename($file);
-                    $qPos = strpos($fileName, "?");
-                    if ($qPos !== false) {
-                        $fileName = substr($fileName, 0, $qPos);
-                    }
-                    header("Content-Type: " . $this->getMimeType($fileName));
-                    header("Content-Length: " . strlen($content));
-                    header("Content-Disposition: inline; filename=\"{$fileName}\"");
-                    header('X-Frame-Options: SAMEORIGIN');
-                    echo $content;
                 }
-            } else if (strpos($target, 'class')===false) {  // http or https
+                $content = file_get_contents($target);
+                $fileName = basename($file);
+                $qPos = strpos($fileName, "?");
+                if ($qPos !== false) {
+                    $fileName = substr($fileName, 0, $qPos);
+                }
+                header("Content-Type: " . $this->getMimeType($fileName));
+                header("Content-Length: " . strlen($content));
+                header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
+                header('X-Frame-Options: SAMEORIGIN');
+                echo $content;
+            } else if (strpos($target, 'class') === false) { // http or https
                 if (intval(get_cfg_var('allow_url_fopen')) === 1) {
                     $content = file_get_contents($target);
                 } else {
@@ -80,17 +86,18 @@ class MediaAccess
                 $fileName = basename($file);
                 $qPos = strpos($fileName, "?");
                 if ($qPos !== false) {
-                    $fileName = substr($fileName, 0, $qPos);
+                    $fileName = str_replace("%20", " ", substr($fileName, 0, $qPos));
                 }
                 header("Content-Type: " . $this->getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
-                header("Content-Disposition: inline; filename=\"{$fileName}\"");
+                header("Content-Disposition: {$this->disposition}; filename={$dq}" . str_replace("+", "%20", urlencode($fileName)) . $dq);
                 header('X-Frame-Options: SAMEORIGIN');
+//                echo $target;
                 echo $content;
-            } else {    // class
+            } else { // class
                 $noscheme = substr($target, 8);
                 $className = substr($noscheme, 0, strpos($noscheme, "/"));
-                $processingObject = new $className( );
+                $processingObject = new $className();
                 $processingObject->processing($this->contextRecord, $options);
             }
         } catch (Exception $ex) {
@@ -104,15 +111,22 @@ class MediaAccess
      */
     private function exitAsError($code)
     {
-//        echo "Error: {$code}";$code = 0;
+//        echo "Error: {$code}";
+//        $code = 0;
 //        $trace = debug_backtrace();
 //        var_dump($trace);
 
         switch ($code) {
-            case 204:   header("HTTP/1.1 204 No Content");  break;
-            case 401:   header("HTTP/1.1 401 Unauthorized");  break;
-            case 500:   header("HTTP/1.1 500 Internal Server Error");  break;
-            default:    // for debug purpose mainly.
+            case 204:
+                header("HTTP/1.1 204 No Content");
+                break;
+            case 401:
+                header("HTTP/1.1 401 Unauthorized");
+                break;
+            case 500:
+                header("HTTP/1.1 500 Internal Server Error");
+                break;
+            default: // for debug purpose mainly.
 
         }
         throw new Exception('Respond HTTP Error.');
@@ -129,7 +143,8 @@ class MediaAccess
     {
         if (strpos($file, "/fmi/xml/cnt/") === 0) { // FileMaker's container field storing an image.
             if (isset($options['authentication']['user'][0])
-                && $options['authentication']['user'][0] == 'database_native') {
+                && $options['authentication']['user'][0] == 'database_native'
+            ) {
                 $passPhrase = '';
                 $generatedPrivateKey = ''; // avoid errors for defined in params.php.
                 $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
@@ -152,20 +167,21 @@ class MediaAccess
 
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_credential';
-                $file = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
+                $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
                     . urlencode($_COOKIE[$cookieNameUser]) . ":"
                     . urlencode($keyDecrypt->biDecryptedString($_COOKIE[$cookieNamePassword])) . "@"
                     . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
-                    . $dbProxyInstance->dbSettings->getDbSpecPort() . $file;
+                    . $dbProxyInstance->dbSettings->getDbSpecPort();
             } else {
-                $file = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
+                $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
                     . urlencode($dbProxyInstance->dbSettings->getDbSpecUser()) . ":"
                     . urlencode($dbProxyInstance->dbSettings->getDbSpecPassword()) . "@"
                     . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
-                    . $dbProxyInstance->dbSettings->getDbSpecPort() . $file;
+                    . $dbProxyInstance->dbSettings->getDbSpecPort();
             }
+            $file = $urlHost . str_replace(" ", "%20", $file);
             foreach ($_GET as $key => $value) {
-                if ($key !== 'media') {
+                if ($key !== 'media' && $key !== 'attach') {
                     $file .= "&" . $key . "=" . urlencode($value);
                 }
             }
@@ -174,6 +190,7 @@ class MediaAccess
         }
         return array($file, $isURL);
     }
+
     /**
      * @param $dbProxyInstance
      * @param $options
@@ -205,9 +222,10 @@ class MediaAccess
                 $pathComponents = explode('/', substr($target, 0, $endOfPath));
                 $indexKeying = -1;
                 foreach ($pathComponents as $index => $dname) {
-                    if (strpos($dname, '=') !== false) {
+                    $decodedComponent = urldecode($dname);
+                    if (strpos($decodedComponent, '=') !== false) {
                         $indexKeying = $index;
-                        $fieldComponents = explode('=', $dname);
+                        $fieldComponents = explode('=', $decodedComponent);
                         $keyField = $fieldComponents[0];
                         $keyValue = $fieldComponents[1];
                     }
@@ -222,7 +240,7 @@ class MediaAccess
                 $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                 $this->contextRecord = $dbProxyInstance->dbClass->authSupportCheckMediaPrivilege(
                     $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $keyField, $keyValue);
-                if ( $this->contextRecord === false ) {
+                if ($this->contextRecord === false) {
                     $this->exitAsError(401);
                 }
             } else if ($authInfoTarget == 'field-group') {
@@ -277,4 +295,5 @@ class MediaAccess
         }
         return $type;
     }
+
 }
