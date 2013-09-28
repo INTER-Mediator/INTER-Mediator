@@ -443,7 +443,8 @@ var INTERMediator = {
 
             if (changedObj.tagName == 'INPUT' && objType == 'radio') {
                 for (i in INTERMediator.updateRequiredObject) {
-                    if (INTERMediator.updateRequiredObject[i]['field'] == objectSpec['field']) {
+                    if (INTERMediator.updateRequiredObject[i]['field'] == objectSpec['field']
+                        && INTERMediator.updateRequiredObject[i]['keying'] == objectSpec['keying']) {
                         INTERMediator.updateRequiredObject[i]['initialvalue'] = newValue;
                     }
                 }

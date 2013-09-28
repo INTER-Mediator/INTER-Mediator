@@ -15,7 +15,6 @@ To Do List for the INTER-Mediator developer(s)
 - Generating the page on the server-side initially. Now the IMCake is going on.
 - Client-side evaluated field as like FileMaker's calculation field.
 - The list-detail style page navigation without JavaScript programming.
-- Check the schema as far as the field name.
 - Showing as the alert box when any errors occurred ??
 - Password policy when the password is changed.
 - Supports HTML5's datalist tag elements
@@ -33,7 +32,6 @@ To Do List for the INTER-Mediator developer(s)
  (Followings are from INTER-Mediator Study Meeting 2003#1)
 - Calendar Component Support.
 - Tab Component Support.
-- [BUG] The field for radio buttons reports "Anyone changed this field" message.
 
 =================================
 Known Issues for Browsers:
@@ -51,17 +49,22 @@ Change Log
 
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.3.9-dev
+Ver.3.10-dev
+
+Ver.3.9 (2013/9/28)
 - The definition file editor works reading/writing. You can call it at the start of logs on debug mode.
 - Customize the login panel by CSS definitions.
-- Update FX.php to fix compatibility with FileMaker Server 12.
-- Enable omitting to place the primary key field object on a layout when using FileMaker Server (by specifying 'key' => '-recid').
 - The title of the login panel can be set to property as like "INTERMediatorOnPage.authPanelTitle = "title";".
+- Update FX.php to fix compatibility with FileMaker Server 12.
+- Enable omitting to place the primary key field object on a layout when using FileMaker Server
+  (by specifying 'key' => '-recid').
 - MediaAccess can choose inline or attachment.
-- [BUG FIX] Fix display unnecessary insert button and delete button on the navigation bar after pressing an "enter" key in the text box of the moving page control on the navigation bar (WebKit browsers only).
+- [BUG FIX] Fix display unnecessary insert button and delete button on the navigation bar after pressing an "enter" key
+            in the text box of the moving page control on the navigation bar (WebKit browsers only).
 - [BUG FIX] Authentication and Authorization for groups.
 - [BUG FIX] FileMaker_FX class isolates the FX object to data and auth.
 - [BUG FIX] File uploader didn't respond on the message and progress.
+- [BUG FIX] The field for radio buttons reports "Anyone changed this field" message.
 
 Ver.3.8 (2013/8/22)
 - The official INTER-Mediator site is http://inter-mediator.org/.
@@ -78,7 +81,8 @@ Ver.3.8 (2013/8/22)
   You can modify the already existing method as you like.
 - The moving page control to the navigation bar (Thanks to Mr. Ito).
 - Prevent to show the password in an URL for the FileMaker_FX data class on the debug mode.
-- Enable editing a correct record when displaying multiple records and an id attribute of the linked element in the repeaters is existing.
+- Enable editing a correct record when displaying multiple records and an id attribute of the linked element
+  in the repeaters is existing.
 - MediaAccess class can work for the FileMaker Native Authentication.
 - Encrypt the password in the cookie when using the Native Authentication.
 - Set the secure attribute of the cookie when using HTTPS.
