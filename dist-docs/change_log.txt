@@ -50,6 +50,7 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.3.10-dev
+- [BUG FIX] Fix DataConverter_FMDateTime and DataConverter_MySQLDateTime's issue on Windows.
 
 Ver.3.9 (2013/9/28)
 - The definition file editor works reading/writing. You can call it at the start of logs on debug mode.

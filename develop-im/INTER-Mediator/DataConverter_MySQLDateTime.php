@@ -39,7 +39,7 @@ class DataConverter_MySQLDateTime
             $comp = explode('-', $sep[0]);
             $dtObj = new DateTime($comp[0] . '-' . $comp[1] . '-' . $comp[2]
                 . ' ' . $sep[1], new DateTimeZone($this->tz));
-            $fmt = '%x %T';
+            $fmt = '%x %H:%M:%S';
         } elseif (($sp === FALSE) && ($slash == 2) && ($colon == 0)) {
             $comp = explode('-', $str);
             $dtObj = new DateTime($comp[0] . '-' . $comp[1] . '-' . $comp[2],
@@ -47,7 +47,7 @@ class DataConverter_MySQLDateTime
             $fmt = '%x';
         } elseif (($sp === FALSE) && ($slash == 0) && ($colon == 2)) {
             $dtObj = new DateTime($str, new DateTimeZone($this->tz));
-            $fmt = '%T';
+            $fmt = '%H:%M:%S';
         }
         if ($dtObj === false) {
             return $str;
