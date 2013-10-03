@@ -1435,10 +1435,21 @@ var INTERMediator = {
                                 }
 
                                 objectReference[nInfo['field']] = nodeId;
-
+                                
                                 // Set data to the element.
-                                if (setDataToElement(currentLinkedNodes[k], curTarget, curVal)) {
-                                    postSetFields.push({'id': nodeId, 'value': curVal});
+                                if ((typeof curVal == 'object' || curVal instanceof Object)) {
+                                    // [WIP]
+                                    for (i = 0; i < Object.keys(curVal).length; i++) {
+                                        if (i == 0) {
+                                            if (setDataToElement(currentLinkedNodes[k], curTarget, curVal[i])) {
+                                                postSetFields.push({'id': nodeId, 'value': curVal[i]});
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    if (setDataToElement(currentLinkedNodes[k], curTarget, curVal)) {
+                                        postSetFields.push({'id': nodeId, 'value': curVal});
+                                    }
                                 }
                             }
                         } catch (ex) {

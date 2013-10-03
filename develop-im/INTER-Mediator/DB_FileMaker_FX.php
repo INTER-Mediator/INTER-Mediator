@@ -256,6 +256,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if (count($dataArray) == 1) {
                         $oneRecordArray[$field] = $this->formatter->formatterFromDB(
                             "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
+                    } else {
+                        foreach ($dataArray as $portalKey => $portalValue) {
+                            $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
+                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                        }
                     }
                 }
                 $returnArray[] = $oneRecordArray;
