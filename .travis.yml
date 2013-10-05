@@ -9,7 +9,7 @@ php:
   - 5.2
 
 node_js:
-  - 0.10
+  - "0.10"
 
 #env:
 #  - DB=mysql
