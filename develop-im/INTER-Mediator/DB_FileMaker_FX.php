@@ -83,6 +83,17 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
+        
+        $usePortal = false;
+        if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
+            foreach ($context['relation'] as $relDef) {
+                if (isset($relDef['portal']) && $relDef['portal']) {
+                    $usePortal = true;
+                    $context['records'] = 1;
+                }
+            }
+        }
+
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(),
             isset($context['records']) ? $context['records'] : 100000000);
         $this->fx->FMSkipRecords(
@@ -115,10 +126,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
+        
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
             foreach ($context['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
-                    if ($relDef['join-field'] == $foreignDef['field']) {
+                    if (isset($relDef['join-field']) && $relDef['join-field'] == $foreignDef['field']) {
                         $foreignField = $relDef['foreign-key'];
                         $foreignValue = $foreignDef['value'];
                         $foreignOperator = isset($relDef['operator']) ? $relDef['operator'] : 'eq';
@@ -254,16 +266,31 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $this->fieldInfo[] = $field;
                     }
                     if (count($dataArray) == 1) {
-                        $oneRecordArray[$field] = $this->formatter->formatterFromDB(
-                            "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
+                        if (!$usePortal) {
+                            $oneRecordArray[$field] = $this->formatter->formatterFromDB(
+                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
+                        }
                     } else {
                         foreach ($dataArray as $portalKey => $portalValue) {
-                            $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
-                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            if ($usePortal && strpos($field, '::')) {
+                                $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
+                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            } else {
+                                $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
+                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            }
                         }
                     }
                 }
-                $returnArray[] = $oneRecordArray;
+                if ($usePortal) {
+                    foreach ($oneRecordArray as $portalArrayField => $portalArray) {
+                        if ($portalArrayField !== '-recid') {
+                            $returnArray[] = $portalArray;
+                        }
+                    }
+                } else {
+                    $returnArray[] = $oneRecordArray;
+                }
                 $isFirstRecord = false;
             }
         }

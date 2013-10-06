@@ -195,7 +195,8 @@ class DefinitionChecker
                 '*' => array(
                     'foreign-key' => 'string',
                     'join-field' => 'string',
-                    'operator' => 'string'
+                    'operator' => 'string',
+                    'portal' => 'boolean'
                 )
             ),
             'query' => array(

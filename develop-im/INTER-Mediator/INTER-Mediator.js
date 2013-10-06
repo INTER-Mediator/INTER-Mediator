@@ -1438,7 +1438,6 @@ var INTERMediator = {
                                 
                                 // Set data to the element.
                                 if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                                    // [WIP]
                                     for (i = 0; i < Object.keys(curVal).length; i++) {
                                         if (i == 0) {
                                             if (setDataToElement(currentLinkedNodes[k], curTarget, curVal[i])) {
