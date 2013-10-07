@@ -90,6 +90,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
                     $context['records'] = 1;
+                    $this->dbSettings->setDbSpecDataType('fmalt');
                 }
             }
         }
