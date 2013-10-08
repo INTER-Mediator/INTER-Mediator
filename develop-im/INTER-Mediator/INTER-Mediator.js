@@ -1197,6 +1197,9 @@ var INTERMediator = {
                         for (index in relationDef) {
                             relationValue[ relationDef[index]['join-field'] ]
                                 = currentRecord[relationDef[index]['join-field']];
+                            if (relationDef[index]['portal'] == true) {
+                                currentContext['portal'] = true;
+                            }
                             for (fieldName in parentObjectInfo) {
                                 if (fieldName == relationDef[index]['join-field']) {
                                     dependObject.push(parentObjectInfo[fieldName]);
@@ -1323,6 +1326,9 @@ var INTERMediator = {
                         currentLinkedNodes = collectLinkedElement(repeatersOneRec).linkedNode;
                         shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
                         keyField = currentContext['key'] ? currentContext['key'] : 'id';
+                        if (currentContext['portal'] == true) {
+                            keyField = currentContext['name'] + "::-recid";
+                        }
                         keyValue = targetRecords.recordset[ix][keyField];
                         keyingValue = keyField + "=" + keyValue;
 

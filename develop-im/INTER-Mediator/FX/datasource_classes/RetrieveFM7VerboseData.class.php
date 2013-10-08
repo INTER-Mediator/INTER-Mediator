@@ -14,6 +14,7 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
     var $currentFlag = '';
     var $currentRecord = '';
     var $currentSubrecordIndex;
+    var $currentSubrecordId;
     var $currentField = '';
     var $currentFieldIndex;
     var $isInRelatedSet = false;
@@ -71,6 +72,7 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
                     if ($this->FX->portalAsRecord) {
                         $this->FX->currentData[$this->currentRecord] = array( '-recid' => $recordID, '-modid' => $modID );
                     }
+                    $this->currentSubrecordId = $recordID;
                 }
                 else {
                     $this->currentRecord = $recordID . '.' . $modID;
@@ -123,6 +125,7 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
             case 'parseData':
                 if ($this->FX->useInnerArray) {
                     $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= $this->xmlDecode($data);
+                    $this->FX->currentData[$this->currentRecord][$this->relatedSetTOC . '::-recid'][$this->currentFieldIndex] = $this->currentSubrecordId;
                 } else {
                     if ($this->isRemainName($this->currentField))    {
                         if ( $this->FX->portalAsRecord ) {

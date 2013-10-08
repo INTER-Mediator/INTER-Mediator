@@ -281,6 +281,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                             }
                         }
+                        if ($usePortal && strpos($field, '::')) {
+                            $this->mainTableCount = count($dataArray);
+                        }
                     }
                 }
                 if ($usePortal) {
