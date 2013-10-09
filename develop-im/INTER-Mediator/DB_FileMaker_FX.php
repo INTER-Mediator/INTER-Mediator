@@ -267,21 +267,28 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $this->fieldInfo[] = $field;
                     }
                     if (count($dataArray) == 1) {
-                        if (!$usePortal) {
+                        if ($usePortal) {
+                            foreach ($dataArray as $portalKey => $portalValue) {
+                                $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
+                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            }
+                        } else {
                             $oneRecordArray[$field] = $this->formatter->formatterFromDB(
                                 "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
                         }
                     } else {
                         foreach ($dataArray as $portalKey => $portalValue) {
-                            if ($usePortal && strpos($field, '::')) {
-                                $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
-                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            if ($usePortal && strpos($field, '::') !== false) {
+                                if (strpos($field, $dataSourceName . '::') !== false) {
+                                    $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
+                                        "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                                }
                             } else {
                                 $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                             }
                         }
-                        if ($usePortal && strpos($field, '::')) {
+                        if ($usePortal && strpos($field, '::') !== false) {
                             $this->mainTableCount = count($dataArray);
                         }
                     }
