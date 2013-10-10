@@ -9,7 +9,7 @@ php:
   - 5.2
 
 node_js:
-  - 0.8
+  - "0.10"
 
 #env:
 #  - DB=mysql
@@ -22,14 +22,14 @@ matrix:
     - env: "DB=postgres"
 
 before_script:
-#  - export DISPLAY=:99.0
-#  - sh -e /etc/init.d/xvfb start
-#  - sleep 5
-#  - npm install
-#  - node_modules/.bin/buster-server &
-#  - sleep 5
-#  - firefox http://localhost:1111/capture &
-#  - sleep 5
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - sleep 5
+  - npm install
+  - node_modules/.bin/buster-server &
+  - sleep 5
+  - firefox http://localhost:1111/capture &
+  - sleep 5
   - mysql -u root < ./dist-docs/sample_schema_mysql.txt
   - sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
   - chmod 666 /tmp/sample.sq3
@@ -48,6 +48,8 @@ script:
   - phpunit DB_PDO-PostgreSQL_Test.php
   - phpunit DB_PDO-SQLite_Test.php
   - phpunit DB_Proxy_Test.php
+  - phpunit DataConverter_MySQLDateTime_Test.php
+  - phpunit DataConverter_FMDateTime_Test.php
   - phpunit INTERMediator_Test.php
-#  - cd ../..
-#  - npm test
+  - cd ../..
+  - npm test
