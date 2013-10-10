@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
+    <script src="include_FMS2.php"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            var nodeUnsupport = document.getElementById('nonsupportmessage');
+            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
+                INTERMediator.construct(true);
+            }
+        }
+
+        function test() {
+            INTERMediator_DBAdapter.db_createRecord({
+                name: "history_to",
+                dataset: [
+                    {field: "startdate", value: document.getElementById('startdate').value}
+                ]
+            });
+            INTERMediator.flushMessage();
+        }
+    </script>
+</head>
+<body>
+<div id="nonsupportmessage" style="background-color:#333333">
+    <div style="text-align:center;color:yellow">
+        If you see this, you must use any unsupported web browser.
+        Or you should set to active for JavaScript.
+        In case of generating the page, Please wait a while.
+    </div>
+    <div style="text-align:center;color:yellow">
+        この表示が見えている場合、非対応ブラウザで参照されています。
+        あるいは、JavaScriptを使用しないように設定されています。
+        描画処理中の場合はしばらくお待ちください。
+    </div>
+</div>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+<table border="1">
+    <tbody>
+    <tr>
+        <td>id</td>
+        <td>
+            <div class="IM[person_layout@id]"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>address</td>
+        <td><input type="text" class="IM[person_layout@address]" value=""/></td>
+    </tr>
+    <tr>
+        <td>mail</td>
+        <td><input type="text" class="IM[person_layout@mail]" value=""/></td>
+    </tr>
+    <tr>
+        <td class="a b c d">category</td>
+        <td>
+            <select class="IM[person_layout@category]">
+                <option value="101">Family</option>
+                <option value="102">ClassMate</option>
+                <option value="103">Collegue</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>check</td>
+        <td><input type="checkbox" class="IM[person_layout@check]" value="1"/></td>
+    </tr>
+    <tr>
+        <td>multi-valued check(use "mail" field)</td>
+        <td>
+            <input type="checkbox" class="IM[person_layout@mail]" value="Dog"/>Dog
+            <input type="checkbox" class="IM[person_layout@mail]" value="Cat"/>Cat
+            <input type="checkbox" class="IM[person_layout@mail]" value="Rabit"/>Rabit
+        </td>
+    </tr>
+    <tr>
+        <td>location</td>
+        <td>
+            <input type="radio" name="radio1" class="IM[person_layout@location]" value="201"/>Domestic
+            <input type="radio" name="radio1" class="IM[person_layout@location]" value="202"/>International
+            <input type="radio" name="radio1" class="IM[person_layout@location]" value="203"/>Neightbor
+            <input type="radio" name="radio1" class="IM[person_layout@location]" value="204"/>Space
+        </td>
+    </tr>
+    <tr>
+        <td>memo</td>
+        <td><textarea class="IM[person_layout@memo]"></textarea></td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <table border="1">
+                <thead>
+                <tr>
+                    <th>person_id</th>
+                    <th>datetime</th>
+                    <th>summary</th>
+                    <th>important</th>
+                    <th>way</th>
+                    <th>kind</th>
+                    <th>description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>
+                        <div class="IM[contact_to@contact_to::person_id]"></div>
+                    </td>
+                    <td><input type="text" class="IM[contact_to@contact_to::datetime]"/></td>
+                    <td><input type="text" class="IM[contact_to@contact_to::summary]"/></td>
+                    <td><input type="checkbox" class="IM[contact_to@contact_to::important]" value="1"/></td>
+                    <td>
+                        <input type="radio" name="radio1" class="IM[contact_to@contact_to::way]" value="4"/>Direct
+                        <input type="radio" name="radio1" class="IM[contact_to@contact_to::way]" value="5"/>Indirect
+                        <input type="radio" name="radio1" class="IM[contact_to@contact_to::way]" value="6"/>Others
+                    </td>
+                    <td>
+                        <select class="IM[contact_to@contact_to::way]">
+                            <option class="IM[contact_way@id@value|contact_way@name@innerHTML] contactway"
+                                    value=""></option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="IM[contact_to@contact_to::kind]">
+                            <option class="IM[cor_way_kind@kind_id@value|cor_way_kind@contact_kind::name@innerHTML] contactkind"
+                                    value=""></option>
+                        </select>
+                    </td>
+                    <td><textarea class="IM[contact_to@contact_to::description]"></textarea></td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <ul>
+                <li>
+                    <hr/>
+                    <input type="text" class="IM[history_to@startdate]"/></li>
+                <li><input type="text" class="IM[history_to@enddate]"/></li>
+                <li><input type="text" class="IM[history_to@description]"/></li>
+            </ul>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
+<!--<input type="text" id="startdate"/>-->
+<!--<button onclick="test()">テスト</button>-->
+</body>
+</html>
