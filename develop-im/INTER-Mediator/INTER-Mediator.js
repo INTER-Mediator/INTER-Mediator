@@ -291,7 +291,7 @@ var INTERMediator = {
     updateDB: function (idValue) {
         var newValue = null, changedObj, objType, objectSpec, keyingComp, keyingField, keyingValue, currentVal,
             response, isDiffrentOnDB, valueAttr, criteria, updateNodeId, needUpdate, i, j, k, checkQueryParameter,
-            dbspec, mergedValues, targetNodes;
+            dbspec, mergedValues, targetNodes, foreignComp, foreignField, foreignValue, foreignCriteria;
 
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
@@ -307,18 +307,38 @@ var INTERMediator = {
                 keyingField = keyingComp[0];
                 keyingComp.shift();
                 keyingValue = keyingComp.join('=');
-                checkQueryParameter = {
-                    name: objectSpec['name'],
-                    records: 1,
-                    paging: objectSpec['paging'],
-                    fields: [objectSpec['field']],
-                    parentkeyvalue: null,
-                    conditions: [
-                        {field: keyingField, operator: '=', value: keyingValue}
-                    ],
-                    useoffset: false,
-                    primaryKeyOnly: true
-                };
+                foreignComp = objectSpec['foreignfield'].split('=');
+                if (foreignComp[1] != "") {
+                    foreignField = foreignComp[0];
+                    foreignComp.shift();
+                    foreignValue = foreignComp.join('=');
+                    checkQueryParameter = {
+                        name: objectSpec['name'],
+                        records: 1,
+                        paging: objectSpec['paging'],
+                        fields: [objectSpec['field']],
+                        parentkeyvalue: null,
+                        conditions: [
+                            {field: keyingField, operator: '=', value: keyingValue},
+                            {field: foreignField, operator: '=', value: foreignValue}
+                        ],
+                        useoffset: false,
+                        primaryKeyOnly: true
+                    };
+                } else {
+                    checkQueryParameter = {
+                        name: objectSpec['name'],
+                        records: 1,
+                        paging: objectSpec['paging'],
+                        fields: [objectSpec['field']],
+                        parentkeyvalue: null,
+                        conditions: [
+                            {field: keyingField, operator: '=', value: keyingValue}
+                        ],
+                        useoffset: false,
+                        primaryKeyOnly: true
+                    };
+                }
                 try {
                     currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
                 } catch (ex) {
@@ -411,16 +431,29 @@ var INTERMediator = {
 
         if (newValue != null) {
             criteria = objectSpec['keying'].split('=');
+            foreignCriteria = objectSpec['foreignfield'].split('=');
             try {
-                INTERMediator_DBAdapter.db_update({
-                    name: objectSpec['name'],
-                    conditions: [
-                        {field: criteria[0], operator: '=', value: criteria[1]}
-                    ],
-                    dataset: [
-                        {field: objectSpec['field'], value: newValue}
-                    ]
-                });
+                if (foreignCriteria[1] == "") {
+                    INTERMediator_DBAdapter.db_update({
+                        name: objectSpec['name'],
+                        conditions: [
+                            {field: criteria[0], operator: '=', value: criteria[1]}
+                        ],
+                        dataset: [
+                            {field: objectSpec['field'], value: newValue}
+                        ]
+                    });
+                } else {
+                    INTERMediator_DBAdapter.db_update({
+                        name: objectSpec['name'],
+                        conditions: [
+                            {field: criteria[0], operator: '=', value: criteria[1]}
+                        ],
+                        dataset: [
+                            {field: objectSpec['field'] + "." + foreignCriteria[1], value: newValue}
+                        ]
+                    });
+                }
             } catch (ex) {
                 if (ex == "_im_requath_request_") {
                     if (ex == "_im_requath_request_") {
@@ -473,7 +506,7 @@ var INTERMediator = {
     },
 
 
-    deleteButton: function (targetName, keyField, keyValue, removeNodes, isConfirm) {
+    deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
         var key, removeNode;
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
@@ -483,12 +516,25 @@ var INTERMediator = {
         INTERMediatorOnPage.showProgress();
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            INTERMediator_DBAdapter.db_delete({
-                name: targetName,
-                conditions: [
-                    {field: keyField, operator: '=', value: keyValue}
-                ]
-            });
+            if (foreignField != "") {
+                INTERMediator_DBAdapter.db_update({
+                    name: targetName,
+                    conditions: [
+                        {field: keyField, operator: "=", value: keyValue},
+                    ],
+                    dataset: [
+                        {field: "-delete.related", operator: "=", value: foreignField.replace("::-recid", "") + "." + foreignValue}
+                    ]
+                });
+            } else {
+                INTERMediator_DBAdapter.db_delete({
+                    name: targetName,
+                    conditions: [
+                        {field: keyField, operator: '=', value: keyValue},
+                        {field: foreignField, operator: '=', value: foreignValue}
+                    ]
+                });
+            }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
@@ -497,7 +543,7 @@ var INTERMediator = {
                     INTERMediatorOnPage.authenticating(
                         function () {
                             INTERMediator.deleteButton(
-                                targetName, keyField, keyValue, removeNodes, false);
+                                targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, false);
                         }
                     );
                     return;
@@ -515,8 +561,8 @@ var INTERMediator = {
         INTERMediator.flushMessage();
     },
 
-    insertButton: function (targetName, foreignValues, updateNodes, removeNodes, isConfirm) {
-        var currentContext, recordSet, index, key, removeNode, i;
+    insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
+        var currentContext, recordSet, index, key, removeNode, i, relationDef;
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
@@ -535,7 +581,28 @@ var INTERMediator = {
         }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
+            
+            relationDef = currentContext["relation"];
+            if (relationDef) {
+                for (index in relationDef) {
+                    if (relationDef[index]["portal"] == true) {
+                        currentContext["portal"] = true;
+                    }
+                }
+            }
+            if (currentContext["portal"] == true) {
+                INTERMediator_DBAdapter.db_update({
+                    name: targetName,
+                    conditions: [
+                        {field: currentContext["key"], operator: "=", value: keyValue}
+                    ],
+                    dataset: [
+                        {field: "contact_to::summary.0", value: ""}
+                    ]
+                });
+            } else {
+                INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
+            }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 INTERMediatorOnPage.authChallenge = null;
@@ -543,7 +610,7 @@ var INTERMediator = {
                 INTERMediatorOnPage.authenticating(
                     function () {
                         INTERMediator.insertButton(
-                            targetName, foreignValues, updateNodes, removeNodes, false);
+                            targetName, keyValue, foreignValues, updateNodes, removeNodes, false);
                     }
                 );
                 INTERMediator.flushMessage();
@@ -1165,7 +1232,7 @@ var INTERMediator = {
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                selectedNode;
+                selectedNode, foreignField, foreignValue, foreignFieldValue;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1327,7 +1394,12 @@ var INTERMediator = {
                         shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
                         keyField = currentContext['key'] ? currentContext['key'] : 'id';
                         if (currentContext['portal'] == true) {
-                            keyField = currentContext['name'] + "::-recid";
+                            keyField = "-recid";
+                            foreignField = currentContext['name'] + "::-recid";
+                            foreignValue = targetRecords.recordset[ix][foreignField];
+                            foreignFieldValue = foreignField + "=" + foreignValue;
+                        } else {
+                            foreignFieldValue = "=";
                         }
                         keyValue = targetRecords.recordset[ix][keyField];
                         keyingValue = keyField + "=" + keyValue;
@@ -1436,6 +1508,7 @@ var INTERMediator = {
                                         field: nInfo['field'],
                                         'parent-enclosure': node.getAttribute('id'),
                                         keying: keyingValue,
+                                        foreignfield: foreignFieldValue,
                                         'foreign-value': relationValue,
                                         updatenodeid: parentNodeId};
                                 }
@@ -1466,8 +1539,17 @@ var INTERMediator = {
                         }
 
                     }
+                    
+                    if (currentContext['portal'] == true) {
+                        keyField = "-recid";
+                        foreignField = currentContext['name'] + "::-recid";
+                        foreignValue = targetRecords.recordset[ix][foreignField];
+                        foreignFieldValue = foreignField + "=" + foreignValue;
+                    } else {
+                        foreignFieldValue = "=";
+                    }
                     setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
-                        currentContext, keyField, keyValue, shouldDeleteNodes);
+                        currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
 
                     newlyAddedNodes = [];
                     for (i = 0; i < repeatersOneRec.length; i++) {
@@ -1505,7 +1587,7 @@ var INTERMediator = {
                     }
 
                 }
-                setupInsertButton(currentContext, encNodeTag, repNodeTag, node, relationValue);
+                setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue);
 
                 for (var pName in widgetSupport) {
 //                    (widgetSupport[pName].finish).apply(
@@ -1862,7 +1944,7 @@ var INTERMediator = {
             return needPostValueSet;
         }
 
-        function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContext, keyField, keyValue, shouldDeleteNodes) {
+        function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
             // Handling Delete buttons
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
 
@@ -1878,7 +1960,7 @@ var INTERMediator = {
 
                         return function () {
                             INTERMediator.deleteButton(
-                                contextName, keyField, keyValue, removeNodes, confirming);
+                                contextName, keyField, keyValue, foreignField, foreignValue, removeNodes, confirming);
                         };
                     };
                     eventListenerPostAdding.push({
@@ -1921,7 +2003,7 @@ var INTERMediator = {
             }
         }
 
-        function setupInsertButton(currentContext, encNodeTag, repNodeTag, node, relationValue) {
+        function setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
                 firstLevelNodes, targetNodeTag, existingButtons;
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
@@ -1992,7 +2074,7 @@ var INTERMediator = {
                     insertJSFunction = function (a, b, c, d, e) {
                         var contextName = a, relationValue = b, nodeId = c, removeNodes = d, confirming = e;
                         return function () {
-                            INTERMediator.insertButton(contextName, relationValue, nodeId, removeNodes, confirming);
+                            INTERMediator.insertButton(contextName, keyValue, relationValue, nodeId, removeNodes, confirming);
                         }
                     };
 

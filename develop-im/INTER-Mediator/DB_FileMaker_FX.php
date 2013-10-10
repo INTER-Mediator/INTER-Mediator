@@ -90,6 +90,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
                     $context['records'] = 1;
+                    $context['paging'] = true;
                     $this->dbSettings->setDbSpecDataType('fmalt');
                 }
             }
@@ -269,6 +270,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if (count($dataArray) == 1) {
                         if ($usePortal) {
                             foreach ($dataArray as $portalKey => $portalValue) {
+                                $oneRecordArray[$portalKey]['-recid'] = $recId;  // parent record id
                                 $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                             }
@@ -280,6 +282,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         foreach ($dataArray as $portalKey => $portalValue) {
                             if ($usePortal && strpos($field, '::') !== false) {
                                 if (strpos($field, $dataSourceName . '::') !== false) {
+                                    $oneRecordArray[$portalKey]['-recid'] = $recId;  // parent record id
                                     $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                         "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                                 }
@@ -287,9 +290,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                 $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                             }
-                        }
-                        if ($usePortal && strpos($field, '::') !== false) {
-                            $this->mainTableCount = count($dataArray);
                         }
                     }
                 }
@@ -299,6 +299,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             $returnArray[] = $portalArray;
                         }
                     }
+                    $this->mainTableCount = count($returnArray);
                 } else {
                     $returnArray[] = $oneRecordArray;
                 }
@@ -317,7 +318,22 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     {
         $this->fieldInfo = null;
 
-        $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+        $context = $this->dbSettings->getDataSourceTargetArray();
+        
+        $usePortal = false;
+        foreach ($context['relation'] as $relDef) {
+            if (isset($relDef['portal']) && $relDef['portal']) {
+                $usePortal = true;
+                $context['paging'] = true;
+                $this->dbSettings->setDbSpecDataType('fmalt');
+            }
+        }
+
+        if ($usePortal) {
+            $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
+        } else {
+            $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+        }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
 
@@ -398,7 +414,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         if ($result['foundCount'] == 1) {
             foreach ($result['data'] as $key => $row) {
                 $recId = substr($key, 0, strpos($key, '.'));
-                $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+                if ($usePortal) {
+                    $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
+                } else {
+                    $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+                }
                 $this->fx->SetRecordID($recId);
                 $counter = 0;
                 $fieldValues = $this->dbSettings->getValue();
@@ -460,6 +480,16 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
+        
+        $usePortal = false;
+        foreach ($context['relation'] as $relDef) {
+            if (isset($relDef['portal']) && $relDef['portal']) {
+                $usePortal = true;
+                $context['paging'] = true;
+                $this->dbSettings->setDbSpecDataType('fmalt');
+            }
+        }
+
         $keyFieldName = isset($context['key']) ? $context['key'] : 'id';
 
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
@@ -568,7 +598,22 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
-        $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 100000000);
+        
+        $usePortal = false;
+        foreach ($context['relation'] as $relDef) {
+            if (isset($relDef['portal']) && $relDef['portal']) {
+                $usePortal = true;
+                $context['paging'] = true;
+                $this->dbSettings->setDbSpecDataType('fmalt');
+            }
+        }
+
+        if ($usePortal) {
+            $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
+        } else {
+            $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+        }
+
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
             $this->fx->AddDBParam($value['field'], $value['value'], $op);

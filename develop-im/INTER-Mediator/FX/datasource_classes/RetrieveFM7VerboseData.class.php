@@ -125,7 +125,9 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
             case 'parseData':
                 if ($this->FX->useInnerArray) {
                     $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= $this->xmlDecode($data);
-                    $this->FX->currentData[$this->currentRecord][$this->relatedSetTOC . '::-recid'][$this->currentFieldIndex] = $this->currentSubrecordId;
+                    if (!empty($this->relatedSetTOC)) {
+                        $this->FX->currentData[$this->currentRecord][$this->relatedSetTOC . '::-recid'][$this->currentFieldIndex] = $this->currentSubrecordId;
+                    }
                 } else {
                     if ($this->isRemainName($this->currentField))    {
                         if ( $this->FX->portalAsRecord ) {

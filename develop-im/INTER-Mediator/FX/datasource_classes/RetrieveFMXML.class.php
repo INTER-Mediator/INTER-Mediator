@@ -299,7 +299,7 @@ class RetrieveFMXML extends RetrieveFXData {
         if ($FMV < 7) {
             $tempSearch .= '&-format=-fmp_xml';                          // then set the FileMaker XML format to use...
         }
-        if (!in_array($action, array('-dbnames', '-layoutnames', '-scriptnames'))) {
+        if (!in_array($action, array('-dbnames', '-layoutnames', '-scriptnames', '-edit'))) {
             $tempSearch .= "&-max={$this->FX->groupSize}{$skipRequest}"; // add the set size and skip size data...
         }
         $tempSearch .= $currentSort . $currentSearch . '&' . $action;    // finally, add sorting, search parameters, and action data.
