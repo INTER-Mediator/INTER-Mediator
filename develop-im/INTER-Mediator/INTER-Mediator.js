@@ -291,7 +291,7 @@ var INTERMediator = {
     updateDB: function (idValue) {
         var newValue = null, changedObj, objType, objectSpec, keyingComp, keyingField, keyingValue, currentVal,
             response, isDiffrentOnDB, valueAttr, criteria, updateNodeId, needUpdate, i, j, k, checkQueryParameter,
-            dbspec, mergedValues, targetNodes, foreignComp, foreignField, foreignValue, foreignCriteria;
+            dbspec, mergedValues, targetNodes, foreignComp, foreignField, foreignValue, foreignCriteria, portalRowNum;
 
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
@@ -371,7 +371,19 @@ var INTERMediator = {
                         return;
                     }
                 }
-                currentVal = currentVal.recordset[0][objectSpec['field']];
+                
+                if (foreignValue && (typeof currentVal == "object" || currentVal instanceof Object)) {
+                    for (i = 0; i < Object.keys(currentVal).length; i++) {
+                        if (currentVal.recordset[0][objectSpec['name'] + "::-recid"][i] == foreignValue) {
+                            portalRowNum = i;
+                        }
+                    }
+                }
+                if (portalRowNum) {
+                    currentVal = currentVal.recordset[0][objectSpec['field']][portalRowNum];
+                } else {
+                    currentVal = currentVal.recordset[0][objectSpec['field']];
+                }
                 isDiffrentOnDB = (objectSpec['initialvalue'] != currentVal);
             }
 

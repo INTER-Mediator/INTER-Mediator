@@ -95,6 +95,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
+        if ($this->dbSettings->getPrimaryKeyOnly()) {
+            $this->dbSettings->setDbSpecDataType('fmalt');
+        }
 
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(),
             isset($context['records']) ? $context['records'] : 100000000);
