@@ -91,12 +91,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $usePortal = true;
                     $context['records'] = 1;
                     $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType('fmalt');
+                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
                 }
             }
         }
         if ($this->dbSettings->getPrimaryKeyOnly()) {
-            $this->dbSettings->setDbSpecDataType('fmalt');
+            $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
         }
 
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(),
@@ -328,7 +328,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             if (isset($relDef['portal']) && $relDef['portal']) {
                 $usePortal = true;
                 $context['paging'] = true;
-                $this->dbSettings->setDbSpecDataType('fmalt');
+                $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
             }
         }
 
@@ -489,7 +489,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             if (isset($relDef['portal']) && $relDef['portal']) {
                 $usePortal = true;
                 $context['paging'] = true;
-                $this->dbSettings->setDbSpecDataType('fmalt');
+                $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
             }
         }
 
@@ -607,7 +607,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             if (isset($relDef['portal']) && $relDef['portal']) {
                 $usePortal = true;
                 $context['paging'] = true;
-                $this->dbSettings->setDbSpecDataType('fmalt');
+                $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
             }
         }
 
