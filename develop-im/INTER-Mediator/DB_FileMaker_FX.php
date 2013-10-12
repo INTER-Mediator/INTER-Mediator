@@ -118,6 +118,24 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $hasFindParams = true;
                 }
             }
+        } elseif ($usePortal && isset($context['view'])) {
+            $this->dbSettings->setDataSourceName($context['view']);
+            $parentTable = $this->dbSettings->getDataSourceTargetArray();
+            if (isset($parentTable['query'])) {
+                foreach ($parentTable['query'] as $condition) {
+                    if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
+                        $this->fx->SetLogicalOR();
+                    } else {
+                        if (isset($condition['operator'])) {
+                            $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
+                        } else {
+                            $this->fx->AddDBParam($condition['field'], $condition['value']);
+                        }
+                        $hasFindParams = true;
+                    }
+                }
+            }
+            $this->dbSettings->setDataSourceName($context['name']);
         }
 
         if ($this->dbSettings->getExtraCriteria()) {
@@ -197,7 +215,21 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $this->fx->AddSortParam($condition['field']);
                 }
             }
+        } elseif ($usePortal && isset($context['view'])) {
+            $this->dbSettings->setDataSourceName($context['view']);
+            $parentTable = $this->dbSettings->getDataSourceTargetArray();
+            if (isset($parentTable['sort'])) {
+                foreach ($parentTable['sort'] as $condition) {
+                    if (isset($condition['direction'])) {
+                        $this->fx->AddSortParam($condition['field'], $condition['direction']);
+                    } else {
+                        $this->fx->AddSortParam($condition['field']);
+                    }
+                }
+            }
+            $this->dbSettings->setDataSourceName($context['name']);
         }
+
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
                 $this->fx->AddSortParam($condition['field'], $condition['direction']);
