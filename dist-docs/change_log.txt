@@ -50,9 +50,10 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.3.10-dev
-- Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
+- Support FileMaker's portal objects. (by specifying 'relation' => array('portal' => true) ).
 - New sample (Master-Detail Style Page for FileMaker's portal access version) is added.
 - Modify FX.php for FileMaker Server to enable the "fmalt" and retrieve the record id on portal objects.
+- [INFO] FileMaker's portal objects requires FileMaker Server 9 or later.
 - [BUG FIX] Fix DataConverter_FMDateTime and DataConverter_MySQLDateTime's issue on Windows.
 
 Ver.3.9 (2013/9/28)
