@@ -370,7 +370,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
+        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : '-recid';
 
         if (isset($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
@@ -525,7 +525,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
-        $keyFieldName = isset($context['key']) ? $context['key'] : 'id';
+        $keyFieldName = isset($context['key']) ? $context['key'] : '-recid';
 
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         $requiredFields = $this->dbSettings->getFieldsRequired();

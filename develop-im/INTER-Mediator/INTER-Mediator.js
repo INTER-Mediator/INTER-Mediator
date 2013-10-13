@@ -374,7 +374,7 @@ var INTERMediator = {
                 }
                 
                 if (foreignValue != null && (typeof currentVal == "object" || currentVal instanceof Object)) {
-                    for (i = 0; i < Object.keys(currentVal).length; i++) {
+                    for (i = 0; i <= Object.keys(currentVal).length; i++) {
                         if (currentVal.recordset[0][objectSpec['name'] + "::-recid"][i] == foreignValue) {
                             portalRowNum = i;
                         }
@@ -403,7 +403,7 @@ var INTERMediator = {
                 if (objType != null) {
                     if (objType == 'checkbox') {
                         dbspec = INTERMediatorOnPage.getDBSpecification();
-                        if (dbspec['db-class'] != null && dbspec['db-class'] == 'FileMaker_FX') {
+                        if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
                             mergedValues = [];
                             targetNodes = changedObj.parentNode.getElementsByTagName('INPUT');
                             for (k = 0; k < targetNodes.length; k++) {
@@ -575,7 +575,7 @@ var INTERMediator = {
     },
 
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
-        var currentContext, recordSet, index, key, removeNode, i, relationDef;
+        var currentContext, recordSet, index, key, removeNode, i, relationDef, targetRecord, portalField, targetPortalField;
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
@@ -604,13 +604,28 @@ var INTERMediator = {
                 }
             }
             if (currentContext["portal"] == true) {
+                targetRecord = INTERMediator_DBAdapter.db_query({
+                    name: targetName,
+                    records: 1,
+                    conditions: [
+                        {field: currentContext["key"] ? currentContext["key"] : "-recid", operator: "=", value: keyValue}
+                    ]
+                });
+                for (portalField in targetRecord["recordset"][0]) {
+                    if (portalField.contains(targetName + "::")) {
+                        targetPortalField = portalField;
+                        if (portalField != targetName + "::id") {
+                            break;
+                        }
+                    }
+                }
                 INTERMediator_DBAdapter.db_update({
                     name: targetName,
                     conditions: [
-                        {field: currentContext["key"], operator: "=", value: keyValue}
+                        {field: currentContext["key"] ? currentContext["key"] : "-recid", operator: "=", value: keyValue}
                     ],
                     dataset: [
-                        {field: "contact_to::summary.0", value: ""}
+                        {field: targetPortalField + ".0", value: ""}
                     ]
                 });
             } else {
@@ -1245,7 +1260,7 @@ var INTERMediator = {
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                selectedNode, foreignField, foreignValue, foreignFieldValue;
+                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1405,7 +1420,12 @@ var INTERMediator = {
                         currentWidgetNodes = collectLinkedElement(repeatersOneRec).widgetNode;
                         currentLinkedNodes = collectLinkedElement(repeatersOneRec).linkedNode;
                         shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
-                        keyField = currentContext['key'] ? currentContext['key'] : 'id';
+                        dbspec = INTERMediatorOnPage.getDBSpecification();
+                        if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
+                            keyField = currentContext["key"] ? currentContext["key"] : "-recid";
+                        } else {
+                            keyField = currentContext["key"] ? currentContext["key"] : "id";
+                        }
                         if (currentContext['portal'] == true) {
                             keyField = "-recid";
                             foreignField = currentContext['name'] + "::-recid";
@@ -2018,7 +2038,7 @@ var INTERMediator = {
 
         function setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
-                firstLevelNodes, targetNodeTag, existingButtons;
+                firstLevelNodes, targetNodeTag, existingButtons, keyField;
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
                 if (relationValue || !currentContext['paging'] || currentContext['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
@@ -2102,10 +2122,16 @@ var INTERMediator = {
                             currentContext['repeat-control'].match(/confirm-insert/i))
                     );
                 } else {
+                    dbspec = INTERMediatorOnPage.getDBSpecification();
+                    if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
+                        keyField = currentContext["key"] ? currentContext["key"] : "-recid";
+                    } else {
+                        keyField = currentContext["key"] ? currentContext["key"] : "id";
+                    }
                     INTERMediator.deleteInsertOnNavi.push({
                         kind: 'INSERT',
                         name: currentContext['name'],
-                        key: currentContext['key'] ? currentContext['key'] : 'id',
+                        key: keyField,
                         confirm: currentContext['repeat-control'].match(/confirm-insert/i)
                     });
                 }
