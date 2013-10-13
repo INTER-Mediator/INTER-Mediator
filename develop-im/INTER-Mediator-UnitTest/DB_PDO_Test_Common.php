@@ -235,6 +235,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
     public function testDefaultKey()
     {
+        $this->dbProxySetupForAccess("person", 1);
+
         $testName = "The default key field name";
         $presetValue = "id";
         $value = $this->db_proxy->dbClass->getDefaultKey();
