@@ -67,8 +67,14 @@ class FileUploader
             . rand(1000, 9999) . '.' . $filePathInfo['extension'];
         $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
             . rand(1000, 9999) . '.' . $filePathInfo['extension'];
-        if (!file_exists($dirPath)) {
-            mkdir($dirPath, 0744, true);
+        if (!file_exists($fileRoot . $dirPath)) {
+            $result = mkdir($fileRoot . $dirPath, 0744, true);
+            if (!$result) {
+                $dbProxyInstance->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
+                $dbProxyInstance->processingRequest($options, "noop");
+                $dbProxyInstance->finishCommunication();
+                return;
+            }
         }
         $result = move_uploaded_file($fileInfo["tmp_name"], $filePath);
         if (!$result) {
