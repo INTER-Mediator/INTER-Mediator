@@ -533,7 +533,7 @@ var INTERMediator = {
                 INTERMediator_DBAdapter.db_update({
                     name: targetName,
                     conditions: [
-                        {field: keyField, operator: "=", value: keyValue},
+                        {field: keyField, operator: "=", value: keyValue}
                     ],
                     dataset: [
                         {field: "-delete.related", operator: "=", value: foreignField.replace("::-recid", "") + "." + foreignValue}

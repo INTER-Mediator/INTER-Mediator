@@ -439,7 +439,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
-        $this->logger->setDebugMessage($this->stringWithoutPassword(var_export($this->dbSettings->getFieldsRequired(),true)));
+//        $this->logger->setDebugMessage($this->stringWithoutPassword(var_export($this->dbSettings->getFieldsRequired(),true)));
 
         if ($result['errorCode'] > 0) {
             $this->logger->setErrorMessage($this->stringWithoutPassword(
@@ -458,11 +458,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $counter = 0;
                 $fieldValues = $this->dbSettings->getValue();
                 foreach ($this->dbSettings->getFieldsRequired() as $field) {
+                    $dotPos = strpos($field, '.');
+                    $originalfield = substr($field, 0, $dotPos);
                     $value = $fieldValues[$counter];
                     $counter++;
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
                     $convVal = $this->formatter->formatterToDB(
-                        "{$dataSourceName}{$this->dbSettings->getSeparator()}{$field}", $convVal);
+                        "{$dataSourceName}{$this->dbSettings->getSeparator()}{$originalfield}", $convVal);
                     $this->fx->AddDBParam($field, $convVal);
                 }
                 if ($counter < 1) {
