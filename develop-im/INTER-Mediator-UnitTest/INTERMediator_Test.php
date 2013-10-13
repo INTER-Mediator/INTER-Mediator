@@ -18,7 +18,7 @@ require_once('../INTER-Mediator/DB_AuthCommon.php');
 
 class INTERMediator_Test extends PHPUnit_Framework_TestCase
 {
-    function setUp()
+    public function setUp()
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
@@ -47,7 +47,8 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
             false);
     }
 
-    public function test_params() {
+    public function test_params()
+    {
         $testName = "Check parameters in params.php.";
         
         include('../INTER-Mediator/params.php');
@@ -55,8 +56,33 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $this->assertFalse(isset($issuedHashDSN), $testName);
         $this->assertFalse(isset($scriptPathPrefix), $testName);
     }
+
+    public function test_arrayToJS()
+    {
+        $testName = 'Check arrayToJS function in INTER-Mediator.php.';
+        
+        $ar = array('database' => 'TestDB', 'user' => 'web', 'password' => 'password');
+        $prefix = '0';
+        $exarray = array('password');
+        $resultString = "'0':{'database':'TestDB','user':'web','password':'password'}";
+
+        $this->assertSame(arrayToJS($ar, $prefix, $exarray), $resultString, $testName);
+    }
+
+    public function test_arrayToJSExcluding()
+    {
+        $testName = 'Check arrayToJSExcluding function in INTER-Mediator.php.';
+        
+        $ar = array('database' => 'TestDB', 'user' => 'web', 'password' => 'password');
+        $prefix = '0';
+        $exarray = array('password');
+        $resultString = "'0':{'database':'TestDB','user':'web'}";
+
+        $this->assertSame(arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
+    }
     
-    function test_hex2bin_for53()    {
+    public function test_hex2bin_for53()
+    {
         $testName = "Check hex2bin_for53 function in INTER-Mediator.php.";
 
         $hexString = "616263643132333441424344242526";
@@ -68,11 +94,10 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         if ( $version[0] >= 5 && $version[1] >= 4 ) {
            $this->assertTrue(hex2bin_for53($hexString) === hex2bin($hexString), $testName);
         }
-
-
     }
 
-    function test_randomString()    {
+    public function test_randomString()
+    {
         $testName = "Check randamString function in INTER-Mediator.php.";
         $str = randomString(10);
         $this->assertTrue(is_string($str), $testName);
@@ -86,9 +111,10 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $str = randomString(0);
         $this->assertTrue(is_string($str), $testName);
         $this->assertTrue(strlen($str) == 0, $testName);
-
     }
-    function test_getLocaleFromBrowser()    {
+    
+    public function test_getLocaleFromBrowser()
+    {
         $testName = "Check getLocaleFromBrowser function in INTER-Mediator.php.";
         $headerStr = "ja";
         $locStr = getLocaleFromBrowser($headerStr);
