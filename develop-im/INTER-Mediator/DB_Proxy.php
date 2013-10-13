@@ -51,6 +51,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     private $previousClientid;
 
+    public function defaultKey()
+    {
+        return $this->dbClass->defaultKey();
+    }
     /**
      * @param bool $testmode
      */

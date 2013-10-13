@@ -31,19 +31,24 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     }
 
-    function setupFXforAuth($layoutName, $recordCount)
+    public function defaultKey()
+    {
+        return "-recid";
+    }
+
+    private function setupFXforAuth($layoutName, $recordCount)
     {
         $this->fxAuth = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
-    function setupFXforDB($layoutName, $recordCount)
+    private function setupFXforDB($layoutName, $recordCount)
     {
         $this->fx = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    function setupFX_Impl($layoutName, $recordCount, $user, $password)
+    private function setupFX_Impl($layoutName, $recordCount, $user, $password)
     {
         $fx = new FX(
             $this->dbSettings->getDbSpecServer(),
@@ -57,27 +62,27 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $fx;
     }
 
-    function stringWithoutPassword($str)
+    private function stringWithoutPassword($str)
     {
         return str_replace($this->dbSettings->getAccessPassword(), "********", $str);
     }
 
-    function stringReturnOnly($str)
+    private function stringReturnOnly($str)
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str));
     }
 
-    function unifyCRLF($str)
+    private function unifyCRLF($str)
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str));
     }
 
-    function getFieldInfo($dataSourceName)
+    public function getFieldInfo($dataSourceName)
     {
         return $this->fieldInfo;
     }
 
-    function getFromDB($dataSourceName)
+    public function getFromDB($dataSourceName)
     {
         $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}",2);
         $this->fieldInfo = null;
@@ -344,12 +349,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $returnArray;
     }
 
-    function countQueryResult($dataSourceName)
+    public function countQueryResult($dataSourceName)
     {
         return $this->mainTableCount;
     }
 
-    function setToDB($dataSourceName)
+    public function setToDB($dataSourceName)
     {
         $this->fieldInfo = null;
 
@@ -512,7 +517,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function newToDB($dataSourceName, $bypassAuth)
+    public function newToDB($dataSourceName, $bypassAuth)
     {
         $this->fieldInfo = null;
 
@@ -630,7 +635,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $keyValue;
     }
 
-    function deleteFromDB($dataSourceName)
+    public function deleteFromDB($dataSourceName)
     {
         $this->fieldInfo = null;
 
@@ -756,7 +761,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportStoreChallenge($uid, $challenge, $clientId)
+    public function authSupportStoreChallenge($uid, $challenge, $clientId)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -806,7 +811,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportCheckMediaToken($uid)
+    public function authSupportCheckMediaToken($uid)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -836,7 +841,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
+    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -871,7 +876,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportRemoveOutdatedChallenges()
+    public function authSupportRemoveOutdatedChallenges()
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -903,7 +908,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportRetrieveHashedPassword($username)
+    public function authSupportRetrieveHashedPassword($username)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -936,7 +941,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 //        return substr($hashedpw, -8);
 //    }
 //
-    function authSupportCreateUser($username, $hashedpassword)
+    public function authSupportCreateUser($username, $hashedpassword)
     {
         if ($this->authSupportRetrieveHashedPassword($username) !== false) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
@@ -955,7 +960,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportChangePassword($username, $hashednewpassword)
+    public function authSupportChangePassword($username, $hashednewpassword)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -991,7 +996,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportGetUserIdFromUsername($username)
+    public function authSupportGetUserIdFromUsername($username)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -1015,7 +1020,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportGetUsernameFromUserId($userid)
+    public function authSupportGetUsernameFromUserId($userid)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -1039,7 +1044,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportGetUserIdFromEmail($email)
+    public function authSupportGetUserIdFromEmail($email)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -1063,7 +1068,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportUnifyUsernameAndEmail($username)
+    public function authSupportUnifyUsernameAndEmail($username)
     {
         if (!$this->dbSettings->getEmailAsAccount() || $this->dbSettings->isDBNative()) {
             return $username;
@@ -1096,7 +1101,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $usernameCandidate;
     }
 
-    function authSupportGetGroupNameFromGroupId($groupid)
+    public function authSupportGetGroupNameFromGroupId($groupid)
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if ($groupTable == null) {
@@ -1117,7 +1122,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportGetGroupsOfUser($user)
+    public function authSupportGetGroupsOfUser($user)
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {
@@ -1142,7 +1147,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $belongGroups;
     private $firstLevel;
 
-    function resolveGroup($groupid)
+    private function resolveGroup($groupid)
     {
         $this->setupFXforAuth($this->dbSettings->getCorrTable(), 1);
         if ($this->firstLevel) {
@@ -1167,7 +1172,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
+    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -1189,7 +1194,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
+    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -1224,7 +1229,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
+    public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
     {
         $this->setupFXforAuth($tableName, 1);
         $this->fxAuth->AddDBParam($userField, $user, 'eq');
@@ -1240,4 +1245,5 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         return false;
     }
+
 }

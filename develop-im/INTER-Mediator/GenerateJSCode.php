@@ -16,7 +16,7 @@
  */
 class GenerateJSCode
 {
-    function __construct()
+    public function __construct()
     {
         header('Content-Type: text/javascript;charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
@@ -24,19 +24,21 @@ class GenerateJSCode
         header('X-Frame-Options: SAMEORIGIN');
     }
 
-    function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
+    public function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
     {
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
 
-    function generateErrorMessageJS($message)
+    public function generateErrorMessageJS($message)
     {
         $q = '"';
         echo "INTERMediator.setErrorMessage({$q}"
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
-    function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
+    private $defaultsArray;
+
+    public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
     {
         $q = '"';
         $generatedPrivateKey = null;
@@ -81,6 +83,27 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
             "function(){return {$q}{$relativeToEditor}?target=$relativeToDefFile{$q};}");
 
+        /* from db-class, determine the default key field string */
+        $defaultKey = null;
+        $dbClassName = 'DB_' .
+            (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
+                (isset ($dbClass) ? $dbClass : ''));
+        require_once("{$dbClassName}.php");
+        $dbInstance = new $dbClassName();
+        if ($dbInstance != null) {
+            $defaultKey = $dbInstance->defaultKey();
+            if ($defaultKey != null) {
+                $items = array();
+                foreach ($datasource as $context) {
+                    if (!array_key_exists('key', $context)) {
+                        $context['key'] = $defaultKey;
+                    }
+                    $items[] = $context;
+                }
+                $datasource = $items;
+            }
+        }
+
         if (isset($callURL)) {
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
@@ -93,7 +116,8 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
         $this->generateAssignJS(
-            "INTERMediatorOnPage.getDataSources", "function(){return ", arrayToJS($datasource, ''), ";}");
+            "INTERMediatorOnPage.getDataSources", "function(){return ",
+            arrayToJSExcluding($datasource, '', array('password')), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsAliases",
             "function(){return ", arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
@@ -101,7 +125,8 @@ class GenerateJSCode
             "INTERMediatorOnPage.getOptionsTransaction",
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
         $this->generateAssignJS(
-            "INTERMediatorOnPage.getDBSpecification", "function(){return ", arrayToJS($dbspecification, ''), ";}");
+            "INTERMediatorOnPage.getDBSpecification", "function(){return ",
+            arrayToJSExcluding($dbspecification, '', array('password')), ";}");
         $isEmailAsUsernae = isset($options['authentication'])
             && isset($options['authentication']['email-as-username'])
             && $options['authentication']['email-as-username'] === true;

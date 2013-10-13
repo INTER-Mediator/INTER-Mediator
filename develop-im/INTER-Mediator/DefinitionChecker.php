@@ -17,7 +17,7 @@
 class DefinitionChecker
 {
 
-    function checkDefinitions($datasource, $options, $dbspecification)
+    public function checkDefinitions($datasource, $options, $dbspecification)
     {
         if ($dbspecification['db-class'] == 'FileMaker_FX') {
             require_once('DB_FileMaker_FX.php');
@@ -41,7 +41,7 @@ class DefinitionChecker
         return $allMessage;
     }
 
-    function checkDefinition($definition, $prohibit)
+    public function checkDefinition($definition, $prohibit)
     {
         if ( $definition === NULL ) {
             return;
@@ -52,7 +52,7 @@ class DefinitionChecker
         $this->moveChildren($definition);
     }
 
-    function moveChildren($items)
+    private function moveChildren($items)
     {
         $endPoint = $this->currentProhibit;
         $currentPath = '';
