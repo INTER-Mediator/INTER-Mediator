@@ -421,7 +421,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
         }
 
-        $this->logger->setDebugMessage("dbNative={$this->dbSettings->isDBNative()}", 2);
+//        $this->logger->setDebugMessage("dbNative={$this->dbSettings->isDBNative()}", 2);
 //        $this->logger->setDebugMessage("", 2);
 
         if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
