@@ -31,7 +31,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     }
 
-    public function defaultKey()
+    public static function defaultKey()
+    {
+        return "-recid";
+    }
+
+    public function getDefaultKey()
     {
         return "-recid";
     }

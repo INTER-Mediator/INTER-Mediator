@@ -43,6 +43,10 @@ class GenerateJSCode
         $q = '"';
         $generatedPrivateKey = null;
         $passPhrase = null;
+
+        /*
+         * Decide the params.php file and load it.
+         */
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $currentDirParam = $currentDir . 'params.php';
         $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
@@ -52,6 +56,9 @@ class GenerateJSCode
             include($currentDirParam);
         }
 
+        /*
+         * Read the JS programs regarding by the developing or deployed.
+         */
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             $jsLibDir = $currentDir . 'js_lib' . DIRECTORY_SEPARATOR;
             $bi2phpDir = $currentDir . 'bi2php' . DIRECTORY_SEPARATOR;
@@ -69,6 +76,9 @@ class GenerateJSCode
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
         }
 
+        /*
+         * Generate the link to the definition file editor
+         */
         $relativeToDefFile = '';
         $editorPath = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
         $defFilePath = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME'];
@@ -83,27 +93,36 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
             "function(){return {$q}{$relativeToEditor}?target=$relativeToDefFile{$q};}");
 
-        /* from db-class, determine the default key field string */
+        /*
+         * from db-class, determine the default key field string
+         */
         $defaultKey = null;
         $dbClassName = 'DB_' .
             (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
                 (isset ($dbClass) ? $dbClass : ''));
         require_once("{$dbClassName}.php");
-        $dbInstance = new $dbClassName();
-        if ($dbInstance != null) {
-            $defaultKey = $dbInstance->defaultKey();
-            if ($defaultKey != null) {
-                $items = array();
-                foreach ($datasource as $context) {
-                    if (!array_key_exists('key', $context)) {
-                        $context['key'] = $defaultKey;
-                    }
-                    $items[] = $context;
-                }
-                $datasource = $items;
+        if (((int)phpversion()) < 5.3) {
+            $dbInstance = new $dbClassName();
+            if ($dbInstance != null) {
+                $defaultKey = $dbInstance->getDefaultKey();
             }
+        } else {
+            $defaultKey = $dbClassName::defaultKey();
+        }
+        if ($defaultKey !== null) {
+            $items = array();
+            foreach ($datasource as $context) {
+                if (!array_key_exists('key', $context)) {
+                    $context['key'] = $defaultKey;
+                }
+                $items[] = $context;
+            }
+            $datasource = $items;
         }
 
+        /*
+         * Determine the uri of myself
+         */
         if (isset($callURL)) {
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {

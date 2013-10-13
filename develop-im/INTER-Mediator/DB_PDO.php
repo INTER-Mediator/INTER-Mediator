@@ -73,7 +73,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    public function defaultKey()
+    public static function defaultKey()
+    {
+        return "id";
+    }
+
+    public function getDefaultKey()
     {
         return "id";
     }
