@@ -53,7 +53,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     public static function defaultKey()
     {
-        return "id";
+        trigger_error ("Don't call the static method defaultKey of DB_Proxy class.");
+        return null;
     }
     public function getDefaultKey()
     {

@@ -28,7 +28,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $this->db_proxy = new DB_Proxy();
         $this->db_proxy->initialize(array(),
             array(
-                'authentication'=> array( // table only, for all operations
+                'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
                     'group' => array('group2'), // Itemize permitted groups
                     'privilege' => array(), // Itemize permitted privileges
@@ -41,10 +41,10 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
                 ),
             ),
             array(
-                'db-class'=>'FileMaker_FX',
-                'dsn'=>'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
-                'user'=>'web',
-                'password'=> 'password',
+                'db-class' => 'FileMaker_FX',
+                'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
+                'user' => 'web',
+                'password' => 'password',
             ),
             false);
 
@@ -111,7 +111,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
-        $challenge = $this->db_proxy-->generateChallenge();
+        $challenge = $this->db_proxy-- > generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
         $challenge = $this->db_proxy->generateChallenge();
@@ -144,7 +144,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $testName = "Create New User and Authenticate";
         $username = "testuser2";
         $password = "testuser2";
-                $this->assertTrue($this->db_proxy->addUser( $username, $password ));
+        $this->assertTrue($this->db_proxy->addUser($username, $password));
 
         $retrievedHexSalt = $this->db_proxy->dbClass->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
@@ -182,4 +182,16 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
     }
 
+    public function testDefaultKey()
+    {
+        $testName = "The default key field name";
+        $presetValue = "-recid";
+        $value = $this->db_proxy->dbClass->getDefaultKey();
+        $this->assertTrue($presetValue == $value, $testName);
+        if (((int)phpversion()) >= 5.3) {
+            $className = "DB_FileMaker_FX";
+            $value = $className::defaultKey();
+        }
+        $this->assertTrue($presetValue == $value, $testName);
+    }
 }
