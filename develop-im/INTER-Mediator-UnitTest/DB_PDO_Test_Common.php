@@ -243,7 +243,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($presetValue == $value, $testName);
         if (((int)phpversion()) >= 5.3) {
             $className = get_class($this->db_proxy->dbClass);
-            $value = $className::defaultKey();
+            eval("$value = $className::defaultKey();");
         }
         $this->assertTrue($presetValue == $value, $testName);
     }

@@ -107,7 +107,7 @@ class GenerateJSCode
                 $defaultKey = $dbInstance->getDefaultKey();
             }
         } else {
-            $defaultKey = $dbClassName::defaultKey();
+            eval("$defaultKey = $dbClassName::defaultKey();");
         }
         if ($defaultKey !== null) {
             $items = array();
