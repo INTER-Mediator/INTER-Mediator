@@ -63,10 +63,9 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         
         $ar = array('database' => 'TestDB', 'user' => 'web', 'password' => 'password');
         $prefix = '0';
-        $exarray = array('password');
         $resultString = "'0':{'database':'TestDB','user':'web','password':'password'}";
 
-        $this->assertSame(arrayToJS($ar, $prefix, $exarray), $resultString, $testName);
+        $this->assertSame(arrayToJS($ar, $prefix), $resultString, $testName);
     }
 
     public function test_arrayToJSExcluding()
