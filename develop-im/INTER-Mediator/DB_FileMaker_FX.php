@@ -314,10 +314,17 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     }
                     if (count($dataArray) == 1) {
                         if ($usePortal) {
+                            $existsRelated = false;
                             foreach ($dataArray as $portalKey => $portalValue) {
+                                if (strpos($field, '::') !== false) {
+                                    $existsRelated = true;
+                                }
                                 $oneRecordArray[$portalKey]['-recid'] = $recId;  // parent record id
                                 $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            }
+                            if ($existsRelated == false) {
+                                $oneRecordArray = array();
                             }
                         } else {
                             $oneRecordArray[$field] = $this->formatter->formatterFromDB(
@@ -366,11 +373,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $context = $this->dbSettings->getDataSourceTargetArray();
         
         $usePortal = false;
-        foreach ($context['relation'] as $relDef) {
-            if (isset($relDef['portal']) && $relDef['portal']) {
-                $usePortal = true;
-                $context['paging'] = true;
-                $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+        if (isset($context['relation'])) {
+            foreach ($context['relation'] as $relDef) {
+                if (isset($relDef['portal']) && $relDef['portal']) {
+                    $usePortal = true;
+                    $context['paging'] = true;
+                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                }
             }
         }
 
@@ -529,11 +538,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $context = $this->dbSettings->getDataSourceTargetArray();
         
         $usePortal = false;
-        foreach ($context['relation'] as $relDef) {
-            if (isset($relDef['portal']) && $relDef['portal']) {
-                $usePortal = true;
-                $context['paging'] = true;
-                $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+        if (isset($context['relation'])) {
+            foreach ($context['relation'] as $relDef) {
+                if (isset($relDef['portal']) && $relDef['portal']) {
+                    $usePortal = true;
+                    $context['paging'] = true;
+                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                }
             }
         }
 
@@ -647,11 +658,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $context = $this->dbSettings->getDataSourceTargetArray();
         
         $usePortal = false;
-        foreach ($context['relation'] as $relDef) {
-            if (isset($relDef['portal']) && $relDef['portal']) {
-                $usePortal = true;
-                $context['paging'] = true;
-                $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+        if (isset($context['relation'])) {
+            foreach ($context['relation'] as $relDef) {
+                if (isset($relDef['portal']) && $relDef['portal']) {
+                    $usePortal = true;
+                    $context['paging'] = true;
+                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                }
             }
         }
 

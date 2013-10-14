@@ -1260,7 +1260,7 @@ var INTERMediator = {
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec;
+                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [];
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1384,13 +1384,19 @@ var INTERMediator = {
 
                 } else {   // cache is not active.
                     try {
+                        if (currentContext["portal"] == true) {
+                            for (condition in INTERMediator.additionalCondition) {
+                                optionalCondition.push(INTERMediator.additionalCondition[condition]);
+                                break;
+                            }
+                        }
                         targetRecords = INTERMediator_DBAdapter.db_query({
                             name: currentContext['name'],
                             records: currentContext['records'],
                             paging: currentContext['paging'],
                             fields: fieldList,
                             parentkeyvalue: relationValue,
-                            conditions: null,
+                            conditions: optionalCondition,
                             useoffset: true});
                     } catch (ex) {
                         if (ex == "_im_requath_request_") {
