@@ -308,17 +308,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $recId = substr($key, 0, strpos($key, '.'));
                 $oneRecordArray['-recid'] = $recId;
                 
+                $existsRelated = false;
                 foreach ($oneRecord as $field => $dataArray) {
                     if ($isFirstRecord) {
                         $this->fieldInfo[] = $field;
                     }
                     if (count($dataArray) == 1) {
                         if ($usePortal) {
-                            $existsRelated = false;
                             foreach ($dataArray as $portalKey => $portalValue) {
-                                if (strpos($field, '::') !== false) {
-                                    $existsRelated = true;
-                                }
                                 $oneRecordArray[$portalKey]['-recid'] = $recId;  // parent record id
                                 $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
@@ -332,7 +329,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         }
                     } else {
                         foreach ($dataArray as $portalKey => $portalValue) {
-                            if ($usePortal && strpos($field, '::') !== false) {
+                            if (strpos($field, '::') !== false) {
+                                $existsRelated = true;
                                 if (strpos($field, $dataSourceName . '::') !== false) {
                                     $oneRecordArray[$portalKey]['-recid'] = $recId;  // parent record id
                                     $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
