@@ -87,6 +87,32 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $this->fieldInfo;
     }
 
+    public function getSchema($dataSourceName)
+    {
+        $this->fieldInfo = null;
+        
+        $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), '');
+        $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+        $result = $this->fx->FMView();
+        
+        if (!is_array($result)) {
+            if ($this->dbSettings->isDBNative()) {
+                $this->dbSettings->setRequireAuthentication(true);
+            } else {
+                $this->logger->setErrorMessage(
+                    $this->stringWithoutPassword(get_class($result) . ': ' . $result->getDebugInfo()));
+            }
+            return false;
+        }
+        
+        $returnArray = array();
+        foreach ($result['fields'] as $key => $fieldInfo) {
+            $returnArray[$fieldInfo['name']] = '';
+        }
+        
+        return $returnArray;
+    }
+    
     public function getFromDB($dataSourceName)
     {
         $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}",2);
@@ -315,6 +341,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     }
                     if (count($dataArray) == 1) {
                         if ($usePortal) {
+                            if (strpos($field, '::') !== false) {
+                                $existsRelated = true;
+                            }
                             foreach ($dataArray as $portalKey => $portalValue) {
                                 $oneRecordArray[$portalKey]['-recid'] = $recId;  // parent record id
                                 $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
@@ -322,6 +351,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             }
                             if ($existsRelated == false) {
                                 $oneRecordArray = array();
+                                $oneRecordArray[0]['-recid'] = $recId;  // parent record id
                             }
                         } else {
                             $oneRecordArray[$field] = $this->formatter->formatterFromDB(
@@ -349,7 +379,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             $returnArray[] = $portalArray;
                         }
                     }
-                    $this->mainTableCount = count($returnArray);
+                    if ($existsRelated == false) {
+                        $this->mainTableCount = 0;
+                    } else {
+                        $this->mainTableCount = count($returnArray);
+                    }
                 } else {
                     $returnArray[] = $oneRecordArray;
                 }

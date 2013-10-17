@@ -522,6 +522,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 //        $this->logger->setDebugMessage("access={$access}, target={$this->dbSettings->getTargetName()}", 2);
         // Come here access=challenge or authenticated access
         switch ($access) {
+            case 'describe':
+                $result = $this->dbClass->getSchema($this->dbSettings->getTargetName());
+                $this->outputOfPrcessing = 'dbresult=' . arrayToJS($result, '') . ';'
+                    . "resultCount=0;";
+                break;
             case 'select':
                 $result = $this->getFromDB($this->dbSettings->getTargetName());
                 if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {

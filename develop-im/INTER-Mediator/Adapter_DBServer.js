@@ -254,8 +254,16 @@ INTERMediator_DBAdapter = {
             return;
         }
 
-        params = "access=select&name=" + encodeURIComponent(args['name']);
-        params += "&records=" + encodeURIComponent(args['records'] ? args['records'] : 10000000);
+        if (args['records'] == null) {
+            params = "access=select&name=" + encodeURIComponent(args['name']) + "&records=10000000";
+        } else {
+            if (args['records'] == 0) {
+                params = "access=describe&name=" + encodeURIComponent(args['name']);
+            } else {
+                params = "access=select&name=" + encodeURIComponent(args['name']);
+            }
+            params += "&records=" + encodeURIComponent(args['records']);
+        }
 
         if (args['primaryKeyOnly']) {
             params += "&pkeyonly=true";
