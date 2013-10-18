@@ -174,6 +174,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->dbSettings->setDataSourceName($context['name']);
         }
 
+        $childRecordId = null;
+        $childRecordIdValue = null;
         if ($this->dbSettings->getExtraCriteria()) {
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
@@ -182,6 +184,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
                     $this->fx->AddDBParam($condition['field'], $condition['value'], $op);
                     $hasFindParams = true;
+                    if (strpos($condition['field'], '::') !== false) {
+                        $childRecordId = $condition['field'];
+                        $childRecordIdValue = $condition['value'];
+                    }
                 }
             }
         }
@@ -385,7 +391,17 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $this->mainTableCount = count($returnArray);
                     }
                 } else {
-                    $returnArray[] = $oneRecordArray;
+                    if ($childRecordId == null) {
+                        $returnArray[] = $oneRecordArray;
+                    } else {
+                        foreach ($oneRecordArray as $portalArrayField => $portalArray) {
+                            if ($childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]) {
+                                $returnArray = array();
+                                $returnArray[] = $oneRecordArray[$portalArrayField];
+                                return $returnArray;
+                            }
+                        }
+                    }
                 }
                 $isFirstRecord = false;
             }

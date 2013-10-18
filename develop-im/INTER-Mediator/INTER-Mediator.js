@@ -373,18 +373,7 @@ var INTERMediator = {
                     }
                 }
                 
-                if (foreignValue != null && (typeof currentVal == "object" || currentVal instanceof Object)) {
-                    for (i = 0; i <= Object.keys(currentVal).length; i++) {
-                        if (currentVal.recordset[0][objectSpec['name'] + "::-recid"][i] == foreignValue) {
-                            portalRowNum = i;
-                        }
-                    }
-                }
-                if (portalRowNum != null) {
-                    currentVal = currentVal.recordset[0][objectSpec['field']][portalRowNum];
-                } else {
-                    currentVal = currentVal.recordset[0][objectSpec['field']];
-                }
+                currentVal = currentVal.recordset[0][objectSpec['field']];
                 isDiffrentOnDB = (objectSpec['initialvalue'] != currentVal);
             }
 
@@ -536,7 +525,7 @@ var INTERMediator = {
                         {field: keyField, operator: "=", value: keyValue}
                     ],
                     dataset: [
-                        {field: "-delete.related", operator: "=", value: foreignField.replace("::-recid", "") + "." + foreignValue}
+                        {field: "-delete.related", operator: "=", value: foreignField.replace("\:\:-recid", "") + "." + foreignValue}
                     ]
                 });
             } else {
@@ -611,7 +600,7 @@ var INTERMediator = {
                     ]
                 });
                 for (portalField in targetRecord["recordset"]) {
-                    if (portalField.contains(targetName + "::")) {
+                    if (portalField.indexOf(targetName + "::") > -1) {
                         targetPortalField = portalField;
                         if (portalField != targetName + "::id" && portalField != targetName + "::person_id") {
                             break;
@@ -647,10 +636,6 @@ var INTERMediator = {
             }
         }
 
-        for (key in removeNodes) {
-            removeNode = document.getElementById(removeNodes[key]);
-            removeNode.parentNode.removeChild(removeNode);
-        }
         for (i = 0; i < INTERMediator.keyFieldObject.length; i++) {
             if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodes) {
                 INTERMediator.keyFieldObject[i]['foreign-value'] = foreignValues;
