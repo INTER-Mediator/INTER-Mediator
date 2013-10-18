@@ -17,21 +17,6 @@
     <link href="../sample.css" rel="stylesheet" type="text/css"/>
     <script src="include_MySQL.php"></script>
     <script type="text/javascript">
-        /*
-         INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
-         if (name === 'invoice') {
-         //    modLine(repeaters[0]);
-         calcTotal(target);
-         }
-         };
-
-         INTERMediatorOnPage.expandingRecordFinish = function (name, repeaters) {
-         if (name === 'items') {
-         modLine(repeaters[0]);
-         //    alert(repeaters[0].tagName);
-         }
-         };
-         */
         INTERMediatorOnPage.invoiceExpanded = function (target) {
             calcTotal(target);
         };
@@ -65,7 +50,8 @@
                     s += INTERMediatorLib.toNumber(document.getElementById(nodes[i]).innerHTML);
                 }
                 if (document.getElementById('total')) {
-                    document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat(s, 2);
+                    var value = INTERMediatorLib.toNumber(document.getElementById(nodes[i]).innerHTML);
+                    s += (isNaN(value) ? 0 : value);
                 }
             }
         }
