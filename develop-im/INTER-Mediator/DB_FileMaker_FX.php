@@ -201,8 +201,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $foreignOperator = isset($relDef['operator']) ? $relDef['operator'] : 'eq';
                         $formattedValue = $this->formatter->formatterToDB(
                             "{$dataSourceName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
-                        $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
-                        $hasFindParams = true;
+                        if (!$usePortal) {
+                            $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
+                            $hasFindParams = true;
+                        }
                     }
                 }
             }

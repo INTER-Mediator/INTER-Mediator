@@ -563,7 +563,8 @@ var INTERMediator = {
     },
 
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
-        var currentContext, recordSet, index, key, removeNode, i, relationDef, targetRecord, portalField, targetPortalField;
+        var currentContext, recordSet, index, key, removeNode, i, relationDef, targetRecord, portalField,
+            targetPortalField, targetPortalValue;
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
@@ -602,7 +603,12 @@ var INTERMediator = {
                 for (portalField in targetRecord["recordset"]) {
                     if (portalField.indexOf(targetName + "::") > -1) {
                         targetPortalField = portalField;
-                        if (portalField != targetName + "::id" && portalField != targetName + "::person_id") {
+                        if (portalField == targetName + "::" + recordSet[0]['field']) {
+                            targetPortalValue = recordSet[0]['value'];
+                        } else {
+                            targetPortalValue = "";
+                        }
+                        if (portalField != targetName + "::id" && portalField != targetName + "::" + recordSet[0]['field']) {
                             break;
                         }
                     }
@@ -613,7 +619,7 @@ var INTERMediator = {
                         {field: currentContext["key"] ? currentContext["key"] : "-recid", operator: "=", value: keyValue}
                     ],
                     dataset: [
-                        {field: targetPortalField + ".0", value: "[WIP]"}
+                        {field: targetPortalField + ".0", value: targetPortalValue}
                     ]
                 });
             } else {
