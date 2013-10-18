@@ -645,6 +645,13 @@ var INTERMediator = {
         for (i = 0; i < INTERMediator.keyFieldObject.length; i++) {
             if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodes) {
                 INTERMediator.keyFieldObject[i]['foreign-value'] = foreignValues;
+                if (currentContext["portal"] == true) {
+                    INTERMediator.additionalCondition[targetName] = {
+                        field: currentContext["key"] ? currentContext["key"] : "-recid",
+                        operator: "=",
+                        value: keyValue
+                    };
+                }
                 INTERMediator.constructMain(i);
                 break;
             }
