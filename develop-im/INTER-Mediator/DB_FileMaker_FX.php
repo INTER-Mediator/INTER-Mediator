@@ -397,7 +397,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $returnArray[] = $oneRecordArray;
                     } else {
                         foreach ($oneRecordArray as $portalArrayField => $portalArray) {
-                            if ($childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]) {
+                            if (isset($oneRecordArray[$childRecordId]) 
+                                    && $childRecordIdValue == $oneRecordArray[$childRecordId]) {
+                                $returnArray = array();
+                                $returnArray[] = $oneRecordArray;
+                                return $returnArray;
+                            }
+                            if (isset($oneRecordArray[$portalArrayField][$childRecordId]) 
+                                    && $childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]) {
                                 $returnArray = array();
                                 $returnArray[] = $oneRecordArray[$portalArrayField];
                                 return $returnArray;
