@@ -294,7 +294,7 @@ INTERMediator_DBAdapter = {
             if (criteriaObject["field"]) {
                 criteriaObject = [criteriaObject];
             }
-            for (index in criteriaObject) {
+            for (index = 0 ; index < criteriaObject.length ; index++) {
                 if (criteriaObject.hasOwnProperty(index)) {
                     params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
                     if (criteriaObject[index]["operator"] !== undefined) {
@@ -305,6 +305,7 @@ INTERMediator_DBAdapter = {
                     }
                     extCount++;
                 }
+
             }
         }
 
@@ -314,11 +315,12 @@ INTERMediator_DBAdapter = {
             if (sortkeyObject["field"]) {
                 sortkeyObject = [sortkeyObject];
             }
-            for (index in sortkeyObject) {
+            for (index = 0 ; index < sortkeyObject.length ; index++) {
                 params += "&sortkey" + extCount + "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
                 params += "&sortkey" + extCount + "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
                 extCount++;
             }
+
         }
 
         params += "&randkey" + Math.random();    // For ie...
@@ -431,8 +433,8 @@ INTERMediator_DBAdapter = {
             }
         }
         for (extCount = 0; extCount < args['dataset'].length; extCount++) {
-            params += "&field_" + (counter+extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
-            params += "&value_" + (counter+extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
+            params += "&field_" + (counter + extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
+            params += "&value_" + (counter + extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
         }
         result = this.server_access(params, 1013, 1014);
         return result.dbresult;
