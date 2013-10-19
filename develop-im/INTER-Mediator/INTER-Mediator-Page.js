@@ -240,6 +240,7 @@ INTERMediatorOnPage = {
             userBox.type = "text";
             userBox.id = "_im_username";
             userBox.size = "24";
+            userBox.setAttribute("autocapitalize", "off");
             userLabel.appendChild(userBox);
 
             breakLine = document.createElement('BR');
