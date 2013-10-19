@@ -19,7 +19,7 @@ var INTERMediator = {
     // Same as the "separator".
     additionalCondition: {},
     // This array should be [{tableName: [{field:xxx,operator:xxx,value:xxxx}]}, ... ]
-    additionalSortKey: [],
+    additionalSortKey: {},
     // This array should be [{tableName: [{field:xxx,direction:xxx}]}, ... ]
     defaultTargetInnerHTML: false,
     // For general elements, if target isn't specified, the value will be set to innerHTML.

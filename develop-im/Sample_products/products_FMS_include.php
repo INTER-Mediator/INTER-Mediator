@@ -20,12 +20,12 @@ IM_Entry(
     ),
     array(
         'formatter' => array(
-            array('field' => 'product@photofile', 'converter-class' => 'AppendPrefix', 'parameter' => 'images/'),
-            array('field' => 'product@id', 'converter-class' => 'AppendPrefix', 'parameter' => 'detail_FMS_include.php?id='),
+//            array('field' => 'product@photofile', 'converter-class' => 'AppendPrefix', 'parameter' => 'images/'),
+//            array('field' => 'product@id', 'converter-class' => 'AppendPrefix', 'parameter' => 'detail_FMS_include.php?id='),
             array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
         ),
     ),
     array('db-class' => 'FileMaker_FX'),
-    false // debug
+    2 // debug
 );
 ?>
