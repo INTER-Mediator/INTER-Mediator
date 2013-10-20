@@ -556,7 +556,11 @@ var INTERMediator = {
 
         for (key in removeNodes) {
             removeNode = document.getElementById(removeNodes[key]);
-            removeNode.parentNode.removeChild(removeNode);
+            try {
+                removeNode.parentNode.removeChild(removeNode);
+            } catch (ex) {
+                // Avoid an error for Safari
+            }
         }
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
@@ -673,7 +677,15 @@ var INTERMediator = {
                 INTERMediator.setErrorMessage(ex, "EXCEPTION-4");
             }
         }
-
+        
+        for (key in removeNodes) {
+            removeNode = document.getElementById(removeNodes[key]);
+            try {
+                removeNode.parentNode.removeChild(removeNode);
+            } catch (ex) {
+                // Avoid an error for Safari
+            }
+        }
         for (i = 0; i < INTERMediator.keyFieldObject.length; i++) {
             if (INTERMediator.keyFieldObject[i]['node'].getAttribute('id') == updateNodes) {
                 INTERMediator.keyFieldObject[i]['foreign-value'] = foreignValues;
