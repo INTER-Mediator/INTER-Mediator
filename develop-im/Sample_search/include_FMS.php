@@ -21,7 +21,7 @@ IM_Entry(
     ),
     null,
     array('db-class' => 'FileMaker_FX'),
-    2
+    false
 );
 
 ?>

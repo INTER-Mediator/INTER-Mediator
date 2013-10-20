@@ -273,6 +273,13 @@ var IMParts_im_fileupload = {
                                                 break;
                                             }
                                         }
+                                    } else {
+                                        for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
+                                            if (INTERMediator.keyFieldObject[i]['name'] == updateInfo['name']) {
+                                                indexContext = i;
+                                                break;
+                                            }
+                                        }
                                     }
                                     INTERMediator.construct(indexContext);
                                 });
