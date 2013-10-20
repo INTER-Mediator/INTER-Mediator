@@ -27,8 +27,11 @@ IM_Entry(
             'view' => 'person_layout',
             'repeat-control' => 'confirm-delete insert',
             'relation' => array(
-                array('portal' => true)
+                array('foreign-key' => 'contact_to::person_id', 'join-field' => 'id', 'operator' => 'eq', 'portal' => true)
             ),
+            //'default-values' => array(
+            //    array('field'=>'contact_to::summary', 'value'=> 'test'),
+            //),
         ),
         array(
             'name' => 'contact_way',

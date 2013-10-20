@@ -572,7 +572,7 @@ var INTERMediator = {
         }
         INTERMediatorOnPage.showProgress();
         currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
-        recordSet = [];
+        recordSet = [], relatedRecordSet = [];
         if (foreignValues != null) {
             for (index in currentContext['relation']) {
                 recordSet.push({
@@ -593,57 +593,66 @@ var INTERMediator = {
                 }
             }
             if (currentContext["portal"] == true) {
-                targetRecord = INTERMediator_DBAdapter.db_query({
-                    name: targetName,
-                    records: 1,
-                    conditions: [
-                        {field: currentContext["key"] ? currentContext["key"] : "-recid", operator: "=", value: keyValue}
-                    ]
-                });
-                for (portalField in targetRecord["recordset"][0][0]) {
-                    if (portalField.indexOf(targetName + "::") > -1) {
-                        existRelated = true;
-                        targetPortalField = portalField;
-                        if (portalField == targetName + "::" + recordSet[0]['field']) {
-                            targetPortalValue = recordSet[0]['value'];
-                        } else {
-                            targetPortalValue = "";
-                        }
-                        if (portalField != targetName + "::id" && portalField != targetName + "::" + recordSet[0]['field']) {
-                            break;
-                        }
-                    }
+                relatedRecordSet = [];
+                for (index in currentContext["default-values"]) {
+                    relatedRecordSet.push({
+                        field: currentContext["default-values"][index]["field"] + ".0",
+                        value: currentContext["default-values"][index]["value"]
+                    });
                 }
-                if (existRelated == false) {
+                
+                if (relatedRecordSet.length == 0) {
+                    targetPortalValue = "";
+                    
                     targetRecord = INTERMediator_DBAdapter.db_query({
                         name: targetName,
-                        records: 0,
+                        records: 1,
                         conditions: [
                             {field: currentContext["key"] ? currentContext["key"] : "-recid", operator: "=", value: keyValue}
                         ]
                     });
-                    for (portalField in targetRecord["recordset"]) {
+                    for (portalField in targetRecord["recordset"][0][0]) {
                         if (portalField.indexOf(targetName + "::") > -1) {
+                            existRelated = true;
                             targetPortalField = portalField;
                             if (portalField == targetName + "::" + recordSet[0]['field']) {
                                 targetPortalValue = recordSet[0]['value'];
-                            } else {
-                                targetPortalValue = "";
                             }
                             if (portalField != targetName + "::id" && portalField != targetName + "::" + recordSet[0]['field']) {
                                 break;
                             }
                         }
                     }
+
+                    if (existRelated == false) {
+                        targetRecord = INTERMediator_DBAdapter.db_query({
+                            name: targetName,
+                            records: 0,
+                            conditions: [
+                                {field: currentContext["key"] ? currentContext["key"] : "-recid", operator: "=", value: keyValue}
+                            ]
+                        });
+                        for (portalField in targetRecord["recordset"]) {
+                            if (portalField.indexOf(targetName + "::") > -1) {
+                                targetPortalField = portalField;
+                                if (portalField == targetName + "::" + recordSet[0]['field']) {
+                                    targetPortalValue = recordSet[0]['value'];
+                                }
+                                if (portalField != targetName + "::id" && portalField != targetName + "::" + recordSet[0]['field']) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    relatedRecordSet.push({field: targetPortalField + ".0", value: targetPortalValue});
                 }
+                
                 INTERMediator_DBAdapter.db_update({
                     name: targetName,
                     conditions: [
                         {field: currentContext["key"] ? currentContext["key"] : "-recid", operator: "=", value: keyValue}
                     ],
-                    dataset: [
-                        {field: targetPortalField + ".0", value: targetPortalValue}
-                    ]
+                    dataset: relatedRecordSet
                 });
             } else {
                 INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
