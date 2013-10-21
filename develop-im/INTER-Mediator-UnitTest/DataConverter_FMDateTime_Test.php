@@ -23,7 +23,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $this->assertSame($this->dataconverter->converterFromDBtoUser($datetimeString), $convertedDatetimeString, $testName);
 
         $dateString = '01/05/2000';
-        $convertedDatetimeString = strftime('%x', strtotime('01/05/00'));
+        $convertedDateString = strftime('%x', strtotime('01/05/00'));
         $this->assertSame($this->dataconverter->converterFromDBtoUser($dateString), $convertedDateString, $testName);
 
         $timeString = '12:34:56';
