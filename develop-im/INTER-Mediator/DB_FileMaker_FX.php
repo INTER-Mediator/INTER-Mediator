@@ -184,6 +184,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
                     $this->fx->AddDBParam($condition['field'], $condition['value'], $op);
                     $hasFindParams = true;
+                    if ($condition['field'] == $this->getDefaultKey()) {
+                        $this->fx->FMSkipRecords(0);
+                    }
                     if (strpos($condition['field'], '::') !== false) {
                         $childRecordId = $condition['field'];
                         $childRecordIdValue = $condition['value'];
@@ -340,7 +343,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $oneRecordArray = array();
                 
                 $recId = substr($key, 0, strpos($key, '.'));
-                $oneRecordArray['-recid'] = $recId;
+                $oneRecordArray[$this->getDefaultKey()] = $recId;
                 
                 $existsRelated = false;
                 foreach ($oneRecord as $field => $dataArray) {
@@ -353,13 +356,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                 $existsRelated = true;
                             }
                             foreach ($dataArray as $portalKey => $portalValue) {
-                                $oneRecordArray[$portalKey]['-recid'] = $recId;  // parent record id
+                                $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId;  // parent record id
                                 $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                             }
                             if ($existsRelated == false) {
                                 $oneRecordArray = array();
-                                $oneRecordArray[0]['-recid'] = $recId;  // parent record id
+                                $oneRecordArray[0][$this->getDefaultKey()] = $recId;  // parent record id
                             }
                         } else {
                             $oneRecordArray[$field] = $this->formatter->formatterFromDB(
@@ -370,7 +373,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             if (strpos($field, '::') !== false) {
                                 $existsRelated = true;
                                 if (strpos($field, $dataSourceName . '::') !== false) {
-                                    $oneRecordArray[$portalKey]['-recid'] = $recId;  // parent record id
+                                    $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId;  // parent record id
                                     $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                         "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                                 }
@@ -383,7 +386,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
                 if ($usePortal) {
                     foreach ($oneRecordArray as $portalArrayField => $portalArray) {
-                        if ($portalArrayField !== '-recid') {
+                        if ($portalArrayField !== $this->getDefaultKey()) {
                             $returnArray[] = $portalArray;
                         }
                     }
@@ -446,7 +449,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : '-recid';
+        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->getDefaultKey();
 
         if (isset($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
@@ -605,7 +608,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
-        $keyFieldName = isset($context['key']) ? $context['key'] : '-recid';
+        $keyFieldName = isset($context['key']) ? $context['key'] : $this->getDefaultKey();
 
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         $requiredFields = $this->dbSettings->getFieldsRequired();
@@ -698,7 +701,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         foreach ($result['data'] as $key => $row) {
-            if ($keyFieldName == '-recid') {
+            if ($keyFieldName == $this->getDefaultKey()) {
                 $recId = substr($key, 0, strpos($key, '.'));
                 $keyValue = $recId;
             } else {

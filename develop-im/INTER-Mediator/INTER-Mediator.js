@@ -600,7 +600,7 @@ var INTERMediator = {
                 relatedRecordSet = [];
                 for (index in currentContext["default-values"]) {
                     relatedRecordSet.push({
-                        field: currentContext["default-values"][index]["field"] + ".0",
+                        field: targetName + "::" + currentContext["default-values"][index]["field"] + ".0",
                         value: currentContext["default-values"][index]["value"]
                     });
                 }
@@ -621,6 +621,7 @@ var INTERMediator = {
                             targetPortalField = portalField;
                             if (portalField == targetName + "::" + recordSet[0]['field']) {
                                 targetPortalValue = recordSet[0]['value'];
+                                break;
                             }
                             if (portalField != targetName + "::id" && portalField != targetName + "::" + recordSet[0]['field']) {
                                 break;
@@ -641,6 +642,7 @@ var INTERMediator = {
                                 targetPortalField = portalField;
                                 if (portalField == targetName + "::" + recordSet[0]['field']) {
                                     targetPortalValue = recordSet[0]['value'];
+                                    break;
                                 }
                                 if (portalField != targetName + "::id" && portalField != targetName + "::" + recordSet[0]['field']) {
                                     break;

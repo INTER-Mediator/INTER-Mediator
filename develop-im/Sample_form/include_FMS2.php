@@ -23,14 +23,14 @@ IM_Entry(
             ),
         ),
         array(
-            'name' => 'contact_to',
+            'name' => 'contact_to',  // related table occurrence name
             'view' => 'person_layout',
             'repeat-control' => 'confirm-delete insert',
             'relation' => array(
-                array('foreign-key' => 'contact_to::person_id', 'join-field' => 'id', 'operator' => 'eq', 'portal' => true)
+                array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq', 'portal' => true),
             ),
             //'default-values' => array(
-            //    array('field'=>'contact_to::summary', 'value'=> 'test'),
+            //    array('field'=>'summary', 'value'=> 'test'),
             //),
         ),
         array(
