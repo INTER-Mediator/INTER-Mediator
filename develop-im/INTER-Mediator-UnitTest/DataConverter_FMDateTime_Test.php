@@ -21,7 +21,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $testName = 'Check converterFromDBtoUser function in DataConverter_FMDateTime.php.';
         
         $datetimeString = '01/05/2000 12:34:56';
-        if (getenv('TRAVIS_PHP_VERSION')) {
+        if (TRAVIS_CI) {
             $convertedDatetimeString = "01/05/00 12:34:56";  // for Travis CI
         } else {
             $convertedDatetimeString = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
