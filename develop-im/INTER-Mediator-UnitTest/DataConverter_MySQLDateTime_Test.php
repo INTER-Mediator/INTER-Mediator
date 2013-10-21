@@ -9,35 +9,27 @@ class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
-        define('TRAVIS_CI' , (bool) getenv('TRAVIS_PHP_VERSION'));
-        
-        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en';
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         
         $this->dataconverter = new DataConverter_MySQLDateTime();
     }
     
     public function test_converterFromDBtoUser()
     {
-        $testName = 'Check converterFromDBtoUser function in DataConverter_MySQLDateTime.php.';
+        $testName = "Check converterFromDBtoUser function in DataConverter_MySQLDateTime.php.";
         
-        $datetimeString = '01/05/2000 12:34:56';
-        if (TRAVIS_CI) {
-            $convertedDatetimeString = "01/05/2000 12:34:56";  // for Travis CI
-        } else {
-            $convertedDatetimeString = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
-        }
+        $datetimeString = "2000-01-05 12:34:56";
+        //$convertedDatetimeString = "2000/01/05 12:34:56";
+        $convertedDatetimeString = "01/05/00 12:34:56";  // for Travis CI
         $this->assertSame($this->dataconverter->converterFromDBtoUser($datetimeString), $convertedDatetimeString, $testName);
-        
-        $dateString = '01/05/2000';
-        if (TRAVIS_CI) {
-            $convertedDateString = "01/05/2000";  // for Travis CI
-        } else {
-            $convertedDateString = strftime('%x', strtotime('01/05/00'));
-        }
+
+        $dateString = "2000-01-05";
+        //$convertedDateString = "2000/01/05";
+        $convertedDateString = "01/05/00";  // for Travis CI
         $this->assertSame($this->dataconverter->converterFromDBtoUser($dateString), $convertedDateString, $testName);
 
-        $timeString = '12:34:56';
-        $convertedTimeString = '12:34:56';
+        $timeString = "12:34:56";
+        $convertedTimeString = "12:34:56";
         $this->assertSame($this->dataconverter->converterFromDBtoUser($timeString), $convertedTimeString, $testName);
     }
 }
