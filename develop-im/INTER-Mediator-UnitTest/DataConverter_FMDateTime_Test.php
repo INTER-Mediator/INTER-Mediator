@@ -9,6 +9,8 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
 {
     public function setUp()
     {
+        define('TRAVIS_CI' , (bool) getenv('TRAVIS_PHP_VERSION'));
+        
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en';
         
         $this->dataconverter = new DataConverter_FMDateTime();
@@ -27,7 +29,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $this->assertSame($this->dataconverter->converterFromDBtoUser($datetimeString), $convertedDatetimeString, $testName);
 
         $dateString = '01/05/2000';
-        if (getenv('TRAVIS_PHP_VERSION')) {
+        if (TRAVIS_CI) {
             $convertedDateString = "01/05/00";  // for Travis CI
         } else {
             $convertedDateString = strftime('%x', strtotime('01/05/00'));
