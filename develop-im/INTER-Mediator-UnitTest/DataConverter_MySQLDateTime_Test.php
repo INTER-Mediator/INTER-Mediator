@@ -21,19 +21,13 @@ class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
         $testName = 'Check converterFromDBtoUser function in DataConverter_MySQLDateTime.php.';
         
         $datetimeString = '01/05/2000 12:34:56';
-        if (TRAVIS_CI) {
-            $convertedDatetimeString = "01/05/00 12:34:56";  // for Travis CI
-        } else {
-            $convertedDatetimeString = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
-        }
+        $convertedDatetimeString = "01/05/00 12:34:56";  // for Travis CI
+        //$convertedDatetimeString = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
         $this->assertSame($this->dataconverter->converterFromDBtoUser($datetimeString), $convertedDatetimeString, $testName);
         
         $dateString = '01/05/2000';
-        if (TRAVIS_CI) {
-            $convertedDateString = "01/05/00";  // for Travis CI
-        } else {
-            $convertedDateString = strftime('%x', strtotime('01/05/00'));
-        }
+        $convertedDateString = "01/05/00";  // for Travis CI
+        //$convertedDateString = strftime('%x', strtotime('01/05/00'));
         $this->assertSame($this->dataconverter->converterFromDBtoUser($dateString), $convertedDateString, $testName);
 
         $timeString = '12:34:56';
