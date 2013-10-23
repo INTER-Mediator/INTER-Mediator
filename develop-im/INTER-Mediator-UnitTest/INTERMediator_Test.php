@@ -76,7 +76,12 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $prefix = '0';
         $exarray = array('password');
         $resultString = "'0':{'database':'TestDB','user':'web'}";
+        $this->assertSame(arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
 
+        $ar = array('user' => 'web', 'password' => 'password', 'database' => 'TestDB');
+        $prefix = '';
+        $exarray = array('password');
+        $resultString = "{'user':'web','database':'TestDB'}";
         $this->assertSame(arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
     }
     

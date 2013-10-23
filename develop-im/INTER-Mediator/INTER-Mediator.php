@@ -182,20 +182,19 @@ function arrayToJSExcluding($ar, $prefix, $exarray)
             $items[] = arrayToJSExcluding($value, $key, $exarray);
         }
         $currentKey = (string)$prefix;
-        if ($currentKey == '') {
-            $returnStr = "{" . implode(',', $items) . '}';
-        } else {
-            $str = '';
-            foreach ($items as $item) {
-                if (!in_array($currentKey, $exarray) && $item != '') {
-                    if ($str == '') {
-                        $str .= $item;
-                    } else {
-                        $str .= ',' . $item;
-                    }
+        foreach ($items as $item) {
+            if (!in_array($currentKey, $exarray) && $item != '') {
+                if ($returnStr == '') {
+                    $returnStr .= $item;
+                } else {
+                    $returnStr .= ',' . $item;
                 }
             }
-            $returnStr = "'{$currentKey}':{" . $str . '}';
+        }
+        if ($currentKey == '') {
+            $returnStr = '{' . $returnStr . '}';
+        } else {
+            $returnStr = "'{$currentKey}':{" . $returnStr . '}';
         }
     } else {
         $currentKey = (string)$prefix;
