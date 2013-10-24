@@ -49,13 +49,13 @@ Change Log
 
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.3.10-dev
+Ver.4.0-dev
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
 - New sample (Master-Detail Style Page for FileMaker's portal access version) is added.
 - Modify FX.php for FileMaker Server to enable the "fmalt" and retrieve the record id on portal objects.
 - Modify FX.php for FileMaker Server to disable the surrogate input patch when using FileMaker Server 12
   (by specifying $dbDataType = 'FMPro12' in params.php).
-- The 'password' key in a definition file doesn't send to clients.
+- [SECURITY FIX] Database connection information (the 'password' key etc.) in a definition file doesn't send to clients.
 - [INFO] FileMaker's portal objects requires FileMaker Server 9 or later.
 - [BUG FIX] Fix DataConverter_FMDateTime and DataConverter_MySQLDateTime's issue on Windows.
 

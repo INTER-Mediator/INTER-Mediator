@@ -145,7 +145,8 @@ class GenerateJSCode
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDBSpecification", "function(){return ",
-            arrayToJSExcluding($dbspecification, '', array('password')), ";}");
+            arrayToJSExcluding($dbspecification, '', 
+                array('dsn', 'option', 'database', 'user', 'password', 'server', 'port', 'protocol', 'datatype')), ";}");
         $isEmailAsUsernae = isset($options['authentication'])
             && isset($options['authentication']['email-as-username'])
             && $options['authentication']['email-as-username'] === true;
