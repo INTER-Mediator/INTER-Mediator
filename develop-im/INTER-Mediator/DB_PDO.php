@@ -46,7 +46,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return true;
         }
         try {
-            $this->link = new DB_PDO($this->dbSettings->getDbSpecDSN(),
+            $this->link = new PDO($this->dbSettings->getDbSpecDSN(),
                 $this->dbSettings->getDbSpecUser(),
                 $this->dbSettings->getDbSpecPassword(),
                 is_array($this->dbSettings->getDbSpecOption()) ? $this->dbSettings->getDbSpecOption() : array());
@@ -64,7 +64,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return true;
         }
         try {
-            $this->link = new DB_PDO($dsnString);
+            $this->link = new PDO($dsnString);
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage());
             return false;
