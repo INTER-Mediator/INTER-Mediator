@@ -537,8 +537,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $counter = 0;
                 $fieldValues = $this->dbSettings->getValue();
                 foreach ($this->dbSettings->getFieldsRequired() as $field) {
-                    $dotPos = strpos($field, '.');
-                    $originalfield = substr($field, 0, $dotPos);
+                    if (strpos($field, '.') !== false) {
+                        // remove dot + recid number if contains recid (example: "TO::FIELD.0" -> "TO::FIELD")
+                        $dotPos = strpos($field, '.');
+                        $originalfield = substr($field, 0, $dotPos);
+                    } else {
+                        $originalfield = $field;
+                    }
                     $value = $fieldValues[$counter];
                     $counter++;
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
