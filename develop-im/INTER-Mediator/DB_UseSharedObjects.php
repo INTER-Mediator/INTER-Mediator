@@ -37,17 +37,17 @@ abstract class DB_UseSharedObjects
         }
     }
 
-    function setSettings($dbSettings)
+    private function setSettings($dbSettings)
     {
         $this->dbSettings = $dbSettings;
     }
 
-    function setLogger($logger)
+    private function setLogger($logger)
     {
         $this->logger = $logger;
     }
 
-    function setFormatter($formatter)
+    private function setFormatter($formatter)
     {
         $this->formatter = $formatter;
     }

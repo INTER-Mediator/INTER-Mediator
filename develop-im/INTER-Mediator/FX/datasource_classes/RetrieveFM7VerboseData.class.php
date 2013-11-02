@@ -14,6 +14,7 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
     var $currentFlag = '';
     var $currentRecord = '';
     var $currentSubrecordIndex;
+    var $currentSubrecordId;
     var $currentField = '';
     var $currentFieldIndex;
     var $isInRelatedSet = false;
@@ -71,6 +72,7 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
                     if ($this->FX->portalAsRecord) {
                         $this->FX->currentData[$this->currentRecord] = array( '-recid' => $recordID, '-modid' => $modID );
                     }
+                    $this->currentSubrecordId = $recordID;
                 }
                 else {
                     $this->currentRecord = $recordID . '.' . $modID;
@@ -91,7 +93,7 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
                 $this->FX->totalRecordCount = $attrs['TOTAL-COUNT'];
                 break;
             case 'field-definition':
-                if ($this->FX->charSet  != '' && defined('MB_OVERLOAD_STRING')) {
+                if ($this->FX->charSet  != '' && function_exists('mb_convert_encoding')) {
                     $this->FX->fieldInfo[$this->FX->fieldCount]['name'] = mb_convert_encoding($attrs['NAME'], $this->FX->charSet, 'UTF-8');
                 }
                 else {
@@ -123,6 +125,9 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
             case 'parseData':
                 if ($this->FX->useInnerArray) {
                     $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= $this->xmlDecode($data);
+                    if (!empty($this->relatedSetTOC)) {
+                        $this->FX->currentData[$this->currentRecord][$this->relatedSetTOC . '::-recid'][$this->currentFieldIndex] = $this->currentSubrecordId;
+                    }
                 } else {
                     if ($this->isRemainName($this->currentField))    {
                         if ( $this->FX->portalAsRecord ) {
@@ -195,7 +200,7 @@ class RetrieveFM7VerboseData extends RetrieveFM7Data {
      */
 
     function xmlDecode ($value) {
-        if ($this->FX->dataParamsEncoding  != '' && defined('MB_OVERLOAD_STRING')) {
+        if ($this->FX->dataParamsEncoding != '' && function_exists('mb_convert_encoding')) {
             return mb_convert_encoding($value, $this->FX->charSet, 'UTF-8');
         }
         return preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $value);

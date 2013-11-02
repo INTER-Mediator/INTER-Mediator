@@ -31,19 +31,29 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     }
 
-    function setupFXforAuth($layoutName, $recordCount)
+    public static function defaultKey()
+    {
+        return "-recid";
+    }
+
+    public function getDefaultKey()
+    {
+        return "-recid";
+    }
+
+    private function setupFXforAuth($layoutName, $recordCount)
     {
         $this->fxAuth = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
-    function setupFXforDB($layoutName, $recordCount)
+    private function setupFXforDB($layoutName, $recordCount)
     {
         $this->fx = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    function setupFX_Impl($layoutName, $recordCount, $user, $password)
+    private function setupFX_Impl($layoutName, $recordCount, $user, $password)
     {
         $fx = new FX(
             $this->dbSettings->getDbSpecServer(),
@@ -57,32 +67,74 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $fx;
     }
 
-    function stringWithoutPassword($str)
+    private function stringWithoutPassword($str)
     {
         return str_replace($this->dbSettings->getAccessPassword(), "********", $str);
     }
 
-    function stringReturnOnly($str)
+    private function stringReturnOnly($str)
     {
         return str_replace("\n\r", "\r", str_replace("\n", "\r", $str));
     }
 
-    function unifyCRLF($str)
+    private function unifyCRLF($str)
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str));
     }
 
-    function getFieldInfo($dataSourceName)
+    public function getFieldInfo($dataSourceName)
     {
         return $this->fieldInfo;
     }
 
-    function getFromDB($dataSourceName)
+    public function getSchema($dataSourceName)
+    {
+        $this->fieldInfo = null;
+        
+        $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), '');
+        $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+        $result = $this->fx->FMView();
+        
+        if (!is_array($result)) {
+            if ($this->dbSettings->isDBNative()) {
+                $this->dbSettings->setRequireAuthentication(true);
+            } else {
+                $this->logger->setErrorMessage(
+                    $this->stringWithoutPassword(get_class($result) . ': ' . $result->getDebugInfo()));
+            }
+            return false;
+        }
+        
+        $returnArray = array();
+        foreach ($result['fields'] as $key => $fieldInfo) {
+            $returnArray[$fieldInfo['name']] = '';
+        }
+        
+        return $returnArray;
+    }
+    
+    public function getFromDB($dataSourceName)
     {
         $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}",2);
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
+        
+        $usePortal = false;
+        if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
+            foreach ($context['relation'] as $relDef) {
+                if (isset($relDef['portal']) && $relDef['portal']) {
+                    $usePortal = true;
+                    $context['records'] = 1;
+                    $context['paging'] = true;
+                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                }
+            }
+        }
+        if ($this->dbSettings->getPrimaryKeyOnly()) {
+            $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+        }
+
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(),
             isset($context['records']) ? $context['records'] : 100000000);
         $this->fx->FMSkipRecords(
@@ -102,8 +154,28 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $hasFindParams = true;
                 }
             }
+        } elseif ($usePortal && isset($context['view'])) {
+            $this->dbSettings->setDataSourceName($context['view']);
+            $parentTable = $this->dbSettings->getDataSourceTargetArray();
+            if (isset($parentTable['query'])) {
+                foreach ($parentTable['query'] as $condition) {
+                    if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
+                        $this->fx->SetLogicalOR();
+                    } else {
+                        if (isset($condition['operator'])) {
+                            $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
+                        } else {
+                            $this->fx->AddDBParam($condition['field'], $condition['value']);
+                        }
+                        $hasFindParams = true;
+                    }
+                }
+            }
+            $this->dbSettings->setDataSourceName($context['name']);
         }
 
+        $childRecordId = null;
+        $childRecordIdValue = null;
         if ($this->dbSettings->getExtraCriteria()) {
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
@@ -112,20 +184,30 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
                     $this->fx->AddDBParam($condition['field'], $condition['value'], $op);
                     $hasFindParams = true;
+                    if ($condition['field'] == $this->getDefaultKey()) {
+                        $this->fx->FMSkipRecords(0);
+                    }
+                    if (strpos($condition['field'], '::') !== false) {
+                        $childRecordId = $condition['field'];
+                        $childRecordIdValue = $condition['value'];
+                    }
                 }
             }
         }
+        
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
             foreach ($context['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
-                    if ($relDef['join-field'] == $foreignDef['field']) {
+                    if (isset($relDef['join-field']) && $relDef['join-field'] == $foreignDef['field']) {
                         $foreignField = $relDef['foreign-key'];
                         $foreignValue = $foreignDef['value'];
                         $foreignOperator = isset($relDef['operator']) ? $relDef['operator'] : 'eq';
                         $formattedValue = $this->formatter->formatterToDB(
                             "{$dataSourceName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
-                        $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
-                        $hasFindParams = true;
+                        if (!$usePortal) {
+                            $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
+                            $hasFindParams = true;
+                        }
                     }
                 }
             }
@@ -180,7 +262,21 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $this->fx->AddSortParam($condition['field']);
                 }
             }
+        } elseif ($usePortal && isset($context['view'])) {
+            $this->dbSettings->setDataSourceName($context['view']);
+            $parentTable = $this->dbSettings->getDataSourceTargetArray();
+            if (isset($parentTable['sort'])) {
+                foreach ($parentTable['sort'] as $condition) {
+                    if (isset($condition['direction'])) {
+                        $this->fx->AddSortParam($condition['field'], $condition['direction']);
+                    } else {
+                        $this->fx->AddSortParam($condition['field']);
+                    }
+                }
+            }
+            $this->dbSettings->setDataSourceName($context['name']);
         }
+
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
                 $this->fx->AddSortParam($condition['field'], $condition['direction']);
@@ -247,36 +343,113 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $oneRecordArray = array();
                 
                 $recId = substr($key, 0, strpos($key, '.'));
-                $oneRecordArray['-recid'] = $recId;
+                $oneRecordArray[$this->getDefaultKey()] = $recId;
                 
+                $existsRelated = false;
                 foreach ($oneRecord as $field => $dataArray) {
                     if ($isFirstRecord) {
                         $this->fieldInfo[] = $field;
                     }
                     if (count($dataArray) == 1) {
-                        $oneRecordArray[$field] = $this->formatter->formatterFromDB(
-                            "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
+                        if ($usePortal) {
+                            if (strpos($field, '::') !== false) {
+                                $existsRelated = true;
+                            }
+                            foreach ($dataArray as $portalKey => $portalValue) {
+                                $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId;  // parent record id
+                                $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
+                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            }
+                            if ($existsRelated == false) {
+                                $oneRecordArray = array();
+                                $oneRecordArray[0][$this->getDefaultKey()] = $recId;  // parent record id
+                            }
+                        } else {
+                            $oneRecordArray[$field] = $this->formatter->formatterFromDB(
+                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
+                        }
+                    } else {
+                        foreach ($dataArray as $portalKey => $portalValue) {
+                            if (strpos($field, '::') !== false) {
+                                $existsRelated = true;
+                                if (strpos($field, $dataSourceName . '::') !== false) {
+                                    $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId;  // parent record id
+                                    $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
+                                        "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                                }
+                            } else {
+                                $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
+                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            }
+                        }
                     }
                 }
-                $returnArray[] = $oneRecordArray;
+                if ($usePortal) {
+                    foreach ($oneRecordArray as $portalArrayField => $portalArray) {
+                        if ($portalArrayField !== $this->getDefaultKey()) {
+                            $returnArray[] = $portalArray;
+                        }
+                    }
+                    if ($existsRelated == false) {
+                        $this->mainTableCount = 0;
+                    } else {
+                        $this->mainTableCount = count($returnArray);
+                    }
+                } else {
+                    if ($childRecordId == null) {
+                        $returnArray[] = $oneRecordArray;
+                    } else {
+                        foreach ($oneRecordArray as $portalArrayField => $portalArray) {
+                            if (isset($oneRecordArray[$childRecordId]) 
+                                    && $childRecordIdValue == $oneRecordArray[$childRecordId]) {
+                                $returnArray = array();
+                                $returnArray[] = $oneRecordArray;
+                                return $returnArray;
+                            }
+                            if (isset($oneRecordArray[$portalArrayField][$childRecordId]) 
+                                    && $childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]) {
+                                $returnArray = array();
+                                $returnArray[] = $oneRecordArray[$portalArrayField];
+                                return $returnArray;
+                            }
+                        }
+                    }
+                }
                 $isFirstRecord = false;
             }
         }
         return $returnArray;
     }
 
-    function countQueryResult($dataSourceName)
+    public function countQueryResult($dataSourceName)
     {
         return $this->mainTableCount;
     }
 
-    function setToDB($dataSourceName)
+    public function setToDB($dataSourceName)
     {
         $this->fieldInfo = null;
 
-        $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+        $context = $this->dbSettings->getDataSourceTargetArray();
+        
+        $usePortal = false;
+        if (isset($context['relation'])) {
+            foreach ($context['relation'] as $relDef) {
+                if (isset($relDef['portal']) && $relDef['portal']) {
+                    $usePortal = true;
+                    $context['paging'] = true;
+                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                }
+            }
+        }
+
+        if ($usePortal) {
+            $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
+        } else {
+            $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+        }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
+        $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->getDefaultKey();
 
         if (isset($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
@@ -345,7 +518,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $this->logger->setDebugMessage($this->stringWithoutPassword($result['URL']));
-        $this->logger->setDebugMessage($this->stringWithoutPassword(var_export($this->dbSettings->getFieldsRequired(),true)));
+//        $this->logger->setDebugMessage($this->stringWithoutPassword(var_export($this->dbSettings->getFieldsRequired(),true)));
 
         if ($result['errorCode'] > 0) {
             $this->logger->setErrorMessage($this->stringWithoutPassword(
@@ -355,16 +528,27 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         if ($result['foundCount'] == 1) {
             foreach ($result['data'] as $key => $row) {
                 $recId = substr($key, 0, strpos($key, '.'));
-                $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+                if ($usePortal) {
+                    $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
+                } else {
+                    $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+                }
                 $this->fx->SetRecordID($recId);
                 $counter = 0;
                 $fieldValues = $this->dbSettings->getValue();
                 foreach ($this->dbSettings->getFieldsRequired() as $field) {
+                    if (strpos($field, '.') !== false) {
+                        // remove dot + recid number if contains recid (example: "TO::FIELD.0" -> "TO::FIELD")
+                        $dotPos = strpos($field, '.');
+                        $originalfield = substr($field, 0, $dotPos);
+                    } else {
+                        $originalfield = $field;
+                    }
                     $value = $fieldValues[$counter];
                     $counter++;
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
                     $convVal = $this->formatter->formatterToDB(
-                        "{$dataSourceName}{$this->dbSettings->getSeparator()}{$field}", $convVal);
+                        "{$dataSourceName}{$this->dbSettings->getSeparator()}{$originalfield}", $convVal);
                     $this->fx->AddDBParam($field, $convVal);
                 }
                 if ($counter < 1) {
@@ -412,12 +596,24 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function newToDB($dataSourceName, $bypassAuth)
+    public function newToDB($dataSourceName, $bypassAuth)
     {
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
-        $keyFieldName = isset($context['key']) ? $context['key'] : 'id';
+        
+        $usePortal = false;
+        if (isset($context['relation'])) {
+            foreach ($context['relation'] as $relDef) {
+                if (isset($relDef['portal']) && $relDef['portal']) {
+                    $usePortal = true;
+                    $context['paging'] = true;
+                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                }
+            }
+        }
+
+        $keyFieldName = isset($context['key']) ? $context['key'] : $this->getDefaultKey();
 
         $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
         $requiredFields = $this->dbSettings->getFieldsRequired();
@@ -510,7 +706,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         foreach ($result['data'] as $key => $row) {
-            if ($keyFieldName == '-recid') {
+            if ($keyFieldName == $this->getDefaultKey()) {
                 $recId = substr($key, 0, strpos($key, '.'));
                 $keyValue = $recId;
             } else {
@@ -520,12 +716,29 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $keyValue;
     }
 
-    function deleteFromDB($dataSourceName)
+    public function deleteFromDB($dataSourceName)
     {
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
-        $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 100000000);
+        
+        $usePortal = false;
+        if (isset($context['relation'])) {
+            foreach ($context['relation'] as $relDef) {
+                if (isset($relDef['portal']) && $relDef['portal']) {
+                    $usePortal = true;
+                    $context['paging'] = true;
+                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                }
+            }
+        }
+
+        if ($usePortal) {
+            $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
+        } else {
+            $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+        }
+
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
             $this->fx->AddDBParam($value['field'], $value['value'], $op);
@@ -631,7 +844,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportStoreChallenge($uid, $challenge, $clientId)
+    public function authSupportStoreChallenge($uid, $challenge, $clientId)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -681,7 +894,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportCheckMediaToken($uid)
+    public function authSupportCheckMediaToken($uid)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -711,7 +924,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
+    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -746,7 +959,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportRemoveOutdatedChallenges()
+    public function authSupportRemoveOutdatedChallenges()
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -778,7 +991,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportRetrieveHashedPassword($username)
+    public function authSupportRetrieveHashedPassword($username)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -811,7 +1024,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 //        return substr($hashedpw, -8);
 //    }
 //
-    function authSupportCreateUser($username, $hashedpassword)
+    public function authSupportCreateUser($username, $hashedpassword)
     {
         if ($this->authSupportRetrieveHashedPassword($username) !== false) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
@@ -830,7 +1043,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportChangePassword($username, $hashednewpassword)
+    public function authSupportChangePassword($username, $hashednewpassword)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -866,7 +1079,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportGetUserIdFromUsername($username)
+    public function authSupportGetUserIdFromUsername($username)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -890,7 +1103,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportGetUsernameFromUserId($userid)
+    public function authSupportGetUsernameFromUserId($userid)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -914,7 +1127,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportGetUserIdFromEmail($email)
+    public function authSupportGetUserIdFromEmail($email)
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
@@ -938,7 +1151,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportUnifyUsernameAndEmail($username)
+    public function authSupportUnifyUsernameAndEmail($username)
     {
         if (!$this->dbSettings->getEmailAsAccount() || $this->dbSettings->isDBNative()) {
             return $username;
@@ -971,7 +1184,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $usernameCandidate;
     }
 
-    function authSupportGetGroupNameFromGroupId($groupid)
+    public function authSupportGetGroupNameFromGroupId($groupid)
     {
         $groupTable = $this->dbSettings->getGroupTable();
         if ($groupTable == null) {
@@ -992,7 +1205,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportGetGroupsOfUser($user)
+    public function authSupportGetGroupsOfUser($user)
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {
@@ -1017,7 +1230,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $belongGroups;
     private $firstLevel;
 
-    function resolveGroup($groupid)
+    private function resolveGroup($groupid)
     {
         $this->setupFXforAuth($this->dbSettings->getCorrTable(), 1);
         if ($this->firstLevel) {
@@ -1042,7 +1255,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
+    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -1064,7 +1277,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
+    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -1099,7 +1312,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
+    public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
     {
         $this->setupFXforAuth($tableName, 1);
         $this->fxAuth->AddDBParam($userField, $user, 'eq');
@@ -1115,4 +1328,5 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         return false;
     }
+
 }

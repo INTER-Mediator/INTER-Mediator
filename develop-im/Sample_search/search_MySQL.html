@@ -49,12 +49,13 @@
             document.getElementById('place').value = searchCriteriaTown;
             document.getElementById('zipcode').value = searchCriteriaZip;
         }
-//        INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {
-//            if (name === 'postalcode') {
-//                document.getElementById('place').value = searchCriteriaTown;
-//                document.getElementById('zipcode').value = searchCriteriaZip;
-//            }
-//        }
+        function doSortFieldChange(key, direction)  {
+            if (whichSearch == 1)   {
+                doSearchFromTown(key, direction)
+            } else if (whichSearch == 2)  {
+                doSearchFromZipcode(key, direction)
+            }
+        }
     </script>
 </head>
 <body>
@@ -77,18 +78,14 @@
     <thead>
     <tr>
         <th>郵便番号
-            <a href="javascript:whichSearch==2
-                ?doSearchFromZipcode('f3','ASC'):doSearchFromTown('f3','ASC')">▼</a>
-            <a href="javascript:whichSearch==2
-                ?doSearchFromZipcode('f3','DESC'):doSearchFromTown('f3','DESC')">▲</a>
+            <a href="javascript:doSortFieldChange('f3','ASC')">▼</a>
+            <a href="javascript:doSortFieldChange('f3','DESC')">▲</a>
         </th>
         <th>都道府県</th>
         <th>市区町村</th>
         <th>町域名
-            <a href="javascript:whichSearch==2
-                ?doSearchFromZipcode('f9','ASC'):doSearchFromTown('f9','ASC')">▼</a>
-            <a href="javascript:whichSearch==2
-                ?doSearchFromZipcode('f9','DESC'):doSearchFromTown('f9','DESC')">▲</a>
+            <a href="javascript:doSortFieldChange('f9','ASC')">▼</a>
+            <a href="javascript:doSortFieldChange('f9','DESC')">▲</a>
         </th>
     </tr>
     </thead>

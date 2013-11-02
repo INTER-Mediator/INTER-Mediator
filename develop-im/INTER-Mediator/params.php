@@ -19,6 +19,7 @@ $dbPassword = 'password';
 $dbServer = '127.0.0.1';
 $dbPort = '80';
 $dbDataType = 'FMPro7';
+//$dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 

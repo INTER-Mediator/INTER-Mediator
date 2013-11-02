@@ -48,6 +48,7 @@ script:
   - phpunit DB_PDO-PostgreSQL_Test.php
   - phpunit DB_PDO-SQLite_Test.php
   - phpunit DB_Proxy_Test.php
+  - phpunit DB_Settings_Test.php
   - phpunit DataConverter_MySQLDateTime_Test.php
   - phpunit DataConverter_FMDateTime_Test.php
   - phpunit INTERMediator_Test.php

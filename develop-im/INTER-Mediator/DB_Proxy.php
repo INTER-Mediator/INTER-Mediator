@@ -51,6 +51,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     private $previousClientid;
 
+    public static function defaultKey()
+    {
+        trigger_error ("Don't call the static method defaultKey of DB_Proxy class.");
+        return null;
+    }
+    public function getDefaultKey()
+    {
+        return $this->dbClass->getDefaultKey();
+    }
     /**
      * @param bool $testmode
      */
@@ -421,7 +430,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
         }
 
-        $this->logger->setDebugMessage("dbNative={$this->dbSettings->isDBNative()}", 2);
+//        $this->logger->setDebugMessage("dbNative={$this->dbSettings->isDBNative()}", 2);
 //        $this->logger->setDebugMessage("", 2);
 
         if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
@@ -513,6 +522,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 //        $this->logger->setDebugMessage("access={$access}, target={$this->dbSettings->getTargetName()}", 2);
         // Come here access=challenge or authenticated access
         switch ($access) {
+            case 'describe':
+                $result = $this->dbClass->getSchema($this->dbSettings->getTargetName());
+                $this->outputOfPrcessing = 'dbresult=' . arrayToJS($result, '') . ';'
+                    . "resultCount=0;";
+                break;
             case 'select':
                 $result = $this->getFromDB($this->dbSettings->getTargetName());
                 if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {

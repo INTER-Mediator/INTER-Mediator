@@ -484,7 +484,7 @@ class DB_Settings
 
     function setStart($st)
     {
-        $this->start = $st;
+        $this->start = intval(mb_ereg_replace('[^0-9]', '', $st));
     }
 
     function getStart()
@@ -499,7 +499,7 @@ class DB_Settings
 
     function setRecordCount($sk)
     {
-        $this->recordCount = $sk;
+        $this->recordCount = intval(mb_ereg_replace('[^0-9]', '', $sk));
     }
 
     function getExtraCriteria()

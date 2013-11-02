@@ -174,25 +174,37 @@ function arrayToJS($ar, $prefix)
  */
 function arrayToJSExcluding($ar, $prefix, $exarray)
 {
+    $returnStr = '';
+    
     if (is_array($ar)) {
         $items = array();
         foreach ($ar as $key => $value) {
             $items[] = arrayToJSExcluding($value, $key, $exarray);
         }
         $currentKey = (string)$prefix;
-        if ($currentKey == '')
-            $returnStr = "{" . implode(',', $items) . '}';
-        else if (!in_array($exarray, $currentKey)) {
-            $returnStr = "'{$currentKey}':{" . implode(',', $items) . '}';
+        foreach ($items as $item) {
+            if (!in_array($currentKey, $exarray) && $item != '') {
+                if ($returnStr == '') {
+                    $returnStr .= $item;
+                } else {
+                    $returnStr .= ',' . $item;
+                }
+            }
+        }
+        if ($currentKey == '') {
+            $returnStr = '{' . $returnStr . '}';
+        } else {
+            $returnStr = "'{$currentKey}':{" . $returnStr . '}';
         }
     } else {
         $currentKey = (string)$prefix;
         if ($currentKey == '') {
             $returnStr = "'" . valueForJSInsert($ar) . "'";
-        } else if (!in_array($exarray, $currentKey)) {
+        } else if (!in_array($currentKey, $exarray)) {
             $returnStr = "'{$prefix}':'" . valueForJSInsert($ar) . "'";
         }
     }
+    
     return $returnStr;
 }
 

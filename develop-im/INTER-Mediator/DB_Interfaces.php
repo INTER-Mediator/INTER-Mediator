@@ -17,13 +17,15 @@
 
 interface DB_Interface
 {
-    function getFromDB($dataSourceName);
-    function countQueryResult($dataSourceName);
-    function setToDB($dataSourceName);
-    function newToDB($dataSourceName, $bypassAuth);
-    function deleteFromDB($dataSourceName);
-    function getFieldInfo($dataSourceName);
+    public function getFromDB($dataSourceName);
+    public function countQueryResult($dataSourceName);
+    public function setToDB($dataSourceName);
+    public function newToDB($dataSourceName, $bypassAuth);
+    public function deleteFromDB($dataSourceName);
+    public function getFieldInfo($dataSourceName);
     public function setupConnection();
+    public static function defaultKey();   // For PHP 5.3 or above
+    public function getDefaultKey();   // For PHP 5.2
 }
 
 interface Auth_Interface_DB					// with using table for authentication/authorization

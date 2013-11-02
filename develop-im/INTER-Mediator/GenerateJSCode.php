@@ -16,7 +16,7 @@
  */
 class GenerateJSCode
 {
-    function __construct()
+    public function __construct()
     {
         header('Content-Type: text/javascript;charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
@@ -24,23 +24,29 @@ class GenerateJSCode
         header('X-Frame-Options: SAMEORIGIN');
     }
 
-    function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
+    public function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
     {
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
 
-    function generateErrorMessageJS($message)
+    public function generateErrorMessageJS($message)
     {
         $q = '"';
         echo "INTERMediator.setErrorMessage({$q}"
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
-    function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
+    private $defaultsArray;
+
+    public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
     {
         $q = '"';
         $generatedPrivateKey = null;
         $passPhrase = null;
+
+        /*
+         * Decide the params.php file and load it.
+         */
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $currentDirParam = $currentDir . 'params.php';
         $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
@@ -50,6 +56,9 @@ class GenerateJSCode
             include($currentDirParam);
         }
 
+        /*
+         * Read the JS programs regarding by the developing or deployed.
+         */
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             $jsLibDir = $currentDir . 'js_lib' . DIRECTORY_SEPARATOR;
             $bi2phpDir = $currentDir . 'bi2php' . DIRECTORY_SEPARATOR;
@@ -67,6 +76,9 @@ class GenerateJSCode
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
         }
 
+        /*
+         * Generate the link to the definition file editor
+         */
         $relativeToDefFile = '';
         $editorPath = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
         $defFilePath = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME'];
@@ -81,6 +93,36 @@ class GenerateJSCode
         $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
             "function(){return {$q}{$relativeToEditor}?target=$relativeToDefFile{$q};}");
 
+        /*
+         * from db-class, determine the default key field string
+         */
+        $defaultKey = null;
+        $dbClassName = 'DB_' .
+            (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
+                (isset ($dbClass) ? $dbClass : ''));
+        require_once("{$dbClassName}.php");
+        if (((int)phpversion()) < 5.3) {
+            $dbInstance = new $dbClassName();
+            if ($dbInstance != null) {
+                $defaultKey = $dbInstance->getDefaultKey();
+            }
+        } else {
+            eval("$defaultKey = $dbClassName::defaultKey();");
+        }
+        if ($defaultKey !== null) {
+            $items = array();
+            foreach ($datasource as $context) {
+                if (!array_key_exists('key', $context)) {
+                    $context['key'] = $defaultKey;
+                }
+                $items[] = $context;
+            }
+            $datasource = $items;
+        }
+
+        /*
+         * Determine the uri of myself
+         */
         if (isset($callURL)) {
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
@@ -93,7 +135,8 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
         $this->generateAssignJS(
-            "INTERMediatorOnPage.getDataSources", "function(){return ", arrayToJS($datasource, ''), ";}");
+            "INTERMediatorOnPage.getDataSources", "function(){return ",
+            arrayToJSExcluding($datasource, '', array('password')), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsAliases",
             "function(){return ", arrayToJS(isset($options['aliases']) ? $options['aliases'] : array(), ''), ";}");
@@ -101,7 +144,9 @@ class GenerateJSCode
             "INTERMediatorOnPage.getOptionsTransaction",
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
         $this->generateAssignJS(
-            "INTERMediatorOnPage.getDBSpecification", "function(){return ", arrayToJS($dbspecification, ''), ";}");
+            "INTERMediatorOnPage.getDBSpecification", "function(){return ",
+            arrayToJSExcluding($dbspecification, '', 
+                array('dsn', 'option', 'database', 'user', 'password', 'server', 'port', 'protocol', 'datatype')), ";}");
         $isEmailAsUsernae = isset($options['authentication'])
             && isset($options['authentication']['email-as-username'])
             && $options['authentication']['email-as-username'] === true;
