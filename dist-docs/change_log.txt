@@ -75,7 +75,7 @@ Ver.3.10 (2013/11/2)
 - [BUG FIX] The sample Authorized Chat had q wrong field name.
 - [BUG FIX] The sample Search Page had inappropriate JavaScript codes.
 - [BUG FIX] The sample Client-Side Calculation Page had inappropriate JavaScript codes.
-- Thanks to Mr. Tsutomu Uasa for reporting bugs on a lot of circumstances.
+- Thanks to Mr. Tsutomu Yuasa for reporting bugs on a lot of circumstances.
 
 Ver.3.9 (2013/9/28)
 - The definition file editor works reading/writing. You can call it at the start of logs on debug mode.
