@@ -36,6 +36,9 @@ To Do List for the INTER-Mediator developer(s)
 =================================
 Known Issues for Browsers:
 =================================
+For every version of Internet Explorer
+- Don't use on Compatibility mode, please. (Also Quirk mode.)
+
 Internet Explorer 7
 - Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
 
@@ -60,6 +63,7 @@ Ver.4.0-dev
 - [SECURITY FIX] Fix SQL injection issue when using PDO.
 - [INFO] INTER-Mediator requires FileMaker Server 10 or later, OS X v10.6 or later if using FileMaker Server.
 - [BUG FIX] Fix DataConverter_FMDateTime and DataConverter_MySQLDateTime's issue on Windows.
+- [BUG FIX] The substr function in IE8 can't handle a negative parameter, fix it on the numberFormat method.
 
 Ver.3.9 (2013/9/28)
 - The definition file editor works reading/writing. You can call it at the start of logs on debug mode.
