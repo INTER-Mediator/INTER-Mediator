@@ -481,6 +481,9 @@ INTERMediatorOnPage = {
             } else {
                 judge = (specifiedVersion == versionNum);
             }
+            if (document.documentMode)  {
+                judge = (specifiedVersion <= document.documentMode);
+            }
         }
         if (judge) {
             if (deleteNode != null) {

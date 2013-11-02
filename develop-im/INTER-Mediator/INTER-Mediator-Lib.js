@@ -404,7 +404,7 @@ var INTERMediatorLib = {
     },
 
     numberFormat: function (str, digit) {
-        var s, n, sign, f, underDot, underNumStr;
+        var s, n, sign, f, underDot, underNumStr, pstr;
         s = new Array();
         n = INTERMediatorLib.toNumber(str);
         sign = '';
@@ -416,7 +416,8 @@ var INTERMediatorLib = {
         //    if (f == 0) f = '';
         for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
             if (n >= 1000) {
-                s.push(('000' + (n % 1000).toString()).substr(-3));
+                pstr = '000' + (n % 1000).toString();
+                s.push(pstr.substr(pstr.length - 3));
             } else {
                 s.push(n);
             }

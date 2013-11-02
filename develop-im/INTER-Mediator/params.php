@@ -33,7 +33,7 @@ $dbOption = array();
 $browserCompatibility = array(
     'Chrome' => '1+',
     'FireFox' => '2+',
-    'msie' => '7+',
+    'msie' => '8+',
     'Opera' => '1+',
     'Safari' => '4+',
 //    'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS

@@ -36,6 +36,9 @@ To Do List for the INTER-Mediator developer(s)
 =================================
 Known Issues for Browsers:
 =================================
+For every version of Internet Explorer
+- Don't use on Compatibility mode, please. (Also Quirk mode.)
+
 Internet Explorer 7
 - Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
 
@@ -55,10 +58,19 @@ Ver.4.0-dev
 - Modify FX.php for FileMaker Server to enable the "fmalt" and retrieve the record id on portal objects.
 - Modify FX.php for FileMaker Server to disable the surrogate input patch when using FileMaker Server 12
   (by specifying $dbDataType = 'FMPro12' in params.php).
+- Check availability of BC Math functions of PHP. INTER-Mediator requires BC Math for authentication.
+- Check the compatibility mode of Internet Explorer on checking browsers.
 - [SECURITY FIX] Database connection information (the 'password' key etc.) in a definition file doesn't send to clients.
 - [SECURITY FIX] Fix SQL injection issue when using PDO.
-- [INFO] FileMaker's portal objects requires FileMaker Server 9 or later.
+- [INFO] INTER-Mediator requires FileMaker Server 10 or later, OS X v10.6 or later if using FileMaker Server.
 - [BUG FIX] Fix DataConverter_FMDateTime and DataConverter_MySQLDateTime's issue on Windows.
+- [BUG FIX] The substr function in IE8 can't handle a negative parameter, fix it on the numberFormat method.
+- [BUG FIX] The sample List-Detail Style Navigation for FileMaker Server had some wrong links to MySQL samples.
+- [BUG FIX] The sample List-Detail Style Navigation for FileMaker Server had some wrong definitions to refer images.
+- [BUG FIX] The sample Authorized Chat had q wrong field name.
+- [BUG FIX] The sample Search Page had inappropriate JavaScript codes.
+- [BUG FIX] The sample Client-Side Calculation Page had inappropriate JavaScript codes.
+- Thanks to Mr. Tsutomu Uasa for reporting bugs on a lot of circumstances.
 
 Ver.3.9 (2013/9/28)
 - The definition file editor works reading/writing. You can call it at the start of logs on debug mode.
