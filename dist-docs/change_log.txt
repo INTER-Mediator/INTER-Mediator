@@ -52,7 +52,12 @@ Change Log
 
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.0-dev
+Ver.4.0 (any date)=========================================================
+
+
+===========================================================================
+
+Ver.3.10 (2013/11/2)
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
 - New sample (Master-Detail Style Page for FileMaker's portal access version) is added.
 - Modify FX.php for FileMaker Server to enable the "fmalt" and retrieve the record id on portal objects.
