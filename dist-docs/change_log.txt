@@ -53,8 +53,15 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.0 (any date)=========================================================
-
-
+- Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
+- Enable omitting to place the primary key field object on a layout when using FileMaker Server
+  (by specifying 'key' => '-recid').
+- The definition file editor works reading/writing. You can call it at the start of logs on debug mode.
+- Authentication user interface is improved.
+- The 'issuedhash' table for storing challenges of authentication can be use another database.
+- Post only page could be made without any programmings.
+- Bridge for JavaScript Components is added. The HTML editor tinyMCE and original File Uploader are supported.
+- Started CI!
 ===========================================================================
 
 Ver.3.10 (2013/11/2)
