@@ -37,11 +37,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->logger->setErrorMessage("Query Error: [{$str}] Code={$this->link->errorCode()} Info ={$errorInfo}");
     }
 
-    private function quotedFieldName($fieldName)
-    {
-        return "`{$fieldName}`";
-    }
-
     /**
      * @return bool
      */
@@ -1436,9 +1431,67 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     '-', //Change the sign of the argument
                     'XOR' //Logical XOR
                 )));
+
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for PostgreSQL */
+            return !(FALSE === array_search(strtoupper($operator), array(
+                    'LIKE', //
+                    'SIMILAR TO', //
+                    '~*', //	正規表現に一致、大文字小文字の区別なし	'thomas' ~* '.*Thomas.*'
+                    '!~', //	正規表現に一致しない、大文字小文字の区別あり	'thomas' !~ '.*Thomas.*'
+                    '!~*', //	正規表現に一致しない、大文字小文字の区別なし	'thomas' !~* '.*vadim.*'
+                    '||', //  文字列の結合
+                    '+', //	和	2 + 3	5
+                    '-', //	差	2 - 3	-1
+                    '*', //	積	2 * 3	6
+                    '/', //	商（整数の割り算では余りを切り捨て）	4 / 2	2
+                    '%', //	剰余（余り）	5 % 4	1
+                    '^', //	累乗	2.0 ^ 3.0	8
+                    '|/', //	平方根	|/ 25.0	5
+                    '||/', //	立方根	||/ 27.0	3
+                    '!', //	階乗	5 !	120
+                    '!!', //	階乗（前置演算子）	!! 5	120
+                    '@', //	絶対値	@ -5.0	5
+                    '&', //	バイナリのAND	91 & 15	11
+                    '|', //	バイナリのOR	32 | 3	35
+                    '#', //	バイナリのXOR	17 # 5	20
+                    '~', //	バイナリのNOT	~1	-2
+                    '<<', //	バイナリの左シフト	1 << 4	16
+                    '>>', //	バイナリの右シフト
+                    'AND', //
+                    'OR', //
+                    'NOT', //
+                    '<', //	小なり
+                    '>', //	大なり
+                    '<=', //	等しいかそれ以下
+                    '>=', //	等しいかそれ以上
+                    '=', //	等しい
+                    '<>', // または !=	等しくない
+                    '||', //	結合	B'10001' || B'011'	10001011
+                    '&', //	ビットのAND	B'10001' & B'01101'	00001
+                    '|', //	ビットのOR	B'10001' | B'01101'	11101
+                    '#', //	ビットのXOR	B'10001' # B'01101'	11100
+                    '~', //	ビットのNOT	~ B'10001'	01110
+                    '<<', //ビットの左シフト	B'10001' << 3	01000
+                    '>>', //ビットの右シフト	B'10001' >> 2	00100
+                    //[上記に含まれないもの]
+                    //幾何データ型、ネットワークアドレス型、JSON演算子、配列演算子、範囲演算子
+                )));
+
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) { /* for SQLite */
+            return !(FALSE === array_search(strtoupper($operator), array(
+                    '||',
+                    '*', '/', '%',
+                    '+', '-',
+                    '<<', '>>', '&', '|',
+                    '<', '<=', '>', '>=',
+                    '=', '==', '!=', '<>', 'IS', 'IS NOT', 'IN', 'LIKE', 'GLOB', 'MATCH', 'REGEXP',
+                    'AND',
+                    'OR',
+                    '-', '+', '~', 'NOT',
+                )));
+
         } else { // others don' define so far
+            return FALSE;
         }
 
     }
@@ -1446,13 +1499,49 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     public
     function isPossibleOrderSpecifier($specifier)
     {
-        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
+        /* for MySQL */
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
             return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for PostgreSQL */
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) { /* for SQLite */
+
+        /* for PostgreSQL */
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
+            return !(FALSE === array_search(strtoupper($specifier), array(
+                    'ASC',
+                    'DESC',
+                    'ASC NULLS FIRST',
+                    'ASC NULLS LAST',
+                    'DESC NULLS FIRST',
+                    'DESC NULLS LAST',
+                )));
+
+        /* for SQLite */
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
+
         } else { // others don' define so far
+            return FALSE;
         }
     }
+
+    private function quotedFieldName($fieldName)
+    {
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for SQLite */
+            return "`{$fieldName}`";
+
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for SQLite */
+            $q = '"';
+            return $q . str_replace($q, $q . $q, $fieldName) . $q;
+
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) { /* for SQLite */
+            $q = '"';
+            return $q . str_replace($q, $q . $q, $fieldName) . $q;
+
+        } else {
+            return $fieldName;
+        }
+    }
+
+
 }
 
 ?>
