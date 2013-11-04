@@ -69,6 +69,10 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testAuthUser1()
     {
         $testName = "Check time calc feature of PHP";
@@ -83,6 +87,10 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $this->assertTrue($calc === (11 + 3600 * 24), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testAuthUser2()
     {
         $testName = "Password Retrieving";
@@ -95,15 +103,23 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testAuthUser3()
     {
         $testName = "Salt retrieving";
         $username = 'user1';
-        $retrievedSalt = $this->db_proxy->dbClass->authSupportGetSalt($username);
+        $retrievedSalt = $this->db_proxy->authSupportGetSalt($username);
         $this->assertEquals('54455354', $retrievedSalt, $testName);
 
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testAuthUser4()
     {
         $testName = "Generate Challenge and Retrieve it";
@@ -111,7 +127,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
-        $challenge = $this->db_proxy-- > generateChallenge();
+        $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
         $challenge = $this->db_proxy->generateChallenge();
@@ -120,33 +136,47 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testAuthUser5()
     {
         $testName = "Simulation of Authentication";
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+        $uid = $this->db_proxy->dbClass->authSupportGetUserIdFromUsername($username);
 
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->db_proxy->dbClass->authSupportStoreChallenge($uid, $challenge, "TEST");
 
         //        $challenge = $this->db_pdo->authSupportRetrieveChallenge($username, "TEST");
-        $retrievedHexSalt = $this->db_proxy->dbClass->authSupportGetSalt($username);
+        $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
+
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testAuthUser6()
     {
         $testName = "Create New User and Authenticate";
-        $username = "testuser2";
-        $password = "testuser2";
-        $this->assertTrue($this->db_proxy->addUser($username, $password));
+        $username = "testuser1";
+        $password = "testuser1";
 
-        $retrievedHexSalt = $this->db_proxy->dbClass->authSupportGetSalt($username);
+        $addUserResult = $this->db_proxy->addUser($username, $password);
+        var_export($this->db_proxy->logger->getAllErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessage());
+        $this->assertTrue($addUserResult);
+
+        $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
         $clientId = "TEST";
@@ -161,6 +191,10 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
             $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     function testUserGroup()
     {
         $testName = "Resolve containing group";
@@ -169,6 +203,10 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($groupArray) > 0, $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testNativeUser()
     {
         $testName = "Native User Challenge Check";
@@ -182,6 +220,10 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
     }
 
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testDefaultKey()
     {
         $testName = "The default key field name";
