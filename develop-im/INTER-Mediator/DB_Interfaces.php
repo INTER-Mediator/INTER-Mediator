@@ -26,6 +26,8 @@ interface DB_Interface
     public function setupConnection();
     public static function defaultKey();   // For PHP 5.3 or above
     public function getDefaultKey();   // For PHP 5.2
+    public function isPossibleOperator($operator);
+    public function isPossibleOrderSpecifier($specifier);
 }
 
 interface Auth_Interface_DB					// with using table for authentication/authorization

@@ -72,6 +72,58 @@ var IMParts_tinymce = {
         }
     }
 };
+var IMParts_codemirror = {
+    instanciate: function (parentNode) {
+        var newId = parentNode.getAttribute('id') + '-e';
+        var newNode = document.createElement('TEXTAREA');
+        newNode.setAttribute('id', newId);
+        INTERMediatorLib.setClassAttributeToNode(newNode, '_im_codemirror');
+        parentNode.appendChild(newNode);
+        this.ids.push(newId);
+
+        newNode._im_getValue = function () {
+            var targetNode = newNode;
+            return targetNode.getValue();
+        };
+        parentNode._im_getValue = function () {
+            var targetNode = newNode;
+            return targetNode.value;
+        };
+        parentNode._im_getComponentId = function () {
+            var theId = newId;
+            return theId;
+        };
+
+        parentNode._im_setValue = function (str) {
+            IMParts_codemirror.initialValues[this._im_getComponentId()] = str;
+        };
+    },
+    ids: [],
+    initialValues: {},
+    mode: "text/html",
+    finish: function () {
+        for (var i = 0; i < this.ids.length; i++) {
+            var targetId = this.ids[i];
+            var targetNode = document.getElementById(targetId);
+            if (targetNode) {
+                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode});
+                editor.setValue(this.initialValues[targetId]);
+                editor.on("change", function () {
+                    var nodeId = targetId;
+                    return function (instance, obj) {
+                        INTERMediator.valueChange(nodeId)
+                    };
+                }());
+                targetNode._im_getValue = function () {
+                    var insideEditor = editor;
+                    return function () {
+                        return insideEditor.getValue();
+                    }
+                }();
+            }
+        }
+    }
+};
 
 /*********
  *
@@ -90,16 +142,16 @@ var IMParts_im_fileupload = {
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
         IMParts_im_fileupload.ids.push(newId);
-         if (IMParts_im_fileupload.forceOldStyleForm)   {
-             IMParts_im_fileupload.html5DDSuported = false;
+        if (IMParts_im_fileupload.forceOldStyleForm) {
+            IMParts_im_fileupload.html5DDSuported = false;
         } else {
-             IMParts_im_fileupload.html5DDSuported = true;
-             try {
-                 var x = new FileReader();
-                 var y = new FormData();
-             } catch (ex) {
-                 IMParts_im_fileupload.html5DDSuported = false;
-             }
+            IMParts_im_fileupload.html5DDSuported = true;
+            try {
+                var x = new FileReader();
+                var y = new FormData();
+            } catch (ex) {
+                IMParts_im_fileupload.html5DDSuported = false;
+            }
         }
         if (IMParts_im_fileupload.html5DDSuported) {
             newNode.dropzone = "copy";
@@ -109,9 +161,10 @@ var IMParts_im_fileupload = {
             newNode.style.backgroundColor = "#AAAAAA";
             newNode.style.border = "3px dotted #808080";
             newNode.style.textAlign = "center";
+            newNode.style.fontSize = "75%";
             var eachLine = INTERMediatorOnPage.getMessages()[3101].split(/\n/);
             for (var i = 0; i < eachLine.length; i++) {
-                if(i > 0)   {
+                if (i > 0) {
                     newNode.appendChild(document.createElement("BR"));
                 }
                 newNode.appendChild(document.createTextNode(eachLine[i]));
@@ -119,7 +172,7 @@ var IMParts_im_fileupload = {
         } else {
             formNode = document.createElement('FORM');
             formNode.setAttribute('method', 'post');
-            formNode.setAttribute('action', INTERMediatorOnPage.getEntryPath()+"?access=uploadfile");
+            formNode.setAttribute('action', INTERMediatorOnPage.getEntryPath() + "?access=uploadfile");
             formNode.setAttribute('enctype', 'multipart/form-data');
             newNode.appendChild(formNode);
 
@@ -233,12 +286,10 @@ var IMParts_im_fileupload = {
                             var updateInfo = INTERMediator.updateRequiredObject[eventTarget.getAttribute('id')];
 
                             if (IMParts_im_fileupload.progressSupported) {
-                                var iframeNode = document.getElementById('upload_frame' + iframeId);
-                                iframeNode.style.display = "block";
+                                infoFrame.style.display = "block";
                                 setTimeout(function () {
-                                    var infoURL = selfURL() + '?uploadprocess='
-                                        + IMParts_im_fileupload.uploadId + iframeId;
-                                    iframeNode.setAttribute('src', infoURL);
+                                    infoFrame.setAttribute('src',
+                                        'upload_frame.php?up_id=' + IMParts_im_fileupload.uploadId + iframeId);
                                 });
                             }
 
@@ -381,9 +432,9 @@ var IMParts_im_fileupload = {
             }
         }
 
-        function selfURL()  {
+        function selfURL() {
             var nodes = document.getElementsByTagName("SCRIPT");
-            for (var i = 0; i<nodes.length; i++)    {
+            for (var i = 0; i < nodes.length; i++) {
                 var srcAttr = nodes[i].getAttribute("src");
                 if (srcAttr.match(/\.php/)) {
                     return srcAttr;

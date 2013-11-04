@@ -12,8 +12,16 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
     <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
     <script type="text/javascript" src="tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+    <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/addon/runmode/runmode.js"></script>
+    <script src="codemirror/addon/runmode/colorize.js"></script>
+    <script src="codemirror/mode/javascript/javascript.js"></script>
+    <script src="codemirror/mode/xml/xml.js"></script>
+    <script src="codemirror/mode/css/css.js"></script>
+    <script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
     <script src="include_MySQL.php"></script>
     <script type="text/javascript">
         tinymceOption = {
@@ -71,6 +79,9 @@
     <tbody class="_im_post">
     <tr>
         <td>
+            <div class="IM[testtable@text1] IM_WID-GET[codemirror]"></div>
+        </td>
+        <td>
             <div class="IM[testtable@text1] IM_WID-GET[tinymce]"></div>
         </td>
         <td>
@@ -94,17 +105,22 @@
     <tbody>
     <tr>
         <td class="IM[testtable@dt1]"></td>
-        <td class="IM[testtable@text1] IM_WIDGET[tinymce]"></td>
         <td class="IM[testtable@vc1] IM_WIDGET[im_fileupload]"></td>
-        <td></td>
+        <td class="IM[testtable@text1] IM_WIDGET[tinymce]"></td>
     </tr>
     <tr>
         <td></td>
-        <td colspan="3">
+        <td></td>
+        <td class="IM[testtable@text1] IM_WIDGET[codemirror]"></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td colspan="2">
             <table>
                 <tr><td class="IM[fileupload@path]"></td></tr>
             </table>
         </td>
+        <td></td>
     </tr>
     </tbody>
 </table>

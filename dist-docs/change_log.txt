@@ -32,6 +32,8 @@ To Do List for the INTER-Mediator developer(s)
  (Followings are from INTER-Mediator Study Meeting 2003#1)
 - Calendar Component Support.
 - Tab Component Support.
+- The database class DB_PDO should use the prepare method instead of the query method.
+  Most parts are using the quote method to prevent SQL injection attacks but it should do for improvements.
 
 =================================
 Known Issues for Browsers:

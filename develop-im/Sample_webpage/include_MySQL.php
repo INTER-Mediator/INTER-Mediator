@@ -32,6 +32,7 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'f_id', 'join-field' => 'id', 'operator' => '=')
             ),
+            'repeat-control'=>'delete',
         ),
     ),
     array(

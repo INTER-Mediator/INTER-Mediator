@@ -37,12 +37,17 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->logger->setErrorMessage("Query Error: [{$str}] Code={$this->link->errorCode()} Info ={$errorInfo}");
     }
 
+    private function quotedFieldName($fieldName)
+    {
+        return "`{$fieldName}`";
+    }
+
     /**
      * @return bool
      */
     public function setupConnection()
     {
-        if ( $this->isAlreadySetup )    {
+        if ($this->isAlreadySetup) {
             return true;
         }
         try {
@@ -60,7 +65,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     public function setupWithDSN($dsnString)
     {
-        if ( $this->isAlreadySetup )    {
+        if ($this->isAlreadySetup) {
             return true;
         }
         try {
@@ -123,17 +128,24 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     if (isset($condition['value']) && $condition['value'] != null) {
+                        $escapedField = $this->quotedFieldName($condition['field']);
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
+                            if (!$this->isPossibleOperator($condition['operator'])) {
+                                throw new Exception("Invalid Operator.");
+                            }
                             $queryClauseArray[$chunkCount][]
-                                = "{$condition['field']} {$condition['operator']} {$escapedValue}";
+                                = "{$escapedField} {$condition['operator']} {$escapedValue}";
                         } else {
                             $queryClauseArray[$chunkCount][]
-                                = "{$condition['field']} = {$escapedValue}";
+                                = "{$escapedField} = {$escapedValue}";
                         }
                     } else {
+                        if (!$this->isPossibleOperator($condition['operator'])) {
+                            throw new Exception("Invalid Operator.");
+                        }
                         $queryClauseArray[$chunkCount][]
-                            = "{$condition['field']} {$condition['operator']}";
+                            = "{$escapedField} {$condition['operator']}";
                     }
                 }
             }
@@ -159,17 +171,24 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     if (isset($condition['value']) && $condition['value'] != null) {
+                        $escapedField = $this->quotedFieldName($condition['field']);
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
+                            if (!$this->isPossibleOperator($condition['operator'])) {
+                                throw new Exception("Invalid Operator.");
+                            }
                             $queryClauseArray[$chunkCount][]
-                                = "{$condition['field']} {$condition['operator']} {$escapedValue}";
+                                = "{$escapedField} {$condition['operator']} {$escapedValue}";
                         } else {
                             $queryClauseArray[$chunkCount][]
-                                = "{$condition['field']} = {$escapedValue}";
+                                = "{$escapedField} = {$escapedValue}";
                         }
                     } else {
+                        if (!$this->isPossibleOperator($condition['operator'])) {
+                            throw new Exception("Invalid Operator.");
+                        }
                         $queryClauseArray[$chunkCount][]
-                            = "{$condition['field']} {$condition['operator']}";
+                            = "{$escapedField} {$condition['operator']}";
                     }
                 }
             }
@@ -184,10 +203,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             foreach ($tableInfo['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
                     if ($relDef['join-field'] == $foreignDef['field']) {
+                        $escapedField = $this->quotedFieldName($relDef['foreign-key']);
                         $escapedValue = $this->link->quote($foreignDef['value']);
                         $op = isset($relDef['operator']) ? $relDef['operator'] : '=';
+                        if (!$this->isPossibleOperator($op)) {
+                            throw new Exception("Invalid Operator.");
+                        }
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
-                            . "({$relDef['foreign-key']}{$op}{$escapedValue})";
+                            . "({$escapedField}{$op}{$escapedValue})";
                     }
                 }
             }
@@ -250,15 +273,23 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
                 if (isset($condition['direction'])) {
-                    $sortClause[] = "{$condition['field']} {$condition['direction']}";
+                    if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
+                        throw new Exception("Invalid Sort Specifier.");
+                    }
+                    $escapedField = $this->quotedFieldName($condition['field']);
+                    $sortClause[] = "{$escapedField} {$condition['direction']}";
                 } else {
-                    $sortClause[] = "{$condition['field']}";
+                    $sortClause[] = $escapedField;
                 }
             }
         }
         if (isset($tableInfo['sort'])) {
             foreach ($tableInfo['sort'] as $condition) {
-                $sortClause[] = "{$condition['field']} {$condition['direction']}";
+                if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
+                    throw new Exception("Invalid Sort Specifier.");
+                }
+                $escapedField = $this->quotedFieldName($condition['field']);
+                $sortClause[] = "{$escapedField} {$condition['direction']}";
             }
         }
         return implode(',', $sortClause);
@@ -346,7 +377,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $rowArray = array();
             foreach ($row as $field => $val) {
-                if ( $isFirstRow )  {
+                if ($isFirstRow) {
                     $this->fieldInfo[] = $field;
                 }
                 $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
@@ -701,7 +732,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      */
     function authSupportCheckMediaToken($uid)
     {
-        $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$uid}",2);
+        $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$uid}", 2);
 
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {
@@ -1165,7 +1196,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      */
     function authSupportUnifyUsernameAndEmail($username)
     {
-        if (! $this->dbSettings->getEmailAsAccount() || strlen($username) == 0)  {
+        if (!$this->dbSettings->getEmailAsAccount() || strlen($username) == 0) {
             return $username;
         }
         $userTable = $this->dbSettings->getUserTable();
@@ -1332,10 +1363,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         foreach ($resultHash->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $userID = $row['user_id'];
-            if ($userID < 1 )   {
+            if ($userID < 1) {
                 return false;
             }
-            $resultArray = array('user_id'=>$userID);
+            $resultArray = array('user_id' => $userID);
             $sql = "UPDATE {$userTable} SET hashedpasswd=" . $this->link->quote($password)
                 . " WHERE id=" . $this->link->quote($userID);
             $this->logger->setDebugMessage($sql);
@@ -1358,6 +1389,69 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             }
         }
         return false;
+    }
+
+    public function isPossibleOperator($operator)
+    {
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
+            return !(FALSE === array_search(strtoupper($operator), array(
+                    'AND', '&&', //Logical AND
+                    '=', //Assign a value (as part of a SET statement, or as part of the SET clause in an UPDATE statement)
+                    ':=', //Assign a value
+                    'BETWEEN ... AND ...', //Check whether a value is within a range of values
+                    'BINARY', //Cast a string to a binary string
+                    '&', //Bitwise AND
+                    '~', //Invert bits
+                    '|', //Bitwise OR
+                    '^', //Bitwise XOR
+                    'CASE', //Case operator
+                    'DIV', //Integer division
+                    '/', //Division operator
+                    '<=>', //NULL-safe equal to operator
+                    '=', //Equal operator
+                    '>=', //Greater than or equal operator
+                    '>', //Greater than operator
+                    'IS NOT NULL', //	NOT NULL value test
+                    'IS NOT', //Test a value against a boolean
+                    'IS NULL', //NULL value test
+                    'IS', //Test a value against a boolean
+                    '<<', //Left shift
+                    '<=', //Less than or equal operator
+                    '<', //Less than operator
+                    'LIKE', //Simple pattern matching
+                    '-', //Minus operator
+                    '%', 'MOD', //Modulo operator
+                    'NOT BETWEEN ... AND ...', //Check whether a value is not within a range of values
+                    '!=', '<>', //Not equal operator
+                    'NOT LIKE', //Negation of simple pattern matching
+                    'NOT REGEXP', //Negation of REGEXP
+                    'NOT', '!', //Negates value
+                    '||', 'OR', //Logical OR
+                    '+', //Addition operator
+                    'REGEXP', //Pattern matching using regular expressions
+                    '>>', //Right shift
+                    'RLIKE', //Synonym for REGEXP
+                    'SOUNDS LIKE', //Compare sounds
+                    '*', //Multiplication operator
+                    '-', //Change the sign of the argument
+                    'XOR' //Logical XOR
+                )));
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for PostgreSQL */
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) { /* for SQLite */
+        } else { // others don' define so far
+        }
+
+    }
+
+    public
+    function isPossibleOrderSpecifier($specifier)
+    {
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
+            return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for PostgreSQL */
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) { /* for SQLite */
+        } else { // others don' define so far
+        }
     }
 }
 

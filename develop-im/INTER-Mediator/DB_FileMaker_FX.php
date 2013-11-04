@@ -1329,4 +1329,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
+    public function isPossibleOperator($operator)
+    {
+        // TODO: Implement isPossibleOperator() method.
+    }
+
+    public function isPossibleOrderSpecifier($specifier)
+    {
+        // TODO: Implement isPossibleOrderSpecifier() method.
+    }
 }

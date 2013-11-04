@@ -53,13 +53,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     public static function defaultKey()
     {
-        trigger_error ("Don't call the static method defaultKey of DB_Proxy class.");
+        trigger_error("Don't call the static method defaultKey of DB_Proxy class.");
         return null;
     }
+
     public function getDefaultKey()
     {
         return $this->dbClass->getDefaultKey();
     }
+
     /**
      * @param bool $testmode
      */
@@ -80,18 +82,23 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function getFromDB($dataSourceName)
     {
-        $className = get_class($this->userExpanded);
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeGetFromDB")) {
-            $this->logger->setDebugMessage("The method 'doBeforeSetToDB' of the class '{$className}' is calling.", 2);
-            $this->userExpanded->doBeforeGetFromDB($dataSourceName);
-        }
-        if ($this->dbClass !== null) {
-            $this->logger->setDebugMessage("The method 'getFromDB' of the class '{$className}' is calling.", 2);
-            $result = $this->dbClass->getFromDB($dataSourceName);
-        }
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterGetFromDB")) {
-            $this->logger->setDebugMessage("The method 'doAfterSetToDB' of the class '{$className}' is calling.", 2);
-            $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
+        try {
+            $className = get_class($this->userExpanded);
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeGetFromDB")) {
+                $this->logger->setDebugMessage("The method 'doBeforeSetToDB' of the class '{$className}' is calling.", 2);
+                $this->userExpanded->doBeforeGetFromDB($dataSourceName);
+            }
+            if ($this->dbClass !== null) {
+                $this->logger->setDebugMessage("The method 'getFromDB' of the class '{$className}' is calling.", 2);
+                $result = $this->dbClass->getFromDB($dataSourceName);
+            }
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterGetFromDB")) {
+                $this->logger->setDebugMessage("The method 'doAfterSetToDB' of the class '{$className}' is calling.", 2);
+                $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
+            }
+        } catch (Exception $e) {
+            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            return false;
         }
         return $result;
     }
@@ -116,14 +123,19 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function setToDB($dataSourceName)
     {
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeSetToDB")) {
-            $this->userExpanded->doBeforeSetToDB($dataSourceName);
-        }
-        if ($this->dbClass !== null) {
-            $result = $this->dbClass->setToDB($dataSourceName);
-        }
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
-            $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
+        try {
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeSetToDB")) {
+                $this->userExpanded->doBeforeSetToDB($dataSourceName);
+            }
+            if ($this->dbClass !== null) {
+                $result = $this->dbClass->setToDB($dataSourceName);
+            }
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
+                $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
+            }
+        } catch (Exception $e) {
+            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            return false;
         }
         return $result;
     }
@@ -135,16 +147,22 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function newToDB($dataSourceName, $bypassAuth)
     {
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeNewToDB")) {
-            $this->userExpanded->doBeforeNewToDB($dataSourceName);
-        }
-        if ($this->dbClass !== null) {
-            $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
-        }
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
-            $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
+        try {
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeNewToDB")) {
+                $this->userExpanded->doBeforeNewToDB($dataSourceName);
+            }
+            if ($this->dbClass !== null) {
+                $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
+            }
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
+                $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
+            }
+        } catch (Exception $e) {
+            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            return false;
         }
         return $result;
+
     }
 
     /**
@@ -153,16 +171,22 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function deleteFromDB($dataSourceName)
     {
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
-            $this->userExpanded->doBeforeDeleteFromDB($dataSourceName);
-        }
-        if ($this->dbClass !== null) {
-            $result = $this->dbClass->deleteFromDB($dataSourceName);
-        }
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
-            $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);
+        try {
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
+                $this->userExpanded->doBeforeDeleteFromDB($dataSourceName);
+            }
+            if ($this->dbClass !== null) {
+                $result = $this->dbClass->deleteFromDB($dataSourceName);
+            }
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
+                $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);
+            }
+        } catch (Exception $e) {
+            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            return false;
         }
         return $result;
+
     }
 
     /**
@@ -270,7 +294,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         } else if (isset($issuedHashDSN)) {
             $challengeDSN = $issuedHashDSN;
         }
-        if ( ! is_null($challengeDSN) ) {
+        if (!is_null($challengeDSN)) {
             require_once("DB_PDO.php");
             $this->authDbClass = new DB_PDO();
             $this->authDbClass->setUpSharedObjects($this);
@@ -297,7 +321,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
         }
 
-        $this->dbSettings->setPrimaryKeyOnly( isset($_POST['pkeyonly']) &&
+        $this->dbSettings->setPrimaryKeyOnly(isset($_POST['pkeyonly']) &&
             !(isset($prohibitIgnoreCondition) ? $prohibitIgnoreCondition : false));
 
         $this->dbSettings->setCurrentUser(isset($_POST['authuser']) ? $_POST['authuser'] : null);
@@ -494,7 +518,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         } else {
                             if (count($authorizedGroups) > 0) {
                                 $belongGroups = $this->dbClass->authSupportGetGroupsOfUser($signedUser);
-                                $this->logger->setDebugMessage($signedUser."=belongGroups=".var_export($belongGroups, true),2);
+                                $this->logger->setDebugMessage($signedUser . "=belongGroups=" . var_export($belongGroups, true), 2);
                                 if (count(array_intersect($belongGroups, $authorizedGroups)) != 0) {
                                     $noAuthorization = false;
                                 }
@@ -677,6 +701,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $salt = $this->generateSalt();
         return sha1($pw . $salt) . bin2hex($salt);
     }
+
     /**
      * @param $username
      * @return string
@@ -726,7 +751,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if (strlen($storedChalenge) == 24) { // ex.fc0d54312ce33c2fac19d758
             $hashedPassword = $this->dbClass->authSupportRetrieveHashedPassword($username);
             $this->logger->setDebugMessage("[checkAuthorization]hashedPassword={$hashedPassword}", 2);
-            $this->logger->setDebugMessage("[checkAuthorization]hmac_value=".hash_hmac('sha256', $hashedPassword, $storedChalenge), 2);
+            $this->logger->setDebugMessage("[checkAuthorization]hmac_value=" . hash_hmac('sha256', $hashedPassword, $storedChalenge), 2);
             if (strlen($hashedPassword) > 0) {
                 if ($hashedvalue == hash_hmac('sha256', $hashedPassword, $storedChalenge)) {
 //                    if ($hashedvalue == sha1($storedChalenge . $hashedPassword)) {
@@ -862,7 +887,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $userInfo = null;
         $userID = $this->authDbClass->authSupportUserEnrollmentActivateUser($challenge);
-        if ($userID !== false)   {
+        if ($userID !== false) {
             $hashednewpassword = $this->convertHashedPassword($password);
             $userInfo = authSupportUserEnrollmentCheckHash($userID, $hashednewpassword);
         }
@@ -872,5 +897,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     public function setupConnection()
     {
         // TODO: Implement setupConnection() method.
+    }
+
+    public function isPossibleOperator($operator)
+    {
+        // TODO: Implement isPossibleOperator() method.
+    }
+
+    public function isPossibleOrderSpecifier($specifier)
+    {
+        // TODO: Implement isPossibleOrderSpecifier() method.
     }
 }
