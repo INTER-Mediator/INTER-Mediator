@@ -188,6 +188,7 @@ class DefinitionChecker
             'table' => 'string',
             'view' => 'string',
             'records' => 'integer',
+            'maxrecords' => 'integer',
             'paging' => 'boolean',
             'key' => 'string',
             'sequence' => 'string',

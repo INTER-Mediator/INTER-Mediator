@@ -68,6 +68,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'table' => getValueFromArray($context, 'table'),
                         'view' => getValueFromArray($context, 'view'),
                         'records' => getValueFromArray($context, 'records'),
+                        'maxrecords' => getValueFromArray($context, 'maxrecords'),
                         'paging' => getValueFromArray($context, 'paging'),
                         'key' => getValueFromArray($context, 'key'),
                         'sequence' => getValueFromArray($context, 'sequence'),
@@ -353,7 +354,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         );
 
         $keysShouldInteger = array(
-            'records',
+            'records', 'maxrecords',
         );
 
         $keysShouldBoolean = array(
