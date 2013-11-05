@@ -78,7 +78,7 @@ Ver.3.10 (2013/11/2)
 - Modify FX.php for FileMaker Server to enable the "fmalt" and retrieve the record id on portal objects.
 - Modify FX.php for FileMaker Server to disable the surrogate input patch when using FileMaker Server 12
   (by specifying $dbDataType = 'FMPro12' in params.php).
-- Check availability of BC Math functions of PHP. INTER-Mediator requires BC Math for authentication.
+- Check availability of BC Math functions of PHP. INTER-Mediator requires BC Math for native authentication.
 - Check the compatibility mode of Internet Explorer on checking browsers.
 - [SECURITY FIX] Database connection information (the 'password' key etc.) in a definition file doesn't send to clients.
 - [SECURITY FIX] Fix SQL injection issue when using PDO.
