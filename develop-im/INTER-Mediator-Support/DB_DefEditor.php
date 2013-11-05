@@ -352,6 +352,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'formatter' => array('field', 'converter-class', 'parameter'),
         );
 
+        $keysShouldInteger = array(
+            'records',
+        );
+
+        $keysShouldBoolean = array(
+            'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct',
+        );
+
         switch ($dataSourceName) {
             case 'contexts':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
@@ -372,7 +380,17 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]]
                         = $this->dbSettings->getValueOfField($theKey);
                 } else {
-                    $globalDataSource[$contextID][$theKey] = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                        $setValue = (int)$setValue;
+                    } else if (array_search($theKey, $keysShouldBoolean) !== false) {
+                        $setValue = (boolean)$setValue;
+                    }
+                    if (strlen($setValue) > 0) {
+                        $globalDataSource[$contextID][$theKey] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$theKey])) {
+                        unset($globalDataSource[$contextID][$theKey]);
+                    }
                 }
                 break;
             case 'relation':
@@ -403,7 +421,17 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     $globalOptions["authentication"][$authKey]
                         = $this->dbSettings->getValueOfField($theKey);
                 } else {
-                    $globalOptions[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                        $setValue = (int)$setValue;
+                    } else if (array_search($theKey, $keysShouldBoolean) !== false) {
+                        $setValue = (boolean)$setValue;
+                    }
+                    if (strlen($setValue) > 0) {
+                        $globalOptions[$theKey] = $setValue;
+                    } else if (isset($globalOptions[$theKey])) {
+                        unset($globalOptions[$theKey]);
+                    }
                 }
                 break;
             case 'aliases':
@@ -788,5 +816,25 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     public function setupConnection()
     {
         // TODO: Implement setupConnection() method.
+    }
+
+    public static function defaultKey()
+    {
+        // TODO: Implement defaultKey() method.
+    }
+
+    public function getDefaultKey()
+    {
+        // TODO: Implement getDefaultKey() method.
+    }
+
+    public function isPossibleOperator($operator)
+    {
+        // TODO: Implement isPossibleOperator() method.
+    }
+
+    public function isPossibleOrderSpecifier($specifier)
+    {
+        // TODO: Implement isPossibleOrderSpecifier() method.
     }
 }
