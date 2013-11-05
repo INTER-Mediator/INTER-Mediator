@@ -1201,7 +1201,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fxAuth->AddDBParam('username', $username, "eq");
         $this->fxAuth->AddDBParam('email', str_replace("@", "\\@", $username), "eq");
         $this->fxAuth->SetLogicalOR();
-        $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        $result = $this->fxAuth->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;

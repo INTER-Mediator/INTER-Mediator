@@ -1388,12 +1388,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     public function isPossibleOperator($operator)
     {
-        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
+        //for MySQL
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
             return !(FALSE === array_search(strtoupper($operator), array(
                     'AND', '&&', //Logical AND
                     '=', //Assign a value (as part of a SET statement, or as part of the SET clause in an UPDATE statement)
                     ':=', //Assign a value
-                    'BETWEEN ... AND ...', //Check whether a value is within a range of values
+                    'BETWEEN', //Check whether a value is within a range of values
                     'BINARY', //Cast a string to a binary string
                     '&', //Bitwise AND
                     '~', //Invert bits
@@ -1416,7 +1417,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     'LIKE', //Simple pattern matching
                     '-', //Minus operator
                     '%', 'MOD', //Modulo operator
-                    'NOT BETWEEN ... AND ...', //Check whether a value is not within a range of values
+                    'NOT BETWEEN', //Check whether a value is not within a range of values
                     '!=', '<>', //Not equal operator
                     'NOT LIKE', //Negation of simple pattern matching
                     'NOT REGEXP', //Negation of REGEXP
@@ -1432,7 +1433,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     'XOR' //Logical XOR
                 )));
 
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for PostgreSQL */
+            //for PostgreSQL
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
             return !(FALSE === array_search(strtoupper($operator), array(
                     'LIKE', //
                     'SIMILAR TO', //
@@ -1476,8 +1478,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     //[上記に含まれないもの]
                     //幾何データ型、ネットワークアドレス型、JSON演算子、配列演算子、範囲演算子
                 )));
-
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) { /* for SQLite */
+            // for SQLite
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
             return !(FALSE === array_search(strtoupper($operator), array(
                     '||',
                     '*', '/', '%',
@@ -1496,14 +1498,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     }
 
-    public
-    function isPossibleOrderSpecifier($specifier)
+    public function isPossibleOrderSpecifier($specifier)
     {
         /* for MySQL */
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
             return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
 
-        /* for PostgreSQL */
+            /* for PostgreSQL */
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
             return !(FALSE === array_search(strtoupper($specifier), array(
                     'ASC',
@@ -1514,7 +1515,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     'DESC NULLS LAST',
                 )));
 
-        /* for SQLite */
+            /* for SQLite */
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
             return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
 
