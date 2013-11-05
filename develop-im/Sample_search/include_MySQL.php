@@ -14,13 +14,12 @@ IM_Entry(
         array(
             'name' => 'postalcode',
             'records' => 10,
+            'maxrecords' => 10,
             'paging' => true,
             //	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
         ),
     ),
     null,
     array('db-class' => 'PDO'),
-    2
+    false
 );
-
-?>

@@ -2359,7 +2359,7 @@ var INTERMediator = {
                 c_node = document.createElement("INPUT");
                 c_node.setAttribute("class", 'IM_NAV_JUMP');
                 c_node.setAttribute("type", 'text');
-                c_node.setAttribute("value", ( INTERMediator.startFrom / pageSize ) + 1);
+                c_node.setAttribute("value", Math.ceil(INTERMediator.startFrom / pageSize + 1));
                 node.appendChild(c_node);
                 node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[11]));
                 INTERMediatorLib.addEvent(

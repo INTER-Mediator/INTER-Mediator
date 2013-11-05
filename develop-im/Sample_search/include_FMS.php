@@ -14,6 +14,7 @@ IM_Entry(
         array(
             'name' => 'postalcode',
             'records' => 10,
+            'maxrecords' => 10,
             'paging' => true,
             'query' => array(),
             //	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ascend' ),),
@@ -23,5 +24,3 @@ IM_Entry(
     array('db-class' => 'FileMaker_FX'),
     false
 );
-
-?>

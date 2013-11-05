@@ -30,6 +30,7 @@
             INTERMediator.additionalSortKey["postalcode"]
                     = {field:key, direction:direction};
             INTERMediator.startFrom = 0;
+            INTERMediator.pagedSize = 5;
             INTERMediator.construct(true);
 
             document.getElementById('place').value = searchCriteriaTown;
@@ -44,6 +45,7 @@
             INTERMediator.additionalSortKey["postalcode"]
                     = {field:key, direction:direction};
             INTERMediator.startFrom = 0;
+            INTERMediator.pagedSize = 0;
             INTERMediator.construct(true);
 
             document.getElementById('place').value = searchCriteriaTown;

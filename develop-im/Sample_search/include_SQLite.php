@@ -14,6 +14,7 @@ IM_Entry(
         array(
             'name' => 'postalcode',
             'records' => 10,
+            'maxrecords' => 10,
             'paging' => true,
             //	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
         ),
@@ -22,5 +23,3 @@ IM_Entry(
     array('db-class' => 'PDO','dsn' => 'sqlite:/var/db/im/sample.sq3',),
     false
 );
-
-?>

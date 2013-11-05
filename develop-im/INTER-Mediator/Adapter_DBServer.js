@@ -262,7 +262,11 @@ INTERMediator_DBAdapter = {
             } else {
                 params = "access=select&name=" + encodeURIComponent(args['name']);
             }
-            params += "&records=" + encodeURIComponent(args['records']);
+            if (args['records'] >= INTERMediator.pagedSize && INTERMediator.pagedSize > 0) {
+                params += "&records=" + encodeURIComponent(INTERMediator.pagedSize);
+            } else {
+                params += "&records=" + encodeURIComponent(args['records']);
+            }
         }
 
         if (args['primaryKeyOnly']) {
@@ -343,7 +347,9 @@ INTERMediator_DBAdapter = {
                 returnValue.count++;
             }
             if (( args['paging'] != null) && ( args['paging'] == true )) {
-                INTERMediator.pagedSize = args['records'];
+                if (!(args['records'] >= INTERMediator.pagedSize && INTERMediator.pagedSize > 0)) {
+                    INTERMediator.pagedSize = args['records'];
+                }
                 INTERMediator.pagedAllCount = result.resultCount;
             }
         } catch (ex) {

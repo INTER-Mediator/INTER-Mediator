@@ -135,8 +135,22 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
         }
 
-        $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(),
-            isset($context['records']) ? $context['records'] : 100000000);
+        $limitParam = 100000000;
+        if ($this->dbSettings->getRecordCount() > 0) {
+            $limitParam = $this->dbSettings->getRecordCount();
+        }
+        if (isset($context['records'])) {
+            $limitParam = $context['records'];
+        } elseif (isset($context['maxrecords'])) {
+            $limitParam = $context['maxrecords'];
+        }
+        if (isset($context['maxrecords']) 
+            && intval($context['maxrecords']) >= $this->dbSettings->getRecordCount() 
+            && $this->dbSettings->getRecordCount() > 0) {
+            $limitParam = $this->dbSettings->getRecordCount();
+        }
+        $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), $limitParam);
+        
         $this->fx->FMSkipRecords(
             (isset($context['paging']) and $context['paging'] === true) ? $this->dbSettings->getStart() : 0);
 

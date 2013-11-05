@@ -348,7 +348,15 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         if (isset($tableInfo['records'])) {
             $limitParam = $tableInfo['records'];
+        } elseif (isset($tableInfo['maxrecords'])) {
+            $limitParam = $tableInfo['maxrecords'];
         }
+        if (isset($tableInfo['maxrecords']) 
+            && intval($tableInfo['maxrecords']) >= $this->dbSettings->getRecordCount() 
+            && $this->dbSettings->getRecordCount() > 0) {
+            $limitParam = $this->dbSettings->getRecordCount();
+        }
+
         $skipParam = 0;
         if (isset($tableInfo['paging']) and $tableInfo['paging'] == true) {
             $skipParam = $this->dbSettings->getStart();
