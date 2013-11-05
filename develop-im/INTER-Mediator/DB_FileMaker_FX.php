@@ -90,11 +90,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function getSchema($dataSourceName)
     {
         $this->fieldInfo = null;
-        
+
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), '');
         $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
         $result = $this->fx->FMView();
-        
+
         if (!is_array($result)) {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
@@ -104,22 +104,22 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
             return false;
         }
-        
+
         $returnArray = array();
         foreach ($result['fields'] as $key => $fieldInfo) {
             $returnArray[$fieldInfo['name']] = '';
         }
-        
+
         return $returnArray;
     }
-    
+
     public function getFromDB($dataSourceName)
     {
-        $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}",2);
+        $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}", 2);
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
-        
+
         $usePortal = false;
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
             foreach ($context['relation'] as $relDef) {
@@ -147,6 +147,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $this->fx->SetLogicalOR();
                 } else {
                     if (isset($condition['operator'])) {
+                        if (!$this->isPossibleOperator($condition['operator'])) {
+                            throw new Exception("Invalid Operator.");
+                        }
                         $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
                     } else {
                         $this->fx->AddDBParam($condition['field'], $condition['value']);
@@ -163,6 +166,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $this->fx->SetLogicalOR();
                     } else {
                         if (isset($condition['operator'])) {
+                            if (!$this->isPossibleOperator($condition['operator'])) {
+                                throw new Exception("Invalid Operator.");
+                            }
                             $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
                         } else {
                             $this->fx->AddDBParam($condition['field'], $condition['value']);
@@ -182,6 +188,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $this->fx->SetLogicalOR();
                 } else {
                     $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
+                    if (!$this->isPossibleOperator($op)) {
+                        throw new Exception("Invalid Operator.");
+                    }
                     $this->fx->AddDBParam($condition['field'], $condition['value'], $op);
                     $hasFindParams = true;
                     if ($condition['field'] == $this->getDefaultKey()) {
@@ -194,7 +203,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
-        
+
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
             foreach ($context['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
@@ -205,6 +214,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $formattedValue = $this->formatter->formatterToDB(
                             "{$dataSourceName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$usePortal) {
+                            if (!$this->isPossibleOperator($foreignOperator)) {
+                                throw new Exception("Invalid Operator.");
+                            }
                             $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
                             $hasFindParams = true;
                         }
@@ -257,6 +269,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         if (isset($context['sort'])) {
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
+                    if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
+                        throw new Exception("Invalid Sort Specifier.");
+                    }
                     $this->fx->AddSortParam($condition['field'], $condition['direction']);
                 } else {
                     $this->fx->AddSortParam($condition['field']);
@@ -268,6 +283,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             if (isset($parentTable['sort'])) {
                 foreach ($parentTable['sort'] as $condition) {
                     if (isset($condition['direction'])) {
+                        if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
+                            throw new Exception("Invalid Sort Specifier.");
+                        }
                         $this->fx->AddSortParam($condition['field'], $condition['direction']);
                     } else {
                         $this->fx->AddSortParam($condition['field']);
@@ -279,6 +297,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
+                if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
+                    throw new Exception("Invalid Sort Specifier.");
+                }
                 $this->fx->AddSortParam($condition['field'], $condition['direction']);
             }
         }
@@ -318,19 +339,19 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             if ($this->dbSettings->isDBNative()) {
                 $this->logger->setErrorMessage(
                     $this->stringWithoutPassword(get_class($this->fxResult)
-                    . ': ' . $this->fxResult->getDebugInfo()));
+                        . ': ' . $this->fxResult->getDebugInfo()));
                 $this->dbSettings->setRequireAuthentication(true);
             } else {
                 $this->logger->setErrorMessage(
                     $this->stringWithoutPassword(get_class($this->fxResult)
-                    . ': ' . $this->fxResult->getDebugInfo()));
+                        . ': ' . $this->fxResult->getDebugInfo()));
             }
             return null;
         }
         if ($this->fxResult['errorCode'] != 0 && $this->fxResult['errorCode'] != 401) {
             $this->logger->setErrorMessage(
                 $this->stringWithoutPassword("FX reports error at find action: "
-                . "code={$this->fxResult['errorCode']}, url={$this->fxResult['URL']}"));
+                    . "code={$this->fxResult['errorCode']}, url={$this->fxResult['URL']}"));
             return null;
         }
         $this->logger->setDebugMessage($this->stringWithoutPassword($this->fxResult['URL']));
@@ -341,10 +362,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         if (isset($this->fxResult['data'])) {
             foreach ($this->fxResult['data'] as $key => $oneRecord) {
                 $oneRecordArray = array();
-                
+
                 $recId = substr($key, 0, strpos($key, '.'));
                 $oneRecordArray[$this->getDefaultKey()] = $recId;
-                
+
                 $existsRelated = false;
                 foreach ($oneRecord as $field => $dataArray) {
                     if ($isFirstRecord) {
@@ -356,13 +377,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                 $existsRelated = true;
                             }
                             foreach ($dataArray as $portalKey => $portalValue) {
-                                $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId;  // parent record id
+                                $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
                                 $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                             }
                             if ($existsRelated == false) {
                                 $oneRecordArray = array();
-                                $oneRecordArray[0][$this->getDefaultKey()] = $recId;  // parent record id
+                                $oneRecordArray[0][$this->getDefaultKey()] = $recId; // parent record id
                             }
                         } else {
                             $oneRecordArray[$field] = $this->formatter->formatterFromDB(
@@ -373,7 +394,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             if (strpos($field, '::') !== false) {
                                 $existsRelated = true;
                                 if (strpos($field, $dataSourceName . '::') !== false) {
-                                    $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId;  // parent record id
+                                    $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
                                     $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                         "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                                 }
@@ -400,14 +421,16 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $returnArray[] = $oneRecordArray;
                     } else {
                         foreach ($oneRecordArray as $portalArrayField => $portalArray) {
-                            if (isset($oneRecordArray[$childRecordId]) 
-                                    && $childRecordIdValue == $oneRecordArray[$childRecordId]) {
+                            if (isset($oneRecordArray[$childRecordId])
+                                && $childRecordIdValue == $oneRecordArray[$childRecordId]
+                            ) {
                                 $returnArray = array();
                                 $returnArray[] = $oneRecordArray;
                                 return $returnArray;
                             }
-                            if (isset($oneRecordArray[$portalArrayField][$childRecordId]) 
-                                    && $childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]) {
+                            if (isset($oneRecordArray[$portalArrayField][$childRecordId])
+                                && $childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]
+                            ) {
                                 $returnArray = array();
                                 $returnArray[] = $oneRecordArray[$portalArrayField];
                                 return $returnArray;
@@ -431,14 +454,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
-        
+
         $usePortal = false;
         if (isset($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
                     $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                    $this->dbSettings->setDbSpecDataType(
+                        str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
                 }
             }
         }
@@ -455,8 +479,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             foreach ($tableInfo['query'] as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
+                    if (!$this->isPossibleOperator($op)) {
+                        throw new Exception("Invalid Operator.");
+                    }
                     $convertedValue = $this->formatter->formatterToDB(
-                        "{$dataSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}", $condition['value']);
+                        "{$dataSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}",
+                        $condition['value']);
                     $this->fx->AddDBParam($condition['field'], $convertedValue, $op);
                 }
             }
@@ -465,6 +493,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             if (!$this->dbSettings->getPrimaryKeyOnly() || $value['field'] == $primaryKey) {
                 $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
+                if (!$this->isPossibleOperator($op)) {
+                    throw new Exception("Invalid Operator.");
+                }
                 $convertedValue = $this->formatter->formatterToDB(
                     "{$dataSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
                 $this->fx->AddDBParam($value['field'], $convertedValue, $op);
@@ -601,7 +632,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
-        
+
         $usePortal = false;
         if (isset($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
@@ -721,7 +752,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
-        
+
         $usePortal = false;
         if (isset($context['relation'])) {
             foreach ($context['relation'] as $relDef) {
@@ -741,6 +772,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
+            if (!$this->isPossibleOperator($op)) {
+                throw new Exception("Invalid Operator.");
+            }
             $this->fx->AddDBParam($value['field'], $value['value'], $op);
         }
         if (isset($context['authentication'])
@@ -902,7 +936,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         if ($uid < 1) {
             $uid = 0;
-        }$this->setupFXforAuth($hashTable, 1);
+        }
+        $this->setupFXforAuth($hashTable, 1);
         $this->fxAuth->AddDBParam('user_id', $uid, 'eq');
         $this->fxAuth->AddDBParam('clienthost', '_im_media', 'eq');
         $result = $this->fxAuth->DoFxAction("perform_find", TRUE, TRUE, 'full');
@@ -1166,7 +1201,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fxAuth->AddDBParam('username', $username, "eq");
         $this->fxAuth->AddDBParam('email', str_replace("@", "\\@", $username), "eq");
         $this->fxAuth->SetLogicalOR();
-        $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        $result = $this->fxAuth->DoFxAction("perform_find", TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
@@ -1331,11 +1366,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     public function isPossibleOperator($operator)
     {
-        // TODO: Implement isPossibleOperator() method.
+        return !(FALSE === array_search(strtoupper($operator), array(
+                'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ',
+            )));
     }
 
     public function isPossibleOrderSpecifier($specifier)
     {
-        // TODO: Implement isPossibleOrderSpecifier() method.
+        return !(array_search(strtoupper($specifier), array('ASCEND', 'DESCEND')) === FALSE);
     }
 }
