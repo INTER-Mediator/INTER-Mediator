@@ -267,11 +267,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $sortClause = array();
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
+                $escapedField = $this->quotedFieldName($condition['field']);
                 if (isset($condition['direction'])) {
                     if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
                     }
-                    $escapedField = $this->quotedFieldName($condition['field']);
                     $sortClause[] = "{$escapedField} {$condition['direction']}";
                 } else {
                     $sortClause[] = $escapedField;
@@ -280,7 +280,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         if (isset($tableInfo['sort'])) {
             foreach ($tableInfo['sort'] as $condition) {
-                if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
+                if (isset($condition['direction']) && !$this->isPossibleOrderSpecifier($condition['direction'])) {
                     throw new Exception("Invalid Sort Specifier.");
                 }
                 $escapedField = $this->quotedFieldName($condition['field']);
