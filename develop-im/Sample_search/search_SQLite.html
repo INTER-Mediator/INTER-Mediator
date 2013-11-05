@@ -12,7 +12,7 @@
 
 <html>
 <head>
-    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <title>INTER-Mediator - Sample - Form Style/SQLite</title>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
     <script type="text/javascript" src="include_SQLite.php"></script>
@@ -30,6 +30,7 @@
             INTERMediator.additionalSortKey["postalcode"]
                     = {field:key, direction:direction};
             INTERMediator.startFrom = 0;
+            INTERMediator.pagedSize = 5;
             INTERMediator.construct(true);
 
             document.getElementById('place').value = searchCriteriaTown;
@@ -44,6 +45,7 @@
             INTERMediator.additionalSortKey["postalcode"]
                     = {field:key, direction:direction};
             INTERMediator.startFrom = 0;
+            INTERMediator.pagedSize = 0;
             INTERMediator.construct(true);
 
             document.getElementById('place').value = searchCriteriaTown;

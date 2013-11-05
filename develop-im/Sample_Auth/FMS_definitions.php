@@ -58,8 +58,8 @@ IM_Entry(
             array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
         ),
         'authentication' => array( // table only, for all operations
-//            'user' => array('user1'), // Itemize permitted users
-           'user' => array('database_native'), // Use DB-Native users.
+            'user' => array('user1'), // Itemize permitted users
+//           'user' => array('database_native'), // Use DB-Native users.
 //            'group' => array('group2'), // Itemize permitted groups
 //            'user-table' => 'authuser', // Default value "authuser"
 //            'group-table' => '', //'authgroup',

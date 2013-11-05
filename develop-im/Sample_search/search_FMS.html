@@ -12,7 +12,7 @@
 
 <html>
 <head>
-    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
     <script type="text/javascript" src="include_FMS.php"></script>
@@ -28,6 +28,7 @@
             INTERMediator.additionalCondition["postalcode"] = {field:'f9', operator:'cn', value:searchCriteriaTown};
             INTERMediator.additionalSortKey["postalcode"] = {field:key, direction:direction};
             INTERMediator.startFrom = 0;
+            INTERMediator.pagedSize = 5;
             INTERMediator.construct(true);
         }
         function doSearchFromZipcode(key, direction) {
@@ -37,6 +38,7 @@
             INTERMediator.additionalCondition["postalcode"] = {field:'f3', operator:'bw', value:searchCriteriaZip};
             INTERMediator.additionalSortKey["postalcode"] = {field:key, direction:direction};
             INTERMediator.startFrom = 0;
+            INTERMediator.pagedSize = 0;
             INTERMediator.construct(true);
         }
         INTERMediatorOnPage.expandingEnclosureFinish = function (name, target) {

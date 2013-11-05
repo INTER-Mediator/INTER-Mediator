@@ -15,6 +15,7 @@ IM_Entry(
             'name' => 'postalcode',
             'view' => 'im_sample.postalcode',
             'records' => 10,
+            'maxrecords' => 10,
             'paging' => true,
             //	'sort'	    => array( array( 'field'=>'f3', 'direction'=>'ASC' ),),
         ),
@@ -23,5 +24,3 @@ IM_Entry(
     array('db-class' => 'PDO','dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db'),
     false
 );
-
-?>
