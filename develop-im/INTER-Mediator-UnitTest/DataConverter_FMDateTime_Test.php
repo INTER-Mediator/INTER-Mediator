@@ -21,7 +21,6 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $datetimeString = '01/05/2000 12:34:56';
         if (getenv('TRAVIS') === 'true') {
             $convertedDatetimeString = '01/05/00 12:34:56';  // for Travis CI
-            echo getenv('TRAVIS');
         } else {
             $convertedDatetimeString = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
         }
@@ -30,7 +29,6 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $dateString = '01/05/2000';
         if (getenv('TRAVIS') === 'true') {
             $convertedDateString = '01/05/00';  // for Travis CI
-            echo getenv('TRAVIS');
         } else {
             $convertedDateString = strftime('%x', strtotime('01/05/00'));
         }
