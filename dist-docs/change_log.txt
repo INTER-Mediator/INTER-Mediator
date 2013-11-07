@@ -70,6 +70,7 @@ Ver.3.11 (in development)
 - The code editor "codemirror" is supported. See Sample_webpage folder.
 - INTERMediator.pagedSize can be changeable when specifying 'records' key and 'maxrecords' key in a definition file
   (for example: array('records' => 10, 'maxrecords' => 10) ).
+- Fix moving to the last page when clicking the button on the navigation bar.
 - [SECURITY FIX] Check operators in settings, and quote any field names for PDO.
 
 Ver.3.10 (2013/11/2)
