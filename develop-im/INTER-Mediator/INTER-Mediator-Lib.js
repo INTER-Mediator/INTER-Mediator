@@ -403,6 +403,9 @@ var INTERMediatorLib = {
         return value;
     },
 
+    /*
+    digit should be a positive value. negative value doesn't support so far.
+     */
     numberFormat: function (str, digit) {
         var s, n, sign, f, underDot, underNumStr, pstr;
         s = new Array();
@@ -423,7 +426,7 @@ var INTERMediatorLib = {
             }
         }
         underDot = (digit == null) ? 0 : INTERMediatorLib.toNumber(digit);
-        underNumStr = (underDot == 0) ? '' : new String(Math.floor(f * Math.pow(10, underDot)));
+        underNumStr = (underDot == 0) ? '' : new String(Math.round(f * Math.pow(10, underDot)));
         while (underNumStr.length < underDot) {
             underNumStr = "0" + underNumStr;
         }

@@ -372,7 +372,7 @@ var INTERMediator = {
                         return;
                     }
                 }
-                
+
                 currentVal = currentVal.recordset[0][objectSpec['field']];
                 isDiffrentOnDB = (objectSpec['initialvalue'] != currentVal);
             }
@@ -587,7 +587,7 @@ var INTERMediator = {
         }
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            
+
             relationDef = currentContext["relation"];
             if (relationDef) {
                 for (index in relationDef) {
@@ -604,10 +604,10 @@ var INTERMediator = {
                         value: currentContext["default-values"][index]["value"]
                     });
                 }
-                
+
                 if (relatedRecordSet.length == 0) {
                     targetPortalValue = "";
-                    
+
                     targetRecord = INTERMediator_DBAdapter.db_query({
                         name: targetName,
                         records: 1,
@@ -652,7 +652,7 @@ var INTERMediator = {
                     }
                     relatedRecordSet.push({field: targetPortalField + ".0", value: targetPortalValue});
                 }
-                
+
                 INTERMediator_DBAdapter.db_update({
                     name: targetName,
                     conditions: [
@@ -679,7 +679,7 @@ var INTERMediator = {
                 INTERMediator.setErrorMessage(ex, "EXCEPTION-4");
             }
         }
-        
+
         for (key in removeNodes) {
             removeNode = document.getElementById(removeNodes[key]);
             try {
@@ -990,10 +990,11 @@ var INTERMediator = {
         }
     },
 
-//=================================
-// Construct Page
-//=================================
     /**
+     * //=================================
+     * // Construct Page
+     * //=================================
+
      * Construct the Web Page with DB Data
      * You should call here when you show the page.
      *
@@ -1511,7 +1512,7 @@ var INTERMediator = {
                             INTERMediator.setErrorMessage(ex, "EXCEPTION-26");
                         }
                     }
-                    
+
                     if (currentContext['portal'] != true || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
                         nameTable = {};
                         for (k = 0; k < currentLinkedNodes.length; k++) {
@@ -1535,7 +1536,7 @@ var INTERMediator = {
                                         nameAttrCounter++
                                     }
                                     nameNumber = nameTable[nameTableKey];
-    //                            nameNumber = INTERMediator.radioNameMode ? currentLevel : RecordCounter;nameAttrCounter
+                                    //                            nameNumber = INTERMediator.radioNameMode ? currentLevel : RecordCounter;nameAttrCounter
                                     nameAttr = currentLinkedNodes[k].getAttribute('name');
                                     if (nameAttr) {
                                         currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + nameNumber);
@@ -1543,7 +1544,7 @@ var INTERMediator = {
                                         currentLinkedNodes[k].setAttribute('name', 'IM-R-' + nameNumber);
                                     }
                                 }
-    
+
                                 if (!isInsidePostOnly
                                     && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                                     valueChangeFunction = function (targetId) {
@@ -1570,7 +1571,7 @@ var INTERMediator = {
                                         });
                                     }
                                 }
-    
+
                                 for (j = 0; j < linkInfoArray.length; j++) {
                                     // for each info Multiple replacement definitions
                                     // for one node is prohibited.
@@ -1581,7 +1582,7 @@ var INTERMediator = {
                                     }
                                     curTarget = nInfo['target'];
                                     // Store the key field value and current value for update
-    
+
                                     if (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA'
                                         || INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
                                         INTERMediator.updateRequiredObject[nodeId] = {
@@ -1595,9 +1596,9 @@ var INTERMediator = {
                                             'foreign-value': relationValue,
                                             updatenodeid: parentNodeId};
                                     }
-    
+
                                     objectReference[nInfo['field']] = nodeId;
-                                    
+
                                     // Set data to the element.
                                     if ((typeof curVal == 'object' || curVal instanceof Object)) {
                                         for (i = 0; i < Object.keys(curVal).length; i++) {
@@ -1623,7 +1624,7 @@ var INTERMediator = {
 
                         }
                     }
-                    
+
                     if (currentContext['portal'] == true) {
                         keyField = "-recid";
                         foreignField = currentContext['name'] + "::-recid";
@@ -1636,7 +1637,7 @@ var INTERMediator = {
                     }
                     setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                         currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
-                    
+
                     if (currentContext['portal'] != true || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
                         newlyAddedNodes = [];
                         for (i = 0; i < repeatersOneRec.length; i++) {
@@ -1650,7 +1651,7 @@ var INTERMediator = {
                                     currentContext['name'], node, objectReference);
                             }
                         }
-                    
+
                         try {
                             if (INTERMediatorOnPage.expandingRecordFinish != null) {
                                 INTERMediatorOnPage.expandingRecordFinish(currentContext['name'], newlyAddedNodes);
@@ -1658,7 +1659,7 @@ var INTERMediator = {
                                     "Call INTERMediatorOnPage.expandingRecordFinish with the context: "
                                         + currentContext['name'], 2);
                             }
-    
+
                             if (currentContext['post-repeater']) {
                                 postCallFunc = new Function("arg",
                                     "INTERMediatorOnPage." + currentContext['post-repeater'] + "(arg)");
@@ -2442,7 +2443,7 @@ var INTERMediator = {
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(
                         (navLabel == null || navLabel[10] == null) ?
-                            INTERMediatorOnPage.getMessages()[7] : navLabel[10] ));
+                            INTERMediatorOnPage.getMessages()[7] : navLabel[10]));
                     node.setAttribute('class', 'IM_NAV_button');
                     INTERMediatorLib.addEvent(node, 'click', INTERMediator.saveRecordFromNavi);
                 }
@@ -2459,7 +2460,7 @@ var INTERMediator = {
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(
                         (navLabel == null || navLabel[11] == null) ?
-                            INTERMediatorOnPage.getMessages()[9] : navLabel[11] ));
+                            INTERMediatorOnPage.getMessages()[9] : navLabel[11]));
                     node.setAttribute('class', 'IM_NAV_button');
                     INTERMediatorLib.addEvent(node, 'click',
                         function () {
