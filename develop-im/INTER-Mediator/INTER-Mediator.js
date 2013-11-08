@@ -2039,7 +2039,7 @@ var INTERMediator = {
                         if (nodeTag == "TEXTAREA") {
                             if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
                                 // for IE11
-                                curVal = curVal.replace(/\r\n/g, "\n").replace(/\n/g, "\n");
+                                curVal = curVal.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
                             } else {
                                 curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                             }
