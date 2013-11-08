@@ -2346,7 +2346,11 @@ var INTERMediator = {
                 node.appendChild(document.createTextNode(
                     (navLabel == null || navLabel[3] == null) ? '>>' : navLabel[3]));
                 node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                endPageCount = allCount - (allCount % pageSize);
+                if (pageSize == 1) {
+                    endPageCount = allCount - pageSize;
+                } else {
+                    endPageCount = allCount - (allCount % pageSize);
+                }
                 INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
                     INTERMediator.constructMain(true);
