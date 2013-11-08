@@ -7,7 +7,8 @@
         {"name" : "Kiyonori Ito"}
     ],
     "scripts" : {
-        "test" : "node_modules/.bin/buster-test -r specification"
+        "test" : "node_modules/.bin/buster-test -r specification",
+        "test-local" : "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies" : {
         "buster" : "~0.6",
