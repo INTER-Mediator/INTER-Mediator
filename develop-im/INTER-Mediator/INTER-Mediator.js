@@ -43,6 +43,7 @@ var INTERMediator = {
     pagedAllCount: 0,
     currentEncNumber: 0,
     isIE: false,
+    isTrident: false,
     ieVersion: -1,
     titleAsLinkInfo: true,
     classAsLinkInfo: true,
@@ -1144,6 +1145,18 @@ var INTERMediator = {
                     }
                 }
             }
+            msiePos = ua.indexOf('; Trident/');
+            if (msiePos >= 0) {
+                INTERMediator.isTrident = true;
+                for (i = msiePos + 10; i < ua.length; i++) {
+                    c = ua.charAt(i);
+                    if (c != ' ' && c != '.' && (c < '0' || c > '9')) {
+                        INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(msiePos + 10, i)) + 4;
+                        break;
+                    }
+                }
+            }
+            
             // Restoring original HTML Document from backup data.
             bodyNode = document.getElementsByTagName('BODY')[0];
             if (INTERMediator.rootEnclosure == null) {
@@ -2024,7 +2037,12 @@ var INTERMediator = {
                         element.innerHTML = curVal;
                     } else {
                         if (nodeTag == "TEXTAREA") {
-                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                            if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
+                                // for IE11
+                                curVal = curVal.replace(/\r\n/g, "\n").replace(/\n/g, "\n");
+                            } else {
+                                curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                            }
                         }
                         textNode = document.createTextNode(curVal);
                         element.appendChild(textNode);
