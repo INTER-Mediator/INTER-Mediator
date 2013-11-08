@@ -77,6 +77,7 @@ Ver.3.11 (in development)
   (for example: array('records' => 10, 'maxrecords' => 10) ).
 - Fix moving to the last page when clicking the button on the navigation bar.
 - [SECURITY FIX] Check operators in settings, and quote any field names for PDO.
+- [BUG FIX] Fix displaying of new lines in textarea in some case using Internet Explorer 11.
 
 Ver.3.10 (2013/11/2)
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
