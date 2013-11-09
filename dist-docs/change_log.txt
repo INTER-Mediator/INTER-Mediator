@@ -57,7 +57,10 @@ Change Log
 
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.0 (any date)=========================================================
+Ver.4 (any date)=========================================================
+
+[Major differences from Ver.3]
+- [INFO] INTER-Mediator requires FileMaker Server 10 or later, OS X v10.6 or later if using FileMaker Server.
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
 - Enable omitting to place the primary key field object on a layout when using FileMaker Server
   (by specifying 'key' => '-recid').
@@ -67,7 +70,7 @@ Ver.4.0 (any date)=========================================================
 - Post only page could be made without any programmings.
 - Bridge for JavaScript Components is added. The HTML editor tinyMCE and original File Uploader are supported.
 - Support the FileMaker's checkbox set feature.
-- FileMaker Object fields supported.
+- Support displaying of the FileMaker's container fields.
 - Started CI!
 ===========================================================================
 
@@ -77,7 +80,7 @@ Ver.3.11 (in development)
   (for example: array('records' => 10, 'maxrecords' => 10) ).
 - Fix moving to the last page when clicking the button on the navigation bar.
 - [SECURITY FIX] Check operators in settings, and quote any field names for PDO.
-- [BUG FIX] Fix displaying of new lines in textarea in some case using Internet Explorer 11.
+- [BUG FIX] Fix displaying of new lines in textarea when using Internet Explorer 11.
 
 Ver.3.10 (2013/11/2)
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
