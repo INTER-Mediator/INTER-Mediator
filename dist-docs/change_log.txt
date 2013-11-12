@@ -78,9 +78,10 @@ Ver.3.11 (in development)
 - The code editor "codemirror" is supported. See Sample_webpage folder.
 - INTERMediator.pagedSize can be changeable when specifying 'records' key and 'maxrecords' key in a definition file
   (for example: array('records' => 10, 'maxrecords' => 10) ).
-- Fix moving to the last page when clicking the button on the navigation bar.
+- Modify moving to the last page when clicking the button on the navigation bar.
 - [SECURITY FIX] Check operators in settings, and quote any field names for PDO.
 - [BUG FIX] Fix displaying of new lines in textarea when using Internet Explorer 11.
+- [BUG FIX] Revise MediaAccess.php to fix displaying of the FileMaker's container fields if the name of the table contains 'class'.
 
 Ver.3.10 (2013/11/2)
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
