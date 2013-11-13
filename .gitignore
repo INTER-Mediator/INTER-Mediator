@@ -1,4 +1,5 @@
 .idea
 tinymce
 codemirror
+npm-debug.log
 .DS_Store
