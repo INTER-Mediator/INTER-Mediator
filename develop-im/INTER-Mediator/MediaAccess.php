@@ -69,8 +69,7 @@ class MediaAccess
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
                 header('X-Frame-Options: SAMEORIGIN');
                 echo $content;
-            } else if ((stripos($target, 'http://') == 0 || stripos($target, 'https://') == 0) 
-                    && stripos($target, '/fmi/xml/cnt/') > 0) { // http or https
+            } else if (stripos($target, 'http://') == 0 || stripos($target, 'https://') == 0) { // http or https
                 if (intval(get_cfg_var('allow_url_fopen')) === 1) {
                     $content = file_get_contents($target);
                 } else {
