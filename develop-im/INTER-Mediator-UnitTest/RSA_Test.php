@@ -6,8 +6,8 @@
  * Time: 13:27
  * To change this template use File | Settings | File Templates.
  */
-require_once(__DIR__ . '/../INTER-Mediator/phpseclib/Crypt/RSA.php');
-require_once(__DIR__ . '/../INTER-Mediator/phpseclib/Math/BigInteger.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/phpseclib/Crypt/RSA.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/phpseclib/Math/BigInteger.php');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {

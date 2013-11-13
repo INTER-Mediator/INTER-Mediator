@@ -2,7 +2,7 @@
 /**
  * MediaAccess_Test file
  */
-require_once(__DIR__ . '/../INTER-Mediator/MediaAccess.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/MediaAccess.php');
 
 class MediaAccess_Test extends PHPUnit_Framework_TestCase
 {
