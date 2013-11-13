@@ -6,13 +6,12 @@
  * Time: 13:27
  * To change this template use File | Settings | File Templates.
  */
-
-//require_once('PHPUnit/Framework/TestCase.php');
-//require_once('Crypt/RSA.php');
+require_once(__DIR__ . '/../INTER-Mediator/phpseclib/Crypt/RSA.php');
+require_once(__DIR__ . '/../INTER-Mediator/phpseclib/Math/BigInteger.php');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {
-    function setUp()
+    protected function setUp()
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
@@ -20,8 +19,8 @@ class RSA_Test extends PHPUnit_Framework_TestCase
 
     public function testGeneratedKey()
     {
-        $publickey = nil;
-        $privatekey = nil;
+        $publickey = null;
+        $privatekey = null;
         $rsa = new Crypt_RSA();
         extract($rsa->createKey(512)); /* 128, 256 didn't work, 512, 1024 work, 2048 didn't finish in 5 min. */
         $rsa->loadKey($publickey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
@@ -98,6 +97,7 @@ EOL;
 
         $rsa = new Crypt_RSA();
         $rsa->loadKey($generatedKey);
+        $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
         $dec = $rsa->decrypt(pack("H*", $data));
         $this->assertEquals($str, $dec, "Decrypt with Supplied key.");
     }

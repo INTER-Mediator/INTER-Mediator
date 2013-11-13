@@ -52,5 +52,6 @@ script:
   - phpunit DataConverter_MySQLDateTime_Test.php
   - phpunit DataConverter_FMDateTime_Test.php
   - phpunit INTERMediator_Test.php
+  - phpunit RSA_Test.php 
   - cd ../..
   - npm test
