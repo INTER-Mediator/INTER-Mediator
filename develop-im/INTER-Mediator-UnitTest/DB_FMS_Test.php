@@ -9,14 +9,14 @@
  */
 
 require_once('PHPUnit/Framework/TestCase.php');
-require_once('../INTER-Mediator/DB_Interfaces.php');
-require_once('../INTER-Mediator/DB_UseSharedObjects.php');
-require_once('../INTER-Mediator/DB_AuthCommon.php');
-require_once('../INTER-Mediator/DB_Settings.php');
-require_once('../INTER-Mediator/DB_Formatters.php');
-require_once('../INTER-Mediator/DB_Proxy.php');
-require_once('../INTER-Mediator/DB_Logger.php');
-require_once('../INTER-Mediator/DB_FileMaker_FX.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Interfaces.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_UseSharedObjects.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_AuthCommon.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Settings.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Formatters.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Proxy.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Logger.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_FileMaker_FX.php');
 
 class DB_FMS_Test extends PHPUnit_Framework_TestCase
 {

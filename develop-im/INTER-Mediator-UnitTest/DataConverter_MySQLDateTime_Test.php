@@ -2,8 +2,8 @@
 /**
  * DataConverter_MySQLDateTime_Test file
  */
-require_once('../INTER-Mediator/INTER-Mediator.php');
-require_once('../INTER-Mediator/DataConverter_MySQLDateTime.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DataConverter_MySQLDateTime.php');
 
 class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
 {

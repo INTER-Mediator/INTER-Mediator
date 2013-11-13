@@ -7,14 +7,14 @@
  * To change this template use File | Settings | File Templates.
  */
 
-require_once('../INTER-Mediator/INTER-Mediator.php');
-require_once('../INTER-Mediator/DB_Interfaces.php');
-require_once('../INTER-Mediator/DB_Logger.php');
-require_once('../INTER-Mediator/DB_Settings.php');
-require_once('../INTER-Mediator/DB_UseSharedObjects.php');
-require_once('../INTER-Mediator/DB_Proxy.php');
-require_once('../INTER-Mediator/DB_Formatters.php');
-require_once('../INTER-Mediator/DB_AuthCommon.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Interfaces.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Logger.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Settings.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_UseSharedObjects.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Proxy.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Formatters.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_AuthCommon.php');
 
 class INTERMediator_Test extends PHPUnit_Framework_TestCase
 {

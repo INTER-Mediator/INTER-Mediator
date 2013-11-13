@@ -2,7 +2,7 @@
 /**
  * DB_Settings_Test file
  */
-require_once('../INTER-Mediator/DB_Settings.php');
+require_once(dirname(__FILE__) . '/../INTER-Mediator/DB_Settings.php');
 
 class DB_Settings_Test extends PHPUnit_Framework_TestCase
 {
