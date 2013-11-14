@@ -79,6 +79,8 @@ Ver.3.11 (in development)
 - INTERMediator.pagedSize can be changeable when specifying 'records' key and 'maxrecords' key in a definition file
   (for example: array('records' => 10, 'maxrecords' => 10) ).
 - Modify moving to the last page when clicking the button on the navigation bar.
+- Prevent to show the username in an URL for the FileMaker_FX data class on the debug mode.
+- Prevent to show the password in an URL for the FileMaker_FX data class on the debug mode in some cases when using the Native Authentication.
 - [SECURITY FIX] Check operators in settings, and quote any field names for PDO.
 - [BUG FIX] Fix displaying of new lines in textarea when using Internet Explorer 11.
 - [BUG FIX] Revise MediaAccess.php to fix displaying of the FileMaker's container fields if the name of the table (layout) contains 'class'.
