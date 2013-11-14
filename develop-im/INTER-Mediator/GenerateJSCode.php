@@ -89,9 +89,14 @@ class GenerateJSCode
         $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
         $editorPath = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR
             . 'INTER-Mediator-Support' . DIRECTORY_SEPARATOR . 'defedit.html';
-        $relativeToEditor = substr($editorPath, strlen($_SERVER['DOCUMENT_ROOT']));
-        $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
-            "function(){return {$q}{$relativeToEditor}?target=$relativeToDefFile{$q};}");
+        if (file_exists($editorPath)) {
+            $relativeToEditor = substr($editorPath, strlen($_SERVER['DOCUMENT_ROOT']));
+            $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
+                "function(){return {$q}{$relativeToEditor}?target=$relativeToDefFile{$q};}");
+        } else {
+            $this->generateAssignJS("INTERMediatorOnPage.getEditorPath",
+                "function(){return '';}");
+        }
 
         /*
          * from db-class, determine the default key field string

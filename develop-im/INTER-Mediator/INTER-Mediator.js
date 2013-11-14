@@ -178,10 +178,12 @@ var INTERMediator = {
             }
             debugNode.appendChild(document.createTextNode(
                 "============DEBUG INFO on " + new Date() + "============ "));
-            var aLink = document.createElement('a');
-            aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath());
-            aLink.appendChild(document.createTextNode('Definition File Editor'));
-            debugNode.appendChild(aLink);
+            if (INTERMediatorOnPage.getEditorPath()) {
+                var aLink = document.createElement('a');
+                aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath());
+                aLink.appendChild(document.createTextNode('Definition File Editor'));
+                debugNode.appendChild(aLink);
+            }
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.debugMessages.length; i++) {
                 lines = INTERMediator.debugMessages[i].split("\n");
