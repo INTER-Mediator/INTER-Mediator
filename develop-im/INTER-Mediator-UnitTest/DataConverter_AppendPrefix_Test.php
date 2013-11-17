@@ -23,7 +23,7 @@ class DataConverter_AppendPrefix_Test extends PHPUnit_Framework_TestCase
 
     public function test_converterFromUserToDB()
     {
-        /$string = '1000';
+        $string = '1000';
         $convertedString = '1000';
         $this->assertEquals($this->dataconverter->converterFromUserToDB($string), $convertedString);
 
