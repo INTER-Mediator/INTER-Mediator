@@ -31,7 +31,7 @@ class DataConverter_Currency extends DataConverter_NumberBase
         if (mb_strlen($this->currencyMark) > 0 && strpos($str, $this->currencyMark) === 0) {
             $str = substr($str, strlen($this->currencyMark));
         }
-        $normalized = str_replace(',', '', mb_convert_kana($str, 'n'));
+        $normalized = str_replace($this->thSepMark, '', mb_convert_kana($str, 'n'));
         $numberString = '';
         $isPeriod = false;
         for ($i = 0; $i < mb_strlen($normalized); $i++) {
