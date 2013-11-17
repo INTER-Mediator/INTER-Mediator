@@ -318,6 +318,8 @@ function setLocaleAsBrowser($locType)
         } else {
             setlocale($locType, 'en_US');
         }
+    } else {
+        setlocale($locType, '');
     }
     return $useMbstring;
 }
