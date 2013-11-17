@@ -19,7 +19,7 @@ class DataConverter_Currency_Test extends PHPUnit_Framework_TestCase
     {
         $string = '1000';
         if (getenv('TRAVIS') === 'true') {
-            $convertedString = '1,000';  // for Travis CI (temporary)
+            $convertedString = '1000';  // for Travis CI (temporary)
         } else {
             $convertedString = '¥1,000';
         }
@@ -32,12 +32,16 @@ class DataConverter_Currency_Test extends PHPUnit_Framework_TestCase
         $convertedString = '1000';
         $this->assertEquals($this->dataconverter->converterFromUserToDB($string), $convertedString);
 
-        $string = '¥1000';
+        $string = '1,000';
         $convertedString = '1000';
         $this->assertEquals($this->dataconverter->converterFromUserToDB($string), $convertedString);
 
-        $string = '¥1,000';
-        $convertedString = '1000';
+        if (getenv('TRAVIS') === 'true') {
+            $string = '10,000';
+        } else {
+            $string = '¥10,000';
+        }
+        $convertedString = '10000';
         $this->assertEquals($this->dataconverter->converterFromUserToDB($string), $convertedString);
     }
 }
