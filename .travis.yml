@@ -44,13 +44,16 @@ before_script:
 #  - sh -c "if [ '$DB' = 'postgres' ]; then cat DB_PDO_Test.php | sed -e s/mysql\:dbname=test_db\;host=127.0.0.1/pgsql\:host=127.0.0.1\;port=5432\;dbname=test_db/ > DB_PDO_Test.tmp; mv DB_PDO_Test.tmp DB_PDO_Test.php; fi"
 
 script:
+  - phpunit DataConverter_AppendPrefix_Test.php
+  - phpunit DataConverter_AppendSuffix_Test.php
+  - phpunit DataConverter_Currency_Test.php
+  - phpunit DataConverter_FMDateTime_Test.php
+  - phpunit DataConverter_MySQLDateTime_Test.php
   - phpunit DB_PDO-MySQL_Test.php
   - phpunit DB_PDO-PostgreSQL_Test.php
   - phpunit DB_PDO-SQLite_Test.php
   - phpunit DB_Proxy_Test.php
   - phpunit DB_Settings_Test.php
-  - phpunit DataConverter_MySQLDateTime_Test.php
-  - phpunit DataConverter_FMDateTime_Test.php
   - phpunit INTERMediator_Test.php
   - phpunit RSA_Test.php 
   - cd ../..
