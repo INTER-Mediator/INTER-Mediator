@@ -448,7 +448,11 @@ INTERMediator_DBAdapter = {
         }
         for (extCount = 0; extCount < args['dataset'].length; extCount++) {
             params += "&field_" + (counter + extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['field']);
-            params += "&value_" + (counter + extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
+            if (INTERMediator.isTrident && INTERMediator.ieVersion == 8) {
+                params += "&value_" + (counter + extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['value'].replace(/\n/g, ""));
+            } else {
+                params += "&value_" + (counter + extCount) + "=" + encodeURIComponent(args['dataset'][extCount]['value']);
+            }
         }
         result = this.server_access(params, 1013, 1014);
         return result.dbresult;
