@@ -55,6 +55,7 @@ script:
   - phpunit DB_Proxy_Test.php
   - phpunit DB_Settings_Test.php
   - phpunit INTERMediator_Test.php
-  - phpunit RSA_Test.php 
+  - phpunit MediaAccess_Test.php
+  - phpunit RSA_Test.php
   - cd ../..
   - npm test
