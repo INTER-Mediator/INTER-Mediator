@@ -82,6 +82,7 @@ Ver.3.11 (in development)
 - Prevent to show the username in an URL for the FileMaker_FX data class on the debug mode.
 - Prevent to show the password in an URL for the FileMaker_FX data class on the debug mode in some cases when using the Native Authentication.
 - Show the link of the definition file editor on the debug mode only if "INTER-Mediator-Support" directory exists.
+- Check availability of BC Math functions of PHP only when using the Native Authentication.
 - [SECURITY FIX] Check operators in settings, and quote any field names for PDO.
 - [BUG FIX] Fix displaying of new lines in textarea when using Internet Explorer 11.
 - [BUG FIX] Prevent increasing new lines when editing data in textarea with Internet Explorer 8.

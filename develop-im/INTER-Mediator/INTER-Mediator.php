@@ -17,17 +17,19 @@ require_once('DB_Logger.php');
 require_once('DB_Settings.php');
 require_once('DB_UseSharedObjects.php');
 require_once('DB_Proxy.php');
-if (!class_exists('Crypt_RSA')) {
-    require_once('phpseclib/Crypt/RSA.php');
-}
-if (!class_exists('Crypt_Hash')) {
-    require_once('phpseclib/Crypt/Hash.php');
-}
-if (!class_exists('Math_BigInteger')) {
-    require_once('phpseclib/Math/BigInteger.php');
-}
 
 $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+
+if (!class_exists('Crypt_RSA')) {
+    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Crypt' . DIRECTORY_SEPARATOR . 'RSA.php');
+}
+if (!class_exists('Crypt_Hash')) {
+    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Crypt' . DIRECTORY_SEPARATOR . 'Hash.php');
+}
+if (!class_exists('Math_BigInteger')) {
+    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Math' . DIRECTORY_SEPARATOR . 'BigInteger.php');
+}
+
 $currentDirParam = $currentDir . 'params.php';
 $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
 if (file_exists($parentDirParam)) {
@@ -52,8 +54,14 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     // check required PHP extensions
     $requiredFunctions = array(
         'mbstring' => 'mb_internal_encoding',
-    //    'bcmath' => 'bcadd',
     );
+    foreach ($options as $key => $option) {
+        if ($key == 'authentication' && array_search('database_native', $option['user']) !== false) {
+            // Native Authentication requires BC Math functions
+            $requiredFunctions = array_merge($requiredFunctions, array('bcmath' => 'bcadd'));
+            break;
+        }
+    }
     foreach ($requiredFunctions as $key => $value) {
         if (!function_exists($value)) {
             $generator = new GenerateJSCode();
