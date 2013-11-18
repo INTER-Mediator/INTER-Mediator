@@ -84,6 +84,7 @@ Ver.3.11 (in development)
 - Show the link of the definition file editor on the debug mode only if "INTER-Mediator-Support" directory exists.
 - [SECURITY FIX] Check operators in settings, and quote any field names for PDO.
 - [BUG FIX] Fix displaying of new lines in textarea when using Internet Explorer 11.
+- [BUG FIX] Prevent increasing new lines when editing data in textarea with Internet Explorer 8.
 - [BUG FIX] Revise MediaAccess.php to fix displaying of the FileMaker's container fields if the name of the table (layout) contains 'class'.
 - [BUG FIX] Fix converterFromUserToDB method of DataConverter_Currency class to consider the currency mark and digit group separator (',').
 
