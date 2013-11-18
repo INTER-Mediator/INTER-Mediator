@@ -13,17 +13,21 @@ class MediaAccess_Test extends PHPUnit_Framework_TestCase
 
     public function test_asAttachment()
     {
-        $expected = 'inline';
         $this->reflectionClass = new ReflectionClass('MediaAccess');
         $disposition = $this->reflectionClass->getProperty('disposition');
         $disposition->setAccessible(true);
-        $this->assertEquals($disposition->getValue($this->mediaaccess), $expected);
-
+        
+        
+        if (((float)phpversion()) >= 5.3) {
+            $expected = 'inline';
+            $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
+        }
+        
         $expected = 'attachment';
         $attachment = $this->reflectionClass->getMethod('asAttachment');
         $attachment->setAccessible(true);
         $attachment->invoke($this->mediaaccess);
-        $this->assertEquals($disposition->getValue($this->mediaaccess), $expected);
+        $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
     }
 
     public function test_exitAsError()
@@ -48,46 +52,46 @@ class MediaAccess_Test extends PHPUnit_Framework_TestCase
 
         $path = '';
         $expected = 'application/octet-stream';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.jpg';
         $expected = 'image/jpeg';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.jpeg';
         $expected = 'image/jpeg';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.png';
         $expected = 'image/png';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.html';
         $expected = 'text/html';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.txt';
         $expected = 'text/plain';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.gif';
         $expected = 'image/gif';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.bmp';
         $expected = 'image/bmp';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.tif';
         $expected = 'image/tiff';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.tiff';
         $expected = 'image/tiff';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
 
         $path = 'test.pdf';
         $expected = 'application/pdf';
-        $this->assertEquals($this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)), $expected);
+        $this->assertEquals($expected, $this->reflectionMethod->invokeArgs($this->mediaaccess, array($path)));
     }
 }
