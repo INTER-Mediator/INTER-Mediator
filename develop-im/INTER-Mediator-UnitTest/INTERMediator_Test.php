@@ -51,7 +51,7 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
     {
         $testName = "Check parameters in params.php.";
         
-        include('../INTER-Mediator/params.php');
+        include(dirname(__FILE__) . '/../INTER-Mediator/params.php');
         
         $this->assertFalse(isset($issuedHashDSN), $testName);
         $this->assertFalse(isset($scriptPathPrefix), $testName);
