@@ -13,21 +13,20 @@ class MediaAccess_Test extends PHPUnit_Framework_TestCase
 
     public function test_asAttachment()
     {
-        $this->reflectionClass = new ReflectionClass('MediaAccess');
-        $disposition = $this->reflectionClass->getProperty('disposition');
-        $disposition->setAccessible(true);
-        
-        
         if (((float)phpversion()) >= 5.3) {
+            $this->reflectionClass = new ReflectionClass('MediaAccess');
+            $disposition = $this->reflectionClass->getProperty('disposition');
+            $disposition->setAccessible(true);
+        
             $expected = 'inline';
             $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
-        }
         
-        $expected = 'attachment';
-        $attachment = $this->reflectionClass->getMethod('asAttachment');
-        $attachment->setAccessible(true);
-        $attachment->invoke($this->mediaaccess);
-        $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
+            $expected = 'attachment';
+            $attachment = $this->reflectionClass->getMethod('asAttachment');
+            $attachment->setAccessible(true);
+            $attachment->invoke($this->mediaaccess);
+            $this->assertEquals($expected, $disposition->getValue($this->mediaaccess));
+        }
     }
 
     public function test_exitAsError()
