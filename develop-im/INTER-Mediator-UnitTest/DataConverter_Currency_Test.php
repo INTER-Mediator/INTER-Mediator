@@ -13,39 +13,31 @@ class DataConverter_Currency_Test extends PHPUnit_Framework_TestCase
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         
         $this->dataconverter = new DataConverter_Currency();
+        
+        $locInfo = localeconv();
+        $this->thSepMark = $locInfo['mon_thousands_sep'];
+        $this->currencyMark = $locInfo['currency_symbol'];
     }
     
     public function test_converterFromDBtoUser()
     {
+        $expected = $this->currencyMark . '1' . $this->thSepMark . '000';
         $string = '1000';
-        if (getenv('TRAVIS') === 'true') {
-            $convertedString = '1000';  // for Travis CI
-        } else {
-            $convertedString = '¥1,000';
-        }
-        $this->assertEquals($this->dataconverter->converterFromDBtoUser($string), $convertedString);
+        $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
     }
 
     public function test_converterFromUserToDB()
     {
+        $expected = '100';
         $string = '100';
-        $convertedString = '100';
-        $this->assertEquals($this->dataconverter->converterFromUserToDB($string), $convertedString);
+        $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
 
-        if (getenv('TRAVIS') === 'true') {
-            $string = '1000';  // for Travis CI
-        } else {
-            $string = '1,000';
-        }
-        $convertedString = '1000';
-        $this->assertEquals($this->dataconverter->converterFromUserToDB($string), $convertedString);
+        $expected = '1000';
+        $string = '1' . $this->thSepMark . '000';
+        $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
 
-        if (getenv('TRAVIS') === 'true') {
-            $string = '10000';  // for Travis CI
-        } else {
-            $string = '¥10,000';
-        }
-        $convertedString = '10000';
-        $this->assertEquals($this->dataconverter->converterFromUserToDB($string), $convertedString);
+        $expected = '10000';
+        $string = $this->currencyMark . '10' . $this->thSepMark . '000';
+        $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
     }
 }
