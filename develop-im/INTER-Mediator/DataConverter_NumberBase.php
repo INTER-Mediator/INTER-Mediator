@@ -18,7 +18,7 @@ class DataConverter_NumberBase
     protected $currencyMark = null;
     protected $useMbstring;
 
-    function __construct()
+    public function __construct()
     {
         $this->useMbstring = setLocaleAsBrowser(LC_ALL);
         $locInfo = localeconv();
@@ -27,9 +27,13 @@ class DataConverter_NumberBase
         $this->currencyMark = $locInfo['currency_symbol'];
     }
 
-    function converterFromUserToDB($str)
+    public function converterFromUserToDB($str)
     {
-        $comp = explode($this->decimalMark, $str);
+        if (strlen($this->decimalMark) > 0) {
+            $comp = explode($this->decimalMark, $str);
+        } else {
+            $comp[0] = $str;
+        }
         $intPart = intval(str_replace($this->thSepMark, '', $comp[0]));
         if (isset($comp[1])) {
             $decimalPart = intval(str_replace($this->thSepMark, '', $comp[1]));
@@ -39,5 +43,3 @@ class DataConverter_NumberBase
         }
     }
 }
-
-?>
