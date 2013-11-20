@@ -39,6 +39,7 @@ DROP SCHEMA IF EXISTS im_sample CASCADE;
 CREATE SCHEMA im_sample;
 
 SET search_path TO im_sample,public;
+ALTER USER web SET search_path TO im_sample,public;
 
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
 CREATE SEQUENCE serial START 1000;
@@ -281,8 +282,23 @@ CREATE TABLE issuedhash (
 
 /* Grant to All operations for all objects with web account */
 GRANT ALL PRIVILEGES ON SCHEMA im_sample TO web;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA im_sample TO web;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA im_sample TO web;
+GRANT ALL PRIVILEGES ON im_sample.authcor TO web;
+GRANT ALL PRIVILEGES ON im_sample.authgroup TO web;
+GRANT ALL PRIVILEGES ON im_sample.authuser TO web;
+GRANT ALL PRIVILEGES ON im_sample.chat TO web;
+GRANT ALL PRIVILEGES ON im_sample.contact TO web;
+GRANT ALL PRIVILEGES ON im_sample.contact_kind TO web;
+GRANT ALL PRIVILEGES ON im_sample.contact_way TO web;
+GRANT ALL PRIVILEGES ON im_sample.cor_way_kind TO web;
+GRANT ALL PRIVILEGES ON im_sample.cor_way_kindname TO web;
+GRANT ALL PRIVILEGES ON im_sample.history TO web;
+GRANT ALL PRIVILEGES ON im_sample.invoice TO web;
+GRANT ALL PRIVILEGES ON im_sample.issuedhash TO web;
+GRANT ALL PRIVILEGES ON im_sample.item TO web;
+GRANT ALL PRIVILEGES ON im_sample.person TO web;
+GRANT ALL PRIVILEGES ON im_sample.postalcode TO web;
+GRANT ALL PRIVILEGES ON im_sample.product TO web;
+GRANT ALL PRIVILEGES ON im_sample.serial TO web;
 
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link) 
