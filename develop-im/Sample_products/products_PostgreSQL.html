@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>INTER-Mediator - Sample - Form Style/PostgreSQL</title>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link href="../sample.css" rel="stylesheet" type="text/css"/>
+    <script src="products_PostgreSQL_include.php"></script>
+</head>
+<body onload="INTERMediator.construct(true)">
+<table border="1">
+    <thead>
+    <tr>
+        <th>id's</th>
+        <th>name</th>
+        <th>unitprice</th>
+        <th>photo</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><a href="detail_PostgreSQL.html?id=" class="IM[product@id@#href]">Detail</a></td>
+        <td>
+            <div class="IM[product@name]"></div>
+        </td>
+        <td align="right">
+            <div class="IM[product@unitprice]"></div>
+        </td>
+        <td>
+            <img width="30" src="images/" class="IM[product@photofile@#src]"/>
+            <a class="IM[product@ack_link@href|product@acknowledgement]"></a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
