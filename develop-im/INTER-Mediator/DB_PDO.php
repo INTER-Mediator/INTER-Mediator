@@ -122,8 +122,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         $outsideOp = ' AND ';
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
+                    $escapedField = $this->quotedFieldName($condition['field']);
                     if (isset($condition['value']) && $condition['value'] != null) {
-                        $escapedField = $this->quotedFieldName($condition['field']);
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             if (!$this->isPossibleOperator($condition['operator'])) {
@@ -165,8 +165,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         $outsideOp = ' AND ';
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
+                    $escapedField = $this->quotedFieldName($condition['field']);
                     if (isset($condition['value']) && $condition['value'] != null) {
-                        $escapedField = $this->quotedFieldName($condition['field']);
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             if (!$this->isPossibleOperator($condition['operator'])) {
