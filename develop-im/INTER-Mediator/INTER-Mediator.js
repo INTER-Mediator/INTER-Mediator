@@ -1319,7 +1319,8 @@ var INTERMediator = {
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [];
+                selectedNode, replacedNode, children, foreignField, foreignValue, foreignFieldValue, dbspec,
+                condition, optionalCondition = [];
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1504,7 +1505,21 @@ var INTERMediator = {
 
                         for (k = 0; k < currentLinkedNodes.length; k++) {
                             // for each linked element
-                            setIdValue(currentLinkedNodes[k]);
+                            nodeId = currentLinkedNodes[k].getAttribute("id");
+                            replacedNode = setIdValue(currentLinkedNodes[k]);
+                            
+                            if (Object.keys(targetRecords.recordset).length > 1) {
+                                if (replacedNode.getAttribute("type") == "checkbox") {
+                                    children = replacedNode.parentNode.childNodes;
+                                    for (i = 0; i < children.length; i++) {
+                                        if (children[i].nodeType === 1 && children[i].tagName == "LABEL"
+                                                && nodeId == children[i].getAttribute("for")) {
+                                            children[i].setAttribute("for", replacedNode.getAttribute("id"));
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                         }
                         for (k = 0; k < currentWidgetNodes.length; k++) {
                             var wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
