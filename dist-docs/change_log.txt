@@ -91,7 +91,8 @@ Ver.3.11 (in development)
 - [BUG FIX] Prevent increasing new lines when editing data in textarea with Internet Explorer 8.
 - [BUG FIX] Revise MediaAccess.php to fix displaying of the FileMaker's container fields if the name of the table (layout) contains 'class'.
 - [BUG FIX] Fix converterFromUserToDB method of DataConverter_Currency class to consider the currency mark and digit group separator (',').
-
+- [BUG FIX] Handle 'for' attribute of the 'label' element to enable editing a correct record using checkbox when displaying multiple records.
+  
 Ver.3.10 (2013/11/2)
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
 - New sample (Master-Detail Style Page for FileMaker's portal access version) is added.
