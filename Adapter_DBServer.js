@@ -9,6 +9,9 @@
 /*==================================================
  Database Access Object for Server-based Database
  ==================================================*/
+
+//"use strict"
+
 var INTERMediator_DBAdapter;
 
 INTERMediator_DBAdapter = {
@@ -120,6 +123,8 @@ INTERMediator_DBAdapter = {
     },
 
     changePassowrd: function (username, oldpassword, newpassword) {
+        var challengeResult, params, result;
+
         if (username && oldpassword) {
             INTERMediatorOnPage.authUser = username;
             if (username != ''    // No usename and no challenge, get a challenge.
@@ -565,7 +570,7 @@ INTERMediator_DBAdapter = {
      This function returns the value of the key field of the new record.
      */
     db_createRecord: function (args) {
-        var params, i, result, index, addedObject, counter, targetKey;
+        var params, i, result, index, addedObject, counter, targetKey, ds, key;
 
         if (args['name'] == null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));

@@ -7,6 +7,7 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
+//"use strict"
 
 if (!Array.indexOf) {
     Array.prototype.indexOf = function (target) {
@@ -73,7 +74,7 @@ INTERMediatorOnPage = {
     },
 
     getContextInfo: function (contextName) {
-        var dataSources, oneSource;
+        var dataSources, oneSource, index;
         dataSources = INTERMediatorOnPage.getDataSources();
         for (index in dataSources) {
             if (dataSources[index].name == contextName) {

@@ -16,6 +16,9 @@
 //=================================
 // Database Access
 //=================================
+
+//"use strict"
+
 var INTERMediator_DBAdapter = {
     /*
      db_query

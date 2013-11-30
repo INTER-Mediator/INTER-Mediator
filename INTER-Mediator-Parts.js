@@ -11,6 +11,9 @@
  * TinyMCE bridgeObject
  * @type {{instanciate: Function, ids: Array, finish: Function}}
  */
+
+//"use strict"
+
 var IMParts_tinymce = {
     instanciate: function (parentNode) {
         var newId = parentNode.getAttribute('id') + '-e';
@@ -243,6 +246,8 @@ var IMParts_im_fileupload = {
     ids: [],
     formFromId: {},
     finish: function () {
+        var shaObj, hmacValue;
+
         if (IMParts_im_fileupload.html5DDSuported) {
             for (var i = 0; i < IMParts_im_fileupload.ids.length; i++) {
                 var targetNode = document.getElementById(IMParts_im_fileupload.ids[i]);

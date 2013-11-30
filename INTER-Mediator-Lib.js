@@ -7,6 +7,8 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
+//"use strict"
+
 var INTERMediatorLib = {
 
     ignoreEnclosureRepeaterClassName: "_im_ignore_enc_rep",
