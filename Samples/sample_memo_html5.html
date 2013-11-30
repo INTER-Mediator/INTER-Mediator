@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="stylesheet" type="text/css" href="sample.css"/>
+    <title>INTER-Mediator - Sample - Memo with HTML5 Local Database</title>
+    <script src="../INTER-Mediator.js"></script>
+    <script src="../Adapter_LocalDB.js"></script>
+    <script>
+        function IM_getDataSources() {
+            return {
+                '0':{
+                    'records':1,
+                    'paging':'1',
+                    'name':'person',
+                    'key':'id',
+                    'query':{},
+                    'sort':{'0':{'field':'id', 'direction':'asc'}},
+                    'repeat-control':'insert delete'},
+                '1':{
+                    'name':'contact',
+                    'key':'id',
+                    'foreign-key':'person_id',
+                    'join-field':'id',
+                    'repeat-control':'insert delete'},
+                '2':{
+                    'name':'contact_way',
+                    'key':'id'},
+                '3':{
+                    'name':'cor_way_kindname',
+                    'key':'id',
+                    'foreign-key':'way_id',
+                    'join-field':'way'},
+                '4':{
+                    'name':'history',
+                    'key':'id',
+                    'foreign-key':'person_id',
+                    'repeat-control':'insert delete',
+                    'join-field':'id'}};
+        }
+        function IM_getOptions() {   // IM_getOptions function is deprecated.
+            return {'formatter':{}};
+        }
+    </script>
+</head>
+<body>
+
+</body>
+</html>

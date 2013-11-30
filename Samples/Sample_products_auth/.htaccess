@@ -1,0 +1,1 @@
+RedirectMatch images/(.+) http://localhost/INTER-Mediator/Samples/Sample_products_auth/contexts_MySQL.php?media=$1
