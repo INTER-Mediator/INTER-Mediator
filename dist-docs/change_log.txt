@@ -75,7 +75,10 @@ Ver.4 (any date)=========================================================
 - Started CI!
 ===========================================================================
 
-Ver.3.11 (in development)
+Ver.3.12 or Ver.4.0 (in development)
+- File hierarchy changed for easily involving the pulled sources into developing web apps
+
+Ver.3.11 (2013/11/30)
 - The code editor "codemirror" is supported. See Sample_webpage folder.
 - INTERMediator.pagedSize can be changeable when specifying 'records' key and 'maxrecords' key in a definition file
   (for example: array('records' => 10, 'maxrecords' => 10) ).
