@@ -7,6 +7,9 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
+
+//"use strict"
+
 var INTERMediator = {
     /*
      Properties
@@ -571,7 +574,7 @@ var INTERMediator = {
 
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
         var currentContext, recordSet, index, key, removeNode, i, relationDef, targetRecord, portalField,
-            targetPortalField, targetPortalValue, existRelated = false;
+            targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet;
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
@@ -831,7 +834,7 @@ var INTERMediator = {
     clickPostOnlyButton: function (node) {
         var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
         var mergedValues, inputNodes, typeAttr, k, target, value, result, alertmessage;
-        var linkedNodes, namedNodes;
+        var linkedNodes, namedNodes, index;
         var targetNode = node.parentNode;
         while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
             targetNode = targetNode.parentNode;
@@ -1319,7 +1322,8 @@ var INTERMediator = {
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [];
+                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [],
+                nameTableKey;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -2115,7 +2119,7 @@ var INTERMediator = {
 
         function setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
-                firstLevelNodes, targetNodeTag, existingButtons, keyField;
+                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec;
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
                 if (relationValue || !currentContext['paging'] || currentContext['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
