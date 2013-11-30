@@ -4,7 +4,7 @@ config["My tests"] = {
     environment: "browser",
     sources: [
         "INTER-Mediator/*.js",
-        "INTER-Mediator/js_lib/*.js"
+        "INTER-Mediator/lib/js_lib/*.js"
     ],
     tests: [
         "INTER-Mediator-UnitTest/*-test.js"
