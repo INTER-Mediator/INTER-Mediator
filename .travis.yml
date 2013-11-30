@@ -58,5 +58,5 @@ script:
   - phpunit INTERMediator_Test.php
   - phpunit MediaAccess_Test.php
   - phpunit RSA_Test.php
-  - cd ../..
+  - cd ..
   - npm test
