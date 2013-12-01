@@ -3,9 +3,12 @@
 # INTER-Mediator Distribution File Builder by Masayuki Nii
 #    Execute for current directory as the root of repository.
 
+echo "Should be update this script."
+exit;
+
 YUICOMP="../yuicompressor-2.4.7.jar"
 
-version="3.11"
+version="4.0"
 
 dt=`date "+%Y-%m-%d"`
 versionInFilename=`echo "${version}" | tr '.' '_'`;
