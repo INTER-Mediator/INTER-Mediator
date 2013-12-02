@@ -17,9 +17,15 @@ Sample pages with this archived file are published at below.
 You don't have to deploy the samples if you just want to just a glance.
 http://msyk.dyndns.org/im-sample.html
 
-Contributer:
-Atsushi Matsuo
-Kiyonori Ito
+### Contributer:
+- Atsushi Matsuo
+- Kiyonori Ito
+
+### Special Thanks to:
+- Tsutomu Yuasa
+- Kentaro Suzuki
+- Miyuki Imaizumi
+- Yukio Murakami
 
 ## Contributing
 
