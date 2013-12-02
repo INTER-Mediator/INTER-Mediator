@@ -26,6 +26,7 @@ http://msyk.dyndns.org/im-sample.html
 - Kentaro Suzuki
 - Miyuki Imaizumi
 - Yukio Murakami
+- Akinori Mizoguchi
 
 ## Contributing
 
