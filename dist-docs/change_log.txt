@@ -58,10 +58,19 @@ Change Log
 
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
+Ver.4.1 (in development)
+
+
+Ver.4.0 (2013/12/4)
+- File hierarchy changed for easily involving the pulled sources into developing web apps
+- Modify FX.php to fix compatibility with FileMaker Server 13.
+- Also updates below from Ver.3.0
+
 Ver.4 (any date)=========================================================
 
 [Major differences from Ver.3]
 - [INFO] INTER-Mediator requires FileMaker Server 10 or later, OS X v10.6 or later if using FileMaker Server.
+- FileMaker Server 13 supported with the XML sharing.
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
 - Enable omitting to place the primary key field object on a layout when using FileMaker Server
   (by specifying 'key' => '-recid').
@@ -74,10 +83,6 @@ Ver.4 (any date)=========================================================
 - Support displaying of the FileMaker's container fields.
 - Started CI!
 ===========================================================================
-
-Ver.3.12 or Ver.4.0 (in development)
-- File hierarchy changed for easily involving the pulled sources into developing web apps
-- Modify FX.php to fix compatibility with FileMaker Server 13.
 
 Ver.3.11 (2013/11/30)
 - The code editor "codemirror" is supported. See Sample_webpage folder.
