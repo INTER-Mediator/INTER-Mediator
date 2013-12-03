@@ -80,14 +80,14 @@ class GenerateJSCode
          * Generate the link to the definition file editor
          */
         $relativeToDefFile = '';
-        $editorPath = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
+        $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator-Support';
         $defFilePath = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME'];
         while (strpos($defFilePath, $editorPath) !== 0 && strlen($editorPath) > 1) {
             $editorPath = dirname($editorPath);
             $relativeToDefFile .= '..' . DIRECTORY_SEPARATOR;
         }
         $relativeToDefFile .= substr($defFilePath, strlen($editorPath) + 1);
-        $editorPath = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR
+        $editorPath = dirname(__FILE__) . DIRECTORY_SEPARATOR
             . 'INTER-Mediator-Support' . DIRECTORY_SEPARATOR . 'defedit.html';
         if (file_exists($editorPath)) {
             $relativeToEditor = substr($editorPath, strlen($_SERVER['DOCUMENT_ROOT']));
@@ -106,13 +106,13 @@ class GenerateJSCode
             (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
                 (isset ($dbClass) ? $dbClass : ''));
         require_once("{$dbClassName}.php");
-        if (((int)phpversion()) < 6.3) {
+        if (((float)phpversion()) < 5.3) {
             $dbInstance = new $dbClassName();
             if ($dbInstance != null) {
                 $defaultKey = $dbInstance->getDefaultKey();
             }
         } else {
-            eval("$defaultKey = $dbClassName::defaultKey();");
+            $defaultKey = $dbClassName::defaultKey();
         }
         if ($defaultKey !== null) {
             $items = array();

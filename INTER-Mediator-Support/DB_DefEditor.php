@@ -42,6 +42,16 @@ function getValueFromArray($ar, $index1, $index2 = null, $index3 = null)
     return $value;
 }
 
+function changeIncludeIMPath($src, $validStatement)  {
+    $includeFunctions = array('require_once', 'include_once', 'require', 'include');
+    foreach($includeFunctions as $targetFunction)   {
+        $pattern = '/' . $targetFunction . '\\(.+INTER-Mediator.php.+\\);/';
+        if(preg_match($pattern, $src))  {
+            return preg_replace($pattern, $validStatement, $src);
+        }
+    }
+}
+
 class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 {
     var $recordCount;
@@ -56,7 +66,15 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
             return null;
         }
-        eval(str_replace("<?php", "", str_replace("?>", "", str_replace("IM_Entry", "IM_Dummy_Entry", $fileContent))));
+        $convert = str_replace("<?php", "",
+            str_replace("?>", "",
+                str_replace("IM_Entry", "IM_Dummy_Entry",
+                    changeIncludeIMPath(
+                        $fileContent,
+                        "require_once('../INTER-Mediator.php');"
+                    ))));
+        eval($convert);
+
         $result = array();
         $seq = 0;
         switch ($dataSourceName) {
@@ -335,7 +353,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             return null;
         }
         $funcStartPos = strpos($fileContent, "IM_Entry");
-        eval(str_replace("<?php", "", str_replace("?>", "", str_replace("IM_Entry", "IM_Dummy_Entry", $fileContent))));
+        $convert = str_replace("<?php", "",
+            str_replace("?>", "",
+                str_replace("IM_Entry", "IM_Dummy_Entry",
+                    changeIncludeIMPath(
+                        $fileContent,
+                        "require_once('../INTER-Mediator.php');"
+                    ))));
+        eval($convert);
 
         $allKeys = array(
             'relation' => array('foreign-key', 'join-field', 'operator'),
@@ -505,7 +530,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             return null;
         }
         $funcStartPos = strpos($fileContent, "IM_Entry");
-        eval(str_replace("<?php", "", str_replace("?>", "", str_replace("IM_Entry", "IM_Dummy_Entry", $fileContent))));
+        $convert = str_replace("<?php", "",
+            str_replace("?>", "",
+                str_replace("IM_Entry", "IM_Dummy_Entry",
+                    changeIncludeIMPath(
+                        $fileContent,
+                        "require_once('../INTER-Mediator.php');"
+                    ))));
+        eval($convert);
 
         switch ($dataSourceName) {
             case 'contexts':
@@ -662,7 +694,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             return null;
         }
         $funcStartPos = strpos($fileContent, "IM_Entry");
-        eval(str_replace("<?php", "", str_replace("?>", "", str_replace("IM_Entry", "IM_Dummy_Entry", $fileContent))));
+        $convert = str_replace("<?php", "",
+            str_replace("?>", "",
+                str_replace("IM_Entry", "IM_Dummy_Entry",
+                    changeIncludeIMPath(
+                        $fileContent,
+                        "require_once('../INTER-Mediator.php');"
+                    ))));
+        eval($convert);
 
         switch ($dataSourceName) {
             case 'contexts':
