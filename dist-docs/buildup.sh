@@ -39,7 +39,7 @@ cat ${curpath}/Adapter_DBServer.js      > temp.js
 cat ${curpath}/INTER-Mediator-Lib.js   >> temp.js
 cat ${curpath}/INTER-Mediator-Page.js  >> temp.js
 cat ${curpath}/INTER-Mediator-Parts.js >> temp.js
-cat ${curpath}/INTER-Mediator.js       >> temp.js
+sed -f "${sedrule}" ${curpath}/INTER-Mediator.js >> temp.js
 cat ${curpath}/lib/js_lib/sha1.js          >> temp.js
 cat ${curpath}/lib/js_lib/sha256.js        >> temp.js
 cat ${curpath}/lib/bi2php/biBigInt.js      >> temp.js
