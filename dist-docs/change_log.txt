@@ -77,6 +77,7 @@ Ver.4 (any date)=========================================================
 
 Ver.3.12 or Ver.4.0 (in development)
 - File hierarchy changed for easily involving the pulled sources into developing web apps
+- Modify FX.php to fix compatibility with FileMaker Server 13.
 
 Ver.3.11 (2013/11/30)
 - The code editor "codemirror" is supported. See Sample_webpage folder.
