@@ -106,7 +106,7 @@ class GenerateJSCode
             (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
                 (isset ($dbClass) ? $dbClass : ''));
         require_once("{$dbClassName}.php");
-        if (((int)phpversion()) < 5.3) {
+        if (((int)phpversion()) < 6.3) {
             $dbInstance = new $dbClassName();
             if ($dbInstance != null) {
                 $defaultKey = $dbInstance->getDefaultKey();
