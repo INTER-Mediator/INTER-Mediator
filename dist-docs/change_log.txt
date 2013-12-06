@@ -38,6 +38,8 @@ To Do List for the INTER-Mediator developer(s)
 - The database class DB_PDO should use the prepare method instead of the query method.
   Most parts are using the quote method to prevent SQL injection attacks but it should do for improvements.
 - Authentication UI should generate on the server side.
+- Working with FileMaker's ODBC sharing instead of XML sharing (FX.php) when using FileMaker Server 13.
+- Support uploading a file to FileMaker's container field when using FileMaker Server 13.
 
 =================================
 Known Issues for Browsers:
@@ -66,7 +68,7 @@ Ver.4.0 (2013/12/4)
 - Modify FX.php to fix compatibility with FileMaker Server 13.
 - Also updates below from Ver.3.0
 
-Ver.4 (any date)=========================================================
+Ver.4 (2013/12/4)=========================================================
 
 [Major differences from Ver.3]
 - [INFO] INTER-Mediator requires FileMaker Server 10 or later, OS X v10.6 or later if using FileMaker Server.
