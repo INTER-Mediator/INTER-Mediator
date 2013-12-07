@@ -94,8 +94,7 @@ class DataConverter_FMDateTime
         $gengoYear = 0;
         foreach ($jYearStartDate as $startDate => $gengo) {
             $dtStart = new DateTime($startDate);
-            $dinterval = $dt->diff($dtStart);
-            if ($dinterval->invert == 1) {
+            if ($dt->format('U') > $dtStart->format('U')) {
                 $gengoName = $gengo;
                 $gengoYear = $dt->format('Y') - $dtStart->format('Y') + 1;
                 $gengoYear = ($gengoYear == 1) ? '元' : $gengoYear;

@@ -59,6 +59,108 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
 
         $expected = array(
+            'unixtime' => '-1812227104',
+            'year' => '1912',
+            'jyear' => '明治45年',
+            'month' => '07',
+            'day' => '29',
+            'hour' => '12',
+            'minute' => '34',
+            'second' => '56',
+            'weekdayName' => '月',
+            'weekday' => '1',
+            'longdate' => '1912/07/29',
+            'jlongdate' => '明治 45 年 7 月 29 日 月曜日'
+        );
+        $string = '07/29/1912 12:34:56';
+        $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
+
+        $expected = array(
+            'unixtime' => '-1812140704',
+            'year' => '1912',
+            'jyear' => '大正元年',
+            'month' => '07',
+            'day' => '30',
+            'hour' => '12',
+            'minute' => '34',
+            'second' => '56',
+            'weekdayName' => '火',
+            'weekday' => '2',
+            'longdate' => '1912/07/30',
+            'jlongdate' => '大正 元 年 7 月 30 日 火曜日'
+        );
+        $string = '07/30/1912 12:34:56';
+        $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
+
+        $expected = array(
+            'unixtime' => '-1389212704',
+            'year' => '1925',
+            'jyear' => '大正14年',
+            'month' => '12',
+            'day' => '24',
+            'hour' => '12',
+            'minute' => '34',
+            'second' => '56',
+            'weekdayName' => '木',
+            'weekday' => '4',
+            'longdate' => '1925/12/24',
+            'jlongdate' => '大正 14 年 12 月 24 日 木曜日'
+        );
+        $string = '12/24/1925 12:34:56';
+        $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
+
+        $expected = array(
+            'unixtime' => '-1389126304',
+            'year' => '1925',
+            'jyear' => '昭和元年',
+            'month' => '12',
+            'day' => '25',
+            'hour' => '12',
+            'minute' => '34',
+            'second' => '56',
+            'weekdayName' => '金',
+            'weekday' => '5',
+            'longdate' => '1925/12/25',
+            'jlongdate' => '昭和 元 年 12 月 25 日 金曜日'
+        );
+        $string = '12/25/1925 12:34:56';
+        $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
+
+        $expected = array(
+            'unixtime' => '600147296',
+            'year' => '1989',
+            'jyear' => '昭和65年',
+            'month' => '01',
+            'day' => '07',
+            'hour' => '12',
+            'minute' => '34',
+            'second' => '56',
+            'weekdayName' => '土',
+            'weekday' => '6',
+            'longdate' => '1989/01/07',
+            'jlongdate' => '昭和 65 年 1 月 7 日 土曜日'
+        );
+        $string = '01/07/1989 12:34:56';
+        $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
+
+        $expected = array(
+            'unixtime' => '600233696',
+            'year' => '1989',
+            'jyear' => '平成元年',
+            'month' => '01',
+            'day' => '08',
+            'hour' => '12',
+            'minute' => '34',
+            'second' => '56',
+            'weekdayName' => '日',
+            'weekday' => '0',
+            'longdate' => '1989/01/08',
+            'jlongdate' => '平成 元 年 1 月 8 日 日曜日'
+        );
+        $string = '01/08/1989 12:34:56';
+        $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
+
+        $expected = array(
             'unixtime' => '947043296',
             'year' => '2000',
             'jyear' => '平成12年',
