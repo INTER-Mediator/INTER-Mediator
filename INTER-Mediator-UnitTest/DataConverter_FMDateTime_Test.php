@@ -47,6 +47,14 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $string = '';
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($string));
 
+        $expected = '1/13/2000 12:34:56';
+        $timeString = '2000/01/13 12:34:56';
+        $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($timeString));
+
+        $expected = '1/6/2000';
+        $timeString = '2000/01/06';
+        $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($timeString));
+
         $expected = '12:34:56';
         $timeString = '12:34:56';
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($timeString));

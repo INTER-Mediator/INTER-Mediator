@@ -23,7 +23,9 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DataConverter_AppendSuffix_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_Test.php');
         $suite->addTestFile($folder . 'DataConverter_FMDateTime_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_HTMLString_Test.php');
         $suite->addTestFile($folder . 'DataConverter_MySQLDateTime_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Number_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NumberBase_Test.php');
         $suite->addTestFile($folder . 'INTERMediator_Test.php');
         $suite->addTestFile($folder . 'MediaAccess_Test.php');

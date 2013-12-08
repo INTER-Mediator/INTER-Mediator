@@ -38,5 +38,9 @@ class DataConverter_NumberBase_Test extends PHPUnit_Framework_TestCase
         $expected = '1000000';
         $string = '1' . $this->thSepMark . '000' . $this->thSepMark . '000';
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
+
+        $expected = '10000000.1';
+        $string = '10' . $this->thSepMark . '000' . $this->thSepMark . '000.1';
+        $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
     }
 }
