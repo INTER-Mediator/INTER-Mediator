@@ -23,17 +23,16 @@ class DataConverter_NumberBase
         $this->useMbstring = setLocaleAsBrowser(LC_ALL);
         $locInfo = localeconv();
         $this->decimalMark = $locInfo['mon_decimal_point'];
+        if (strlen($this->decimalMark) == 0) {
+            $this->decimalMark = '.';
+        }
         $this->thSepMark = $locInfo['mon_thousands_sep'];
         $this->currencyMark = $locInfo['currency_symbol'];
     }
 
     public function converterFromUserToDB($str)
     {
-        if (strlen($this->decimalMark) > 0) {
-            $comp = explode($this->decimalMark, $str);
-        } else {
-            $comp[0] = $str;
-        }
+        $comp = explode($this->decimalMark, $str);
         $intPart = intval(str_replace($this->thSepMark, '', $comp[0]));
         if (isset($comp[1])) {
             $decimalPart = intval(str_replace($this->thSepMark, '', $comp[1]));
