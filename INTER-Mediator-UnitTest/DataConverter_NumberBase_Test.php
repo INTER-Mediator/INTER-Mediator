@@ -14,6 +14,7 @@ class DataConverter_NumberBase_Test extends PHPUnit_Framework_TestCase
         $this->dataconverter = new DataConverter_NumberBase();
         
         $locInfo = localeconv();
+        $this->decimalMark = $locInfo['mon_decimal_point'];
         $this->thSepMark = $locInfo['mon_thousands_sep'];
     }
 
@@ -40,7 +41,7 @@ class DataConverter_NumberBase_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
 
         $expected = '10000000.1';
-        $string = '10' . $this->thSepMark . '000' . $this->thSepMark . '000.1';
+        $string = '10' . $this->thSepMark . '000' . $this->thSepMark . '000' . $this->decimalMark . '1';
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
     }
 }
