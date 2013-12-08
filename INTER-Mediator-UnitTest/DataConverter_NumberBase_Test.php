@@ -15,6 +15,9 @@ class DataConverter_NumberBase_Test extends PHPUnit_Framework_TestCase
         
         $locInfo = localeconv();
         $this->decimalMark = $locInfo['mon_decimal_point'];
+        if (strlen($this->decimalMark) == 0) {
+            $this->decimalMark = '.';
+        }
         $this->thSepMark = $locInfo['mon_thousands_sep'];
     }
 

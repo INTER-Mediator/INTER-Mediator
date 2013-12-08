@@ -23,9 +23,11 @@ class DataConverter_NumberBase
         $this->useMbstring = setLocaleAsBrowser(LC_ALL);
         $locInfo = localeconv();
         $this->decimalMark = $locInfo['mon_decimal_point'];
+        // @codeCoverageIgnoreStart
         if (strlen($this->decimalMark) == 0) {
             $this->decimalMark = '.';
         }
+        // @codeCoverageIgnoreEnd
         $this->thSepMark = $locInfo['mon_thousands_sep'];
         $this->currencyMark = $locInfo['currency_symbol'];
     }
