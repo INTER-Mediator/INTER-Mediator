@@ -23,14 +23,14 @@ class DataConverter_FMDateTime
      * @param integer $format
      * @return unknown_type
      */
-    function __construct($format = '')
+    public function __construct($format = '')
     {
         $this->fmt = $format;
         $this->useMbstring = setLocaleAsBrowser(LC_TIME);
         date_default_timezone_set($this->tz);
     }
 
-    function converterFromDBtoUser($str)
+    public function converterFromDBtoUser($str)
     {
         $sp = strpos($str, ' ');
         $slash = substr_count($str, '/');
@@ -55,7 +55,7 @@ class DataConverter_FMDateTime
         return strftime(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
     }
 
-    function converterFromUserToDB($str)
+    public function converterFromUserToDB($str)
     {
         $dtAr = date_parse($str);
         if ($dtAr === false) return $str;
@@ -72,7 +72,7 @@ class DataConverter_FMDateTime
         return $dt;
     }
 
-    function dateArrayFromFMDate($d)
+    public function dateArrayFromFMDate($d)
     {
         if ($d == '') {
             return '';
@@ -81,7 +81,11 @@ class DataConverter_FMDateTime
             '1989-1-8' => '平成', '1925-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
         $wStrArray = array('日', '月', '火', '水', '木', '金', '土');
 
-        $dateComp = date_parse_from_format('m/d/Y H:i:s', $d);
+        if (((float)phpversion()) >= 5.3) {
+            $dateComp = date_parse_from_format('m/d/Y H:i:s', $d);
+        } else {
+            $dateComp = date_parse($d);
+        }
         $dt = new DateTime();
         $dt->setDate($dateComp['year'], $dateComp['month'], $dateComp['day']);
         $dt->setTime($dateComp['hour'], $dateComp['minute'], $dateComp['second']);
@@ -90,8 +94,7 @@ class DataConverter_FMDateTime
         $gengoYear = 0;
         foreach ($jYearStartDate as $startDate => $gengo) {
             $dtStart = new DateTime($startDate);
-            $dinterval = $dt->diff($dtStart);
-            if ($dinterval->invert == 1) {
+            if ($dt->format('U') > $dtStart->format('U')) {
                 $gengoName = $gengo;
                 $gengoYear = $dt->format('Y') - $dtStart->format('Y') + 1;
                 $gengoYear = ($gengoYear == 1) ? '元' : $gengoYear;
@@ -115,5 +118,3 @@ class DataConverter_FMDateTime
         );
     }
 }
-
-?>
