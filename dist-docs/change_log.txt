@@ -61,11 +61,8 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.1 (in development)
-<<<<<<< HEAD
 - Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
-=======
 - [BUG FIX] Modify dateArrayFromFMDate method of DataConverter_FMDateTime class to fix compatibility with PHP 5.2.
->>>>>>> eda7b0ec09633f54d30b0fd4990f61b29de78431
 
 Ver.4.0 (2013/12/4)
 - File hierarchy changed for easily involving the pulled sources into developing web apps
