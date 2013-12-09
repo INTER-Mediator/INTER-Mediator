@@ -5,7 +5,7 @@
 
 YUICOMP="../yuicompressor-2.4.7.jar"
 
-version="4.0"
+version="4.1"
 
 dt=`date "+%Y-%m-%d"`
 versionInFilename=`echo "${version}" | tr '.' '_'`;
@@ -47,7 +47,11 @@ cat ${curpath}/lib/bi2php/biMontgomery.js  >> temp.js
 cat ${curpath}/lib/bi2php/biRSA.js         >> temp.js
 
 #### Compress INTER-Mediator.js
-java -jar ${YUICOMP} temp.js -v --charset UTF-8 -o INTER-Mediator.js
+if [ -f ${YUICOMP} ]; then
+    java -jar ${YUICOMP} temp.js -v --charset UTF-8 -o INTER-Mediator.js
+else
+    sed -f "${sedrule}" "temp.js" > "INTER-Mediator.js"
+fi
 rm temp.js
 
 cp -rf "${curpath}/dist-docs" .

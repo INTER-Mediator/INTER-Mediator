@@ -295,7 +295,8 @@ function getRelativePath()
  */
 function setLocaleAsBrowser($locType)
 {
-    $lstr = getLocaleFromBrowser($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+    $lstr = getLocaleFromBrowser(
+        (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) ? 'ja_JP' : $_SERVER['HTTP_ACCEPT_LANGUAGE']);
 
     // Detect server platform, Windows or Unix
     $isWindows = false;

@@ -59,7 +59,7 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.1 (in development)
-
+- Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
 
 Ver.4.0 (2013/12/4)
 - File hierarchy changed for easily involving the pulled sources into developing web apps
