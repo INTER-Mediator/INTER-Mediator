@@ -62,6 +62,8 @@ Latest changes might exist on the GitHub repository. Please check https://github
 
 Ver.4.1 (in development)
 - Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
+- Add the meta tag with "X-UA-Compatible" to all samples, it forces Internet Explorer to
+work as its native document mode.
 - [BUG FIX] Modify dateArrayFromFMDate method of DataConverter_FMDateTime class to fix compatibility with PHP 5.2.
 
 Ver.4.0 (2013/12/4)
