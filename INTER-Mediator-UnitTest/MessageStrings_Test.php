@@ -12,7 +12,7 @@ class MessageStrings_Test extends PHPUnit_Framework_TestCase
         $this->messagestrings = new MessageStrings();
     }
 
-    public function test_converterFromUserToDB()
+    public function test_getMessages()
     {
         $expected = 'Are you sure to delete?';
         $messages = $this->messagestrings->getMessages();
