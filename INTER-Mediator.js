@@ -775,7 +775,7 @@ var INTERMediator = {
 
     deleteRecordFromNavi: function (targetName, keyField, keyValue, isConfirm) {
         if (isConfirm) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                 return;
             }
         }
