@@ -63,9 +63,11 @@ Latest changes might exist on the GitHub repository. Please check https://github
 Ver.4.1 (in development)
 - Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
 - Add the meta tag with "X-UA-Compatible" to all samples, it forces Internet Explorer to
-work as its native document mode.
+  work as its native document mode.
 - [BUG FIX] Modify dateArrayFromFMDate method of DataConverter_FMDateTime class to fix compatibility with PHP 5.2.
-- [BUG FIX] Correct the confirmation message when clicking the deleting record button on the navigation bar (Thanks to Kentaro Suzuki).
+- [BUG FIX] Correct the confirmation message when clicking the deleting record button on the navigation bar.
+  (Thanks to Kentaro Suzuki).
+- [BUG FIX] The delete button on the navigation bar works correctly when specifying INTERMediator.pagedSize = 1.
 
 Ver.4.0 (2013/12/4)
 - File hierarchy changed for easily involving the pulled sources into developing web apps
