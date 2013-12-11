@@ -2077,7 +2077,7 @@ var INTERMediator = {
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
 
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/delete/i)) {
-                if (currentContext['relation'] || currentContext['records'] === undefined || currentContext['records'] > 1) {
+                if (currentContext['relation'] || currentContext['records'] === undefined || (currentContext['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
                     buttonNode = document.createElement('BUTTON');
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
                     thisId = 'IM_Button_' + buttonIdNum;
