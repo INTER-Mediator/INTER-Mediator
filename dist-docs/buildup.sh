@@ -21,7 +21,9 @@ s/@@@@1@@@@/${dt}/
 s/@@@@2@@@@/${version}/
 EOF
 
-rm -r ../temp
+if [ -d "../temp" ]; then
+    rm -r ../temp
+fi
 mkdir ../temp
 cd ../temp
 
@@ -35,7 +37,11 @@ cp "${curpath}/index.html" .
 cp "${curpath}/readme.md" .
 
 #### Merge js files
-cat ${curpath}/Adapter_DBServer.js      > temp.js
+if [ -f ${YUICOMP} ]; then
+    sed -f "${sedrule}" "${curpath}/Adapter_DBServer.js" > temp.js
+else
+    cat ${curpath}/Adapter_DBServer.js      > temp.js
+fi
 cat ${curpath}/INTER-Mediator-Lib.js   >> temp.js
 cat ${curpath}/INTER-Mediator-Page.js  >> temp.js
 cat ${curpath}/INTER-Mediator-Parts.js >> temp.js
@@ -48,7 +54,9 @@ cat ${curpath}/lib/bi2php/biRSA.js         >> temp.js
 
 #### Compress INTER-Mediator.js
 if [ -f ${YUICOMP} ]; then
-    java -jar ${YUICOMP} temp.js -v --charset UTF-8 -o INTER-Mediator.js
+    sed '1s/*/*!/' temp.js > INTER-Mediator.js
+    java -jar ${YUICOMP} INTER-Mediator.js -v --charset UTF-8 -o temp.js
+    sed '1s/*!/*/' temp.js > "INTER-Mediator.js"
 else
     sed -f "${sedrule}" "temp.js" > "INTER-Mediator.js"
 fi
