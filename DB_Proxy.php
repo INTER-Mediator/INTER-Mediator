@@ -2,7 +2,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2013 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -472,7 +472,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $rsa->setPassword();
                     $privatekey = $rsa->getPrivateKey();
                     $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
-                    require_once('bi2php/biRSA.php');
+                    require_once('lib/bi2php/biRSA.php');
                     $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
                     $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
 
