@@ -405,8 +405,13 @@ var INTERMediatorLib = {
         return value;
     },
 
+    Round: function (value, digit) {
+        var powers = Math.pow(10, digit);
+        return Math.round(value * powers) / powers;
+    },
+
     /*
-    digit should be a positive value. negative value doesn't support so far.
+     digit should be a positive value. negative value doesn't support so far.
      */
     numberFormat: function (str, digit) {
         var s, n, sign, f, underDot, underNumStr, pstr;
@@ -591,5 +596,53 @@ var INTERMediatorLib = {
                 checkNode(target.children[i]);
             }
         }
+    },
+
+    parseFieldsInExpression: function (exp) {
+        var returnArray = [], matchedArray, i, rExp;
+
+        rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
+        matchedArray = exp.match(rExp);
+        if (!matchedArray) {
+            return null;
+        }
+        for (i = 0; i < matchedArray.length; i++) {
+            returnArray.push(matchedArray[i].replace(/[\[\] ]/g, ""));
+        }
+        return returnArray;
+    },
+
+    calculateExpressionWithValues: function (exp, vals) {
+        var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue;
+
+        rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
+        matchedArray = exp.match(rExp);
+        for (i = 0; i < matchedArray.length; i++) {
+            itemName = matchedArray[i].replace(/[\[\] ]/g, "");
+            itemValue = vals[itemName];
+            if(INTERMediatorLib.is_array(itemValue)) {
+                tempValue = "";
+                for (j = 0; j < itemValue.length ; j++) {
+                    if (j != 0) {
+                        tempValue += ",";
+                    }
+                    if(isNaN(parseFloat(itemValue[j])))    {
+                        tempValue += '"' + itemValue[j] + '"';
+                    } else {
+                        tempValue += itemValue[j];
+                    }
+                }
+                itemValue = '[' + tempValue + ']';
+            } else if(isNaN(parseFloat(itemValue)))    {
+                itemValue = '"' + itemValue + '"';
+            }
+            exp = exp.replace(new RegExp("\\["+itemName+"\\]", "g"), itemValue);
+        }
+        try {
+            result = eval(exp);
+        } catch(e)  {
+
+        }
+        return result;
     }
 };

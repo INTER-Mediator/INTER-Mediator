@@ -18,6 +18,7 @@
     <link href="../sample.css" rel="stylesheet" type="text/css"/>
     <script src="include_MySQL.php"></script>
     <script type="text/javascript">
+        /*
         INTERMediatorOnPage.invoiceExpanded = function (target) {
             calcTotal(target);
         };
@@ -56,6 +57,7 @@
                 }
             }
         }
+        */
     </script>
 </head>
 <body onload="INTERMediator.construct(true);">
@@ -89,8 +91,7 @@
                 <tbody>
                 <tr>
                     <td>
-                        <input type="text" class="IM[item@product_id]" size="2"
-                               onchange="modLine(this);calcTotal(this)"/>
+                        <input type="text" class="IM[item@product_id]" size="2"/>
 
                         <div style="display:inline;" class="_im_enclosure">
                             <div style="display:inline;" class="_im_repeater">
@@ -98,19 +99,16 @@
                             </div>
                         </div>
                     </td>
-                    <td><input type="text" class="IM[item@qty]" size="5" style="text-align:right;"
-                               onchange="modLine(this);calcTotal(this)"/></td>
+                    <td><input type="text" class="IM[item@qty]" size="5" style="text-align:right;"/></td>
                     <td>
-                        <input type="text" class="IM[item@unitprice]" size="8" style="text-align:right;"
-                               onchange="modLine(this);calcTotal(this)"/>
-
+                        <input type="text" class="IM[item@unitprice]" size="8" style="text-align:right;"/>
                         <div style="display:inline;" class="_im_enclosure">
                             <div style="display:inline;text-align:right;" class="_im_repeater">
                                 (<span class="IM[product@unitprice]"></span>)
                             </div>
                         </div>
                     </td>
-                    <td align="right"><span align="right" class="IM[item@amount]"></span></td>
+                    <td align="right"><span align="right" class="IM[item@amount_calc]"></span></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -119,7 +117,7 @@
     </tr>
     <tr>
         <td>Total:</td>
-        <td><span id="total"></span></td>
+        <td class="IM[invoice@total_calc]"></td>
     </tr>
     </tbody>
 </table>

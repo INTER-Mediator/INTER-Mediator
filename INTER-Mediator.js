@@ -77,6 +77,15 @@ var INTERMediator = {
     rootEnclosure: null,
     // Storing to retrieve the page to initial condition.
     // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
+    calculateRequiredObject: null,
+    /*
+    key => {    // Key is the id attribute of the node which is defined as "calcuration"
+     "expression": exp.replace(/ /g, ""),   // expression
+     "nodeInfo": nInfo,     // node if object i.e. {field:.., table:.., target:..., tableidnex:....}
+     "values": {}   // key=target name in expression, value=real value.
+                    // if value=undefined, it shows the value is calculation field
+     }
+     */
     errorMessages: [],
     debugMessages: [],
     deleteInsertOnNavi: [],
@@ -1128,10 +1137,11 @@ var INTERMediator = {
         }
 
         function pageConstruct() {
-            var ua, msiePos, i, c, bodyNode, currentNode, currentID, enclosure, targetNode, emptyElement;
+            var ua, msiePos, i, c, bodyNode, currentNode, currentID, enclosure, targetNode, emptyElement, refNodeId;
 
             INTERMediator.keyFieldObject = [];
             INTERMediator.updateRequiredObject = {};
+            INTERMediator.calculateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
             INTERMediator.elementIds = [];
             INTERMediator.widgetElementIds = [];
@@ -1161,7 +1171,7 @@ var INTERMediator = {
                     }
                 }
             }
-            
+
             // Restoring original HTML Document from backup data.
             bodyNode = document.getElementsByTagName('BODY')[0];
             if (INTERMediator.rootEnclosure == null) {
@@ -1210,6 +1220,60 @@ var INTERMediator = {
                     }
                 }
             }
+            var nodeId, exp, nInfo, valuesArray, result, termPos, j;
+            console.error(INTERMediator.calculateRequiredObject);
+            var nodeRefs = [];
+            for (var nodeId in INTERMediator.calculateRequiredObject) {
+                targetNode = document.getElementById(nodeId);
+                exp = INTERMediator.calculateRequiredObject[nodeId]["expression"];
+                nInfo = INTERMediator.calculateRequiredObject[nodeId]["nodeInfo"];
+                valuesArray = INTERMediator.calculateRequiredObject[nodeId]["values"];
+                for (ix in valuesArray) {
+                    if (valuesArray[ix] == undefined) {
+                        termPos = exp.indexOf(ix);
+                        if (termPos > 1 && exp.substr(termPos - 2, 2) == '[[') {
+                            refNodeId = INTERMediatorOnPage.getNodeIdsFromIMDefinition(ix, targetNode);
+//                            valuesArray[ix] = [];
+                            for (i = 0; i < refNodeId.length; i++) {
+//                                valuesArray[ix].push(document.getElementById(refNodeId[i]).innerHTML);
+                                nodeRefs.push({node: nodeId, ref: refNodeId[i]});
+                            }
+                        } else {
+                            refNodeId = INTERMediatorOnPage.getNodeIdFromIMDefinition(ix, targetNode);
+//                            valuesArray[ix] = document.getElementById(refNodeId).innerHTML;
+                            nodeRefs.push({node: nodeId, ref: refNodeId});
+                        }
+                    }
+                }
+            }
+//            judge = false;
+//            while (judge != true) {
+//                judge = true;point1 = -1;point2 = -1;
+//                loop:
+//                for (i = 0; i < nodeRefs.length - 1; i++) {
+//                    for (j = i + 1; j < nodeRefs.length; j++) {
+//                        if (nodeRefs[i].ref == nodeRefs[j].node) {
+//                            judge = false;
+//                            point1 = i;
+//                            point2 = j;
+//                            break loop;
+//                        }
+//                    }
+//                }
+//                if (! judge)    {
+//                    temp = nodeRefs[i];
+//                    nodeRefs[i] = nodeRefs[j];
+//                    nodeRefs[j] = temp;
+//                }
+//            }
+//            for (var nodeId in INTERMediator.calculateRequiredObject) {
+//                targetNode = document.getElementById(nodeId);
+//                exp = INTERMediator.calculateRequiredObject[nodeId]["expression"];
+//                result = INTERMediatorLib.calculateExpressionWithValues(exp, valuesArray);
+//                targetNode.appendChild(document.createTextNode(result));
+//            }
+            console.error(nodeRefs);
+
             INTERMediator.navigationSetup();
             appendCredit();
         }
@@ -1323,7 +1387,8 @@ var INTERMediator = {
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
                 selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [],
-                nameTableKey;
+                nameTableKey, replacedNode, children;
+            var calcDef, exp, elements, val, calcFields;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1343,7 +1408,18 @@ var INTERMediator = {
             linkDefs = collectLinkDefinitions(linkedNodes);
             voteResult = tableVoting(linkDefs);
             currentContext = voteResult.targettable;
-            fieldList = voteResult.fieldlist; // Create field list for database fetch.
+
+            fieldList = []; // Create field list for database fetch.
+            calcDef = currentContext['calculation'];
+            calcFields = [];
+            for (ix in calcDef) {
+                calcFields.push(calcDef[ix]["field"]);
+            }
+            for (i = 0; i < voteResult.fieldlist.length; i++) {
+                if (!calcFields[voteResult.fieldlist[i]]) {
+                    calcFields.push(voteResult.fieldlist[i]);
+                }
+            }
 
             if (currentContext) {
                 try {
@@ -1510,13 +1586,13 @@ var INTERMediator = {
                             // for each linked element
                             nodeId = currentLinkedNodes[k].getAttribute("id");
                             replacedNode = setIdValue(currentLinkedNodes[k]);
-                            
+
                             if (Object.keys(targetRecords.recordset).length > 1) {
                                 if (replacedNode.getAttribute("type") == "checkbox") {
                                     children = replacedNode.parentNode.childNodes;
                                     for (i = 0; i < children.length; i++) {
                                         if (children[i].nodeType === 1 && children[i].tagName == "LABEL"
-                                                && nodeId == children[i].getAttribute("for")) {
+                                            && nodeId == children[i].getAttribute("for")) {
                                             children[i].setAttribute("for", replacedNode.getAttribute("id"));
                                             break;
                                         }
@@ -1569,7 +1645,6 @@ var INTERMediator = {
                                         nameAttrCounter++
                                     }
                                     nameNumber = nameTable[nameTableKey];
-                                    //                            nameNumber = INTERMediator.radioNameMode ? currentLevel : RecordCounter;nameAttrCounter
                                     nameAttr = currentLinkedNodes[k].getAttribute('name');
                                     if (nameAttr) {
                                         currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + nameNumber);
@@ -1612,6 +1687,23 @@ var INTERMediator = {
                                     curVal = targetRecords.recordset[ix][nInfo['field']];
                                     if (curVal == null) {
                                         curVal = '';
+                                        calcDef = currentContext['calculation'];
+                                        exp = INTERMediatorLib.getNamedValueInObject(
+                                            calcDef, "field", nInfo["field"], "expression");
+                                        if (exp) {
+                                            elements = INTERMediatorLib.parseFieldsInExpression(exp);
+                                            if (elements) {
+                                                INTERMediator.calculateRequiredObject[nodeId] = {
+                                                    "expression": exp.replace(/ /g, ""),
+                                                    "nodeInfo": nInfo,
+                                                    "values": {}
+                                                };
+                                                for (i = 0; i < elements.length; i++) {
+                                                    val = targetRecords.recordset[ix][elements[i]];
+                                                    INTERMediator.calculateRequiredObject[nodeId]["values"][elements[i]] = val;
+                                                }
+                                            }
+                                        }
                                     }
                                     curTarget = nInfo['target'];
                                     // Store the key field value and current value for update
@@ -1627,7 +1719,8 @@ var INTERMediator = {
                                             keying: keyingValue,
                                             foreignfield: foreignFieldValue,
                                             'foreign-value': relationValue,
-                                            updatenodeid: parentNodeId};
+                                            updatenodeid: parentNodeId
+                                        };
                                     }
 
                                     objectReference[nInfo['field']] = nodeId;
