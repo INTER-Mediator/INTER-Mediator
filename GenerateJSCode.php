@@ -2,7 +2,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2013 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -112,7 +112,7 @@ class GenerateJSCode
                 $defaultKey = $dbInstance->getDefaultKey();
             }
         } else {
-            $defaultKey = $dbClassName::defaultKey();
+            $defaultKey = call_user_func(array($dbClassName, 'defaultKey'));
         }
         if ($defaultKey !== null) {
             $items = array();
