@@ -613,36 +613,336 @@ var INTERMediatorLib = {
     },
 
     calculateExpressionWithValues: function (exp, vals) {
-        var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue;
+        var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue, nodeId, itemValueArray;
 
         rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
         matchedArray = exp.match(rExp);
         for (i = 0; i < matchedArray.length; i++) {
             itemName = matchedArray[i].replace(/[\[\] ]/g, "");
             itemValue = vals[itemName];
-            if(INTERMediatorLib.is_array(itemValue)) {
+            if (itemValue.indexOf('__valueof_') === 0) {
+                nodeId = itemValue.substring(10);
+                itemValue = IMLibElement.getValueFromIMNode(document.getElementById(nodeId));
+            } else if (itemValue.indexOf('__valuesof_') === 0) {
+                nodeId = itemValue.substring(11).split(",");
+                itemValueArray = [];
+                for(j = 0 ; j < nodeId.length ; j++)    {
+                    itemValueArray.push(IMLibElement.getValueFromIMNode(document.getElementById(nodeId[j])));
+                }
+                itemValue = itemValueArray.join(",");
+            }
+            if (INTERMediatorLib.is_array(itemValue)) {
                 tempValue = "";
-                for (j = 0; j < itemValue.length ; j++) {
+                for (j = 0; j < itemValue.length; j++) {
                     if (j != 0) {
                         tempValue += ",";
                     }
-                    if(isNaN(parseFloat(itemValue[j])))    {
+                    if (isNaN(parseFloat(itemValue[j]))) {
                         tempValue += '"' + itemValue[j] + '"';
                     } else {
                         tempValue += itemValue[j];
                     }
                 }
                 itemValue = '[' + tempValue + ']';
-            } else if(isNaN(parseFloat(itemValue)))    {
+            } else if (isNaN(parseFloat(itemValue))) {
                 itemValue = '"' + itemValue + '"';
             }
-            exp = exp.replace(new RegExp("\\["+itemName+"\\]", "g"), itemValue);
+            exp = exp.replace(new RegExp("\\[" + itemName + "\\]", "g"), itemValue);
         }
         try {
             result = eval(exp);
-        } catch(e)  {
+        } catch (e) {
 
         }
         return result;
     }
 };
+
+var IM = {
+    sum: function(params)   {
+        var i, s = 0;
+        for (i = 0; i < params.length; i++ )    {
+            s += params[i];
+        }
+        return s;
+    }
+}
+
+/*
+
+ IMLibNodeGraph object can handle the directed acyclic graph.
+ The nodes property stores every node, i.e. the id attribute of each node.
+ The edges property stores ever edge represented by the objet {from: node1, to: node2}.
+ If the node1 or node2 aren't stored in the nodes array, they are going to add as nodes too.
+
+ The following is the example to store the directed acyclic graph.
+
+ a -> b -> c -> d
+   |    -> f
+   ------>
+   -> e
+ i -> j
+ x
+
+ IMLibNodeGraph.clear();
+ IMLibNodeGraph.addEdge("a","b");
+ IMLibNodeGraph.addEdge("b","c");
+ IMLibNodeGraph.addEdge("c","d");
+ IMLibNodeGraph.addEdge("a","e");
+ IMLibNodeGraph.addEdge("b","f");
+ IMLibNodeGraph.addEdge("a","f");
+ IMLibNodeGraph.addEdge("i","j");
+ IMLibNodeGraph.addNode("x");
+
+ The first calling of the getLeafNodesWithRemoving method returns "d", "f", "e", "j", "x".
+ The second calling does "c", "i". The third one does "b", the forth one does "a".
+ You can get the nodes from leaves to root as above.
+
+ If the getLeafNodesWithRemoving method returns [] (no elements array), and the nodes property has any elements,
+ it shows the graph has circular reference.
+
+ */
+var IMLibNodeGraph = {
+    nodes: [],
+    edges: [],
+    clear: function () {
+        this.nodes = [];
+        this.edges = [];
+    },
+    addNode: function (node) {
+        if (this.nodes.indexOf(node) < 0) {
+            this.nodes.push(node);
+        }
+    },
+    addEdge: function (fromNode, toNode) {
+        if (this.nodes.indexOf(fromNode) < 0) {
+            this.addNode(fromNode);
+        }
+        if (this.nodes.indexOf(toNode) < 0) {
+            this.addNode(toNode);
+        }
+        this.edges.push({from: fromNode, to: toNode});
+    },
+    getAllNodesInEdge: function () {
+        var i, nodes = [];
+        for (i = 0; i < this.edges.length; i++) {
+            if (nodes.indexOf(this.edges[i].from) < 0) {
+                nodes.push(this.edges[i].from);
+            }
+            if (nodes.indexOf(this.edges[i].to) < 0) {
+                nodes.push(this.edges[i].to);
+            }
+        }
+        return nodes;
+    },
+    getLeafNodes: function () {
+        var i, srcs = [], dests = [], srcAndDests = this.getAllNodesInEdge();
+        for (i = 0; i < this.edges.length; i++) {
+            srcs.push(this.edges[i].from);
+        }
+        for (i = 0; i < this.edges.length; i++) {
+            if (srcs.indexOf(this.edges[i].to) < 0 && dests.indexOf(this.edges[i].to) < 0) {
+                dests.push(this.edges[i].to);
+            }
+        }
+        for (i = 0; i < this.nodes.length; i++) {
+            if (srcAndDests.indexOf(this.nodes[i]) < 0) {
+                dests.push(this.nodes[i]);
+            }
+        }
+        return dests;
+    },
+    getLeafNodesWithRemoving: function () {
+        var i, newEdges = [], dests = this.getLeafNodes();
+        for (i = 0; i < this.edges.length; i++) {
+            if (dests.indexOf(this.edges[i].to) < 0) {
+                newEdges.push(this.edges[i]);
+            }
+        }
+        this.edges = newEdges;
+        for (i = 0; i < dests.length; i++) {
+            this.nodes.splice(this.nodes.indexOf(dests[i]), 1);
+        }
+        return dests;
+    }
+};
+
+var IMLibElement = {
+    setValueToIMNode: function (element, curTarget, curVal) {
+        var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
+            needPostValueSet = false, nodeTag, curValues, i;
+        // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
+        nodeTag = element.tagName;
+
+        if (curTarget != null && curTarget.length > 0) { //target is specified
+            if (curTarget.charAt(0) == '#') { // Appending
+                curTarget = curTarget.substring(1);
+                if (curTarget == 'innerHTML') {
+                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                    }
+                    element.innerHTML += curVal;
+                } else if (curTarget == 'textNode' || curTarget == 'script') {
+                    textNode = document.createTextNode(curVal);
+                    if (nodeTag == "TEXTAREA") {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                    }
+                    element.appendChild(textNode);
+                } else if (curTarget.indexOf('style.') == 0) {
+                    styleName = curTarget.substring(6, curTarget.length);
+                    statement = "element.style." + styleName + "='" + curVal + "';";
+                    eval(statement);
+                } else {
+                    currentValue = element.getAttribute(curTarget);
+                    element.setAttribute(curTarget, currentValue + curVal);
+                }
+            }
+            else if (curTarget.charAt(0) == '$') { // Replacing
+                curTarget = curTarget.substring(1);
+                if (curTarget == 'innerHTML') {
+                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                    }
+                    element.innerHTML = element.innerHTML.replace("$", curVal);
+                } else if (curTarget == 'textNode' || curTarget == 'script') {
+                    if (nodeTag == "TEXTAREA") {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                    }
+                    element.innerHTML = element.innerHTML.replace("$", curVal);
+                } else if (curTarget.indexOf('style.') == 0) {
+                    styleName = curTarget.substring(6, curTarget.length);
+                    statement = "element.style." + styleName + "='" + curVal + "';";
+                    eval(statement);
+                } else {
+                    currentValue = element.getAttribute(curTarget);
+                    element.setAttribute(curTarget, currentValue.replace("$", curVal));
+                }
+            } else { // Setting
+                if (INTERMediatorLib.isWidgetElement(element)) {
+                    element._im_setValue(curVal);
+                } else if (curTarget == 'innerHTML') { // Setting
+                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                    }
+                    element.innerHTML = curVal;
+                } else if (curTarget == 'textNode') {
+                    if (nodeTag == "TEXTAREA") {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                    }
+                    textNode = document.createTextNode(curVal);
+                    element.appendChild(textNode);
+                } else if (curTarget == 'script') {
+                    textNode = document.createTextNode(curVal);
+                    if (nodeTag == "SCRIPT") {
+                        element.appendChild(textNode);
+                    } else {
+                        scriptNode = document.createElement("script");
+                        scriptNode.type = "text/javascript";
+                        scriptNode.appendChild(textNode);
+                        element.appendChild(scriptNode);
+                    }
+                } else if (curTarget.indexOf('style.') == 0) {
+                    styleName = curTarget.substring(6, curTarget.length);
+                    statement = "element.style." + styleName + "='" + curVal + "';";
+                    eval(statement);
+                } else {
+                    element.setAttribute(curTarget, curVal);
+                }
+            }
+        } else { // if the 'target' is not specified.
+            if (INTERMediatorLib.isWidgetElement(element)) {
+                element._im_setValue(curVal);
+            } else if (nodeTag == "INPUT") {
+                typeAttr = element.getAttribute('type');
+                if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
+                    valueAttr = element.value;
+                    curValues = curVal.split("\n");
+                    if (typeAttr == 'checkbox' && curValues.length > 1) {
+                        element.checked = false;
+                        for (i = 0; i < curValues.length; i++) {
+                            if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
+                                if (INTERMediator.isIE) {
+                                    element.setAttribute('checked', 'checked');
+                                } else {
+                                    element.checked = true;
+                                }
+                            }
+                        }
+                    } else {
+                        if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
+                            if (INTERMediator.isIE) {
+                                element.setAttribute('checked', 'checked');
+                            } else {
+                                element.checked = true;
+                            }
+                        } else {
+                            element.checked = false;
+                        }
+                    }
+                } else { // this node must be text field
+                    element.value = curVal;
+                }
+            } else if (nodeTag == "SELECT") {
+                needPostValueSet = true;
+            } else { // include option tag node
+                if (INTERMediator.defaultTargetInnerHTML) {
+                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
+                    element.innerHTML = curVal;
+                } else {
+                    if (nodeTag == "TEXTAREA") {
+                        if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
+                            // for IE11
+                            curVal = curVal.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+                        } else {
+                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                        }
+                    }
+                    textNode = document.createTextNode(curVal);
+                    element.appendChild(textNode);
+                }
+            }
+        }
+        return needPostValueSet;
+    },
+    getValueFromIMNode: function (element, targetIndex) {
+        var nodeTag, typeAttr, valueAttr, curVal;
+        nodeTag = element.tagName;
+        if (INTERMediatorLib.isWidgetElement(element)) {
+            element._im_getValue();
+        } else if (nodeTag == "INPUT") {
+            typeAttr = element.getAttribute('type');
+            if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
+                if (typeAttr == 'checkbox') {
+                    if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
+                        if (INTERMediator.isIE) {
+                            element.setAttribute('checked', 'checked');
+                        } else {
+                            element.checked = true;
+                        }
+                    }
+                } else {
+                    if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
+                        if (INTERMediator.isIE) {
+                            element.setAttribute('checked', 'checked');
+                        } else {
+                            element.checked = true;
+                        }
+                    } else {
+                        element.checked = false;
+                    }
+                }
+                return element.value;
+            } else { // this node must be text field
+                return element.value;
+            }
+        } else if (nodeTag == "SELECT") {
+            return element.value;
+        } else if (nodeTag == "TEXTAREA") {
+            return element.value;
+        } else {
+            return element.innerHTML;
+        }
+    }
+}
