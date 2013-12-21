@@ -620,16 +620,18 @@ var INTERMediatorLib = {
         for (i = 0; i < matchedArray.length; i++) {
             itemName = matchedArray[i].replace(/[\[\] ]/g, "");
             itemValue = vals[itemName];
-            if (itemValue.indexOf('__valueof_') === 0) {
-                nodeId = itemValue.substring(10);
-                itemValue = IMLibElement.getValueFromIMNode(document.getElementById(nodeId));
-            } else if (itemValue.indexOf('__valuesof_') === 0) {
-                nodeId = itemValue.substring(11).split(",");
-                itemValueArray = [];
-                for(j = 0 ; j < nodeId.length ; j++)    {
-                    itemValueArray.push(IMLibElement.getValueFromIMNode(document.getElementById(nodeId[j])));
+            if (itemValue) {
+                if (itemValue.indexOf('__valueof_') === 0) {
+                    nodeId = itemValue.substring(10);
+                    itemValue = IMLibElement.getValueFromIMNode(document.getElementById(nodeId));
+                } else if (itemValue.indexOf('__valuesof_') === 0) {
+                    nodeId = itemValue.substring(11).split(",");
+                    itemValueArray = [];
+                    for (j = 0; j < nodeId.length; j++) {
+                        itemValueArray.push(IMLibElement.getValueFromIMNode(document.getElementById(nodeId[j])));
+                    }
+                    itemValue = itemValueArray.join(",");
                 }
-                itemValue = itemValueArray.join(",");
             }
             if (INTERMediatorLib.is_array(itemValue)) {
                 tempValue = "";
@@ -659,9 +661,9 @@ var INTERMediatorLib = {
 };
 
 var IM = {
-    sum: function(params)   {
+    sum: function (params) {
         var i, s = 0;
-        for (i = 0; i < params.length; i++ )    {
+        for (i = 0; i < params.length; i++) {
             s += params[i];
         }
         return s;
@@ -678,9 +680,9 @@ var IM = {
  The following is the example to store the directed acyclic graph.
 
  a -> b -> c -> d
-   |    -> f
-   ------>
-   -> e
+ |    -> f
+ ------>
+ -> e
  i -> j
  x
 
