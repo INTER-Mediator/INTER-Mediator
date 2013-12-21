@@ -64,6 +64,8 @@ Ver.4.1 (in development)
 - Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
 - Add the meta tag with "X-UA-Compatible" to all samples, it forces Internet Explorer to
   work as its native document mode.
+- [BUG FIX] Fix the issue of the Native Authentication (version 4.0 only).
+- [BUG FIX] Fix the issue of GenerateJSCode.php to work with PHP 5.2 again (version 4.0 only).
 - [BUG FIX] Modify dateArrayFromFMDate method of DataConverter_FMDateTime class to fix compatibility with PHP 5.2.
 - [BUG FIX] Correct the confirmation message when clicking the deleting record button on the navigation bar.
   (Thanks to Kentaro Suzuki).

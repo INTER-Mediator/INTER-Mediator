@@ -360,7 +360,9 @@ INTERMediatorOnPage = {
                 inputPassword = document.getElementById('_im_password').value;
                 inputNewPassword = document.getElementById('_im_newpassword').value;
                 if (inputUsername === '' || inputPassword === '' || inputNewPassword === '') {
-                    newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(2007);
+                    newPasswordMessage.appendChild(
+                        document.createTextNode(
+                            INTERMediatorLib.getInsertedStringFromErrorNumber(2007)));
                     return;
                 }
                 INTERMediatorOnPage.authUser = inputUsername;
@@ -369,7 +371,9 @@ INTERMediatorOnPage = {
                     INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
                     challengeResult = INTERMediator_DBAdapter.getChallenge();
                     if (!challengeResult) {
-                        newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(2008);
+                        newPasswordMessageappendChild(
+                            document.createTextNode(
+                                INTERMediatorLib.getInsertedStringFromErrorNumber(2008)));
                         INTERMediator.flushMessage();
                         return; // If it's failed to get a challenge, finish everything.
                     }
@@ -383,8 +387,10 @@ INTERMediatorOnPage = {
                 } catch (e) {
                     result = {newPasswordResult: false};
                 }
-                newPasswordMessage.innerHTML = INTERMediatorLib.getInsertedStringFromErrorNumber(
-                    result.newPasswordResult === true ? 2009 : 2010);
+                newPasswordMessage.appendChild(
+                    document.createTextNode(
+                        INTERMediatorLib.getInsertedStringFromErrorNumber(
+                            result.newPasswordResult === true ? 2009 : 2010)));
 
                 INTERMediator.flushMessage();
             }
@@ -482,7 +488,7 @@ INTERMediatorOnPage = {
             } else {
                 judge = (specifiedVersion == versionNum);
             }
-            if (document.documentMode)  {
+            if (document.documentMode) {
                 judge = (specifiedVersion <= document.documentMode);
             }
         }
