@@ -620,7 +620,7 @@ var INTERMediatorLib = {
         for (i = 0; i < matchedArray.length; i++) {
             itemName = matchedArray[i].replace(/[\[\] ]/g, "");
             itemValue = vals[itemName];
-            if (itemValue) {
+            if (itemValue && typeof itemValue == 'string') {
                 if (itemValue.indexOf('__valueof_') === 0) {
                     nodeId = itemValue.substring(10);
                     itemValue = IMLibElement.getValueFromIMNode(document.getElementById(nodeId));
