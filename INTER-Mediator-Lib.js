@@ -766,6 +766,13 @@ var IMLibNodeGraph = {
             this.nodes.splice(this.nodes.indexOf(dests[i]), 1);
         }
         return dests;
+    },
+    applyToAllNodes: function(f)    {
+        var i;
+        for (i = 0; i < this.nodes.length; i++) {
+            f(this.nodes[i]);
+        }
+
     }
 };
 

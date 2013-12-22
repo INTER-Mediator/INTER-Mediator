@@ -1005,6 +1005,10 @@ var INTERMediator = {
         }
     },
 
+    recalculation: function()   {
+
+    },
+
     /**
      * //=================================
      * // Construct Page
@@ -1138,6 +1142,7 @@ var INTERMediator = {
 
         function pageConstruct() {
             var ua, msiePos, i, c, bodyNode, currentNode, currentID, enclosure, targetNode, emptyElement, refNodeId;
+            var nodeId, exp, nInfo, valuesArray, termPos, leafNodes, calcObject, ix;
 
             INTERMediator.keyFieldObject = [];
             INTERMediator.updateRequiredObject = {};
@@ -1220,10 +1225,10 @@ var INTERMediator = {
                     }
                 }
             }
-            var nodeId, exp, nInfo, valuesArray, termPos, leafNodes, calcObject, ix;
 
-            console.error(INTERMediator.calculateRequiredObject);
+//            console.error(INTERMediator.calculateRequiredObject);
 
+            // Calculation fields updating
             IMLibNodeGraph.clear();
             for (nodeId in INTERMediator.calculateRequiredObject) {
                 targetNode = document.getElementById(nodeId);
@@ -1249,6 +1254,12 @@ var INTERMediator = {
                     }
                 }
             }
+            IMLibNodeGraph.applyToAllNodes(function(node){
+                var targetNode = document.getElementById(node);
+                if(targetNode.tagName == 'INPUT')   {
+                    INTERMediatorLib.addEvent(targetNode, 'change', function(){INTERMediator.recalculation();})
+                }
+            });
             do {
                 leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
                 for (i = 0; i < leafNodes.length; i++) {
@@ -1271,7 +1282,7 @@ var INTERMediator = {
                 // Spanning Tree Detected.
             }
 
-            console.error(INTERMediator.calculateRequiredObject);
+//            console.error(INTERMediator.calculateRequiredObject);
 
             INTERMediator.navigationSetup();
             appendCredit();
