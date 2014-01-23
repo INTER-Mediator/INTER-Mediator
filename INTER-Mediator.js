@@ -1397,7 +1397,7 @@ var INTERMediator = {
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
                 selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [],
-                nameTableKey, replacedNode, children;
+                nameTableKey, replacedNode, children, dataAttr;
             var calcDef, exp, elements, val, calcFields;
 
             currentLevel++;
@@ -1560,7 +1560,8 @@ var INTERMediator = {
                     for (i = 0; i < repeaters.length; i++) {
                         newNode = repeaters[i].cloneNode(true);
                         nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                        if (nodeClass == INTERMediator.noRecordClassName) {
+                        dataAttr = newNode.getAttribute("data-im-control");
+                        if (nodeClass == INTERMediator.noRecordClassName || dataAttr == "noresult") {
                             node.appendChild(newNode);
                             setIdValue(newNode);
                         }
@@ -1782,7 +1783,8 @@ var INTERMediator = {
                         for (i = 0; i < repeatersOneRec.length; i++) {
                             newNode = repeatersOneRec[i].cloneNode(true);
                             nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                            if (nodeClass != INTERMediator.noRecordClassName) {
+                            dataAttr = newNode.getAttribute("data-im-control");
+                            if ((nodeClass != INTERMediator.noRecordClassName)&&(dataAttr != "noresult")) {
                                 node.appendChild(newNode);
                                 newlyAddedNodes.push(newNode);
                                 setIdValue(newNode);
