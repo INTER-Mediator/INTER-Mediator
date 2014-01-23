@@ -1254,9 +1254,11 @@ var INTERMediator = {
                     }
                 }
             }
+            console.error(INTERMediator.calculateRequiredObject);
+
             IMLibNodeGraph.applyToAllNodes(function(node){
                 var targetNode = document.getElementById(node);
-                if(targetNode.tagName == 'INPUT')   {
+                if(targetNode && targetNode.tagName == 'INPUT')   {
                     INTERMediatorLib.addEvent(targetNode, 'change', function(){INTERMediator.recalculation();})
                 }
             });
@@ -1282,7 +1284,7 @@ var INTERMediator = {
                 // Spanning Tree Detected.
             }
 
-//            console.error(INTERMediator.calculateRequiredObject);
+            console.error(INTERMediator.calculateRequiredObject);
 
             INTERMediator.navigationSetup();
             appendCredit();
@@ -1398,7 +1400,7 @@ var INTERMediator = {
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
                 selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [],
                 nameTableKey, replacedNode, children;
-            var calcDef, exp, elements, val, calcFields;
+            var calcDef, exp, elements, val, calcFields, targetField;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1419,19 +1421,23 @@ var INTERMediator = {
             voteResult = tableVoting(linkDefs);
             currentContext = voteResult.targettable;
 
-            fieldList = []; // Create field list for database fetch.
-            calcDef = currentContext['calculation'];
-            calcFields = [];
-            for (ix in calcDef) {
-                calcFields.push(calcDef[ix]["field"]);
-            }
-            for (i = 0; i < voteResult.fieldlist.length; i++) {
-                if (!calcFields[voteResult.fieldlist[i]]) {
-                    calcFields.push(voteResult.fieldlist[i]);
-                }
-            }
-
             if (currentContext) {
+                fieldList = []; // Create field list for database fetch.
+                calcDef = ('calculation' in currentContext) ? currentContext['calculation'] : null;
+                calcFields = [];
+                for (ix in calcDef) {
+                    targetField = calcDef[ix]["field"];
+                    if (targetField.indexOf("@") >= 0)  {
+                        targetField = targetField.substring(0, targetField.indexOf("@"));
+                    }
+                    calcFields.push(targetField);
+                }
+                for (i = 0; i < voteResult.fieldlist.length; i++) {
+                    if (!calcFields[voteResult.fieldlist[i]]) {
+                        fieldList.push(voteResult.fieldlist[i]);
+                    }
+                }
+
                 try {
                     relationValue = null;
                     dependObject = [];
