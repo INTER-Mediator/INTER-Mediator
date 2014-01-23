@@ -299,6 +299,12 @@ class DefinitionChecker
                     'context' => 'string',
                 )
             ),
+            'calculation' => array(
+                '*' => array(
+                    'field' => 'string',
+                    'expression' => 'string',
+                )
+            ),
         ),
     );
 

@@ -13,53 +13,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv=“X-UA-Compatible” content=“IE=edge” />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <link href="../sample.css" rel="stylesheet" type="text/css"/>
     <script src="include_FMS.php"></script>
     <script type="text/javascript">
-        INTERMediatorOnPage.invoiceExpanded = function (target) {
-            calcTotal(target);
-        };
-
-        INTERMediatorOnPage.itemsExpanded = function (repeaters) {
-            modLine(repeaters[0]);
-        };
-
-        function modLine(target) {
-            if (!target) {
-                return;
-            }
-            var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@qty", target);
-            var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@unitprice", target);
-            var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice", target);
-            var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@amount", target);
-            if (qtyId && unitPriceId && productPriceId && amountId) {
-                var unitPrice = new Number(document.getElementById(unitPriceId).value > 0 ?
-                        document.getElementById(unitPriceId).value :
-                        document.getElementById(productPriceId).innerHTML);
-                var amountPrice = unitPrice * document.getElementById(qtyId).value;
-                document.getElementById(amountId).innerHTML = INTERMediatorLib.numberFormat(amountPrice);
-            }
-        }
-
-        function calcTotal(target) {
-            var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition('item@amount', target);
-            if (nodes) {
-                var s = 0;
-                for (var i = 0; i < nodes.length; i++) {
-                    var value = INTERMediatorLib.toNumber(document.getElementById(nodes[i]).innerHTML);
-                    s += isNaN(value) ? 0 : value;
-                }
-                if (document.getElementById('total')) {
-                    document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat(s, 2);
-                }
-            }
-        }
-
     </script>
 </head>
-<body onload="INTERMediator.construct(true);calcTotal();">
+<body onload="INTERMediator.construct(true);">
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1">
     <tbody>
@@ -111,7 +72,7 @@
                             </div>
                         </div>
                     </td>
-                    <td align="right"><span align="right" class="IM[item@amount]"></span></td>
+                    <td align="right"><span align="right" class="IM[item@amount_calc]"></span></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -120,7 +81,7 @@
     </tr>
     <tr>
         <td>Total:</td>
-        <td><span id="total"></span></td>
+        <td class="IM[invoice@total_calc]"></td>
     </tr>
     </tbody>
 </table>

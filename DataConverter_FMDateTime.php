@@ -32,6 +32,7 @@ class DataConverter_FMDateTime
 
     public function converterFromDBtoUser($str)
     {
+        $str = str_replace(".", "/", $str);
         $sp = strpos($str, ' ');
         $slash = substr_count($str, '/');
         $colon = substr_count($str, ':');

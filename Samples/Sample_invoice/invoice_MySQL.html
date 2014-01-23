@@ -14,48 +14,10 @@
 <head>
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv=“X-UA-Compatible” content=“IE=edge” />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link href="../sample.css" rel="stylesheet" type="text/css"/>
     <script src="include_MySQL.php"></script>
     <script type="text/javascript">
-        INTERMediatorOnPage.invoiceExpanded = function (target) {
-            calcTotal(target);
-        };
-
-        INTERMediatorOnPage.itemsExpanded = function (repeaters) {
-            modLine(repeaters[0]);
-        };
-
-        function modLine(target) {
-            if (!target) {
-                return;
-            }
-            var qtyId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@qty", target);
-            var unitPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@unitprice", target);
-            var productPriceId = INTERMediatorOnPage.getNodeIdFromIMDefinition("product@unitprice", target);
-            var amountId = INTERMediatorOnPage.getNodeIdFromIMDefinition("item@amount", target);
-            if (qtyId && unitPriceId && productPriceId && amountId) {
-                var unitPrice = new Number(document.getElementById(unitPriceId).value > 0 ?
-                        document.getElementById(unitPriceId).value :
-                        document.getElementById(productPriceId).innerHTML);
-                var amountPrice = unitPrice * document.getElementById(qtyId).value;
-                document.getElementById(amountId).innerHTML = INTERMediatorLib.numberFormat(amountPrice);
-            }
-        }
-
-        function calcTotal(target) {
-            var nodes = INTERMediatorOnPage.getNodeIdsFromIMDefinition('item@amount', target);
-            if (nodes) {
-                var s = 0;
-                for (var i = 0; i < nodes.length; i++) {
-                    var value = INTERMediatorLib.toNumber(document.getElementById(nodes[i]).innerHTML);
-                    s += (isNaN(value) ? 0 : value);
-                }
-                if (document.getElementById('total')) {
-                    document.getElementById('total').innerHTML = INTERMediatorLib.numberFormat(s,0);
-                }
-            }
-        }
     </script>
 </head>
 <body onload="INTERMediator.construct(true);">
@@ -89,8 +51,7 @@
                 <tbody>
                 <tr>
                     <td>
-                        <input type="text" class="IM[item@product_id]" size="2"
-                               onchange="modLine(this);calcTotal(this)"/>
+                        <input type="text" class="IM[item@product_id]" size="2"/>
 
                         <div style="display:inline;" class="_im_enclosure">
                             <div style="display:inline;" class="_im_repeater">
@@ -98,19 +59,16 @@
                             </div>
                         </div>
                     </td>
-                    <td><input type="text" class="IM[item@qty]" size="5" style="text-align:right;"
-                               onchange="modLine(this);calcTotal(this)"/></td>
+                    <td><input type="text" class="IM[item@qty]" size="5" style="text-align:right;"/></td>
                     <td>
-                        <input type="text" class="IM[item@unitprice]" size="8" style="text-align:right;"
-                               onchange="modLine(this);calcTotal(this)"/>
-
+                        <input type="text" class="IM[item@unitprice]" size="8" style="text-align:right;"/>
                         <div style="display:inline;" class="_im_enclosure">
                             <div style="display:inline;text-align:right;" class="_im_repeater">
                                 (<span class="IM[product@unitprice]"></span>)
                             </div>
                         </div>
                     </td>
-                    <td align="right"><span align="right" class="IM[item@amount]"></span></td>
+                    <td align="right"><span align="right" class="IM[item@amount_calc]"></span></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -119,7 +77,7 @@
     </tr>
     <tr>
         <td>Total:</td>
-        <td><span id="total"></span></td>
+        <td class="IM[invoice@total_calc]"></td>
     </tr>
     </tbody>
 </table>

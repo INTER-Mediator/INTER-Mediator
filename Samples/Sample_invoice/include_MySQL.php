@@ -22,7 +22,13 @@ $tableDefinitions = array(
             array('field' => 'id', 'direction' => 'ASC'),
         ),
         'repeat-control' => 'insert delete',
-        'post-enclosure' => 'invoiceExpanded',
+//        'post-enclosure' => 'invoiceExpanded',
+        'calculation' => array(
+            array(
+                'field' => 'total_calc',
+                'expression' => 'IM.sum([[amount_calc]])',
+            ),
+        ),
     ),
     array(
         'name' => 'item',
@@ -48,7 +54,13 @@ $tableDefinitions = array(
                 'message' => 'Unit price should be between 1.. 9999.'
             ),
         ),
-        'post-repeater' => 'itemsExpanded',
+        'calculation' => array(
+            array(
+                'field' => 'amount_calc',
+                'expression' => '[qty] * ([unitprice] == "" ? [product@unitprice] : [unitprice])',
+            ),
+        ),
+//        'post-repeater' => 'itemsExpanded',
     ),
     array(
         'name' => 'product',
@@ -71,6 +83,6 @@ $optionDefinitions = array(
 );
 $dbDefinitions = array('db-class' => 'PDO');
 
-IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, false);
+IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, 2);
 
 ?>

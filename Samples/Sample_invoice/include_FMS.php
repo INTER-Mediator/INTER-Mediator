@@ -19,7 +19,13 @@ IM_Entry(
                 array('field' => 'id', 'direction' => 'ascend'),
             ),
             'repeat-control' => 'insert delete',
-            'post-enclosure' => 'invoiceExpanded',
+//            'post-enclosure' => 'invoiceExpanded',
+            'calculation' => array(
+                array(
+                    'field' => 'total_calc',
+                    'expression' => 'IM.sum([[amount_calc]])',
+                ),
+            ),
         ),
         array(
             'name' => 'item',
@@ -45,7 +51,13 @@ IM_Entry(
                     'message' => 'Unit price should be between 1.. 9999.'
                 ),
             ),
-            'post-repeater' => 'itemsExpanded',
+            'calculation' => array(
+                array(
+                    'field' => 'amount_calc',
+                    'expression' => '[qty] * ([unitprice] == "" ? [product@unitprice] : [unitprice])',
+                ),
+            ),
+//            'post-repeater' => 'itemsExpanded',
         ),
         array(
             'name' => 'product',
