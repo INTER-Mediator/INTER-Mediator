@@ -43,11 +43,11 @@
     <tr>
         <th>id</th>
         <td>
-            <div class="IM[person@id]"></div>
+            <div data-im="person@id"></div>
         </td>
         <th>category</th>
         <td>
-            <select class="IM[person@category]">
+            <select data-im="person@category">
                 <option value="101">Family</option>
                 <option value="102">ClassMate</option>
                 <option value="103">Collegue</option>
@@ -58,11 +58,11 @@
     </tr>
     <tr>
         <th>name</th>
-        <td colspan="5"><input type="text" class="IM[person@name]" value=""/></td>
+        <td colspan="5"><input type="text" data-im="person@name" value=""/></td>
     </tr>
     <tr>
         <th>mail</th>
-        <td colspan="5"><input type="text" class="IM[person@mail]" value=""/></td>
+        <td colspan="5"><input type="text" data-im="person@mail" value=""/></td>
     </tr>
     <tr>
         <th>location</th>
@@ -92,20 +92,20 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td><input type="text" class="IM[contact@datetime]"/></td>
-                    <td><input type="text" class="IM[contact@summary]"/></td>
-                    <td><input type="checkbox" class="IM[contact@important]" value="1"/></td>
+                    <td><input type="text" data-im="contact@datetime"/></td>
+                    <td><input type="text" data-im="contact@summary"/></td>
+                    <td><input type="checkbox" data-im="contact@important" value="1"/></td>
                     <td>
-                        <select class="IM[contact@way]">
-                            <option class="IM[contact_way@id@value|contact_way@name@innerHTML]"></option>
+                        <select data-im="contact@way">
+                            <option data-im="contact_way@id@value|contact_way@name@innerHTML"></option>
                         </select>
                     </td>
                     <td>
-                        <select class="IM[contact@kind]">
-                            <option class="IM[kindid|kindname]"></option>
+                        <select data-im="contact@kind">
+                            <option data-im="kindid|kindname"></option>
                         </select>
                     </td>
-                    <td><textarea class="IM[contact@description@innerHTML]"></textarea></td>
+                    <td><textarea data-im="contact@description@innerHTML"></textarea></td>
                 </tr>
                 </tbody>
             </table>

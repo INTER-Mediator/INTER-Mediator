@@ -122,19 +122,22 @@
                     <td><input type="text" title="contact_to@summary"/></td>
                     <td><input type="checkbox" title="contact_to@important" value="1"/></td>
                     <td>
-                        <input type="radio" name="radio1" class="IM[contact_to@way]" value="4"/>Direct
-                        <input type="radio" name="radio1" class="IM[contact_to@way]" value="5"/>Indirect
-                        <input type="radio" name="radio1" class="IM[contact_to@way]" value="6"/>Others
+                        <input type="radio" name="radio1" data-im="contact_to@way" value="4"/>Direct
+                        <input type="radio" name="radio1" data-im="contact_to@way" value="5"/>Indirect
+                        <input type="radio" name="radio1" data-im="contact_to@way" value="6"/>Others
                     </td>
                     <td>
                         <select title="contact_to@way">
-                            <option class="IM[contact_way@id@value|contact_way@name@innerHTML] contactway"
+                            <option class="contactway"
+                                    data-im="contact_way@id@value|contact_way@name@innerHTML"
                                     value=""></option>
                         </select>
                     </td>
                     <td>
                         <select title="contact_to@kind">
-                            <option class="IM[cor_way_kind@kind_id@value|cor_way_kind@contact_kind::name@innerHTML] contactkind"
+                            <option class="contactkind"
+                                    data-im="cor_way_kind@kind_id@value
+                                    cor_way_kind@contact_kind::name@innerHTML"
                                     value=""></option>
                         </select>
                     </td>

@@ -43,10 +43,10 @@ Uncomment the following lines in demo1.php
 <body onload="INTERMediator.construct(true);">
 
 4. Modify the inside of table as like:
-        <td class="IM[postalcode@f3]"></td>
-        <td class="IM[postalcode@f7]"></td>
-        <td><span class="IM[postalcode@f8]"></span>
-        <span class="IM[postalcode@f9]"></span>
+        <td data-im="postalcode@f3"></td>
+        <td data-im="postalcode@f7"></td>
+        <td><span data-im="postalcode@f8"></span>
+        <span data-im="postalcode@f9"></span>
         </td>
 
 5. Open demo2.html and it can show the postal codes in so many lines.
@@ -83,7 +83,7 @@ select f3,f9,memo from postalcode where f3 like '14%' desc order by f3 limit 10;
 
 10. Modify the inside of table as like:
 
-            <td><input type="text" class="IM[postalcode@memo]"/></td>
+            <td><input type="text" data-im="postalcode@memo"/></td>
 
 11. Limit to Shinjuku's Data with postalcode.
 
@@ -103,9 +103,9 @@ select f3,f9,memo from postalcode where f3 like '14%' desc order by f3 limit 10;
          <td>
              <table>
                  <tr>
-                     <td class="IM[restaurant@postalcode]"></td>
-                     <td class="IM[restaurant@name]"></td>
-                     <td class="IM[restaurant@tel]"></td>
+                     <td data-im="restaurant@postalcode"></td>
+                     <td data-im="restaurant@name"></td>
+                     <td data-im="restaurant@tel"></td>
                  </tr>
              </table>
          </td>
@@ -116,7 +116,7 @@ select f3,f9,memo from postalcode where f3 like '14%' desc order by f3 limit 10;
    In html, uncomment the SCRIPT tag of the header,
    and replace BODY tag with unload attribute.
 
-2. Add class="_im_post" to TBODY, and new Button tag element.
+2. Add data-im-control="post" to TBODY, and new Button tag element.
    Post the answer and verify the DB.
 
 3. Add Q2 as checkbox.

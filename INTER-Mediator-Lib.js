@@ -131,14 +131,19 @@ var INTERMediatorLib = {
         }
     },
 
+
     /**
      * Cheking the argument is the Linked Element or not.
      */
 
     isLinkedElement: function (node) {
-        var classInfo, matched;
+        var classInfo, matched, attr;
 
         if (node != null) {
+            attr = node.getAttribute("data-im")
+            if (attr) {
+                return true;
+            }
             if (INTERMediator.titleAsLinkInfo) {
                 if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
                     // IE: If the node doesn't have a title attribute, getAttribute
@@ -164,6 +169,10 @@ var INTERMediatorLib = {
         var classInfo, matched;
 
         if (node != null) {
+            attr = node.getAttribute("data-im-widget")
+            if (attr) {
+                return true;
+            }
             classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
             if (classInfo != null) {
                 matched = classInfo.match(/IM_WIDGET\[.*\]/);
@@ -219,7 +228,8 @@ var INTERMediatorLib = {
          */
 
         function isRepeaterOfEnclosure(repeater, enclosure) {
-            var repeaterTag, enclosureTag, enclosureClass, repeaterClass, repeaterType;
+            var repeaterTag, enclosureTag, enclosureClass, repeaterClass, enclosureDataAttr,
+                repeaterDataAttr, repeaterType;
             if (!repeater || !enclosure) {
                 return false;
             }
@@ -233,9 +243,14 @@ var INTERMediatorLib = {
             }
             if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
                 enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
-                if (enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0) {
+                enclosureDataAttr = enclosure.getAttribute("data-im-control");
+                if ((enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0)
+                    || (enclosureDataAttr && enclosureDataAttr == "enclosure")) {
                     repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
-                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN') && repeaterClass != null && repeaterClass.indexOf('_im_repeater') >= 0) {
+                    repeaterDataAttr = repeater.getAttribute("data-im-control");
+                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN')
+                        && ((repeaterClass && repeaterClass.indexOf('_im_repeater') >= 0)
+                        || (repeaterDataAttr && repeaterDataAttr == "repeater"))) {
                         return true;
                     } else if (repeaterTag === 'INPUT') {
                         repeaterType = repeater.getAttribute('type');
@@ -257,8 +272,18 @@ var INTERMediatorLib = {
      */
 
     getLinkedElementInfo: function (node) {
-        var defs = [], eachDefs, i, classAttr, matched;
+        var defs = [], eachDefs, eachDefsDeep, eachDefsDeepMore, i, j, attr, matched;
         if (INTERMediatorLib.isLinkedElement(node)) {
+            attr = node.getAttribute("data-im");
+            if (attr) {
+                eachDefs = attr.split(/[\s|]+/);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0) {
+                        defs.push(resolveAlias(eachDefs[i]));
+                    }
+                }
+                return defs;
+            }
             if (INTERMediator.titleAsLinkInfo) {
                 if (node.getAttribute('TITLE') != null) {
                     eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
@@ -266,18 +291,19 @@ var INTERMediatorLib = {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
                 }
+                return defs;
             }
             if (INTERMediator.classAsLinkInfo) {
-                classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classAttr !== null && classAttr.length > 0) {
-                    matched = classAttr.match(/IM\[([^\]]*)\]/);
+                attr = INTERMediatorLib.getClassAttributeFromNode(node);
+                if (attr !== null && classAttr.length > 0) {
+                    matched = attr.match(/IM\[([^\]]*)\]/);
                     eachDefs = matched[1].split(INTERMediator.defDivider);
                     for (i = 0; i < eachDefs.length; i++) {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
                 }
+                return defs;
             }
-            return defs;
         }
         return false;
 
@@ -767,7 +793,7 @@ var IMLibNodeGraph = {
         }
         return dests;
     },
-    applyToAllNodes: function(f)    {
+    applyToAllNodes: function (f) {
         var i;
         for (i = 0; i < this.nodes.length; i++) {
             f(this.nodes[i]);

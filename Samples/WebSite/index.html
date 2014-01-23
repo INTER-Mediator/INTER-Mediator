@@ -38,7 +38,7 @@
     <div align="right">
         <p>
             Updated at
-            <span class="_im_enclosure"><span class="_im_repeater IM[PageInfo@Modified]"></span></span>
+            <span data-im-control="enclosure"><span class="_im_repeater IM[PageInfo@Modified]"></span></span>
             <br>新居雅行 Masayuki Nii／msyk@msyk.net
         </p>
     </div>
@@ -47,7 +47,7 @@
     <div id="navigationbox" class="graybox">
         <h3 style="margin:0">Contents</h3>
         <ul style="margin:0">
-            <li><a href="." class="IM[Titles@Title@innerHTML|Titles@LinkAddress@href]"></a></li>
+            <li><a href="." data-im="Titles@Title@innerHTML|Titles@LinkAddress@href"></a></li>
         </ul>
         <h3 style="margin:0">Community</h3>
         <ul style="margin:0">
@@ -73,18 +73,18 @@
         <ul style="margin:0">
             <li>
                 <span class="datestring IM[News@creditDate@innerHTML]"></span>
-                <span class="IM[News@Body@innerHTML]"></span>
+                <span data-im="News@Body@innerHTML"></span>
             </li>
         </ul>
         <!-- ^ -->
 
     </div>
     <!-- INTER-Mediator works here -->
-    <div id="Contents" class="_im_enclosure">
+    <div id="Contents" data-im-control="enclosure">
         <div class="_im_repeater">
-            <h2 class="IM[EachScript@Title@innerHTML]"></h2>
+            <h2 data-im="EachScript@Title@innerHTML"></h2>
 
-            <div class="IM[EachScript@Body@innerHTML]"></div>
+            <div data-im="EachScript@Body@innerHTML"></div>
         </div>
     </div>
     <!-- ^ -->

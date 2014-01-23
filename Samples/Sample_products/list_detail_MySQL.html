@@ -51,14 +51,14 @@
         <tbody>
         <tr>
             <td>
-                <button class="IM[productlist@id@$onclick]"
+                <button data-im="productlist@id@$onclick"
                         onclick="showDetail($)">Detail</button>
             </td>
-            <td class="IM[productlist@name]"></td>
-            <td style="text-align:right;" class="IM[productlist@unitprice]"></td>
+            <td data-im="productlist@name"></td>
+            <td style="text-align:right;" data-im="productlist@unitprice"></td>
             <td>
-                <img width="30" src="images/" class="IM[productlist@photofile@#src]"/>
-                <a class="IM[productlist@ack_link@href|productlist@acknowledgement]"></a>
+                <img width="30" src="images/" data-im="productlist@photofile@#src"/>
+                <a data-im="productlist@ack_link@href|productlist@acknowledgement"></a>
             </td>
         </tr>
         </tbody>
@@ -71,31 +71,31 @@
         <tbody>
         <tr>
             <th>id</th>
-            <td class="IM[productdetail@id]"></td>
+            <td data-im="productdetail@id"></td>
         </tr>
         <tr>
             <th>name</th>
-            <td class="IM[productdetail@name]"></td>
+            <td data-im="productdetail@name"></td>
         </tr>
         <tr>
             <th>unitprice</th>
-            <td class="IM[productdetail@unitprice]"></td>
+            <td data-im="productdetail@unitprice"></td>
         </tr>
         <tr>
             <th>photofile</th>
-            <td class="IM[productdetail@photofile]"></td>
+            <td data-im="productdetail@photofile"></td>
         </tr>
         <tr>
             <th>acknowledgement</th>
-            <td class="IM[productdetail@acknowledgement]"></td>
+            <td data-im="productdetail@acknowledgement"></td>
         </tr>
         <tr>
             <th>ack_link</th>
-            <td class="IM[productdetail@ack_link]"></td>
+            <td data-im="productdetail@ack_link"></td>
         </tr>
         <tr>
             <th>photofile</th>
-            <td><img src="images/" class="IM[productdetail@photofile@#src]"/></td>
+            <td><img src="images/" data-im="productdetail@photofile@#src"/></td>
         </tr>
         </tbody>
     </table>

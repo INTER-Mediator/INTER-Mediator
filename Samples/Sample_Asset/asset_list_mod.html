@@ -19,20 +19,20 @@
             <!-- This table contains assets without discarding. -->
             <td>
                 <button onclick="location.href = 'asset_detail_mod.html?id=$';"
-                        class="IM[asseteffect@asset_id@$onclick]">
+                        data-im="asseteffect@asset_id@$onclick">
                     詳細</button>
             </td>
-            <!--<td class="IM[asseteffect@category]"></td>-->
+            <!--<td data-im="asseteffect@category"></td>-->
             <td>
-                <span class="_im_enclosure">
-                    <span class="_im_repeater IM[category-in-list@name]"></span>
+                <span data-im-control="enclosure">
+                    <span data-im="category-in-list@name" data-im-control="repeater"></span>
                 </span>
             </td>
-            <td class="IM[asseteffect@name]"></td>
-            <td class="IM[asseteffect@manifacture]"></td>
-            <td class="IM[asseteffect@productinfo]"></td>
-            <td class="IM[asseteffect@purchase]"></td>
-            <td class="IM[asseteffect@discard]"></td>
+            <td data-im="asseteffect@name"></td>
+            <td data-im="asseteffect@manifacture"></td>
+            <td data-im="asseteffect@productinfo"></td>
+            <td data-im="asseteffect@purchase"></td>
+            <td data-im="asseteffect@discard"></td>
             <td></td>
         </tr>
     </tbody>
