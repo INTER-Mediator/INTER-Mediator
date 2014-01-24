@@ -189,15 +189,18 @@ var INTERMediatorLib = {
         var nameInfo, matched;
 
         if (node != null) {
+            nameInfo = node.getAttribute('data-im-group');
+            if (nameInfo) {
+                return true;
+            }
             nameInfo = node.getAttribute('name');
-            if (nameInfo != null) {
+            if (nameInfo) {
                 matched = nameInfo.match(/IM\[.*\]/);
                 if (matched) {
                     return true;
                 }
             }
-
-        }
+         }
         return false;
     },
 
@@ -272,11 +275,12 @@ var INTERMediatorLib = {
      */
 
     getLinkedElementInfo: function (node) {
-        var defs = [], eachDefs, eachDefsDeep, eachDefsDeepMore, i, j, attr, matched;
+        var defs = [], eachDefs, reg, i, attr, matched;
         if (INTERMediatorLib.isLinkedElement(node)) {
             attr = node.getAttribute("data-im");
             if (attr) {
-                eachDefs = attr.split(/[\s|]+/);
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = attr.split(reg);
                 for (i = 0; i < eachDefs.length; i++) {
                     if (eachDefs[i] && eachDefs[i].length > 0) {
                         defs.push(resolveAlias(eachDefs[i]));
@@ -317,33 +321,55 @@ var INTERMediatorLib = {
     },
 
     getWidgetInfo: function (node) {
-        var defs = [], eachDefs, i, classAttr, matched;
+        var defs = [], eachDefs, i, classAttr, matched, reg;
         if (INTERMediatorLib.isWidgetElement(node)) {
+            classAttr = node.getAttribute("data-im-widget");
+            if (classAttr && classAttr.length > 0) {
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = classAttr.split(reg);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0)  {
+                    defs.push(eachDefs[i]);
+                    }
+                }
+                return defs;
+            }
             classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
-            if (classAttr !== null && classAttr.length > 0) {
+            if (classAttr && classAttr.length > 0) {
                 matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/);
                 eachDefs = matched[1].split(INTERMediator.defDivider);
                 for (i = 0; i < eachDefs.length; i++) {
                     defs.push(eachDefs[i]);
                 }
+                return defs;
             }
-            return defs;
         }
         return false;
     },
 
     getNamedInfo: function (node) {
-        var defs = [], eachDefs, i, nameAttr, matched;
+        var defs = [], eachDefs, i, nameAttr, matched, reg;
         if (INTERMediatorLib.isNamedElement(node)) {
+            nameAttr = node.getAttribute('data-im-group');
+            if (nameAttr && nameAttr.length > 0) {
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = nameAttr.split(reg);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0)  {
+                    defs.push(eachDefs[i]);
+                    }
+                }
+                return defs;
+            }
             nameAttr = node.getAttribute('name');
-            if (nameAttr !== null && nameAttr.length > 0) {
+            if (nameAttr && nameAttr.length > 0) {
                 matched = nameAttr.match(/IM\[([^\]]*)\]/);
                 eachDefs = matched[1].split(INTERMediator.defDivider);
                 for (i = 0; i < eachDefs.length; i++) {
                     defs.push(eachDefs[i]);
                 }
+                return defs;
             }
-            return defs;
         }
         return false;
     },
@@ -605,17 +631,45 @@ var INTERMediatorLib = {
         }
     },
 
-    getElementsByClassName: function (node, cName) {
-        var nodes = [], reg = new RegExp(cName);
+    /*
+    If the cNode parameter is like '_im_post', this function will search data-im-control="post" elements.
+     */
+    getElementsByClassNameOrDataAttr: function (node, cName) {
+        var nodes = [];
+        var attrValue = (cName.length>5) ? cName.substr(4) : null;
+        var reg = new RegExp(cName);
         checkNode(node);
         return nodes;
 
         function checkNode(target) {
+            var className, attr;
             if (target.nodeType != 1) {
                 return;
             }
-            if (INTERMediatorLib.getClassAttributeFromNode(target)
-                && INTERMediatorLib.getClassAttributeFromNode(target).match(reg)) {
+            className = INTERMediatorLib.getClassAttributeFromNode(target);
+            attr = target.getAttribute("data-im-control");
+            if ((className && className.match(reg)) ||(attr && attrValue && attr == attrValue)) {
+                nodes.push(target);
+            }
+            for (var i = 0; i < target.children.length; i++) {
+                checkNode(target.children[i]);
+            }
+        }
+    },
+
+    getElementsByClassName: function (node, cName) {
+        var nodes = [];
+        var reg = new RegExp(cName);
+        checkNode(node);
+        return nodes;
+
+        function checkNode(target) {
+            var className;
+            if (target.nodeType != 1) {
+                return;
+            }
+            className = INTERMediatorLib.getClassAttributeFromNode(target);
+            if (className && className.match(reg)) {
                 nodes.push(target);
             }
             for (var i = 0; i < target.children.length; i++) {
@@ -945,9 +999,10 @@ var IMLibElement = {
         var nodeTag, typeAttr, valueAttr, curVal;
         nodeTag = element.tagName;
         if (INTERMediatorLib.isWidgetElement(element)) {
-            element._im_getValue();
+            return element._im_getValue();
         } else if (nodeTag == "INPUT") {
             typeAttr = element.getAttribute('type');
+            valueAttr = element.getAttribute('value');
             if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                 if (typeAttr == 'checkbox') {
                     if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
