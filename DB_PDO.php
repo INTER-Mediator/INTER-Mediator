@@ -630,9 +630,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $lastKeyValue = $this->link->lastInsertId($seqObject);
 
         if ($this->isRequiredUpdated) {
-            $sql = "SELECT * FROM {$tableName} where {$keyField}={$lastKeyValue}";
-            $statement = $this->link->prepare("SELECT * FROM ? where ? = ?");
-            $result = $statement->execute(array($tableName, $keyField, $lastKeyValue));
+            $sql = "SELECT * FROM " . $tableName
+                . " WHERE " . $keyField . "=" . $this->link->quote($lastKeyValue);
+            $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
