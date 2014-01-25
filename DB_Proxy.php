@@ -204,7 +204,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     public function requireUpdatedRecord($value)
     {
         if ($this->dbClass !== null) {
-            $this->dbClass->requireCreatedRecord($value);
+            $this->dbClass->requireUpdatedRecord($value);
         }
     }
 
