@@ -201,6 +201,21 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return $result;
     }
 
+    public function requireUpdatedRecord($value)
+    {
+        if ($this->dbClass !== null) {
+            $this->dbClass->requireCreatedRecord($value);
+        }
+    }
+
+    public function updatedRecord()
+    {
+        if ($this->dbClass !== null) {
+            return $this->dbClass->updatedRecord();
+        }
+        return null;
+    }
+
     /**
      * @param $datasource
      * @param $options

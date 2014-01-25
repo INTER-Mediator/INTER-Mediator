@@ -28,6 +28,8 @@ interface DB_Interface
     public function getDefaultKey();   // For PHP 5.2
     public function isPossibleOperator($operator);
     public function isPossibleOrderSpecifier($specifier);
+    public function requireUpdatedRecord($value);
+    public function updatedRecord();
 }
 
 interface Auth_Interface_DB					// with using table for authentication/authorization

@@ -27,6 +27,18 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     private $fieldInfo = null;
 
     private $isAlreadySetup = false;
+    private $isRequiredUpdated = false;
+    private $updatedRecord = null;
+
+    public function requireUpdatedRecord($value)
+    {
+        $this->isRequiredUpdated = $value;
+    }
+
+    public function updatedRecord()
+    {
+        $this->updatedRecord;
+    }
 
     /**
      * @param $str
@@ -351,9 +363,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         } elseif (isset($tableInfo['maxrecords'])) {
             $limitParam = $tableInfo['maxrecords'];
         }
-        if (isset($tableInfo['maxrecords']) 
-            && intval($tableInfo['maxrecords']) >= $this->dbSettings->getRecordCount() 
-            && $this->dbSettings->getRecordCount() > 0) {
+        if (isset($tableInfo['maxrecords'])
+            && intval($tableInfo['maxrecords']) >= $this->dbSettings->getRecordCount()
+            && $this->dbSettings->getRecordCount() > 0
+        ) {
             $limitParam = $this->dbSettings->getRecordCount();
         }
 
@@ -487,6 +500,31 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
 
+        if ($this->isRequiredUpdated) {
+            $sql = "SELECT * FROM {$tableName} {$queryClause}";
+            $result = $this->link->query($sql);
+            $this->logger->setDebugMessage($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+            } else {
+                $sqlResult = array();
+                $isFirstRow = true;
+                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    $rowArray = array();
+                    foreach ($row as $field => $val) {
+                        if ($isFirstRow) {
+                            $this->fieldInfo[] = $field;
+                        }
+                        $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                        $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                    }
+                    $sqlResult[] = $rowArray;
+                    $isFirstRow = false;
+                }
+                $this->updatedRecord = $sqlResult;
+            }
+        }
+
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
                 if ($condition['db-operation'] == 'update' && $condition['situation'] == 'post') {
@@ -573,8 +611,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
+        $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /**/
-            $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
             $setClause = (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
                 '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
         } else { // sqlite, pgsql
@@ -590,6 +628,35 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
         $lastKeyValue = $this->link->lastInsertId($seqObject);
+
+        if ($this->isRequiredUpdated) {
+            $sql = "SELECT * FROM {$tableName} where {$keyField}={$lastKeyValue}";
+            $statement = $this->link->prepare("SELECT * FROM :table where :key = :value");
+            $statement->bindParam(':table', $tableName);
+            $statement->bindParam(':key', $keyField);
+            $statement->bindParam(':value', $lastKeyValue);
+            $result = $statement->execute();
+            $this->logger->setDebugMessage($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+            } else {
+                $sqlResult = array();
+                $isFirstRow = true;
+                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    $rowArray = array();
+                    foreach ($row as $field => $val) {
+                        if ($isFirstRow) {
+                            $this->fieldInfo[] = $field;
+                        }
+                        $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                        $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                    }
+                    $sqlResult[] = $rowArray;
+                    $isFirstRow = false;
+                }
+                $this->updatedRecord = $sqlResult;
+            }
+        }
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
