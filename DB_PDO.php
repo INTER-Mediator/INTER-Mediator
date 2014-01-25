@@ -37,7 +37,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     public function updatedRecord()
     {
-        $this->updatedRecord;
+        return $this->updatedRecord;
     }
 
     /**

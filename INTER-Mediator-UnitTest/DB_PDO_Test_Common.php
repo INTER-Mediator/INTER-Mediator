@@ -67,7 +67,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $newKeyValue = $this->db_proxy->newToDB("person", true);
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->updatedRecord();
-        $this->assertTrue($createdRecord != null, "Update record should be exists.");
+        $this->assertTrue($createdRecord != null, "Created record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
 
         $nameValue = "unknown, oh mygod!";
