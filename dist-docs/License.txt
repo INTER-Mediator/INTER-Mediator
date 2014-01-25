@@ -113,3 +113,22 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+===================
+
+----------------------------------------------------------------------
+Qdsmtp
+	Copyright (C)2008	spok
+						http://hal456.net/qdsmtp/
+						http://www.cpa-lab.com/tech/
+----------------------------------------------------------------------
+■ライセンス
+
+　本プログラムはフリーソフトウェアです。
+  The MIT License
+  http://www.opensource.org/licenses/mit-license.php
+
+  日本語参考訳
+  http://sourceforge.jp/projects/opensource/wiki/licenses%2FMIT_license
+
+このライセンスを守るのが難しい場合は、作者に連絡をとってください。
