@@ -42,9 +42,9 @@
     <tbody>
     <tr>
         <td style="border-top: solid 2px black;">
-            [id=<span class="IM[Article@id]"></span>]Kind:
-            <select class="IM[Article@ContentKind_id]">
-                <option class="IM[ContentKind@id@value|ContentKind@KindName]"></option>
+            [id=<span data-im="Article@id"></span>]Kind:
+            <select data-im="Article@ContentKind_id">
+                <option data-im="ContentKind@id@value|ContentKind@KindName"></option>
             </select>
         </td>
     </tr>
@@ -54,11 +54,11 @@
                 <tbody>
                 <tr>
                     <td>
-                        Title: <input type="text" class="IM[TitlesOfArticle@Title]" size="50"/>
-                        Language: <input type="text" class="IM[TitlesOfArticle@Language]" size="4"/>
-                        Order:<input type="text" class="IM[TitlesOfArticle@Ordering]" size="4"/>
-                        Link Address:<input type="text" class="IM[TitlesOfArticle@LinkAddress]" size="30"/>
-                        <input type="checkbox" class="IM[TitlesOfArticle@NotShow]" value="1"/>Not Show
+                        Title: <input type="text" data-im="TitlesOfArticle@Title" size="50"/>
+                        Language: <input type="text" data-im="TitlesOfArticle@Language" size="4"/>
+                        Order:<input type="text" data-im="TitlesOfArticle@Ordering" size="4"/>
+                        Link Address:<input type="text" data-im="TitlesOfArticle@LinkAddress" size="30"/>
+                        <input type="checkbox" data-im="TitlesOfArticle@NotShow" value="1"/>Not Show
                     </td>
                 </tr>
                 </tbody>
@@ -70,18 +70,18 @@
             <table width="100%" class="contentsbox">
                 <tbody>
                 <tr>
-                    <td><input type="hidden" class="IM[ContentsOfArticle@id]"/>
-                        Article ID: <input type="text" class="IM[ContentsOfArticle@Article_id]" size="4"/>
-                        Title: <input type="text" class="IM[ContentsOfArticle@Title]" size="50"/>
-                        Language: <input type="text" class="IM[ContentsOfArticle@Language]" size="4"/>
-                        Credit Date: <input type="text" class="IM[ContentsOfArticle@creditDate]" size="20"/>
-                        Order: <input type="text" class="IM[ContentsOfArticle@Ordering]" size="4"/>
+                    <td><input type="hidden" data-im="ContentsOfArticle@id"/>
+                        Article ID: <input type="text" data-im="ContentsOfArticle@Article_id" size="4"/>
+                        Title: <input type="text" data-im="ContentsOfArticle@Title" size="50"/>
+                        Language: <input type="text" data-im="ContentsOfArticle@Language" size="4"/>
+                        Credit Date: <input type="text" data-im="ContentsOfArticle@creditDate" size="20"/>
+                        Order: <input type="text" data-im="ContentsOfArticle@Ordering" size="4"/>
                         <button onclick="editbutton(this);">Edit</button>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="4">
-                        <textarea class="IM[ContentsOfArticle@Body]" rows="3"
+                        <textarea data-im="ContentsOfArticle@Body" rows="3"
                                   style="width:95%;"></textarea>
                     </td>
                 </tr>

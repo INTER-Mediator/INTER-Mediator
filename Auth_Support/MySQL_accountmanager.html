@@ -37,25 +37,25 @@ Set the new password and click "Set" button on each user.
     <tbody>
     <tr>
         <td>
-            <input class="IM[authuser@username]" type="text" />
+            <input data-im="authuser@username" type="text" />
         </td>
         <td>
-            <input class="IM[authuser@hashedpasswd]" type="text" />
+            <input data-im="authuser@hashedpasswd" type="text" />
             <button onclick="setPassword(this)">Set</button>
         </td>
         <td>
-            <input class="IM[authuser@email]" type="text" />
+            <input data-im="authuser@email" type="text" />
         </td>
         <td>
-            <span class="_im_enclosure">
-                <span class="_im_repeater">
-                <select class="IM[belonggroup@dest_group_id]">
-                    <option class="IM[groupname@id@value|groupname@groupname]"></option>
+            <span data-im-control="enclosure">
+                <span data-im-control="repeater">
+                <select data-im="belonggroup@dest_group_id">
+                    <option data-im="groupname@id@value|groupname@groupname"></option>
                 </select>
                 </span>
             </span>
         </td>
-        <td><span class="IM[authuser@belonging]"></span></td>
+        <td><span data-im="authuser@belonging"></span></td>
         <td></td>
     </tr>
     </tbody>
@@ -68,13 +68,13 @@ Set the new password and click "Set" button on each user.
     <tbody>
     <tr>
         <td>
-            <input class="IM[authgroup@groupname]" type="text" />
+            <input data-im="authgroup@groupname" type="text" />
         </td>
         <td>
-            <span class="_im_enclosure">
-                <span class="_im_repeater">
-                <select class="IM[groupingroup@dest_group_id]">
-                    <option class="IM[groupname@id@value|groupname@groupname]"></option>
+            <span data-im-control="enclosure">
+                <span data-im-control="repeater">
+                <select data-im="groupingroup@dest_group_id">
+                    <option data-im="groupname@id@value|groupname@groupname"></option>
                 </select>
                 </span>
             </span>

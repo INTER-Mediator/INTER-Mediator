@@ -1293,12 +1293,14 @@ var INTERMediator = {
          */
 
         function seekEnclosureNode(node, currentRecord, currentTable, parentEnclosure, objectReference) {
-            var children, className, i;
+            var children, className, i, attr;
             if (node.nodeType === 1) { // Work for an element
                 try {
                     if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
                         className = INTERMediatorLib.getClassAttributeFromNode(node);
-                        if (className && className.match(/_im_post/)) {
+                        attr = node.getAttribute("data-im-control");
+                        if ((className && className.match(/_im_post/))
+                            || (attr && attr == "post")){
                             setupPostOnlyEnclosure(node);
                         } else {
                             if (INTERMediator.isIE) {
@@ -1342,7 +1344,7 @@ var INTERMediator = {
 
         function setupPostOnlyEnclosure(node) {
             var nodes;
-            var postNodes = INTERMediatorLib.getElementsByClassName(node, '_im_post');
+            var postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post');
             for (var i = 1; i < postNodes.length; i++) {
                 INTERMediatorLib.addEvent(
                     postNodes[i],
@@ -1397,7 +1399,7 @@ var INTERMediator = {
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
                 selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [],
-                nameTableKey, replacedNode, children;
+                nameTableKey, replacedNode, children, dataAttr;
             var calcDef, exp, elements, val, calcFields;
 
             currentLevel++;
@@ -1560,7 +1562,8 @@ var INTERMediator = {
                     for (i = 0; i < repeaters.length; i++) {
                         newNode = repeaters[i].cloneNode(true);
                         nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                        if (nodeClass == INTERMediator.noRecordClassName) {
+                        dataAttr = newNode.getAttribute("data-im-control");
+                        if (nodeClass == INTERMediator.noRecordClassName || dataAttr == "noresult") {
                             node.appendChild(newNode);
                             setIdValue(newNode);
                         }
@@ -1777,12 +1780,14 @@ var INTERMediator = {
                     setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                         currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
 
-                    if (currentContext['portal'] != true || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
+                    if (currentContext['portal'] != true
+                        || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
                         newlyAddedNodes = [];
                         for (i = 0; i < repeatersOneRec.length; i++) {
                             newNode = repeatersOneRec[i].cloneNode(true);
                             nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                            if (nodeClass != INTERMediator.noRecordClassName) {
+                            dataAttr = newNode.getAttribute("data-im-control");
+                            if ((nodeClass != INTERMediator.noRecordClassName)&&(dataAttr != "noresult")) {
                                 node.appendChild(newNode);
                                 newlyAddedNodes.push(newNode);
                                 setIdValue(newNode);
@@ -2266,7 +2271,7 @@ var INTERMediator = {
                                 footNode = document.createElement(targetNodeTag);
                                 enclosedNode.appendChild(footNode);
                             }
-                            existingButtons = INTERMediatorLib.getElementsByClassName(footNode, '_im_insert_button');
+                            existingButtons = INTERMediatorLib.getElementsByClassNameOrDataAttr(footNode, '_im_insert_button');
                             if (existingButtons.length == 0) {
                                 trNode = document.createElement('TR');
                                 tdNode = document.createElement('TD');
@@ -2280,7 +2285,7 @@ var INTERMediator = {
                         case 'UL':
                         case 'OL':
                             liNode = document.createElement('LI');
-                            existingButtons = INTERMediatorLib.getElementsByClassName(liNode, '_im_insert_button');
+                            existingButtons = INTERMediatorLib.getElementsByClassNameOrDataAttr(liNode, '_im_insert_button');
                             if (existingButtons.length == 0) {
                                 liNode.appendChild(buttonNode);
                                 if (currentContext['repeat-control'].match(/top/i)) {
@@ -2294,7 +2299,7 @@ var INTERMediator = {
                         case 'SPAN':
                             if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                                 divNode = document.createElement(repNodeTag);
-                                existingButtons = INTERMediatorLib.getElementsByClassName(divNode, '_im_insert_button');
+                                existingButtons = INTERMediatorLib.getElementsByClassNameOrDataAttr(divNode, '_im_insert_button');
                                 if (existingButtons.length == 0) {
                                     divNode.appendChild(buttonNode);
                                     if (currentContext['repeat-control'].match(/top/i)) {

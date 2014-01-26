@@ -24,7 +24,8 @@ IM_Entry(
             // Three definitions below will NOT be specified simultaneously. Here is a demo. Try with commented any lines.
             'post-reconstruct' => true,
             'post-dismiss-message' => '送信したんだもーん',
-            'post-move-url' => 'http://inter-mediator.org/',
+        //    'post-move-url' => 'http://inter-mediator.org/',
+            'extending-class' => "MailSending",
         ),
     ),
     array(

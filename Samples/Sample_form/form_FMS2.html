@@ -53,21 +53,21 @@
     <tr>
         <td>id</td>
         <td>
-            <div class="IM[person_layout@id]"></div>
+            <div data-im="person_layout@id"></div>
         </td>
     </tr>
     <tr>
         <td>address</td>
-        <td><input type="text" class="IM[person_layout@address]" value=""/></td>
+        <td><input type="text" data-im="person_layout@address" value=""/></td>
     </tr>
     <tr>
         <td>mail</td>
-        <td><input type="text" class="IM[person_layout@mail]" value=""/></td>
+        <td><input type="text" data-im="person_layout@mail" value=""/></td>
     </tr>
     <tr>
         <td class="a b c d">category</td>
         <td>
-            <select class="IM[person_layout@category]">
+            <select data-im="person_layout@category">
                 <option value="101">Family</option>
                 <option value="102">ClassMate</option>
                 <option value="103">Collegue</option>
@@ -76,28 +76,28 @@
     </tr>
     <tr>
         <td>check</td>
-        <td><input type="checkbox" class="IM[person_layout@check]" value="1"/></td>
+        <td><input type="checkbox" data-im="person_layout@check" value="1"/></td>
     </tr>
     <tr>
         <td>multi-valued check(use "mail" field)</td>
         <td>
-            <input type="checkbox" class="IM[person_layout@mail]" value="Dog"/>Dog
-            <input type="checkbox" class="IM[person_layout@mail]" value="Cat"/>Cat
-            <input type="checkbox" class="IM[person_layout@mail]" value="Rabit"/>Rabit
+            <input type="checkbox" data-im="person_layout@mail" value="Dog"/>Dog
+            <input type="checkbox" data-im="person_layout@mail" value="Cat"/>Cat
+            <input type="checkbox" data-im="person_layout@mail" value="Rabit"/>Rabit
         </td>
     </tr>
     <tr>
         <td>location</td>
         <td>
-            <input type="radio" name="radio1" class="IM[person_layout@location]" value="201"/>Domestic
-            <input type="radio" name="radio1" class="IM[person_layout@location]" value="202"/>International
-            <input type="radio" name="radio1" class="IM[person_layout@location]" value="203"/>Neightbor
-            <input type="radio" name="radio1" class="IM[person_layout@location]" value="204"/>Space
+            <input type="radio" name="radio1" data-im="person_layout@location" value="201"/>Domestic
+            <input type="radio" name="radio1" data-im="person_layout@location" value="202"/>International
+            <input type="radio" name="radio1" data-im="person_layout@location" value="203"/>Neightbor
+            <input type="radio" name="radio1" data-im="person_layout@location" value="204"/>Space
         </td>
     </tr>
     <tr>
         <td>memo</td>
-        <td><textarea class="IM[person_layout@memo]"></textarea></td>
+        <td><textarea data-im="person_layout@memo"></textarea></td>
     </tr>
     <tr>
         <td colspan="2">
@@ -116,29 +116,30 @@
                 <tbody>
                 <tr>
                     <td>
-                        <div class="IM[contact_to@contact_to::person_id]"></div>
+                        <div data-im="contact_to@contact_to::person_id"></div>
                     </td>
-                    <td><input type="text" class="IM[contact_to@contact_to::datetime]"/></td>
-                    <td><input type="text" class="IM[contact_to@contact_to::summary]"/></td>
-                    <td><input type="checkbox" class="IM[contact_to@contact_to::important]" value="1"/></td>
+                    <td><input type="text" data-im="contact_to@contact_to::datetime"/></td>
+                    <td><input type="text" data-im="contact_to@contact_to::summary"/></td>
+                    <td><input type="checkbox" data-im="contact_to@contact_to::important" value="1"/></td>
                     <td>
-                        <input type="radio" name="radio1" class="IM[contact_to@contact_to::way]" value="4"/>Direct
-                        <input type="radio" name="radio1" class="IM[contact_to@contact_to::way]" value="5"/>Indirect
-                        <input type="radio" name="radio1" class="IM[contact_to@contact_to::way]" value="6"/>Others
+                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="4"/>Direct
+                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="5"/>Indirect
+                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="6"/>Others
                     </td>
                     <td>
-                        <select class="IM[contact_to@contact_to::way]">
-                            <option class="IM[contact_way@id@value|contact_way@name@innerHTML] contactway"
+                        <select data-im="contact_to@contact_to::way">
+                            <option class="contactway"
+                                    data-im="contact_way@id@value contact_way@name@innerHTML"
                                     value=""></option>
                         </select>
                     </td>
                     <td>
-                        <select class="IM[contact_to@contact_to::kind]">
+                        <select data-im="contact_to@contact_to::kind">
                             <option class="IM[cor_way_kind@kind_id@value|cor_way_kind@contact_kind::name@innerHTML] contactkind"
                                     value=""></option>
                         </select>
                     </td>
-                    <td><textarea class="IM[contact_to@contact_to::description]"></textarea></td>
+                    <td><textarea data-im="contact_to@contact_to::description"></textarea></td>
                 </tr>
                 </tbody>
             </table>
@@ -149,9 +150,9 @@
             <ul>
                 <li>
                     <hr/>
-                    <input type="text" class="IM[history_to@startdate]"/></li>
-                <li><input type="text" class="IM[history_to@enddate]"/></li>
-                <li><input type="text" class="IM[history_to@description]"/></li>
+                    <input type="text" data-im="history_to@startdate"/></li>
+                <li><input type="text" data-im="history_to@enddate"/></li>
+                <li><input type="text" data-im="history_to@description"/></li>
             </ul>
         </td>
     </tr>
