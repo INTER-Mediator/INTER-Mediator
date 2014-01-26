@@ -65,6 +65,11 @@ Ver.4.1 (in development)
   class="_im_repeater" -> data-im-control="repeater",  class="_im_enclosure" -> data-im-control="enclosure",
   class="_im_post" -> data-im-control="post", class="_im_for_noresult_" -> data-im-control="noresult",
   class="IM_WIDGET[...]" -> data-im-widget="...", name="IM[survey@q4]" -> data-im-group="...."
+- Database class and DB_Proxy support requireUpdatedRecord($value) and updatedRecord() method.
+  For DB_PDO class, call the requireUpdatedRecord(true) and updateRecord() returns updated and newly created record.
+  For DB_FileMaker_FX class, just call updateRecord() and it returns updated and newly created record.
+- Delete buttons have the class "IM_Button_Delete".
+- Insert buttons have the class "IM_Button_Insert" instead of "_im_insert_button".
 - Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
 - Add the meta tag with "X-UA-Compatible" to all samples, it forces Internet Explorer to
   work as its native document mode.
