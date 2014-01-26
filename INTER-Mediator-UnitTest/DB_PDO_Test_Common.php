@@ -73,6 +73,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $nameValue = "unknown, oh mygod!";
         $addressValue = "anyplace, who knows!";
         $this->dbProxySetupForAccess("person", 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
         $this->db_proxy->dbSettings->addTargetField("name");
         $this->db_proxy->dbSettings->addValue($nameValue);
         $this->db_proxy->dbSettings->addTargetField("address");
