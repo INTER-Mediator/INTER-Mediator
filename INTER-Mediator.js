@@ -1421,19 +1421,19 @@ var INTERMediator = {
             voteResult = tableVoting(linkDefs);
             currentContext = voteResult.targettable;
 
-            fieldList = []; // Create field list for database fetch.
-            calcDef = currentContext['calculation'];
-            calcFields = [];
-            for (ix in calcDef) {
-                calcFields.push(calcDef[ix]["field"]);
-            }
-            for (i = 0; i < voteResult.fieldlist.length; i++) {
-                if (!calcFields[voteResult.fieldlist[i]]) {
-                    calcFields.push(voteResult.fieldlist[i]);
-                }
-            }
-
             if (currentContext) {
+                fieldList = []; // Create field list for database fetch.
+                calcDef = currentContext['calculation'];
+                calcFields = [];
+                for (ix in calcDef) {
+                    calcFields.push(calcDef[ix]["field"]);
+                }
+                for (i = 0; i < voteResult.fieldlist.length; i++) {
+                    if (!calcFields[voteResult.fieldlist[i]]) {
+                        calcFields.push(voteResult.fieldlist[i]);
+                    }
+                }
+
                 try {
                     relationValue = null;
                     dependObject = [];
