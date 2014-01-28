@@ -42,10 +42,25 @@
             var node = document.getElementById('container');
             node.style.display = "block"
         }
+        function setDisplayLevel(level)  {
+            var i, value, nodes, rootNode;
+            value = "none";
+            if (level == 1) {
+                value = "table-row";
+            }
+            rootNode = document.getElementsByTagName("BODY")[0];
+            nodes = INTERMediatorLib.getElementsByClassName(rootNode, "advanced");
+            for (i = 0 ; i < nodes.length; i++) {
+                nodes[i].style.display = value;
+            }
+        }
     </script>
     <style>
-        INPUT{font-size: 14pt;}
+        INPUT{font-size: 10pt;}
         TH{color: #666666;}
+        .advanced   {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -64,7 +79,11 @@
         .htaccessファイルを配置して、Web認証を機能させるなどの手段が利用できます。<br>
     </div>
 </div>
-<div id="container" style="display:none;;">
+<div id="container" style="display:none;">
+<div style="float:right">
+    <button onclick="setDisplayLevel(1)">Show All</button>
+    <button onclick="setDisplayLevel(2)">Reduce</button>
+</div>
 <h1>Definition File Editor</h1>
 <h2>Target Definition File</h2>
 
@@ -81,64 +100,64 @@
 </tr>
 <tr>
     <th class="title">name</th>
-    <td><input type="text" class="IM[contexts@name]"/></td>
+    <td><input type="text" data-im="contexts@name"/></td>
 </tr>
 <tr>
     <td></td>
     <th>table</th>
-    <td><input type="text" class="IM[contexts@table]"/></td>
+    <td><input type="text" data-im="contexts@table"/></td>
     <th>view</th>
-    <td><input type="text" class="IM[contexts@view]"/></td>
+    <td><input type="text" data-im="contexts@view"/></td>
     <th>key</th>
-    <td><input type="text" class="IM[contexts@key]"/></td>
+    <td><input type="text" data-im="contexts@key"/></td>
+    <td colspan="3"></td>
+</tr>
+<tr>
+    <td></td>
     <th>sequence</th>
-    <td><input type="text" class="IM[contexts@sequence]"/></td>
+    <td><input type="text" data-im="contexts@sequence"/></td>
+    <th>paging</th>
+    <td><input type="text" data-im="contexts@paging"/></td>
+    <th>repeat-control</th>
+    <td><input type="text" data-im="contexts@repeat-control"/></td>
     <td colspan="3"></td>
 </tr>
 <tr>
     <td></td>
     <th>records</th>
-    <td><input type="text" class="IM[contexts@records]"/></td>
+    <td><input type="text" data-im="contexts@records"/></td>
     <th>maxrecords</th>
-    <td><input type="text" class="IM[contexts@maxrecords]"/></td>
-    <th>paging</th>
-    <td><input type="text" class="IM[contexts@paging]"/></td>
-    <th>repeat-control</th>
-    <td><input type="text" class="IM[contexts@repeat-control]"/></td>
-    <td colspan="3"></td>
-</tr>
-<tr>
-    <td></td>
+    <td><input type="text" data-im="contexts@maxrecords"/></td>
     <th>cache</th>
-    <td><input type="text" class="IM[contexts@cache]"/></td>
+    <td><input type="text" data-im="contexts@cache"/></td>
     <td colspan="6"></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Extension Settings</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>extending-class</th>
-    <td><input type="text" class="IM[contexts@extending-class]"/></td>
+    <td><input type="text" data-im="contexts@extending-class"/></td>
     <th>post-repeater</th>
-    <td><input type="text" class="IM[contexts@post-repeater]"/></td>
+    <td><input type="text" data-im="contexts@post-repeater"/></td>
     <th>post-enclosure</th>
-    <td><input type="text" class="IM[contexts@post-enclosure]"/></td>
+    <td><input type="text" data-im="contexts@post-enclosure"/></td>
     <td colspan="5"></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Settings for Post-only Mode</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>post-reconstruct</th>
-    <td><input type="text" class="IM[contexts@post-reconstruct]"/></td>
+    <td><input type="text" data-im="contexts@post-reconstruct"/></td>
     <th>post-dismiss-message</th>
-    <td><input type="text" class="IM[contexts@post-dismiss-message]"/></td>
+    <td><input type="text" data-im="contexts@post-dismiss-message"/></td>
     <th>post-move-url</th>
-    <td><input type="text" class="IM[contexts@post-move-url]"/></td>
+    <td><input type="text" data-im="contexts@post-move-url"/></td>
     <td colspan="3"></td>
 </tr>
 <tr>
@@ -151,11 +170,11 @@
         <table>
             <tr>
                 <th>field</th>
-                <td><input type="text" class="IM[query@field]"/></td>
+                <td><input type="text" data-im="query@field"/></td>
                 <th>operator</th>
-                <td><input type="text" class="IM[query@operator]"/></td>
+                <td><input type="text" data-im="query@operator"/></td>
                 <th>value</th>
-                <td><input type="text" class="IM[query@value]"/></td>
+                <td><input type="text" data-im="query@value"/></td>
             </tr>
         </table>
     </td>
@@ -170,9 +189,9 @@
         <table>
             <tr>
                 <th>field</th>
-                <td><input type="text" class="IM[sort@field]"/></td>
+                <td><input type="text" data-im="sort@field"/></td>
                 <th>direction</th>
-                <td><input type="text" class="IM[sort@direction]"/></td>
+                <td><input type="text" data-im="sort@direction"/></td>
             </tr>
         </table>
     </td>
@@ -187,208 +206,210 @@
         <table>
             <tr>
                 <th>foreign-key</th>
-                <td><input type="text" class="IM[relation@foreign-key]"/></td>
+                <td><input type="text" data-im="relation@foreign-key"/></td>
                 <th>join-field</th>
-                <td><input type="text" class="IM[relation@join-field]"/></td>
+                <td><input type="text" data-im="relation@join-field"/></td>
                 <th>operator</th>
-                <td><input type="text" class="IM[relation@operator]"/></td>
+                <td><input type="text" data-im="relation@operator"/></td>
+                <th>portal</th>
+                <td><input type="text" data-im="relation@portal"/></td>
             </tr>
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Default Values</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
             <tr>
                 <th>field</th>
-                <td><input type="text" class="IM[default-values@field]"/></td>
+                <td><input type="text" data-im="default-values@field"/></td>
                 <th>value</th>
-                <td><input type="text" class="IM[default-values@value]"/></td>
+                <td><input type="text" data-im="default-values@value"/></td>
             </tr>
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Validations</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
             <tr>
                 <th>field</th>
-                <td><input type="text" class="IM[validation@field]"/></td>
+                <td><input type="text" data-im="validation@field"/></td>
                 <th>rule</th>
-                <td><input type="text" class="IM[validation@rule]"/></td>
+                <td><input type="text" data-im="validation@rule"/></td>
                 <th>message</th>
-                <td><input type="text" class="IM[validation@message]"/></td>
+                <td><input type="text" data-im="validation@message"/></td>
             </tr>
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Scripts</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
             <tr>
                 <th>db-operation</th>
-                <td><input type="text" class="IM[script@db-operation]"/></td>
+                <td><input type="text" data-im="script@db-operation"/></td>
                 <th>situation</th>
-                <td><input type="text" class="IM[script@situation]"/></td>
+                <td><input type="text" data-im="script@situation"/></td>
                 <th>definition</th>
-                <td><input type="text" class="IM[script@definition]"/></td>
+                <td><input type="text" data-im="script@definition"/></td>
             </tr>
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Global Variables (FileMaker Server only)</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
             <tr>
                 <th>db-operation</th>
-                <td><input type="text" class="IM[global@db-operation]"/></td>
+                <td><input type="text" data-im="global@db-operation"/></td>
                 <th>field</th>
-                <td><input type="text" class="IM[global@field]"/></td>
+                <td><input type="text" data-im="global@field"/></td>
                 <th>value</th>
-                <td><input type="text" class="IM[global@value]"/></td>
+                <td><input type="text" data-im="global@value"/></td>
             </tr>
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">File Uploading</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
             <tr>
                 <th>field</th>
-                <td><input type="text" class="IM[file-upload@field]"/></td>
+                <td><input type="text" data-im="file-upload@field"/></td>
                 <th>context</th>
-                <td><input type="text" class="IM[file-upload@context]"/></td>
+                <td><input type="text" data-im="file-upload@context"/></td>
             </tr>
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Authentication, Authorization and Security</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>media-handling</th>
-    <td><input type="text" class="IM[contexts@authentication-media-handling]"/></td>
+    <td><input type="text" data-im="contexts@authentication-media-handling"/></td>
     <th>protect-writing</th>
-    <td><input type="text" class="IM[contexts@protect-writing]"/></td>
+    <td><input type="text" data-im="contexts@protect-writing"/></td>
     <th>protect-reading</th>
-    <td><input type="text" class="IM[contexts@dprotect-reading]"/></td>
+    <td><input type="text" data-im="contexts@dprotect-reading"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>all:user</th>
-    <td><input type="text" class="IM[contexts@authentication-all-user]"/></td>
+    <td><input type="text" data-im="contexts@authentication-all-user"/></td>
     <th>all:group</th>
-    <td><input type="text" class="IM[contexts@authentication-all-group]"/></td>
+    <td><input type="text" data-im="contexts@authentication-all-group"/></td>
     <th>all:target</th>
-    <td><input type="text" class="IM[contexts@authentication-all-target]"/></td>
+    <td><input type="text" data-im="contexts@authentication-all-target"/></td>
     <th>all:field</th>
-    <td><input type="text" class="IM[contexts@authentication-all-field]"/></td>
+    <td><input type="text" data-im="contexts@authentication-all-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>load:user</th>
-    <td><input type="text" class="IM[contexts@authentication-load-user]"/></td>
+    <td><input type="text" data-im="contexts@authentication-load-user"/></td>
     <th>load:group</th>
-    <td><input type="text" class="IM[contexts@authentication-load-group]"/></td>
+    <td><input type="text" data-im="contexts@authentication-load-group"/></td>
     <th>load:target</th>
-    <td><input type="text" class="IM[contexts@authentication-load-target]"/></td>
+    <td><input type="text" data-im="contexts@authentication-load-target"/></td>
     <th>load:field</th>
-    <td><input type="text" class="IM[contexts@authentication-load-field]"/></td>
+    <td><input type="text" data-im="contexts@authentication-load-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>update:user</th>
-    <td><input type="text" class="IM[contexts@authentication-update-user]"/></td>
+    <td><input type="text" data-im="contexts@authentication-update-user"/></td>
     <th>update:group</th>
-    <td><input type="text" class="IM[contexts@authentication-update-group]"/></td>
+    <td><input type="text" data-im="contexts@authentication-update-group"/></td>
     <th>update:target</th>
-    <td><input type="text" class="IM[contexts@authentication-update-target]"/></td>
+    <td><input type="text" data-im="contexts@authentication-update-target"/></td>
     <th>update:field</th>
-    <td><input type="text" class="IM[contexts@authentication-update-field]"/></td>
+    <td><input type="text" data-im="contexts@authentication-update-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>new:user</th>
-    <td><input type="text" class="IM[contexts@authentication-new-user]"/></td>
+    <td><input type="text" data-im="contexts@authentication-new-user"/></td>
     <th>new:group</th>
-    <td><input type="text" class="IM[contexts@authentication-new-group]"/></td>
+    <td><input type="text" data-im="contexts@authentication-new-group"/></td>
     <th>new:target</th>
-    <td><input type="text" class="IM[contexts@authentication-new-target]"/></td>
+    <td><input type="text" data-im="contexts@authentication-new-target"/></td>
     <th>new:field</th>
-    <td><input type="text" class="IM[contexts@authentication-new-field]"/></td>
+    <td><input type="text" data-im="contexts@authentication-new-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>delete:user</th>
-    <td><input type="text" class="IM[contexts@authentication-delete-user]"/></td>
+    <td><input type="text" data-im="contexts@authentication-delete-user"/></td>
     <th>delete:group</th>
-    <td><input type="text" class="IM[contexts@authentication-delete-group]"/></td>
+    <td><input type="text" data-im="contexts@authentication-delete-group"/></td>
     <th>delete:target</th>
-    <td><input type="text" class="IM[contexts@authentication-delete-target]"/></td>
+    <td><input type="text" data-im="contexts@authentication-delete-target"/></td>
     <th>delete:field</th>
-    <td><input type="text" class="IM[contexts@authentication-delete-field]"/></td>
+    <td><input type="text" data-im="contexts@authentication-delete-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Database Settings just for this Context</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>db-class</th>
-    <td><input type="text" class="IM[contexts@db-class]"/></td>
+    <td><input type="text" data-im="contexts@db-class"/></td>
     <th>dsn</th>
-    <td><input type="text" class="IM[contexts@dsn]"/></td>
+    <td><input type="text" data-im="contexts@dsn"/></td>
     <th>option</th>
-    <td><input type="text" class="IM[contexts@option]"/></td>
+    <td><input type="text" data-im="contexts@option"/></td>
     <th>database</th>
-    <td><input type="text" class="IM[contexts@database]"/></td>
+    <td><input type="text" data-im="contexts@database"/></td>
     <td></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>user</th>
-    <td><input type="text" class="IM[contexts@user]"/></td>
+    <td><input type="text" data-im="contexts@user"/></td>
     <th>password</th>
-    <td><input type="text" class="IM[contexts@password]"/></td>
+    <td><input type="text" data-im="contexts@password"/></td>
     <th>server</th>
-    <td><input type="text" class="IM[contexts@server]"/></td>
+    <td><input type="text" data-im="contexts@server"/></td>
     <th>port</th>
-    <td><input type="text" class="IM[contexts@port]"/></td>
+    <td><input type="text" data-im="contexts@port"/></td>
     <td></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>protocol</th>
-    <td><input type="text" class="IM[contexts@protocol]"/></td>
+    <td><input type="text" data-im="contexts@protocol"/></td>
     <th>datatype</th>
-    <td><input type="text" class="IM[contexts@datatype]"/></td>
+    <td><input type="text" data-im="contexts@datatype"/></td>
     <td colspan="4"></td>
     <td></td>
 </tr>
@@ -396,30 +417,30 @@
 </table>
 <h2>Options</h2>
 <table>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th>separator</th>
-        <td><input type="text" class="IM[options@separator]"/></td>
+        <td><input type="text" data-im="options@separator"/></td>
         <th>transaction</th>
-        <td><input type="text" class="IM[options@transaction]"/></td>
+        <td><input type="text" data-im="options@transaction"/></td>
         <th>media-root-dir</th>
-        <td><input type="text" class="IM[options@media-root-dir]"/></td>
+        <td><input type="text" data-im="options@media-root-dir"/></td>
         <th>media-context</th>
-        <td><input type="text" class="IM[options@media-context]"/></td>
+        <td><input type="text" data-im="options@media-context"/></td>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th colspan="9" class="title">Aliases</th>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <td colspan="9">
             <table>
                 <tr>
                     <th>alias</th>
-                    <td><input type="text" class="IM[aliases@alias]"/></td>
+                    <td><input type="text" data-im="aliases@alias"/></td>
                     <th>original term</th>
-                    <td><input type="text" class="IM[aliases@original]"/></td>
+                    <td><input type="text" data-im="aliases@original"/></td>
                 </tr>
             </table>
         </td>
@@ -434,55 +455,55 @@
             <table>
                 <tr>
                     <th>field</th>
-                    <td><input type="text" class="IM[formatter@field]"/></td>
+                    <td><input type="text" data-im="formatter@field"/></td>
                     <th>converter-class</th>
-                    <td><input type="text" class="IM[formatter@converter-class]"/></td>
+                    <td><input type="text" data-im="formatter@converter-class"/></td>
                     <th>parameter</th>
-                    <td><input type="text" class="IM[formatter@parameter]"/></td>
+                    <td><input type="text" data-im="formatter@parameter"/></td>
                 </tr>
             </table>
         </td>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th colspan="9" class="title">Browser Compatibilities</th>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <td colspan="9">
             <table>
                 <tr>
                     <th>alias</th>
-                    <td><input type="text" class="IM[browser-compatibility@alias]"/></td>
+                    <td><input type="text" data-im="browser-compatibility@alias"/></td>
                     <th>original term</th>
-                    <td><input type="text" class="IM[browser-compatibility@original]"/></td>
+                    <td><input type="text" data-im="browser-compatibility@original"/></td>
                 </tr>
             </table>
         </td>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th colspan="9" class="title">Authentication and Authorization</th>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th>user-table</th>
-        <td><input type="text" class="IM[options@authentication-user-table]"/></td>
+        <td><input type="text" data-im="options@authentication-user-table"/></td>
         <th>group-table</th>
-        <td><input type="text" class="IM[options@authentication-group-table]"/></td>
+        <td><input type="text" data-im="options@authentication-group-table"/></td>
         <th>corresponding-table</th>
-        <td><input type="text" class="IM[options@authentication-corresponding-table]"/></td>
+        <td><input type="text" data-im="options@authentication-corresponding-table"/></td>
         <th>challenge-table</th>
-        <td><input type="text" class="IM[options@authentication-challenge-table]"/></td>
+        <td><input type="text" data-im="options@authentication-challenge-table"/></td>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th>authexpired</th>
-        <td><input type="text" class="IM[options@authentication-authexpired]"/></td>
+        <td><input type="text" data-im="options@authentication-authexpired"/></td>
         <th>realm</th>
-        <td><input type="text" class="IM[options@authentication-realm]"/></td>
+        <td><input type="text" data-im="options@authentication-realm"/></td>
         <th>email-as-username</th>
-        <td><input type="text" class="IM[options@authentication-email-as-username]"/></td>
+        <td><input type="text" data-im="options@authentication-email-as-username"/></td>
     </tr>
 </table>
 
@@ -490,29 +511,29 @@
 <table>
     <tr>
         <th>db-class</th>
-        <td><input type="text" class="IM[dbsettings@db-class]"/></td>
+        <td><input type="text" data-im="dbsettings@db-class"/></td>
         <th>dsn</th>
-        <td><input type="text" class="IM[dbsettings@dsn]"/></td>
+        <td><input type="text" data-im="dbsettings@dsn"/></td>
         <th>option</th>
-        <td><input type="text" class="IM[dbsettings@option]"/></td>
+        <td><input type="text" data-im="dbsettings@option"/></td>
         <th>database</th>
-        <td><input type="text" class="IM[dbsettings@database]"/></td>
+        <td><input type="text" data-im="dbsettings@database"/></td>
     </tr>
     <tr>
         <th>user</th>
-        <td><input type="text" class="IM[dbsettings@user]"/></td>
+        <td><input type="text" data-im="dbsettings@user"/></td>
         <th>password</th>
-        <td><input type="text" class="IM[dbsettings@password]"/></td>
+        <td><input type="text" data-im="dbsettings@password"/></td>
         <th>server</th>
-        <td><input type="text" class="IM[dbsettings@server]"/></td>
+        <td><input type="text" data-im="dbsettings@server"/></td>
         <th>port</th>
-        <td><input type="text" class="IM[dbsettings@port]"/></td>
+        <td><input type="text" data-im="dbsettings@port"/></td>
     </tr>
     <tr>
         <th>protocol</th>
-        <td><input type="text" class="IM[dbsettings@protocol]"/></td>
+        <td><input type="text" data-im="dbsettings@protocol"/></td>
         <th>datatype</th>
-        <td><input type="text" class="IM[dbsettings@datatype]"/></td>
+        <td><input type="text" data-im="dbsettings@datatype"/></td>
     </tr>
 </table>
 
@@ -520,7 +541,7 @@
 
 <div class="_im_enclosure">
     <div class="_im_repeater">
-        <input type="text" class="IM[debug@debug]"/>
+        <input type="text" data-im="debug@debug"/>
     </div>
 </div>
 </div>

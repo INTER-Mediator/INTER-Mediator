@@ -71,7 +71,7 @@ class MessageStrings
         1030 => "Connection Error on changing password=@1@/@2@",
         1031 => "Change File Uploading: ",
         1032 => "Connection Error on uploading file=@1@/@2@",
-        1033 => "The field name [@1@] specified in the page file doesn't exist in this context, or it's defined as a client-side calculation field.",
+        1033 => "The field name specified in the page file doesn't exist [folder=@1@]",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

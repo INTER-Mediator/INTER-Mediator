@@ -25,6 +25,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $fxAuth = null;
     private $mainTableCount = 0;
     private $fieldInfo = null;
+    private $updatedRecord = null;
 
     public function setupConnection()
     {
@@ -39,6 +40,16 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function getDefaultKey()
     {
         return "-recid";
+    }
+
+    public function requireUpdatedRecord($value)
+    {
+        // always can get the new record for FileMaker Server.
+    }
+
+    public function updatedRecord()
+    {
+        return $this->updatedRecord;
     }
 
     private function setupFXforAuth($layoutName, $recordCount)
@@ -100,7 +111,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fieldInfo = null;
 
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), '');
-        $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+        $this->dbSettings->setDbSpecDataType(
+            str_replace('fmpro', 'fmalt',
+                strtolower($this->dbSettings->getDbSpecDataType())));
         $result = $this->fx->FMView();
 
         if (!is_array($result)) {
@@ -123,7 +136,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     public function getFromDB($dataSourceName)
     {
-        $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}", 2);
+        //    $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}", 2);
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
@@ -140,7 +153,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         }
         if ($this->dbSettings->getPrimaryKeyOnly()) {
-            $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+            $this->dbSettings->setDbSpecDataType(
+                str_replace('fmpro', 'fmalt',
+                    strtolower($this->dbSettings->getDbSpecDataType())));
         }
 
         $limitParam = 100000000;
@@ -152,13 +167,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         } elseif (isset($context['maxrecords'])) {
             $limitParam = $context['maxrecords'];
         }
-        if (isset($context['maxrecords']) 
-            && intval($context['maxrecords']) >= $this->dbSettings->getRecordCount() 
-            && $this->dbSettings->getRecordCount() > 0) {
+        if (isset($context['maxrecords'])
+            && intval($context['maxrecords']) >= $this->dbSettings->getRecordCount()
+            && $this->dbSettings->getRecordCount() > 0
+        ) {
             $limitParam = $this->dbSettings->getRecordCount();
         }
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), $limitParam);
-        
+
         $this->fx->FMSkipRecords(
             (isset($context['paging']) and $context['paging'] === true) ? $this->dbSettings->getStart() : 0);
 
@@ -379,89 +395,96 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->logger->setDebugMessage($this->stringWithoutCredential($this->fxResult['URL']));
         $this->mainTableCount = $this->fxResult['foundCount'];
 
+        if (isset($this->fxResult['data'])) {
+            return $this->createRecordset($this->fxResult['data'], $dataSourceName,
+                $usePortal, $childRecordId, $childRecordIdValue);
+        }
+        return array();
+    }
+
+    private function createRecordset($resultData, $dataSourceName, $usePortal, $childRecordId, $childRecordIdValue)
+    {
         $isFirstRecord = true;
         $returnArray = array();
-        if (isset($this->fxResult['data'])) {
-            foreach ($this->fxResult['data'] as $key => $oneRecord) {
-                $oneRecordArray = array();
+        foreach ($resultData as $key => $oneRecord) {
+            $oneRecordArray = array();
 
-                $recId = substr($key, 0, strpos($key, '.'));
-                $oneRecordArray[$this->getDefaultKey()] = $recId;
+            $recId = substr($key, 0, strpos($key, '.'));
+            $oneRecordArray[$this->getDefaultKey()] = $recId;
 
-                $existsRelated = false;
-                foreach ($oneRecord as $field => $dataArray) {
-                    if ($isFirstRecord) {
-                        $this->fieldInfo[] = $field;
+            $existsRelated = false;
+            foreach ($oneRecord as $field => $dataArray) {
+                if ($isFirstRecord) {
+                    $this->fieldInfo[] = $field;
+                }
+                if (count($dataArray) == 1) {
+                    if ($usePortal) {
+                        if (strpos($field, '::') !== false) {
+                            $existsRelated = true;
+                        }
+                        foreach ($dataArray as $portalKey => $portalValue) {
+                            $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
+                            $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
+                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                        }
+                        if ($existsRelated == false) {
+                            $oneRecordArray = array();
+                            $oneRecordArray[0][$this->getDefaultKey()] = $recId; // parent record id
+                        }
+                    } else {
+                        $oneRecordArray[$field] = $this->formatter->formatterFromDB(
+                            "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
                     }
-                    if (count($dataArray) == 1) {
-                        if ($usePortal) {
-                            if (strpos($field, '::') !== false) {
-                                $existsRelated = true;
-                            }
-                            foreach ($dataArray as $portalKey => $portalValue) {
+                } else {
+                    foreach ($dataArray as $portalKey => $portalValue) {
+                        if (strpos($field, '::') !== false) {
+                            $existsRelated = true;
+                            if (strpos($field, $dataSourceName . '::') !== false) {
                                 $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
                                 $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                             }
-                            if ($existsRelated == false) {
-                                $oneRecordArray = array();
-                                $oneRecordArray[0][$this->getDefaultKey()] = $recId; // parent record id
-                            }
                         } else {
-                            $oneRecordArray[$field] = $this->formatter->formatterFromDB(
-                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
-                        }
-                    } else {
-                        foreach ($dataArray as $portalKey => $portalValue) {
-                            if (strpos($field, '::') !== false) {
-                                $existsRelated = true;
-                                if (strpos($field, $dataSourceName . '::') !== false) {
-                                    $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
-                                    $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
-                                        "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
-                                }
-                            } else {
-                                $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
-                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
-                            }
+                            $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
+                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                         }
                     }
                 }
-                if ($usePortal) {
-                    foreach ($oneRecordArray as $portalArrayField => $portalArray) {
-                        if ($portalArrayField !== $this->getDefaultKey()) {
-                            $returnArray[] = $portalArray;
-                        }
-                    }
-                    if ($existsRelated == false) {
-                        $this->mainTableCount = 0;
-                    } else {
-                        $this->mainTableCount = count($returnArray);
-                    }
-                } else {
-                    if ($childRecordId == null) {
-                        $returnArray[] = $oneRecordArray;
-                    } else {
-                        foreach ($oneRecordArray as $portalArrayField => $portalArray) {
-                            if (isset($oneRecordArray[$childRecordId])
-                                && $childRecordIdValue == $oneRecordArray[$childRecordId]
-                            ) {
-                                $returnArray = array();
-                                $returnArray[] = $oneRecordArray;
-                                return $returnArray;
-                            }
-                            if (isset($oneRecordArray[$portalArrayField][$childRecordId])
-                                && $childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]
-                            ) {
-                                $returnArray = array();
-                                $returnArray[] = $oneRecordArray[$portalArrayField];
-                                return $returnArray;
-                            }
-                        }
-                    }
-                }
-                $isFirstRecord = false;
             }
+            if ($usePortal) {
+                foreach ($oneRecordArray as $portalArrayField => $portalArray) {
+                    if ($portalArrayField !== $this->getDefaultKey()) {
+                        $returnArray[] = $portalArray;
+                    }
+                }
+                if ($existsRelated == false) {
+                    $this->mainTableCount = 0;
+                } else {
+                    $this->mainTableCount = count($returnArray);
+                }
+            } else {
+                if ($childRecordId == null) {
+                    $returnArray[] = $oneRecordArray;
+                } else {
+                    foreach ($oneRecordArray as $portalArrayField => $portalArray) {
+                        if (isset($oneRecordArray[$childRecordId])
+                            && $childRecordIdValue == $oneRecordArray[$childRecordId]
+                        ) {
+                            $returnArray = array();
+                            $returnArray[] = $oneRecordArray;
+                            return $returnArray;
+                        }
+                        if (isset($oneRecordArray[$portalArrayField][$childRecordId])
+                            && $childRecordIdValue == $oneRecordArray[$portalArrayField][$childRecordId]
+                        ) {
+                            $returnArray = array();
+                            $returnArray[] = $oneRecordArray[$portalArrayField];
+                            return $returnArray;
+                        }
+                    }
+                }
+            }
+            $isFirstRecord = false;
         }
         return $returnArray;
     }
@@ -640,6 +663,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         . "code={$result['errorCode']}, url={$result['URL']}<hr>"));
                     return false;
                 }
+                $this->updatedRecord = createRecordset($result['data'], $dataSourceName, null, null, null);
                 $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
                 break;
             }
@@ -661,7 +685,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
                     $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                    $this->dbSettings->setDbSpecDataType(
+                        str_replace('fmpro', 'fmalt',
+                            strtolower($this->dbSettings->getDbSpecDataType())));
                 }
             }
         }
@@ -766,6 +792,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $keyValue = $row[$keyFieldName][0];
             }
         }
+        $this->updatedRecord = createRecordset($result['data'], $dataSourceName, null, null, null);
         return $keyValue;
     }
 
@@ -781,7 +808,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($relDef['portal']) && $relDef['portal']) {
                     $usePortal = true;
                     $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                    $this->dbSettings->setDbSpecDataType(
+                        str_replace('fmpro', 'fmalt',
+                            strtolower($this->dbSettings->getDbSpecDataType())));
                 }
             }
         }

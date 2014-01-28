@@ -131,14 +131,19 @@ var INTERMediatorLib = {
         }
     },
 
+
     /**
      * Cheking the argument is the Linked Element or not.
      */
 
     isLinkedElement: function (node) {
-        var classInfo, matched;
+        var classInfo, matched, attr;
 
         if (node != null) {
+            attr = node.getAttribute("data-im")
+            if (attr) {
+                return true;
+            }
             if (INTERMediator.titleAsLinkInfo) {
                 if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
                     // IE: If the node doesn't have a title attribute, getAttribute
@@ -164,6 +169,10 @@ var INTERMediatorLib = {
         var classInfo, matched;
 
         if (node != null) {
+            attr = node.getAttribute("data-im-widget")
+            if (attr) {
+                return true;
+            }
             classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
             if (classInfo != null) {
                 matched = classInfo.match(/IM_WIDGET\[.*\]/);
@@ -180,15 +189,18 @@ var INTERMediatorLib = {
         var nameInfo, matched;
 
         if (node != null) {
+            nameInfo = node.getAttribute('data-im-group');
+            if (nameInfo) {
+                return true;
+            }
             nameInfo = node.getAttribute('name');
-            if (nameInfo != null) {
+            if (nameInfo) {
                 matched = nameInfo.match(/IM\[.*\]/);
                 if (matched) {
                     return true;
                 }
             }
-
-        }
+         }
         return false;
     },
 
@@ -219,7 +231,8 @@ var INTERMediatorLib = {
          */
 
         function isRepeaterOfEnclosure(repeater, enclosure) {
-            var repeaterTag, enclosureTag, enclosureClass, repeaterClass, repeaterType;
+            var repeaterTag, enclosureTag, enclosureClass, repeaterClass, enclosureDataAttr,
+                repeaterDataAttr, repeaterType;
             if (!repeater || !enclosure) {
                 return false;
             }
@@ -233,9 +246,14 @@ var INTERMediatorLib = {
             }
             if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
                 enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
-                if (enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0) {
+                enclosureDataAttr = enclosure.getAttribute("data-im-control");
+                if ((enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0)
+                    || (enclosureDataAttr && enclosureDataAttr == "enclosure")) {
                     repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
-                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN') && repeaterClass != null && repeaterClass.indexOf('_im_repeater') >= 0) {
+                    repeaterDataAttr = repeater.getAttribute("data-im-control");
+                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN')
+                        && ((repeaterClass && repeaterClass.indexOf('_im_repeater') >= 0)
+                        || (repeaterDataAttr && repeaterDataAttr == "repeater"))) {
                         return true;
                     } else if (repeaterTag === 'INPUT') {
                         repeaterType = repeater.getAttribute('type');
@@ -257,8 +275,19 @@ var INTERMediatorLib = {
      */
 
     getLinkedElementInfo: function (node) {
-        var defs = [], eachDefs, i, classAttr, matched;
+        var defs = [], eachDefs, reg, i, attr, matched;
         if (INTERMediatorLib.isLinkedElement(node)) {
+            attr = node.getAttribute("data-im");
+            if (attr) {
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = attr.split(reg);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0) {
+                        defs.push(resolveAlias(eachDefs[i]));
+                    }
+                }
+                return defs;
+            }
             if (INTERMediator.titleAsLinkInfo) {
                 if (node.getAttribute('TITLE') != null) {
                     eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
@@ -266,18 +295,19 @@ var INTERMediatorLib = {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
                 }
+                return defs;
             }
             if (INTERMediator.classAsLinkInfo) {
-                classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classAttr !== null && classAttr.length > 0) {
-                    matched = classAttr.match(/IM\[([^\]]*)\]/);
+                attr = INTERMediatorLib.getClassAttributeFromNode(node);
+                if (attr !== null && classAttr.length > 0) {
+                    matched = attr.match(/IM\[([^\]]*)\]/);
                     eachDefs = matched[1].split(INTERMediator.defDivider);
                     for (i = 0; i < eachDefs.length; i++) {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
                 }
+                return defs;
             }
-            return defs;
         }
         return false;
 
@@ -291,33 +321,55 @@ var INTERMediatorLib = {
     },
 
     getWidgetInfo: function (node) {
-        var defs = [], eachDefs, i, classAttr, matched;
+        var defs = [], eachDefs, i, classAttr, matched, reg;
         if (INTERMediatorLib.isWidgetElement(node)) {
+            classAttr = node.getAttribute("data-im-widget");
+            if (classAttr && classAttr.length > 0) {
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = classAttr.split(reg);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0)  {
+                    defs.push(eachDefs[i]);
+                    }
+                }
+                return defs;
+            }
             classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
-            if (classAttr !== null && classAttr.length > 0) {
+            if (classAttr && classAttr.length > 0) {
                 matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/);
                 eachDefs = matched[1].split(INTERMediator.defDivider);
                 for (i = 0; i < eachDefs.length; i++) {
                     defs.push(eachDefs[i]);
                 }
+                return defs;
             }
-            return defs;
         }
         return false;
     },
 
     getNamedInfo: function (node) {
-        var defs = [], eachDefs, i, nameAttr, matched;
+        var defs = [], eachDefs, i, nameAttr, matched, reg;
         if (INTERMediatorLib.isNamedElement(node)) {
+            nameAttr = node.getAttribute('data-im-group');
+            if (nameAttr && nameAttr.length > 0) {
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = nameAttr.split(reg);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0)  {
+                    defs.push(eachDefs[i]);
+                    }
+                }
+                return defs;
+            }
             nameAttr = node.getAttribute('name');
-            if (nameAttr !== null && nameAttr.length > 0) {
+            if (nameAttr && nameAttr.length > 0) {
                 matched = nameAttr.match(/IM\[([^\]]*)\]/);
                 eachDefs = matched[1].split(INTERMediator.defDivider);
                 for (i = 0; i < eachDefs.length; i++) {
                     defs.push(eachDefs[i]);
                 }
+                return defs;
             }
-            return defs;
         }
         return false;
     },
@@ -579,17 +631,45 @@ var INTERMediatorLib = {
         }
     },
 
-    getElementsByClassName: function (node, cName) {
-        var nodes = [], reg = new RegExp(cName);
+    /*
+    If the cNode parameter is like '_im_post', this function will search data-im-control="post" elements.
+     */
+    getElementsByClassNameOrDataAttr: function (node, cName) {
+        var nodes = [];
+        var attrValue = (cName.length>5) ? cName.substr(4) : null;
+        var reg = new RegExp(cName);
         checkNode(node);
         return nodes;
 
         function checkNode(target) {
+            var className, attr;
             if (target.nodeType != 1) {
                 return;
             }
-            if (INTERMediatorLib.getClassAttributeFromNode(target)
-                && INTERMediatorLib.getClassAttributeFromNode(target).match(reg)) {
+            className = INTERMediatorLib.getClassAttributeFromNode(target);
+            attr = target.getAttribute("data-im-control");
+            if ((className && className.match(reg)) ||(attr && attrValue && attr == attrValue)) {
+                nodes.push(target);
+            }
+            for (var i = 0; i < target.children.length; i++) {
+                checkNode(target.children[i]);
+            }
+        }
+    },
+
+    getElementsByClassName: function (node, cName) {
+        var nodes = [];
+        var reg = new RegExp(cName);
+        checkNode(node);
+        return nodes;
+
+        function checkNode(target) {
+            var className;
+            if (target.nodeType != 1) {
+                return;
+            }
+            className = INTERMediatorLib.getClassAttributeFromNode(target);
+            if (className && className.match(reg)) {
                 nodes.push(target);
             }
             for (var i = 0; i < target.children.length; i++) {
@@ -767,7 +847,7 @@ var IMLibNodeGraph = {
         }
         return dests;
     },
-    applyToAllNodes: function(f)    {
+    applyToAllNodes: function (f) {
         var i;
         for (i = 0; i < this.nodes.length; i++) {
             f(this.nodes[i]);
@@ -919,9 +999,10 @@ var IMLibElement = {
         var nodeTag, typeAttr, valueAttr, curVal;
         nodeTag = element.tagName;
         if (INTERMediatorLib.isWidgetElement(element)) {
-            element._im_getValue();
+            return element._im_getValue();
         } else if (nodeTag == "INPUT") {
             typeAttr = element.getAttribute('type');
+            valueAttr = element.getAttribute('value');
             if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                 if (typeAttr == 'checkbox') {
                     if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {

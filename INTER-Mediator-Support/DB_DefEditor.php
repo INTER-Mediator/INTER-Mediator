@@ -144,6 +144,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             'foreign-key' => getValueFromArray($rel, 'foreign-key'),
                             'join-field' => getValueFromArray($rel, 'join-field'),
                             'operator' => getValueFromArray($rel, 'operator'),
+                            'portal' => getValueFromArray($rel, 'portal'),
                         );
                         $seq++;
                     }
@@ -363,7 +364,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         eval($convert);
 
         $allKeys = array(
-            'relation' => array('foreign-key', 'join-field', 'operator'),
+            'relation' => array('foreign-key', 'join-field', 'operator', 'portal'),
             'query' => array('field', 'value', 'operator'),
             'sort' => array('field', 'direction'),
             'default-values' => array('field', 'value'),
@@ -876,5 +877,15 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     public function isPossibleOrderSpecifier($specifier)
     {
         // TODO: Implement isPossibleOrderSpecifier() method.
+    }
+
+    public function requireUpdatedRecord($value)
+    {
+        // TODO: Implement requireUpdatedRecord() method.
+    }
+
+    public function updatedRecord()
+    {
+        // TODO: Implement updatedRecord() method.
     }
 }
