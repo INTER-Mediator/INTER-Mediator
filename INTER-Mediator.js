@@ -2044,146 +2044,6 @@ var INTERMediator = {
             return shouldDeleteNodes;
         }
 
-        /*
-         function setDataToElement(element, curTarget, curVal) {
-         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-         needPostValueSet = false, nodeTag, curValues, i;
-         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
-         nodeTag = element.tagName;
-
-         if (curTarget != null && curTarget.length > 0) { //target is specified
-         if (curTarget.charAt(0) == '#') { // Appending
-         curTarget = curTarget.substring(1);
-         if (curTarget == 'innerHTML') {
-         if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
-         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
-         }
-         element.innerHTML += curVal;
-         } else if (curTarget == 'textNode' || curTarget == 'script') {
-         textNode = document.createTextNode(curVal);
-         if (nodeTag == "TEXTAREA") {
-         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-         }
-         element.appendChild(textNode);
-         } else if (curTarget.indexOf('style.') == 0) {
-         styleName = curTarget.substring(6, curTarget.length);
-         statement = "element.style." + styleName + "='" + curVal + "';";
-         eval(statement);
-         } else {
-         currentValue = element.getAttribute(curTarget);
-         element.setAttribute(curTarget, currentValue + curVal);
-         }
-         }
-         else if (curTarget.charAt(0) == '$') { // Replacing
-         curTarget = curTarget.substring(1);
-         if (curTarget == 'innerHTML') {
-         if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
-         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
-         }
-         element.innerHTML = element.innerHTML.replace("$", curVal);
-         } else if (curTarget == 'textNode' || curTarget == 'script') {
-         if (nodeTag == "TEXTAREA") {
-         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-         }
-         element.innerHTML = element.innerHTML.replace("$", curVal);
-         } else if (curTarget.indexOf('style.') == 0) {
-         styleName = curTarget.substring(6, curTarget.length);
-         statement = "element.style." + styleName + "='" + curVal + "';";
-         eval(statement);
-         } else {
-         currentValue = element.getAttribute(curTarget);
-         element.setAttribute(curTarget, currentValue.replace("$", curVal));
-         }
-         } else { // Setting
-         if (INTERMediatorLib.isWidgetElement(element)) {
-         element._im_setValue(curVal);
-         } else if (curTarget == 'innerHTML') { // Setting
-         if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
-         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
-         }
-         element.innerHTML = curVal;
-         } else if (curTarget == 'textNode') {
-         if (nodeTag == "TEXTAREA") {
-         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-         }
-         textNode = document.createTextNode(curVal);
-         element.appendChild(textNode);
-         } else if (curTarget == 'script') {
-         textNode = document.createTextNode(curVal);
-         if (nodeTag == "SCRIPT") {
-         element.appendChild(textNode);
-         } else {
-         scriptNode = document.createElement("script");
-         scriptNode.type = "text/javascript";
-         scriptNode.appendChild(textNode);
-         element.appendChild(scriptNode);
-         }
-         } else if (curTarget.indexOf('style.') == 0) {
-         styleName = curTarget.substring(6, curTarget.length);
-         statement = "element.style." + styleName + "='" + curVal + "';";
-         eval(statement);
-         } else {
-         element.setAttribute(curTarget, curVal);
-         }
-         }
-         } else { // if the 'target' is not specified.
-         if (INTERMediatorLib.isWidgetElement(element)) {
-         element._im_setValue(curVal);
-         } else if (nodeTag == "INPUT") {
-         typeAttr = element.getAttribute('type');
-         if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
-         valueAttr = element.value;
-         curValues = curVal.split("\n");
-         if (typeAttr == 'checkbox' && curValues.length > 1) {
-         element.checked = false;
-         for (i = 0; i < curValues.length; i++) {
-         if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
-         if (INTERMediator.isIE) {
-         element.setAttribute('checked', 'checked');
-         } else {
-         element.checked = true;
-         }
-         }
-         }
-         } else {
-         if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
-         if (INTERMediator.isIE) {
-         element.setAttribute('checked', 'checked');
-         } else {
-         element.checked = true;
-         }
-         } else {
-         element.checked = false;
-         }
-         }
-         } else { // this node must be text field
-         element.value = curVal;
-         }
-         } else if (nodeTag == "SELECT") {
-         needPostValueSet = true;
-         } else { // include option tag node
-         if (INTERMediator.defaultTargetInnerHTML) {
-         if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
-         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
-         }
-         element.innerHTML = curVal;
-         } else {
-         if (nodeTag == "TEXTAREA") {
-         if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
-         // for IE11
-         curVal = curVal.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-         } else {
-         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-         }
-         }
-         textNode = document.createTextNode(curVal);
-         element.appendChild(textNode);
-         }
-         }
-         }
-         return needPostValueSet;
-         }
-         */
         function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
             // Handling Delete buttons
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
@@ -2191,6 +2051,7 @@ var INTERMediator = {
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/delete/i)) {
                 if (currentContext['relation'] || currentContext['records'] === undefined || (currentContext['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
                     buttonNode = document.createElement('BUTTON');
+                    INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Delete");
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
                     thisId = 'IM_Button_' + buttonIdNum;
                     buttonNode.setAttribute('id', thisId);
@@ -2249,8 +2110,8 @@ var INTERMediator = {
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
                 if (relationValue || !currentContext['paging'] || currentContext['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
+                    INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Insert");
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
-                    INTERMediatorLib.setClassAttributeToNode(buttonNode, '_im_insert_button');
                     shouldRemove = [];
                     switch (encNodeTag) {
                         case 'TBODY':
@@ -2271,7 +2132,7 @@ var INTERMediator = {
                                 footNode = document.createElement(targetNodeTag);
                                 enclosedNode.appendChild(footNode);
                             }
-                            existingButtons = INTERMediatorLib.getElementsByClassNameOrDataAttr(footNode, '_im_insert_button');
+                            existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert');
                             if (existingButtons.length == 0) {
                                 trNode = document.createElement('TR');
                                 tdNode = document.createElement('TD');
@@ -2285,7 +2146,7 @@ var INTERMediator = {
                         case 'UL':
                         case 'OL':
                             liNode = document.createElement('LI');
-                            existingButtons = INTERMediatorLib.getElementsByClassNameOrDataAttr(liNode, '_im_insert_button');
+                            existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert');
                             if (existingButtons.length == 0) {
                                 liNode.appendChild(buttonNode);
                                 if (currentContext['repeat-control'].match(/top/i)) {
@@ -2299,7 +2160,7 @@ var INTERMediator = {
                         case 'SPAN':
                             if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                                 divNode = document.createElement(repNodeTag);
-                                existingButtons = INTERMediatorLib.getElementsByClassNameOrDataAttr(divNode, '_im_insert_button');
+                                existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
                                 if (existingButtons.length == 0) {
                                     divNode.appendChild(buttonNode);
                                     if (currentContext['repeat-control'].match(/top/i)) {
