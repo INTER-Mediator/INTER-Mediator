@@ -46,19 +46,19 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
-            'authentication' => array(
-                'all' => array( /* load, update, new, delete*/
-                    'user' => array(),
-                    'group' => array(),
-                    'target' => 'table',
-                ),
-                'load' => array( /* load, update, new, delete*/
-                    'user' => array(),
-                    'group' => array(),
-                    'target' => 'record',
-                    'field' => 'username',
-                ),
-            ),
+//            'authentication' => array(
+//                'all' => array( /* load, update, new, delete*/
+//                    'user' => array(),
+//                    'group' => array(),
+//                    'target' => 'table',
+//                ),
+//                'load' => array( /* load, update, new, delete*/
+//                    'user' => array(),
+//                    'group' => array(),
+//                    'target' => 'record',
+//                    'field' => 'username',
+//                ),
+//            ),
         ),
     ),
     array(
@@ -69,16 +69,16 @@ IM_Entry(
         ),
         //    'transaction' => 'none',
         'authentication' => array( // table only, for all operations
-            'user' => array('user1'), // Itemize permitted users
-            'group' => array('group2'), // Itemize permitted groups
-            'user-table' => 'authuser', // Default values
-            'group-table' => 'authgroup',
-            'corresponding-table' => 'authcor',
-            'challenge-table' => 'issuedhash',
-            'authexpired' => '600', // Set as seconds.
-            'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
-            'realm' => 'Sample_Auth/MySQL_definitions', //
-            'email-as-username' => true,
+//            'user' => array('user1'), // Itemize permitted users
+//            'group' => array('group2'), // Itemize permitted groups
+//            'user-table' => 'authuser', // Default values
+//            'group-table' => 'authgroup',
+//            'corresponding-table' => 'authcor',
+//            'challenge-table' => 'issuedhash',
+//            'authexpired' => '600', // Set as seconds.
+//            'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+//            'realm' => 'Sample_Auth/MySQL_definitions', //
+//            'email-as-username' => true,
         ),
     ),
     array('db-class' => 'PDO'),

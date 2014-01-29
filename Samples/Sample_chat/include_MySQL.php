@@ -21,6 +21,7 @@ IM_Entry(
             'default-values' => array(
                 array('field' => 'postdt', 'value' => date("Y-m-d H:i:s")),
             ),
+            'repeat-control' => 'delete',
             'authentication' => array(
                 'all' => array( // load, update, new, delete
 //                    'user' => array (),
@@ -49,7 +50,7 @@ IM_Entry(
         ),
     ),
     array('db-class' => 'PDO'),
-    false
+    2
 );
 
 ?>

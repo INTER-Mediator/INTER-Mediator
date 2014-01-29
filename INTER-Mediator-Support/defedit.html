@@ -42,10 +42,25 @@
             var node = document.getElementById('container');
             node.style.display = "block"
         }
+        function setDisplayLevel(level)  {
+            var i, value, nodes, rootNode;
+            value = "none";
+            if (level == 1) {
+                value = "table-row";
+            }
+            rootNode = document.getElementsByTagName("BODY")[0];
+            nodes = INTERMediatorLib.getElementsByClassName(rootNode, "advanced");
+            for (i = 0 ; i < nodes.length; i++) {
+                nodes[i].style.display = value;
+            }
+        }
     </script>
     <style>
-        INPUT{font-size: 14pt;}
+        INPUT{font-size: 10pt;}
         TH{color: #666666;}
+        .advanced   {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -64,7 +79,11 @@
         .htaccessファイルを配置して、Web認証を機能させるなどの手段が利用できます。<br>
     </div>
 </div>
-<div id="container" style="display:none;;">
+<div id="container" style="display:none;">
+<div style="float:right">
+    <button onclick="setDisplayLevel(1)">Show All</button>
+    <button onclick="setDisplayLevel(2)">Reduce</button>
+</div>
 <h1>Definition File Editor</h1>
 <h2>Target Definition File</h2>
 
@@ -91,16 +110,12 @@
     <td><input type="text" data-im="contexts@view"/></td>
     <th>key</th>
     <td><input type="text" data-im="contexts@key"/></td>
-    <th>sequence</th>
-    <td><input type="text" data-im="contexts@sequence"/></td>
     <td colspan="3"></td>
 </tr>
 <tr>
     <td></td>
-    <th>records</th>
-    <td><input type="text" data-im="contexts@records"/></td>
-    <th>maxrecords</th>
-    <td><input type="text" data-im="contexts@maxrecords"/></td>
+    <th>sequence</th>
+    <td><input type="text" data-im="contexts@sequence"/></td>
     <th>paging</th>
     <td><input type="text" data-im="contexts@paging"/></td>
     <th>repeat-control</th>
@@ -109,15 +124,19 @@
 </tr>
 <tr>
     <td></td>
+    <th>records</th>
+    <td><input type="text" data-im="contexts@records"/></td>
+    <th>maxrecords</th>
+    <td><input type="text" data-im="contexts@maxrecords"/></td>
     <th>cache</th>
     <td><input type="text" data-im="contexts@cache"/></td>
     <td colspan="6"></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Extension Settings</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>extending-class</th>
     <td><input type="text" data-im="contexts@extending-class"/></td>
@@ -127,11 +146,11 @@
     <td><input type="text" data-im="contexts@post-enclosure"/></td>
     <td colspan="5"></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Settings for Post-only Mode</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>post-reconstruct</th>
     <td><input type="text" data-im="contexts@post-reconstruct"/></td>
@@ -192,15 +211,17 @@
                 <td><input type="text" data-im="relation@join-field"/></td>
                 <th>operator</th>
                 <td><input type="text" data-im="relation@operator"/></td>
+                <th>portal</th>
+                <td><input type="text" data-im="relation@portal"/></td>
             </tr>
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Default Values</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
@@ -213,11 +234,11 @@
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Validations</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
@@ -232,11 +253,11 @@
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Scripts</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
@@ -251,11 +272,11 @@
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Global Variables (FileMaker Server only)</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
@@ -270,11 +291,11 @@
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">File Uploading</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <td colspan="9">
         <table>
@@ -287,11 +308,11 @@
         </table>
     </td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Authentication, Authorization and Security</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>media-handling</th>
     <td><input type="text" data-im="contexts@authentication-media-handling"/></td>
@@ -300,7 +321,7 @@
     <th>protect-reading</th>
     <td><input type="text" data-im="contexts@dprotect-reading"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>all:user</th>
     <td><input type="text" data-im="contexts@authentication-all-user"/></td>
@@ -311,7 +332,7 @@
     <th>all:field</th>
     <td><input type="text" data-im="contexts@authentication-all-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>load:user</th>
     <td><input type="text" data-im="contexts@authentication-load-user"/></td>
@@ -322,7 +343,7 @@
     <th>load:field</th>
     <td><input type="text" data-im="contexts@authentication-load-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>update:user</th>
     <td><input type="text" data-im="contexts@authentication-update-user"/></td>
@@ -333,7 +354,7 @@
     <th>update:field</th>
     <td><input type="text" data-im="contexts@authentication-update-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>new:user</th>
     <td><input type="text" data-im="contexts@authentication-new-user"/></td>
@@ -344,7 +365,7 @@
     <th>new:field</th>
     <td><input type="text" data-im="contexts@authentication-new-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <th></th>
     <th>delete:user</th>
     <td><input type="text" data-im="contexts@authentication-delete-user"/></td>
@@ -355,11 +376,11 @@
     <th>delete:field</th>
     <td><input type="text" data-im="contexts@authentication-delete-field"/></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th colspan="9" class="title">Database Settings just for this Context</th>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>db-class</th>
     <td><input type="text" data-im="contexts@db-class"/></td>
@@ -371,7 +392,7 @@
     <td><input type="text" data-im="contexts@database"/></td>
     <td></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>user</th>
     <td><input type="text" data-im="contexts@user"/></td>
@@ -383,7 +404,7 @@
     <td><input type="text" data-im="contexts@port"/></td>
     <td></td>
 </tr>
-<tr>
+<tr class="advanced">
     <td></td>
     <th>protocol</th>
     <td><input type="text" data-im="contexts@protocol"/></td>
@@ -396,7 +417,7 @@
 </table>
 <h2>Options</h2>
 <table>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th>separator</th>
         <td><input type="text" data-im="options@separator"/></td>
@@ -407,11 +428,11 @@
         <th>media-context</th>
         <td><input type="text" data-im="options@media-context"/></td>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th colspan="9" class="title">Aliases</th>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <td colspan="9">
             <table>
@@ -443,11 +464,11 @@
             </table>
         </td>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th colspan="9" class="title">Browser Compatibilities</th>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <td colspan="9">
             <table>
@@ -460,11 +481,11 @@
             </table>
         </td>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th colspan="9" class="title">Authentication and Authorization</th>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th>user-table</th>
         <td><input type="text" data-im="options@authentication-user-table"/></td>
@@ -475,7 +496,7 @@
         <th>challenge-table</th>
         <td><input type="text" data-im="options@authentication-challenge-table"/></td>
     </tr>
-    <tr>
+    <tr class="advanced">
         <td></td>
         <th>authexpired</th>
         <td><input type="text" data-im="options@authentication-authexpired"/></td>
@@ -518,8 +539,8 @@
 
 <h2>Debug</h2>
 
-<div data-im-control="enclosure">
-    <div data-im-control="repeater">
+<div class="_im_enclosure">
+    <div class="_im_repeater">
         <input type="text" data-im="debug@debug"/>
     </div>
 </div>
