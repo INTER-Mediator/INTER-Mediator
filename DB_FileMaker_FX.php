@@ -663,7 +663,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         . "code={$result['errorCode']}, url={$result['URL']}<hr>"));
                     return false;
                 }
-                $this->updatedRecord = createRecordset($result['data'], $dataSourceName, null, null, null);
+                $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
                 $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
                 break;
             }
@@ -792,7 +792,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $keyValue = $row[$keyFieldName][0];
             }
         }
-        $this->updatedRecord = createRecordset($result['data'], $dataSourceName, null, null, null);
+        $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
         return $keyValue;
     }
 
