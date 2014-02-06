@@ -65,7 +65,12 @@ Ver.4.1 (in development)
 - HTML5's user defined attributes are supported. class="IM[...]" should be data-im="...",
   class="_im_repeater" -> data-im-control="repeater",  class="_im_enclosure" -> data-im-control="enclosure",
   class="_im_post" -> data-im-control="post", class="_im_for_noresult_" -> data-im-control="noresult",
-  class="IM_WIDGET[...]" -> data-im-widget="...", name="IM[survey@q4]" -> data-im-group="...."- Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
+  class="IM_WIDGET[...]" -> data-im-widget="...", name="IM[survey@q4]" -> data-im-group="...."
+- Database class and DB_Proxy support requireUpdatedRecord($value) and updatedRecord() method.
+  For DB_PDO class, call the requireUpdatedRecord(true) and updateRecord() returns updated and newly created record.
+  For DB_FileMaker_FX class, just call updateRecord() and it returns updated and newly created record.
+- Delete buttons have the class "IM_Button_Delete".
+- Insert buttons have the class "IM_Button_Insert" instead of "_im_insert_button".
 - Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
 - Add the meta tag with "X-UA-Compatible" to all samples, it forces Internet Explorer to
   work as its native document mode.
@@ -77,6 +82,7 @@ Ver.4.1 (in development)
 - [BUG FIX] Correct the confirmation message when clicking the deleting record button on the navigation bar.
   (Thanks to Kentaro Suzuki).
 - [BUG FIX] The delete button on the navigation bar works correctly when specifying INTERMediator.pagedSize = 1.
+- [BUG FIX] Fix compatibility with 'STRICT_TRANS_TABLES' sql-mode setting of MySQL configuration. (Issue #43)
 
 Ver.4.0 (2013/12/4)
 - File hierarchy changed for easily involving the pulled sources into developing web apps

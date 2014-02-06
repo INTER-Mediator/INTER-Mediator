@@ -63,18 +63,28 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     public function testInsertAndUpdateRecord()
     {
         $this->dbProxySetupForAccess("person", 1000000);
+        $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->newToDB("person", true);
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertTrue($createdRecord != null, "Created record should be exists.");
+        $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
 
         $nameValue = "unknown, oh mygod!";
         $addressValue = "anyplace, who knows!";
         $this->dbProxySetupForAccess("person", 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
         $this->db_proxy->dbSettings->addTargetField("name");
         $this->db_proxy->dbSettings->addValue($nameValue);
         $this->db_proxy->dbSettings->addTargetField("address");
         $this->db_proxy->dbSettings->addValue($addressValue);
+        $this->db_proxy->requireUpdatedRecord(true);
         $result = $this->db_proxy->setToDB("person", true);
-        $this->assertTrue($result, "Update should be successful.");
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertTrue($createdRecord != null, "Update record should be exists.");
+        $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
+        $this->assertTrue($createdRecord[0]["name"] === $nameValue, "Field value is not same as the definition.");
+        $this->assertTrue($createdRecord[0]["address"] === $addressValue, "Field value is not same as the definition.");
 
         $this->dbProxySetupForAccess("person", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);

@@ -27,6 +27,8 @@ Thanks for nice works.
 
 * phpseclib (http://phpseclib.sourceforge.net/)
 
+* Qdsmtp (http://hal456.net/qdsmtp/)
+
 ==========================================
 Account Information for FileMaker Database
 ------------------------------------------

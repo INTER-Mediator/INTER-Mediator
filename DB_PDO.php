@@ -2,7 +2,7 @@
 /*
 * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
 *
-*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
 *
 *   This project started at the end of 2009.
 *   INTER-Mediator is supplied under MIT License.
@@ -760,8 +760,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
 
         $currentDT = new DateTime();
-        $currentDTFormat = $currentDT->format('c');
-        //       $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
+        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
 
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $sql = "UPDATE {$hashTable} SET hash=" . $this->link->quote($challenge)

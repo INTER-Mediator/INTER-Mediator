@@ -26,15 +26,15 @@
     <tbody>
     <tr>
         <td>id</td>
-        <td><input type="text" class="IM[invoice@id]"/></td>
+        <td><input type="text" data-im="invoice@id"/></td>
     </tr>
     <tr>
         <td>name</td>
-        <td><input type="text" class="IM[invoice@issued]" value=""/></td>
+        <td><input type="text" data-im="invoice@issued" value=""/></td>
     </tr>
     <tr>
         <td>title</td>
-        <td><input type="text" class="IM[invoice@title]" value=""/></td>
+        <td><input type="text" data-im="invoice@title" value=""/></td>
     </tr>
     <tr>
         <td colspan="2">
@@ -51,28 +51,28 @@
                 <tbody>
                 <tr>
                     <td>
-                        <input type="text" class="IM[item@product_id]" size="2"
+                        <input type="text" data-im="item@product_id" size="2"
                                onchange="modLine(this);calcTotal(this)"/>
 
-                        <div style="display:inline;" class="_im_enclosure">
-                            <div style="display:inline;" class="_im_repeater">
-                                <span class="IM[product@name]"></span>
+                        <div style="display:inline;" data-im-control="enclosure">
+                            <div style="display:inline;" data-im-control="repeater">
+                                <span data-im="product@name"></span>
                             </div>
                         </div>
                     </td>
-                    <td><input type="text" class="IM[item@qty]" size="5" style="text-align:right;"
+                    <td><input type="text" data-im="item@qty" size="5" style="text-align:right;"
                                onchange="modLine(this);calcTotal(this);"/></td>
                     <td>
-                        <input type="text" class="IM[item@unitprice]" size="8" style="text-align:right;"
+                        <input type="text" data-im="item@unitprice" size="8" style="text-align:right;"
                                onchange="modLine(this);calcTotal(this)"/>
 
-                        <div style="display:inline;" class="_im_enclosure">
-                            <div style="display:inline;text-align:right;" class="_im_repeater">
-                                (<span class="IM[product@unitprice]"></span>)
+                        <div style="display:inline;" data-im-control="enclosure">
+                            <div style="display:inline;text-align:right;" data-im-control="repeater">
+                                (<span data-im="product@unitprice"></span>)
                             </div>
                         </div>
                     </td>
-                    <td align="right"><span align="right" class="IM[item@amount_calc]"></span></td>
+                    <td align="right"><span align="right" data-im="item@amount_calc"></span></td>
                     <td></td>
                 </tr>
                 </tbody>
@@ -81,7 +81,7 @@
     </tr>
     <tr>
         <td>Total:</td>
-        <td class="IM[invoice@total_calc]"></td>
+        <td data-im="invoice@total_calc"></td>
     </tr>
     </tbody>
 </table>

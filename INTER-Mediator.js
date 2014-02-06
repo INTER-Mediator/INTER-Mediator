@@ -1101,7 +1101,6 @@ var INTERMediator = {
                 seekEnclosureNode(
                     updateNode,
                     INTERMediator.keyFieldObject[indexOfKeyFieldObject]['foreign-value'],
-                    INTERMediator.keyFieldObject[indexOfKeyFieldObject]['name'],
                     INTERMediatorLib.getEnclosureSimple(updateNode),
                     null
                 );
@@ -1187,7 +1186,7 @@ var INTERMediator = {
             postSetFields = [];
 
             try {
-                seekEnclosureNode(bodyNode, null, null, null, null);
+                seekEnclosureNode(bodyNode, null, null, null);
             } catch (ex) {
                 if (ex == "_im_requath_request_") {
                     throw ex;
@@ -1292,7 +1291,7 @@ var INTERMediator = {
          * Seeking nodes and if a node is an enclosure, proceed repeating.
          */
 
-        function seekEnclosureNode(node, currentRecord, currentTable, parentEnclosure, objectReference) {
+        function seekEnclosureNode(node, currentRecord, parentEnclosure, objectReference) {
             var children, className, i, attr;
             if (node.nodeType === 1) { // Work for an element
                 try {
@@ -1305,14 +1304,14 @@ var INTERMediator = {
                         } else {
                             if (INTERMediator.isIE) {
                                 try {
-                                    expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                                    expandEnclosure(node, currentRecord, parentEnclosure, objectReference);
                                 } catch (ex) {
                                     if (ex == "_im_requath_request_") {
                                         throw ex;
                                     }
                                 }
                             } else {
-                                expandEnclosure(node, currentRecord, currentTable, parentEnclosure, objectReference);
+                                expandEnclosure(node, currentRecord, parentEnclosure, objectReference);
                             }
                         }
                     } else {
@@ -1320,13 +1319,7 @@ var INTERMediator = {
                         if (children) {
                             for (i = 0; i < children.length; i++) {
                                 if (children[i].nodeType === 1) {
-                                    seekEnclosureNode(
-                                        children[i],
-                                        currentRecord,
-                                        currentTable,
-                                        parentEnclosure,
-                                        objectReference
-                                    );
+                                    seekEnclosureNode(children[i], currentRecord, parentEnclosure, objectReference);
                                 }
                             }
                         }
@@ -1368,7 +1361,7 @@ var INTERMediator = {
                 if (node.nodeType === 1) { // Work for an element
                     try {
                         if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
-                            expandEnclosure(node, null, null, null, null);
+                            expandEnclosure(node, null, null, null);
                         } else {
                             children = node.childNodes; // Check all child nodes.
                             for (i = 0; i < children.length; i++) {
@@ -1390,7 +1383,7 @@ var INTERMediator = {
          * Expanding an enclosure.
          */
 
-        function expandEnclosure(node, currentRecord, currentTable, parentEnclosure, parentObjectInfo) {
+        function expandEnclosure(node, currentRecord, parentEnclosure, parentObjectInfo) {
             var objectReference = {}, linkedNodes, encNodeTag, parentNodeId, repeatersOriginal, repeaters,
                 linkDefs, voteResult, currentContext, fieldList, repNodeTag, relationValue, dependObject,
                 relationDef, index, fieldName, thisKeyFieldObject, i, j, k, ix, targetRecords, newNode,
@@ -1791,8 +1784,7 @@ var INTERMediator = {
                                 node.appendChild(newNode);
                                 newlyAddedNodes.push(newNode);
                                 setIdValue(newNode);
-                                seekEnclosureNode(newNode, targetRecords.recordset[ix],
-                                    currentContext['name'], node, objectReference);
+                                seekEnclosureNode(newNode, targetRecords.recordset[ix], node, objectReference);
                             }
                         }
 
@@ -1873,7 +1865,7 @@ var INTERMediator = {
                         selectedNode.selected = true;
                     }
 
-                    seekEnclosureNode(newNode, null, null, node, null);
+                    seekEnclosureNode(newNode, null, node, null);
                 }
             }
             currentLevel--;
