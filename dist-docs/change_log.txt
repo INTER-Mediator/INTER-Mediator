@@ -40,6 +40,7 @@ To Do List for the INTER-Mediator developer(s)
 - Authentication UI should generate on the server side.
 - Working with FileMaker's ODBC sharing instead of XML sharing (FX.php) when using FileMaker Server 13.
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13.
+- Mail sending support.
 
 =================================
 Known Issues for Browsers:
@@ -61,9 +62,15 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.1 (in development)
+- HTML5's user defined attributes are supported. class="IM[...]" should be data-im="...",
+  class="_im_repeater" -> data-im-control="repeater",  class="_im_enclosure" -> data-im-control="enclosure",
+  class="_im_post" -> data-im-control="post", class="_im_for_noresult_" -> data-im-control="noresult",
+  class="IM_WIDGET[...]" -> data-im-widget="...", name="IM[survey@q4]" -> data-im-group="...."- Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
 - Taking care in case of Accept-Language: header wasn't set (i.e. nothing defined language in browser).
 - Add the meta tag with "X-UA-Compatible" to all samples, it forces Internet Explorer to
   work as its native document mode.
+- TestDB.fmp12 is updated and sample_schema_filemaker.php is added in "dist-docs" directory.
+- The Defnition File Editor starts with reduced items and can show all items by clicking button.
 - [BUG FIX] Fix the issue of the Native Authentication (version 4.0 only).
 - [BUG FIX] Fix the issue of GenerateJSCode.php to work with PHP 5.2 again (version 4.0 only).
 - [BUG FIX] Modify dateArrayFromFMDate method of DataConverter_FMDateTime class to fix compatibility with PHP 5.2.
