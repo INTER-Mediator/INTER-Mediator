@@ -1005,7 +1005,7 @@ var INTERMediator = {
         }
     },
 
-    recalculation: function()   {
+    recalculation: function () {
 
     },
 
@@ -1253,10 +1253,12 @@ var INTERMediator = {
                     }
                 }
             }
-            IMLibNodeGraph.applyToAllNodes(function(node){
+            IMLibNodeGraph.applyToAllNodes(function (node) {
                 var targetNode = document.getElementById(node);
-                if(targetNode.tagName == 'INPUT')   {
-                    INTERMediatorLib.addEvent(targetNode, 'change', function(){INTERMediator.recalculation();})
+                if (targetNode.tagName == 'INPUT') {
+                    INTERMediatorLib.addEvent(targetNode, 'change', function () {
+                        INTERMediator.recalculation();
+                    })
                 }
             });
             do {
@@ -1299,7 +1301,7 @@ var INTERMediator = {
                         className = INTERMediatorLib.getClassAttributeFromNode(node);
                         attr = node.getAttribute("data-im-control");
                         if ((className && className.match(/_im_post/))
-                            || (attr && attr == "post")){
+                            || (attr && attr == "post")) {
                             setupPostOnlyEnclosure(node);
                         } else {
                             if (INTERMediator.isIE) {
@@ -1593,7 +1595,7 @@ var INTERMediator = {
                             nodeId = currentLinkedNodes[k].getAttribute("id");
                             replacedNode = setIdValue(currentLinkedNodes[k]);
 
-                            if (Object.keys(targetRecords.recordset).length > 1) {
+                            if (targetRecords.recordset.length > 1) {
                                 if (replacedNode.getAttribute("type") == "checkbox") {
                                     children = replacedNode.parentNode.childNodes;
                                     for (i = 0; i < children.length; i++) {
@@ -1733,18 +1735,13 @@ var INTERMediator = {
 
                                     // Set data to the element.
                                     if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                                        for (i = 0; i < Object.keys(curVal).length; i++) {
-                                            if (i == 0) {
-
-                                                if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal[i])) {
-//                                                if (setDataToElement(currentLinkedNodes[k], curTarget, curVal[i])) {
-                                                    postSetFields.push({'id': nodeId, 'value': curVal[i]});
-                                                }
+                                        if (curVal.length > 0) {
+                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal[0])) {
+                                                postSetFields.push({'id': nodeId, 'value': curVal[0]});
                                             }
                                         }
                                     } else {
                                         if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
-//                                            if (setDataToElement(currentLinkedNodes[k], curTarget, curVal)) {
                                             postSetFields.push({'id': nodeId, 'value': curVal});
                                         }
                                     }
@@ -1780,7 +1777,7 @@ var INTERMediator = {
                             newNode = repeatersOneRec[i].cloneNode(true);
                             nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                             dataAttr = newNode.getAttribute("data-im-control");
-                            if ((nodeClass != INTERMediator.noRecordClassName)&&(dataAttr != "noresult")) {
+                            if ((nodeClass != INTERMediator.noRecordClassName) && (dataAttr != "noresult")) {
                                 node.appendChild(newNode);
                                 newlyAddedNodes.push(newNode);
                                 setIdValue(newNode);

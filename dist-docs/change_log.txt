@@ -80,6 +80,7 @@ Ver.4.1 (in development)
 - [BUG FIX] Correct the confirmation message when clicking the deleting record button on the navigation bar.
   (Thanks to Kentaro Suzuki).
 - [BUG FIX] The delete button on the navigation bar works correctly when specifying INTERMediator.pagedSize = 1.
+- [BUG FIX} Eliminated "Object.keys()" for IE8.
 
 Ver.4.0 (2013/12/4)
 - File hierarchy changed for easily involving the pulled sources into developing web apps
