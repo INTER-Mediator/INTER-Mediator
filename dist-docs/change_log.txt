@@ -40,6 +40,7 @@ To Do List for the INTER-Mediator developer(s)
 - Authentication UI should generate on the server side.
 - Working with FileMaker's ODBC sharing instead of XML sharing (FX.php) when using FileMaker Server 13.
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13.
+- Mail sending support.
 
 =================================
 Known Issues for Browsers:
@@ -74,6 +75,7 @@ Ver.4.1 (in development)
 - Add the meta tag with "X-UA-Compatible" to all samples, it forces Internet Explorer to
   work as its native document mode.
 - TestDB.fmp12 is updated and sample_schema_filemaker.php is added in "dist-docs" directory.
+- The Defnition File Editor starts with reduced items and can show all items by clicking button.
 - [BUG FIX] Fix the issue of the Native Authentication (version 4.0 only).
 - [BUG FIX] Fix the issue of GenerateJSCode.php to work with PHP 5.2 again (version 4.0 only).
 - [BUG FIX] Modify dateArrayFromFMDate method of DataConverter_FMDateTime class to fix compatibility with PHP 5.2.
@@ -81,6 +83,7 @@ Ver.4.1 (in development)
   (Thanks to Kentaro Suzuki).
 - [BUG FIX] The delete button on the navigation bar works correctly when specifying INTERMediator.pagedSize = 1.
 - [BUG FIX} Eliminated "Object.keys()" for IE8.
+- [BUG FIX] Fix compatibility with 'STRICT_TRANS_TABLES' sql-mode setting of MySQL configuration. (Issue #43)
 
 Ver.4.0 (2013/12/4)
 - File hierarchy changed for easily involving the pulled sources into developing web apps

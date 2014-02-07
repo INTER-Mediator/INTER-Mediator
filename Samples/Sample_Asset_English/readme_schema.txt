@@ -134,5 +134,5 @@ INSERT rent	SET asset_id=16,staff_id=108,rentdate='2012-1-29',backdate='2012-1-3
 INSERT rent	SET asset_id=16,staff_id=108,rentdate='2012-4-29',backdate='2012-5-10';
 INSERT rent	SET asset_id=16,staff_id=109,rentdate='2012-6-29',backdate='2012-7-29';
 
-INSERT category SET category_id=1,name='個人用';
-INSERT category SET category_id=2,name='共用';
+INSERT category SET category_id=1,name='Indivisual';
+INSERT category SET category_id=2,name='Shared';
