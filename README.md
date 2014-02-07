@@ -20,10 +20,10 @@ http://msyk.dyndns.org/im-sample.html
 ### Contributer:
 - Atsushi Matsuo
 - Kiyonori Ito
+- Kentaro Suzuki
 
 ### Special Thanks to:
 - Tsutomu Yuasa
-- Kentaro Suzuki
 - Miyuki Imaizumi
 - Yukio Murakami
 - Akinori Mizoguchi

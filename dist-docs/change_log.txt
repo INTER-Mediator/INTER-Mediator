@@ -50,6 +50,7 @@ For every version of Internet Explorer
 
 Internet Explorer 7
 - Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
+- As far as above reason, IE7 must be partially supported forever.
 
 Internet Explorer 6 or under are NOT supported!
 FireFox/Safari/Chrome/Opera will work fine as for HTML5 supported version.
@@ -61,11 +62,17 @@ Change Log
 
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.1 (in development)
-- HTML5's user defined attributes are supported. class="IM[...]" should be data-im="...",
-  class="_im_repeater" -> data-im-control="repeater",  class="_im_enclosure" -> data-im-control="enclosure",
-  class="_im_post" -> data-im-control="post", class="_im_for_noresult_" -> data-im-control="noresult",
-  class="IM_WIDGET[...]" -> data-im-widget="...", name="IM[survey@q4]" -> data-im-group="...."
+Ver.4.2 (in development)
+
+Ver.4.1 (2014/2/7)
+- HTML5's user defined attributes are supported. Refer the alternative former style. CLASS-IM[] style is still supported.
+        class="IM[...]" -> data-im="...",
+        class="_im_repeater" -> data-im-control="repeater"
+        class="_im_enclosure" -> data-im-control="enclosure"
+        class="_im_ignore_enc_rep" -> data-im-control="ignore_enc_rep"
+        class="_im_for_noresult_" -> data-im-control="noresult"
+        class="IM_WIDGET[...]" -> data-im-widget="..."
+        name="IM[survey@q4]" -> data-im-group="...."
 - Database class and DB_Proxy support requireUpdatedRecord($value) and updatedRecord() method.
   For DB_PDO class, call the requireUpdatedRecord(true) and updateRecord() returns updated and newly created record.
   For DB_FileMaker_FX class, just call updateRecord() and it returns updated and newly created record.

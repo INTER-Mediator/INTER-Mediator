@@ -1034,7 +1034,6 @@ var INTERMediator = {
     constructMain: function (indexOfKeyFieldObject) {
         var i, theNode, currentLevel = 0, postSetFields = [], buttonIdNum = 1,
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1;
-
         INTERMediator.deleteInsertOnNavi = [];
         INTERMediatorOnPage.retrieveAuthInfo();
         try {

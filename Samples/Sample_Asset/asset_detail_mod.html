@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Please keep the CLASS-IM[] style target descriptions for compatibility to the paper -->
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
@@ -34,45 +35,45 @@
 <table>
     <tbody>
         <tr>
-            <th>名称</th><td><input type="text" data-im="assetdetail@name"/></td>
+            <th>名称</th><td><input type="text" class="IM[assetdetail@name]"/></td>
             <th>分類</th>
             <td>
                 <!--Before Modification:-->
-                <!--<input type="text" data-im="assetdetail@category"/>-->
+                <!--<input type="text" class="IM[assetdetail@category"/>-->
                 <!--After Modification1: Modification for page elements-->
-                <select data-im="assetdetail@category">
-                    <option data-im="category@category_id@value|category@name" value=""></option>
+                <select class="IM[assetdetail@category]">
+                    <option class="IM[category@category_id@value|category@name]" value=""></option>
                 </select>
                 <!--After Modification1:-->
             </td>
             <th>メモ</th>
         </tr>
         <tr><th>メーカー</th>
-            <td><input type="text" data-im="assetdetail@manifacture"/></td>
-            <th>型番</th><td><input type="text" data-im="assetdetail@productinfo"/></td>
+            <td><input type="text" class="IM[assetdetail@manifacture]"/></td>
+            <th>型番</th><td><input type="text" class="IM[assetdetail@productinfo]"/></td>
             <td rowspan="4">
-                <textarea data-im="assetdetail@memo"></textarea>
+                <textarea class="IM[assetdetail@memo"></textarea>
                 <hr>
-                <button onclick="setBackDate($)" data-im="assetdetail@asset_id@$onclick">本日返却</button>
+                <button onclick="setBackDate($)" class="IM[assetdetail@asset_id@$onclick]">本日返却</button>
             </td>
         </tr>
         <tr>
-            <th>取得日</th><td><input type="text" data-im="assetdetail@purchase"/></td>
-            <th>破棄日</th><td><input type="text" data-im="assetdetail@discard"/></td>
+            <th>取得日</th><td><input type="text" class="IM[assetdetail@purchase]"/></td>
+            <th>破棄日</th><td><input type="text" class="IM[assetdetail@discard]"/></td>
         </tr>
         <tr><td colspan="4">
             <table>
                 <thead><tr><th>貸出日</th><th>返却日</th><th>担当者</th><th>メモ</th></tr></thead>
                 <tbody>
                     <tr>
-                        <td data-im="rent@rentdate"></td>
-                        <td data-im="rent@backdate"></td>
+                        <td class="IM[rent@rentdate]"></td>
+                        <td class="IM[rent@backdate]"></td>
                         <td>
-                            <select data-im="rent@staff_id">
-                                <option data-im="staff@staff_id@value|staff@name"></option>
+                            <select class="IM[rent@staff_id]">
+                                <option class="IM[staff@staff_id@value|staff@name]"></option>
                             </select>
                         </td>
-                        <td><input type="text" data-im="rent@memo"/></td>
+                        <td><input type="text" class="IM[rent@memo]"/></td>
 
                     </tr>
                 </tbody>

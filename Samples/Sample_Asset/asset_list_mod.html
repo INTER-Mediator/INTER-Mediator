@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Please keep the CLASS-IM[] style target descriptions for compatibility to the paper -->
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
@@ -19,20 +20,20 @@
             <!-- This table contains assets without discarding. -->
             <td>
                 <button onclick="location.href = 'asset_detail_mod.html?id=$';"
-                        data-im="asseteffect@asset_id@$onclick">
+                        class="IM[asseteffect@asset_id@$onclick]">
                     詳細</button>
             </td>
             <!--<td data-im="asseteffect@category"></td>-->
             <td>
-                <span data-im-control="enclosure">
-                    <span data-im="category-in-list@name" data-im-control="repeater"></span>
+                <span class="_im_enclosure">
+                    <span class="IM[category-in-list@name] _im_repeater"></span>
                 </span>
             </td>
-            <td data-im="asseteffect@name"></td>
-            <td data-im="asseteffect@manifacture"></td>
-            <td data-im="asseteffect@productinfo"></td>
-            <td data-im="asseteffect@purchase"></td>
-            <td data-im="asseteffect@discard"></td>
+            <td class="IM[asseteffect@name]"></td>
+            <td class="IM[asseteffect@manifacture]"></td>
+            <td class="IM[asseteffect@productinfo]"></td>
+            <td class="IM[asseteffect@purchase]"></td>
+            <td class="IM[asseteffect@discard]"></td>
             <td></td>
         </tr>
     </tbody>
