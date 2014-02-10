@@ -181,7 +181,7 @@ class QdsmtpBase extends QdsmtpError{
 
 	function QdsmtpBase( $param = null ){
 		if( !is_null( $param[0] ) && is_bool( $param[0] ) ){
-			$this->continue = $continue;
+		//	$this->continue = $continue;    //avoid error Feb 10, 2014 msyk
 		}
 		if( is_array( $param[0] ) ){
 			$this->server( $param[0] );
