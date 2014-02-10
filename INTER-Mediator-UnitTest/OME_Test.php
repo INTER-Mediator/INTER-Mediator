@@ -9,10 +9,21 @@
 require_once(dirname(__FILE__) . '/../lib/mailsend/OME.php');
 require_once(dirname(__FILE__) . '/../lib/mailsend/qdsmtp/qdsmtp.php');
 
-class OMETest extends PHPUnit_Framework_TestCase
+class OME_Test extends PHPUnit_Framework_TestCase
 {
 
     var $mailAddress = "msyk@msyk.net";
+    var $smtpSettings = array(
+        'host' => 's98.coreserver.jp',
+        'port' => 587,
+        'protocol' => 'SMTP_AUTH',
+        'user' => 'msyktest@msyk.net',
+        'pass' => 'msyk27745test',
+    );
+    /*
+      * This SMTP account won't access any time. Masayuki Nii has this account, and he will be activate it
+      * just on his testing only. Usually this password might be wrong.
+      */
 
     public function testSendSimpleMail()
     {
@@ -31,18 +42,7 @@ class OMETest extends PHPUnit_Framework_TestCase
     public function testSendMailSMTP()
     {
         $ome = new OME();
-        $ome->setSmtpInfo(array(
-            'host' => 's98.coreserver.jp',
-            'port' => 587,
-            'protocol' => 'SMTP_AUTH',
-            'user' => 'msyktest@msyk.net',
-            'pass' => 'msyk27745test',
-        ));
-
-        /*
-         * This SMTP account won't access any time. Masayuki Nii has this account, and he will be activate it
-         * just on his testing only. Usually this password might be wrong.
-         */
+        $ome->setSmtpInfo($this->smtpSettings);
 
         $ome->setToField($this->mailAddress, "Masayuki Nii");
         $ome->setFromField($this->mailAddress, "新居雅行");

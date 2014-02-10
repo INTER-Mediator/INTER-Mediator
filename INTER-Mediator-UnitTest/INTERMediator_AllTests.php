@@ -30,6 +30,7 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'INTERMediator_Test.php');
         $suite->addTestFile($folder . 'MediaAccess_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_Test.php');
+        $suite->addTestFile($folder . 'OME_Test.php');
         $suite->addTestFile($folder . 'RSA_Test.php');
         return $suite;
     }
