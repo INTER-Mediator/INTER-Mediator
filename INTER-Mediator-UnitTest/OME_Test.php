@@ -41,16 +41,23 @@ class OME_Test extends PHPUnit_Framework_TestCase
 
     public function testSendMailSMTP()
     {
+        date_default_timezone_set("Asia/Tokyo");
+
         $ome = new OME();
         $ome->setSmtpInfo($this->smtpSettings);
 
         $ome->setToField($this->mailAddress, "Masayuki Nii");
         $ome->setFromField($this->mailAddress, "新居雅行");
+        $ome->setCurrentDateToHead();
         $ome->setSubject("INTER-Mediator ユニットテスト: testSendMailSMTP");
         $ome->setBody("INTER-Mediator Uni Test: testSendMailSMTP");
         $ome->appendBody("\nINTER-Mediator Uni Test: testSendMailSMTP");
         $ome->appendBody("\nINTER-Mediator ユニットテスト: testSendMailSMTP");
         $ome->appendBody("\nINTER-Mediator Uni Test: testSendMailSMTP");
+        for ($i=0;$i<100;$i++)  {
+            $ome->appendBody("日本語の「複雑な」構造を、持った文章(sentence)を、書いてみたら、こうなったですぞ。");
+        }
+        $ome->appendBody("\nこれが最後です。");
         $result = $ome->send();
         $this->assertEquals($result, true, "[ERROR] in sending mail");
     }

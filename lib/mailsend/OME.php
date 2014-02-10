@@ -52,6 +52,12 @@ class OME
 
     private $senderAddress = null;
     private $smtpInfo = null;
+    private $isSetCurrentDateToHead = false;
+    private $isUseSendmailParam = false;
+
+    function __construct() {
+        mb_internal_encoding('UTF-8');
+    }
 
     /**    エラーメッセージを取得する。
      *
@@ -73,6 +79,16 @@ class OME
     public function setMailEncoding($info)
     {
         $this->mailEncoding = $info;
+    }
+
+    public function setCurrentDateToHead()
+    {
+        $this->isSetCurrentDateToHead = true;
+    }
+
+    public function useSendMailParam()
+    {
+        $this->isUseSendmailParam = true;
     }
 
     /**    メールの本文を設定する。既存の本文は置き換えられる。
@@ -119,6 +135,7 @@ class OME
     public function setSendMailParam($param)
     {
         $this->sendmailParam = $param;
+        $this->isUseSendmailParam = true;
     }
 
     /**    メールアドレスが正しい形式かどうかを判断する。
@@ -390,34 +407,43 @@ class OME
             $headerField .= "Cc: {$this->ccField}\n";
         if ($this->bccField != '')
             $headerField .= "Bcc: {$this->bccField}\n";
+        if ($this->isSetCurrentDateToHead) {
+            $formatString = 'r'; //"D, d M Y H:i:s O (T)";
+            $headerField .= "Date: " . date($formatString) . "\n";
+            // Mon, 10 Feb 2014 19:36:36 +0900 (JST)
+        }
         if ($this->extHeaders != '')
             $headerField .= $this->extHeaders;
 
+        $bodyString = $this->devideWithLimitingWidth($this->body);
+        if ($this->mailEncoding != 'UTF-8') {
+            $bodyString = mb_convert_encoding($bodyString, $this->mailEncoding);
+        }
+
         if ($this->smtpInfo === null) {
-            if ($this->sendmailParam != '') {
+            if ($this->isUseSendmailParam) {
                 $resultMail = mail(
                     rtrim($this->header_base64_encode($this->toField, False)),
                     rtrim($this->header_base64_encode($this->subject, true)),
-                    mb_convert_encoding($this->devideWithLimitingWidth($this->body), $this->mailEncoding),
+                    $bodyString,
                     $this->header_base64_encode($headerField, True),
                     $this->sendmailParam);
             } else {
                 $resultMail = mail(
                     rtrim($this->header_base64_encode($this->toField, False)),
                     rtrim($this->header_base64_encode($this->subject, true)),
-                    mb_convert_encoding(
-                        $this->devideWithLimitingWidth($this->body), $this->mailEncoding),
+                    $bodyString,
                     $this->header_base64_encode($headerField, True));
             }
         } else {
-            if ($this->senderAddress != null)   {
+            if ($this->senderAddress != null) {
                 $this->smtpInfo["from"] = $this->senderAddress;
             }
             $smtp = new QdSmtp($this->smtpInfo);
             $resultMail = $smtp->mail(
                 $this->unifyCRLF(rtrim($this->header_base64_encode($this->toField, False))),
                 $this->unifyCRLF(rtrim($this->header_base64_encode($this->subject, true))),
-                $this->unifyCRLF(mb_convert_encoding($this->devideWithLimitingWidth($this->body), $this->mailEncoding)),
+                $this->unifyCRLF($bodyString),
                 $this->unifyCRLF($this->header_base64_encode($headerField, True))
             );
 
@@ -432,10 +458,9 @@ class OME
      */
     private function devideWithLimitingWidth($str)
     {
+        $maxByteCount = 2;
         if ($this->bodyWidth == 0)
             return $str;
-        $str = mb_convert_encoding($str, 'EUC-JP', 'UTF-8');
-        mb_internal_encoding('EUC-JP');
         $newLine = "\n";
         $strLength = mb_strlen($str);
         $devidedStr = mb_substr($str, 0, 1);
@@ -444,12 +469,14 @@ class OME
             $byteLength = 0;
         else
             $byteLength = strlen($devidedStr);
+        $lineByteCounter = 0;
         for ($pos = 1; $pos < $strLength; $pos++) {
             $posChar = mb_substr($str, $pos, 1);
-            if ($posChar == $newLine)
+            if ($posChar == $newLine) {
                 $byteLength = 0;
-            else {
-                if (($byteLength >= $this->bodyWidth)
+                $lineByteCounter = 0;
+            } else {
+                if (($lineByteCounter >= $this->bodyWidth)
                     && !$this->isInhibitLineTopChar($posChar)
                     && !$this->isInhibitLineEndChar($beforeChar)
                 ) {
@@ -464,21 +491,24 @@ class OME
 
                         $devidedStr .= $newLine;
                         $byteLength = 0;
+                        $lineByteCounter = 0;
                     } // Endo of if
                 }
                 $byteLength += strlen($posChar);
+                $lineByteCounter += min($maxByteCount, strlen($posChar));
             }
             $devidedStr .= $posChar;
             $beforeChar = $posChar;
         }
-        mb_internal_encoding('UTF-8');
-        return mb_convert_encoding($devidedStr, 'UTF-8', 'EUC-JP');
+        return $devidedStr;
     } // End of function devideWithLimitingWidth()
 
-    private function unifyCRLF($str)    {
+    private function unifyCRLF($str)
+    {
         $strUnifiedLF = str_replace("\r", "\n", str_replace("\r\n", "\n", $str));
         return str_replace("\n", "\r\n", $strUnifiedLF);
     }
+
     /**    引数の文字が空白かどうかのチェックを行う。ただ、これは標準の関数を利用すべきかもしれない（内部利用メソッド／devideWithLimitingWidth関数で利用）
      *
      * @param string 処理対象の文字
@@ -532,7 +562,7 @@ class OME
      */
     private function isInhibitLineTopChar($str)
     {
-        switch (mb_convert_encoding($str, 'UTF-8', 'EUC-JP')) {
+        switch ($str) {
             case ')':
             case ']':
             case '}':
@@ -575,7 +605,7 @@ class OME
      */
     private function isInhibitLineEndChar($str)
     {
-        switch (mb_convert_encoding($str, 'UTF-8', 'EUC-JP')) {
+        switch ($str) {
             case '(':
             case '[':
             case '{':
