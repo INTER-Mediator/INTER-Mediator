@@ -1868,7 +1868,7 @@ var INTERMediator = {
         }
 
         function setIdValue(node) {
-            var i, overwrite = true;
+            var i, elementInfo, comp, overwrite = true;
             
             if (node.getAttribute('id') == null) {
                 node.setAttribute('id', nextIdValue());
