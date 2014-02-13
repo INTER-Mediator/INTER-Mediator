@@ -963,7 +963,7 @@ var INTERMediator = {
                 var newNode, parentOfTarget, targetNode = node, thisContext = contextInfo, isSetMsg = false;
                 INTERMediator.flushMessage();
                 if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
-                    INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode);
+                    INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, returnValue);
                 }
                 if (thisContext['post-dismiss-message']) {
                     parentOfTarget = targetNode.parentNode;

@@ -63,6 +63,8 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.2 (in development)
+- INTERMediatorOnPage.processingAfterPostOnlyContext has TWO parameters.
+- DataConverter_HTMLString supports double and single quote to convert to reference character.
 
 Ver.4.1 (2014/2/7)
 - HTML5's user defined attributes are supported. Refer the alternative former style. CLASS-IM[] style is still supported.
