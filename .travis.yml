@@ -3,6 +3,7 @@ language:
   - node_js
 
 php:
+  - 5.6
   - 5.5
   - 5.4
   - 5.3
@@ -16,8 +17,9 @@ node_js:
 #  - DB=sqlite3
 #  - DB=postgres
 
-#matrix:
-#  allow_failures:
+matrix:
+  allow_failures:
+    - php: 5.6
 #    - env: "DB=sqlite3"
 #    - env: "DB=postgres"
 
