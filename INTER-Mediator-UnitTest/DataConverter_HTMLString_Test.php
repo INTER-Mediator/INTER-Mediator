@@ -12,6 +12,7 @@ class DataConverter_HTMLString_Test extends PHPUnit_Framework_TestCase
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         
         $this->dataconverter = new DataConverter_HTMLString();
+        $this->dataconverterForLinking = new DataConverter_HTMLString(true);
     }
     
     public function test_converterFromUserToDB()
@@ -26,5 +27,37 @@ class DataConverter_HTMLString_Test extends PHPUnit_Framework_TestCase
         $expected = '';
         $string = '';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '<br/>';
+        $string = "\n";
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '<br/>';
+        $string = "\r\n";
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '&gt;';
+        $string = '>';
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '&lt;';
+        $string = '<';
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '&#39;';
+        $string = "'";
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '&quot;';
+        $string = '"';
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '&amp;';
+        $string = '&';
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+        
+        $expected = '<a href="http://inter-mediator.org/" target="_blank">http://inter-mediator.org/</a>';
+        $string = 'http://inter-mediator.org/';
+        $this->assertSame($expected, $this->dataconverterForLinking->converterFromDBtoUser($string));
     }
 }
