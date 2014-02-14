@@ -1,4 +1,5 @@
 <?php
+
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
@@ -29,10 +30,12 @@ class DataConverter_HTMLString
                 str_replace("\r\n", "<br/>",
                     str_replace(">", "&gt;",
                         str_replace("<", "&lt;",
-                            str_replace("&", "&amp;", $str))))));
+                            str_replace("'", "&#39;",
+                                str_replace('"', "&quot;",
+                                    str_replace("&", "&amp;", $str))))))));
         if ($this->linking) {
-            $str = mb_ereg_replace ( "(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)" ,
-                "<a href=\"\\0\" target='_blank'>\\0</a>" , $str ,"i");
+            $str = mb_ereg_replace("(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)",
+                "<a href=\"\\0\" target='_blank'>\\0</a>", $str, "i");
         }
         return $str;
     }
