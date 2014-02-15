@@ -898,7 +898,7 @@ var INTERMediator = {
                         if (currentVal.recordset == null
                             || currentVal.recordset[0] == null) {
                             alert(INTERMediatorLib.getInsertedString(
-                                INTERMediatorOnPage.getMessages()[1003], [objectSpec['field']]));
+                                INTERMediatorOnPage.getMessages()[1003], [fieldArray.join(',')]));
                             return;
                         }
                         if (currentVal.count > 1) {

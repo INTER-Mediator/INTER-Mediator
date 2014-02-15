@@ -25,6 +25,14 @@ class OME_Test extends PHPUnit_Framework_TestCase
       * just on his testing only. Usually this password might be wrong.
       */
 
+    public function testAddressDividing()
+    {
+        $addrString = "Masayuki Nii <msyk@msyk.net>";
+        $ome = new OME();
+        $ome->setToField($addrString);
+        $this->assertEquals($ome->getToField() === $addrString, true, "[ERROR] in parse mail address string.");
+    }
+
     public function testSendSimpleMail()
     {
         $ome = new OME();

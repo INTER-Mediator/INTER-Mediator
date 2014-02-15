@@ -29,7 +29,7 @@ class DataConverter_HTMLString
                 str_replace("\r\n", "<br/>",
                     str_replace(">", "&gt;",
                         str_replace("<", "&lt;",
-                            str_replace("'", "&#39;",
+                            str_replace("'", "&apos;",
                                 str_replace('"', "&quot;",
                                     str_replace("&", "&amp;", $str))))))));
         if ($this->linking) {
