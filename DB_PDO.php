@@ -546,7 +546,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
      * @param $bypassAuth
      * @return bool
      */
-    function newToDB($dataSourceName, $bypassAuth)
+    public function newToDB($dataSourceName, $bypassAuth)
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();

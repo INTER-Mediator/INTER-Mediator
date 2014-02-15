@@ -180,6 +180,12 @@ class DefinitionChecker
         ),
         'media-root-dir'=> 'string',
         'media-context'=> 'string',
+        'smtp' => array(
+            'server' => 'string',
+            'port' => 'integer',
+            'username' => 'string',
+            'password' => 'string',
+        )
     );
     private
         $prohibitKeywordsForDataSource = array(
@@ -305,6 +311,63 @@ class DefinitionChecker
                     'expression' => 'string',
                 )
             ),
+            'send-mail' => array(
+                'load' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
+                'new' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
+                'update' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
+            )
+
         ),
     );
 

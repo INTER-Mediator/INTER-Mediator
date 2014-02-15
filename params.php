@@ -95,3 +95,13 @@ EOL;
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
 $customLoginPanel = '';
+
+/*
+ * If you want to specify the smtp server info, set them below.
+$sendMailSMTP = array(
+    'server' => 'string',
+    'port' => 'integer',
+    'username' => 'string',
+    'password' => 'string',
+);
+*/

@@ -55,7 +55,8 @@ class OME
     private $isSetCurrentDateToHead = false;
     private $isUseSendmailParam = false;
 
-    function __construct() {
+    function __construct()
+    {
         mb_internal_encoding('UTF-8');
     }
 
@@ -138,6 +139,16 @@ class OME
         $this->isUseSendmailParam = true;
     }
 
+    private function divideMailAddress($addr)
+    {
+        if(preg_match(
+                "/(.*)<(([a-zA-Z0-9])+([a-zA-Z0-9_\.-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+))+>/",
+                $addr, $matches)===1)   {
+            return array('name' => trim($matches[1]), 'address' => $matches[2]);
+        }
+        return array('name' => '', 'address' => trim($addr));
+    }
+
     /**    メールアドレスが正しい形式かどうかを判断する。
      *
      *    判断に使う正規表現は「^([a-z0-9_]|\-|\.)+@(([a-z0-9_]|\-)+\.)+[a-z]+$」なので、完全ではないが概ねOKかと。
@@ -149,7 +160,7 @@ class OME
     {
         if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9_\.-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $address)) {
             if (isset($address)) {
-                $this->errorMessage = "アドレス“$address”は正しくないメールアドレスです。";
+                $this->errorMessage = "アドレス“{$address}”は正しくないメールアドレスです。";
             }
             return false;
         } else {
@@ -163,16 +174,21 @@ class OME
      * @param    string    送信者名（日本語の文字列はそのまま指定可能）で、省略しても良い
      * @param    boolean    送信者アドレスを自動的にsendmailの-fパラメータとして与えて、Return-Pathのアドレスとして使用する場合はTRUE。既定値はFALSE
      */
-    public function setFromField($address, $name = '', $isSetToParam = FALSE)
+    public function setFromField($address, $name = false, $isSetToParam = FALSE)
     {
+        if ($name === false)    {
+            $divided = $this->divideMailAddress($address);
+            $address = $divided['address'];
+            $name = $divided['name'];
+        }
         if ($this->checkEmail($address)) {
             if ($name == '') {
                 $this->fromField = $address;
-                if ($isSetToParam)
+                if ($isSetToParam || $this->isUseSendmailParam)
                     $this->sendmailParam = "-f $address";
             } else {
                 $this->fromField = "$name <$address>";
-                if ($isSetToParam)
+                if ($isSetToParam || $this->isUseSendmailParam)
                     $this->sendmailParam = "-f $address";
             }
             $this->senderAddress = $address;
@@ -188,10 +204,15 @@ class OME
      * @param string 送信者のアドレス
      * @param string 送信者名
      */
-    public function setToField($address, $name = '')
+    public function setToField($address, $name = false)
     {
+        if ($name === false)    {
+            $divided = $this->divideMailAddress($address);
+            $address = $divided['address'];
+            $name = $divided['name'];
+        }
         if ($this->checkEmail($address)) {
-            if ($name == '')
+            if ($name == '' || $name === false)
                 $this->toField = "$address";
             else
                 $this->toField = "$name <$address>";
@@ -200,16 +221,26 @@ class OME
         return false;
     }
 
+    // This method for unit testing.
+    public function getToField()    {
+        return $this->toField;
+    }
+
     /**    Toフィールドに追加する。
      *
      * @return boolean メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      * @param string    送信者のアドレス
      * @param string    送信者名。日本語の指定も可能
      */
-    public function appendToField($address, $name = '')
+    public function appendToField($address, $name = false)
     {
+        if ($name === false)    {
+            $divided = $this->divideMailAddress($address);
+            $address = $divided['address'];
+            $name = $divided['name'];
+        }
         if ($this->checkEmail($address)) {
-            if ($name == '')
+            if ($name == '' || $name === false)
                 $appendString = "$address";
             else
                 $appendString = "$name <$address>";
@@ -228,10 +259,15 @@ class OME
      * @param string    送信者名
      * @return boolean    メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
      */
-    public function setCcField($address, $name = '')
+    public function setCcField($address, $name = false)
     {
+        if ($name === false)    {
+            $divided = $this->divideMailAddress($address);
+            $address = $divided['address'];
+            $name = $divided['name'];
+        }
         if ($this->checkEmail($address)) {
-            if ($name == '')
+            if ($name == '' || $name === false)
                 $this->ccField = "$address";
             else
                 $this->ccField = "$name <$address>";
@@ -246,10 +282,15 @@ class OME
      * @param string 送信者名
      * @return boolean    メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
-    public function appendCcField($address, $name = '')
+    public function appendCcField($address, $name = false)
     {
+        if ($name === false)    {
+            $divided = $this->divideMailAddress($address);
+            $address = $divided['address'];
+            $name = $divided['name'];
+        }
         if ($this->checkEmail($address)) {
-            if ($name == '')
+            if ($name == '' || $name === false)
                 $appendString = "$address";
             else
                 $appendString = "$name <$address>";
@@ -268,10 +309,15 @@ class OME
      * @param string 送信者名
      * @return boolean メールアドレスを調べて不正ならfalse（アドレスは設定されない）、そうでなければtrue
      */
-    public function setBccField($address, $name = '')
+    public function setBccField($address, $name = false)
     {
+        if ($name === false)    {
+            $divided = $this->divideMailAddress($address);
+            $address = $divided['address'];
+            $name = $divided['name'];
+        }
         if ($this->checkEmail($address)) {
-            if ($name == '')
+            if ($name == '' || $name === false)
                 $this->bccField = "$address";
             else
                 $this->bccField = "$name <$address>";
@@ -286,10 +332,15 @@ class OME
      * @param string 送信者名
      * @return string メールアドレスを調べて不正ならfalse（アドレスは追加されない）、そうでなければtrue
      */
-    public function appendBccField($address, $name = '')
+    public function appendBccField($address, $name = false)
     {
+        if ($name === false)    {
+            $divided = $this->divideMailAddress($address);
+            $address = $divided['address'];
+            $name = $divided['name'];
+        }
         if ($this->checkEmail($address)) {
-            if ($name == '')
+            if ($name == '' || $name === false)
                 $appendString = "$address";
             else
                 $appendString = "$name <$address>";
@@ -314,7 +365,7 @@ class OME
             $this->tmpContents = implode('', $fileContensArray);
             return true;
         }
-        $this->errorMessage = "テンプレートファイルが存在しません。";
+        $this->errorMessage = "テンプレートファイルが存在しません。指定パス={$tfile}";
         return false;
     }
 

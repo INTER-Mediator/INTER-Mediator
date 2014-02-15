@@ -63,11 +63,13 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.2 (in development)
+- Send emails after the load/edit/new database operations.
 - INTERMediatorOnPage.processingAfterPostOnlyContext has TWO parameters.
 - DataConverter_HTMLString supports double and single quote to convert to reference character.
 - When the 'transaction' set to 'none', the update processing improved and update once for single record.
 - [BUG FIX] Fix setIdValue() of INTER-Mediator.js to enable setting the value of the field to the attribute of
   the node again when specifying the IM target and displaying multiple records.
+- [BUG FIX] Modified DataConverter_MySQLDateTime class. In case of NULL field, it shows '' string.
 
 Ver.4.1 (2014/2/7)
 - HTML5's user defined attributes are supported. Refer the alternative former style. CLASS-IM[] style is still supported.

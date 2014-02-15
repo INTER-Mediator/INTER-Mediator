@@ -52,6 +52,9 @@ class DataConverter_MySQLDateTime
         if ($dtObj === false) {
             return $str;
         }
+        if (strftime('%Y', $dtObj->format('U'))<1970) {
+            return '';
+        }
         return strftime(($this->fmt == '') ? $fmt : $this->fmt, $dtObj->format('U'));
     }
 
