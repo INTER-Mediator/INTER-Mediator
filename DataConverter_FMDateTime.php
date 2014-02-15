@@ -2,7 +2,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -82,11 +82,13 @@ class DataConverter_FMDateTime
             '1989-1-8' => '平成', '1925-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
         $wStrArray = array('日', '月', '火', '水', '木', '金', '土');
 
+        // @codeCoverageIgnoreStart
         if (((float)phpversion()) >= 5.3) {
             $dateComp = date_parse_from_format('m/d/Y H:i:s', $d);
         } else {
             $dateComp = date_parse($d);
         }
+        // @codeCoverageIgnoreEnd
         $dt = new DateTime();
         $dt->setDate($dateComp['year'], $dateComp['month'], $dateComp['day']);
         $dt->setTime($dateComp['hour'], $dateComp['minute'], $dateComp['second']);
