@@ -72,6 +72,8 @@ class MessageStrings
         1031 => "Change File Uploading: ",
         1032 => "Connection Error on uploading file=@1@/@2@",
         1033 => "The field name specified in the page file doesn't exist [folder=@1@]",
+        1034 => "Other people might be updated.\n\n@1@\n\nYou can overwrite with your data if you select OK.",
+        1035 => "field=@1@, initial value=@2@, current value=@3@\n",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

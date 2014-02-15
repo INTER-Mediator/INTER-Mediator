@@ -1009,27 +1009,7 @@ var IMLibElement = {
             return element._im_getValue();
         } else if (nodeTag == "INPUT") {
             typeAttr = element.getAttribute('type');
-            valueAttr = element.getAttribute('value');
             if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
-                if (typeAttr == 'checkbox') {
-                    if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
-                        if (INTERMediator.isIE) {
-                            element.setAttribute('checked', 'checked');
-                        } else {
-                            element.checked = true;
-                        }
-                    }
-                } else {
-                    if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
-                        if (INTERMediator.isIE) {
-                            element.setAttribute('checked', 'checked');
-                        } else {
-                            element.checked = true;
-                        }
-                    } else {
-                        element.checked = false;
-                    }
-                }
                 return element.value;
             } else { // this node must be text field
                 return element.value;

@@ -65,7 +65,9 @@ Latest changes might exist on the GitHub repository. Please check https://github
 Ver.4.2 (in development)
 - INTERMediatorOnPage.processingAfterPostOnlyContext has TWO parameters.
 - DataConverter_HTMLString supports double and single quote to convert to reference character.
-- [BUG FIX] Fix setIdValue() of INTER-Mediator.js to enable setting the value of the field to the attribute of the node again when specifying the IM target and displaying multiple records.
+- When the 'transaction' set to 'none', the update processing improved and update once for single record.
+- [BUG FIX] Fix setIdValue() of INTER-Mediator.js to enable setting the value of the field to the attribute of
+  the node again when specifying the IM target and displaying multiple records.
 
 Ver.4.1 (2014/2/7)
 - HTML5's user defined attributes are supported. Refer the alternative former style. CLASS-IM[] style is still supported.
@@ -74,6 +76,7 @@ Ver.4.1 (2014/2/7)
         class="_im_enclosure" -> data-im-control="enclosure"
         class="_im_ignore_enc_rep" -> data-im-control="ignore_enc_rep"
         class="_im_for_noresult_" -> data-im-control="noresult"
+        class="_im_post" -> data-im-control="post" (added this line after release)
         class="IM_WIDGET[...]" -> data-im-widget="..."
         name="IM[survey@q4]" -> data-im-group="...."
 - Database class and DB_Proxy support requireUpdatedRecord($value) and updatedRecord() method.
