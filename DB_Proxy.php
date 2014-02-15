@@ -82,6 +82,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function getFromDB($dataSourceName)
     {
+        $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
         try {
             $className = get_class($this->userExpanded);
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeGetFromDB")) {
@@ -96,6 +97,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterSetToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
             }
+            if (isset($currentDataSource['send-mail']['load']))   {
+                $this->logger->setDebugMessage("Try to send an email.", 2);
+                $mailSender = new SendMail();
+                $mailResult = $mailSender->processing(
+                    $currentDataSource['send-mail']['load'],
+                    $result,
+                    $this->dbSettings->getSmtpConfiguration());
+                if ($mailResult !== true)   {
+                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
+                }
+            }
+
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             return false;
@@ -123,15 +136,30 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function setToDB($dataSourceName)
     {
+        $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
         try {
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeSetToDB")) {
                 $this->userExpanded->doBeforeSetToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
+                if (isset($currentDataSource['send-mail']['edit']))   {
+                    $this->dbClass->requireUpdatedRecord(true);
+                }
                 $result = $this->dbClass->setToDB($dataSourceName);
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
                 $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
+            }
+            if (isset($currentDataSource['send-mail']['edit']))   {
+                $this->logger->setDebugMessage("Try to send an email.", 2);
+                $mailSender = new SendMail();
+                $mailResult = $mailSender->processing(
+                    $currentDataSource['send-mail']['edit'],
+                    $this->dbClass->updatedRecord(),
+                    $this->dbSettings->getSmtpConfiguration());
+                if ($mailResult !== true)   {
+                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
+                }
             }
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
@@ -145,17 +173,32 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      * @param $bypassAuth
      * @return mixed
      */
-    function newToDB($dataSourceName, $bypassAuth)
+    public function newToDB($dataSourceName, $bypassAuth)
     {
+        $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
         try {
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeNewToDB")) {
                 $this->userExpanded->doBeforeNewToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
+                if (isset($currentDataSource['send-mail']['new']))   {
+                    $this->dbClass->requireUpdatedRecord(true);
+                }
                 $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
                 $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
+            }
+            if (isset($currentDataSource['send-mail']['new']))   {
+                $this->logger->setDebugMessage("Try to send an email.");
+                $mailSender = new SendMail();
+                $mailResult = $mailSender->processing(
+                    $currentDataSource['send-mail']['new'],
+                    $this->dbClass->updatedRecord(),
+                    $this->dbSettings->getSmtpConfiguration());
+                if ($mailResult !== true)   {
+                    $this->logger->setErrorMessage("Mail sending error: $mailResult");
+                }
             }
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
@@ -450,6 +493,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
         $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
+
+        if (isset($options['smtp']))    {
+            $this->dbSettings->setSmtpConfiguration($options['smtp']);
+        }
 
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);

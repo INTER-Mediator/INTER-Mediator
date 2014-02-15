@@ -146,7 +146,7 @@ class OME
                 $addr, $matches)===1)   {
             return array('name' => trim($matches[1]), 'address' => $matches[2]);
         }
-        return $addr;
+        return array('name' => '', 'address' => trim($addr));
     }
 
     /**    メールアドレスが正しい形式かどうかを判断する。
@@ -184,11 +184,11 @@ class OME
         if ($this->checkEmail($address)) {
             if ($name == '') {
                 $this->fromField = $address;
-                if ($isSetToParam)
+                if ($isSetToParam || $this->isUseSendmailParam)
                     $this->sendmailParam = "-f $address";
             } else {
                 $this->fromField = "$name <$address>";
-                if ($isSetToParam)
+                if ($isSetToParam || $this->isUseSendmailParam)
                     $this->sendmailParam = "-f $address";
             }
             $this->senderAddress = $address;
@@ -365,7 +365,7 @@ class OME
             $this->tmpContents = implode('', $fileContensArray);
             return true;
         }
-        $this->errorMessage = "テンプレートファイルが存在しません。";
+        $this->errorMessage = "テンプレートファイルが存在しません。指定パス={$tfile}";
         return false;
     }
 

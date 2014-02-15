@@ -49,6 +49,23 @@ class DB_Settings
     private $requireAuthorization = false;
     private $requireAuthentication = false;
 
+    private $smtpConfiguration = null;
+
+    /**
+     * @param string $dataSourceName
+     */
+    public function setSmtpConfiguration($config)
+    {
+        $this->smtpConfiguration = $config;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmtpConfiguration()
+    {
+        return $this->smtpConfiguration;
+    }
 
     /**
      * @param string $dataSourceName
@@ -413,6 +430,16 @@ class DB_Settings
     function setDataSource($src)
     {
         $this->dataSource = $src;
+    }
+
+    function getDataSource($dataSourceName)
+    {
+        foreach ($this->dataSource as $index => $value) {
+            if ($value['name'] == $dataSourceName) {
+                return $value;
+            }
+        }
+        return null;
     }
 
     function getIndexOfDataSource($dataSourceName)
