@@ -36,13 +36,21 @@ class SendMail
             $smtpConfig = $altSMTPConfig;
         }
         if (isset($smtpConfig) && is_array($smtpConfig)) {
-            $ome->setSmtpInfo(array(
-                'host' => $smtpConfig['server'],
-                'port' => $smtpConfig['port'],
-                'protocol' => (isset($smtpConfig['password']) ? 'SMTP_AUTH' : 'SMTP'),
-                'user' => $smtpConfig['username'],
-                'pass' => $smtpConfig['password'],
-            ));
+            if (isset($smtpConfig['password'])) {
+                $ome->setSmtpInfo(array(
+                    'host' => $smtpConfig['server'],
+                    'port' => $smtpConfig['port'],
+                    'protocol' => 'SMTP_AUTH',
+                    'user' => $smtpConfig['username'],
+                    'pass' => $smtpConfig['password'],
+                ));
+            } else {
+                $ome->setSmtpInfo(array(
+                    'host' => $smtpConfig['server'],
+                    'port' => $smtpConfig['port'],
+                    'protocol' => 'SMTP',
+                ));
+            }
         }
 
         if (isset($sendMailParam['to-constant'])) {
