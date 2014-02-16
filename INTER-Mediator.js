@@ -824,7 +824,7 @@ var INTERMediator = {
             INTERMediator.flushMessage();
         },
 
-        saveRecordFromNavi: function () {
+        saveRecordFromNavi: function (dontUpdate) {
             var idValue, contextName, keying, field, value, originalValue, keyingComp, keyingField, keyingValue;
             var updatingInfo = {}, checkQueryParameter, currentVal, fieldArray, valueArray, diffrence, newValue;
             var needUpdate = true, changedObj, i;
@@ -956,7 +956,7 @@ var INTERMediator = {
                     }
                 }
             }
-            if (needUpdate) {
+            if (needUpdate && (dontUpdate !== true)) {
                 INTERMediator.constructMain(true);
             }
             INTERMediatorOnPage.hideProgress();
