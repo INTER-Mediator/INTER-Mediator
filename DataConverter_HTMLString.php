@@ -11,27 +11,31 @@
 class DataConverter_HTMLString
 {
     private $linking;
+    private $escape;
 
-    function __construct($uselink = false)
+    public function __construct($uselink = false, $escape = true)
     {
         $this->linking = $uselink;
+        $this->escape = $escape;
     }
 
-    function converterFromUserToDB($str)
+    public function converterFromUserToDB($str)
     {
         return $str;
     }
 
-    function converterFromDBtoUser($str)
+    public function converterFromDBtoUser($str)
     {
-        $str = str_replace("\n", "<br/>",
-            str_replace("\r", "<br/>",
-                str_replace("\r\n", "<br/>",
-                    str_replace(">", "&gt;",
-                        str_replace("<", "&lt;",
-                            str_replace("'", "&#39;",
-                                str_replace('"', "&quot;",
-                                    str_replace("&", "&amp;", $str))))))));
+        if ($this->escape) {
+            $str = str_replace(">", "&gt;",
+                str_replace("<", "&lt;",
+                    str_replace("'", "&#39;",
+                        str_replace('"', "&quot;",
+                            str_replace("&", "&amp;", $str)))));
+        }
+        $str = str_replace("\n", "<br />",
+            str_replace("\r", "<br />",
+                str_replace("\r\n", "<br />", $str)));
         if ($this->linking) {
             $str = mb_ereg_replace("(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)",
                 "<a href=\"\\0\" target=\"_blank\">\\0</a>", $str, "i");
