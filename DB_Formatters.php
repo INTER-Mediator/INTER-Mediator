@@ -2,7 +2,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -18,7 +18,7 @@ class DB_Formatters
 {
     private $formatter = null;
     /* Formatter processing */
-    function setFormatter($fmt)
+    public function setFormatter($fmt)
     {
         if (is_array($fmt)) {
             $this->formatter = array();
@@ -26,14 +26,20 @@ class DB_Formatters
                 if (!isset($this->formatter[$oneItem['field']])) {
                     $cvClassName = "DataConverter_{$oneItem['converter-class']}";
                     //    require_once("{$cvClassName}.php");
-                    $this->formatter[$oneItem['field']]
-                        = new $cvClassName(isset($oneItem['parameter']) ? $oneItem['parameter'] : '');
+                    if (isset($oneItem['parameter']) && is_array($oneItem['parameter'])) {
+                        $this->formatter[$oneItem['field']]
+                            = new $cvClassName(isset($oneItem['parameter'][0]) ? $oneItem['parameter'][0] : '',
+                                isset($oneItem['parameter'][1]) ? $oneItem['parameter'][1] : '');
+                    } else {
+                        $this->formatter[$oneItem['field']]
+                            = new $cvClassName(isset($oneItem['parameter']) ? $oneItem['parameter'] : '');
+                    }
                 }
             }
         }
     }
 
-    function formatterFromDB($field, $data)
+    public function formatterFromDB($field, $data)
     {
         if (is_array($this->formatter)) {
             if (isset($this->formatter[$field])) {
@@ -43,7 +49,7 @@ class DB_Formatters
         return $data;
     }
 
-    function formatterToDB($field, $data)
+    public function formatterToDB($field, $data)
     {
         if (is_array($this->formatter)) {
             if (isset($this->formatter[$field])) {
