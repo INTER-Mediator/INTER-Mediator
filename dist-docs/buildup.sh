@@ -21,8 +21,7 @@ echo "================================================="
 echo " Start to build the INTER-Mediator Ver.${version}"
 echo "-------------------------------------------------"
 
-dt=`date "+%Y-%m-%d"`
-versionInFilename=`echo "${version}" | tr '.' '_'`;
+dt=$(date "+%Y-%m-%d")
 
 sedrule="/tmp/sedrule"
 cat << EOF > "${sedrule}"
@@ -83,8 +82,8 @@ if [ -f "${topOfDir}/${YUICOMP}" ]; then
     sed '1s/*/*!/' "${buildPath}/temp.js" > "${buildPath}/temp2.js"
     java -jar "${topOfDir}/${YUICOMP}" "${buildPath}/temp2.js" -v --charset UTF-8 -o "${buildPath}/temp3.js" 2> "${buildDir}/${YUICOMPLOG}"
     sed '1s/*!/*/' "${buildPath}/temp3.js" > "${buildPath}/INTER-Mediator.js"
+    rm  "${buildPath}/temp.js" "${buildPath}/temp2.js" "${buildPath}/temp3.js"
 fi
-rm  "${buildPath}/temp.js" "${buildPath}/temp2.js" "${buildPath}/temp3.js"
 
 # Copy "lib" path php contents.
 echo "PROCESSING: ${originalPath}/lib"
@@ -152,8 +151,6 @@ if [ $choice = 1 ]; then
 fi
 
 find "${buildPath}" -name "\.*" -exec rm -rf {} \;
-
-# zip -r ../INTER-Mediator-${versionInFilename}.zip *
 
 rm "${sedrule}"
 

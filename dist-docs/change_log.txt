@@ -40,7 +40,6 @@ To Do List for the INTER-Mediator developer(s)
 - Authentication UI should generate on the server side.
 - Working with FileMaker's ODBC sharing instead of XML sharing (FX.php) when using FileMaker Server 13.
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13.
-- Mail sending support.
 
 =================================
 Known Issues for Browsers:
