@@ -80,7 +80,18 @@ sed -f "${sedrule}" "${buildPath}/temp.js" > "${buildPath}/INTER-Mediator.js"
 #### Compress INTER-Mediator.js
 if [ -f "${topOfDir}/${YUICOMP}" ]; then
     sed '1s/*/*!/' "${buildPath}/temp.js" > "${buildPath}/temp2.js"
-    java -jar "${topOfDir}/${YUICOMP}" "${buildPath}/temp2.js" -v --charset UTF-8 -o "${buildPath}/temp3.js" 2> "${buildDir}/${YUICOMPLOG}"
+    if [ `uname -o` = "Cygwin" ];  then
+    	jarPath=$(cygpath -w "${topOfDir}/${YUICOMP}")
+    	temp2Path=$(cygpath -w "${buildPath}/temp2.js")
+    	temp3Path=$(cygpath -w "${buildPath}/temp3.js")
+    	yuiLogPath=$(cygpath -w "${buildDir}/${YUICOMPLOG}")
+    else 
+    	jarPath="${topOfDir}/${YUICOMP}"
+    	temp2Path="${buildPath}/temp2.js"
+    	temp3Path="${buildPath}/temp3.js"
+    	yuiLogPath="${buildDir}/${YUICOMPLOG}"
+    fi
+    java -jar "${jarPath}"  "${temp2Path}" -v --charset UTF-8 -o "${temp3Path}" 2> "${yuiLogPath}"
     sed '1s/*!/*/' "${buildPath}/temp3.js" > "${buildPath}/INTER-Mediator.js"
     rm  "${buildPath}/temp.js" "${buildPath}/temp2.js" "${buildPath}/temp3.js"
 fi
