@@ -80,7 +80,10 @@ sed -f "${sedrule}" "${buildPath}/temp.js" > "${buildPath}/INTER-Mediator.js"
 #### Compress INTER-Mediator.js
 if [ -f "${topOfDir}/${YUICOMP}" ]; then
     sed '1s/*/*!/' "${buildPath}/temp.js" > "${buildPath}/temp2.js"
-    if [ `uname -o` = "Cygwin" ];  then
+    
+    osName=$(uname -s)
+    echo "Detected OS: ${osName}"
+    if [[ "${osName}" == CYGWIN* ]];  then
     	jarPath=$(cygpath -w "${topOfDir}/${YUICOMP}")
     	temp2Path=$(cygpath -w "${buildPath}/temp2.js")
     	temp3Path=$(cygpath -w "${buildPath}/temp3.js")
@@ -172,6 +175,7 @@ echo " INTER-Mediator Ver.${version} was successfully Build" >> "${buildDir}/${r
 echo " Check out: ${buildDir}" >> "${buildDir}/${receipt}"
 echo "=================================================" >> "${buildDir}/${receipt}"
 echo "Date: $(date)" >> "${buildDir}/${receipt}"
+echo "OS Info: $(uname -a)" >> "${buildDir}/${receipt}"
 echo "Original: ${originalPath}" >> "${buildDir}/${receipt}"
 echo "Build to: ${buildPath}" >> "${buildDir}/${receipt}"
 if [ $choice = 1 ]; then
