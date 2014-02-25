@@ -65,7 +65,7 @@ Ver.4.2 (in development)
 - Send emails after the load/edit/new database operations.
 - INTERMediatorOnPage.processingAfterPostOnlyContext has TWO parameters.
 - DataConverter_HTMLString supports double and single quote to convert to reference character.
-- DataConverter_HTMLString supports the second parameter for disabling HTML escaping.
+- DataConverter_HTMLString supports disabling HTML escaping (by specifying 'parameter' => 'noescape' ).
 - When the 'transaction' set to 'none', the update processing improved and update once for single record.
 - [BUG FIX] Fix setIdValue() of INTER-Mediator.js to enable setting the value of the field to the attribute of
   the node again when specifying the IM target and displaying multiple records.
