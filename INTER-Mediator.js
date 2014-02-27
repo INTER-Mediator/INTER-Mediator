@@ -50,6 +50,7 @@ var INTERMediator = {
         ieVersion: -1,
         titleAsLinkInfo: true,
         classAsLinkInfo: true,
+        isDBDataPreferable: false,
         noRecordClassName: "_im_for_noresult_",
 
         // Remembering Objects
@@ -1353,7 +1354,7 @@ var INTERMediator = {
                     }
                 }
 
-//            console.error(INTERMediator.calculateRequiredObject);
+                console.error(INTERMediator.calculateRequiredObject);
 
                 // Calculation fields updating
                 IMLibNodeGraph.clear();
@@ -1519,11 +1520,10 @@ var INTERMediator = {
                     relationDef, index, fieldName, thisKeyFieldObject, i, j, k, ix, targetRecords, newNode,
                     nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue, counter,
                     nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
-                    curTarget, postCallFunc, newlyAddedNodes, keyingValue, oneRecord, isMatch, pagingValue,
+                    curTarget, postCallFunc, newlyAddedNodes, keyingValue, pagingValue,
                     recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                    selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, condition, optionalCondition = [],
-                    nameTableKey, replacedNode, children, dataAttr;
-                var calcDef, exp, elements, val, calcFields;
+                    selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, optionalCondition = [],
+                    nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, currentRepeaterItems;
 
                 currentLevel++;
                 INTERMediator.currentEncNumber++;
@@ -1607,79 +1607,7 @@ var INTERMediator = {
                         }
                     }
 
-                    if (currentContext['cache'] == true) {
-                        try {
-                            if (!INTERMediatorOnPage.dbCache[currentContext['name']]) {
-                                INTERMediatorOnPage.dbCache[currentContext['name']] = INTERMediator_DBAdapter.db_query({
-                                    name: currentContext['name'],
-                                    records: null,
-                                    paging: null,
-                                    fields: fieldList,
-                                    parentkeyvalue: null,
-                                    conditions: null,
-                                    useoffset: false});
-                            }
-                            if (relationValue == null) {
-                                targetRecords = INTERMediatorOnPage.dbCache[currentContext['name']];
-                            } else {
-                                targetRecords = {recordset: [], count: 0};
-                                counter = 0;
-                                for (ix in INTERMediatorOnPage.dbCache[currentContext['name']].recordset) {
-                                    oneRecord = INTERMediatorOnPage.dbCache[currentContext['name']].recordset[ix];
-                                    isMatch = true;
-                                    index = 0;
-                                    for (keyField in relationValue) {
-                                        fieldName = currentContext['relation'][index]['foreign-key'];
-                                        if (oneRecord[fieldName] != relationValue[keyField]) {
-                                            isMatch = false;
-                                            break;
-                                        }
-                                        index++;
-                                    }
-                                    if (isMatch) {
-                                        if (!pagingValue || (pagingValue && ( counter >= INTERMediator.startFrom ))) {
-                                            targetRecords.recordset.push(oneRecord);
-                                            targetRecords.count++;
-                                            if (recordsValue <= targetRecords.count) {
-                                                break;
-                                            }
-                                        }
-                                        counter++;
-                                    }
-                                }
-                            }
-                        } catch (ex) {
-                            if (ex == "_im_requath_request_") {
-                                throw ex;
-                            } else {
-                                INTERMediator.setErrorMessage(ex, "EXCEPTION-24");
-                            }
-                        }
-
-                    } else {   // cache is not active.
-                        try {
-                            if (currentContext["portal"] == true) {
-                                for (condition in INTERMediator.additionalCondition) {
-                                    optionalCondition.push(INTERMediator.additionalCondition[condition]);
-                                    break;
-                                }
-                            }
-                            targetRecords = INTERMediator_DBAdapter.db_query({
-                                name: currentContext['name'],
-                                records: currentContext['records'],
-                                paging: currentContext['paging'],
-                                fields: fieldList,
-                                parentkeyvalue: relationValue,
-                                conditions: optionalCondition,
-                                useoffset: true});
-                        } catch (ex) {
-                            if (ex == "_im_requath_request_") {
-                                throw ex;
-                            } else {
-                                INTERMediator.setErrorMessage(ex, "EXCEPTION-12");
-                            }
-                        }
-                    }
+                    targetRecords = retrieveDataForEnclosure(currentContext, fieldList, relationValue, optionalCondition);
 
                     if (targetRecords.count == 0) {
                         for (i = 0; i < repeaters.length; i++) {
@@ -1821,25 +1749,9 @@ var INTERMediator = {
                                         // for one node is prohibited.
                                         nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
                                         curVal = targetRecords.recordset[ix][nInfo['field']];
-                                        if (curVal == null) {
-                                            curVal = '';
-                                            calcDef = currentContext['calculation'];
-                                            exp = INTERMediatorLib.getNamedValueInObject(
-                                                calcDef, "field", nInfo["field"], "expression");
-                                            if (exp) {
-                                                elements = INTERMediatorLib.parseFieldsInExpression(exp);
-                                                if (elements) {
-                                                    INTERMediator.calculateRequiredObject[nodeId] = {
-                                                        "expression": exp.replace(/ /g, ""),
-                                                        "nodeInfo": nInfo,
-                                                        "values": {}
-                                                    };
-                                                    for (i = 0; i < elements.length; i++) {
-                                                        val = targetRecords.recordset[ix][elements[i]];
-                                                        INTERMediator.calculateRequiredObject[nodeId]["values"][elements[i]] = val;
-                                                    }
-                                                }
-                                            }
+                                        currentRepeaterItems = [];
+                                        if (!INTERMediator.isDBDataPreferable || curVal != null) {
+                                            currentRepeaterItems = updateCalcurationInfo(currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
                                         }
                                         curTarget = nInfo['target'];
                                         // Store the key field value and current value for update
@@ -1897,6 +1809,8 @@ var INTERMediator = {
                         }
                         setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                             currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
+
+                        updateCalcurationInfoAfterRepeater(node, currentContext.name, currentRepeaterItems);
 
                         if (currentContext['portal'] != true
                             || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
@@ -1994,6 +1908,126 @@ var INTERMediator = {
                     }
                 }
                 currentLevel--;
+            }
+
+            function updateCalcurationInfo(currentContext, nodeId, nInfo, currentRecord) {
+                var calcDef, exp, field, elements, i, index, addedItems = [];
+
+                calcDef = currentContext['calculation'];
+                field = null;
+                exp = null;
+                for (index in calcDef) {
+                    if (calcDef[index]["field"].indexOf(nInfo["field"]) == 0) {
+                        exp = calcDef[index]["expression"];
+                        field = calcDef[index]["field"];
+                        elements = INTERMediatorLib.parseFieldsInExpression(exp);
+                        if (elements) {
+                            INTERMediator.calculateRequiredObject[nodeId] = {
+                                "field": field,
+                                "expression": exp.replace(/ /g, ""),
+                                "nodeInfo": nInfo,
+                                "values": {},
+                                "referes": {}
+                            };
+                            for (i = 0; i < elements.length; i++) {
+                                val = currentRecord[elements[i]];
+                                INTERMediator.calculateRequiredObject[nodeId]["values"][elements[i]] = val;
+                            }
+                            addedItems.push(nodeId);
+                        }
+                    }
+                }
+                return addedItems;
+            }
+
+            function updateCalcurationInfoAfterRepeater(node, contextName, currentRepeaterItems)   {
+                var nodeId, valuesObj, key, targetId, index;
+                for(index = 0 ; index < currentRepeaterItems.length ; index++)    {
+                    nodeId = currentRepeaterItems[index];
+                    valuesObj = INTERMediator.calculateRequiredObject[nodeId].values;
+                    for (key in valuesObj)  {
+                        targetId = INTERMediatorOnPage.getNodeIdFromIMDefinition(contextName + "@" + key, node, true);
+                        INTERMediator.calculateRequiredObject[nodeId].referes[key] = targetId;
+                    }
+                }
+
+            }
+
+            function retrieveDataForEnclosure(currentContext, fieldList, relationValue, optionalCondition) {
+                var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition;
+                if (currentContext['cache'] == true) {
+                    try {
+                        if (!INTERMediatorOnPage.dbCache[currentContext['name']]) {
+                            INTERMediatorOnPage.dbCache[currentContext['name']] = INTERMediator_DBAdapter.db_query({
+                                name: currentContext['name'],
+                                records: null,
+                                paging: null,
+                                fields: fieldList,
+                                parentkeyvalue: null,
+                                conditions: null,
+                                useoffset: false});
+                        }
+                        if (relationValue == null) {
+                            targetRecords = INTERMediatorOnPage.dbCache[currentContext['name']];
+                        } else {
+                            targetRecords = {recordset: [], count: 0};
+                            counter = 0;
+                            for (ix in INTERMediatorOnPage.dbCache[currentContext['name']].recordset) {
+                                oneRecord = INTERMediatorOnPage.dbCache[currentContext['name']].recordset[ix];
+                                isMatch = true;
+                                index = 0;
+                                for (keyField in relationValue) {
+                                    fieldName = currentContext['relation'][index]['foreign-key'];
+                                    if (oneRecord[fieldName] != relationValue[keyField]) {
+                                        isMatch = false;
+                                        break;
+                                    }
+                                    index++;
+                                }
+                                if (isMatch) {
+                                    if (!pagingValue || (pagingValue && ( counter >= INTERMediator.startFrom ))) {
+                                        targetRecords.recordset.push(oneRecord);
+                                        targetRecords.count++;
+                                        if (recordsValue <= targetRecords.count) {
+                                            break;
+                                        }
+                                    }
+                                    counter++;
+                                }
+                            }
+                        }
+                    } catch (ex) {
+                        if (ex == "_im_requath_request_") {
+                            throw ex;
+                        } else {
+                            INTERMediator.setErrorMessage(ex, "EXCEPTION-24");
+                        }
+                    }
+                } else {   // cache is not active.
+                    try {
+                        if (currentContext["portal"] == true) {
+                            for (condition in INTERMediator.additionalCondition) {
+                                optionalCondition.push(INTERMediator.additionalCondition[condition]);
+                                break;
+                            }
+                        }
+                        targetRecords = INTERMediator_DBAdapter.db_query({
+                            "name": currentContext['name'],
+                            "records": currentContext['records'],
+                            "paging": currentContext['paging'],
+                            "fields": fieldList,
+                            "parentkeyvalue": relationValue,
+                            "conditions": optionalCondition,
+                            "useoffset": true});
+                    } catch (ex) {
+                        if (ex == "_im_requath_request_") {
+                            throw ex;
+                        } else {
+                            INTERMediator.setErrorMessage(ex, "EXCEPTION-12");
+                        }
+                    }
+                }
+                return targetRecords;
             }
 
             function setIdValue(node) {
