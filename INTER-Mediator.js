@@ -81,10 +81,12 @@ var INTERMediator = {
         calculateRequiredObject: null,
         /*
          key => {    // Key is the id attribute of the node which is defined as "calcuration"
+         "field":
          "expression": exp.replace(/ /g, ""),   // expression
          "nodeInfo": nInfo,     // node if object i.e. {field:.., table:.., target:..., tableidnex:....}
          "values": {}   // key=target name in expression, value=real value.
          // if value=undefined, it shows the value is calculation field
+         "refers": {}
          }
          */
         errorMessages: [],
@@ -1270,7 +1272,8 @@ var INTERMediator = {
 
             function pageConstruct() {
                 var ua, msiePos, i, c, bodyNode, currentNode, currentID, enclosure, targetNode, emptyElement, refNodeId;
-                var nodeId, exp, nInfo, valuesArray, termPos, leafNodes, calcObject, ix;
+                var nodeId, exp, nInfo, valuesArray, termPos, leafNodes, calcObject, ix, refersArray, calcFieldInfo;
+                var hadUndefined;
 
                 INTERMediator.keyFieldObject = [];
                 INTERMediator.updateRequiredObject = {};
@@ -1327,11 +1330,13 @@ var INTERMediator = {
 
                 // After work to set up popup menus.
                 for (i = 0; i < postSetFields.length; i++) {
-                    if (postSetFields[i]['value'] == "" && document.getElementById(postSetFields[i]['id']).tagName == "SELECT") {
+                    if (postSetFields[i]['value'] == ""
+                        && document.getElementById(postSetFields[i]['id']).tagName == "SELECT") {
                         // for compatibility with Firefox when the value of select tag is empty.
                         emptyElement = document.createElement('option');
                         emptyElement.setAttribute("value", "");
-                        document.getElementById(postSetFields[i]['id']).insertBefore(emptyElement, document.getElementById(postSetFields[i]['id']).firstChild);
+                        document.getElementById(postSetFields[i]['id']).insertBefore(
+                            emptyElement, document.getElementById(postSetFields[i]['id']).firstChild);
                     }
                     document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
                 }
@@ -1359,27 +1364,38 @@ var INTERMediator = {
                 // Calculation fields updating
                 IMLibNodeGraph.clear();
                 for (nodeId in INTERMediator.calculateRequiredObject) {
+                    calcObject = INTERMediator.calculateRequiredObject[nodeId];
                     targetNode = document.getElementById(nodeId);
-                    valuesArray = INTERMediator.calculateRequiredObject[nodeId]["values"];
-                    exp = INTERMediator.calculateRequiredObject[nodeId]["expression"];
-
+                    valuesArray = calcObject.values;
+                    refersArray = calcObject.refres;
+                    exp =calcObject.expression;
+                    hadUndefined = false;
                     for (ix in valuesArray) {
                         if (valuesArray[ix] == undefined) {
+                            hadUndefined = true;
                             termPos = exp.indexOf(ix);
                             if (termPos > 1 && exp.substr(termPos - 2, 2) == '[[') {
                                 refNodeId = INTERMediatorOnPage.getNodeIdsFromIMDefinition(ix, targetNode);
                                 for (i = 0; i < refNodeId.length; i++) {
                                     IMLibNodeGraph.addEdge(nodeId, refNodeId[i]);
                                 }
-                                INTERMediator.calculateRequiredObject[nodeId]["values"][ix]
-                                    = "__valuesof_" + refNodeId.join(",");
+//                                INTERMediator.calculateRequiredObject[nodeId]["values"][ix]
+//                                    = "__valuesof_" + refNodeId.join(",");
                             } else {
                                 refNodeId = INTERMediatorOnPage.getNodeIdFromIMDefinition(ix, targetNode);
                                 IMLibNodeGraph.addEdge(nodeId, refNodeId);
-                                INTERMediator.calculateRequiredObject[nodeId]["values"][ix]
-                                    = "__valueof_" + refNodeId;
+//                                INTERMediator.calculateRequiredObject[nodeId]["values"][ix]
+//                                    = "__valueof_" + refNodeId;
                             }
                         }
+                    }
+                    if (! hadUndefined) {
+                        calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(calcObject.field);
+                        IMLibElement.setValueToIMNode(
+                            targetNode,
+                            calcFieldInfo.target,
+                            INTERMediatorLib.calculateExpressionWithValues(exp, valuesArray, refersArray));
+                        console.error(calcObject.field,calcFieldInfo );
                     }
                 }
                 IMLibNodeGraph.applyToAllNodes(function (node) {
@@ -1396,13 +1412,14 @@ var INTERMediator = {
                         targetNode = document.getElementById(leafNodes[i]);
                         calcObject = INTERMediator.calculateRequiredObject[leafNodes[i]];
                         if (calcObject) {
-                            exp = calcObject["expression"];
-                            nInfo = calcObject["nodeInfo"];
-                            valuesArray = calcObject["values"];
+                            exp = calcObject.expression;
+                            nInfo = calcObject.nodeInfo;
+                            valuesArray = calcObject.values;
+                            refersArray = calcObject.referes;
                             IMLibElement.setValueToIMNode(
                                 targetNode,
                                 null,
-                                INTERMediatorLib.calculateExpressionWithValues(exp, valuesArray));
+                                INTERMediatorLib.calculateExpressionWithValues(exp, valuesArray, refersArray));
                         } else {
 
                         }
@@ -1518,11 +1535,11 @@ var INTERMediator = {
                 var objectReference = {}, linkedNodes, encNodeTag, parentNodeId, repeatersOriginal, repeaters,
                     linkDefs, voteResult, currentContext, fieldList, repNodeTag, relationValue, dependObject,
                     relationDef, index, fieldName, thisKeyFieldObject, i, j, k, ix, targetRecords, newNode,
-                    nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue, counter,
+                    nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue,
                     nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
-                    curTarget, postCallFunc, newlyAddedNodes, keyingValue, pagingValue,
+                    curTarget, postCallFunc, newlyAddedNodes, keyingValue, pagingValue, repeaterCalcItems,
                     recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                    selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, optionalCondition = [],
+                    selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec,
                     nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, currentRepeaterItems;
 
                 currentLevel++;
@@ -1543,6 +1560,7 @@ var INTERMediator = {
                 linkDefs = collectLinkDefinitions(linkedNodes);
                 voteResult = tableVoting(linkDefs);
                 currentContext = voteResult.targettable;
+
 
                 if (currentContext) {
                     fieldList = []; // Create field list for database fetch.
@@ -1576,7 +1594,6 @@ var INTERMediator = {
                                 }
                             }
                         }
-
                         thisKeyFieldObject = {
                             'node': node,
                             'name': currentContext['name'] /*currentTable */,
@@ -1607,7 +1624,7 @@ var INTERMediator = {
                         }
                     }
 
-                    targetRecords = retrieveDataForEnclosure(currentContext, fieldList, relationValue, optionalCondition);
+                    targetRecords = retrieveDataForEnclosure(currentContext, fieldList, relationValue);
 
                     if (targetRecords.count == 0) {
                         for (i = 0; i < repeaters.length; i++) {
@@ -1622,6 +1639,7 @@ var INTERMediator = {
                     }
 
                     RecordCounter = 0;
+                    repeaterCalcItems = [];
                     for (ix in targetRecords.recordset) { // for each record
                         try {
                             RecordCounter++;
@@ -1686,6 +1704,7 @@ var INTERMediator = {
                             }
                         }
 
+//                        repeaterCalcItems = [];
                         if (currentContext['portal'] != true || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
                             nameTable = {};
                             for (k = 0; k < currentLinkedNodes.length; k++) {
@@ -1749,9 +1768,10 @@ var INTERMediator = {
                                         // for one node is prohibited.
                                         nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
                                         curVal = targetRecords.recordset[ix][nInfo['field']];
-                                        currentRepeaterItems = [];
                                         if (!INTERMediator.isDBDataPreferable || curVal != null) {
-                                            currentRepeaterItems = updateCalcurationInfo(currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
+                                            currentRepeaterItems = updateCalcurationInfo(
+                                                currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
+                                            repeaterCalcItems = repeaterCalcItems.concat(currentRepeaterItems);
                                         }
                                         curTarget = nInfo['target'];
                                         // Store the key field value and current value for update
@@ -1810,7 +1830,6 @@ var INTERMediator = {
                         setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                             currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
 
-                        updateCalcurationInfoAfterRepeater(node, currentContext.name, currentRepeaterItems);
 
                         if (currentContext['portal'] != true
                             || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
@@ -1853,6 +1872,7 @@ var INTERMediator = {
 
                     }
                     setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue);
+                    updateCalcurationInfoAfterRepeater(node, currentContext.name, repeaterCalcItems);
 
                     for (var pName in widgetSupport) {
 //                    (widgetSupport[pName].finish).apply(
@@ -1931,7 +1951,7 @@ var INTERMediator = {
                             };
                             for (i = 0; i < elements.length; i++) {
                                 val = currentRecord[elements[i]];
-                                INTERMediator.calculateRequiredObject[nodeId]["values"][elements[i]] = val;
+                                INTERMediator.calculateRequiredObject[nodeId].values[elements[i]] = val;
                             }
                             addedItems.push(nodeId);
                         }
@@ -1941,20 +1961,28 @@ var INTERMediator = {
             }
 
             function updateCalcurationInfoAfterRepeater(node, contextName, currentRepeaterItems)   {
-                var nodeId, valuesObj, key, targetId, index;
+                var nodeId, valuesObj, key, targetId, index, targetExp, targetNode;
                 for(index = 0 ; index < currentRepeaterItems.length ; index++)    {
                     nodeId = currentRepeaterItems[index];
+                    targetNode = document.getElementById(nodeId);
                     valuesObj = INTERMediator.calculateRequiredObject[nodeId].values;
                     for (key in valuesObj)  {
-                        targetId = INTERMediatorOnPage.getNodeIdFromIMDefinition(contextName + "@" + key, node, true);
+                        if (key.indexOf("@") > -1)   {
+                            targetExp = key;
+                        } else {
+                        targetExp = contextName + "@" + key;
+                        }
+                        targetId = INTERMediatorOnPage.getNodeIdFromIMDefinition(targetExp, targetNode, false);
                         INTERMediator.calculateRequiredObject[nodeId].referes[key] = targetId;
+                        console.error(nodeId,targetExp,targetId);
                     }
                 }
-
             }
 
-            function retrieveDataForEnclosure(currentContext, fieldList, relationValue, optionalCondition) {
+            function retrieveDataForEnclosure(currentContext, fieldList, relationValue) {
                 var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition;
+                var optionalCondition = [];
+
                 if (currentContext['cache'] == true) {
                     try {
                         if (!INTERMediatorOnPage.dbCache[currentContext['name']]) {
