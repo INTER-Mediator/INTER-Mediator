@@ -574,7 +574,7 @@ INTERMediatorOnPage = {
                     if (children[i].nodeType == 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
-                            if (nodeDefs.indexOf(imDefinition) > -1) {
+                            if (nodeDefs.indexOf(imDefinition) > -1 && children[i].getAttribute) {
                                 returnValue = children[i].getAttribute('id');
                                 return returnValue;
                             }
@@ -591,12 +591,14 @@ INTERMediatorOnPage = {
     },
 
     getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
-        var enclosureNode, nodeIds;
+        var enclosureNode, nodeIds, nodeDefs;
 
-        if (justFromNode) {
+        if (justFromNode === true) {
             enclosureNode = fromNode;
-        } else {
+        } else if (justFromNode === false) {
             enclosureNode = INTERMediatorLib.getParentEnclosure(fromNode);
+        } else {
+            enclosureNode = INTERMediatorLib.getParentRepeater(fromNode);
         }
         if (enclosureNode != null) {
             nodeIds = [];
@@ -605,18 +607,16 @@ INTERMediatorOnPage = {
         return nodeIds;
 
         function seekNode(node, imDefinition) {
-            var thisClass, thisTitle, children, i;
+            var children, i, nodeDefs;
             if (node.nodeType != 1) {
                 return;
             }
             children = node.childNodes;
             if (children) {
                 for (i = 0; i < children.length; i++) {
-                    if (children[i].getAttribute != null) {
-                        thisClass = children[i].getAttribute('class');
-                        thisTitle = children[i].getAttribute('title');
-                        if ((thisClass != null && thisClass.indexOf(imDefinition) > -1)
-                            || (thisTitle != null && thisTitle.indexOf(imDefinition) > -1)) {
+                    if (children[i].nodeType == 1) {
+                        nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
+                        if (nodeDefs && nodeDefs.indexOf(imDefinition) > -1) {
                             nodeIds.push(children[i].getAttribute('id'));
                         }
                     }
@@ -624,6 +624,18 @@ INTERMediatorOnPage = {
                 }
             }
         }
+    },
+
+    getNodeIdsHavingTargetFromNode: function(fromNode, imDefinition)    {
+        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, true);
+    },
+
+    getNodeIdsHavingTargetFromRepeater: function(fromNode, imDefinition)    {
+        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, "");
+    },
+
+    getNodeIdsHavingTargetFromEnclosure: function(fromNode, imDefinition)    {
+        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, false);
     },
 
     getKeyWithRealm: function (str) {

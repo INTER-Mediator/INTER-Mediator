@@ -26,7 +26,7 @@ $tableDefinitions = array(
         'calculation' => array(
             array(
                 'field' => 'total_calc',
-                'expression' => 'IM.sum([[amount_calc]])',
+                'expression' => 'IM.sum([[item@amount_calc]])',
             ),
         ),
     ),

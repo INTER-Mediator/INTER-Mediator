@@ -11,780 +11,758 @@
 
 var INTERMediatorLib = {
 
-        ignoreEnclosureRepeaterClassName: "_im_ignore_enc_rep",
-        ignoreEnclosureRepeaterControlName: "ignore_enc_rep",
-        rollingRepeaterClassName: "_im_repeater",
-        rollingEnclocureClassName: "_im_enclosure",
-        rollingRepeaterDataControlName: "repeater",
-        rollingEnclocureDataControlName: "enclosure",
+    ignoreEnclosureRepeaterClassName: "_im_ignore_enc_rep",
+    ignoreEnclosureRepeaterControlName: "ignore_enc_rep",
+    rollingRepeaterClassName: "_im_repeater",
+    rollingEnclocureClassName: "_im_enclosure",
+    rollingRepeaterDataControlName: "repeater",
+    rollingEnclocureDataControlName: "enclosure",
 
-        generatePasswordHash: function (password) {
-            var numToHex, salt, saltHex, code, lowCode, highCode;
-            numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
-            salt = "";
-            saltHex = "";
-            for (i = 0; i < 4; i++) {
-                code = Math.floor(Math.random() * (128 - 32) + 32);
-                lowCode = code & 0xF;
-                highCode = (code >> 4) & 0xF;
-                salt += String.fromCharCode(code);
-                saltHex += numToHex[highCode] + numToHex[lowCode];
-            }
-            return encodeURIComponent(SHA1(password + salt) + saltHex);
+    generatePasswordHash: function (password) {
+        var numToHex, salt, saltHex, code, lowCode, highCode;
+        numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+        salt = "";
+        saltHex = "";
+        for (i = 0; i < 4; i++) {
+            code = Math.floor(Math.random() * (128 - 32) + 32);
+            lowCode = code & 0xF;
+            highCode = (code >> 4) & 0xF;
+            salt += String.fromCharCode(code);
+            saltHex += numToHex[highCode] + numToHex[lowCode];
+        }
+        return encodeURIComponent(SHA1(password + salt) + saltHex);
 
-        },
-        getParentRepeater: function (node) {
-            var currentNode = node;
-            while (currentNode != null) {
-                if (INTERMediatorLib.isRepeater(currentNode, true)) {
-                    return currentNode;
-                }
-                currentNode = currentNode.parentNode;
+    },
+    getParentRepeater: function (node) {
+        var currentNode = node;
+        while (currentNode != null) {
+            if (INTERMediatorLib.isRepeater(currentNode, true)) {
+                return currentNode;
             }
-            return null;
-        },
+            currentNode = currentNode.parentNode;
+        }
+        return null;
+    },
 
-        getParentEnclosure: function (node) {
-            var currentNode = node;
-            while (currentNode != null) {
-                if (INTERMediatorLib.isEnclosure(currentNode, true)) {
-                    return currentNode;
-                }
-                currentNode = currentNode.parentNode;
+    getParentEnclosure: function (node) {
+        var currentNode = node;
+        while (currentNode != null) {
+            if (INTERMediatorLib.isEnclosure(currentNode, true)) {
+                return currentNode;
             }
-            return null;
-        },
+            currentNode = currentNode.parentNode;
+        }
+        return null;
+    },
 
-        isEnclosure: function (node, nodeOnly) {
-            var tagName, className, children, k, controlAttr;
+    isEnclosure: function (node, nodeOnly) {
+        var tagName, className, children, k, controlAttr;
 
-            if (!node || node.nodeType !== 1) {
-                return false;
-            }
-            className = INTERMediatorLib.getClassAttributeFromNode(node);
-            if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
-                return false;
-            }
-            controlAttr = node.getAttribute("data-im-control");
-            if (controlAttr && controlAttr.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterControlName) >= 0) {
-                return false;
-            }
-            tagName = node.tagName;
-            if ((tagName === 'TBODY')
-                || (tagName === 'UL')
-                || (tagName === 'OL')
-                || (tagName === 'SELECT')
-                || ((tagName === 'DIV' || tagName === 'SPAN' )
-                && className
-                && className.indexOf(INTERMediatorLib.rollingEnclocureClassName) >= 0)
-                || ((tagName === 'DIV' || tagName === 'SPAN' )
-                && controlAttr
-                && controlAttr.indexOf(INTERMediatorLib.rollingEnclocureDataControlName) >= 0)) {
-                if (nodeOnly) {
-                    return true;
-                } else {
-                    children = node.childNodes;
-                    for (k = 0; k < children.length; k++) {
+        if (!node || node.nodeType !== 1) {
+            return false;
+        }
+        className = INTERMediatorLib.getClassAttributeFromNode(node);
+        if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
+            return false;
+        }
+        controlAttr = node.getAttribute("data-im-control");
+        if (controlAttr && controlAttr.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterControlName) >= 0) {
+            return false;
+        }
+        tagName = node.tagName;
+        if ((tagName === 'TBODY')
+            || (tagName === 'UL')
+            || (tagName === 'OL')
+            || (tagName === 'SELECT')
+            || ((tagName === 'DIV' || tagName === 'SPAN' )
+            && className
+            && className.indexOf(INTERMediatorLib.rollingEnclocureClassName) >= 0)
+            || ((tagName === 'DIV' || tagName === 'SPAN' )
+            && controlAttr
+            && controlAttr.indexOf(INTERMediatorLib.rollingEnclocureDataControlName) >= 0)) {
+            if (nodeOnly) {
+                return true;
+            } else {
+                children = node.childNodes;
+                for (k = 0; k < children.length; k++) {
 //                    if (INTERMediatorLib.isEnclosure(children[k], true)) {
 //
 //                    } else
-                        if (INTERMediatorLib.isRepeater(children[k], true)) {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        },
-
-        isRepeater: function (node, nodeOnly) {
-            var tagName, className, children, k, controlAttr;
-
-            if (!node || node.nodeType !== 1) {
-                return false;
-            }
-            className = INTERMediatorLib.getClassAttributeFromNode(node);
-            if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
-                return false;
-            }
-            controlAttr = node.getAttribute("data-im-control");
-            if (controlAttr && controlAttr.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterControlName) >= 0) {
-                return false;
-            }
-            tagName = node.tagName;
-            if ((tagName === 'TR')
-                || (tagName === 'LI')
-                || (tagName === 'OPTION')
-                || ((tagName === 'DIV' || tagName === 'SPAN' )
-                && className
-                && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)
-                || ((tagName === 'DIV' || tagName === 'SPAN' )
-                && controlAttr
-                && controlAttr.indexOf(INTERMediatorLib.rollingRepeaterDataControlName) >= 0)) {
-                if (nodeOnly) {
-                    return true;
-                } else {
-                    return searchLinkedElement(node);
-                }
-            }
-            return false;
-
-            function searchLinkedElement(node) {
-                if (INTERMediatorLib.isLinkedElement(node)) {
-                    return true;
-                }
-                children = node.childNodes;
-                for (k = 0; k < children.length; k++) {
-                    if (children[k].nodeType === 1) { // Work for an element
-                        if (INTERMediatorLib.isLinkedElement(children[k])) {
-                            return true;
-                        } else if (searchLinkedElement(children[k])) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-        },
-
-
-        /**
-         * Cheking the argument is the Linked Element or not.
-         */
-
-        isLinkedElement: function (node) {
-            var classInfo, matched, attr;
-
-            if (node != null) {
-                attr = node.getAttribute("data-im")
-                if (attr) {
-                    return true;
-                }
-                if (INTERMediator.titleAsLinkInfo) {
-                    if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
-                        // IE: If the node doesn't have a title attribute, getAttribute
-                        // doesn't return null.
-                        // So it requrired check if it's empty string.
+                    if (INTERMediatorLib.isRepeater(children[k], true)) {
                         return true;
                     }
                 }
-                if (INTERMediator.classAsLinkInfo) {
-                    classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
-                    if (classInfo != null) {
-                        matched = classInfo.match(/IM\[.*\]/);
-                        if (matched) {
-                            return true;
-                        }
+            }
+        }
+        return false;
+    },
+
+    isRepeater: function (node, nodeOnly) {
+        var tagName, className, children, k, controlAttr;
+
+        if (!node || node.nodeType !== 1) {
+            return false;
+        }
+        className = INTERMediatorLib.getClassAttributeFromNode(node);
+        if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
+            return false;
+        }
+        controlAttr = node.getAttribute("data-im-control");
+        if (controlAttr && controlAttr.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterControlName) >= 0) {
+            return false;
+        }
+        tagName = node.tagName;
+        if ((tagName === 'TR')
+            || (tagName === 'LI')
+            || (tagName === 'OPTION')
+            || ((tagName === 'DIV' || tagName === 'SPAN' )
+            && className
+            && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)
+            || ((tagName === 'DIV' || tagName === 'SPAN' )
+            && controlAttr
+            && controlAttr.indexOf(INTERMediatorLib.rollingRepeaterDataControlName) >= 0)) {
+            if (nodeOnly) {
+                return true;
+            } else {
+                return searchLinkedElement(node);
+            }
+        }
+        return false;
+
+        function searchLinkedElement(node) {
+            if (INTERMediatorLib.isLinkedElement(node)) {
+                return true;
+            }
+            children = node.childNodes;
+            for (k = 0; k < children.length; k++) {
+                if (children[k].nodeType === 1) { // Work for an element
+                    if (INTERMediatorLib.isLinkedElement(children[k])) {
+                        return true;
+                    } else if (searchLinkedElement(children[k])) {
+                        return true;
                     }
                 }
             }
             return false;
-        },
+        }
+    },
 
-        isWidgetElement: function (node) {
-            var classInfo, matched;
 
-            if (node != null) {
-                attr = node.getAttribute("data-im-widget")
-                if (attr) {
+    /**
+     * Cheking the argument is the Linked Element or not.
+     */
+
+    isLinkedElement: function (node) {
+        var classInfo, matched, attr;
+
+        if (node != null) {
+            attr = node.getAttribute("data-im")
+            if (attr) {
+                return true;
+            }
+            if (INTERMediator.titleAsLinkInfo) {
+                if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
+                    // IE: If the node doesn't have a title attribute, getAttribute
+                    // doesn't return null.
+                    // So it requrired check if it's empty string.
                     return true;
                 }
+            }
+            if (INTERMediator.classAsLinkInfo) {
                 classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
                 if (classInfo != null) {
-                    matched = classInfo.match(/IM_WIDGET\[.*\]/);
-                    if (matched) {
-                        return true;
-                    }
-                }
-
-            }
-            return false;
-        },
-
-        isNamedElement: function (node) {
-            var nameInfo, matched;
-
-            if (node != null) {
-                nameInfo = node.getAttribute('data-im-group');
-                if (nameInfo) {
-                    return true;
-                }
-                nameInfo = node.getAttribute('name');
-                if (nameInfo) {
-                    matched = nameInfo.match(/IM\[.*\]/);
+                    matched = classInfo.match(/IM\[.*\]/);
                     if (matched) {
                         return true;
                     }
                 }
             }
-            return false;
-        },
+        }
+        return false;
+    },
 
-        getEnclosureSimple: function (node) {
-            if (INTERMediatorLib.isEnclosure(node, true)) {
-                return node;
+    isWidgetElement: function (node) {
+        var classInfo, matched;
+
+        if (node != null) {
+            attr = node.getAttribute("data-im-widget")
+            if (attr) {
+                return true;
             }
-            return INTERMediatorLib.getEnclosureSimple(node.parentNode);
-        },
-
-        getEnclosure: function (node) {
-            var currentNode, detectedRepeater;
-
-            currentNode = node;
-            while (currentNode != null) {
-                if (INTERMediatorLib.isRepeater(currentNode, true)) {
-                    detectedRepeater = currentNode;
-                } else if (isRepeaterOfEnclosure(detectedRepeater, currentNode)) {
-                    detectedRepeater = null;
-                    return currentNode;
-                }
-                currentNode = currentNode.parentNode;
-            }
-            return null;
-
-            /**
-             * Check the pair of nodes in argument is valid for repater/enclosure.
-             */
-
-            function isRepeaterOfEnclosure(repeater, enclosure) {
-                var repeaterTag, enclosureTag, enclosureClass, repeaterClass, enclosureDataAttr,
-                    repeaterDataAttr, repeaterType;
-                if (!repeater || !enclosure) {
-                    return false;
-                }
-                repeaterTag = repeater.tagName;
-                enclosureTag = enclosure.tagName;
-                if ((repeaterTag === 'TR' && enclosureTag === 'TBODY')
-                    || (repeaterTag === 'OPTION' && enclosureTag === 'SELECT')
-                    || (repeaterTag === 'LI' && enclosureTag === 'OL')
-                    || (repeaterTag === 'LI' && enclosureTag === 'UL')) {
+            classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
+            if (classInfo != null) {
+                matched = classInfo.match(/IM_WIDGET\[.*\]/);
+                if (matched) {
                     return true;
                 }
-                if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
-                    enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
-                    enclosureDataAttr = enclosure.getAttribute("data-im-control");
-                    if ((enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0)
-                        || (enclosureDataAttr && enclosureDataAttr == "enclosure")) {
-                        repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
-                        repeaterDataAttr = repeater.getAttribute("data-im-control");
-                        if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN')
-                            && ((repeaterClass && repeaterClass.indexOf('_im_repeater') >= 0)
-                            || (repeaterDataAttr && repeaterDataAttr == "repeater"))) {
-                            return true;
-                        } else if (repeaterTag === 'INPUT') {
-                            repeaterType = repeater.getAttribute('type');
-                            if (repeaterType
-                                && ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
-                                return true;
-                            }
-                        }
-                    }
-                }
-                return false;
             }
-        },
 
+        }
+        return false;
+    },
+
+    isNamedElement: function (node) {
+        var nameInfo, matched;
+
+        if (node != null) {
+            nameInfo = node.getAttribute('data-im-group');
+            if (nameInfo) {
+                return true;
+            }
+            nameInfo = node.getAttribute('name');
+            if (nameInfo) {
+                matched = nameInfo.match(/IM\[.*\]/);
+                if (matched) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
+
+    getEnclosureSimple: function (node) {
+        if (INTERMediatorLib.isEnclosure(node, true)) {
+            return node;
+        }
+        return INTERMediatorLib.getEnclosureSimple(node.parentNode);
+    },
+
+    getEnclosure: function (node) {
+        var currentNode, detectedRepeater;
+
+        currentNode = node;
+        while (currentNode != null) {
+            if (INTERMediatorLib.isRepeater(currentNode, true)) {
+                detectedRepeater = currentNode;
+            } else if (isRepeaterOfEnclosure(detectedRepeater, currentNode)) {
+                detectedRepeater = null;
+                return currentNode;
+            }
+            currentNode = currentNode.parentNode;
+        }
+        return null;
 
         /**
-         * Get the table name / field name information from node as the array of
-         * definitions.
+         * Check the pair of nodes in argument is valid for repater/enclosure.
          */
 
-        getLinkedElementInfo: function (node) {
-            var defs = [], eachDefs, reg, i, attr, matched;
-            if (INTERMediatorLib.isLinkedElement(node)) {
-                attr = node.getAttribute("data-im");
-                if (attr !== null && attr.length > 0) {
-                    reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
-                    eachDefs = attr.split(reg);
-                    for (i = 0; i < eachDefs.length; i++) {
-                        if (eachDefs[i] && eachDefs[i].length > 0) {
-                            defs.push(resolveAlias(eachDefs[i]));
+        function isRepeaterOfEnclosure(repeater, enclosure) {
+            var repeaterTag, enclosureTag, enclosureClass, repeaterClass, enclosureDataAttr,
+                repeaterDataAttr, repeaterType;
+            if (!repeater || !enclosure) {
+                return false;
+            }
+            repeaterTag = repeater.tagName;
+            enclosureTag = enclosure.tagName;
+            if ((repeaterTag === 'TR' && enclosureTag === 'TBODY')
+                || (repeaterTag === 'OPTION' && enclosureTag === 'SELECT')
+                || (repeaterTag === 'LI' && enclosureTag === 'OL')
+                || (repeaterTag === 'LI' && enclosureTag === 'UL')) {
+                return true;
+            }
+            if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
+                enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
+                enclosureDataAttr = enclosure.getAttribute("data-im-control");
+                if ((enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0)
+                    || (enclosureDataAttr && enclosureDataAttr == "enclosure")) {
+                    repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
+                    repeaterDataAttr = repeater.getAttribute("data-im-control");
+                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN')
+                        && ((repeaterClass && repeaterClass.indexOf('_im_repeater') >= 0)
+                        || (repeaterDataAttr && repeaterDataAttr == "repeater"))) {
+                        return true;
+                    } else if (repeaterTag === 'INPUT') {
+                        repeaterType = repeater.getAttribute('type');
+                        if (repeaterType
+                            && ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
+                            return true;
                         }
                     }
-                    return defs;
                 }
-                if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE') != null) {
-                    eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
+            }
+            return false;
+        }
+    },
+
+
+    /**
+     * Get the table name / field name information from node as the array of
+     * definitions.
+     */
+
+    getLinkedElementInfo: function (node) {
+        var defs = [], eachDefs, reg, i, attr, matched;
+        if (INTERMediatorLib.isLinkedElement(node)) {
+            attr = node.getAttribute("data-im");
+            if (attr !== null && attr.length > 0) {
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = attr.split(reg);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0) {
+                        defs.push(resolveAlias(eachDefs[i]));
+                    }
+                }
+                return defs;
+            }
+            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE') != null) {
+                eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
+                for (i = 0; i < eachDefs.length; i++) {
+                    defs.push(resolveAlias(eachDefs[i]));
+                }
+                return defs;
+            }
+            if (INTERMediator.classAsLinkInfo) {
+                attr = INTERMediatorLib.getClassAttributeFromNode(node);
+                if (attr !== null && attr.length > 0) {
+                    matched = attr.match(/IM\[([^\]]*)\]/);
+                    eachDefs = matched[1].split(INTERMediator.defDivider);
                     for (i = 0; i < eachDefs.length; i++) {
                         defs.push(resolveAlias(eachDefs[i]));
                     }
-                    return defs;
                 }
-                if (INTERMediator.classAsLinkInfo) {
-                    attr = INTERMediatorLib.getClassAttributeFromNode(node);
-                    if (attr !== null && attr.length > 0) {
-                        matched = attr.match(/IM\[([^\]]*)\]/);
-                        eachDefs = matched[1].split(INTERMediator.defDivider);
-                        for (i = 0; i < eachDefs.length; i++) {
-                            defs.push(resolveAlias(eachDefs[i]));
-                        }
-                    }
-                    return defs;
-                }
+                return defs;
             }
-            return false;
+        }
+        return false;
 
-            function resolveAlias(def) {
-                var aliases = INTERMediatorOnPage.getOptionsAliases();
-                if (aliases != null && aliases[def] != null) {
-                    return aliases[def];
-                }
-                return def;
+        function resolveAlias(def) {
+            var aliases = INTERMediatorOnPage.getOptionsAliases();
+            if (aliases != null && aliases[def] != null) {
+                return aliases[def];
             }
-        },
+            return def;
+        }
+    },
 
-        getWidgetInfo: function (node) {
-            var defs = [], eachDefs, i, classAttr, matched, reg;
-            if (INTERMediatorLib.isWidgetElement(node)) {
-                classAttr = node.getAttribute("data-im-widget");
-                if (classAttr && classAttr.length > 0) {
-                    reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
-                    eachDefs = classAttr.split(reg);
-                    for (i = 0; i < eachDefs.length; i++) {
-                        if (eachDefs[i] && eachDefs[i].length > 0) {
-                            defs.push(eachDefs[i]);
-                        }
-                    }
-                    return defs;
-                }
-                classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classAttr && classAttr.length > 0) {
-                    matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/);
-                    eachDefs = matched[1].split(INTERMediator.defDivider);
-                    for (i = 0; i < eachDefs.length; i++) {
+    getWidgetInfo: function (node) {
+        var defs = [], eachDefs, i, classAttr, matched, reg;
+        if (INTERMediatorLib.isWidgetElement(node)) {
+            classAttr = node.getAttribute("data-im-widget");
+            if (classAttr && classAttr.length > 0) {
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = classAttr.split(reg);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0) {
                         defs.push(eachDefs[i]);
                     }
-                    return defs;
                 }
+                return defs;
             }
-            return false;
-        },
-
-        getNamedInfo: function (node) {
-            var defs = [], eachDefs, i, nameAttr, matched, reg;
-            if (INTERMediatorLib.isNamedElement(node)) {
-                nameAttr = node.getAttribute('data-im-group');
-                if (nameAttr && nameAttr.length > 0) {
-                    reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
-                    eachDefs = nameAttr.split(reg);
-                    for (i = 0; i < eachDefs.length; i++) {
-                        if (eachDefs[i] && eachDefs[i].length > 0) {
-                            defs.push(eachDefs[i]);
-                        }
-                    }
-                    return defs;
+            classAttr = INTERMediatorLib.getClassAttributeFromNode(node);
+            if (classAttr && classAttr.length > 0) {
+                matched = classAttr.match(/IM_WIDGET\[([^\]]*)\]/);
+                eachDefs = matched[1].split(INTERMediator.defDivider);
+                for (i = 0; i < eachDefs.length; i++) {
+                    defs.push(eachDefs[i]);
                 }
-                nameAttr = node.getAttribute('name');
-                if (nameAttr && nameAttr.length > 0) {
-                    matched = nameAttr.match(/IM\[([^\]]*)\]/);
-                    eachDefs = matched[1].split(INTERMediator.defDivider);
-                    for (i = 0; i < eachDefs.length; i++) {
+                return defs;
+            }
+        }
+        return false;
+    },
+
+    getNamedInfo: function (node) {
+        var defs = [], eachDefs, i, nameAttr, matched, reg;
+        if (INTERMediatorLib.isNamedElement(node)) {
+            nameAttr = node.getAttribute('data-im-group');
+            if (nameAttr && nameAttr.length > 0) {
+                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                eachDefs = nameAttr.split(reg);
+                for (i = 0; i < eachDefs.length; i++) {
+                    if (eachDefs[i] && eachDefs[i].length > 0) {
                         defs.push(eachDefs[i]);
                     }
-                    return defs;
                 }
+                return defs;
             }
-            return false;
-        },
+            nameAttr = node.getAttribute('name');
+            if (nameAttr && nameAttr.length > 0) {
+                matched = nameAttr.match(/IM\[([^\]]*)\]/);
+                eachDefs = matched[1].split(INTERMediator.defDivider);
+                for (i = 0; i < eachDefs.length; i++) {
+                    defs.push(eachDefs[i]);
+                }
+                return defs;
+            }
+        }
+        return false;
+    },
 
-        /**
-         * Get the repeater tag from the enclosure tag.
-         */
+    /**
+     * Get the repeater tag from the enclosure tag.
+     */
 
-        repeaterTagFromEncTag: function (tag) {
-            if (tag == 'TBODY') return 'TR';
-            else if (tag == 'SELECT') return 'OPTION';
-            else if (tag == 'UL') return 'LI';
-            else if (tag == 'OL') return 'LI';
-            else if (tag == 'DIV') return 'DIV';
-            else if (tag == 'SPAN') return 'SPAN';
+    repeaterTagFromEncTag: function (tag) {
+        if (tag == 'TBODY') return 'TR';
+        else if (tag == 'SELECT') return 'OPTION';
+        else if (tag == 'UL') return 'LI';
+        else if (tag == 'OL') return 'LI';
+        else if (tag == 'DIV') return 'DIV';
+        else if (tag == 'SPAN') return 'SPAN';
+        return null;
+    },
+
+    getNodeInfoArray: function (nodeInfo) {
+        var comps, tableName, fieldName, targetName;
+
+        comps = nodeInfo.split(INTERMediator.separator);
+        tableName = '', fieldName = '', targetName = '';
+        if (comps.length == 3) {
+            tableName = comps[0];
+            fieldName = comps[1];
+            targetName = comps[2];
+        } else if (comps.length == 2) {
+            tableName = comps[0];
+            fieldName = comps[1];
+        } else {
+            fieldName = nodeInfo;
+        }
+        return {
+            'table': tableName,
+            'field': fieldName,
+            'target': targetName,
+            'tableindex': "_im_index_" + tableName
+        };
+    },
+
+    getCalcNodeInfoArray: function (nodeInfo) {
+        var comps, tableName, fieldName, targetName;
+
+        comps = nodeInfo.split(INTERMediator.separator);
+        tableName = '', fieldName = '', targetName = '';
+        if (comps.length == 3) {
+            tableName = comps[0];
+            fieldName = comps[1];
+            targetName = comps[2];
+        } else if (comps.length == 2) {
+            fieldName = comps[0];
+            targetName = comps[1];
+        } else {
+            fieldName = nodeInfo;
+        }
+        return {
+            'table': tableName,
+            'field': fieldName,
+            'target': targetName,
+            'tableindex': "_im_index_" + tableName
+        };
+    },
+
+    /* As for IE7, DOM element can't have any prototype. */
+
+    getClassAttributeFromNode: function (node) {
+        var str = '';
+        if (node == null) return '';
+        if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
+            str = node.getAttribute('className');
+        } else {
+            str = node.getAttribute('class');
+        }
+        return str;
+    },
+
+    setClassAttributeToNode: function (node, className) {
+        if (node == null) return;
+        if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
+            node.setAttribute('className', className);
+        } else {
+            node.setAttribute('class', className);
+        }
+    },
+
+    addEvent: function (node, evt, func) {
+        if (node.addEventListener) {
+            node.addEventListener(evt, func, false);
+        } else if (node.attachEvent) {
+            node.attachEvent('on' + evt, func);
+        }
+    },
+
+    toNumber: function (str) {
+        var s = '', i, c;
+        str = (new String(str)).toString();
+        for (i = 0; i < str.length; i++) {
+            c = str.charAt(i);
+            if ((c >= '0' && c <= '9') || c == '-' || c == '.') {
+                s += c;
+            }
+        }
+        return parseFloat(s);
+    },
+
+    RoundHalfToEven: function (value, digit) {
+        return value;
+    },
+
+    Round: function (value, digit) {
+        var powers = Math.pow(10, digit);
+        return Math.round(value * powers) / powers;
+    },
+
+    /*
+     digit should be a positive value. negative value doesn't support so far.
+     */
+    numberFormat: function (str, digit) {
+        var s, n, sign, f, underDot, underNumStr, pstr;
+        s = new Array();
+        n = INTERMediatorLib.toNumber(str);
+        sign = '';
+        if (n < 0) {
+            sign = '-';
+            n = -n;
+        }
+        f = n - Math.floor(n);
+        //    if (f == 0) f = '';
+        for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
+            if (n >= 1000) {
+                pstr = '000' + (n % 1000).toString();
+                s.push(pstr.substr(pstr.length - 3));
+            } else {
+                s.push(n);
+            }
+        }
+        underDot = (digit == null) ? 0 : INTERMediatorLib.toNumber(digit);
+        underNumStr = (underDot == 0) ? '' : new String(Math.round(f * Math.pow(10, underDot)));
+        while (underNumStr.length < underDot) {
+            underNumStr = "0" + underNumStr;
+        }
+        return sign + s.reverse().join(',') + (underNumStr == '' ? '' : '.' + underNumStr);
+    },
+
+    objectToString: function (obj) {
+        var str, i, key;
+
+        if (obj === null) {
+            return "null";
+        }
+        if (typeof obj == 'object') {
+            str = '';
+            if (obj.constractor === Array) {
+                for (i = 0; i < obj.length; i++) {
+                    str += INTERMediatorLib.objectToString(obj[i]) + ", ";
+                }
+                return "[" + str + "]";
+            } else {
+                for (key in obj) {
+                    str += "'" + key + "':" + INTERMediatorLib.objectToString(obj[key]) + ", ";
+                }
+                return "{" + str + "}"
+            }
+        } else {
+            return "'" + obj + "'";
+        }
+    },
+
+    getTargetTableForRetrieve: function (element) {
+        if (element['view'] != null) {
+            return element['view'];
+        }
+        return element['name'];
+    },
+
+    getTargetTableForUpdate: function (element) {
+        if (element['table'] != null) {
+            return element['table'];
+        }
+        return element['name'];
+    },
+
+    getInsertedString: function (tmpStr, dataArray) {
+        var resultStr, counter;
+
+        resultStr = tmpStr;
+        if (dataArray != null) {
+            for (counter = 1; counter <= dataArray.length; counter++) {
+                resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
+            }
+        }
+        return resultStr;
+    },
+
+    getInsertedStringFromErrorNumber: function (errNum, dataArray) {
+        var resultStr, counter;
+
+        resultStr = INTERMediatorOnPage.getMessages()[errNum];
+        if (dataArray != null) {
+            for (counter = 1; counter <= dataArray.length; counter++) {
+                resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
+            }
+        }
+        return resultStr;
+    },
+
+    getNamedObject: function (obj, key, named) {
+        var index;
+        for (index in obj) {
+            if (obj[index][key] == named) {
+                return obj[index];
+            }
+        }
+        return null;
+    },
+
+    getNamedObjectInObjectArray: function (ar, key, named) {
+        var i;
+        for (i = 0; i < ar.length; i++) {
+            if (ar[i][key] == named) {
+                return ar[i];
+            }
+        }
+        return null;
+    },
+
+    getNamedValueInObject: function (ar, key, named, retrieveKey) {
+        var result = [], index;
+        for (index in ar) {
+            if (ar[index][key] == named) {
+                result.push(ar[index][retrieveKey]);
+            }
+        }
+        if (result.length === 0) {
             return null;
-        },
-
-        getNodeInfoArray: function (nodeInfo) {
-            var comps, tableName, fieldName, targetName;
-
-            comps = nodeInfo.split(INTERMediator.separator);
-            tableName = '', fieldName = '', targetName = '';
-            if (comps.length == 3) {
-                tableName = comps[0];
-                fieldName = comps[1];
-                targetName = comps[2];
-            } else if (comps.length == 2) {
-                tableName = comps[0];
-                fieldName = comps[1];
-            } else {
-                fieldName = nodeInfo;
-            }
-            return {
-                'table': tableName,
-                'field': fieldName,
-                'target': targetName,
-                'tableindex': "_im_index_" + tableName
-            };
-        },
-
-        getCalcNodeInfoArray: function (nodeInfo) {
-            var comps, tableName, fieldName, targetName;
-
-            comps = nodeInfo.split(INTERMediator.separator);
-            tableName = '', fieldName = '', targetName = '';
-            if (comps.length == 3) {
-                tableName = comps[0];
-                fieldName = comps[1];
-                targetName = comps[2];
-            } else if (comps.length == 2) {
-                fieldName = comps[0];
-                targetName = comps[1];
-            } else {
-                fieldName = nodeInfo;
-            }
-            return {
-                'table': tableName,
-                'field': fieldName,
-                'target': targetName,
-                'tableindex': "_im_index_" + tableName
-            };
-        },
-
-        /* As for IE7, DOM element can't have any prototype. */
-
-        getClassAttributeFromNode: function (node) {
-            var str = '';
-            if (node == null) return '';
-            if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
-                str = node.getAttribute('className');
-            } else {
-                str = node.getAttribute('class');
-            }
-            return str;
-        },
-
-        setClassAttributeToNode: function (node, className) {
-            if (node == null) return;
-            if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
-                node.setAttribute('className', className);
-            } else {
-                node.setAttribute('class', className);
-            }
-        },
-
-        addEvent: function (node, evt, func) {
-            if (node.addEventListener) {
-                node.addEventListener(evt, func, false);
-            } else if (node.attachEvent) {
-                node.attachEvent('on' + evt, func);
-            }
-        },
-
-        toNumber: function (str) {
-            var s = '', i, c;
-            str = (new String(str)).toString();
-            for (i = 0; i < str.length; i++) {
-                c = str.charAt(i);
-                if ((c >= '0' && c <= '9') || c == '-' || c == '.') {
-                    s += c;
-                }
-            }
-            return parseFloat(s);
-        },
-
-        RoundHalfToEven: function (value, digit) {
-            return value;
-        },
-
-        Round: function (value, digit) {
-            var powers = Math.pow(10, digit);
-            return Math.round(value * powers) / powers;
-        },
-
-        /*
-         digit should be a positive value. negative value doesn't support so far.
-         */
-        numberFormat: function (str, digit) {
-            var s, n, sign, f, underDot, underNumStr, pstr;
-            s = new Array();
-            n = INTERMediatorLib.toNumber(str);
-            sign = '';
-            if (n < 0) {
-                sign = '-';
-                n = -n;
-            }
-            f = n - Math.floor(n);
-            //    if (f == 0) f = '';
-            for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
-                if (n >= 1000) {
-                    pstr = '000' + (n % 1000).toString();
-                    s.push(pstr.substr(pstr.length - 3));
-                } else {
-                    s.push(n);
-                }
-            }
-            underDot = (digit == null) ? 0 : INTERMediatorLib.toNumber(digit);
-            underNumStr = (underDot == 0) ? '' : new String(Math.round(f * Math.pow(10, underDot)));
-            while (underNumStr.length < underDot) {
-                underNumStr = "0" + underNumStr;
-            }
-            return sign + s.reverse().join(',') + (underNumStr == '' ? '' : '.' + underNumStr);
-        },
-
-        objectToString: function (obj) {
-            var str, i, key;
-
-            if (obj === null) {
-                return "null";
-            }
-            if (typeof obj == 'object') {
-                str = '';
-                if (obj.constractor === Array) {
-                    for (i = 0; i < obj.length; i++) {
-                        str += INTERMediatorLib.objectToString(obj[i]) + ", ";
-                    }
-                    return "[" + str + "]";
-                } else {
-                    for (key in obj) {
-                        str += "'" + key + "':" + INTERMediatorLib.objectToString(obj[key]) + ", ";
-                    }
-                    return "{" + str + "}"
-                }
-            } else {
-                return "'" + obj + "'";
-            }
-        },
-
-        getTargetTableForRetrieve: function (element) {
-            if (element['view'] != null) {
-                return element['view'];
-            }
-            return element['name'];
-        },
-
-        getTargetTableForUpdate: function (element) {
-            if (element['table'] != null) {
-                return element['table'];
-            }
-            return element['name'];
-        },
-
-        getInsertedString: function (tmpStr, dataArray) {
-            var resultStr, counter;
-
-            resultStr = tmpStr;
-            if (dataArray != null) {
-                for (counter = 1; counter <= dataArray.length; counter++) {
-                    resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
-                }
-            }
-            return resultStr;
-        },
-
-        getInsertedStringFromErrorNumber: function (errNum, dataArray) {
-            var resultStr, counter;
-
-            resultStr = INTERMediatorOnPage.getMessages()[errNum];
-            if (dataArray != null) {
-                for (counter = 1; counter <= dataArray.length; counter++) {
-                    resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
-                }
-            }
-            return resultStr;
-        },
-
-        getNamedObject: function (obj, key, named) {
-            var index;
-            for (index in obj) {
-                if (obj[index][key] == named) {
-                    return obj[index];
-                }
-            }
-            return null;
-        },
-
-        getNamedObjectInObjectArray: function (ar, key, named) {
-            var i;
-            for (i = 0; i < ar.length; i++) {
-                if (ar[i][key] == named) {
-                    return ar[i];
-                }
-            }
-            return null;
-        },
-
-        getNamedValueInObject: function (ar, key, named, retrieveKey) {
-            var result = [], index;
-            for (index in ar) {
-                if (ar[index][key] == named) {
-                    result.push(ar[index][retrieveKey]);
-                }
-            }
-            if (result.length === 0) {
-                return null;
-            } else if (result.length === 1) {
-                return result[0];
-            } else {
-                return result;
-            }
-        },
-
-        is_array: function (target) {
-            return target
-                && typeof target === 'object'
-                && typeof target.length === 'number'
-                && typeof target.splice === 'function'
-                && !(target.propertyIsEnumerable('length'));
-        },
-
-        getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
-            var result = [], index;
-            for (index in ar) {
-                if (ar[index][key1] == named1 && ar[index][key2] == named2) {
-                    result.push(ar[index][retrieveKey]);
-                }
-            }
-            if (result.length === 0) {
-                return null;
-            } else if (result.length === 1) {
-                return result[0];
-            } else {
-                return result;
-            }
-        },
-
-        getRecordsetFromFieldValueObject: function (obj) {
-            var recordset = {}, index;
-            for (index in obj) {
-                recordset[ obj[index]['field'] ] = obj[index]['value'];
-            }
-            return recordset;
-        },
-
-        getNodePath: function (node) {
-            var path = '';
-            if (node.tagName == null) {
-                return '';
-            } else {
-                return INTERMediatorLib.getNodePath(node.parentNode) + "/" + node.tagName;
-            }
-        },
-
-        /*
-         If the cNode parameter is like '_im_post', this function will search data-im-control="post" elements.
-         */
-        getElementsByClassNameOrDataAttr: function (node, cName) {
-            var nodes = [];
-            var attrValue = (cName.length > 5) ? cName.substr(4) : null;
-            var reg = new RegExp(cName);
-            checkNode(node);
-            return nodes;
-
-            function checkNode(target) {
-                var className, attr;
-                if (target.nodeType != 1) {
-                    return;
-                }
-                className = INTERMediatorLib.getClassAttributeFromNode(target);
-                attr = target.getAttribute("data-im-control");
-                if ((className && className.match(reg)) || (attr && attrValue && attr == attrValue)) {
-                    nodes.push(target);
-                }
-                for (var i = 0; i < target.children.length; i++) {
-                    checkNode(target.children[i]);
-                }
-            }
-        },
-
-        getElementsByClassName: function (node, cName) {
-            var nodes = [];
-            var reg = new RegExp(cName);
-            checkNode(node);
-            return nodes;
-
-            function checkNode(target) {
-                var className;
-                if (target.nodeType != 1) {
-                    return;
-                }
-                className = INTERMediatorLib.getClassAttributeFromNode(target);
-                if (className && className.match(reg)) {
-                    nodes.push(target);
-                }
-                for (var i = 0; i < target.children.length; i++) {
-                    checkNode(target.children[i]);
-                }
-            }
-        },
-
-        parseFieldsInExpression: function (exp) {
-            var returnArray = [], matchedArray, i, rExp;
-
-            rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
-            matchedArray = exp.match(rExp);
-            if (!matchedArray) {
-                return null;
-            }
-            for (i = 0; i < matchedArray.length; i++) {
-                returnArray.push(matchedArray[i].replace(/[\[\] ]/g, ""));
-            }
-            return returnArray;
-        },
-
-        calculateExpressionWithValues: function (exp, vals, refs) {
-            var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue, nodeId, itemValueArray, targetNode;
-
-            rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
-            matchedArray = exp.match(rExp);
-            for (i = 0; i < matchedArray.length; i++) {
-                itemName = matchedArray[i].replace(/[\[\] ]/g, "");
-                itemValue = vals[itemName];
-                if (itemValue == undefined/* && typeof itemValue == 'string' */) {
-//                if (itemValue.indexOf('__valueof_') === 0) {
-//                    nodeId = itemValue.substring(10);
-//                    itemValue = IMLibElement.getValueFromIMNode(document.getElementById(nodeId));
-//                } else if (itemValue.indexOf('__valuesof_') === 0) {
-//                    nodeId = itemValue.substring(11).split(",");
-//                    itemValueArray = [];
-//                    for (j = 0; j < nodeId.length; j++) {
-//                        itemValueArray.push(IMLibElement.getValueFromIMNode(document.getElementById(nodeId[j])));
-//                    }
-//                    itemValue = itemValueArray.join(",");
-//                }
-                    targetNode = document.getElementById(refs[itemName]);
-                    if (targetNode) {
-                        itemValue = IMLibElement.getValueFromIMNode(targetNode);
-                    } else {
-                        console.error("###### SHOULD REPLACE A RIGHT ERROR MESSAGE");
-                    }
-
-                }
-                if (INTERMediatorLib.is_array(itemValue)) {
-                    tempValue = "";
-                    for (j = 0; j < itemValue.length; j++) {
-                        if (j != 0) {
-                            tempValue += ",";
-                        }
-                        if (isNaN(parseFloat(itemValue[j]))) {
-                            tempValue += '"' + itemValue[j] + '"';
-                        } else {
-                            tempValue += itemValue[j];
-                        }
-                    }
-                    itemValue = '[' + tempValue + ']';
-                } else if (isNaN(parseFloat(itemValue))) {
-                    itemValue = '"' + itemValue + '"';
-                }
-                exp = exp.replace(new RegExp("\\[" + itemName + "\\]", "g"), itemValue);
-            }
-            try {
-                console.error(exp);
-                result = eval(exp);
-            } catch (e) {
-
-            }
+        } else if (result.length === 1) {
+            return result[0];
+        } else {
             return result;
         }
+    },
+
+    is_array: function (target) {
+        return target
+            && typeof target === 'object'
+            && typeof target.length === 'number'
+            && typeof target.splice === 'function'
+            && !(target.propertyIsEnumerable('length'));
+    },
+
+    getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
+        var result = [], index;
+        for (index in ar) {
+            if (ar[index][key1] == named1 && ar[index][key2] == named2) {
+                result.push(ar[index][retrieveKey]);
+            }
+        }
+        if (result.length === 0) {
+            return null;
+        } else if (result.length === 1) {
+            return result[0];
+        } else {
+            return result;
+        }
+    },
+
+    getRecordsetFromFieldValueObject: function (obj) {
+        var recordset = {}, index;
+        for (index in obj) {
+            recordset[ obj[index]['field'] ] = obj[index]['value'];
+        }
+        return recordset;
+    },
+
+    getNodePath: function (node) {
+        var path = '';
+        if (node.tagName == null) {
+            return '';
+        } else {
+            return INTERMediatorLib.getNodePath(node.parentNode) + "/" + node.tagName;
+        }
+    },
+
+    /*
+     If the cNode parameter is like '_im_post', this function will search data-im-control="post" elements.
+     */
+    getElementsByClassNameOrDataAttr: function (node, cName) {
+        var nodes = [];
+        var attrValue = (cName.length > 5) ? cName.substr(4) : null;
+        var reg = new RegExp(cName);
+        checkNode(node);
+        return nodes;
+
+        function checkNode(target) {
+            var className, attr;
+            if (target.nodeType != 1) {
+                return;
+            }
+            className = INTERMediatorLib.getClassAttributeFromNode(target);
+            attr = target.getAttribute("data-im-control");
+            if ((className && className.match(reg)) || (attr && attrValue && attr == attrValue)) {
+                nodes.push(target);
+            }
+            for (var i = 0; i < target.children.length; i++) {
+                checkNode(target.children[i]);
+            }
+        }
+    },
+
+    getElementsByClassName: function (node, cName) {
+        var nodes = [];
+        var reg = new RegExp(cName);
+        checkNode(node);
+        return nodes;
+
+        function checkNode(target) {
+            var className;
+            if (target.nodeType != 1) {
+                return;
+            }
+            className = INTERMediatorLib.getClassAttributeFromNode(target);
+            if (className && className.match(reg)) {
+                nodes.push(target);
+            }
+            for (var i = 0; i < target.children.length; i++) {
+                checkNode(target.children[i]);
+            }
+        }
+    },
+
+    parseFieldsInExpression: function (exp) {
+        var returnArray = [], matchedArray, i, rExp;
+
+        rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
+        matchedArray = exp.match(rExp);
+        if (!matchedArray) {
+            return null;
+        }
+        for (i = 0; i < matchedArray.length; i++) {
+            returnArray.push(matchedArray[i].replace(/[\[\] ]/g, ""));
+        }
+        return returnArray;
+    },
+
+    calculateExpressionWithValues: function (exp, vals) {
+        var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue, refIds, itemValueArray, targetNode;
+
+        rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
+        matchedArray = exp.match(rExp);
+        for (i = 0; i < matchedArray.length; i++) {
+            itemName = matchedArray[i].replace(/[\[\] ]/g, "");
+            itemValue = vals[itemName];
+            if (itemValue == undefined) {
+                tempValue = "";
+                for (j = 0; j < itemValue.length; j++) {
+                    if (j != 0) {
+                        tempValue += ",";
+                    }
+                    if (isNaN(parseFloat(itemValue[j]))) {
+                        tempValue += '"' + itemValue[j] + '"';
+                    } else {
+                        tempValue += itemValue[j];
+                    }
+                }
+                itemValue = '[' + tempValue + ']';
+            } else if (isNaN(parseFloat(itemValue))) {
+                itemValue = '"' + itemValue + '"';
+            }
+            exp = exp.replace(new RegExp("\\[" + itemName + "\\]", "g"), itemValue);
+        }
+        try {
+            result = eval(exp);
+        } catch (e) {
+
+        }
+        return result;
     }
-    ;
+};
 
 var IM = {
     sum: function (params) {
@@ -903,7 +881,7 @@ var IMLibNodeGraph = {
 };
 
 var IMLibElement = {
-    setValueToIMNode: function (element, curTarget, curVal) {
+    setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
             needPostValueSet = false, nodeTag, curValues, i;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
@@ -916,6 +894,19 @@ var IMLibElement = {
         }
 
         nodeTag = element.tagName;
+
+        if (clearField === true && curTarget == "") {
+            switch (nodeTag) {
+                case "INPUT":
+                    element.value = "";
+                    break;
+                default:
+                    while (element.childNodes.length > 0) {
+                        element.removeChild(element.childNodes[0]);
+                    }
+                    break;
+            }
+        }
 
         if (curTarget != null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending

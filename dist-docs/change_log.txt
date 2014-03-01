@@ -40,6 +40,11 @@ To Do List for the INTER-Mediator developer(s)
 - Authentication UI should generate on the server side.
 - Working with FileMaker's ODBC sharing instead of XML sharing (FX.php) when using FileMaker Server 13.
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13.
+ (Calculation Field issues)
+- Security Issue: The eval function is used to calculate the expression. Should it replace some wrong characters?
+- Formatting: How to apply a format to a value? Should we support a formatter function? Or other solutions?
+- Error Detection: Any error doesn't arise so far.
+- Functions: The SUM function is just defined so far.
 
 =================================
 Known Issues for Browsers:
@@ -62,6 +67,7 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.2 (in development)
+- Calculation Field started to work (but it has some limitations).
 - Send emails after the load/edit/new database operations.
 - INTERMediatorOnPage.processingAfterPostOnlyContext has TWO parameters.
 - DataConverter_HTMLString supports double and single quote to convert to reference character.
