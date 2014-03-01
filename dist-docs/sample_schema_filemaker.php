@@ -10,12 +10,12 @@
  * 
  * Example:
  * $ php sample_schema_filemaker.php
- * Do you initialize the FileMaker test database (TestDB.fmp12) via ODBC? [y/n]: 
+ * Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]: 
  *
  */
 set_time_limit(0);
 $stdin = fopen("php://stdin", "r");
-echo "Do you initialize the FileMaker test database (TestDB.fmp12) via ODBC? [y/n]: ";
+echo "Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]: ";
 if ('y' == trim(fgets($stdin, 64))) {
     $conn = odbc_connect('TestDB', 'web', 'password');
 
