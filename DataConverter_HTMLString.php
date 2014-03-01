@@ -10,13 +10,19 @@
 
 class DataConverter_HTMLString
 {
-    private $linking;
-    private $escape;
+    private $autolink = false;
+    private $noescape = false;
 
-    public function __construct($uselink = false, $escape = true)
+    public function __construct($option = false)
     {
-        $this->linking = $uselink;
-        $this->escape = $escape;
+        if ($option) {
+            if (in_array(strtolower($option), array('true', 'autolink')) || $option === true) {
+                $this->autolink = true;
+            }
+            if (strtolower($option) === 'noescape') {
+                $this->noescape = true;
+            }
+        }
     }
 
     public function converterFromUserToDB($str)
@@ -26,7 +32,7 @@ class DataConverter_HTMLString
 
     public function converterFromDBtoUser($str)
     {
-        if ($this->escape) {
+        if (!$this->noescape) {
             $str = str_replace(">", "&gt;",
                 str_replace("<", "&lt;",
                     str_replace("'", "&#39;",
@@ -36,7 +42,7 @@ class DataConverter_HTMLString
         $str = str_replace("\n", "<br />",
             str_replace("\r", "<br />",
                 str_replace("\r\n", "<br />", $str)));
-        if ($this->linking) {
+        if ($this->autolink) {
             $str = mb_ereg_replace("(https?|ftp)(:\\/\\/[-_.!~*\\'()a-zA-Z0-9;\\/?:\\@&=+\\$,%#]+)",
                 "<a href=\"\\0\" target=\"_blank\">\\0</a>", $str, "i");
         }
