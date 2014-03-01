@@ -737,22 +737,23 @@ var INTERMediatorLib = {
         for (i = 0; i < matchedArray.length; i++) {
             itemName = matchedArray[i].replace(/[\[\] ]/g, "");
             itemValue = vals[itemName];
-            if (itemValue == undefined) {
+//            if (itemValue == undefined) {
                 tempValue = "";
                 for (j = 0; j < itemValue.length; j++) {
                     if (j != 0) {
                         tempValue += ",";
                     }
                     if (isNaN(parseFloat(itemValue[j]))) {
-                        tempValue += '"' + itemValue[j] + '"';
+                        tempValue += '"' + secureString(itemValue[j]) + '"';
                     } else {
                         tempValue += itemValue[j];
                     }
                 }
-                itemValue = '[' + tempValue + ']';
-            } else if (isNaN(parseFloat(itemValue))) {
-                itemValue = '"' + itemValue + '"';
-            }
+                itemValue = ( j = 1 ) ? tempValue : '[' + tempValue + ']';
+            console.error(itemValue);
+//            } else if (isNaN(parseFloat(itemValue))) {
+//                itemValue = '"' + secureString(itemValue) + '"';
+//            }
             exp = exp.replace(new RegExp("\\[" + itemName + "\\]", "g"), itemValue);
         }
         try {
@@ -761,6 +762,10 @@ var INTERMediatorLib = {
 
         }
         return result;
+
+        function secureString(str)  {
+            return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\n\r]/g, '');
+        }
     }
 };
 
