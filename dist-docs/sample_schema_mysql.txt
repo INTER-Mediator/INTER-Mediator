@@ -326,7 +326,7 @@ INSERT rent	SET asset_id=12,staff_id=108,rentdate='2012-8-1',backdate='';
 INSERT rent	SET asset_id=13,staff_id=109,rentdate='2012-8-1',backdate='';
 INSERT rent	SET asset_id=16,staff_id=109,rentdate='2010-11-29',backdate='2010-11-29';
 INSERT rent	SET asset_id=16,staff_id=105,rentdate='2010-12-29',backdate='2010-12-29';
-INSERT rent	SET asset_id=16,staff_id=103,rentdate='2011-2-29',backdate='2011-3-29';
+INSERT rent	SET asset_id=16,staff_id=103,rentdate='2011-2-28',backdate='2011-3-29';
 INSERT rent	SET asset_id=16,staff_id=104,rentdate='2011-5-29',backdate='2011-6-3';
 INSERT rent	SET asset_id=16,staff_id=109,rentdate='2011-8-9',backdate='2011-8-31';
 INSERT rent	SET asset_id=16,staff_id=102,rentdate='2011-9-29',backdate='2011-9-30';
