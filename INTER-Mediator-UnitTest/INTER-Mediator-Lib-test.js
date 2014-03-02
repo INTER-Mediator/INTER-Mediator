@@ -147,7 +147,7 @@ buster.testCase("INTERMediatorLib.calculateExpressionWithValues() Test", {
         var exp, vals, result;
 
         exp = "[dog] * [cat]";
-        vals = {dog: 20, cat: 4}
+        vals = {dog: [20], cat: [4]}
         result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
         assert.equals(result, 80);
     },
@@ -155,7 +155,7 @@ buster.testCase("INTERMediatorLib.calculateExpressionWithValues() Test", {
         var exp, vals, result;
 
         exp = "[dog] * [cat]";
-        vals = {dog: 29, cat: 4.1}
+        vals = {dog: [29], cat: [4.1]}
         result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
         assert.equals(INTERMediatorLib.Round(result,1), 118.9);
     },
@@ -163,7 +163,7 @@ buster.testCase("INTERMediatorLib.calculateExpressionWithValues() Test", {
         var exp, vals, result;
 
         exp = "[dog] + [cat]";
-        vals = {dog: "Bowwow!", cat: "Mewww"}
+        vals = {dog: ["Bowwow!"], cat: ["Mewww"]}
         result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
         assert.equals(result, "Bowwow!Mewww");
     },
@@ -171,7 +171,7 @@ buster.testCase("INTERMediatorLib.calculateExpressionWithValues() Test", {
         var exp, vals, result;
 
         exp = "[dog] + [cat]";
-        vals = {dog: "Bowwow!", cat: 4.3}
+        vals = {dog: ["Bowwow!"], cat: [4.3]}
         result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
         assert.equals(result, "Bowwow!4.3");
     }
