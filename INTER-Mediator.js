@@ -843,7 +843,7 @@ var INTERMediator = {
                         updatingInfo[contextName][keying] = {};
                     }
                     field = INTERMediator.updateRequiredObject[idValue]['field'];
-                    value = IMLibElement.getValueFromIMNode(document.getElementById(idValue), 0);
+                    value = IMLibElement.getValueFromIMNode(document.getElementById(idValue));
                     originalValue = INTERMediator.updateRequiredObject[idValue]['initialvalue'];
                     updatingInfo[contextName][keying][field] = {value: value, initialvalue: originalValue, nodeId: idValue};
                 }

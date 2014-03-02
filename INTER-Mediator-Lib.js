@@ -1045,8 +1045,9 @@ var IMLibElement = {
         }
         return needPostValueSet;
     },
-    getValueFromIMNode: function (element, targetIndex) {
-        var nodeTag, typeAttr, valueAttr, curVal;
+    getValueFromIMNode: function (element) {
+        var nodeTag, typeAttr;
+
         nodeTag = element.tagName;
         if (INTERMediatorLib.isWidgetElement(element)) {
             return element._im_getValue();
