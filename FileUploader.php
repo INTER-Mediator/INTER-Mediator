@@ -34,6 +34,7 @@ class FileUploader
                 $dbProxyInstance->logger->setErrorMessage("'media-root-dir' isn't specified");
                 $dbProxyInstance->processingRequest($options, "noop");
                 $dbProxyInstance->finishCommunication();
+                $dbProxyInstance->exportOutputDataAsJason();
             }
             return;
         }
@@ -50,6 +51,7 @@ class FileUploader
                 $dbProxyInstance->logger->setErrorMessage("No file wasn't uploaded.");
                 $dbProxyInstance->processingRequest($options, "noop");
                 $dbProxyInstance->finishCommunication();
+                $dbProxyInstance->exportOutputDataAsJason();
             }
             return;
         }
@@ -73,6 +75,7 @@ class FileUploader
                 $dbProxyInstance->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
                 $dbProxyInstance->processingRequest($options, "noop");
                 $dbProxyInstance->finishCommunication();
+                $dbProxyInstance->exportOutputDataAsJason();
                 return;
             }
         }
@@ -84,6 +87,7 @@ class FileUploader
                 $dbProxyInstance->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
                 $dbProxyInstance->processingRequest($options, "noop");
                 $dbProxyInstance->finishCommunication();
+                $dbProxyInstance->exportOutputDataAsJason();
             }
             return;
         }
@@ -142,12 +146,15 @@ class FileUploader
                     $relatedContext->dbSettings->setValue($values);
                     $relatedContext->processingRequest($options, "new", true);
                     $relatedContext->finishCommunication(true);
+                    $relatedContext->exportOutputDataAsJason();
                 }
             }
         }
 
-        echo "dbresult='{$filePath}';";
+//        echo "dbresult='{$filePath}';";
+        $dbProxyInstance->setOutputData('dbresult', $filePath);
         $dbProxyInstance->finishCommunication();
+        $dbProxyInstance->exportOutputDataAsJason();
         if (isset($_POST["_im_redirect"])) {
             header("Location: {$_POST["_im_redirect"]}");
         }
