@@ -3759,6 +3759,70 @@ if ('y' == trim(fgets($stdin, 64))) {
     odbc_exec($conn, 'INSERT INTO "product" ("name", "id", "category_id", "unitprice", "photofile", "acknowledgement", "ack_link") VALUES (\'Onion\', 5, 2, 21340, \'onion2.png\', \'Image: FreeDigitalPhotos.net\', \'http://www.freedigitalphotos.net\')');
 
 
+    // The schema for the "Sample_Asset" sample set.
+    odbc_exec($conn, 'DELETE FROM "asset"');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (11, \'個人用\', \'MacBook Air[1]\', \'Apple\', \'2012/250GB/4GB\', DATE \'2012-8-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (12, \'個人用\', \'MacBook Air[2]\', \'Apple\', \'2012/250GB/4GB\', DATE \'2012-8-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (13, \'個人用\', \'MacBook Air[3]\', \'Apple\', \'2012/250GB/4GB\', DATE \'2012-8-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (14, \'個人用\', \'VAIO type A[1]\', \'ソニー\', \'VGN-AR85S\', DATE \'2008-6-12\', DATE \'2012-2-2\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (15, \'個人用\', \'VAIO type A[2]\', \'ソニー\', \'VGN-AR85S\', DATE \'2008-6-12\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (16, \'共用\', \'プロジェクタ\', \'エプソン\', \'EB-460T\', DATE \'2010-11-23\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (17, \'共用\', \'ホワイトボード[1]\', \'不明\', \'不明\', \'\', DATE \'2005-3-22\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (18, \'共用\', \'ホワイトボード[2]\', \'不明\', \'不明\', \'\', DATE \'2005-3-22\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (19, \'共用\', \'加湿器\', \'シャープ\', \'プラズマクラスター加湿器\', DATE \'2011-12-2\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (20, \'共用\', \'事務室エアコン\', \'\', \'\', \'\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (21, \'共用\', \'会議室エアコン\', \'\', \'\', \'\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (22, \'共用\', \'携帯電話ドコモ\', \'京セラ\', \'P904i\', DATE \'2010-4-4\', DATE \'2012-3-3\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (23, \'個人用\', \'携帯電話au\', \'シャープ\', \'SH001\', DATE \'2012-3-3\', DATE \'2012-10-1\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (24, \'個人用\', \'携帯電話Softbank[1]\', \'Apple\', \'iPhone 5\', DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (25, \'個人用\', \'携帯電話Softbank[2]\', \'Apple\', \'iPhone 5\', DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (26, \'個人用\', \'携帯電話Softbank[3]\', \'Apple\', \'iPhone 5\', DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (27, \'個人用\', \'携帯電話Softbank[4]\', \'Apple\', \'iPhone 5\', DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (28, \'個人用\', \'携帯電話Softbank[5]\', \'Apple\', \'iPhone 5\', DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "asset" ("asset_id", "category", "name", "manifacture", "productinfo", "purchase", "discard") VALUES (29, \'個人用\', \'携帯電話Softbank[6]\', \'Apple\', \'iPhone 5\', DATE \'2012-10-1\', \'\')');
+
+    odbc_exec($conn, 'DELETE FROM "staff"');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (101, \'田中次郎\', \'代表取締役社長\')');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (102, \'山本三郎\', \'専務取締役\')');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (103, \'北野六郎\', \'営業部長\')');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (104, \'東原七海\', \'営業部\')');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (105, \'内村久郎\', \'営業部\')');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (106, \'菅沼健一郎\', \'開発部長\')');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (107, \'西森裕太\', \'開発部\')');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (108, \'野村顕昭\', \'開発部\')');
+    odbc_exec($conn, 'INSERT INTO "staff" ("staff_id", "name", "section") VALUES (109, \'辻野均\', \'開発部\')');
+
+    odbc_exec($conn, 'DELETE FROM "rent"');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (22, 101, DATE \'2010-4-4\', DATE \'2012-3-3\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (23, 101, DATE \'2012-3-3\', DATE \'2012-10-1\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (24, 101, DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (25, 102, DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (26, 103, DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (27, 106, DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (28, 107, DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (29, 108, DATE \'2012-10-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (14, 106, DATE \'2008-6-12\', DATE \'2012-2-2\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (15, 106, DATE \'2008-6-12\', DATE \'2011-3-31\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (15, 109, DATE \'2011-4-6\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (11, 107, DATE \'2012-8-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (12, 108, DATE \'2012-8-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (13, 109, DATE \'2012-8-1\', \'\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 109, DATE \'2010-11-29\', DATE \'2010-11-29\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 105, DATE \'2010-12-29\', DATE \'2010-12-29\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 103, DATE \'2011-2-28\', DATE \'2011-3-29\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 104, DATE \'2011-5-29\', DATE \'2011-6-3\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 109, DATE \'2011-8-9\', DATE \'2011-8-31\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 102, DATE \'2011-9-29\', DATE \'2011-9-30\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 101, DATE \'2011-12-2\', DATE \'2011-12-9\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 108, DATE \'2012-1-29\', DATE \'2012-1-31\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 108, DATE \'2012-4-29\', DATE \'2012-5-10\')');
+    odbc_exec($conn, 'INSERT INTO "rent" ("asset_id", "staff_id", "rentdate", "backdate") VALUES (16, 109, DATE \'2012-6-29\', DATE \'2012-7-29\')');
+
+    odbc_exec($conn, 'DELETE FROM "category"');
+    odbc_exec($conn, 'INSERT INTO "category" ("category_id", "name") VALUES (1, \'個人用\')');
+    odbc_exec($conn, 'INSERT INTO "category" ("category_id", "name") VALUES (2, \'共用\')');
+
+
     // The schema for the "Sample_Auth" sample set.
     odbc_exec($conn, 'DELETE FROM "chat"');
 
