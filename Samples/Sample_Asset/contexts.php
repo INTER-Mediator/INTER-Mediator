@@ -2,12 +2,12 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-require_once('../../INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 IM_Entry(
     array(
@@ -88,19 +88,17 @@ IM_Entry(
         // Modification 3: Modification for a data in single field.
         // - This context is copied from the above one, and modified.
         'formatter' => array(
-             array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
+            array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
             array('field' => 'asset@discard', 'converter-class' => 'MySQLDateTime'),
         ),
         // [END OF] Modification 3
     ),
     array(
         'db-class' => 'PDO',
-        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
+        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=UTF-8',
         'option' => array(),
         'user' => 'web',
         'password' => 'password',
     ),
     2
 );
-
-?>
