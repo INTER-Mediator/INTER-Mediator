@@ -158,23 +158,25 @@ buster.testCase("INTERMediatorLib.calculateExpressionWithValues() Test", {
         vals = {dog: [29], cat: [4.1]}
         result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
         assert.equals(INTERMediatorLib.Round(result,1), 118.9);
-    },
-    "Calculate strings.": function () {
-        var exp, vals, result;
-
-        exp = "[dog] + [cat]";
-        vals = {dog: ["Bowwow!"], cat: ["Mewww"]}
-        result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
-        assert.equals(result, "Bowwow!Mewww");
-    },
-    "Calculate string and numeric.": function () {
-        var exp, vals, result;
-
-        exp = "[dog] + [cat]";
-        vals = {dog: ["Bowwow!"], cat: [4.3]}
-        result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
-        assert.equals(result, "Bowwow!4.3");
     }
+    // Temporary string calculations is drop the support.
+    //
+//    "Calculate strings.": function () {
+//        var exp, vals, result;
+//
+//        exp = "[dog] + [cat]";
+//        vals = {dog: ["Bowwow!"], cat: ["Mewww"]}
+//        result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
+//        assert.equals(result, "Bowwow!Mewww");
+//    },
+//    "Calculate string and numeric.": function () {
+//        var exp, vals, result;
+//
+//        exp = "[dog] + [cat]";
+//        vals = {dog: ["Bowwow!"], cat: [4.3]}
+//        result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
+//        assert.equals(result, "Bowwow!4.3");
+//    }
 });
 
 buster.testCase("INTERMediatorLib.Round() Test", {
