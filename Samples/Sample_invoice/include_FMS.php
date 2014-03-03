@@ -56,6 +56,10 @@ IM_Entry(
                     'field' => 'amount_calc',
                     'expression' => '[qty] * ([unitprice] == "" ? [product@unitprice] : [unitprice])',
                 ),
+                array(
+                    'field' => 'qty@style.color',
+                    'expression' => '[qty] > 10 ? "red" : "black" ',
+                ),
             ),
 //            'post-repeater' => 'itemsExpanded',
         ),

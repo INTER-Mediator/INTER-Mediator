@@ -737,30 +737,36 @@ var INTERMediatorLib = {
         for (i = 0; i < matchedArray.length; i++) {
             itemName = matchedArray[i].replace(/[\[\] ]/g, "");
             itemValue = vals[itemName];
-            if (itemValue == undefined) {
-                tempValue = "";
-                for (j = 0; j < itemValue.length; j++) {
-                    if (j != 0) {
-                        tempValue += ",";
-                    }
-                    if (isNaN(parseFloat(itemValue[j]))) {
-                        tempValue += '"' + itemValue[j] + '"';
-                    } else {
-                        tempValue += itemValue[j];
-                    }
+//            if (itemValue == undefined) {
+            tempValue = "";
+            for (j = 0; j < itemValue.length; j++) {
+                if (j != 0) {
+                    tempValue += ",";
                 }
-                itemValue = '[' + tempValue + ']';
-            } else if (isNaN(parseFloat(itemValue))) {
-                itemValue = '"' + itemValue + '"';
+                if (isNaN(parseFloat(itemValue[j]))) {
+                    tempValue += '"' + secureString(itemValue[j]) + '"';
+                } else {
+                    tempValue += itemValue[j];
+                }
             }
+            itemValue = ( j = 1 ) ? tempValue : '[' + tempValue + ']';
+//            console.error(itemValue);
+//            } else if (isNaN(parseFloat(itemValue))) {
+//                itemValue = '"' + secureString(itemValue) + '"';
+//            }
             exp = exp.replace(new RegExp("\\[" + itemName + "\\]", "g"), itemValue);
         }
         try {
-            result = eval(exp);
+        //    result = eval(exp);
+            result = Parser.evaluate(exp);
         } catch (e) {
 
         }
         return result;
+
+        function secureString(str) {
+            return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\n\r]/g, '');
+        }
     }
 };
 
@@ -1040,8 +1046,9 @@ var IMLibElement = {
         }
         return needPostValueSet;
     },
-    getValueFromIMNode: function (element, targetIndex) {
-        var nodeTag, typeAttr, valueAttr, curVal;
+    getValueFromIMNode: function (element) {
+        var nodeTag, typeAttr;
+
         nodeTag = element.tagName;
         if (INTERMediatorLib.isWidgetElement(element)) {
             return element._im_getValue();
