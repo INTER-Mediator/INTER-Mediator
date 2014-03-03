@@ -29,6 +29,8 @@ Thanks for nice works.
 
 * Qdsmtp (http://hal456.net/qdsmtp/)
 
+* JavaScript Expression Evaluator (http://silentmatt.com/javascript-expression-evaluator/)
+
 ==========================================
 Account Information for FileMaker Database
 ------------------------------------------

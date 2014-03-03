@@ -57,7 +57,8 @@ $tableDefinitions = array(
         'calculation' => array(
             array(
                 'field' => 'amount_calc',
-                'expression' => '[qty] * ([unitprice] == "" ? [product@unitprice] : [unitprice])',
+                'expression' => '[qty] * sin([unitprice])^2',
+           //     'expression' => '[qty] * ([unitprice] == "" ? [product@unitprice] : [unitprice])',
             ),
             array(
                 'field' => 'qty@style.color',
