@@ -1211,9 +1211,9 @@ var INTERMediator = {
             var timerTask;
             INTERMediatorOnPage.showProgress();
             if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
-                timerTask = 'INTERMediator.constructMain(true)';
+                timerTask = function(){INTERMediator.constructMain(true)};
             } else {
-                timerTask = 'INTERMediator.constructMain(' + indexOfKeyFieldObject + ')';
+                timerTask = function(){INTERMediator.constructMain(false)};
             }
             setTimeout(timerTask, 0);
         },

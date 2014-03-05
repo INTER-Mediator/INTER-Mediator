@@ -730,7 +730,7 @@ var INTERMediatorLib = {
     },
 
     calculateExpressionWithValues: function (exp, vals) {
-        var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue, refIds, itemValueArray, targetNode;
+        var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue, sq ="'", dq ="'";
 
         rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
         matchedArray = exp.match(rExp);
@@ -744,7 +744,7 @@ var INTERMediatorLib = {
                     tempValue += ",";
                 }
                 if (isNaN(parseFloat(itemValue[j]))) {
-                    tempValue += '"' + secureString(itemValue[j]) + '"';
+                    tempValue += sq + secureString(itemValue[j]) + sq;
                 } else {
                     tempValue += itemValue[j];
                 }
@@ -759,13 +759,16 @@ var INTERMediatorLib = {
         try {
         //    result = eval(exp);
             result = Parser.evaluate(exp);
-        } catch (e) {
-
+        } catch (ex) {
+            INTERMediator.setErrorMessage(ex, "EXCEPTION-28: JS Expression Eval Error: " + exp);
         }
         return result;
 
         function secureString(str) {
-            return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/[\n\r]/g, '');
+            return str.replace(/\\/g, '\\\\')
+                .replace(/'/g, '\\'+sq)
+            //    .replace(/"/g, '\\'+dq)
+                .replace(/[\n\r]/g, '');
         }
     }
 };

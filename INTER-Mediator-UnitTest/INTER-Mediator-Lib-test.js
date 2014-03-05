@@ -2,16 +2,18 @@
  * How to test locally.
  *
  * [Preparation]
- * Install Node.js locally.
- * Set the current directory to the INTER-Mediator dirctory.
- * Execute command "sudo npm link buster"
+ * - Install Node.js locally.
+ * - Set the current directory to the INTER-Mediator dirctory.
+ * - Execute command "sudo npm link buster"
+ *     The "node_modules" folder is going to create on the current folder.
  *
  * [At the start of your development]
- * Set the current directory to the INTER-Mediator dirctory.
- * Execute command "buster-server"
- * Open any browser and connect to http://localhost:1111
- * Click "Capture browser" button
- * Execute command "buster-test"   <-- Repeat it!
+ * - Set the current directory to the INTER-Mediator dirctory.
+ * - Execute command "buster-server"
+ *     Don't stop the process started by above command.
+ * - Open any browser and connect to http://localhost:1111
+ * - Click "Capture browser" button on the browser page
+ * - Execute command "buster-test"   <-- Repeat it!
  */
 
 var assert = buster.assertions.assert;

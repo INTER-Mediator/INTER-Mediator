@@ -25,7 +25,7 @@ $tableDefinitions = array(
         'calculation' => array(
             array(
                 'field' => 'calc',
-                'expression' => '"<special>" + [message]',
+                'expression' => "'<special>' + [message]",
             ),
         ),
     ),
