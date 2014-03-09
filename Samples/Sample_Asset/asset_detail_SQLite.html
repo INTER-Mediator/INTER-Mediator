@@ -4,8 +4,8 @@
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
-    <title>INTER-Mediator - Sample - Asset List/FileMaker Server</title>
-    <script src="contexts_FMS.php"></script>
+    <title>INTER-Mediator - Sample - Asset List/SQLite</title>
+    <script src="contexts_SQLite.php"></script>
     <script>
         window.onload = function(){
             var param = location.search.split('&');
@@ -23,32 +23,26 @@
                 conditions:[
                     {field:'asset_id', operator:'=', value:id},
                     {field:'backdate', operator:'IS NULL'}],
-                dataset:[{field:'backdate', value:'2012-12-31'}]
+                dataset:[{field:'backdate', value:'2013-06-29'}]
             });
             INTERMediator.construct();
         }
     </script>
 </head>
 <body>
-<p><a href="asset_list_FMS.html">資産一覧に戻る</a>|<a href="asset_list_mod_FMS.html">有効な資産一覧に戻る</a></p>
+<p><a href="asset_list_SQLite.html">資産一覧に戻る</a></p>
 <table>
     <tbody>
         <tr>
             <th>名称</th><td><input type="text" class="IM[assetdetail@name]"/></td>
-            <th>分類</th>
-            <td>
-                <!--<input type="text" class="IM[assetdetail@category"/>-->
-                <select class="IM[assetdetail@category]">
-                    <option class="IM[category@category_id@value|category@name]" value=""></option>
-                </select>
-            </td>
+            <th>分類</th><td><input type="text" class="IM[assetdetail@category]"/></td>
             <th>メモ</th>
         </tr>
         <tr><th>メーカー</th>
             <td><input type="text" class="IM[assetdetail@manifacture]"/></td>
             <th>型番</th><td><input type="text" class="IM[assetdetail@productinfo]"/></td>
             <td rowspan="4">
-                <textarea class="IM[assetdetail@memo"></textarea>
+                <textarea class="IM[assetdetail@memo]"></textarea>
                 <hr>
                 <button onclick="setBackDate($)" class="IM[assetdetail@asset_id@$onclick]">本日返却</button>
             </td>

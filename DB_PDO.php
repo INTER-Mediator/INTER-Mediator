@@ -1559,6 +1559,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                     '<', '<=', '>', '>=',
                     '=', '==', '!=', '<>', 'IS', 'IS NOT', 'IN', 'LIKE', 'GLOB', 'MATCH', 'REGEXP',
                     'AND',
+                    'IS NULL', //NULL value test
                     'OR',
                     '-', '+', '~', 'NOT',
                 )));
@@ -1597,10 +1598,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
 
     private function quotedFieldName($fieldName)
     {
-        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for SQLite */
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
             return "`{$fieldName}`";
 
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for SQLite */
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for PostgreSQL */
             $q = '"';
             return $q . str_replace($q, $q . $q, $fieldName) . $q;
 
@@ -1613,7 +1614,4 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-
 }
-
-?>
