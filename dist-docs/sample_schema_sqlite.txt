@@ -57,13 +57,13 @@ CREATE TABLE contact	(
 CREATE UNIQUE INDEX contact_id ON contact (id);
 CREATE INDEX contact_person_id ON contact (person_id);
 
-INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (1,'2009-12-1 15:23:00','Telephone',4,4);
-INSERT INTO contact (person_id,datetime,summary,important,way,kind) VALUES (1,'2009-12-2 15:23:00','Meeting',1,4,7);
-INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (1,'2009-12-3 15:23:00','Mail',5,8);
-INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (2,'2009-12-4 15:23:00','Calling',6,12);
-INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (2,'2009-12-1 15:23:00','Telephone',4,4);
-INSERT INTO contact (person_id,datetime,summary,important,way,kind) VALUES (3,'2009-12-2 15:23:00','Meeting',1,4,7);
-INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (3,'2009-12-3 15:23:00','Mail',5,8);
+INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (1,'2009-12-01 15:23:00','Telephone',4,4);
+INSERT INTO contact (person_id,datetime,summary,important,way,kind) VALUES (1,'2009-12-02 15:23:00','Meeting',1,4,7);
+INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (1,'2009-12-03 15:23:00','Mail',5,8);
+INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (2,'2009-12-04 15:23:00','Calling',6,12);
+INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (2,'2009-12-01 15:23:00','Telephone',4,4);
+INSERT INTO contact (person_id,datetime,summary,important,way,kind) VALUES (3,'2009-12-02 15:23:00','Meeting',1,4,7);
+INSERT INTO contact (person_id,datetime,summary,way,kind) VALUES (3,'2009-12-03 15:23:00','Mail',5,8);
 
 CREATE TABLE contact_way	(
 	id		INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -127,8 +127,8 @@ CREATE TABLE history	(
 CREATE UNIQUE INDEX history_id ON history (id);
 CREATE INDEX history_person_id ON history (person_id);
 
-INSERT INTO history(person_id,startdate,enddate,description) VALUES(1,'2001-4-1','2003-3-31','Hight School');
-INSERT INTO history(person_id,startdate,enddate,description) VALUES(1,'2003-4-1','2007-3-31','University');
+INSERT INTO history(person_id,startdate,enddate,description) VALUES(1,'2001-04-01','2003-03-31','Hight School');
+INSERT INTO history(person_id,startdate,enddate,description) VALUES(1,'2003-04-01','2007-03-31','University');
 
 /* The schema for the "Sample_search" sample set.*/
 
@@ -187,6 +187,113 @@ CREATE VIEW item_display AS
         IF(item.unitprice is null, qty * product.unitprice, qty * item.unitprice) AS amount FROM item,
         product WHERE item.product_id=product.id;
 */
+
+/* The schema for the "Sample_Asset" sample set. */
+
+DROP TABLE IF EXISTS asset;
+CREATE TABLE asset	(
+	asset_id	INTEGER PRIMARY KEY AUTOINCREMENT,
+	name		VARCHAR(20),
+	category	VARCHAR(20),
+    manifacture VARCHAR(20),
+    productinfo VARCHAR(20),
+	purchase    DATE,
+    discard     DATE,
+    memo	    TEXT
+);
+CREATE UNIQUE INDEX asset_id ON asset (asset_id);
+CREATE INDEX asset_purchase ON asset (purchase);
+CREATE INDEX asset_discard ON asset (discard);
+
+DROP TABLE IF EXISTS rent;
+CREATE TABLE rent	(
+	rent_id		INTEGER PRIMARY KEY AUTOINCREMENT,
+	asset_id  	INT,
+	staff_id    INT,
+	rentdate    DATE,
+    backdate    DATE,
+    memo	    TEXT
+);
+CREATE UNIQUE INDEX rent_id ON rent (rent_id);
+CREATE INDEX rent_rentdate  ON rent (rentdate);
+CREATE INDEX rent_backdate  ON rent (backdate);
+CREATE INDEX rent_asset_id  ON rent (asset_id);
+CREATE INDEX rent_staff_id  ON rent (staff_id);
+
+DROP TABLE IF EXISTS staff;
+CREATE TABLE staff	(
+	staff_id	INTEGER PRIMARY KEY AUTOINCREMENT,
+	name		VARCHAR(20),
+    section     VARCHAR(20),
+    memo	    TEXT
+);
+CREATE UNIQUE INDEX staff_id ON staff (staff_id);
+
+DROP TABLE IF EXISTS category;
+CREATE TABLE category	(
+	category_id	INTEGER PRIMARY KEY AUTOINCREMENT,
+	name		VARCHAR(20)
+);
+CREATE UNIQUE INDEX category_id ON category (category_id);
+
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (11, '個人用', 'MacBook Air[1]', 'Apple', '2012/250GB/4GB', '2012-08-01', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (12, '個人用', 'MacBook Air[2]', 'Apple', '2012/250GB/4GB', '2012-08-01', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (13, '個人用', 'MacBook Air[3]', 'Apple', '2012/250GB/4GB', '2012-08-01', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (14, '個人用', 'VAIO type A[1]', 'ソニー', 'VGN-AR85S', '2008-06-12', '2012-02-02');
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (15, '個人用', 'VAIO type A[2]', 'ソニー', 'VGN-AR85S', '2008-06-12', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (16, '共用', 'プロジェクタ', 'エプソン', 'EB-460T', '2010-11-23', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (17, '共用', 'ホワイトボード[1]', '不明', '不明', NULL, '2005-03-22');
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (18, '共用', 'ホワイトボード[2]', '不明', '不明', NULL, '2005-03-22');
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (19, '共用', '加湿器', 'シャープ', 'プラズマクラスター加湿器', '2011-12-02', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (20, '共用', '事務室エアコン', '', '', NULL, NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (21, '共用', '会議室エアコン', '', '', NULL, NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (22, '共用', '携帯電話ドコモ', '京セラ', 'P904i', '2010-04-04', '2012-03-03');
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (23, '個人用', '携帯電話au', 'シャープ', 'SH001', '2012-03-03', '2012-10-01');
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (24, '個人用', '携帯電話Softbank[1]', 'Apple', 'iPhone 5', '2012-10-01', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (25, '個人用', '携帯電話Softbank[2]', 'Apple', 'iPhone 5', '2012-10-01', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (26, '個人用', '携帯電話Softbank[3]', 'Apple', 'iPhone 5', '2012-10-01', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (27, '個人用', '携帯電話Softbank[4]', 'Apple', 'iPhone 5', '2012-10-01', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (28, '個人用', '携帯電話Softbank[5]', 'Apple', 'iPhone 5', '2012-10-01', NULL);
+INSERT INTO asset (asset_id,category,name,manifacture,productinfo,purchase,discard) VALUES (29, '個人用', '携帯電話Softbank[6]', 'Apple', 'iPhone 5', '2012-10-01', NULL);
+
+INSERT INTO staff (staff_id,name,section) VALUES (101, '田中次郎', '代表取締役社長');
+INSERT INTO staff (staff_id,name,section) VALUES (102, '山本三郎', '専務取締役');
+INSERT INTO staff (staff_id,name,section) VALUES (103, '北野六郎', '営業部長');
+INSERT INTO staff (staff_id,name,section) VALUES (104, '東原七海', '営業部');
+INSERT INTO staff (staff_id,name,section) VALUES (105, '内村久郎', '営業部');
+INSERT INTO staff (staff_id,name,section) VALUES (106, '菅沼健一郎', '開発部長');
+INSERT INTO staff (staff_id,name,section) VALUES (107, '西森裕太', '開発部');
+INSERT INTO staff (staff_id,name,section) VALUES (108, '野村顕昭', '開発部');
+INSERT INTO staff (staff_id,name,section) VALUES (109, '辻野均', '開発部');
+
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (22, 101, '2010-04-04', '2012-03-03');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (23, 101, '2012-03-03', '2012-10-01');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (24, 101, '2012-10-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (25, 102, '2012-10-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (26, 103, '2012-10-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (27, 106, '2012-10-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (28, 107, '2012-10-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (29, 108, '2012-10-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (14, 106, '2008-06-12', '2012-02-02');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (15, 106, '2008-06-12', '2011-03-31');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (15, 109, '2011-04-06', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (11, 107, '2012-08-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (12, 108, '2012-08-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (13, 109, '2012-08-01', NULL);
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 109, '2010-11-29', '2010-11-29');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 105, '2010-12-29', '2010-12-29');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 103, '2011-02-28', '2011-03-29');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 104, '2011-05-29', '2011-06-03');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 109, '2011-08-09', '2011-08-31');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 102, '2011-09-29', '2011-09-30');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 101, '2011-12-02', '2011-12-09');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 108, '2012-01-29', '2012-01-31');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 108, '2012-04-29', '2012-05-10');
+INSERT INTO rent (asset_id,staff_id,rentdate,backdate) VALUES (16, 109, '2012-06-29', '2012-07-29');
+
+INSERT INTO category (category_id,name) VALUES (1, '個人用');
+INSERT INTO category (category_id,name) VALUES (2, '共用');
+
 /* The schema for the "Sample_Auth" sample set. */
 
 CREATE TABLE chat (
@@ -272,9 +379,9 @@ INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_
     VALUES("Onion",5,1,21340,'onion2.png','Image: FreeDigitalPhotos.net',
     'http://www.freedigitalphotos.net');
 
-INSERT INTO invoice(id,issued,title) VALUES(1,"2010-2-4",'Invoice');
-INSERT INTO invoice(id,issued,title) VALUES(2,"2010-2-6",'Invoice');
-INSERT INTO invoice(id,issued,title) VALUES(3,"2010-2-14",'Invoice');
+INSERT INTO invoice(id,issued,title) VALUES(1,"2010-02-04",'Invoice');
+INSERT INTO invoice(id,issued,title) VALUES(2,"2010-02-06",'Invoice');
+INSERT INTO invoice(id,issued,title) VALUES(3,"2010-02-14",'Invoice');
 
 INSERT INTO item(invoice_id,product_id,qty) VALUES(1,1,12);
 INSERT INTO item(invoice_id,product_id,qty,unitprice)  VALUES(1,2,12,1340);
