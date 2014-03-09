@@ -32,7 +32,7 @@ IM_Entry(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
             'query' => array(
-                array('field' => 'discard', 'operator' => 'IS NULL'),
+                array('field' => 'discard', 'operator' => '<', 'value'=>'1990-01-01'),
             ),
             'repeat-control'=>'insert delete',
             'records' => 5,
