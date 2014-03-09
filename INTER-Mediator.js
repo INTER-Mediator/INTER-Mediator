@@ -1172,7 +1172,7 @@ var INTERMediator = {
                             }
                         }
                         if (newValueAdded) {
-                            updatedValue = INTERMediatorLib.calculateExpressionWithValues(
+                            updatedValue = Parser.evaluate(
                                 calcObject.expression,
                                 calcObject.values
                             );
@@ -1921,7 +1921,7 @@ var INTERMediator = {
                     if (calcDef[index]["field"].indexOf(nInfo["field"]) == 0) {
                         exp = calcDef[index]["expression"];
                         field = calcDef[index]["field"];
-                        elements = INTERMediatorLib.parseFieldsInExpression(exp);
+                        elements = Parser.parse(exp).variables();
                         calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
                         objectKey = nodeId + (calcFieldInfo.target.length > 0 ? ("@" + calcFieldInfo.target) : "");
                         if (elements) {
@@ -1944,6 +1944,7 @@ var INTERMediator = {
                         }
                     }
                 }
+                console.error(INTERMediator.calculateRequiredObject);
             }
 
 
@@ -2028,10 +2029,11 @@ var INTERMediator = {
                                 }
                                 calcObject.values[field] = valueSeries;
                             }
+                            console.error(exp, valuesArray);
                             IMLibElement.setValueToIMNode(
                                 targetNode,
                                 calcFieldInfo.target,
-                                INTERMediatorLib.calculateExpressionWithValues(exp, valuesArray));
+                                Parser.evaluate(exp, valuesArray));
                         } else {
 
                         }

@@ -26,7 +26,7 @@ $tableDefinitions = array(
         'calculation' => array(
             array(
                 'field' => 'total_calc',
-                'expression' => 'sum([item@amount_calc])',
+                'expression' => 'sum(item@amount_calc)',
             ),
         ),
     ),
@@ -57,12 +57,13 @@ $tableDefinitions = array(
         'calculation' => array(
             array(
                 'field' => 'amount_calc',
-                'expression' => "[qty] * if ( [unitprice] = '', [product@unitprice], [unitprice] )",
+                'expression' => "qty * if ( unitprice = '', product@unitprice, unitprice )",
            //     'expression' => '[qty] * ([unitprice] == '' ? [product@unitprice] : [unitprice])',
             ),
             array(
                 'field' => 'qty@style.color',
-                'expression' => "if ([qty] >= 10, 'red', 'black')",
+//                'expression' => "(qty >= 10) ? 'red' : 'black'",
+                'expression' => "if (qty >= 10, 'red', 'black')",
             ),
         ),
 //        'post-repeater' => 'itemsExpanded',

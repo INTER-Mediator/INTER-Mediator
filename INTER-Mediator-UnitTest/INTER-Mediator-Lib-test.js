@@ -76,110 +76,73 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
     }
 });
 
-buster.testCase("INTERMediatorLib.parseFieldsInExpression() Test", {
-    "Get all field items for single item.": function () {
-        var exp, items;
-
-        exp = "[a]";
-        items = INTERMediatorLib.parseFieldsInExpression(exp);
-        assert.equals(items.length, 1);
-        assert.equals(items[0], "a");
-    },
-    "Get all field items for invalid expression.": function () {
-        var exp, items;
-
-        exp = "[a";
-        items = INTERMediatorLib.parseFieldsInExpression(exp);
-        assert.equals(items, null);
-    },
-    "Get all field items for multiple items.": function () {
-        var exp, items;
-
-        exp = "[a]*[b]";
-        items = INTERMediatorLib.parseFieldsInExpression(exp);
-        assert.equals(items.length, 2);
-        assert.equals(items[0], "a");
-        assert.equals(items[1], "b");
-    },
-    "Get all field items for multiple items with space.": function () {
-        var exp, items;
-
-        exp = " [ a ] * [ b ] ";
-        items = INTERMediatorLib.parseFieldsInExpression(exp);
-        assert.equals(items.length, 2);
-        assert.equals(items[0], "a");
-        assert.equals(items[1], "b");
-    },
-    "Get all field items for more multiple items.": function () {
-        var exp, items;
-
-        exp = "[a]*[b]+[c]*[d]";
-        items = INTERMediatorLib.parseFieldsInExpression(exp);
-        assert.equals(items.length, 4);
-        assert.equals(items[0], "a");
-        assert.equals(items[1], "b");
-        assert.equals(items[2], "c");
-        assert.equals(items[3], "d");
-    },
-    "Get all field items for mistaking.": function () {
-        var exp, items;
-
-        exp = "[a][*[b]+[c]]*[d]";
-        items = INTERMediatorLib.parseFieldsInExpression(exp);
-        assert.equals(items.length, 4);
-        assert.equals(items[0], "a");
-        assert.equals(items[1], "b");
-        assert.equals(items[2], "c");
-        assert.equals(items[3], "d");
-    },
-    "Get all field items for double paren.": function () {
-        var exp, items;
-
-        exp = "[a]*[b]+[[c]]";
-        items = INTERMediatorLib.parseFieldsInExpression(exp);
-        assert.equals(items.length, 3);
-        assert.equals(items[0], "a");
-        assert.equals(items[1], "b");
-        assert.equals(items[2], "c");
-    }
-});
-
-buster.testCase("INTERMediatorLib.calculateExpressionWithValues() Test", {
-    "Calculate integer values.": function () {
-        var exp, vals, result;
-
-        exp = "[dog] * [cat]";
-        vals = {dog: [20], cat: [4]}
-        result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
-        assert.equals(result, 80);
-    },
-    "Calculate integer and float values.": function () {
-        var exp, vals, result;
-
-        exp = "[dog] * [cat]";
-        vals = {dog: [29], cat: [4.1]}
-        result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
-        assert.equals(INTERMediatorLib.Round(result,1), 118.9);
-    }
-    // Temporary string calculations is drop the support.
-    //
-//    "Calculate strings.": function () {
-//        var exp, vals, result;
+//buster.testCase("INTERMediatorLib.parseFieldsInExpression() Test", {
+//    "Get all field items for single item.": function () {
+//        var exp, items;
 //
-//        exp = "[dog] + [cat]";
-//        vals = {dog: ["Bowwow!"], cat: ["Mewww"]}
-//        result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
-//        assert.equals(result, "Bowwow!Mewww");
+//        exp = "[a]";
+//        items = INTERMediatorLib.parseFieldsInExpression(exp);
+//        assert.equals(items.length, 1);
+//        assert.equals(items[0], "a");
 //    },
-//    "Calculate string and numeric.": function () {
-//        var exp, vals, result;
+//    "Get all field items for invalid expression.": function () {
+//        var exp, items;
 //
-//        exp = "[dog] + [cat]";
-//        vals = {dog: ["Bowwow!"], cat: [4.3]}
-//        result = INTERMediatorLib.calculateExpressionWithValues(exp, vals);
-//        assert.equals(result, "Bowwow!4.3");
+//        exp = "[a";
+//        items = INTERMediatorLib.parseFieldsInExpression(exp);
+//        assert.equals(items, null);
+//    },
+//    "Get all field items for multiple items.": function () {
+//        var exp, items;
+//
+//        exp = "[a]*[b]";
+//        items = INTERMediatorLib.parseFieldsInExpression(exp);
+//        assert.equals(items.length, 2);
+//        assert.equals(items[0], "a");
+//        assert.equals(items[1], "b");
+//    },
+//    "Get all field items for multiple items with space.": function () {
+//        var exp, items;
+//
+//        exp = " [ a ] * [ b ] ";
+//        items = INTERMediatorLib.parseFieldsInExpression(exp);
+//        assert.equals(items.length, 2);
+//        assert.equals(items[0], "a");
+//        assert.equals(items[1], "b");
+//    },
+//    "Get all field items for more multiple items.": function () {
+//        var exp, items;
+//
+//        exp = "[a]*[b]+[c]*[d]";
+//        items = INTERMediatorLib.parseFieldsInExpression(exp);
+//        assert.equals(items.length, 4);
+//        assert.equals(items[0], "a");
+//        assert.equals(items[1], "b");
+//        assert.equals(items[2], "c");
+//        assert.equals(items[3], "d");
+//    },
+//    "Get all field items for mistaking.": function () {
+//        var exp, items;
+//
+//        exp = "[a][*[b]+[c]]*[d]";
+//        items = INTERMediatorLib.parseFieldsInExpression(exp);
+//        assert.equals(items.length, 4);
+//        assert.equals(items[0], "a");
+//        assert.equals(items[1], "b");
+//        assert.equals(items[2], "c");
+//        assert.equals(items[3], "d");
+//    },
+//    "Get all field items for double paren.": function () {
+//        var exp, items;
+//
+//        exp = "[a]*[b]+[[c]]";
+//        items = INTERMediatorLib.parseFieldsInExpression(exp);
+//        assert.equals(items.length, 3);
+//        assert.equals(items[0], "a");
+//        assert.equals(items[1], "b");
+//        assert.equals(items[2], "c");
 //    }
-});
+//});
 
 buster.testCase("INTERMediatorLib.Round() Test", {
     "Round library function test for positive value.": function () {

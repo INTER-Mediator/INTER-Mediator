@@ -715,73 +715,63 @@ var INTERMediatorLib = {
         }
     },
 
-    parseFieldsInExpression: function (exp) {
-        var returnArray = [], matchedArray, i, rExp;
+//    parseFieldsInExpression: function (exp) {
+//        var returnArray = [], matchedArray, i, rExp;
+//
+//        rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
+//        matchedArray = exp.match(rExp);
+//        if (!matchedArray) {
+//            return null;
+//        }
+//        for (i = 0; i < matchedArray.length; i++) {
+//            returnArray.push(matchedArray[i].replace(/[\[\] ]/g, ""));
+//        }
+//        return returnArray;
+//    },
 
-        rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
-        matchedArray = exp.match(rExp);
-        if (!matchedArray) {
-            return null;
-        }
-        for (i = 0; i < matchedArray.length; i++) {
-            returnArray.push(matchedArray[i].replace(/[\[\] ]/g, ""));
-        }
-        return returnArray;
-    },
-
-    calculateExpressionWithValues: function (exp, vals) {
-        var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue, sq ="'", dq ="'";
-
-        rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
-        matchedArray = exp.match(rExp);
-        for (i = 0; i < matchedArray.length; i++) {
-            itemName = matchedArray[i].replace(/[\[\] ]/g, "");
-            itemValue = vals[itemName];
-//            if (itemValue == undefined) {
-            tempValue = "";
-            for (j = 0; j < itemValue.length; j++) {
-                if (j != 0) {
-                    tempValue += ",";
-                }
-                if (isNaN(parseFloat(itemValue[j]))) {
-                    tempValue += sq + secureString(itemValue[j]) + sq;
-                } else {
-                    tempValue += itemValue[j];
-                }
-            }
-            itemValue = ( j = 1 ) ? tempValue : '[' + tempValue + ']';
-//            console.error(itemValue);
-//            } else if (isNaN(parseFloat(itemValue))) {
-//                itemValue = '"' + secureString(itemValue) + '"';
+//    calculateExpressionWithValues: function (exp, vals) {
+//        var itemName, matchedArray, i, j, rExp, itemValue, result = "", tempValue, sq ="'", dq ="'";
+//
+//        rExp = new RegExp("\\[([^\\[\\]]+)\\]", "g");
+//        matchedArray = exp.match(rExp);
+//        for (i = 0; i < matchedArray.length; i++) {
+//            itemName = matchedArray[i].replace(/[\[\] ]/g, "");
+//            itemValue = vals[itemName];
+////            if (itemValue == undefined) {
+//            tempValue = "";
+//            for (j = 0; j < itemValue.length; j++) {
+//                if (j != 0) {
+//                    tempValue += ",";
+//                }
+//                if (isNaN(parseFloat(itemValue[j]))) {
+//                    tempValue += sq + secureString(itemValue[j]) + sq;
+//                } else {
+//                    tempValue += itemValue[j];
+//                }
 //            }
-            exp = exp.replace(new RegExp("\\[" + itemName + "\\]", "g"), itemValue);
-        }
-        try {
-        //    result = eval(exp);
-            result = Parser.evaluate(exp);
-        } catch (ex) {
-            INTERMediator.setErrorMessage(ex, "EXCEPTION-28: JS Expression Eval Error: " + exp);
-        }
-        return result;
-
-        function secureString(str) {
-            return str.replace(/\\/g, '\\\\')
-                .replace(/'/g, '\\'+sq)
-            //    .replace(/"/g, '\\'+dq)
-                .replace(/[\n\r]/g, '');
-        }
-    }
+////            itemValue = ( j = 1 ) ? tempValue : '[' + tempValue + ']';
+////            console.error(itemValue);
+////            } else if (isNaN(parseFloat(itemValue))) {
+////                itemValue = '"' + secureString(itemValue) + '"';
+////            }
+//            exp = exp.replace(new RegExp("\\[" + itemName + "\\]", "g"), itemValue);
+//        }
+//        try {
+//        //    result = eval(exp);
+//            result = Parser.evaluate(exp);
+//        } catch (ex) {
+//            INTERMediator.setErrorMessage(ex, "EXCEPTION-28: JS Expression Eval Error: " + exp);
+//        }
+//        return result;
+//
+//        function secureString(str) {
+//            return str.replace(/\\/g, '\\\\')
+//                .replace(/'/g, '\\'+sq)
+//            //    .replace(/"/g, '\\'+dq)
+//                .replace(/[\n\r]/g, '');
+//        }
+//    }
 };
-
-var IM = {
-    sum: function (params) {
-        var i, s = 0;
-        for (i = 0; i < params.length; i++) {
-            s += params[i];
-        }
-        return s;
-    }
-}
 
 /*
 
