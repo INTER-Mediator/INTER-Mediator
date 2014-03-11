@@ -1239,7 +1239,8 @@ var INTERMediator = {
                             IMLibElement.setValueToIMNode(
                                 document.getElementById(calcFieldInfo.field),
                                 calcFieldInfo.target,
-                                updatedValue);
+                                updatedValue,
+                                true);
                             updatedNodeIds.push(calcFieldInfo.field);
                             updateNodeValues.push(updatedValue);
                         }
@@ -2094,7 +2095,8 @@ var INTERMediator = {
                             IMLibElement.setValueToIMNode(
                                 targetNode,
                                 calcFieldInfo.target,
-                                Parser.evaluate(exp, valuesArray));
+                                Parser.evaluate(exp, valuesArray),
+                                true);
                         } else {
 
                         }
