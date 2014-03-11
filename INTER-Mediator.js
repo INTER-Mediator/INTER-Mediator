@@ -578,17 +578,11 @@ var INTERMediator = {
             for (key in removeNodes) {
                 removeNode = document.getElementById(removeNodes[key]);
                 removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
-
-//                console.error("removingNodes", removingNodes);
-
                 if (removingNodes) {
                     for (i = 0; i < removingNodes.length; i++) {
                         removeNodeId = removingNodes[i].id;
                         if (removeNodeId in INTERMediator.calculateRequiredObject) {
                             delete INTERMediator.calculateRequiredObject[removeNodeId];
-
-//                            console.error("delete", removeNodeId);
-
                         }
                     }
                     for (i = 0; i < removingNodes.length; i++) {
@@ -597,16 +591,12 @@ var INTERMediator = {
                             calcObject = INTERMediator.calculateRequiredObject[nodeId];
                             referes = {};
                             values = {};
-                            //  calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
-                            // targetNode = document.getElementById(calcFieldInfo.field);
                             for (j in calcObject.referes) {
                                 referes[j] = [], values[j] = [];
                                 for (k = 0; k < calcObject.referes[j].length; k++) {
                                     if (removeNodeId != calcObject.referes[j][k]) {
                                         referes[j].push(calcObject.referes[j][k]);
                                         values[j].push(calcObject.values[j][k]);
-                                    } else {
-//                                        console.error("delete", removeNodeId);
                                     }
                                 }
                             }
