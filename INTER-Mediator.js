@@ -527,7 +527,7 @@ var INTERMediator = {
 
 
         deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
-            var key, removeNode;
+            var key, removeNode, removingNodes;
             if (isConfirm) {
                 if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                     return;
@@ -572,14 +572,57 @@ var INTERMediator = {
                 }
             }
 
+            console.error("INTERMediator.calculateRequiredObject", INTERMediator.calculateRequiredObject);
+
+            var i, j, k, removeNodeId, nodeId, calcObject, referes, values;
             for (key in removeNodes) {
                 removeNode = document.getElementById(removeNodes[key]);
+                removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
+
+//                console.error("removingNodes", removingNodes);
+
+                if (removingNodes) {
+                    for (i = 0; i < removingNodes.length; i++) {
+                        removeNodeId = removingNodes[i].id;
+                        if (removeNodeId in INTERMediator.calculateRequiredObject) {
+                            delete INTERMediator.calculateRequiredObject[removeNodeId];
+
+//                            console.error("delete", removeNodeId);
+
+                        }
+                    }
+                    for (i = 0; i < removingNodes.length; i++) {
+                        removeNodeId = removingNodes[i].id;
+                        for (nodeId in INTERMediator.calculateRequiredObject) {
+                            calcObject = INTERMediator.calculateRequiredObject[nodeId];
+                            referes = {};
+                            values = {};
+                            //  calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
+                            // targetNode = document.getElementById(calcFieldInfo.field);
+                            for (j in calcObject.referes) {
+                                referes[j] = [], values[j] = [];
+                                for (k = 0; k < calcObject.referes[j].length; k++) {
+                                    if (removeNodeId != calcObject.referes[j][k]) {
+                                        referes[j].push(calcObject.referes[j][k]);
+                                        values[j].push(calcObject.values[j][k]);
+                                    } else {
+//                                        console.error("delete", removeNodeId);
+                                    }
+                                }
+                            }
+                            calcObject.referes = referes;
+                            calcObject.values = values;
+                        }
+                    }
+                }
                 try {
                     removeNode.parentNode.removeChild(removeNode);
-                } catch (ex) {
+                } catch
+                    (ex) {
                     // Avoid an error for Safari
                 }
             }
+            INTERMediator.recalculation();
             INTERMediatorOnPage.hideProgress();
             INTERMediator.flushMessage();
         },
@@ -720,6 +763,7 @@ var INTERMediator = {
                     break;
                 }
             }
+            INTERMediator.recalculation();
             INTERMediatorOnPage.hideProgress();
             INTERMediator.flushMessage();
         },
@@ -781,6 +825,7 @@ var INTERMediator = {
                 INTERMediator.constructMain(true);
                 INTERMediator.additionalCondition = restore;
             }
+            INTERMediator.recalculation();
             INTERMediatorOnPage.hideProgress();
             INTERMediator.flushMessage();
         },
@@ -1137,12 +1182,23 @@ var INTERMediator = {
             }
         },
 
+        /*
+         On updating, the updatedNodeId should be set to the updating node id.
+         On deleting, parameter doesn't required.
+         */
         recalculation: function (updatedNodeId) {
-            var nodeId, newValueAdded, leafNodes, calcObject, ix, calcFieldInfo, updatedValue;
-            var targetNode, newValue, field, i, updatedNodeIds = [updatedNodeId], updateNodeValues, cachedIndex;
+            var nodeId, newValueAdded, leafNodes, calcObject, ix, calcFieldInfo, updatedValue, isRecalcAll = false;
+            var targetNode, newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex;
 
-            newValue = IMLibElement.getValueFromIMNode(document.getElementById(updatedNodeId));
-            updateNodeValues = [newValue];
+            if (updatedNodeId == undefined) {
+                isRecalcAll = true;
+                updatedNodeIds = [];
+                updateNodeValues = [];
+            } else {
+                newValue = IMLibElement.getValueFromIMNode(document.getElementById(updatedNodeId));
+                updatedNodeIds = [updatedNodeId];
+                updateNodeValues = [newValue];
+            }
 
             IMLibNodeGraph.clear();
             for (nodeId in INTERMediator.calculateRequiredObject) {
@@ -1161,13 +1217,17 @@ var INTERMediator = {
                     calcObject = INTERMediator.calculateRequiredObject[leafNodes[i]];
                     calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
                     if (calcObject) {
-                        newValueAdded = false;
-                        for (field in calcObject.referes) {
-                            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                                cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix]);
-                                if (cachedIndex >= 0) {
-                                    calcObject.values[field][ix] = updateNodeValues[cachedIndex];
-                                    newValueAdded = true;
+                        if (isRecalcAll) {
+                            newValueAdded = true;
+                        } else {
+                            newValueAdded = false;
+                            for (field in calcObject.referes) {
+                                for (ix = 0; ix < calcObject.referes[field].length; ix++) {
+                                    cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix]);
+                                    if (cachedIndex >= 0) {
+                                        calcObject.values[field][ix] = updateNodeValues[cachedIndex];
+                                        newValueAdded = true;
+                                    }
                                 }
                             }
                         }
@@ -1179,9 +1239,7 @@ var INTERMediator = {
                             IMLibElement.setValueToIMNode(
                                 document.getElementById(calcFieldInfo.field),
                                 calcFieldInfo.target,
-                                updatedValue,
-                                true
-                            );
+                                updatedValue);
                             updatedNodeIds.push(calcFieldInfo.field);
                             updateNodeValues.push(updatedValue);
                         }
@@ -1211,9 +1269,13 @@ var INTERMediator = {
             var timerTask;
             INTERMediatorOnPage.showProgress();
             if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
-                timerTask = function(){INTERMediator.constructMain(true)};
+                timerTask = function () {
+                    INTERMediator.constructMain(true)
+                };
             } else {
-                timerTask = function(){INTERMediator.constructMain(false)};
+                timerTask = function () {
+                    INTERMediator.constructMain(false)
+                };
             }
             setTimeout(timerTask, 0);
         },
@@ -1923,7 +1985,7 @@ var INTERMediator = {
                         field = calcDef[index]["field"];
                         elements = Parser.parse(exp).variables();
                         calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
-                        objectKey = nodeId + (calcFieldInfo.target.length > 0 ? ("@" + calcFieldInfo.target) : "");
+                        objectKey = nodeId + (calcFieldInfo.target.length > 0 ? (INTERMediator.separator + calcFieldInfo.target) : "");
                         if (elements) {
                             values = {};
                             referes = {};
@@ -1936,7 +1998,7 @@ var INTERMediator = {
                             }
                             INTERMediator.calculateRequiredObject[objectKey] = {
                                 "field": field,
-                                "expression": exp.replace(/ /g, ""),
+                                "expression": exp,
                                 "nodeInfo": nInfo,
                                 "values": values,
                                 "referes": referes
@@ -1944,7 +2006,7 @@ var INTERMediator = {
                         }
                     }
                 }
-                console.error(INTERMediator.calculateRequiredObject);
+//                console.error(INTERMediator.calculateRequiredObject);
             }
 
 
@@ -1958,10 +2020,10 @@ var INTERMediator = {
                     calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
                     targetNode = document.getElementById(calcFieldInfo.field);
                     for (field in calcObject.values) {
-                        if (field.indexOf("@") > -1) {
+                        if (field.indexOf(INTERMediator.separator) > -1) {
                             targetExp = field;
                         } else {
-                            targetExp = calcObject.nodeInfo.table + "@" + field;
+                            targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
                         }
                         do {
                             targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
@@ -2029,7 +2091,6 @@ var INTERMediator = {
                                 }
                                 calcObject.values[field] = valueSeries;
                             }
-                            console.error(exp, valuesArray);
                             IMLibElement.setValueToIMNode(
                                 targetNode,
                                 calcFieldInfo.target,

@@ -701,7 +701,7 @@ var INTERMediatorLib = {
         return nodes;
 
         function checkNode(target) {
-            var className;
+            var className, i;
             if (target.nodeType != 1) {
                 return;
             }
@@ -714,6 +714,27 @@ var INTERMediatorLib = {
             }
         }
     },
+
+    getElementsByIMManaged: function(node)  {
+        var nodes = [];
+        var reg = new RegExp(/^IM/);
+        checkNode(node);
+        return nodes;
+
+        function checkNode(target) {
+            var nodeId, i;
+            if (target.nodeType != 1) {
+                return;
+            }
+            nodeId = target.getAttribute("id");
+            if (nodeId && nodeId.match(reg)) {
+                nodes.push(target);
+            }
+            for (var i = 0; i < target.children.length; i++) {
+                checkNode(target.children[i]);
+            }
+        }
+    }
 
 //    parseFieldsInExpression: function (exp) {
 //        var returnArray = [], matchedArray, i, rExp;
