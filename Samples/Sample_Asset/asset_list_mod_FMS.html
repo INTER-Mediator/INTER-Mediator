@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<!-- Please keep the CLASS-IM[] style target descriptions for compatibility to the paper -->
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
-    <title>INTER-Mediator - Sample - Asset List/MySQL</title>
-    <script src="contexts.php"></script>
+    <title>INTER-Mediator - Sample - Asset List/FileMaker Server</title>
+    <script src="contexts_FMS.php"></script>
 </head>
 <body onload="INTERMediator.construct()">
 <div id="IM_NAVIGATOR"></div>
@@ -16,10 +15,8 @@
     </thead>
     <tbody>
         <tr>
-            <!-- Modification 2: Use the defferent context "asseteffect" -->
-            <!-- This table contains assets without discarding. -->
             <td>
-                <button onclick="location.href = 'asset_detail_mod.html?id=$';"
+                <button onclick="location.href = 'asset_detail_mod_FMS.html?id=$';"
                         class="IM[asseteffect@asset_id@$onclick]">
                     詳細</button>
             </td>
