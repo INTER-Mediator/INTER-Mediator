@@ -1,12 +1,7 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: msyk
- * Date: 2013/07/06
- * Time: 10:01
- * To change this template use File | Settings | File Templates.
+ * INTERMediator_Test file
  */
-
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
 require_once(dirname(__FILE__) . '/../DB_Logger.php');
@@ -55,6 +50,49 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         
         $this->assertFalse(isset($issuedHashDSN), $testName);
         $this->assertFalse(isset($scriptPathPrefix), $testName);
+    }
+
+    public function test_valueForJSInsert()
+    {
+        $expected = "\\'";
+        $string = "'";
+        $this->assertSame($expected, valueForJSInsert($string));
+
+        $expected = '\\"';
+        $string = '"';
+        $this->assertSame($expected, valueForJSInsert($string));
+        
+        $expected = '\\/';
+        $string = '/';
+        $this->assertSame($expected, valueForJSInsert($string));
+
+        $expected = '\\x3e';
+        $string = '>';
+        $this->assertSame($expected, valueForJSInsert($string));
+
+        $expected = '\\x3c';
+        $string = '<';
+        $this->assertSame($expected, valueForJSInsert($string));
+
+        $expected = '\\n';
+        $string = "\n";
+        $this->assertSame($expected, valueForJSInsert($string));
+
+        $expected = '\\r';
+        $string = "\r";
+        $this->assertSame($expected, valueForJSInsert($string));
+
+        $expected = '\\n';
+        $string = "\xe2\x80\xa8";
+        $this->assertSame($expected, valueForJSInsert($string));
+
+        $expected = '\\n';
+        $string = "\xe2\x80\xa9";
+        $this->assertSame($expected, valueForJSInsert($string));
+
+        $expected = '\\\\';
+        $string = '\\';
+        $this->assertSame($expected, valueForJSInsert($string));
     }
 
     public function test_arrayToJS()
@@ -145,12 +183,10 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
 /*
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 function loadClass($className)
-function valueForJSInsert($str)
 function arrayToJS($ar, $prefix)
 function arrayToJSExcluding($ar, $prefix, $exarray)
 function arrayToQuery($ar, $prefix)
 function getRelativePath()
 function setLocaleAsBrowser($locType)
-function getLocaleFromBrowser()
 */
 }

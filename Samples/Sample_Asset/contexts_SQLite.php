@@ -25,8 +25,6 @@ IM_Entry(
                 array('field'=>'purchase', 'value'=> strftime('%Y-%m-%d')),
             )
         ),
-        // Modification 2: Modification for contexts
-        // - This context is copied from the above one, and modified.
         array(
             'name' => 'asseteffect',
             'view' => 'asset',
@@ -34,13 +32,12 @@ IM_Entry(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
             'query' => array(
-                array('field' => 'discard', 'operator' => '<', 'value'=>'1990-1-1'),
+                array('field' => 'discard', 'operator' => '<', 'value'=>'1990-01-01'),
             ),
             'repeat-control'=>'insert delete',
             'records' => 5,
             'paging' => true,
         ),
-        // [END OF] Modification 2
         array(
             'name' => 'assetdetail',
             'view' => 'asset',
@@ -85,20 +82,14 @@ IM_Entry(
         ),
     ),
     array(
-        // Modification 3: Modification for a data in single field.
-        // - This context is copied from the above one, and modified.
         'formatter' => array(
             array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
             array('field' => 'asset@discard', 'converter-class' => 'MySQLDateTime'),
         ),
-        // [END OF] Modification 3
     ),
     array(
         'db-class' => 'PDO',
-        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8',
-        'option' => array(),
-        'user' => 'web',
-        'password' => 'password',
+        'dsn' => 'sqlite:/var/db/im/sample.sq3',
     ),
-    2
+    false
 );

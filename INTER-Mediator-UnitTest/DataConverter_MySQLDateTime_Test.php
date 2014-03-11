@@ -21,11 +21,15 @@ class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
 
         $expected = '';
-        $string = NULL;
+        $string = null;
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
 
         $expected = '';
         $string = '0000-00-00';
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '';
+        $string = '1969-12-31';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
 
         $expected = ' ';

@@ -14,6 +14,7 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
     {
         $suite = new PHPUnit_Framework_TestSuite( 'all tests' );
         $folder = dirname( __FILE__ ) . '/';
+        $suite->addTestFile($folder . 'DB_Formatters_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-SQLite_Test.php');

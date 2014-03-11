@@ -13,7 +13,8 @@ IM_Entry(
     array(
         array(
             'name' => 'asset',
-            'view' => 'asset',
+            'view' => 'im_sample.asset',
+            'table' => 'im_sample.asset',
             'key' => 'asset_id',
             'repeat-control'=>'insert delete',
             'records' => 5,
@@ -25,11 +26,10 @@ IM_Entry(
                 array('field'=>'purchase', 'value'=> strftime('%Y-%m-%d')),
             )
         ),
-        // Modification 2: Modification for contexts
-        // - This context is copied from the above one, and modified.
         array(
             'name' => 'asseteffect',
-            'view' => 'asset',
+            'view' => 'im_sample.asset',
+            'table' => 'im_sample.asset',
             'sort' => array(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
@@ -40,16 +40,17 @@ IM_Entry(
             'records' => 5,
             'paging' => true,
         ),
-        // [END OF] Modification 2
         array(
             'name' => 'assetdetail',
-            'view' => 'asset',
-            'table' => 'asset',
+            'view' => 'im_sample.asset',
+            'table' => 'im_sample.asset',
             'records' => 1,
             'key' => 'asset_id',
         ),
         array(
             'name' => 'rent',
+            'view' => 'im_sample.rent',
+            'table' => 'im_sample.rent',
             'key' => 'rent_id',
             'sort' => array(
                 array('field' => 'rentdate', 'direction' => 'ASC'),
@@ -64,10 +65,13 @@ IM_Entry(
         ),
         array(
             'name' => 'staff',
+            'view' => 'im_sample.staff',
+            'table' => 'im_sample.staff',
         ),
         array(
             'name' => 'rentback',
-            'table' => 'rent',
+            'view' => 'im_sample.rent',
+            'table' => 'im_sample.rent',
             'key' => 'rent_id',
             'query' => array(
                 array('field' => 'backdate', 'operator' => 'IS NULL'),
@@ -75,30 +79,27 @@ IM_Entry(
         ),
         array(
             'name' => 'category',
+            'view' => 'im_sample.category',
+            'table' => 'im_sample.category',
         ),
         array(
             'name' => 'category-in-list',
-            'view' => 'category',
+            'view' => 'im_sample.category',
+            'table' => 'im_sample.category',
             'relation' => array (
-                array('foreign-key' => 'category_id', 'join-field'=> 'category', 'operator' => '=')
+                array('foreign-key' => 'name', 'join-field'=> 'category', 'operator' => '=')
             )
         ),
     ),
     array(
-        // Modification 3: Modification for a data in single field.
-        // - This context is copied from the above one, and modified.
         'formatter' => array(
             array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
             array('field' => 'asset@discard', 'converter-class' => 'MySQLDateTime'),
         ),
-        // [END OF] Modification 3
     ),
     array(
         'db-class' => 'PDO',
-        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8',
-        'option' => array(),
-        'user' => 'web',
-        'password' => 'password',
+        'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
     ),
-    2
+    false
 );
