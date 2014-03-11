@@ -111,6 +111,5 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
     "Japanese characters variables.": function () {
         var result = Parser.evaluate("テーブル@値1 + テーブル@値2", {'テーブル@値1': [20], 'テーブル@値2': [2]});
         assert.equals(result, 22);
-    },
-})
-;
+    }
+});
