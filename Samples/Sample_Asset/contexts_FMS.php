@@ -19,28 +19,25 @@ IM_Entry(
             'records' => 5,
             'paging' => true,
             'sort' => array(
-                array('field' => 'purchase', 'direction' => 'ASC'),
+                array('field' => 'purchase', 'direction' => 'ascend'),
             ),
             'default-values'=>array(
                 array('field'=>'purchase', 'value'=> strftime('%Y-%m-%d')),
             )
         ),
-        // Modification 2: Modification for contexts
-        // - This context is copied from the above one, and modified.
         array(
             'name' => 'asseteffect',
             'view' => 'asset',
             'sort' => array(
-                array('field' => 'purchase', 'direction' => 'ASC'),
+                array('field' => 'purchase', 'direction' => 'ascend'),
             ),
             'query' => array(
-                array('field' => 'discard', 'operator' => '<', 'value'=>'1990-1-1'),
+                array('field' => 'discard', 'operator' => 'eq', 'value' => ''),
             ),
             'repeat-control'=>'insert delete',
             'records' => 5,
             'paging' => true,
         ),
-        // [END OF] Modification 2
         array(
             'name' => 'assetdetail',
             'view' => 'asset',
@@ -52,10 +49,10 @@ IM_Entry(
             'name' => 'rent',
             'key' => 'rent_id',
             'sort' => array(
-                array('field' => 'rentdate', 'direction' => 'ASC'),
+                array('field' => 'rentdate', 'direction' => 'ascend'),
             ),
             'relation' => array(
-                array('foreign-key' => 'asset_id', 'join-field'=> 'asset_id', 'operator' => '='),
+                array('foreign-key' => 'asset_id', 'join-field'=> 'asset_id', 'operator' => 'eq'),
             ),
             'repeat-control'=>'insert delete',
             'default-values'=>array(
@@ -80,25 +77,21 @@ IM_Entry(
             'name' => 'category-in-list',
             'view' => 'category',
             'relation' => array (
-                array('foreign-key' => 'category_id', 'join-field'=> 'category', 'operator' => '=')
+                array('foreign-key' => 'category_id', 'join-field'=> 'category', 'operator' => 'eq')
             )
         ),
     ),
     array(
-        // Modification 3: Modification for a data in single field.
-        // - This context is copied from the above one, and modified.
         'formatter' => array(
-            array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
-            array('field' => 'asset@discard', 'converter-class' => 'MySQLDateTime'),
+            array('field' => 'asset@purchase', 'converter-class' => 'FMDateTime', 'parameter'=>'%y/%m/%d'),
+            array('field' => 'asset@discard', 'converter-class' => 'FMDateTime'),
         ),
-        // [END OF] Modification 3
     ),
     array(
-        'db-class' => 'PDO',
-        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8',
+        'db-class' => 'FileMaker_FX',
         'option' => array(),
         'user' => 'web',
         'password' => 'password',
     ),
-    2
+    false
 );

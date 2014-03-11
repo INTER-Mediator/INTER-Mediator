@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<!-- Please keep the CLASS-IM[] style target descriptions for compatibility to the paper -->
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
-    <title>INTER-Mediator - Sample - Asset List/MySQL</title>
-    <script src="contexts.php"></script>
+    <title>INTER-Mediator - Sample - Asset List/FileMaker Server</title>
+    <script src="contexts_FMS.php"></script>
     <script>
         window.onload = function(){
             var param = location.search.split('&');
@@ -31,20 +30,17 @@
     </script>
 </head>
 <body>
-<p><a href="asset_list.html">資産一覧に戻る</a>|<a href="asset_list_mod.html">有効な資産一覧に戻る</a></p>
+<p><a href="asset_list_FMS.html">資産一覧に戻る</a>|<a href="asset_list_mod_FMS.html">有効な資産一覧に戻る</a></p>
 <table>
     <tbody>
         <tr>
             <th>名称</th><td><input type="text" class="IM[assetdetail@name]"/></td>
             <th>分類</th>
             <td>
-                <!--Before Modification:-->
                 <!--<input type="text" class="IM[assetdetail@category"/>-->
-                <!--After Modification1: Modification for page elements-->
                 <select class="IM[assetdetail@category]">
                     <option class="IM[category@category_id@value|category@name]" value=""></option>
                 </select>
-                <!--After Modification1:-->
             </td>
             <th>メモ</th>
         </tr>

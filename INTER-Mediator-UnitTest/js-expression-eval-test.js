@@ -49,7 +49,6 @@ buster.testCase("Operators Test2", {
     }
 });
 
-
 buster.testCase("INTER-Mediator Specific Calculation Test: ", {
     "Calculate integer values.": function () {
         var exp, vals, result;
