@@ -143,6 +143,13 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         assert.equals(Parser.evaluate("format(-1000000.678, 3)"), "-1,000,000.678");
         assert.equals(Parser.evaluate("format(999999, -1)"), "999,999.0");
         // A negative second parameter doesn't support so far.
+    },
+    "String functions.": function () {
+        assert.equals(Parser.evaluate("substr('abcdefg', 3, 2)"), "de");
+        assert.equals(Parser.evaluate("substring('abcdefg', 3, 5)"), "de");
+        assert.equals(Parser.evaluate("indexof('abcdefg','cd')"), 2);
+        assert.equals(Parser.evaluate("replace('abcdefgabc', 5, 8, 'yz')"), "abcdeyzbc");
+        assert.equals(Parser.evaluate("substitute('abcdefgabc', 'bc', 'yz')"), "ayzdefgayz");
     }
 
 });
