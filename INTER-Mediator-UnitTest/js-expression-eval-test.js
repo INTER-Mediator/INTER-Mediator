@@ -53,13 +53,13 @@ buster.testCase("Operators Test2", {
 
 buster.testCase("Functions Test", {
     "should be equal to": function () {
-        assert.equals(Parser.evaluate("sin(PI/4)"), 0.7071067811865475);
-        assert.equals(Parser.evaluate("cos(PI/4)"), 0.7071067811865475);
+        assert.equals(Math.round(Parser.evaluate("sin(PI/4)")*100), 71);
+        assert.equals(Math.round(Parser.evaluate("cos(PI/4)")*100), 71);
         assert.equals(Parser.evaluate("tan(PI/4)"), 1);
         assert.equals(Math.round(Parser.evaluate("asin(0.707106781186547)/PI*4*100")), 100);
         assert.equals(Math.round(Parser.evaluate("acos(0.707106781186547)/PI*4*100")), 100);
         assert.equals(Parser.evaluate("atan(1)/PI*4"), 1);
-        assert.equals(Parser.evaluate("sqrt(3)"), 1.7320508075688772);
+        assert.equals(Math.round(Parser.evaluate("sqrt(3)")*100), 173);
         assert.equals(Parser.evaluate("abs(3.6)"), 3.6);
         assert.equals(Parser.evaluate("abs(-3.6)"), 3.6);
         assert.equals(Parser.evaluate("ceil(4.6)"), 5);
@@ -81,8 +81,8 @@ buster.testCase("Functions Test", {
         assert.equals(Parser.evaluate("ceil(-4.4)"), -4);
         assert.equals(Parser.evaluate("floor(-4.4)"), -5);
         assert.equals(Parser.evaluate("round(-4.4)"), -4);
-        assert.equals(Parser.evaluate("exp(0.5)"), 1.6487212707001282);
-        assert.equals(Parser.evaluate("log(0.5)"), -0.6931471805599453);
+        assert.equals(Math.round(Parser.evaluate("exp(0.5)")*100), 165);
+        assert.equals(Math.round(Parser.evaluate("log(0.5)")*100), -69);
         var x = Parser.evaluate("random()");
         assert.equals(x > 0 && x < 1, true);
         var x = Parser.evaluate("random()+1");
