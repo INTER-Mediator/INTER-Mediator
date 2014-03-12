@@ -30,6 +30,8 @@ buster.testCase("Operators Test", {
         assert.equals(Parser.evaluate("a <> b ", { a: 99, b: 100 }), true);
         assert.equals(Parser.evaluate("a && b ", { a: true, b: false }), false);
         assert.equals(Parser.evaluate("a || b ", { a: true, b: false }), true);
+        assert.equals(Parser.evaluate("a > 10 && b < 10", { a: 11, b: 9 }), true);
+        assert.equals(Parser.evaluate("a > 10 || b < 10", { a: 11, b: 12 }), true);
     }
 });
 buster.testCase("Operators Test2", {
@@ -46,6 +48,54 @@ buster.testCase("Operators Test2", {
         assert.equals(Parser.evaluate("a ⋀ b ", { a: "abc\r\ndff\r\nghi", b: "dff\r\nstu" }), "dff\r\n");
         assert.equals(Parser.evaluate("a ⋁ b ", { a: "abc\ndff\nghi", b: "xyz\nstu\n" }), "abc\ndff\nghi\nxyz\nstu\n");
         assert.equals(Parser.evaluate("a ⊬ b ", { a: "abc\ndff\nghi", b: "ghi\ndkg\n" }), "abc\ndff\n");
+    }
+});
+
+buster.testCase("Functions Test", {
+    "should be equal to": function () {
+        assert.equals(Parser.evaluate("sin(PI/4)"), 0.7071067811865475);
+        assert.equals(Parser.evaluate("cos(PI/4)"), 0.7071067811865475);
+        assert.equals(Parser.evaluate("tan(PI/4)"), 1);
+        assert.equals(Math.round(Parser.evaluate("asin(0.707106781186547)/PI*4*100")), 100);
+        assert.equals(Math.round(Parser.evaluate("acos(0.707106781186547)/PI*4*100")), 100);
+        assert.equals(Parser.evaluate("atan(1)/PI*4"), 1);
+        assert.equals(Parser.evaluate("sqrt(3)"), 1.7320508075688772);
+        assert.equals(Parser.evaluate("abs(3.6)"), 3.6);
+        assert.equals(Parser.evaluate("abs(-3.6)"), 3.6);
+        assert.equals(Parser.evaluate("ceil(4.6)"), 5);
+        assert.equals(Parser.evaluate("floor(4.6)"), 4);
+        assert.equals(Parser.evaluate("round(4.6)"), 5);
+        assert.equals(Parser.evaluate("ceil(4.4)"), 5);
+        assert.equals(Parser.evaluate("floor(4.4)"), 4);
+        assert.equals(Parser.evaluate("round(4.4)"), 4);
+        assert.equals(Parser.evaluate("round(2837.4629, 0)"), 2837);
+        assert.equals(Parser.evaluate("round(2837.4629, 1)"), 2837.5);
+        assert.equals(Parser.evaluate("round(2837.4629, 2)"), 2837.46);
+        assert.equals(Parser.evaluate("round(2837.4629, 6)"), 2837.4629);
+        assert.equals(Parser.evaluate("round(2837.4629, -1)"), 2840);
+        assert.equals(Parser.evaluate("round(2837.4629, -3)"), 3000);
+        assert.equals(Parser.evaluate("round(2837.4629, -4)"), 0);
+        assert.equals(Parser.evaluate("ceil(-4.6)"), -4);
+        assert.equals(Parser.evaluate("floor(-4.6)"), -5);
+        assert.equals(Parser.evaluate("round(-4.6)"), -5);
+        assert.equals(Parser.evaluate("ceil(-4.4)"), -4);
+        assert.equals(Parser.evaluate("floor(-4.4)"), -5);
+        assert.equals(Parser.evaluate("round(-4.4)"), -4);
+        assert.equals(Parser.evaluate("exp(0.5)"), 1.6487212707001282);
+        assert.equals(Parser.evaluate("log(0.5)"), -0.6931471805599453);
+        var x = Parser.evaluate("random()");
+        assert.equals(x > 0 && x < 1, true);
+        var x = Parser.evaluate("random()+1");
+        assert.equals(x > 1 && x < 2, true);
+        assert.equals(Parser.evaluate("pow(2,3)"), 8);
+        assert.equals(Parser.evaluate("min(3,1,2,1,5,1)"), 1);
+        assert.equals(Parser.evaluate("max(3,1,2,1,5,1)"), 5);
+        assert.equals(Parser.evaluate("fac(5)"), 120);
+        assert.equals(Parser.evaluate("pyt(3,4)"), 5);
+        assert.equals(Parser.evaluate("atan2(0.5, 0.5)/PI"), 0.25);
+
+        assert.equals(Parser.evaluate("min(a)", {a: [3,3,2,1,5,1]}), 1);
+        assert.equals(Parser.evaluate("max(a)", {a: [3,3,2,1,5,1]}), 5);
     }
 });
 
@@ -124,11 +174,16 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         assert.equals(result, 22);
     },
     "Wrong expression.1": function () {
-        assert.exception(function () {Parser.evaluate("(a + b", {'a': [20], 'b': [2]})});
+        assert.exception(function () {
+            Parser.evaluate("(a + b", {'a': [20], 'b': [2]})
+        });
     },
     "Wrong expression.2": function () {
-        assert.exception(function () {Parser.evaluate("a + b + malfunction(a)", {'a': [20], 'b': [2]})});
+        assert.exception(function () {
+            Parser.evaluate("a + b + malfunction(a)", {'a': [20], 'b': [2]})
+        });
     },
+
     "each 3-digits should be devided.": function () {
         assert.equals(Parser.evaluate("format(999, 0)"), "999");
         assert.equals(Parser.evaluate("format(1000, 0)"), "1,000");
@@ -144,12 +199,22 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         assert.equals(Parser.evaluate("format(999999, -1)"), "999,999.0");
         // A negative second parameter doesn't support so far.
     },
+
     "String functions.": function () {
         assert.equals(Parser.evaluate("substr('abcdefg', 3, 2)"), "de");
         assert.equals(Parser.evaluate("substring('abcdefg', 3, 5)"), "de");
         assert.equals(Parser.evaluate("indexof('abcdefg','cd')"), 2);
         assert.equals(Parser.evaluate("replace('abcdefgabc', 5, 8, 'yz')"), "abcdeyzbc");
         assert.equals(Parser.evaluate("substitute('abcdefgabc', 'bc', 'yz')"), "ayzdefgayz");
+    },
+
+    "String Items.": function () {
+        var items = "abc\ndef\nght\njkl\nwer\ntfv";
+        assert.equals(Parser.evaluate("items(x,0,1)", {x: items}), "abc\n");
+        assert.equals(Parser.evaluate("items(x,2,2)", {x: items}), "ght\njkl\n");
+        assert.equals(Parser.evaluate("items(x,4,2)", {x: items}), "wer\ntfv\n");
+        assert.equals(Parser.evaluate("items(x,4,20)", {x: items}), "wer\ntfv\n");
+        assert.equals(Parser.evaluate("items(x,4)", {x: items}), "wer\ntfv\n");
     }
 
 });
