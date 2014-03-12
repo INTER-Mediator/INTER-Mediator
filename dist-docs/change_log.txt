@@ -66,9 +66,10 @@ Change Log
 
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.2 (in development)
-- Calculation Field started to work (but it has some limitations).
+Ver.4.2 (2014/3/13)
+- Calculation Field started to work. See the 'Sample_invoice'.
 - Send emails after the load/edit/new database operations.
+- Installation procedure is changed. We recommend to clone the repository and use the 'buildup.sh' script.
 - INTERMediatorOnPage.processingAfterPostOnlyContext has TWO parameters.
 - DataConverter_HTMLString supports double and single quote to convert to reference character.
 - DataConverter_HTMLString supports disabling HTML escaping (by specifying 'parameter' => 'noescape' ).
