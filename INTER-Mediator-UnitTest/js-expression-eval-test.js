@@ -66,18 +66,30 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         result = Parser.evaluate(exp, vals);
         assert.equals(INTERMediatorLib.Round(result, 1), 118.9);
     },
-    "Sum function and array variable.": function () {
+    "Sum function and array variable.1": function () {
         var result = Parser.evaluate("sum(p)", {p: [1, 2, 3, 4, 5]});
         assert.equals(result, 15);
     },
-    "If function and array variable.": function () {
+    "If function and array variable.2": function () {
         var result = Parser.evaluate("if(a = 1,'b','c')", {a: [1]});
         assert.equals(result, 'b');
     },
-    "If function and array variable.": function () {
+    "If function and array variable.3": function () {
         var result = Parser.evaluate("if(a = 1,'b','c')", {a: [2]});
         assert.equals(result, 'c');
     },
+    "If function and array variable.4": function () {
+        var result = Parser.evaluate("if((a+1) = (1+b),'b'+c,'c'+c)", {a: [2], b: [4], c: 'q'});
+        assert.equals(result, 'cq');
+    },
+    "If function and array variable.5": function () {
+        var result = Parser.evaluate("if((a+1) = (1+b),'b'+c,'c'+c)", {a: [4], b: [4], c: 'q'});
+        assert.equals(result, 'bq');
+    },
+//    "Triple items function": function () {
+//        var result = Parser.evaluate("(a = 1) ? 'YES' : 'NO'", {a: [1]});
+//        assert.equals(result, 'YES');
+//    },
 
     "Calculate strings.": function () {
         var exp, vals, result;
@@ -110,5 +122,28 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
     "Japanese characters variables.": function () {
         var result = Parser.evaluate("テーブル@値1 + テーブル@値2", {'テーブル@値1': [20], 'テーブル@値2': [2]});
         assert.equals(result, 22);
+    },
+    "Wrong expression.1": function () {
+        assert.exception(function () {Parser.evaluate("(a + b", {'a': [20], 'b': [2]})});
+    },
+    "Wrong expression.2": function () {
+        assert.exception(function () {Parser.evaluate("a + b + malfunction(a)", {'a': [20], 'b': [2]})});
+    },
+    "each 3-digits should be devided.": function () {
+        assert.equals(Parser.evaluate("format(999, 0)"), "999");
+        assert.equals(Parser.evaluate("format(1000, 0)"), "1,000");
+        assert.equals(Parser.evaluate("format(999999, 0)"), "999,999");
+        assert.equals(Parser.evaluate("format(1000000, 0)"), "1,000,000");
+        assert.equals(Parser.evaluate("format(1000000.678, 1)"), "1,000,000.7");
+        assert.equals(Parser.evaluate("format(1000000.678, 2)"), "1,000,000.68");
+        assert.equals(Parser.evaluate("format(1000000.678, 3)"), "1,000,000.678");
+        assert.equals(Parser.evaluate("format(1000000.678, 4)"), "1,000,000.6780");
+        assert.equals(Parser.evaluate("format(-1000000.678, 1)"), "-1,000,000.7");
+        assert.equals(Parser.evaluate("format(-1000000.678, 2)"), "-1,000,000.68");
+        assert.equals(Parser.evaluate("format(-1000000.678, 3)"), "-1,000,000.678");
+        assert.equals(Parser.evaluate("format(999999, -1)"), "999,999.0");
+        // A negative second parameter doesn't support so far.
     }
+
 });
+

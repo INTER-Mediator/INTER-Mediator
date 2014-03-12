@@ -1972,11 +1972,17 @@ var INTERMediator = {
                 exp = null;
                 for (index in calcDef) {
                     if (calcDef[index]["field"].indexOf(nInfo["field"]) == 0) {
+                        try {
                         exp = calcDef[index]["expression"];
                         field = calcDef[index]["field"];
                         elements = Parser.parse(exp).variables();
                         calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
                         objectKey = nodeId + (calcFieldInfo.target.length > 0 ? (INTERMediator.separator + calcFieldInfo.target) : "");
+                        } catch (ex)  {
+                            INTERMediator.setErrorMessage(ex,
+                                INTERMediatorLib.getInsertedString(
+                                    INTERMediatorOnPage.getMessages()[1036], [field, exp]));
+                        }
                         if (elements) {
                             values = {};
                             referes = {};
@@ -2093,7 +2099,9 @@ var INTERMediator = {
                     }
                 } while (leafNodes.length > 0);
                 if (IMLibNodeGraph.nodes.length > 0) {
-                    // Spanning Tree Detected.
+                    INTERMediator.setErrorMessage(new Exception(),
+                        INTERMediatorLib.getInsertedString(
+                            INTERMediatorOnPage.getMessages()[1037], []));
                 }
             }
 

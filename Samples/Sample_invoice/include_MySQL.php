@@ -58,15 +58,12 @@ $tableDefinitions = array(
             array(
                 'field' => 'amount_calc',
                 'expression' => "qty * if ( unitprice = '', product@unitprice, unitprice )",
-           //     'expression' => '[qty] * ([unitprice] == '' ? [product@unitprice] : [unitprice])',
             ),
             array(
                 'field' => 'qty@style.color',
-//                'expression' => "(qty >= 10) ? 'red' : 'black'",
                 'expression' => "if (qty >= 10, 'red', 'black')",
             ),
         ),
-//        'post-repeater' => 'itemsExpanded',
     ),
     array(
         'name' => 'product',
@@ -74,8 +71,6 @@ $tableDefinitions = array(
         'relation' => array(
             array('foreign-key' => 'id', 'join-field' => 'product_id', 'operator' => '=')
         ),
-        //    'foreign-key' 	=> 'id',
-        //    'join-field' 	=> 'product_id',
     ),
 );
 $optionDefinitions = array(
