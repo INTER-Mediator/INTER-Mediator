@@ -55,7 +55,7 @@ buster.testCase("Functions Test", {
     "should be equal to": function () {
         assert.equals(Math.round(Parser.evaluate("sin(PI/4)")*100), 71);
         assert.equals(Math.round(Parser.evaluate("cos(PI/4)")*100), 71);
-        assert.equals(Parser.evaluate("tan(PI/4)"), 1);
+        assert.equals(Math.round(Parser.evaluate("tan(PI/4)")*100), 100);
         assert.equals(Math.round(Parser.evaluate("asin(0.707106781186547)/PI*4*100")), 100);
         assert.equals(Math.round(Parser.evaluate("acos(0.707106781186547)/PI*4*100")), 100);
         assert.equals(Parser.evaluate("atan(1)/PI*4"), 1);
