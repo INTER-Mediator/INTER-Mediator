@@ -246,7 +246,8 @@ var INTERMediator = {
          Parameters:
          */
         valueChange: function (idValue) {
-            var changedObj, linkInfo, matched, context, i, index, checkFunction, target, value, result;
+            var changedObj, linkInfo, matched, context, i, j, index, didValidate, target, value, result, messageNode;
+            var errorMsgs;
 
             if (INTERMediator.isShiftKeyDown && INTERMediator.isControlKeyDown) {
                 INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
@@ -261,6 +262,7 @@ var INTERMediator = {
             changedObj = document.getElementById(idValue);
 
             linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
+            didValidate = false;
             if (linkInfo.length > 0) {
                 matched = linkInfo[0].match(/([^@]+)/);
                 context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
@@ -269,30 +271,54 @@ var INTERMediator = {
                         matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
                         for (index in context["validation"]) {
                             if (context["validation"][index]["field"] == matched[2]) {
-                                checkFunction = function () {
-                                    target = changedObj;
-                                    value = changedObj.value;
-                                    result = false;
-                                    eval("result = " + context["validation"][index]["rule"]);
-                                    if (!result) {
-                                        alert(context["validation"][index]["message"]);
-                                        changedObj.value = INTERMediator.updateRequiredObject[idValue]["initialvalue"];
-                                        changedObj.focus();
-                                        if (INTERMediatorOnPage.doAfterValidationFailure != null) {
-                                            INTERMediatorOnPage.doAfterValidationFailure(target, linkInfo[i]);
-                                        }
-                                    } else {
-                                        if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
-                                            INTERMediatorOnPage.doAfterValidationSucceed(target, linkInfo[i]);
-                                        }
+                                didValidate = true;
+                                result = Parser.evaluate(
+                                    context["validation"][index]["rule"],
+                                    {"value": changedObj.value, "target": changedObj});
+                                if (!result) {
+                                    switch (context["validation"][index]["notify"]) {
+                                        case 'inline':
+                                            messageNode = document.createElement('SPAN');
+                                            INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
+                                            messageNode.appendChild(
+                                                document.createTextNode(context["validation"][index]["message"]));
+                                            changedObj.parentNode.insertBefore(messageNode, changedObj.nextSibling);
+                                            break;
+                                        case 'end-of-sibling':
+                                            messageNode = document.createElement('DIV');
+                                            INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
+                                            messageNode.appendChild(
+                                                document.createTextNode(context["validation"][index]["message"]));
+                                            changedObj.parentNode.appendChild(messageNode);
+                                            break;
+                                        default:
+                                            alert(context["validation"][index]["message"]);
+                                    }
+                                    changedObj.value = INTERMediator.updateRequiredObject[idValue]["initialvalue"];
+                                    changedObj.focus();
+                                    if (INTERMediatorOnPage.doAfterValidationFailure != null) {
+                                        INTERMediatorOnPage.doAfterValidationFailure(target, linkInfo[i]);
                                     }
                                     return result;
-                                }
-                                if (!checkFunction()) {
-                                    return;
+                                } else {
+                                    switch (context["validation"][index]["notify"]) {
+                                        case 'inline':
+                                        case 'end-of-sibling':
+                                            errorMsgs = INTERMediatorLib.getElementsByClassName(
+                                                changedObj.parentNode, '_im_alertmessage');
+                                            for (j = 0; j < errorMsgs.length; j++) {
+                                                errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
+                                            }
+                                            break;
+                                    }
                                 }
                             }
                         }
+                    }
+                }
+                if (didValidate) {
+                    if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
+                        INTERMediatorOnPage.doAfterValidationSucceed(target, linkInfo[i]);
                     }
                 }
             }
@@ -300,6 +326,7 @@ var INTERMediator = {
                 if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
                     INTERMediator.updateRequiredObject[idValue]['edit'] = true;
                 } else {
+                    INTERMediator.recalculation(idValue);
                     INTERMediator.updateDB(idValue);
                     INTERMediator.flushMessage();
                 }
@@ -1776,7 +1803,11 @@ var INTERMediator = {
                                         valueChangeFunction = function (targetId) {
                                             var theId = targetId;
                                             return function (evt) {
-                                                INTERMediator.valueChange(theId);
+                                                var result = INTERMediator.valueChange(theId);
+                                                console.error(result);
+                                                if (!result) {
+                                                    evt.preventDefault();
+                                                }
                                             }
                                         };
                                         eventListenerPostAdding.push({
@@ -1973,12 +2004,12 @@ var INTERMediator = {
                 for (index in calcDef) {
                     if (calcDef[index]["field"].indexOf(nInfo["field"]) == 0) {
                         try {
-                        exp = calcDef[index]["expression"];
-                        field = calcDef[index]["field"];
-                        elements = Parser.parse(exp).variables();
-                        calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
-                        objectKey = nodeId + (calcFieldInfo.target.length > 0 ? (INTERMediator.separator + calcFieldInfo.target) : "");
-                        } catch (ex)  {
+                            exp = calcDef[index]["expression"];
+                            field = calcDef[index]["field"];
+                            elements = Parser.parse(exp).variables();
+                            calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
+                            objectKey = nodeId + (calcFieldInfo.target.length > 0 ? (INTERMediator.separator + calcFieldInfo.target) : "");
+                        } catch (ex) {
                             INTERMediator.setErrorMessage(ex,
                                 INTERMediatorLib.getInsertedString(
                                     INTERMediatorOnPage.getMessages()[1036], [field, exp]));
@@ -2056,15 +2087,15 @@ var INTERMediator = {
                 }
 //                console.error(INTERMediator.calculateRequiredObject);
 
-                IMLibNodeGraph.applyToAllNodes(function (node) {
-                    var targetNode = document.getElementById(node);
-                    if (targetNode && targetNode.tagName == 'INPUT') {
-                        INTERMediatorLib.addEvent(targetNode, 'change', function () {
-                            var targetNodeId = node;
-                            INTERMediator.recalculation(targetNodeId);
-                        })
-                    }
-                });
+//                IMLibNodeGraph.applyToAllNodes(function (node) {
+//                    var targetNode = document.getElementById(node);
+//                    if (targetNode && targetNode.tagName == 'INPUT') {
+//                        INTERMediatorLib.addEvent(targetNode, 'change', function () {
+//                            var targetNodeId = node;
+//                            INTERMediator.recalculation(targetNodeId);
+//                        })
+//                    }
+//                });
                 do {
                     leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
                     for (i = 0; i < leafNodes.length; i++) {

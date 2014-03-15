@@ -231,6 +231,7 @@ class DefinitionChecker
                     'field' => 'string',
                     'rule' => 'string',
                     'message' => 'string',
+                    'notify' => 'string(alert|inline|end-of-sibling)',
                 )
             ),
             'post-repeater' => 'string',

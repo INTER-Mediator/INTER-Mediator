@@ -65,6 +65,10 @@ span.IM_POSTMESSAGE {
 #_im_authbutton{}
 #_im_changebutton{}
 
+._im_alertmessage   {
+    color: red;
+}
+
 table {
     border-collapse: collapse;
     background-color: #EEEEEE;

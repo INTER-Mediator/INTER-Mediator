@@ -13,7 +13,6 @@ To Do List for the INTER-Mediator developer(s)
 - Documentations, especially English documentations.
 - Working with the cloud infrastructures.
 - Generating the page on the server-side initially. Now the IMCake is going on.
-- Client-side evaluated field as like FileMaker's calculation field.
 - The list-detail style page navigation without JavaScript programming.
 - Showing as the alert box when any errors occurred ??
 - Password policy when the password is changed.
@@ -22,7 +21,6 @@ To Do List for the INTER-Mediator developer(s)
 - Single query can retrieve main and related tables simultaneously.
 - Caching the result of queries.
 - FileMaker's Find style database search. To do that, the Record-set feature must be support for context.
-- Store NULL for empty string.
 - HTML5's local database supporting.
 - The meter tag, INPUT#range tag, INPUT#number tag etc, HTML5 new comers supporting.
 - DL/DT/DD tags supporting.
@@ -40,11 +38,6 @@ To Do List for the INTER-Mediator developer(s)
 - Authentication UI should generate on the server side.
 - Working with FileMaker's ODBC sharing instead of XML sharing (FX.php) when using FileMaker Server 13.
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13.
- (Calculation Field issues)
-- Security Issue: The eval function is used to calculate the expression. Should it replace some wrong characters?
-- Formatting: How to apply a format to a value? Should we support a formatter function? Or other solutions?
-- Error Detection: Any error doesn't arise so far.
-- Functions: The SUM function is just defined so far.
 
 =================================
 Known Issues for Browsers:
@@ -65,6 +58,15 @@ Change Log
 =================================
 
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
+
+Ver.4.3 (in development)
+- Validation doesn't call the eval function, but it changes to evaluate the expression to validate.
+- The 'validation' in a context can set the 'notify' parameter. Its value can be 'alert', 'inline' and 'end-of-sibling'.
+- The DataConverter_NullZeroString class added. This is for numeric field that the blank is treated as NULL.
+- [BUG FIX] In case of a validation didn't meet, all calculation fields updated.
+- [BUG FIX] Parser recognized some operators as a part of variables.
+- [BUG FIX] The sum function couldn't aggregate formatted values.
+- [BUG FIX] Formetter classes didn't work in the updating task.
 
 Ver.4.2 (2014/3/13)
 - Calculation Field started to work. See the 'Sample_invoice'.

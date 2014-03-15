@@ -474,7 +474,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $value = $fieldValues[$counter];
             $counter++;
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            $convertedValue = $this->formatter->formatterToDB($field, $convertedValue);
+
+        //    $this->logger->setDebugMessage(" ###### " . "{$tableName}{$this->settings->getSeparator()}{$field}");
+            $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+
+            $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
             $setClause[] = "{$field}=?";
             $setParameter[] = $convertedValue;
         }

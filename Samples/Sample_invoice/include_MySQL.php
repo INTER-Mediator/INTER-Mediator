@@ -26,7 +26,7 @@ $tableDefinitions = array(
         'calculation' => array(
             array(
                 'field' => 'total_calc',
-                'expression' => 'sum(item@amount_calc)',
+                'expression' => 'format(sum(item@amount_calc))',
             ),
         ),
     ),
@@ -45,19 +45,21 @@ $tableDefinitions = array(
         'validation' => array(
             array(
                 'field' => 'qty',
-                'rule' => 'value>=0 && value<100',
-                'message' => 'Quantity should be between 1..99.'
+                'rule' => 'value>=0 && value < 100',
+                'message' => 'Quantity should be between 1..99.',
+                'notify' => 'inline'
             ),
             array(
                 'field' => 'unitprice',
                 'rule' => 'value>=0 && value<10000',
-                'message' => 'Unit price should be between 1.. 9999.'
+                'message' => 'Unit price should be between 1.. 9999.',
+                'notify' => 'end-of-sibling'
             ),
         ),
         'calculation' => array(
             array(
                 'field' => 'amount_calc',
-                'expression' => "qty * if ( unitprice = '', product@unitprice, unitprice )",
+                'expression' => "format(qty * if ( unitprice = '', product@unitprice, unitprice ))",
             ),
             array(
                 'field' => 'qty@style.color',
@@ -75,15 +77,20 @@ $tableDefinitions = array(
 );
 $optionDefinitions = array(
     'formatter' => array(
+       array(
+            'field' => 'item@qty',
+            'converter-class' => 'NullZeroString',
+            'parameter' => '0'
+        ),
         array(
-            'field' => 'item@amount',
-            'converter-class' => 'Number',
+            'field' => 'item@unitprice',
+            'converter-class' => 'NullZeroString',
             'parameter' => '0'
         ),
     ),
 );
 $dbDefinitions = array('db-class' => 'PDO');
 
-IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, false);
+IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, 2);
 
 ?>
