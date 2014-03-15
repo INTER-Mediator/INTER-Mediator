@@ -36,7 +36,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     /**
      * @var string
      */
-    private $outputOfPrcessing = '';
+    private $outputOfProcessing = null;
     /**
      * @var
      */
@@ -60,6 +60,16 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     public function getDefaultKey()
     {
         return $this->dbClass->getDefaultKey();
+    }
+
+    public function addOutputData($key, $value)
+    {
+        return $this->outputOfProcessing[$key] = $value;
+    }
+
+    public function exportOutputDataAsJason()
+    {
+        echo json_encode($this->outputOfProcessing);
     }
 
     /**
@@ -454,7 +464,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
 
-        $this->outputOfPrcessing = '';
+        $this->outputOfProcessing = array();
         $generatedPrivateKey = '';
         $passPhrase = '';
 
@@ -610,8 +620,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         switch ($access) {
             case 'describe':
                 $result = $this->dbClass->getSchema($this->dbSettings->getTargetName());
-                $this->outputOfPrcessing = 'dbresult=' . arrayToJS($result, '') . ';'
-                    . "resultCount=0;";
+//                $this->outputOfProcessing = 'dbresult=' . arrayToJS($result, '') . ';'
+//                    . "resultCount=0;";
+                $this->outputOfProcessing['dbresult'] = $result;
+                $this->outputOfProcessing['resultCount'] = 0;
                 break;
             case 'select':
                 $result = $this->getFromDB($this->dbSettings->getTargetName());
@@ -625,8 +637,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         }
                     }
                 }
-                $this->outputOfPrcessing = 'dbresult=' . arrayToJS($result, '') . ';'
-                    . "resultCount='{$this->countQueryResult($this->dbSettings->getTargetName())}';";
+//                $this->outputOfProcessing = 'dbresult=' . arrayToJS($result, '') . ';'
+//                    . "resultCount='{$this->countQueryResult($this->dbSettings->getTargetName())}';";
+                $this->outputOfProcessing['dbresult'] = $result;
+                $this->outputOfProcessing['resultCount'] = $this->countQueryResult($this->dbSettings->getTargetName());
                 break;
             case 'update':
                 if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
@@ -648,7 +662,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             case 'new':
                 $result = $this->newToDB($this->dbSettings->getTargetName(), $bypassAuth);
-                $this->outputOfPrcessing = "newRecordKeyValue='{$result}';";
+//                $this->outputOfProcessing = "newRecordKeyValue='{$result}';";
+                $this->outputOfProcessing['newRecordKeyValue'] = $result;
                 break;
             case 'delete':
                 $this->deleteFromDB($this->dbSettings->getTargetName());
@@ -658,9 +673,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             case 'changepassword':
                 if (isset($_POST['newpass'])) {
                     $changeResult = $this->changePassword($this->paramAuthUser, $_POST['newpass']);
-                    $this->outputOfPrcessing = "changePasswordResult=" . ($changeResult ? "true;" : "false;");
+//                    $this->outputOfProcessing = "changePasswordResult=" . ($changeResult ? "true;" : "false;");
+                    $this->outputOfProcessing['changePasswordResult'] = ($changeResult ? true : false);
                 } else {
-                    $this->outputOfPrcessing = "changePasswordResult=false;";
+//                    $this->outputOfProcessing = "changePasswordResult=false;";
+                    $this->outputOfProcessing['changePasswordResult']=false;
                 }
                 break;
         }
@@ -685,11 +702,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function finishCommunication($notFinish = false)
     {
-        $this->logger->setDebugMessage("[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
+        $this->logger->setDebugMessage(
+            "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
 
         if ($notFinish || !$this->dbSettings->getRequireAuthorization()) {
-            echo $this->outputOfPrcessing;
-            echo implode('', $this->logger->getMessagesForJS());
+            $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
+            $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
+//            echo json_encode($this->outputOfProcessing);
             return;
         }
         $generatedChallenge = $this->generateChallenge();
@@ -704,12 +723,17 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
         $this->previousClientid = "{$generatedUID}";
-        echo $this->outputOfPrcessing;
-        echo implode('', $this->logger->getMessagesForJS());
-        echo "challenge='{$generatedChallenge}{$userSalt}';";
-        echo "clientid='{$generatedUID}';";
+//        echo var_export($this->outputOfProcessing, true);
+//        echo implode('', $this->logger->getMessagesForJS());
+        $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
+        $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
+        $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
+        $this->outputOfProcessing['clientid'] = $generatedUID;
+//        echo "challenge='{$generatedChallenge}{$userSalt}';";
+//        echo "clientid='{$generatedUID}';";
         if ($this->dbSettings->getRequireAuthentication()) {
-            echo "requireAuth=true;"; // Force authentication to client
+//            echo "requireAuth=true;"; // Force authentication to client
+            $this->outputOfProcessing['requireAuth'] = true;
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         if (isset($tableInfo['authentication'])
@@ -718,8 +742,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         ) {
             $generatedChallenge = $this->generateChallenge();
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
-            echo "mediatoken='{$generatedChallenge}';";
+//            echo "mediatoken='{$generatedChallenge}';";
+            $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
         }
+//        echo json_encode($this->outputOfProcessing);
     }
 
     /* Authentication support */

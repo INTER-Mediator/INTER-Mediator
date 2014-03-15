@@ -80,7 +80,7 @@ INTERMediator_DBAdapter = {
     server_access: function (accessURL, debugMessageNumber, errorMessageNumber) {
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-            mediatoken = null, appPath, authParams;
+            mediatoken = null, appPath, authParams, jsonObject, i;
         appPath = INTERMediatorOnPage.getEntryPath();
         authParams = INTERMediator_DBAdapter.generate_authParams();
         INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams)
@@ -90,7 +90,24 @@ INTERMediator_DBAdapter = {
             myRequest.setRequestHeader("charset", "utf-8");
             myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             myRequest.send(accessURL + authParams);
-            eval(myRequest.responseText);
+//            eval(myRequest.responseText);
+
+            jsonObject = JSON.parse(myRequest.responseText);
+            resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
+            dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
+            requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
+            challenge = jsonObject.challenge ? jsonObject.challenge : null;
+            clientid = jsonObject.clientid ? jsonObject.clientid : null;
+            newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
+            changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
+            mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
+            for (i = 0 ; i < jsonObject.errorMessages; i++) {
+                INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
+            }
+            for (i = 0 ; i < jsonObject.debugMessages; i++) {
+                INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
+            }
+
             INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
             INTERMediator_DBAdapter.store_challenge(challenge);
@@ -180,7 +197,7 @@ INTERMediator_DBAdapter = {
     uploadFile: function (parameters, uploadingFile, doItOnFinish) {
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-            mediatoken = null, appPath, authParams, accessURL;
+            mediatoken = null, appPath, authParams, accessURL, jsonObject, i;
         //           var result = this.server_access("access=uploadfile" + parameters, 1031, 1032, uploadingFile);
         appPath = INTERMediatorOnPage.getEntryPath();
         authParams = INTERMediator_DBAdapter.generate_authParams();
@@ -202,7 +219,23 @@ INTERMediator_DBAdapter = {
                     case 3:
                         break;
                     case 4:
-                        eval(myRequest.responseText);
+//                        eval(myRequest.responseText);
+                        jsonObject = JSON.parse(myRequest.responseText);
+                        resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
+                        dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
+                        requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
+                        challenge = jsonObject.challenge ? jsonObject.challenge : null;
+                        clientid = jsonObject.clientid ? jsonObject.clientid : null;
+                        newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
+                        changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
+                        mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
+                        for (i = 0 ; i < jsonObject.errorMessages; i++) {
+                            INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
+                        }
+                        for (i = 0 ; i < jsonObject.debugMessages; i++) {
+                            INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
+                        }
+
                         INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                             challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
                         INTERMediator_DBAdapter.store_challenge(challenge);
@@ -311,7 +344,7 @@ INTERMediator_DBAdapter = {
             if (criteriaObject["field"]) {
                 criteriaObject = [criteriaObject];
             }
-            for (index = 0 ; index < criteriaObject.length ; index++) {
+            for (index = 0; index < criteriaObject.length; index++) {
                 if (criteriaObject.hasOwnProperty(index)) {
                     params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
                     if (criteriaObject[index]["operator"] !== undefined) {
@@ -332,7 +365,7 @@ INTERMediator_DBAdapter = {
             if (sortkeyObject["field"]) {
                 sortkeyObject = [sortkeyObject];
             }
-            for (index = 0 ; index < sortkeyObject.length ; index++) {
+            for (index = 0; index < sortkeyObject.length; index++) {
                 params += "&sortkey" + extCount + "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
                 params += "&sortkey" + extCount + "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
                 extCount++;

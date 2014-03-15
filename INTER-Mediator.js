@@ -1860,9 +1860,16 @@ var INTERMediator = {
                                         objectReference[nInfo['field']] = nodeId;
 
                                         // Set data to the element.
-                                        if ((typeof curVal == 'object' || curVal instanceof Object)) {
+                                        if (curVal == null) {
+                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
+                                                postSetFields.push({'id': nodeId, 'value': curVal});
+                                            }
+                                        } else if (((typeof curVal == 'object' || curVal instanceof Object))) {
                                             if (curVal.length > 0) {
-                                                if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal[0])) {
+                                                if (IMLibElement.setValueToIMNode(
+                                                    currentLinkedNodes[k],
+                                                    curTarget,
+                                                    curVal[0])) {
                                                     postSetFields.push({'id': nodeId, 'value': curVal[0]});
                                                 }
                                             }
