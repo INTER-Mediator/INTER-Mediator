@@ -91,6 +91,6 @@ $optionDefinitions = array(
 );
 $dbDefinitions = array('db-class' => 'PDO');
 
-IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions, 2);
+IM_Entry($tableDefinitions, $optionDefinitions, $dbDefinitions,  false);
 
 ?>

@@ -63,10 +63,13 @@ Ver.4.3 (in development)
 - Validation doesn't call the eval function, but it changes to evaluate the expression to validate.
 - The 'validation' in a context can set the 'notify' parameter. Its value can be 'alert', 'inline' and 'end-of-sibling'.
 - The DataConverter_NullZeroString class added. This is for numeric field that the blank is treated as NULL.
+- TinyMCE Ver.4.0.19 supported.
+- "new Function()" statements have gone away. Moreover no eval function so far.
 - [BUG FIX] In case of a validation didn't meet, all calculation fields updated.
 - [BUG FIX] Parser recognized some operators as a part of variables.
 - [BUG FIX] The sum function couldn't aggregate formatted values.
 - [BUG FIX] Formetter classes didn't work in the updating task.
+- [BUG FIX] JSON supported communication branch wasn't merged.
 
 Ver.4.2 (2014/3/13)
 - Calculation Field started to work. See the 'Sample_invoice'.

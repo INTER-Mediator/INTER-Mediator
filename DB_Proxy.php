@@ -708,7 +708,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if ($notFinish || !$this->dbSettings->getRequireAuthorization()) {
             $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
             $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
-//            echo json_encode($this->outputOfProcessing);
             return;
         }
         $generatedChallenge = $this->generateChallenge();
@@ -717,22 +716,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $userSalt = $this->saveChallenge(
             $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
 
-//        $this->logger->setDebugMessage("requireAuthentication={$this->dbSettings->getRequireAuthentication()}", 2);
-//        $this->logger->setDebugMessage("requireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
-//        echo implode('', $this->logger->getMessagesForJS());
-
         $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
         $this->previousClientid = "{$generatedUID}";
-//        echo var_export($this->outputOfProcessing, true);
-//        echo implode('', $this->logger->getMessagesForJS());
         $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
         $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
         $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
         $this->outputOfProcessing['clientid'] = $generatedUID;
-//        echo "challenge='{$generatedChallenge}{$userSalt}';";
-//        echo "clientid='{$generatedUID}';";
         if ($this->dbSettings->getRequireAuthentication()) {
-//            echo "requireAuth=true;"; // Force authentication to client
             $this->outputOfProcessing['requireAuth'] = true;
         }
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -742,10 +732,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         ) {
             $generatedChallenge = $this->generateChallenge();
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
-//            echo "mediatoken='{$generatedChallenge}';";
             $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
         }
-//        echo json_encode($this->outputOfProcessing);
     }
 
     /* Authentication support */

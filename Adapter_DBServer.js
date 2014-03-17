@@ -90,8 +90,6 @@ INTERMediator_DBAdapter = {
             myRequest.setRequestHeader("charset", "utf-8");
             myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             myRequest.send(accessURL + authParams);
-//            eval(myRequest.responseText);
-
             jsonObject = JSON.parse(myRequest.responseText);
             resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
             dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
@@ -219,7 +217,6 @@ INTERMediator_DBAdapter = {
                     case 3:
                         break;
                     case 4:
-//                        eval(myRequest.responseText);
                         jsonObject = JSON.parse(myRequest.responseText);
                         resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
                         dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;

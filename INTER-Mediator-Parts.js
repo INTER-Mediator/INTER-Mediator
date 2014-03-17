@@ -52,27 +52,30 @@ var IMParts_tinymce = {
         tinymceOption['editor_selector'] = '_im_tinymce';
         tinymceOption['elements'] = this.ids.join(',');
         tinymceOption.setup = function (ed) {
-            ed.onChange.add(function (ed, ev) {
+            ed.on('change', function (ev) {
                 INTERMediator.valueChange(ed.id);
             });
-            ed.onKeyDown.add(function (ed, ev) {
+            ed.on('keydown', function (ev) {
                 INTERMediator.keyDown(ev);
             });
-            ed.onKeyUp.add(function (ed, ev) {
+            ed.on('keyup', function (ev) {
                 INTERMediator.keyUp(ev);
             });
         };
 
         tinyMCE.init(tinymceOption);
 
-        for (var i = 0; i < this.ids.length; i++) {
-            var targetNode = document.getElementById(this.ids[i]);
+        for (var i = 0; i < IMParts_tinymce.ids.length; i++) {
+            var targetNode = document.getElementById(IMParts_tinymce.ids[i]);
             if (targetNode) {
                 targetNode._im_getValue = function () {
-                    return tinymce.EditorManager.get(this.id).getContent();
-                };
+                    var thisId = this.id;
+                    console.error(tinymce.EditorManager.get(thisId).getContent());
+                    return tinymce.EditorManager.get(thisId).getContent();
+                }
             }
         }
+        IMParts_tinymce.ids = [];
     }
 };
 var IMParts_codemirror = {
@@ -98,7 +101,8 @@ var IMParts_codemirror = {
         };
 
         parentNode._im_setValue = function (str) {
-            IMParts_codemirror.initialValues[this._im_getComponentId()] = str;
+            var theId = newId;
+            IMParts_codemirror.initialValues[theId] = str;
         };
     },
     ids: [],
@@ -125,6 +129,8 @@ var IMParts_codemirror = {
                 }();
             }
         }
+        this.ids = [];
+        this.initialValues = {};
     }
 };
 
@@ -436,6 +442,8 @@ var IMParts_im_fileupload = {
                 }
             }
         }
+        this.ids = [];
+        this.formFromId = {};
 
         function selfURL() {
             var nodes = document.getElementsByTagName("SCRIPT");
@@ -486,3 +494,9 @@ var IMParts_im_fileupload = {
         }
     }
 };
+
+var IMParts_Catalog = {
+    "tinymce": IMParts_tinymce,
+    "codemirror": IMParts_codemirror,
+    "im_fileupload": IMParts_im_fileupload
+}

@@ -1601,7 +1601,7 @@ var INTERMediator = {
                     nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
                     curTarget, postCallFunc, newlyAddedNodes, keyingValue, pagingValue, repeaterCalcItems,
                     recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                    selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec,
+                    selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, setupWidget,
                     nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, currentRepeaterItems;
 
                 currentLevel++;
@@ -1625,6 +1625,7 @@ var INTERMediator = {
 
 
                 if (currentContext) {
+                    setupWidget = false;
                     fieldList = []; // Create field list for database fetch.
                     calcDef = currentContext['calculation'];
                     calcFields = [];
@@ -1747,15 +1748,9 @@ var INTERMediator = {
                             for (k = 0; k < currentWidgetNodes.length; k++) {
                                 var wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
                                 if (wInfo[0]) {
-                                    if (!widgetSupport[wInfo[0]]) {
-                                        var targetName = "IMParts_" + wInfo[0];
-                                        widgetSupport[wInfo[0]] = {
-                                            plugin: eval(targetName),
-                                            instanciate: eval(targetName + ".instanciate"),
-                                            finish: eval(targetName + ".finish")};
-                                    }
-                                    (widgetSupport[wInfo[0]].instanciate).apply(
-                                        (widgetSupport[wInfo[0]].plugin), [currentWidgetNodes[k]]);
+                                    setupWidget = true;
+                                    IMParts_Catalog[wInfo[0]].instanciate.apply(
+                                        IMParts_Catalog[wInfo[0]], [currentWidgetNodes[k]]);
                                 }
                             }
                         } catch (ex) {
@@ -1928,9 +1923,8 @@ var INTERMediator = {
                                 }
 
                                 if (currentContext['post-repeater']) {
-                                    postCallFunc = new Function("arg",
-                                        "INTERMediatorOnPage." + currentContext['post-repeater'] + "(arg)");
-                                    postCallFunc(newlyAddedNodes);
+                      INTERMediatorOnPage[currentContext['post-repeater']](newlyAddedNodes);
+
                                     INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
                                         + currentContext['post-repeater'] + "' with the context: " + currentContext['name'], 2);
                                 }
@@ -1946,10 +1940,10 @@ var INTERMediator = {
                     }
                     setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue);
 
-                    for (var pName in widgetSupport) {
-//                    (widgetSupport[pName].finish).apply(
-//                        (widgetSupport[pName].plugin), null );
-                        widgetSupport[pName].plugin.finish();
+                    if (setupWidget)    {
+                    for (var plugin in IMParts_Catalog) {
+                        IMParts_Catalog[plugin].finish();
+                    }
                     }
                     try {
                         if (INTERMediatorOnPage.expandingEnclosureFinish != null) {
@@ -1968,9 +1962,7 @@ var INTERMediator = {
 
                     try {
                         if (currentContext['post-enclosure']) {
-                            postCallFunc = new Function("arg",
-                                "INTERMediatorOnPage." + currentContext['post-enclosure'] + "(arg)");
-                            postCallFunc(node);
+                            INTERMediatorOnPage[currentContext['post-enclosure']](node);
                             INTERMediator.setDebugMessage(
                                 "Call the post enclosure method 'INTERMediatorOnPage." + currentContext['post-enclosure']
                                     + "' with the context: " + currentContext['name'], 2);
