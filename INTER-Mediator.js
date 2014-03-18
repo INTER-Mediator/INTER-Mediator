@@ -1036,8 +1036,8 @@ var INTERMediator = {
 
         clickPostOnlyButton: function (node) {
             var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
-            var mergedValues, inputNodes, typeAttr, k, target, value, result, alertmessage;
-            var linkedNodes, namedNodes, index;
+            var mergedValues, inputNodes, typeAttr, k, target, errorMsgs, messageNode, result, alertmessage;
+            var linkedNodes, namedNodes, index, hasInvalid;
             var targetNode = node.parentNode;
             while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
                 targetNode = targetNode.parentNode;
@@ -1075,6 +1075,7 @@ var INTERMediator = {
 
             alertmessage = '';
             fieldData = [];
+            hasInvalid = false;
             for (i = 0; i < linkedNodes.length; i++) {
                 elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
                 for (j = 0; j < elementInfo.length; j++) {
@@ -1085,13 +1086,36 @@ var INTERMediator = {
                                 validationInfo = contextInfo.validation[index];
                                 if (validationInfo.field == comp[1]) {
                                     if (validationInfo) {
-                                        target = linkedNodes[i];
-                                        value = linkedNodes[i].value;
-                                        result = false;
-                                        eval("result = " + validationInfo.rule);
+                                        result = Parser.evaluate(
+                                            validationInfo.rule,
+                                            {"value": linkedNodes[i].value, "target": linkedNodes[i]}
+                                        );
                                         if (!result) {
-                                            alertmessage += validationInfo.message;
-                                            alertmessage += "\n";
+                                            hasInvalid = true;
+                                            switch (validationInfo.notify) {
+                                                case 'inline':
+                                                    clearErrorMessage(linkedNodes[i]);
+                                                    messageNode = createErrorMessageNode('SPAN', validationInfo.message);
+                                                    linkedNodes[i].parentNode.insertBefore(messageNode, linkedNodes[i].nextSibling);
+                                                    break;
+                                                case 'end-of-sibling':
+                                                    clearErrorMessage(linkedNodes[i]);
+                                                    messageNode = createErrorMessageNode('DIV', validationInfo.message);
+                                                    linkedNodes[i].parentNode.appendChild(messageNode);
+                                                    break;
+                                                default:
+                                                    alertmessage += validationInfo.message + "\n";
+                                            }
+                                            if (INTERMediatorOnPage.doAfterValidationFailure != null) {
+                                                INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i], linkInfo[i]);
+                                            }
+                                        } else {
+                                            switch (validationInfo.notify) {
+                                                case 'inline':
+                                                case 'end-of-sibling':
+                                                    clearErrorMessage(linkedNodes[i]);
+                                                    break;
+                                            }
                                         }
                                     }
                                 }
@@ -1141,6 +1165,9 @@ var INTERMediator = {
 
             if (alertmessage.length > 0) {
                 window.alert(alertmessage);
+                return;
+            }
+            if (hasInvalid) {
                 return;
             }
 
@@ -1195,6 +1222,22 @@ var INTERMediator = {
                             seekLinkedElement(children[i]);
                         }
                     }
+                }
+            }
+
+            function createErrorMessageNode(tag, message)   {
+                var messageNode;
+                messageNode = document.createElement(tag);
+                INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
+                messageNode.appendChild(document.createTextNode(message));
+                return messageNode;
+            }
+
+            function clearErrorMessage(node)    {
+                var errorMsgs, j;
+                errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');
+                for (j = 0; j < errorMsgs.length; j++) {
+                    errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
                 }
             }
         },
@@ -1923,7 +1966,7 @@ var INTERMediator = {
                                 }
 
                                 if (currentContext['post-repeater']) {
-                      INTERMediatorOnPage[currentContext['post-repeater']](newlyAddedNodes);
+                                    INTERMediatorOnPage[currentContext['post-repeater']](newlyAddedNodes);
 
                                     INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
                                         + currentContext['post-repeater'] + "' with the context: " + currentContext['name'], 2);
@@ -1940,10 +1983,10 @@ var INTERMediator = {
                     }
                     setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue);
 
-                    if (setupWidget)    {
-                    for (var plugin in IMParts_Catalog) {
-                        IMParts_Catalog[plugin].finish();
-                    }
+                    if (setupWidget) {
+                        for (var plugin in IMParts_Catalog) {
+                            IMParts_Catalog[plugin].finish();
+                        }
                     }
                     try {
                         if (INTERMediatorOnPage.expandingEnclosureFinish != null) {

@@ -206,6 +206,7 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         assert.equals(Parser.evaluate("indexof('abcdefg','cd')"), 2);
         assert.equals(Parser.evaluate("replace('abcdefgabc', 5, 8, 'yz')"), "abcdeyzbc");
         assert.equals(Parser.evaluate("substitute('abcdefgabc', 'bc', 'yz')"), "ayzdefgayz");
+        assert.equals(Parser.evaluate("length('abcdefgabc')"), 10);
     },
 
     "String Items.": function () {
