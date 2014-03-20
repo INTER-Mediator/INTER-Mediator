@@ -30,7 +30,7 @@ To Do List for the INTER-Mediator developer(s)
 - Popup menu's default value; if there isn't the value of them, set first one.
 - PayPal support or sort of.
 - The Observer Architecture for both client and server.
- (Followings are from INTER-Mediator Study Meeting 2003#1)
+  (Followings are from INTER-Mediator Study Meeting 2003#1)
 - Calendar/Time Component Support.
 - Tab Component Support.
 - The database class DB_PDO should use the prepare method instead of the query method.
@@ -65,10 +65,11 @@ Ver.4.3 (in development)
 - The DataConverter_NullZeroString class added. This is for numeric field that the blank is treated as NULL.
 - TinyMCE Ver.4.0.19 supported.
 - "new Function()" statements have gone away. Moreover no eval function so far.
+- The length function which returns the length of string added to the expression.
 - [BUG FIX] In case of a validation didn't meet, all calculation fields updated.
 - [BUG FIX] Parser recognized some operators as a part of variables.
 - [BUG FIX] The sum function couldn't aggregate formatted values.
-- [BUG FIX] Formetter classes didn't work in the updating task.
+- [BUG FIX] Formatter classes didn't work in the updating task in PDO.
 - [BUG FIX] JSON supported communication branch wasn't merged.
 
 Ver.4.2 (2014/3/13)

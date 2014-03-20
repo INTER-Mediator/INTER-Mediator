@@ -13,6 +13,7 @@ buster.testCase("Parser.evaluate Test", {
         assert.equals(Parser.evaluate("(-3)^x", { x: 4 }), 81);
         assert.equals(Parser.evaluate("(x+(x-3)*2)", { x: 5 }), 9);
         assert.equals(Parser.evaluate("(x/(x-3)*2)", { x: 5 }), 5);
+        assert.equals(Parser.evaluate("x + y", { x: 5.1, y:3.1 }), 8.2);
     }
 });
 buster.testCase("Operators Test", {
@@ -81,6 +82,10 @@ buster.testCase("Functions Test", {
         assert.equals(Parser.evaluate("ceil(-4.4)"), -4);
         assert.equals(Parser.evaluate("floor(-4.4)"), -5);
         assert.equals(Parser.evaluate("round(-4.4)"), -4);
+        assert.equals(Parser.evaluate("format(1500)"), "1,500");
+        assert.equals(Parser.evaluate("format(1500.9)"), "1,501");
+        assert.equals(Parser.evaluate("format(-1500)"), "-1,500");
+        assert.equals(Parser.evaluate("format(-1500.9)"), "-1,501");
         assert.equals(Math.round(Parser.evaluate("exp(0.5)")*100), 165);
         assert.equals(Math.round(Parser.evaluate("log(0.5)")*100), -69);
         var x = Parser.evaluate("random()");
@@ -119,6 +124,14 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
     "Sum function and array variable.1": function () {
         var result = Parser.evaluate("sum(p)", {p: [1, 2, 3, 4, 5]});
         assert.equals(result, 15);
+    },
+    "Sum function and array variable.2": function () {
+        var result = Parser.evaluate("sum(p)", {p: ['1,000', '1,000', '1,000', 5]});
+        assert.equals(result, 3005);
+    },
+    "Sum function and array variable.3": function () {
+        var result = Parser.evaluate("sum(p)", {p: [1.1, 1.1, 1.1, 5]});
+        assert.equals(result, 8.3);
     },
     "If function and array variable.2": function () {
         var result = Parser.evaluate("if(a = 1,'b','c')", {a: [1]});
@@ -196,7 +209,7 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         assert.equals(Parser.evaluate("format(-1000000.678, 1)"), "-1,000,000.7");
         assert.equals(Parser.evaluate("format(-1000000.678, 2)"), "-1,000,000.68");
         assert.equals(Parser.evaluate("format(-1000000.678, 3)"), "-1,000,000.678");
-        assert.equals(Parser.evaluate("format(999999, -1)"), "999,999.0");
+        assert.equals(Parser.evaluate("format(999999, -1)"), "1,000,000");
         // A negative second parameter doesn't support so far.
     },
 

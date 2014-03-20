@@ -105,3 +105,4 @@ $sendMailSMTP = array(
     'password' => 'string',
 );
 */
+
