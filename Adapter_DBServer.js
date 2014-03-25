@@ -35,8 +35,6 @@ INTERMediator_DBAdapter = {
                     authParams += "&response=dummy";
                 }
             }
-//                authParams += "&response=" + encodeURIComponent(
-//                    SHA1(INTERMediatorOnPage.authChallenge + INTERMediatorOnPage.authHashedPassword));
         }
         return authParams;
     },
@@ -143,7 +141,7 @@ INTERMediator_DBAdapter = {
         if (username && oldpassword) {
             INTERMediatorOnPage.authUser = username;
             if (username != ''    // No usename and no challenge, get a challenge.
-                && (INTERMediatorOnPage.authChallenge == null || INTERMediatorOnPage.authChallenge.length < 24 )) {
+                && (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                 INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
                 challengeResult = INTERMediator_DBAdapter.getChallenge();
                 if (!challengeResult) {
@@ -186,7 +184,7 @@ INTERMediator_DBAdapter = {
                 INTERMediator.setErrorMessage(ex, "EXCEPTION-19");
             }
         }
-        if (INTERMediatorOnPage.authChallenge == null) {
+        if (INTERMediatorOnPage.authChallenge === null) {
             return false;
         }
         return true;
@@ -436,7 +434,7 @@ INTERMediator_DBAdapter = {
     db_update: function (args) {
         var noError = true, params, extCount, result, counter, index, addedObject;
 
-        if (args['name'] == null) {
+        if (args['name'] === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
             noError = false;
         }
@@ -444,7 +442,7 @@ INTERMediator_DBAdapter = {
 //            INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1008));
 //            noError = false;
 //        }
-        if (args['dataset'] == null) {
+        if (args['dataset'] === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1011));
             noError = false;
         }
@@ -528,11 +526,11 @@ INTERMediator_DBAdapter = {
     db_delete: function (args) {
         var noError = true, params, i, result, counter, index, addedObject;
 
-        if (args['name'] == null) {
+        if (args['name'] === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
             noError = false;
         }
-        if (args['conditions'] == null) {
+        if (args['conditions'] === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
             noError = false;
         }
@@ -602,7 +600,7 @@ INTERMediator_DBAdapter = {
     db_createRecord: function (args) {
         var params, i, result, index, addedObject, counter, targetKey, ds, key;
 
-        if (args['name'] == null) {
+        if (args['name'] === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return;
         }

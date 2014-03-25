@@ -408,6 +408,14 @@ function INTERMediatorLib() {
         getNodeInfoArray: function (nodeInfo) {
             var comps, tableName, fieldName, targetName;
 
+            if(! nodeInfo.split)  {
+                return {
+                    'table': null,
+                    'field': null,
+                    'target': null,
+                    'tableindex': null
+                };
+            }
             comps = nodeInfo.split(INTERMediator.separator);
             tableName = '', fieldName = '', targetName = '';
             if (comps.length == 3) {
@@ -455,7 +463,7 @@ function INTERMediatorLib() {
 
         getClassAttributeFromNode: function (node) {
             var str = '';
-            if (node == null) return '';
+            if (node === null) return '';
             if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
                 str = node.getAttribute('className');
             } else {
@@ -465,7 +473,7 @@ function INTERMediatorLib() {
         },
 
         setClassAttributeToNode: function (node, className) {
-            if (node == null) return;
+            if (node === null) return;
             if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
                 node.setAttribute('className', className);
             } else {
@@ -486,7 +494,7 @@ function INTERMediatorLib() {
             str = (new String(str)).toString();
             for (i = 0; i < str.length; i++) {
                 c = str.charAt(i);
-                if ((c >= '0' && c <= '9') || c == '-' || c == this.cachedDiditSeparator[0]) {
+                if ((c >= '0' && c <= '9') || c == '.' || c == '-' || c == this.cachedDiditSeparator[0]) {
                     s += c;
                 }
             }
@@ -514,7 +522,7 @@ function INTERMediatorLib() {
                 sign = '-';
                 n = -n;
             }
-            underDot = (digit == undefined) ? 0 : this.toNumber(digit);
+            underDot = (digit === undefined) ? 0 : this.toNumber(digit);
             power = Math.pow(10, underDot);
             roundedNum = Math.round(n * power);
             underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
@@ -676,7 +684,7 @@ function INTERMediatorLib() {
 
         getNodePath: function (node) {
             var path = '';
-            if (node.tagName == null) {
+            if (node.tagName === null) {
                 return '';
             } else {
                 return INTERMediatorLib.getNodePath(node.parentNode) + "/" + node.tagName;
@@ -881,11 +889,14 @@ var IMLibElement = {
             needPostValueSet = false, nodeTag, curValues, i;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
-        if (curVal == undefined) {
+        if (curVal === undefined) {
             return false;   // Or should be an error?
         }
         if (!element) {
             return false;   // Or should be an error?
+        }
+        if (curVal == null) {
+            curVal = '';
         }
 
         nodeTag = element.tagName;

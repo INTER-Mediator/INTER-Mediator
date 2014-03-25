@@ -23,7 +23,7 @@ IM_Entry(
             'calculation' => array(
                 array(
                     'field' => 'total_calc',
-                    'expression' => 'sum(item@amount_calc)',
+                    'expression' => 'format(sum(item@amount_calc) * (1 + _@taxRate ))',
                 ),
             ),
         ),
