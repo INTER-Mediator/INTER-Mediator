@@ -3,45 +3,29 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */  -->
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <link rel="stylesheet" type="text/css" href="../sample.css">
+    <link rel="stylesheet" type="text/css" href="form.css">
     <title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
-    <script src="include_FMS2.php"></script>
-    <script type="text/javascript">
-        window.onload = function () {
-            var nodeUnsupport = document.getElementById('nonsupportmessage');
-            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
-                INTERMediator.construct(true);
-            }
-        }
-
-        function test() {
-            INTERMediator_DBAdapter.db_createRecord({
-                name: "history_to",
-                dataset: [
-                    {field: "startdate", value: document.getElementById('startdate').value}
-                ]
-            });
-            INTERMediator.flushMessage();
-        }
-    </script>
+    <script type="text/javascript" src="include_FMS2.php"></script>
+    <script type="text/javascript" src="form.js"></script>
 </head>
 <body>
-<div id="nonsupportmessage" style="background-color:#333333">
-    <div style="text-align:center;color:yellow">
+<div id="nonsupportmessage">
+    <div>
         If you see this, you must use any unsupported web browser.
         Or you should set to active for JavaScript.
         In case of generating the page, Please wait a while.
     </div>
-    <div style="text-align:center;color:yellow">
+    <div>
         この表示が見えている場合、非対応ブラウザで参照されています。
         あるいは、JavaScriptを使用しないように設定されています。
         描画処理中の場合はしばらくお待ちください。
@@ -58,11 +42,11 @@
     </tr>
     <tr>
         <td>address</td>
-        <td><input type="text" data-im="person_layout@address" value=""/></td>
+        <td><input type="text" data-im="person_layout@address" value=""></td>
     </tr>
     <tr>
         <td>mail</td>
-        <td><input type="text" data-im="person_layout@mail" value=""/></td>
+        <td><input type="text" data-im="person_layout@mail" value=""></td>
     </tr>
     <tr>
         <td class="a b c d">category</td>
@@ -76,23 +60,23 @@
     </tr>
     <tr>
         <td>check</td>
-        <td><input type="checkbox" data-im="person_layout@check" value="1"/></td>
+        <td><input type="checkbox" data-im="person_layout@check" value="1"></td>
     </tr>
     <tr>
         <td>multi-valued check(use "mail" field)</td>
         <td>
-            <input type="checkbox" data-im="person_layout@mail" value="Dog"/>Dog
-            <input type="checkbox" data-im="person_layout@mail" value="Cat"/>Cat
-            <input type="checkbox" data-im="person_layout@mail" value="Rabit"/>Rabit
+            <input type="checkbox" data-im="person_layout@mail" value="Dog">Dog</input>
+            <input type="checkbox" data-im="person_layout@mail" value="Cat">Cat</input>
+            <input type="checkbox" data-im="person_layout@mail" value="Rabit">Rabit</input>
         </td>
     </tr>
     <tr>
         <td>location</td>
         <td>
-            <input type="radio" name="radio1" data-im="person_layout@location" value="201"/>Domestic
-            <input type="radio" name="radio1" data-im="person_layout@location" value="202"/>International
-            <input type="radio" name="radio1" data-im="person_layout@location" value="203"/>Neightbor
-            <input type="radio" name="radio1" data-im="person_layout@location" value="204"/>Space
+            <input type="radio" name="radio1" data-im="person_layout@location" value="201">Domestic</input>
+            <input type="radio" name="radio1" data-im="person_layout@location" value="202">International</input>
+            <input type="radio" name="radio1" data-im="person_layout@location" value="203">Neightbor</input>
+            <input type="radio" name="radio1" data-im="person_layout@location" value="204">Space</input>
         </td>
     </tr>
     <tr>
@@ -118,13 +102,13 @@
                     <td>
                         <div data-im="contact_to@contact_to::person_id"></div>
                     </td>
-                    <td><input type="text" data-im="contact_to@contact_to::datetime"/></td>
-                    <td><input type="text" data-im="contact_to@contact_to::summary"/></td>
-                    <td><input type="checkbox" data-im="contact_to@contact_to::important" value="1"/></td>
+                    <td><input type="text" data-im="contact_to@contact_to::datetime"></td>
+                    <td><input type="text" data-im="contact_to@contact_to::summary"></td>
+                    <td><input type="checkbox" data-im="contact_to@contact_to::important" value="1"></td>
                     <td>
-                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="4"/>Direct
-                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="5"/>Indirect
-                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="6"/>Others
+                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="4">Direct</input>
+                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="5">Indirect</input>
+                        <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="6">Others</input>
                     </td>
                     <td>
                         <select data-im="contact_to@contact_to::way">
@@ -149,17 +133,17 @@
         <td colspan="2">
             <ul>
                 <li>
-                    <hr/>
-                    <input type="text" data-im="history_to@startdate"/></li>
-                <li><input type="text" data-im="history_to@enddate"/></li>
-                <li><input type="text" data-im="history_to@description"/></li>
+                    <hr>
+                    <input type="text" data-im="history_to@startdate"></li>
+                <li><input type="text" data-im="history_to@enddate"></li>
+                <li><input type="text" data-im="history_to@description"></li>
             </ul>
         </td>
     </tr>
     </tbody>
 </table>
 <!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
-<!--<input type="text" id="startdate"/>-->
+<!--<input type="text" id="startdate">-->
 <!--<button onclick="test()">テスト</button>-->
 </body>
 </html>
