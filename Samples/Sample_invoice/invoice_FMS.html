@@ -3,37 +3,37 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
 -->
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
-    <link href="../sample.css" rel="stylesheet" type="text/css"/>
-    <script src="include_FMS.php"></script>
-    <script type="text/javascript">
-    </script>
+    <link rel="stylesheet" type="text/css" href="../sample.css">
+    <link rel="stylesheet" type="text/css" href="invoice.css">
+    <script type="text/javascript" src="include_FMS.php"></script>
+    <script type="text/javascript" src="invoice.js"></script>
 </head>
-<body onload="INTERMediator.construct(true);">
+<body>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1">
     <tbody>
     <tr>
         <td>id</td>
-        <td><input type="text" data-im="invoice@id"/></td>
+        <td><input type="text" data-im="invoice@id"></td>
     </tr>
     <tr>
-        <td>name</td>
-        <td><input type="text" data-im="invoice@issued" value=""/></td>
+        <td>issued</td>
+        <td><input type="text" data-im="invoice@issued" value=""></td>
     </tr>
     <tr>
         <td>title</td>
-        <td><input type="text" data-im="invoice@title" value=""/></td>
+        <td><input type="text" data-im="invoice@title" value=""></td>
     </tr>
     <tr>
         <td colspan="2">
@@ -50,20 +50,19 @@
                 <tbody>
                 <tr>
                     <td>
-                        <input type="text" data-im="item@product_id" size="2"/>
+                        <input type="text" data-im="item@product_id" size="2">
 
-                        <div style="display:inline;" data-im-control="enclosure">
-                            <div style="display:inline;" data-im-control="repeater">
+                        <div class="inline" data-im-control="enclosure">
+                            <div class="inline" data-im-control="repeater">
                                 <span data-im="product@name"></span>
                             </div>
                         </div>
                     </td>
-                    <td><input type="text" data-im="item@qty" size="5" style="text-align:right;"/></td>
+                    <td><input class="price" type="text" data-im="item@qty" size="5"></td>
                     <td>
-                        <input type="text" data-im="item@unitprice" size="8" style="text-align:right;"/>
-
-                        <div style="display:inline;" data-im-control="enclosure">
-                            <div style="display:inline;text-align:right;" data-im-control="repeater">
+                        <input class="price" type="text" data-im="item@unitprice" size="8">
+                        <div class="inline" data-im-control="enclosure">
+                            <div class="inline price" data-im-control="repeater">
                                 (<span data-im="product@unitprice"></span>)
                             </div>
                         </div>
@@ -77,7 +76,7 @@
     </tr>
     <tr>
         <td>Tax Rate:</td>
-        <td><input type="text" data-im="_@taxRate"/></td>
+        <td><input type="text" data-im="_@taxRate"></td>
     </tr>
     <tr>
         <td>Total:</td>
