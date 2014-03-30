@@ -3,43 +3,19 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */  -->
 <html>
 <head>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" type="text/css" href="../sample.css">
     <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
-    <script src="include_MySQL.php"></script>
-    <script type="text/javascript">
-        window.onload = function () {
-            INTERMediator.construct(true);
-        }
-
-        function postMessage() {
-            INTERMediator_DBAdapter.db_createRecordWithAuth({
-                        name:"chat",
-                        dataset:[{
-                            field: "message",
-                            value: document.getElementById("message").value
-                        }]},
-                    function () {
-                        INTERMediator.construct(0);
-                        document.getElementById("message").value = "";
-                        INTERMediator.flushMessage();
-                    });
-        }
-
-        function logout() {
-            INTERMediatorOnPage.logout();
-            INTERMediator.construct(true);
-
-        }
-    </script>
+    <script type="text/javascript" src="include_MySQL.php"></script>
+    <script type="text/javascript" src="chat.js"></script>
 </head>
 <body>
 <h1>Simple but Authorized Chat</h1>
@@ -50,9 +26,9 @@
         <td></td>
         <td></td>
         <td>
-            <input type="text" id="message"/>
-            <button onclick="postMessage()">Post</button>
-            <button onclick="logout()">Logout</button>
+            <input type="text" id="message">
+            <button id="postbutton">Post</button>
+            <button id="logoutbutton">Logout</button>
         </td>
     </tr>
     <tr>
@@ -64,10 +40,10 @@
     </thead>
     <tbody>
     <tr>
-        <td class="IM[chat@postdt]"></td>
-        <td class="IM[chat@user]"></td>
-        <td class="IM[chat@groupname]"></td>
-        <td><input type="text" class="IM[chat@message]"/></td>
+        <td data-im="chat@postdt"></td>
+        <td data-im="chat@user"></td>
+        <td data-im="chat@groupname"></td>
+        <td data-im="chat@message"></td>
     </tr>
     </tbody>
 </table>
