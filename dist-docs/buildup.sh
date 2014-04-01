@@ -163,6 +163,13 @@ if [ $choice = 1 ]; then
     defeditdeffile="${buildPath}/INTER-Mediator-Support/defedit.php"
     sed 's|IM_Entry|/* IM_Entry|' "${defeditdeffile}" > /tmp/defedit.php
     cp -p /tmp/defedit.php "${defeditdeffile}"
+else
+    echo "PROCESSING: ${originalPath}/dist-docs/License.txt"
+    cp -p   "${originalPath}/dist-docs/License.txt" "${buildPath}"
+	readmeLines=`wc -l "${originalPath}/dist-docs/readme.txt" | awk '{print $1}'`
+	lines=`expr $readmeLines - 8`
+    echo "PROCESSING: ${originalPath}/dist-docs/readme.txt"
+    head -n `echo $lines` "${originalPath}/dist-docs/readme.txt" > "${buildPath}/readme.txt"
 fi
 
 find "${buildPath}" -name "\.*" -exec rm -rf {} \;
