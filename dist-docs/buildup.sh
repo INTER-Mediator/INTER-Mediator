@@ -109,9 +109,9 @@ cp -prf "${originalPath}/lib/phpseclib" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/mailsend" "${buildPath}/lib"
 
 if [ $choice = 3 ]; then
-    dirs=""
-elif [ $choice = 2 ]; then
     dirs="Auth_Support INTER-Mediator-Support"
+elif [ $choice = 2 ]; then
+    dirs=""
 else
     dirs="Auth_Support INTER-Mediator-Support INTER-Mediator-UnitTest Samples"
 fi
