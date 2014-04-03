@@ -3,7 +3,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2014 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -15,47 +15,38 @@
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
-    <script type="text/javascript" src="include_MySQL.php"></script>
+    <script type="text/javascript" src="search_def.php"></script>
     <script type="text/javascript">
         window.onload = function () {
             INTERMediator.construct(true);
         };
         function doSearch() {
             INTERMediator.additionalCondition = {};
-            INTERMediator.additionalCondition["postalcode"] = [];
-            var c1 = IMLibLocalContext.getValue("placeCondition");
+            var c1 = IMLibLocalContext.getValue("condition");
             if (c1 && c1.length > 0) {
-                INTERMediator.additionalCondition["postalcode"].push({
-                    field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'
-                });
+                INTERMediator.additionalCondition = {"postalcode": [
+                    {field: 'f3', operator: 'LIKE', value: '%' + c1 + '%'},
+                    {field: 'f7', operator: 'LIKE', value: '%' + c1 + '%'},
+                    {field: 'f8', operator: 'LIKE', value: '%' + c1 + '%'},
+                    {field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'},
+                    {field: '__operation__', operator: 'ex'}
+                ]};
             }
-            var c2 = IMLibLocalContext.getValue("zipCondition");
-            if (c2 && c2.length > 0) {
-                INTERMediator.additionalCondition["postalcode"].push({
-                    field: 'f3', operator: 'LIKE', value: c2 + '%'
-                });
-            }
-            IMLibLocalContext.archive();    // This isn't required other than IE8.
+            // IMLibLocalContext.archive();    // This isn't required other than IE8.
             INTERMediator.startFrom = 0;
             INTERMediator.construct(true);
         }
         function doSortFieldChange(key, direction) {
-            INTERMediator.additionalSortKey = {"postalcode":{field: key, direction: direction}};
+            INTERMediator.additionalSortKey = {"postalcode": {field: key, direction: direction}};
             doSearch();
         }
     </script>
 </head>
 <body>
 <div>
-    地名(Place Name):
-    <input type="text" data-im="_@placeCondition"/>
-    検索は住所の「町域名」に一部分でも含まれる文字列を検索します。
-</div>
-<div>
-    郵便番号(Zipcode):
-    <input type="text" data-im="_@zipCondition"/>
+    検索条件:
+    <input type="text" data-im="_@condition"/>
     <button onclick="doSearch()">search</button>
-    郵便番号を前方一致で検索します。
 </div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1" id="resultTable">
