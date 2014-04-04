@@ -60,17 +60,21 @@ Change Log
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.3 (in development)
+- The Local Context is supported. You can bind the context named "_" at any place in a page file.
+  The method IMLibLocalContext.getValue/setValue can be used for getting/setting the value.
 - Validation doesn't call the eval function, but it changes to evaluate the expression to validate.
 - The 'validation' in a context can set the 'notify' parameter. Its value can be 'alert', 'inline' and 'end-of-sibling'.
 - The DataConverter_NullZeroString class added. This is for numeric field that the blank is treated as NULL.
 - TinyMCE Ver.4.0.19 supported.
 - "new Function()" statements have gone away. Moreover no eval function so far.
 - The length function which returns the length of string added to the expression.
+- The new area named "Practices" in the "Samples" directory is added.
 - [BUG FIX] In case of a validation didn't meet, all calculation fields updated.
 - [BUG FIX] Parser recognized some operators as a part of variables.
 - [BUG FIX] The sum function couldn't aggregate formatted values.
 - [BUG FIX] Formatter classes didn't work in the updating task in PDO.
 - [BUG FIX] JSON supported communication branch wasn't merged.
+- [BUG FIX] Debug messages weren't shown in the browser's window.
 
 Ver.4.2 (2014/3/13)
 - Calculation Field started to work. See the 'Sample_invoice'.

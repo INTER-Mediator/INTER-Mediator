@@ -103,15 +103,15 @@ fi
 # Copy "lib" path php contents.
 echo "PROCESSING: ${originalPath}/lib"
 mkdir -p "${buildPath}/lib/bi2php"
-cp "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
-cp -rf "${originalPath}/lib/FX" "${buildPath}/lib"
-cp -rf "${originalPath}/lib/phpseclib" "${buildPath}/lib"
-cp -rf "${originalPath}/lib/mailsend" "${buildPath}/lib"
+cp -p "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
+cp -prf "${originalPath}/lib/FX" "${buildPath}/lib"
+cp -prf "${originalPath}/lib/phpseclib" "${buildPath}/lib"
+cp -prf "${originalPath}/lib/mailsend" "${buildPath}/lib"
 
 if [ $choice = 3 ]; then
-    dirs=""
-elif [ $choice = 2 ]; then
     dirs="Auth_Support INTER-Mediator-Support"
+elif [ $choice = 2 ]; then
+    dirs=""
 else
     dirs="Auth_Support INTER-Mediator-Support INTER-Mediator-UnitTest Samples"
 fi
@@ -138,7 +138,7 @@ do
                             ;;
                         *)
 #                            echo "CP: ${originalPath}/${TARGET}/${DIR}/${FILE}"
-                            cp "${originalPath}/${TARGET}/${DIR}/${FILE}" "${buildPath}/${TARGET}/${DIR}/${FILE}"
+                            cp -p "${originalPath}/${TARGET}/${DIR}/${FILE}" "${buildPath}/${TARGET}/${DIR}/${FILE}"
                             ;;
                     esac
                 fi
@@ -148,21 +148,28 @@ do
 done
 
 if [ $choice = 1 ]; then
-    echo "PROCESSING: ${originalPath}/readme.md"
-    cp     "${originalPath}/readme.md" "${buildPath}"
+    echo "PROCESSING: ${originalPath}/README.md"
+    cp -p   "${originalPath}/README.md" "${buildPath}"
 
     echo "PROCESSING: ${originalPath}/dist-docs"
-    cp -rf "${originalPath}/dist-docs" "${buildPath}"
+    cp -prf "${originalPath}/dist-docs" "${buildPath}"
 
     echo "PROCESSING: Rest of ${originalPath}/Samples"
-    cp -r  "${originalPath}/Samples/Sample_products/images" "${buildPath}/Samples/Sample_products/"
-    cp -r  "${originalPath}/Samples/WebSite/previous_rsrcs" "${buildPath}/Samples/WebSite/"
+    cp -pr  "${originalPath}/Samples/Sample_products/images" "${buildPath}/Samples/Sample_products/"
+    cp -pr  "${originalPath}/Samples/WebSite/previous_rsrcs" "${buildPath}/Samples/WebSite/"
 
 # Invalidate the definition file of the DefEditor.
     echo "PROCESSING: Invalidate the Definition File Editor for security reason."
     defeditdeffile="${buildPath}/INTER-Mediator-Support/defedit.php"
     sed 's|IM_Entry|/* IM_Entry|' "${defeditdeffile}" > /tmp/defedit.php
-    cp /tmp/defedit.php "${defeditdeffile}"
+    cp -p /tmp/defedit.php "${defeditdeffile}"
+else
+    echo "PROCESSING: ${originalPath}/dist-docs/License.txt"
+    cp -p   "${originalPath}/dist-docs/License.txt" "${buildPath}"
+	readmeLines=`wc -l "${originalPath}/dist-docs/readme.txt" | awk '{print $1}'`
+	lines=`expr $readmeLines - 8`
+    echo "PROCESSING: ${originalPath}/dist-docs/readme.txt"
+    head -n `echo $lines` "${originalPath}/dist-docs/readme.txt" > "${buildPath}/readme.txt"
 fi
 
 find "${buildPath}" -name "\.*" -exec rm -rf {} \;

@@ -97,10 +97,10 @@ INTERMediator_DBAdapter = {
             newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
             changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
             mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
-            for (i = 0 ; i < jsonObject.errorMessages; i++) {
+            for (i = 0 ; i < jsonObject.errorMessages.length; i++) {
                 INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
             }
-            for (i = 0 ; i < jsonObject.debugMessages; i++) {
+            for (i = 0 ; i < jsonObject.debugMessages.length; i++) {
                 INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
             }
 
@@ -224,10 +224,10 @@ INTERMediator_DBAdapter = {
                         newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
                         changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
                         mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
-                        for (i = 0 ; i < jsonObject.errorMessages; i++) {
+                        for (i = 0 ; i < jsonObject.errorMessages.length; i++) {
                             INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
                         }
-                        for (i = 0 ; i < jsonObject.debugMessages; i++) {
+                        for (i = 0 ; i < jsonObject.debugMessages.length; i++) {
                             INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
                         }
 

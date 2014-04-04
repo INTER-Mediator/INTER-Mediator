@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <!--
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
@@ -42,8 +41,8 @@
             INTERMediator.construct(true);
         }
         function doSortFieldChange(key, direction) {
-            INTERMediator.additionalSortKey["postalcode"] = {field: key, direction: direction};
-            doSearch(key, direction);
+            INTERMediator.additionalSortKey = {"postalcode":{field: key, direction: direction}};
+            doSearch();
         }
     </script>
 </head>
