@@ -69,6 +69,7 @@ Ver.4.3 (in development)
 - "new Function()" statements have gone away. Moreover no eval function so far.
 - The length function which returns the length of string added to the expression.
 - The new area named "Practices" in the "Samples" directory is added.
+- Enable specifying values 'ASC' and 'DESC' for the direction of sorting when using DB_FileMaker_FX class.
 - [BUG FIX] In case of a validation didn't meet, all calculation fields updated.
 - [BUG FIX] Parser recognized some operators as a part of variables.
 - [BUG FIX] The sum function couldn't aggregate formatted values.
