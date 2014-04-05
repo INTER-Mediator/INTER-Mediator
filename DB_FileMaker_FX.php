@@ -310,7 +310,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
                     }
-                    $this->fx->AddSortParam($condition['field'], $this->_adjustDirection($condition['direction']));
+                    $this->fx->AddSortParam($condition['field'], $this->_adjustSortDirection($condition['direction']));
                 } else {
                     $this->fx->AddSortParam($condition['field']);
                 }
@@ -324,7 +324,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
                             throw new Exception("Invalid Sort Specifier.");
                         }
-                        $this->fx->AddSortParam($condition['field'], $this->_adjustDirection($condition['direction']));
+                        $this->fx->AddSortParam($condition['field'], $this->_adjustSortDirection($condition['direction']));
                     } else {
                         $this->fx->AddSortParam($condition['field']);
                     }
@@ -338,7 +338,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
                     throw new Exception("Invalid Sort Specifier.");
                 }
-                $this->fx->AddSortParam($condition['field'], $this->_adjustDirection($condition['direction']));
+                $this->fx->AddSortParam($condition['field'], $this->_adjustSortDirection($condition['direction']));
             }
         }
         if (isset($context['global'])) {
@@ -1427,7 +1427,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return !(array_search(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')) === FALSE);
     }
     
-    protected function _adjustDirection($direction) {
+    protected function _adjustSortDirection($direction) {
         if (strtoupper($direction) == 'ASC') {
             $direction = 'ASCEND';
         } else if (strtoupper($direction) == 'DESC') {
