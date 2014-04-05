@@ -890,3 +890,86 @@ IMLibLocalContext = {
     }
 };
 
+IMLibKeyEventDispatch = {
+    dispatchTable: {},
+
+    clearAll: function () {
+        this.dispatchTable = {};
+    },
+
+    setExecute: function(idValue, charCode, exec)   {
+        if (idValue && charCode)    {
+            if (! this.dispatchTable[idValue])  {
+                this.dispatchTable[idValue] = {};
+            }
+            this.dispatchTable[idValue][charCode] = exec;
+        }
+    }
+};
+INTERMediatorLib.addEvent(document, "keydown", function(e){
+    var event = e ? e : window.event;
+    if (event.charCode) {
+        var charCode = event.charCode;
+    } else {
+        var charCode = event.keyCode;
+    }
+    if (! event)    {
+        return;
+    }
+    var target = event.target;
+    if (! target)    {
+        target = event.srcElement;
+        if (! target)    {
+            return;
+        }
+    }
+    var idValue = target.id;
+    if (! idValue)   {
+        return;
+    }
+    if (! IMLibKeyEventDispatch.dispatchTable[idValue]){
+        return;
+    }
+    var executable = IMLibKeyEventDispatch.dispatchTable[idValue][charCode];
+    if (! executable)    {
+        return;
+    }
+    executable(event);
+});
+
+IMLibMouseEventDispatch = {
+    dispatchTable: {},
+
+    clearAll: function () {
+        this.dispatchTable = {};
+    },
+
+    setExecute: function(idValue, exec)   {
+        if (idValue)    {
+            this.dispatchTable[idValue] = exec;
+        }
+    }
+};
+
+INTERMediatorLib.addEvent(document, "click", function(e)  {
+    var event = e ? e : window.event;
+    if (! event)    {
+        return;
+    }
+    var target = event.target;
+    if (! target)    {
+        target = event.srcElement;
+        if (! target)    {
+            return;
+        }
+    }
+    var idValue = target.id;
+    if (! idValue)   {
+        return;
+    }
+    var executable = IMLibMouseEventDispatch.dispatchTable[idValue];
+    if (! executable)    {
+        return;
+    }
+    executable(event);
+});

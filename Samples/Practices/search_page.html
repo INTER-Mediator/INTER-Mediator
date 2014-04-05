@@ -18,6 +18,29 @@
     <script type="text/javascript" src="search_def.php"></script>
     <script type="text/javascript">
         window.onload = function () {
+            IMLibKeyEventDispatch.setExecute('condition', 13, function () {
+                IMLibLocalContext.update('condition');
+                doSearch();
+            });
+            IMLibMouseEventDispatch.setExecute('search', function () {
+                doSearch();
+            });
+            IMLibMouseEventDispatch.setExecute('sort1a', function () {
+                INTERMediator.additionalSortKey = {"postalcode": {field: 'f3', direction: 'ASC'}};
+                doSearch();
+            });
+            IMLibMouseEventDispatch.setExecute('sort1d', function () {
+                INTERMediator.additionalSortKey = {"postalcode": {field: 'f3', direction: 'DESC'}};
+                doSearch();
+            });
+            IMLibMouseEventDispatch.setExecute('sort2a', function () {
+                INTERMediator.additionalSortKey = {"postalcode": {field: 'f9', direction: 'ASC'}};
+                doSearch();
+            });
+            IMLibMouseEventDispatch.setExecute('sort2d', function () {
+                INTERMediator.additionalSortKey = {"postalcode": {field: 'f9', direction: 'DESC'}};
+                doSearch();
+            });
             INTERMediator.construct(true);
         };
         function doSearch() {
@@ -32,35 +55,31 @@
                     {field: '__operation__', operator: 'ex'}
                 ]};
             }
-            // IMLibLocalContext.archive();    // This isn't required other than IE8.
             INTERMediator.startFrom = 0;
+            IMLibLocalContext.archive();    // This isn't required other than IE8.
             INTERMediator.construct(true);
-        }
-        function doSortFieldChange(key, direction) {
-            INTERMediator.additionalSortKey = {"postalcode": {field: key, direction: direction}};
-            doSearch();
         }
     </script>
 </head>
 <body>
 <div>
     検索条件:
-    <input type="text" data-im="_@condition"/>
-    <button onclick="doSearch()">search</button>
+    <input type="text" id="condition" data-im="_@condition"/>
+    <button id="search">search</button>
 </div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1" id="resultTable">
     <thead>
     <tr>
         <th>郵便番号
-            <a href="javascript:doSortFieldChange('f3','ASC')">▲</a>
-            <a href="javascript:doSortFieldChange('f3','DESC')">▼</a>
+            <span id="sort1a" style="cursor:pointer">▲</span>
+            <span id="sort1d" style="cursor:pointer">▼</span>
         </th>
         <th>都道府県</th>
         <th>市区町村</th>
         <th>町域名
-            <a href="javascript:doSortFieldChange('f9','ASC')">▲</a>
-            <a href="javascript:doSortFieldChange('f9','DESC')">▼</a>
+            <span id="sort2a" style="cursor:pointer">▲</span>
+            <span id="sort2d" style="cursor:pointer">▼</span>
         </th>
     </tr>
     </thead>
