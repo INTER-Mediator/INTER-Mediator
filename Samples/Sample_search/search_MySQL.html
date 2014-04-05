@@ -3,47 +3,19 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */  -->
-
-<html>
+<html lang="ja">
 <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <link rel="stylesheet" type="text/css" href="../sample.css">
     <script type="text/javascript" src="include_MySQL.php"></script>
-    <script type="text/javascript">
-        window.onload = function () {
-            INTERMediator.construct(true);
-        };
-        function doSearch() {
-            INTERMediator.additionalCondition = {};
-            INTERMediator.additionalCondition["postalcode"] = [];
-            var c1 = IMLibLocalContext.getValue("placeCondition");
-            if (c1 && c1.length > 0) {
-                INTERMediator.additionalCondition["postalcode"].push({
-                    field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'
-                });
-            }
-            var c2 = IMLibLocalContext.getValue("zipCondition");
-            if (c2 && c2.length > 0) {
-                INTERMediator.additionalCondition["postalcode"].push({
-                    field: 'f3', operator: 'LIKE', value: c2 + '%'
-                });
-            }
-            IMLibLocalContext.archive();    // This isn't required other than IE8.
-            INTERMediator.startFrom = 0;
-            INTERMediator.construct(true);
-        }
-        function doSortFieldChange(key, direction) {
-            INTERMediator.additionalSortKey = {"postalcode":{field: key, direction: direction}};
-            doSearch();
-        }
-    </script>
+    <script type="text/javascript" src="search.js"></script>
 </head>
 <body>
 <div>
@@ -54,7 +26,7 @@
 <div>
     郵便番号(Zipcode):
     <input type="text" data-im="_@zipCondition"/>
-    <button onclick="doSearch()">search</button>
+    <button id="searchbutton">search</button>
     郵便番号を前方一致で検索します。
 </div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
@@ -62,14 +34,14 @@
     <thead>
     <tr>
         <th>郵便番号
-            <a href="javascript:doSortFieldChange('f3','ASC')">▲</a>
-            <a href="javascript:doSortFieldChange('f3','DESC')">▼</a>
+            <a id="ascendingsortbypostalcode" href="#">▲</a>
+            <a id="descendingsortbypostalcode" href="#">▼</a>
         </th>
         <th>都道府県</th>
         <th>市区町村</th>
         <th>町域名
-            <a href="javascript:doSortFieldChange('f9','ASC')">▲</a>
-            <a href="javascript:doSortFieldChange('f9','DESC')">▼</a>
+            <a id="ascendingsortbyname" href="#">▲</a>
+            <a id="descendingsortbyname" href="#">▼</a>
         </th>
     </tr>
     </thead>
