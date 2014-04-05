@@ -2,7 +2,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -303,14 +303,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 return null;
             }
         }
-
+        
         if (isset($context['sort'])) {
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
                     if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
                     }
-                    $this->fx->AddSortParam($condition['field'], $condition['direction']);
+                    $this->fx->AddSortParam($condition['field'], $this->_adjustDirection($condition['direction']));
                 } else {
                     $this->fx->AddSortParam($condition['field']);
                 }
@@ -324,7 +324,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
                             throw new Exception("Invalid Sort Specifier.");
                         }
-                        $this->fx->AddSortParam($condition['field'], $condition['direction']);
+                        $this->fx->AddSortParam($condition['field'], $this->_adjustDirection($condition['direction']));
                     } else {
                         $this->fx->AddSortParam($condition['field']);
                     }
@@ -338,7 +338,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
                     throw new Exception("Invalid Sort Specifier.");
                 }
-                $this->fx->AddSortParam($condition['field'], $condition['direction']);
+                $this->fx->AddSortParam($condition['field'], $this->_adjustDirection($condition['direction']));
             }
         }
         if (isset($context['global'])) {
@@ -1424,6 +1424,16 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     public function isPossibleOrderSpecifier($specifier)
     {
-        return !(array_search(strtoupper($specifier), array('ASCEND', 'DESCEND')) === FALSE);
+        return !(array_search(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')) === FALSE);
+    }
+    
+    protected function _adjustDirection($direction) {
+        if (strtoupper($direction) == 'ASC') {
+            $direction = 'ASCEND';
+        } else if (strtoupper($direction) == 'DESC') {
+            $direction = 'DESCEND';
+        }
+        
+        return $direction;
     }
 }
