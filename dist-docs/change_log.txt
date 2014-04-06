@@ -10,7 +10,7 @@ Latest changes might exist on the GitHub repository. Please check https://github
 
 Ver.4.4 (in development)
 
-Ver.4.3 (in development)
+Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
   The method IMLibLocalContext.getValue/setValue can be used for getting/setting the value.
 - Validation doesn't call the eval function, but it changes to evaluate the expression to validate.
