@@ -73,6 +73,7 @@ class GenerateJSCode
             echo file_get_contents($bi2phpDir . 'biMontgomery.js');
             echo file_get_contents($bi2phpDir . 'biRSA.js');
             echo file_get_contents($currentDir . 'Adapter_DBServer.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         } else {
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
         }

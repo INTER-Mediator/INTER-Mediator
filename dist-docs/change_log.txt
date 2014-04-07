@@ -1,65 +1,16 @@
+=================================
 INTER-Mediator Change Log
 by Masayuki Nii
 msyk@msyk.net
+=================================
 
 http://inter-mediator.org/
 Change Log will be supplied by English only.
-
-=================================
-To Do, that is left-over. Or Plan
-=================================
-
-To Do List for the INTER-Mediator developer(s)
-- Documentations, especially English documentations.
-- Working with the cloud infrastructures.
-- Generating the page on the server-side initially. Now the IMCake is going on.
-- The list-detail style page navigation without JavaScript programming.
-- Showing as the alert box when any errors occurred ??
-- Password policy when the password is changed.
-- Supports HTML5's datalist tag elements
-- Server side processing with Ruby on Rails or kind of.
-- Single query can retrieve main and related tables simultaneously.
-- Caching the result of queries.
-- FileMaker's Find style database search. To do that, the Record-set feature must be support for context.
-- HTML5's local database supporting.
-- The meter tag, INPUT#range tag, INPUT#number tag etc, HTML5 new comers supporting.
-- DL/DT/DD tags supporting.
-- SECTION/ARTICLE tags for enclosure/repeater, supporting the semantic markup.
-- Amazon Web Service supporting.
-- Searching in PDFs or any kind of files.
-- Popup menu's default value; if there isn't the value of them, set first one.
-- PayPal support or sort of.
-- The Observer Architecture for both client and server.
-  (Followings are from INTER-Mediator Study Meeting 2003#1)
-- Calendar/Time Component Support.
-- Tab Component Support.
-- The database class DB_PDO should use the prepare method instead of the query method.
-  Most parts are using the quote method to prevent SQL injection attacks but it should do for improvements.
-- Authentication UI should generate on the server side.
-- Working with FileMaker's ODBC sharing instead of XML sharing (FX.php) when using FileMaker Server 13.
-- Support uploading a file to FileMaker's container field when using FileMaker Server 13.
-
-=================================
-Known Issues for Browsers:
-=================================
-For every version of Internet Explorer
-- Don't use on Compatibility mode, please. (Also Quirk mode.)
-
-Internet Explorer 7
-- Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
-- As far as above reason, IE7 must be partially supported forever.
-
-Internet Explorer 6 or under are NOT supported!
-FireFox/Safari/Chrome/Opera will work fine as for HTML5 supported version.
-It's hard to check all versions above browsers as you know. I hope you understand.
-
-=================================
-Change Log
-=================================
-
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.3 (in development)
+Ver.4.4 (in development)
+
+Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
   The method IMLibLocalContext.getValue/setValue can be used for getting/setting the value.
 - Validation doesn't call the eval function, but it changes to evaluate the expression to validate.
@@ -129,6 +80,7 @@ Ver.4.0 (2013/12/4)
 - Modify FX.php to fix compatibility with FileMaker Server 13.
 - Also updates below from Ver.3.0
 
+
 Ver.4 (2013/12/4)=========================================================
 
 [Major differences from Ver.3]
@@ -146,6 +98,22 @@ Ver.4 (2013/12/4)=========================================================
 - Support displaying of the FileMaker's container fields.
 - Started CI!
 ===========================================================================
+
+The Browser Information won't need anymore. Oldies have gone. We can go forward at this time (the end of 2013).
+
+=================================
+Known Issues for Browsers:
+=================================
+For every version of Internet Explorer
+- Don't use on Compatibility mode, please. (Also Quirk mode.)
+
+Internet Explorer 7
+- Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
+- As far as above reason, IE7 must be partially supported forever.
+
+Internet Explorer 6 or under are NOT supported!
+FireFox/Safari/Chrome/Opera will work fine as for HTML5 supported version.
+It's hard to check all versions above browsers as you know. I hope you understand.
 
 Ver.3.11 (2013/11/30)
 - The code editor "codemirror" is supported. See Sample_webpage folder.
