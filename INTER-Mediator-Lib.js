@@ -1,7 +1,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -993,7 +993,7 @@ var IMLibElement = {
                 typeAttr = element.getAttribute('type');
                 if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                     valueAttr = element.value;
-                    curValues = curVal.split("\n");
+                    curValues = curVal.toString().split("\n");
                     if (typeAttr == 'checkbox' && curValues.length > 1) {
                         element.checked = false;
                         for (i = 0; i < curValues.length; i++) {
