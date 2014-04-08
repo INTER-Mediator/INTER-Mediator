@@ -6,7 +6,19 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-window.onload = function () {
-    INTERMediator.additionalCondition = {};
-    INTERMediator.construct(true);
-};
+
+#detailarea {
+    cursor: pointer;
+}
+
+.price {
+    text-align: right;
+}
+
+.shown {
+    display: block;
+}
+
+.hidden {
+    display: none;
+}
