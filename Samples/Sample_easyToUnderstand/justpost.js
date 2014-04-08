@@ -1,4 +1,3 @@
-<?php
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
@@ -7,10 +6,11 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
-class MailSending implements Extending_Interface_AfterNew
-{
-    function doAfterNewToDB($dataSourceName, $result)
-    {
-        return $result;
-    }
-}
+window.onload = function () {
+    INTERMediator.construct(true);
+};
+
+INTERMediatorOnPage.processingAfterPostOnlyContext = function(node){
+    // any program here.
+    INTERMediator.construct(true);
+};
