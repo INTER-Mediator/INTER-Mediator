@@ -9,6 +9,9 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.4 (in development)
+- Update samples to be compatible with CSP (Content Security Policy).
+  (except Asset Management, Account Manager and JS Components Sample)
+- Update sample_schema_mysql.txt to merge schema_data.txt of Sample_Extensible Sample.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
