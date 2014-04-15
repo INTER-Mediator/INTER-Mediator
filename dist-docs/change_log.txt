@@ -9,6 +9,7 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.4 (in development)
+- [BUG FIX] Fix not to show the error message (message id: 1024) when updating data using Safari (version 4.3 only).
 - [BUG FIX] Fix an error in "Master-Detail Style Page" Sample for PostgreSQL (version 4.3 only).
 
 Ver.4.3 (2014/4/7)
