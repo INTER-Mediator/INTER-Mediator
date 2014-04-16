@@ -1418,7 +1418,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
-                'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ',
+                'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR',
             )));
     }
 
