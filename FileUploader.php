@@ -1,9 +1,9 @@
 <?php
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -11,7 +11,7 @@ class FileUploader
 {
     private $db;
 
-    function finishCommunication()
+    public function finishCommunication()
     {
         $this->db->finishCommunication();
     }
@@ -21,7 +21,7 @@ class FileUploader
 
     */
 
-    function processing($datasource, $options, $dbspec, $debug)
+    public function processing($datasource, $options, $dbspec, $debug)
     {
         $dbProxyInstance = new DB_Proxy();
         $this->db = $dbProxyInstance;
@@ -156,7 +156,7 @@ class FileUploader
         }
 
 //        echo "dbresult='{$filePath}';";
-        $dbProxyInstance->setOutputData('dbresult', $filePath);
+        $dbProxyInstance->addOutputData('dbresult', $filePath);
         $dbProxyInstance->finishCommunication();
         $dbProxyInstance->exportOutputDataAsJason();
         if (isset($_POST["_im_redirect"])) {
@@ -165,7 +165,7 @@ class FileUploader
     }
 
     //
-    function processInfo()
+    public function processInfo()
     {
         $myself = $_SERVER['REQUEST_URI'];
         $intervalScript = "location.href='{$myself}'";
