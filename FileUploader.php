@@ -128,17 +128,21 @@ class FileUploader
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if ($item['field'] == $_POST["_im_field"]) {
                     $relatedContext = new DB_Proxy();
-                    $relatedContext->initialize($datasource, $options, $dbspec, $debug, $item['context']);
+                    $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : $_POST["_im_contextname"]);
                     $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
                     $fields = array();
                     $values = array();
-                    foreach ($relatedContextInfo["query"] as $cItem) {
-                        $fields[] = $cItem['field'];
-                        $values[] = $cItem['value'];
+                    if (isset($relatedContextInfo["query"])) {
+                        foreach ($relatedContextInfo["query"] as $cItem) {
+                            $fields[] = $cItem['field'];
+                            $values[] = $cItem['value'];
+                        }
                     }
-                    foreach ($relatedContextInfo["relation"] as $cItem) {
-                        $fields[] = $cItem['foreign-key'];
-                        $values[] = $dbKeyValue;
+                    if (isset($relatedContextInfo["relation"])) {
+                        foreach ($relatedContextInfo["relation"] as $cItem) {
+                            $fields[] = $cItem['foreign-key'];
+                            $values[] = $dbKeyValue;
+                        }
                     }
                     $fields[] = "path";
                     $values[] = $filePartialPath;

@@ -18,6 +18,8 @@ Ver.4.4 (in development)
   The affected versions are 3.11, 4.0, 4.1, 4.2 and 4.3 (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix not to show the error message (message id: 1024) when updating data using Safari (version 4.3 only).
 - [BUG FIX] Fix an error in "Master-Detail Style Page" Sample for PostgreSQL (version 4.3 only).
+- [BUG FIX] Fix adding a record to the path field and avoid outputting error messages when not specifying the 
+  'context' key of the 'file-upload' key in a definition file.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
