@@ -20,6 +20,26 @@ function INTERMediatorLib() {
         rollingEnclocureClassName: "_im_enclosure",
         rollingRepeaterDataControlName: "repeater",
         rollingEnclocureDataControlName: "enclosure",
+        
+        initialize: function () {
+            INTERMediator.startFrom = 0;
+            INTERMediator.additionalCondition = {};
+            INTERMediator.additionalSortKey = {};
+            
+            return null;
+        },
+        
+        setup: function () {
+            if (window.addEventListener) {
+                window.addEventListener("load", this.initialize, false);
+            } else if (window.attachEvent) { // for IE
+                window.attachEvent("onload", this.initialize);
+            } else  {
+                window.onload = this.initialize;
+            }
+            
+            return null;
+        },
 
         generatePasswordHash: function (password) {
             var numToHex, salt, saltHex, code, lowCode, highCode;
