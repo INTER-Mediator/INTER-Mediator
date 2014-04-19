@@ -1,7 +1,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -20,6 +20,26 @@ function INTERMediatorLib() {
         rollingEnclocureClassName: "_im_enclosure",
         rollingRepeaterDataControlName: "repeater",
         rollingEnclocureDataControlName: "enclosure",
+        
+        initialize: function () {
+            INTERMediator.startFrom = 0;
+            INTERMediator.additionalCondition = {};
+            INTERMediator.additionalSortKey = {};
+            
+            return null;
+        },
+        
+        setup: function () {
+            if (window.addEventListener) {
+                window.addEventListener("load", this.initialize, false);
+            } else if (window.attachEvent) { // for IE
+                window.attachEvent("onload", this.initialize);
+            } else  {
+                window.onload = this.initialize;
+            }
+            
+            return null;
+        },
 
         generatePasswordHash: function (password) {
             var numToHex, salt, saltHex, code, lowCode, highCode;
@@ -993,7 +1013,7 @@ var IMLibElement = {
                 typeAttr = element.getAttribute('type');
                 if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                     valueAttr = element.value;
-                    curValues = curVal.split("\n");
+                    curValues = curVal.toString().split("\n");
                     if (typeAttr == 'checkbox' && curValues.length > 1) {
                         element.checked = false;
                         for (i = 0; i < curValues.length; i++) {

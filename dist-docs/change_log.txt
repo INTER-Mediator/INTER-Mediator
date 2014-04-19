@@ -12,6 +12,12 @@ Ver.4.4 (in development)
 - Update samples to be compatible with CSP (Content Security Policy).
   (except Asset Management, Account Manager and JS Components Sample)
 - Update sample_schema_mysql.txt to merge schema_data.txt of Sample_Extensible Sample.
+- [BUG FIX] Fix compatibility when using INTERMediator.additionalCondition or INTERMediator.additionalSortKey.
+  The affected version is 4.3 only (Thanks to Kentaro Suzuki).
+- [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in addtionalCondition with FileMaker Server.
+  The affected versions are 3.11, 4.0, 4.1, 4.2 and 4.3 (Thanks to Kentaro Suzuki).
+- [BUG FIX] Fix not to show the error message (message id: 1024) when updating data using Safari (version 4.3 only).
+- [BUG FIX] Fix an error in "Master-Detail Style Page" Sample for PostgreSQL (version 4.3 only).
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
