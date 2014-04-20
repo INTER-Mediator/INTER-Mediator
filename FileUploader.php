@@ -91,12 +91,22 @@ class FileUploader
             }
             return;
         }
+        
+        $targetFieldName = $_POST["_im_field"];
+        $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+        if (isset($dbProxyContext['file-upload'])) {
+            foreach ($dbProxyContext['file-upload'] as $item) {
+                if (isset($item['field']) && !isset($item['context'])) {
+                    $targetFieldName = $item['field'];
+                }
+            }
+        }
 
         $dbKeyValue = $_POST["_im_keyvalue"];
         $dbProxyInstance = new DB_Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
         $dbProxyInstance->dbSettings->addExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
-        $dbProxyInstance->dbSettings->setTargetFields(array($_POST["_im_field"]));
+        $dbProxyInstance->dbSettings->setTargetFields(array($targetFieldName));
         $dbProxyInstance->dbSettings->setValue(array($filePath));
 
         $fileContent = file_get_contents($filePath, false, null, 0, 30);
@@ -122,8 +132,6 @@ class FileUploader
         $dbProxyInstance->processingRequest($options, "update");
 
         $relatedContext = null;
-        $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
-
         if (isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if ($item['field'] == $_POST["_im_field"]) {
