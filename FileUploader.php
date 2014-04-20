@@ -128,7 +128,7 @@ class FileUploader
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if ($item['field'] == $_POST["_im_field"]) {
                     $relatedContext = new DB_Proxy();
-                    $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : $_POST["_im_contextname"]);
+                    $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
                     $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
                     $fields = array();
                     $values = array();
