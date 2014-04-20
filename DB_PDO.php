@@ -354,20 +354,17 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $this->mainTableCount = $result->fetchColumn(0);
 
         // Create SQL
-        $limitParam = 100000000;
+        $limitParam = 10000000;
         if ($this->dbSettings->getRecordCount() > 0) {
             $limitParam = $this->dbSettings->getRecordCount();
         }
         if (isset($tableInfo['records'])) {
             $limitParam = $tableInfo['records'];
-        } elseif (isset($tableInfo['maxrecords'])) {
+            if (isset($tableInfo['maxrecords']) && intval($tableInfo['records']) > intval($tableInfo['maxrecords'])) {
+                $limitParam = $tableInfo['maxrecords'];
+            }
+        } else if (isset($tableInfo['maxrecords'])) {
             $limitParam = $tableInfo['maxrecords'];
-        }
-        if (isset($tableInfo['maxrecords'])
-            && intval($tableInfo['maxrecords']) >= $this->dbSettings->getRecordCount()
-            && $this->dbSettings->getRecordCount() > 0
-        ) {
-            $limitParam = $this->dbSettings->getRecordCount();
         }
 
         $skipParam = 0;
