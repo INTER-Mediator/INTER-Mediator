@@ -24,6 +24,7 @@ Ver.4.4 (in development)
   key in the 'file-upload' key of the definition file.
 - [BUG FIX] Fix not to show the error message ("currentRecord is null - EXCEPTION-25") when using the PostOnlyContext 
   and the related context is exisiting.
+- [BUG FIX] Fix handling the 'maxrecords' key and the 'records' key of the related context.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
