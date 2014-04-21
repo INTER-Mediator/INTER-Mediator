@@ -76,7 +76,26 @@ IM_Entry(
     ),
     array(
         'formatter' => array(
-            array('field' => 'invoice@issued', 'converter-class' => 'FMDateTime', 'parameter' => '%Y-%m-%d'),
+            array(
+                'field' => 'invoice@issued',
+                'converter-class' => 'FMDateTime',
+                'parameter' => '%Y-%m-%d'
+            ),
+            array(
+                'field' => 'item@qty',
+                'converter-class' => 'NullZeroString',
+                'parameter' => '0'
+            ),
+            array(
+                'field' => 'item@unitprice',
+                'converter-class' => 'NullZeroString',
+                'parameter' => '0'
+            ),
+            array(
+                'field' => 'product@unitprice',
+                'converter-class' => 'Number',
+                'parameter' => '2'
+            ),
         ),
     ),
     array('db-class' => 'FileMaker_FX'),
