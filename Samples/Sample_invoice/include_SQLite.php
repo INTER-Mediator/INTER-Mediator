@@ -94,6 +94,9 @@ IM_Entry(
             ),
         ),
     ),
-    array('db-class' => 'PDO'),
+    array(
+        'db-class' => 'PDO',
+        'dsn' => 'sqlite:/var/db/im/sample.sq3',
+    ),
     false
 );

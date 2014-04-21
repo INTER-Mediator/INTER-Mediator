@@ -9,8 +9,9 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.4 (in development)
-- Update samples to be compatible with CSP (Content Security Policy).
+- Update samples to improve compatibility with CSP (Content Security Policy).
   (except Asset Management, Account Manager and JS Components Sample)
+- Add Client-Side Calculation Page Samples for SQLite and PostgreSQL.
 - Update sample_schema_mysql.txt to merge schema_data.txt of Sample_Extensible Sample.
 - Avoid outputting error messages in an error log file when not specifying the 'context' key of the 'file-upload' 
   key in a definition file.
