@@ -100,8 +100,8 @@ buster.testCase("INTERMediatorLib.Round() Test", {
     }
 });
 
-buster.testCase("INTERMediatorLib.getValueFromIMNode() Test", {
-    "should return '' if parameter is null": function () {
-        assert.equals(INTERMediatorLib.getValueFromIMNode(null), "");
+buster.testCase("IMLibElement.getValueFromIMNode() Test", {
+    "should return '' if parameter is null.": function () {
+        assert.equals(IMLibElement.getValueFromIMNode(null), "");
     }
 });
