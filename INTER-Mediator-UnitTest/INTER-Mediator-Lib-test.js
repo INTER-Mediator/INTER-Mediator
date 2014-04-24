@@ -99,3 +99,9 @@ buster.testCase("INTERMediatorLib.Round() Test", {
         assert.equals(INTERMediatorLib.Round(v, -6), 0);
     }
 });
+
+buster.testCase("INTERMediatorLib.getValueFromIMNode() Test", {
+    "should return '' if parameter is null": function () {
+        assert.equals(INTERMediatorLib.getValueFromIMNode(null), "");
+    }
+});

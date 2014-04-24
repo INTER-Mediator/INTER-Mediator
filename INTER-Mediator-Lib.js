@@ -1065,8 +1065,12 @@ var IMLibElement = {
     },
     getValueFromIMNode: function (element) {
         var nodeTag, typeAttr;
-
-        nodeTag = element.tagName;
+        
+        if (element) {
+            nodeTag = element.tagName;
+        } else {
+            return "";
+        }
         if (INTERMediatorLib.isWidgetElement(element)) {
             return element._im_getValue();
         } else if (nodeTag == "INPUT") {

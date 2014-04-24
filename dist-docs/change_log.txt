@@ -26,6 +26,7 @@ Ver.4.4 (in development)
 - [BUG FIX] Fix not to show the error message ("currentRecord is null - EXCEPTION-25") when using the PostOnlyContext 
   and the related context is exisiting.
 - [BUG FIX] Fix handling the 'maxrecords' key and the 'records' key of the related context.
+- [BUG FIX] Avoid an error in getValueFromIMNode() in INTER-Mediator-Lib.js if the parameter is null.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
