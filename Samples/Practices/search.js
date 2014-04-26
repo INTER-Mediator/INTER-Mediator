@@ -11,6 +11,10 @@ window.onload = function () {
         IMLibLocalContext.update('condition');
         doSearch();
     });
+    IMLibKeyEventDispatch.setExecute("number", 13, function () {
+        IMLibLocalContext.update("_im_pagedSize");
+        doSearch();
+    });
     IMLibMouseEventDispatch.setExecute('search', function () {
         doSearch();
     });
