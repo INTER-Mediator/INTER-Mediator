@@ -2178,7 +2178,7 @@ var INTERMediator = {
         }
 
         function retrieveDataForEnclosure(currentContext, fieldList, relationValue) {
-            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition;
+            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition, recordNumber;
             var optionalCondition = [];
 
             if (currentContext['cache'] == true) {
@@ -2237,9 +2237,14 @@ var INTERMediator = {
                             break;
                         }
                     }
+                    if (currentContext['maxrecords']) {
+                        recordNumber = currentContext['maxrecords'];
+                    } else {
+                        recordNumber = currentContext['records'];
+                    }
                     targetRecords = INTERMediator_DBAdapter.db_query({
                         "name": currentContext['name'],
-                        "records": currentContext['records'],
+                        "records": recordNumber,
                         "paging": currentContext['paging'],
                         "fields": fieldList,
                         "parentkeyvalue": relationValue,
