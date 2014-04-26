@@ -15,6 +15,7 @@ Ver.4.4 (in development)
 - Update sample_schema_mysql.txt to merge schema_data.txt of Sample_Extensible Sample.
 - Avoid outputting error messages in an error log file when not specifying the 'context' key of the 'file-upload' 
   key in a definition file.
+- Update the Local Content to improve compatibility with INTERMediator.pagedSize and update the "Practices" sample.
 - [BUG FIX] Fix compatibility when using INTERMediator.additionalCondition or INTERMediator.additionalSortKey.
   The affected version is 4.3 only (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in addtionalCondition with FileMaker Server.
@@ -23,9 +24,8 @@ Ver.4.4 (in development)
 - [BUG FIX] Fix an error in "Master-Detail Style Page" Sample for PostgreSQL (version 4.3 only).
 - [BUG FIX] Fix updating data when uploading a file and specifying the 'field' key and not specifying the 'context' 
   key in the 'file-upload' key of the definition file.
-- [BUG FIX] Fix not to show the error message ("currentRecord is null - EXCEPTION-25") when using the PostOnlyContext 
-  and the related context is exisiting.
-- [BUG FIX] Avoid an error in getValueFromIMNode() in INTER-Mediator-Lib.js if the parameter is null.
+- [BUG FIX] Avoid an error in getValueFromIMNode() of INTER-Mediator-Lib.js if the parameter is null.
+- [BUG FIX] Fix handling the 'maxrecords' key and INTERMediator.pagedSize.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.

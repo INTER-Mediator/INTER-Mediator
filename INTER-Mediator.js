@@ -36,7 +36,6 @@ var INTERMediator = {
     additionalFieldValueOnUpdate: {},
     additionalFieldValueOnDelete: {},
     waitSecondsAfterPostMessage: 4,
-    pagedSize: 0,
     pagedAllCount: 0,
     currentEncNumber: 0,
     isIE: false,
@@ -90,6 +89,8 @@ var INTERMediator = {
     /* These following properties moved to the setter/getter archtecture, and defined out side of this object.*/
     //startFrom: 0,
     // Start from this number of record for "skipping" records.
+    //pagedSize: 0,
+    // 
     //additionalCondition: {},
     // This array should be [{tableName: [{field:xxx,operator:xxx,value:xxxx}]}, ... ]
     //additionalSortKey: {},
@@ -2178,7 +2179,7 @@ var INTERMediator = {
         }
 
         function retrieveDataForEnclosure(currentContext, fieldList, relationValue) {
-            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition;
+            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition, recordNumber;
             var optionalCondition = [];
 
             if (currentContext['cache'] == true) {
@@ -2237,9 +2238,15 @@ var INTERMediator = {
                             break;
                         }
                     }
+                    if (currentContext['maxrecords'] && INTERMediator.pagedSize > 0 
+                            && INTERMediatorLib.toNumber(currentContext['maxrecords']) >= INTERMediator.pagedSize ) {
+                        recordNumber = INTERMediator.pagedSize;
+                    } else {
+                        recordNumber = currentContext['records'];
+                    }
                     targetRecords = INTERMediator_DBAdapter.db_query({
                         "name": currentContext['name'],
-                        "records": currentContext['records'],
+                        "records": recordNumber,
                         "paging": currentContext['paging'],
                         "fields": fieldList,
                         "parentkeyvalue": relationValue,
@@ -2891,6 +2898,7 @@ INTERMediator.propertyIETridentSetup();
 
 if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
     INTERMediator.startFrom = 0;
+    INTERMediator.pagedSize = 0;
     INTERMediator.additionalCondition = {};
     INTERMediator.additionalSortKey = {};
 } else {
@@ -2900,6 +2908,14 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
         },
         set: function (value) {
             INTERMediator.setLocalProperty("_im_startFrom", value);
+        }
+    });
+    Object.defineProperty(INTERMediator, 'pagedSize', {
+        get: function () {
+            return INTERMediator.getLocalProperty("_im_pagedSize", 0);
+        },
+        set: function (value) {
+            INTERMediator.setLocalProperty("_im_pagedSize", value);
         }
     });
     Object.defineProperty(INTERMediator, 'additionalCondition', {
