@@ -1,45 +1,24 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <!--
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
- */
--->
-<html xmlns="http://www.w3.org/1999/xhtml">
+ */ -->
+<html lang="ja">
 <head>
-    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link href="../sample.css" rel="stylesheet" type="text/css"/>
-    <script src="contexts_MySQL.php"></script>
-    <script type="text/javascript">
-        function showDetail(id) {
-            INTERMediator.additionalCondition['productlist']
-                    = {field:'id',operator:'<',value:0};
-            INTERMediator.additionalCondition['productdetail']
-                    = {field:'id',operator:'=',value:id};
-            INTERMediator.construct(true);
-            document.getElementById("listarea").style.display = "none";
-            document.getElementById("detailarea").style.display = "block";
-        }
-
-        function showList() {
-            if ( INTERMediator.additionalCondition['productlist'] ) {
-                INTERMediator.additionalCondition['productlist'] = null;
-            }
-            INTERMediator.additionalCondition['productdetail']
-                    = {field:'id',operator:'<',value:0};
-            INTERMediator.construct(true);
-            document.getElementById("listarea").style.display = "block";
-//            document.getElementById("detailarea").style.display = "none";
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - Authorized Media Handling/MySQL</title>
+    <link type="text/css" rel="stylesheet" href="../sample.css">
+    <link type="text/css" rel="stylesheet" href="list_detail.css">
+    <script type="text/javascript" src="contexts_MySQL.php"></script>
+    <script type="text/javascript" src="list_detail.js"></script>
 </head>
-<body onload="showList()">
+<body>
 <!-- Table for the list view -->
 <div id="listarea">
     <table border="1">
@@ -51,13 +30,12 @@
         <tbody>
         <tr>
             <td>
-                <button data-im="productlist@id@$onclick"
-                        onclick="showDetail($)">Detail</button>
+                <button id="showdetail" data-im="productlist@id@#id">Detail</button>
             </td>
             <td data-im="productlist@name"></td>
-            <td style="text-align:right;" data-im="productlist@unitprice"></td>
+            <td class="price" data-im="productlist@unitprice"></td>
             <td>
-                <img width="30" src="images/" data-im="productlist@photofile@#src"/>
+                <img width="30" src="../Sample_products/images/" data-im="productlist@photofile@#src">
                 <a data-im="productlist@ack_link@href|productlist@acknowledgement"></a>
             </td>
         </tr>
@@ -65,8 +43,8 @@
     </table>
 </div>
 <!-- Table for the detail view -->
-<div id="detailarea">
-    <a href="javascript:showList()">Show List</a>
+<div id="detailarea" class="hidden">
+    <a id="showlist">Show List</a>
     <table border="1">
         <tbody>
         <tr>
@@ -95,7 +73,7 @@
         </tr>
         <tr>
             <th>photofile</th>
-            <td><img src="images/" data-im="productdetail@photofile@#src"/></td>
+            <td><img src="../Sample_products/images/" data-im="productdetail@photofile@#src"></td>
         </tr>
         </tbody>
     </table>

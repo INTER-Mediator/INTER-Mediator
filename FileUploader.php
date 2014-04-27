@@ -1,9 +1,9 @@
 <?php
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -11,7 +11,7 @@ class FileUploader
 {
     private $db;
 
-    function finishCommunication()
+    public function finishCommunication()
     {
         $this->db->finishCommunication();
     }
@@ -21,7 +21,7 @@ class FileUploader
 
     */
 
-    function processing($datasource, $options, $dbspec, $debug)
+    public function processing($datasource, $options, $dbspec, $debug)
     {
         $dbProxyInstance = new DB_Proxy();
         $this->db = $dbProxyInstance;
@@ -91,12 +91,22 @@ class FileUploader
             }
             return;
         }
+        
+        $targetFieldName = $_POST["_im_field"];
+        $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+        if (isset($dbProxyContext['file-upload'])) {
+            foreach ($dbProxyContext['file-upload'] as $item) {
+                if (isset($item['field']) && !isset($item['context'])) {
+                    $targetFieldName = $item['field'];
+                }
+            }
+        }
 
         $dbKeyValue = $_POST["_im_keyvalue"];
         $dbProxyInstance = new DB_Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
         $dbProxyInstance->dbSettings->addExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
-        $dbProxyInstance->dbSettings->setTargetFields(array($_POST["_im_field"]));
+        $dbProxyInstance->dbSettings->setTargetFields(array($targetFieldName));
         $dbProxyInstance->dbSettings->setValue(array($filePath));
 
         $fileContent = file_get_contents($filePath, false, null, 0, 30);
@@ -122,23 +132,25 @@ class FileUploader
         $dbProxyInstance->processingRequest($options, "update");
 
         $relatedContext = null;
-        $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
-
         if (isset($dbProxyContext['file-upload'])) {
             foreach ($dbProxyContext['file-upload'] as $item) {
                 if ($item['field'] == $_POST["_im_field"]) {
                     $relatedContext = new DB_Proxy();
-                    $relatedContext->initialize($datasource, $options, $dbspec, $debug, $item['context']);
+                    $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
                     $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
                     $fields = array();
                     $values = array();
-                    foreach ($relatedContextInfo["query"] as $cItem) {
-                        $fields[] = $cItem['field'];
-                        $values[] = $cItem['value'];
+                    if (isset($relatedContextInfo["query"])) {
+                        foreach ($relatedContextInfo["query"] as $cItem) {
+                            $fields[] = $cItem['field'];
+                            $values[] = $cItem['value'];
+                        }
                     }
-                    foreach ($relatedContextInfo["relation"] as $cItem) {
-                        $fields[] = $cItem['foreign-key'];
-                        $values[] = $dbKeyValue;
+                    if (isset($relatedContextInfo["relation"])) {
+                        foreach ($relatedContextInfo["relation"] as $cItem) {
+                            $fields[] = $cItem['foreign-key'];
+                            $values[] = $dbKeyValue;
+                        }
                     }
                     $fields[] = "path";
                     $values[] = $filePartialPath;
@@ -152,7 +164,7 @@ class FileUploader
         }
 
 //        echo "dbresult='{$filePath}';";
-        $dbProxyInstance->setOutputData('dbresult', $filePath);
+        $dbProxyInstance->addOutputData('dbresult', $filePath);
         $dbProxyInstance->finishCommunication();
         $dbProxyInstance->exportOutputDataAsJason();
         if (isset($_POST["_im_redirect"])) {
@@ -161,7 +173,7 @@ class FileUploader
     }
 
     //
-    function processInfo()
+    public function processInfo()
     {
         $myself = $_SERVER['REQUEST_URI'];
         $intervalScript = "location.href='{$myself}'";

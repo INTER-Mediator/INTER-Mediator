@@ -1,41 +1,22 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <!--
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
- */
--->
-<html xmlns="http://www.w3.org/1999/xhtml">
+ */ -->
+<html lang="ja">
 <head>
-    <title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link href="../sample.css" rel="stylesheet" type="text/css"/>
-    <script src="contexts_FMS.php"></script>
-    <script type="text/javascript">
-        window.onload = function(){showList();};
-        function showDetail(id) {
-            INTERMediator.additionalCondition['productlist'] = {field:'id',operator:'lt',value:0};
-            INTERMediator.additionalCondition['productdetail'] = {field:'id',operator:'eq',value:id};
-            INTERMediator.construct();
-//            document.getElementById("listarea").style.display = "none";
-//            document.getElementById("detailarea").style.display = "";
-        }
-
-        function showList() {
-            if ( INTERMediator.additionalCondition['productlist'] ) {
-                INTERMediator.additionalCondition['productlist'] = null;
-            }
-            INTERMediator.additionalCondition['productdetail'] = {field:'id',operator:'lt',value:0};
-            INTERMediator.construct();
-//            document.getElementById("listarea").style.display = "";
-//            document.getElementById("detailarea").style.display = "none";
-        }
-    </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - List-Detail Style Navigation/FileMaker Server</title>
+    <link type="text/css" rel="stylesheet" href="../sample.css">
+    <link type="text/css" rel="stylesheet" href="list_detail.css">
+    <script type="text/javascript" src="contexts_FMS.php"></script>
+    <script type="text/javascript" src="list_detail.js"></script>
 </head>
 <body>
 <!-- Table for the list view -->
@@ -43,30 +24,32 @@
     <table border="1">
         <thead>
         <tr>
-            <th>id's</th><th>name</th><th>unitprice</th><th>photo</th><th>Object Field</th>
+            <th>id's</th><th>name</th><th>unitprice</th><th>photo</th><!--<th>container field</th>-->
         </tr>
         </thead>
         <tbody>
         <tr>
             <td>
-                <button data-im="productlist@id@$onclick" onclick="showDetail($)">Detail</button>
+                <button id="showdetail" data-im="productlist@id@#id">Detail</button>
             </td>
             <td data-im="productlist@name"></td>
-            <td style="text-align:right;" data-im="productlist@unitprice"></td>
+            <td class="price" data-im="productlist@unitprice"></td>
             <td>
-                <img width="30" src="images/" data-im="productlist@photofile@#src"/>
+                <img width="30" src="images/" data-im="productlist@photofile@#src">
                 <a data-im="productlist@ack_link@href|productlist@acknowledgement"></a>
             </td>
+            <!--
             <td>
-                <img width="50" src="contexts_FMS.php?media=" data-im="productlist@obj@#src"/>
+                <img width="50" src="contexts_FMS.php?media=" data-im="productlist@obj@#src">
             </td>
+            -->
         </tr>
         </tbody>
     </table>
 </div>
 <!-- Table for the detail view -->
-<div id="detailarea">
-    <a href="javascript:showList()">Show List</a>
+<div id="detailarea" class="hidden">
+    <a id="showlist">Show List</a>
     <table border="1">
         <tbody>
         <tr>
@@ -95,7 +78,7 @@
         </tr>
         <tr>
             <th>photofile</th>
-            <td><img src="images/" data-im="productdetail@photofile@#src"/></td>
+            <td><img src="images/" data-im="productdetail@photofile@#src"></td>
         </tr>
         </tbody>
     </table>

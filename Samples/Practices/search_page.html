@@ -2,69 +2,28 @@
 <!--
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2014 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */  -->
-
 <html>
 <head>
-    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - Search/MySQL</title>
+    <link rel="stylesheet" type="text/css" href="../sample.css">
+    <link rel="stylesheet" type="text/css" href="search.css">
     <script type="text/javascript" src="search_def.php"></script>
-    <script type="text/javascript">
-        window.onload = function () {
-            IMLibKeyEventDispatch.setExecute('condition', 13, function () {
-                IMLibLocalContext.update('condition');
-                doSearch();
-            });
-            IMLibMouseEventDispatch.setExecute('search', function () {
-                doSearch();
-            });
-            IMLibMouseEventDispatch.setExecute('sort1a', function () {
-                INTERMediator.additionalSortKey = {"postalcode": {field: 'f3', direction: 'ASC'}};
-                doSearch();
-            });
-            IMLibMouseEventDispatch.setExecute('sort1d', function () {
-                INTERMediator.additionalSortKey = {"postalcode": {field: 'f3', direction: 'DESC'}};
-                doSearch();
-            });
-            IMLibMouseEventDispatch.setExecute('sort2a', function () {
-                INTERMediator.additionalSortKey = {"postalcode": {field: 'f9', direction: 'ASC'}};
-                doSearch();
-            });
-            IMLibMouseEventDispatch.setExecute('sort2d', function () {
-                INTERMediator.additionalSortKey = {"postalcode": {field: 'f9', direction: 'DESC'}};
-                doSearch();
-            });
-            INTERMediator.construct(true);
-        };
-        function doSearch() {
-            INTERMediator.additionalCondition = {};
-            var c1 = IMLibLocalContext.getValue("condition");
-            if (c1 && c1.length > 0) {
-                INTERMediator.additionalCondition = {"postalcode": [
-                    {field: 'f3', operator: 'LIKE', value: '%' + c1 + '%'},
-                    {field: 'f7', operator: 'LIKE', value: '%' + c1 + '%'},
-                    {field: 'f8', operator: 'LIKE', value: '%' + c1 + '%'},
-                    {field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'},
-                    {field: '__operation__', operator: 'ex'}
-                ]};
-            }
-            INTERMediator.startFrom = 0;
-            IMLibLocalContext.archive();    // This isn't required other than IE8.
-            INTERMediator.construct(true);
-        }
-    </script>
+    <script type="text/javascript" src="search.js"></script>
 </head>
 <body>
 <div>
     検索条件:
-    <input type="text" id="condition" data-im="_@condition"/>
+    <input type="text" id="condition" data-im="_@condition">
+    表示件数：
+    <input type="text" id="number" data-im="_@_im_pagedSize" size="3">
     <button id="search">search</button>
 </div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
@@ -72,14 +31,14 @@
     <thead>
     <tr>
         <th>郵便番号
-            <span id="sort1a" style="cursor:pointer">▲</span>
-            <span id="sort1d" style="cursor:pointer">▼</span>
+            <span id="sort1a">▲</span>
+            <span id="sort1d">▼</span>
         </th>
         <th>都道府県</th>
         <th>市区町村</th>
         <th>町域名
-            <span id="sort2a" style="cursor:pointer">▲</span>
-            <span id="sort2d" style="cursor:pointer">▼</span>
+            <span id="sort2a">▲</span>
+            <span id="sort2d">▼</span>
         </th>
     </tr>
     </thead>

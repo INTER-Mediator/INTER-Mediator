@@ -36,7 +36,6 @@ var INTERMediator = {
     additionalFieldValueOnUpdate: {},
     additionalFieldValueOnDelete: {},
     waitSecondsAfterPostMessage: 4,
-    pagedSize: 0,
     pagedAllCount: 0,
     currentEncNumber: 0,
     isIE: false,
@@ -90,6 +89,8 @@ var INTERMediator = {
     /* These following properties moved to the setter/getter archtecture, and defined out side of this object.*/
     //startFrom: 0,
     // Start from this number of record for "skipping" records.
+    //pagedSize: 0,
+    // 
     //additionalCondition: {},
     // This array should be [{tableName: [{field:xxx,operator:xxx,value:xxxx}]}, ... ]
     //additionalSortKey: {},
@@ -1689,53 +1690,55 @@ var INTERMediator = {
                         calcFields.push(voteResult.fieldlist[i]);
                     }
                 }
-
-                try {
-                    relationValue = null;
-                    dependObject = [];
-                    relationDef = currentContext['relation'];
-                    if (relationDef) {
-                        relationValue = {};
-                        for (index in relationDef) {
-                            relationValue[ relationDef[index]['join-field'] ]
-                                = currentRecord[relationDef[index]['join-field']];
-                            if (relationDef[index]['portal'] == true) {
-                                currentContext['portal'] = true;
-                            }
-                            for (fieldName in parentObjectInfo) {
-                                if (fieldName == relationDef[index]['join-field']) {
-                                    dependObject.push(parentObjectInfo[fieldName]);
+                
+                if (!isInsidePostOnly) {
+                    try {
+                        relationValue = null;
+                        dependObject = [];
+                        relationDef = currentContext['relation'];
+                        if (relationDef) {
+                            relationValue = {};
+                            for (index in relationDef) {
+                                relationValue[ relationDef[index]['join-field'] ]
+                                    = currentRecord[relationDef[index]['join-field']];
+                                if (relationDef[index]['portal'] == true) {
+                                    currentContext['portal'] = true;
+                                }
+                                for (fieldName in parentObjectInfo) {
+                                    if (fieldName == relationDef[index]['join-field']) {
+                                        dependObject.push(parentObjectInfo[fieldName]);
+                                    }
                                 }
                             }
                         }
-                    }
-                    thisKeyFieldObject = {
-                        'node': node,
-                        'name': currentContext['name'] /*currentTable */,
-                        'foreign-value': relationValue,
-                        'parent': node.parentNode,
-                        'original': [],
-                        'target': dependObject
-                    };
-                    for (i = 0; i < repeatersOriginal.length; i++) {
-                        thisKeyFieldObject.original.push(repeatersOriginal[i].cloneNode(true));
-                    }
-                    INTERMediator.keyFieldObject.push(thisKeyFieldObject);
-
-                    // Access database and get records
-                    pagingValue = false;
-                    if (currentContext['paging']) {
-                        pagingValue = currentContext['paging'];
-                    }
-                    recordsValue = 10000000000;
-                    if (currentContext['records']) {
-                        recordsValue = currentContext['records'];
-                    }
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        throw ex;
-                    } else {
-                        INTERMediator.setErrorMessage(ex, "EXCEPTION-25");
+                        thisKeyFieldObject = {
+                            'node': node,
+                            'name': currentContext['name'] /*currentTable */,
+                            'foreign-value': relationValue,
+                            'parent': node.parentNode,
+                            'original': [],
+                            'target': dependObject
+                        };
+                        for (i = 0; i < repeatersOriginal.length; i++) {
+                            thisKeyFieldObject.original.push(repeatersOriginal[i].cloneNode(true));
+                        }
+                        INTERMediator.keyFieldObject.push(thisKeyFieldObject);
+    
+                        // Access database and get records
+                        pagingValue = false;
+                        if (currentContext['paging']) {
+                            pagingValue = currentContext['paging'];
+                        }
+                        recordsValue = 10000000000;
+                        if (currentContext['records']) {
+                            recordsValue = currentContext['records'];
+                        }
+                    } catch (ex) {
+                        if (ex == "_im_requath_request_") {
+                            throw ex;
+                        } else {
+                            INTERMediator.setErrorMessage(ex, "EXCEPTION-25");
+                        }
                     }
                 }
 
@@ -2177,7 +2180,7 @@ var INTERMediator = {
         }
 
         function retrieveDataForEnclosure(currentContext, fieldList, relationValue) {
-            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition;
+            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition, recordNumber;
             var optionalCondition = [];
 
             if (currentContext['cache'] == true) {
@@ -2236,9 +2239,15 @@ var INTERMediator = {
                             break;
                         }
                     }
+                    if (currentContext['maxrecords'] && INTERMediator.pagedSize > 0 
+                            && INTERMediatorLib.toNumber(currentContext['maxrecords']) >= INTERMediator.pagedSize ) {
+                        recordNumber = INTERMediator.pagedSize;
+                    } else {
+                        recordNumber = currentContext['records'];
+                    }
                     targetRecords = INTERMediator_DBAdapter.db_query({
                         "name": currentContext['name'],
-                        "records": currentContext['records'],
+                        "records": recordNumber,
                         "paging": currentContext['paging'],
                         "fields": fieldList,
                         "parentkeyvalue": relationValue,
@@ -2893,6 +2902,7 @@ INTERMediator.propertyIETridentSetup();
 
 if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
     INTERMediator.startFrom = 0;
+    INTERMediator.pagedSize = 0;
     INTERMediator.additionalCondition = {};
     INTERMediator.additionalSortKey = {};
 } else {
@@ -2902,6 +2912,14 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
         },
         set: function (value) {
             INTERMediator.setLocalProperty("_im_startFrom", value);
+        }
+    });
+    Object.defineProperty(INTERMediator, 'pagedSize', {
+        get: function () {
+            return INTERMediator.getLocalProperty("_im_pagedSize", 0);
+        },
+        set: function (value) {
+            INTERMediator.setLocalProperty("_im_pagedSize", value);
         }
     });
     Object.defineProperty(INTERMediator, 'additionalCondition', {

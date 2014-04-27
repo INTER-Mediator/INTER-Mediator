@@ -181,6 +181,7 @@ IMLibLocalContext = {
             this.store._im_additionalCondition = INTERMediator.additionalCondition;
             this.store._im_additionalSortKey = INTERMediator.additionalSortKey;
             this.store._im_startFrom = INTERMediator.startFrom;
+            this.store._im_pagedSize = INTERMediator.pagedSize;
             /*
              IE8 issue: "" string is modified as "null" on JSON stringify.
              http://blogs.msdn.com/b/jscript/archive/2009/06/23/serializing-the-value-of-empty-dom-elements-using-native-json-in-ie8.aspx
@@ -207,6 +208,9 @@ IMLibLocalContext = {
                 }
                 if (this.store._im_startFrom) {
                     INTERMediator.startFrom = this.store._im_startFrom;
+                }
+                if (this.store._im_pagedSize) {
+                    INTERMediator.pagedSize = this.store._im_pagedSize;
                 }
             }
         }
@@ -291,6 +295,8 @@ IMLibLocalContext = {
         }
     }
 };
+
+INTERMediatorLib.setup();
 
 IMLibKeyEventDispatch = {
     dispatchTable: {},
