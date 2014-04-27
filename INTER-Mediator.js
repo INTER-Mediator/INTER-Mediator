@@ -244,10 +244,11 @@ var INTERMediator = {
         }
     },
 
-//=================================
-    // User interactions
-    //=================================
-
+    /*
+     =================================
+     User interactions
+     =================================
+     */
     isShiftKeyDown: false,
     isControlKeyDown: false,
 
@@ -2438,8 +2439,12 @@ var INTERMediator = {
             // Handling Delete buttons
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
 
-            if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/delete/i)) {
-                if (currentContext['relation'] || currentContext['records'] === undefined || (currentContext['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
+            if (currentContext['repeat-control']
+                && currentContext['repeat-control'].match(/delete/i)) {
+                if (currentContext['relation']
+                    || currentContext['records'] === undefined
+                    || (currentContext['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
+
                     buttonNode = document.createElement('BUTTON');
                     INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Delete");
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
@@ -2464,12 +2469,11 @@ var INTERMediator = {
                             shouldDeleteNodes,
                             currentContext['repeat-control'].match(/confirm-delete/i))
                     });
-//                    endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
+                    // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
                     switch (encNodeTag) {
                         case 'TBODY':
                             tdNodes = endOfRepeaters.getElementsByTagName('TD');
-                            tdNode = tdNodes[tdNodes.length - 1];
-                            tdNode.appendChild(buttonNode);
+                            tdNode.appendChild(tdNodes[tdNodes.length - 1]);
                             break;
                         case 'UL':
                         case 'OL':

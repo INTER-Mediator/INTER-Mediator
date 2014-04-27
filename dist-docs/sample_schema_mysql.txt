@@ -364,6 +364,22 @@ CREATE TABLE fileupload (
 		ENGINE=InnoDB;
 
 #
+# This 'survey' table is for a demonstration.
+#
+
+CREATE TABLE survey (
+	id	     INT AUTO_INCREMENT,
+	Q1       TEXT,
+	Q2       TEXT,
+	Q3       TEXT,
+	Q4       TEXT,
+	Q5       TEXT,
+	PRIMARY KEY(id)
+)       CHARACTER SET utf8,
+        COLLATE utf8_unicode_ci
+        ENGINE=InnoDB;
+
+#
 #
 #
 
