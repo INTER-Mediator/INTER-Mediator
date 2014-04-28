@@ -39,7 +39,7 @@ IMLibContextPool = {
 //    },
 //
     synchronize: function (context, recKey, key, value) {
-       // console.log("SYNC:"+context+"/"+recKey+"/"+key+"/"+value);
+        // console.log("SYNC:"+context+"/"+recKey+"/"+key+"/"+value);
         var i, j, contextName, refNode, targetNodes, result = false;
         tableName = context.tableName;
         if (this.poolingContexts == null) {
@@ -88,20 +88,23 @@ IMLibContext = function (contextName) {
     }
 
     this.setTable = function (context) {
-        var contextLocal;
+       // console.error(context);
+        var contextName, contextDef;
         if (!context) {
-            contextLocal = INTERMediatorOnPage.getDataSources(this.contextName);
+            contextName = this.contextName;
         } else {
-            contextLocal = context;
+            contextName = context.contextName;
         }
-        if (contextLocal) {
-                this.tableName = contextLocal['view'] ? contextLocal['view'] : contextLocal['name'];
+        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), "name", contextName)
+        if (contextDef) {
+            this.tableName = contextDef['view'] ? contextDef['view'] : contextDef['name'];
         }
     }
 
     this.setTable(this);
 
     this.setValue = function (recKey, key, value, nodeId) {
+      //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
         var i, refNode;
         if (recKey != undefined && recKey != null) {
             if (this.store[recKey] === undefined) {
@@ -314,6 +317,7 @@ IMLibKeyEventDispatch = {
         }
     }
 };
+
 INTERMediatorLib.addEvent(document, "keydown", function (e) {
     var event = e ? e : window.event;
     if (event.charCode) {
@@ -387,3 +391,11 @@ INTERMediatorLib.addEvent(document, "click", function (e) {
     }
     executable(event);
 });
+
+
+function IM_Init()   {
+    INTERMediatorOnPage.removeCookie('_im_localcontext');
+    INTERMediatorOnPage.removeCookie('_im_username');
+    INTERMediatorOnPage.removeCookie('_im_credential');
+    INTERMediatorOnPage.removeCookie('_im_mediatoken');
+};

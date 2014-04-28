@@ -9,7 +9,7 @@
 
 //"use strict"
 
-var INTERMediatorLib = new INTERMediatorLib();
+var INTERMediatorLib = INTERMediatorLib();
 
 function INTERMediatorLib() {
     var instance = {

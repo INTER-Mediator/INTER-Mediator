@@ -632,8 +632,6 @@ var INTERMediator = {
             }
         }
 
-        console.error("INTERMediator.calculateRequiredObject", INTERMediator.calculateRequiredObject);
-
         var i, j, k, removeNodeId, nodeId, calcObject, referes, values;
         for (key in removeNodes) {
             removeNode = document.getElementById(removeNodes[key]);
@@ -1655,7 +1653,7 @@ var INTERMediator = {
                 curTarget, postCallFunc, newlyAddedNodes, keyingValue, pagingValue, repeaterCalcItems,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
                 selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, setupWidget,
-                nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, currentRepeaterItems;
+                nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, contextObj;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
@@ -1678,6 +1676,7 @@ var INTERMediator = {
 
 
             if (currentContext) {
+                contextObj = new IMLibContext(currentContext['name']);
                 setupWidget = false;
                 fieldList = []; // Create field list for database fetch.
                 calcDef = currentContext['calculation'];
@@ -1690,7 +1689,7 @@ var INTERMediator = {
                         calcFields.push(voteResult.fieldlist[i]);
                     }
                 }
-                
+
                 if (!isInsidePostOnly) {
                     try {
                         relationValue = null;
@@ -1723,7 +1722,7 @@ var INTERMediator = {
                             thisKeyFieldObject.original.push(repeatersOriginal[i].cloneNode(true));
                         }
                         INTERMediator.keyFieldObject.push(thisKeyFieldObject);
-    
+
                         // Access database and get records
                         pagingValue = false;
                         if (currentContext['paging']) {
@@ -1927,6 +1926,7 @@ var INTERMediator = {
                                             postSetFields.push({'id': nodeId, 'value': curVal});
                                         }
                                     }
+                                   contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId);
                                 }
                             } catch (ex) {
                                 if (ex == "_im_requath_request_") {
@@ -1949,9 +1949,9 @@ var INTERMediator = {
                         foreignValue = "";
                         foreignFieldValue = "=";
                     }
+
                     setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                         currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
-
 
                     if (currentContext['portal'] != true
                         || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
@@ -2239,8 +2239,8 @@ var INTERMediator = {
                             break;
                         }
                     }
-                    if (currentContext['maxrecords'] && INTERMediator.pagedSize > 0 
-                            && INTERMediatorLib.toNumber(currentContext['maxrecords']) >= INTERMediator.pagedSize ) {
+                    if (currentContext['maxrecords'] && INTERMediator.pagedSize > 0
+                        && INTERMediatorLib.toNumber(currentContext['maxrecords']) >= INTERMediator.pagedSize) {
                         recordNumber = INTERMediator.pagedSize;
                     } else {
                         recordNumber = currentContext['records'];
@@ -2448,62 +2448,64 @@ var INTERMediator = {
             // Handling Delete buttons
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
 
-            if (currentContext['repeat-control']
-                && currentContext['repeat-control'].match(/delete/i)) {
-                if (currentContext['relation']
-                    || currentContext['records'] === undefined
-                    || (currentContext['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
+            if (!currentContext['repeat-control']
+                || !currentContext['repeat-control'].match(/delete/i)) {
+                return;
+            }
+            if (currentContext['relation']
+                || currentContext['records'] === undefined
+                || (currentContext['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
 
-                    buttonNode = document.createElement('BUTTON');
-                    INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Delete");
-                    buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
-                    thisId = 'IM_Button_' + buttonIdNum;
-                    buttonNode.setAttribute('id', thisId);
-                    buttonIdNum++;
-                    deleteJSFunction = function (a, b, c, d, e) {
-                        var contextName = a, keyField = b, keyValue = c, removeNodes = d, confirming = e;
+                buttonNode = document.createElement('BUTTON');
+                INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Delete");
+                buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
+                thisId = 'IM_Button_' + buttonIdNum;
+                buttonNode.setAttribute('id', thisId);
+                buttonIdNum++;
+                deleteJSFunction = function (a, b, c, d, e) {
+                    var contextName = a, keyField = b, keyValue = c, removeNodes = d, confirming = e;
 
-                        return function () {
-                            INTERMediator.deleteButton(
-                                contextName, keyField, keyValue, foreignField, foreignValue, removeNodes, confirming);
-                        };
+                    return function () {
+                        INTERMediator.deleteButton(
+                            contextName, keyField, keyValue, foreignField, foreignValue, removeNodes, confirming);
                     };
-                    eventListenerPostAdding.push({
-                        'id': thisId,
-                        'event': 'click',
-                        'todo': deleteJSFunction(
-                            currentContext['name'],
-                            keyField,
-                            keyValue,
-                            shouldDeleteNodes,
-                            currentContext['repeat-control'].match(/confirm-delete/i))
-                    });
-                    // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
-                    switch (encNodeTag) {
-                        case 'TBODY':
-                            tdNodes = endOfRepeaters.getElementsByTagName('TD');
-                            tdNode.appendChild(tdNodes[tdNodes.length - 1]);
-                            break;
-                        case 'UL':
-                        case 'OL':
+                };
+                eventListenerPostAdding.push({
+                    'id': thisId,
+                    'event': 'click',
+                    'todo': deleteJSFunction(
+                        currentContext['name'],
+                        keyField,
+                        keyValue,
+                        shouldDeleteNodes,
+                        currentContext['repeat-control'].match(/confirm-delete/i))
+                });
+                // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
+                switch (encNodeTag) {
+                    case 'TBODY':
+                        tdNodes = endOfRepeaters.getElementsByTagName('TD');
+                        tdNode = tdNodes[tdNodes.length - 1];
+                        tdNode.appendChild(buttonNode);
+                        break;
+                    case 'UL':
+                    case 'OL':
+                        endOfRepeaters.appendChild(buttonNode);
+                        break;
+                    case 'DIV':
+                    case 'SPAN':
+                        if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                             endOfRepeaters.appendChild(buttonNode);
-                            break;
-                        case 'DIV':
-                        case 'SPAN':
-                            if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
-                                endOfRepeaters.appendChild(buttonNode);
-                            }
-                            break;
-                    }
-                } else {
-                    INTERMediator.deleteInsertOnNavi.push({
-                        kind: 'DELETE',
-                        name: currentContext['name'],
-                        key: keyField,
-                        value: keyValue,
-                        confirm: currentContext['repeat-control'].match(/confirm-delete/i)
-                    });
+                        }
+                        break;
                 }
+            } else {
+                INTERMediator.deleteInsertOnNavi.push({
+                    kind: 'DELETE',
+                    name: currentContext['name'],
+                    key: keyField,
+                    value: keyValue,
+                    confirm: currentContext['repeat-control'].match(/confirm-delete/i)
+                });
             }
         }
 

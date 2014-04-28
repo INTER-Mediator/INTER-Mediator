@@ -8,17 +8,20 @@
     <script src="contexttest.php"></script>
     <script type="text/javascript">
         window.onload = function () {
+            IM_Init();
             INTERMediator.construct(true);
         }
     </script>
 </head>
 <body>
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1" style="float:left;">
     <thead>
     <tr>
         <th>id</th>
         <th>name</th>
         <th>mail</th>
+        <th></th>
     </tr>
     </thead>
     <tbody>
@@ -26,7 +29,8 @@
         <td data-im="personlist@id"></td>
         <td data-im="personlist@name"></td>
         <td data-im="personlist@mail"></td>
-    <tr>
+        <td></td>
+    </tr>
     </tbody>
 </table>
 

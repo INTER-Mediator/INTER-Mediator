@@ -70,7 +70,7 @@ var IMParts_tinymce = {
             if (targetNode) {
                 targetNode._im_getValue = function () {
                     var thisId = this.id;
-                    console.error(tinymce.EditorManager.get(thisId).getContent());
+                    //console.error(tinymce.EditorManager.get(thisId).getContent());
                     return tinymce.EditorManager.get(thisId).getContent();
                 }
             }

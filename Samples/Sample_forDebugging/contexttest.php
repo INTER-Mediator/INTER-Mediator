@@ -14,6 +14,7 @@ IM_Entry(
             'view' => 'person',
             'key' => 'id',
             'records' => 10,
+            'records' => 10,
             'paging' => true,
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(
@@ -27,7 +28,6 @@ IM_Entry(
             'table' => 'person',
             'key' => 'id',
             'records' => 1,
-            'paging' => true,
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
         ),
