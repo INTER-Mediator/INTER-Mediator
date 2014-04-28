@@ -2238,11 +2238,11 @@ var INTERMediator = {
                             break;
                         }
                     }
-                    if (currentContext['maxrecords'] && INTERMediator.pagedSize > 0 
-                            && INTERMediatorLib.toNumber(currentContext['maxrecords']) >= INTERMediator.pagedSize ) {
-                        recordNumber = INTERMediator.pagedSize;
+                    if (currentContext['maxrecords'] && Number(INTERMediator.pagedSize) > 0 
+                            && Number(currentContext['maxrecords']) >= Number(INTERMediator.pagedSize)) {
+                        recordNumber = Number(INTERMediator.pagedSize);
                     } else {
-                        recordNumber = currentContext['records'];
+                        recordNumber = Number(currentContext['records']);
                     }
                     targetRecords = INTERMediator_DBAdapter.db_query({
                         "name": currentContext['name'],

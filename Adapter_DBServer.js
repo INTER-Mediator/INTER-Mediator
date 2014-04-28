@@ -290,12 +290,12 @@ INTERMediator_DBAdapter = {
         if (args['records'] == null) {
             params = "access=select&name=" + encodeURIComponent(args['name']) + "&records=10000000";
         } else {
-            if (INTERMediatorLib.toNumber(args.records) === 0) {
+            if (Number(args.records) === 0) {
                 params = "access=describe&name=" + encodeURIComponent(args['name']);
             } else {
                 params = "access=select&name=" + encodeURIComponent(args['name']);
             }
-            if (INTERMediatorLib.toNumber(args.records) >= INTERMediator.pagedSize && INTERMediator.pagedSize > 0) {
+            if (Number(args.records) >= INTERMediator.pagedSize && Number(INTERMediator.pagedSize) > 0) {
                 params += "&records=" + encodeURIComponent(INTERMediator.pagedSize);
             } else {
                 params += "&records=" + encodeURIComponent(args['records']);
@@ -380,8 +380,8 @@ INTERMediator_DBAdapter = {
                 returnValue.count++;
             }
             if (( args['paging'] != null) && ( args['paging'] == true )) {
-                if (!(args['records'] >= INTERMediator.pagedSize && INTERMediator.pagedSize > 0)) {
-                    INTERMediator.pagedSize = args['records'];
+                if (!(Number(args['records']) >= Number(INTERMediator.pagedSize) && Number(INTERMediator.pagedSize) > 0)) {
+                    INTERMediator.pagedSize = Number(args['records']);
                 }
                 INTERMediator.pagedAllCount = result.resultCount;
             }
