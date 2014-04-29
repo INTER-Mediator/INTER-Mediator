@@ -296,7 +296,7 @@ INTERMediator_DBAdapter = {
             } else {
                 params = "access=select&name=" + encodeURIComponent(args['name']);
             }
-            if (args['uselimit'] && Number(args.records) >= INTERMediator.pagedSize && Number(INTERMediator.pagedSize) > 0) {
+            if (args['uselimit'] === true && Number(args.records) >= INTERMediator.pagedSize && Number(INTERMediator.pagedSize) > 0) {
                 params += "&records=" + encodeURIComponent(INTERMediator.pagedSize);
             } else {
                 params += "&records=" + encodeURIComponent(args['records']);
