@@ -20,25 +20,25 @@ function INTERMediatorLib() {
         rollingEnclocureClassName: "_im_enclosure",
         rollingRepeaterDataControlName: "repeater",
         rollingEnclocureDataControlName: "enclosure",
-        
+
         initialize: function () {
             INTERMediator.startFrom = 0;
             INTERMediator.pagedSize = 0;
             INTERMediator.additionalCondition = {};
             INTERMediator.additionalSortKey = {};
-            
+
             return null;
         },
-        
+
         setup: function () {
             if (window.addEventListener) {
                 window.addEventListener("load", this.initialize, false);
             } else if (window.attachEvent) { // for IE
                 window.attachEvent("onload", this.initialize);
-            } else  {
+            } else {
                 window.onload = this.initialize;
             }
-            
+
             return null;
         },
 
@@ -429,7 +429,7 @@ function INTERMediatorLib() {
         getNodeInfoArray: function (nodeInfo) {
             var comps, tableName, fieldName, targetName;
 
-            if(! nodeInfo.split)  {
+            if (!nodeInfo.split) {
                 return {
                     'table': null,
                     'field': null,
@@ -1066,7 +1066,7 @@ var IMLibElement = {
     },
     getValueFromIMNode: function (element) {
         var nodeTag, typeAttr;
-        
+
         if (element) {
             nodeTag = element.tagName;
         } else {

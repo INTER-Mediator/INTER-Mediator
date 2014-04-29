@@ -88,7 +88,7 @@ IMLibContext = function (contextName) {
     }
 
     this.setTable = function (context) {
-       // console.error(context);
+        // console.error(context);
         var contextName, contextDef;
         if (!context) {
             contextName = this.contextName;
@@ -104,8 +104,8 @@ IMLibContext = function (contextName) {
     this.setTable(this);
 
     this.setValue = function (recKey, key, value, nodeId) {
-      //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
-        var i, refNode;
+        //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
+        var returnValue = null;
         if (recKey != undefined && recKey != null) {
             if (this.store[recKey] === undefined) {
                 this.store[recKey] = {};
@@ -124,10 +124,33 @@ IMLibContext = function (contextName) {
                     IMLibContextPool.synchronize(this, recKey, key, value);
                     if (nodeId) {
                         this.binding[recKey][key].push(nodeId);
+                        //                        var node = document.getElementById(nodeId);
+//                        INTERMediatorLib.addEvent(node, 'change', function () {
+//                            var nodeRef = document.getElementById(nodeId);
+//                            var nodeValue = IMLibElement.getValueFromIMNode(nodeRef);
+//                            self.setValue(itemRecKey, itemKey, nodeValue);
+//                        });
+                        var currentObject = this;
+                        returnValue = {
+                            'id': nodeId,
+                            'event': 'change',
+                            'todo': (function () {
+                                var idValue = nodeId;
+                                var self = currentObject;
+                                var itemRecKey = recKey;
+                                var itemKey = key;
+                                return function () {
+                                    var nodeRef = document.getElementById(idValue);
+                                    var nodeValue = IMLibElement.getValueFromIMNode(nodeRef);
+                                    self.setValue(itemRecKey, itemKey, nodeValue);
+                                };
+                            })()
+                        };
                     }
                 }
             }
         }
+        return returnValue;
     }
 
     this.getValue = function (recKey, key) {
@@ -240,7 +263,6 @@ IMLibLocalContext = {
                 var self = this;
                 INTERMediatorLib.addEvent(node, 'change', function () {
                     self.update(nodeId);
-                    //    INTERMediator.recalculation();
                 });
 
                 value = this.store[nodeInfo.field];
@@ -393,7 +415,7 @@ INTERMediatorLib.addEvent(document, "click", function (e) {
 });
 
 
-function IM_Init()   {
+function IM_Init() {
     INTERMediatorOnPage.removeCookie('_im_localcontext');
     INTERMediatorOnPage.removeCookie('_im_username');
     INTERMediatorOnPage.removeCookie('_im_credential');

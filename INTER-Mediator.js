@@ -1650,7 +1650,7 @@ var INTERMediator = {
                 relationDef, index, fieldName, thisKeyFieldObject, i, j, k, ix, targetRecords, newNode,
                 nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue,
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
-                curTarget, postCallFunc, newlyAddedNodes, keyingValue, pagingValue, repeaterCalcItems,
+                curTarget, postCallFunc, newlyAddedNodes, keyingValue, pagingValue, delayRegisteringEvent,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
                 selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, setupWidget,
                 nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, contextObj;
@@ -1673,7 +1673,6 @@ var INTERMediator = {
             linkDefs = collectLinkDefinitions(linkedNodes);
             voteResult = tableVoting(linkDefs);
             currentContext = voteResult.targettable;
-
 
             if (currentContext) {
                 contextObj = new IMLibContext(currentContext['name']);
@@ -1926,7 +1925,6 @@ var INTERMediator = {
                                             postSetFields.push({'id': nodeId, 'value': curVal});
                                         }
                                     }
-                                   contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId);
                                 }
                             } catch (ex) {
                                 if (ex == "_im_requath_request_") {
@@ -1935,7 +1933,10 @@ var INTERMediator = {
                                     INTERMediator.setErrorMessage(ex, "EXCEPTION-27");
                                 }
                             }
-
+                            delayRegisteringEvent = contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId);
+                            if (delayRegisteringEvent) {
+                                eventListenerPostAdding.push(delayRegisteringEvent);
+                            }
                         }
                     }
 
@@ -2239,11 +2240,11 @@ var INTERMediator = {
                             break;
                         }
                     }
-                    if (currentContext['maxrecords'] && INTERMediator.pagedSize > 0
-                        && INTERMediatorLib.toNumber(currentContext['maxrecords']) >= INTERMediator.pagedSize) {
-                        recordNumber = INTERMediator.pagedSize;
+                    if (currentContext['maxrecords'] && Number(INTERMediator.pagedSize) > 0
+                        && Number(currentContext['maxrecords']) >= Number(INTERMediator.pagedSize)) {
+                        recordNumber = Number(INTERMediator.pagedSize);
                     } else {
-                        recordNumber = currentContext['records'];
+                        recordNumber = Number(currentContext['records']);
                     }
                     targetRecords = INTERMediator_DBAdapter.db_query({
                         "name": currentContext['name'],

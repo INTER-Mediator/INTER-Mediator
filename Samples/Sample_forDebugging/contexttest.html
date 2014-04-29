@@ -11,6 +11,16 @@
             IM_Init();
             INTERMediator.construct(true);
         }
+
+        function showDetail(id) {
+            INTERMediator.additionalCondition = {};
+            INTERMediator.additionalCondition['persondetail'] = [];
+            INTERMediator.additionalCondition['persondetail'].push({field:'id', operator:'=', value: id});
+
+            console.error(INTERMediator.additionalCondition);
+
+            INTERMediator.construct(true);
+        }
     </script>
 </head>
 <body>
@@ -21,14 +31,23 @@
         <th>id</th>
         <th>name</th>
         <th>mail</th>
+        <th>category</th>
+        <th>location</th>
+        <th>checking</th>
         <th></th>
     </tr>
     </thead>
     <tbody>
     <tr>
-        <td data-im="personlist@id"></td>
+        <td>
+            <span data-im="personlist@id"></span>
+            <button onclick="showDetail($)" data-im="personlist@id@$onclick">詳細</button>
+        </td>
         <td data-im="personlist@name"></td>
         <td data-im="personlist@mail"></td>
+        <td data-im="personlist@category"></td>
+        <td data-im="personlist@location"></td>
+        <td data-im="personlist@checking"></td>
         <td></td>
     </tr>
     </tbody>
