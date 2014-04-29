@@ -2239,10 +2239,10 @@ var INTERMediator = {
                         }
                     }
                     useLimit = true;
-                    if (currentContext["relation"] === true) {
+                    if (currentContext["relation"] !== undefined) {
                         useLimit = false;
                     }
-                    if (currentContext['maxrecords'] && useLimit === false && Number(INTERMediator.pagedSize) > 0 
+                    if (currentContext['maxrecords'] && useLimit && Number(INTERMediator.pagedSize) > 0 
                             && Number(currentContext['maxrecords']) >= Number(INTERMediator.pagedSize)) {
                         recordNumber = Number(INTERMediator.pagedSize);
                     } else {
