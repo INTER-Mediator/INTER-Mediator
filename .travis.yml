@@ -45,7 +45,9 @@ before_script:
 #  - sh -c "if [ '$DB' = 'sqlite3' ]; then cat DB_PDO_Test.php | sed -e 's/mysql:dbname=test_db;host=127.0.0.1/sqlite:\/tmp\/sample.sq3/'; fi"
 #  - sh -c "if [ '$DB' = 'postgres' ]; then cat DB_PDO_Test.php | sed -e s/mysql\:dbname=test_db\;host=127.0.0.1/pgsql\:host=127.0.0.1\;port=5432\;dbname=test_db/ > DB_PDO_Test.tmp; mv DB_PDO_Test.tmp DB_PDO_Test.php; fi"
 #  - cd ..
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then composer require 'phpunit/phpunit=3.7.x'; composer install; fi"
 
 script:
-  - phpunit ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
   - npm test
