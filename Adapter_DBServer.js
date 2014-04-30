@@ -270,6 +270,7 @@ INTERMediator_DBAdapter = {
      parentkeyvalue:<the value of foreign key field, could be null>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>
      useoffset:<true/false whether the offset parameter is set on the query.>
+     uselimit:<true/false whether the limit parameter is set on the query.>
      primaryKeyOnly: true/false
      }
 
@@ -295,7 +296,7 @@ INTERMediator_DBAdapter = {
             } else {
                 params = "access=select&name=" + encodeURIComponent(args['name']);
             }
-            if (Number(args.records) >= INTERMediator.pagedSize && Number(INTERMediator.pagedSize) > 0) {
+            if (args['uselimit'] === true && Number(args.records) >= INTERMediator.pagedSize && Number(INTERMediator.pagedSize) > 0) {
                 params += "&records=" + encodeURIComponent(INTERMediator.pagedSize);
             } else {
                 params += "&records=" + encodeURIComponent(args['records']);
@@ -383,7 +384,7 @@ INTERMediator_DBAdapter = {
                 if (!(Number(args['records']) >= Number(INTERMediator.pagedSize) && Number(INTERMediator.pagedSize) > 0)) {
                     INTERMediator.pagedSize = Number(args['records']);
                 }
-                INTERMediator.pagedAllCount = result.resultCount;
+                INTERMediator.pagedAllCount = Number(result.resultCount);
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {

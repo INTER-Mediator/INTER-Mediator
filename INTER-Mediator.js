@@ -2064,7 +2064,7 @@ var INTERMediator = {
         }
 
         function retrieveDataForEnclosure(currentContext, fieldList, relationValue) {
-            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition, recordNumber;
+            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition, recordNumber, useLimit;
             var optionalCondition = [];
 
             if (currentContext['cache'] == true) {
@@ -2123,8 +2123,12 @@ var INTERMediator = {
                             break;
                         }
                     }
-                    if (currentContext['maxrecords'] && Number(INTERMediator.pagedSize) > 0
-                        && Number(currentContext['maxrecords']) >= Number(INTERMediator.pagedSize)) {
+                    useLimit = true;
+                    if (currentContext["relation"] !== undefined) {
+                        useLimit = false;
+                    }
+                    if (currentContext['maxrecords'] && useLimit && Number(INTERMediator.pagedSize) > 0 
+                            && Number(currentContext['maxrecords']) >= Number(INTERMediator.pagedSize)) {
                         recordNumber = Number(INTERMediator.pagedSize);
                     } else {
                         recordNumber = Number(currentContext['records']);
@@ -2136,7 +2140,8 @@ var INTERMediator = {
                         "fields": fieldList,
                         "parentkeyvalue": relationValue,
                         "conditions": optionalCondition,
-                        "useoffset": true});
+                        "useoffset": true,
+                        "useLimit": useLimit});
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
                         throw ex;

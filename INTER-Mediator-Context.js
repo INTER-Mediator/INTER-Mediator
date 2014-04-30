@@ -98,13 +98,13 @@ IMLibContext = function (contextName) {
 
     this.setTable = function (context) {
         // console.error(context);
-        var contextName, contextDef;
-        if (!context) {
-            contextName = this.contextName;
-        } else {
-            contextName = context.contextName;
+        var contextDef;
+        if (! context || ! INTERMediatorOnPage.getDataSources) {
+            this.tableName = this.contextName;
+            // This is not a valid case, it just prevent the error in the unit test.
+            return;
         }
-        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), "name", contextName)
+        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), "name", context.contextName)
         if (contextDef) {
             this.tableName = contextDef['view'] ? contextDef['view'] : contextDef['name'];
         }
