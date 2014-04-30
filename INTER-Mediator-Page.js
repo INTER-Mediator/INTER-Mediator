@@ -53,6 +53,9 @@ INTERMediatorOnPage = {
     isSetDefaultStyle: true,
     authPanelTitle: null,
 
+    additionalExpandingEnclosureFinish: {},
+    additionalExpandingRecordFinish: {},
+
     /*
      This method "getMessages" is going to be replaced valid one with the browser's language.
      Here is defined to prevent the warning of static check.

@@ -12,6 +12,7 @@ IM_Entry(
         array(
             'name' => 'personlist',
             'view' => 'person',
+            'table' => 'person',
             'key' => 'id',
             'records' => 10,
             'records' => 10,
@@ -35,5 +36,5 @@ IM_Entry(
     array(
     ),
     array('db-class' => 'PDO'),
-    2
+    1
 );

@@ -9,6 +9,7 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.4 (in development)
+- Multiple elements bound to the same field of the same table can synchronize in a page.
 - Update samples to improve compatibility with CSP (Content Security Policy).
   (except Asset Management, Account Manager and JS Components Sample)
 - Add Client-Side Calculation Page Samples for SQLite and PostgreSQL.
@@ -16,6 +17,8 @@ Ver.4.4 (in development)
 - Avoid outputting error messages in an error log file when not specifying the 'context' key of the 'file-upload' 
   key in a definition file.
 - Update the Local Content to improve compatibility with INTERMediator.pagedSize and update the "Practices" sample.
+- INTERMediatorOnPage.additionalExpandingEnclosureFinish and INTERMediatorOnPage.additionalExpandingRecordFinish
+  are supported. These are programable interfaces associated with 'post-enclosure' and 'post-repeater' in a context.
 - [BUG FIX] Fix compatibility when using INTERMediator.additionalCondition or INTERMediator.additionalSortKey.
   The affected version is 4.3 only (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in addtionalCondition with FileMaker Server.
