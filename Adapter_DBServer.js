@@ -57,7 +57,9 @@ INTERMediator_DBAdapter = {
                 + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
     },
 
-    logging_comResult: function (myRequest, resultCount, dbresult, requireAuth, challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
+    logging_comResult: function (
+        myRequest, resultCount, dbresult, requireAuth, challenge,
+        clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
         var responseTextTrancated;
         if (INTERMediator.debugMode > 1) {
             if (myRequest.responseText.length > 1000) {
@@ -341,7 +343,9 @@ INTERMediator_DBAdapter = {
                 criteriaObject = [criteriaObject];
             }
             for (index = 0; index < criteriaObject.length; index++) {
-                if (criteriaObject.hasOwnProperty(index)) {
+                if (criteriaObject[index]
+                    && criteriaObject[index]["field"]
+                    && criteriaObject[index]["value"]) {
                     params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
                     if (criteriaObject[index]["operator"] !== undefined) {
                         params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);

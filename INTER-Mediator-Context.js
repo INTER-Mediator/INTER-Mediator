@@ -41,9 +41,9 @@ IMLibContextPool = {
                 this.poolingContexts[i].store[recKey][key] = value;
                 targetNodes = this.poolingContexts[i].binding[recKey][key];
                 for (j = 0; j < targetNodes.length; j++) {
-                    refNode = document.getElementById(targetNodes[j]);
+                    refNode = document.getElementById(targetNodes[j].id);
                     if (refNode) {
-                        IMLibElement.setValueToIMNode(refNode, target, value, true);
+                        IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
                     }
                 }
             }
@@ -51,15 +51,17 @@ IMLibContextPool = {
         return result;
     },
 
-    getContextInfoFromId: function (idValue) {
-        var i, targetContext, result = null;
+    getContextInfoFromId: function (idValue, target) {
+        var i, targetContext, targetName, result = null;
         if (!idValue) {
             return result;
         }
         for (i = 0; i < this.poolingContexts.length; i++) {
             targetContext = this.poolingContexts[i];
-            if (targetContext.contextInfo[idValue]) {
-                return targetContext.contextInfo[idValue];
+            targetName = target == "" ? "_im_no_target" : target;
+            if (targetContext.contextInfo[idValue]
+                && targetContext.contextInfo[idValue][targetName]) {
+                return targetContext.contextInfo[idValue][targetName];
             }
         }
         return result;
@@ -67,11 +69,26 @@ IMLibContextPool = {
 
     updateContext: function (idValue, target) {
         var contextInfo, value;
-        contextInfo = IMLibContextPool.getContextInfoFromId(idValue);
+        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);
         value = IMLibElement.getValueFromIMNode(document.getElementById(idValue));
-        if (contextInfo)    {
-        contextInfo.context.setValue(contextInfo['record'], contextInfo.field, value, false, target);
+        if (contextInfo) {
+            contextInfo.context.setValue(contextInfo['record'], contextInfo.field, value, false, target);
         }
+    },
+
+    dependingObjects: function (idValue) {
+        var i, j, result = [];
+        if (!idValue) {
+            return false;
+        }
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            for (j = 0; j < this.poolingContexts[i].dependingObject.length; j++) {
+                if (this.poolingContexts[i].dependingObject[j] == idValue) {
+                    result.push(this.poolingContexts[i]);
+                }
+            }
+        }
+        return result.length == 0 ? false : result;
     }
 }
 
@@ -82,6 +99,12 @@ IMLibContext = function (contextName) {
     this.binding = {};
     this.contextInfo = {};
     IMLibContextPool.registerContext(this);
+
+    this.foreignValue = null;
+    this.enclosureNode = null;
+    this.repeaterNodes = null;
+    this.dependingObject = null;
+    this.original = null;
 
     this.clearAll = function () {
         this.store = {};
@@ -99,7 +122,7 @@ IMLibContext = function (contextName) {
     this.setTable = function (context) {
         // console.error(context);
         var contextDef;
-        if (! context || ! INTERMediatorOnPage.getDataSources) {
+        if (!context || !INTERMediatorOnPage.getDataSources) {
             this.tableName = this.contextName;
             // This is not a valid case, it just prevent the error in the unit test.
             return;
@@ -114,7 +137,6 @@ IMLibContext = function (contextName) {
 
     this.setValue = function (recKey, key, value, nodeId, target) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
-        var returnValue = null, nodeAndTarget;
         if (recKey != undefined && recKey != null) {
             if (this.store[recKey] === undefined) {
                 this.store[recKey] = {};
@@ -128,37 +150,17 @@ IMLibContext = function (contextName) {
             if (key != undefined && key != null) {
                 this.store[recKey][key] = value;
                 if (nodeId) {
-                    if (!target) {
-                        nodeAndTarget = nodeId;
-                    } else {
-                        nodeAndTarget = nodeId + "|" + target;
+                    this.binding[recKey][key].push({id:nodeId, target:target});
+                    if(this.contextInfo[nodeId] === undefined)  {
+                        this.contextInfo[nodeId] = {};
                     }
-
-                    this.binding[recKey][key].push(nodeAndTarget);
-                    this.contextInfo[nodeAndTarget] = {context: this, record: recKey, field: key};
-                    var currentObject = this;
-//                    returnValue = {
-//                        'id': nodeId,
-//                        'event': 'change',
-//                        'todo': (function () {
-//                            var idValue = nodeId;
-//                            var self = currentObject;
-//                            var itemRecKey = recKey;
-//                            var itemKey = key;
-//                            var itemTarget = target;
-//                            return function () {
-//                                var nodeRef = document.getElementById(idValue);
-//                                var nodeValue = IMLibElement.getValueFromIMNode(nodeRef);
-//                                self.setValue(itemRecKey, itemKey, nodeValue, false, itemTarget);
-//                            };
-//                        })()
-//                    };
+                    this.contextInfo[nodeId][target == "" ? "_im_no_target" : target]
+                        = {context: this, record: recKey, field: key};
                 } else {
                     IMLibContextPool.synchronize(this, recKey, key, value, target);
                 }
             }
         }
-//        return returnValue;
     }
 
     this.getValue = function (recKey, key) {
@@ -182,6 +184,7 @@ IMLibLocalContext = {
 
     setValue: function (key, value) {
         var i, hasUpdated, refIds, node;
+
         hasUpdated = false;
         if (key != undefined && key != null) {
             if (value === undefined || value === null) {

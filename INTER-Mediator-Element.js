@@ -232,7 +232,7 @@ var IMLibElement = {
             return false;
         }
         idValue = element.getAttribute('id');
-        contextInfo = IMLibContextPool.getContextInfoFromId(idValue);   // suppose to target = ""
+        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, "");   // suppose to target = ""
         if (INTERMediator.ignoreOptimisticLocking) {
             return true;
         }

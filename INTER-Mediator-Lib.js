@@ -22,10 +22,12 @@ function INTERMediatorLib() {
         rollingEnclocureDataControlName: "enclosure",
 
         initialize: function () {
-            INTERMediator.startFrom = 0;
-            INTERMediator.pagedSize = 0;
-            INTERMediator.additionalCondition = {};
-            INTERMediator.additionalSortKey = {};
+//            INTERMediator.startFrom = 0;
+//            INTERMediator.pagedSize = 0;
+//            INTERMediator.additionalCondition = {};
+//            INTERMediator.additionalSortKey = {};
+
+            IMLibLocalContext.unarchive();
 
             return null;
         },
