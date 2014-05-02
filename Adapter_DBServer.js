@@ -332,9 +332,12 @@ INTERMediator_DBAdapter = {
         }
         extCount = 0;
         while (args['conditions'] && args['conditions'][extCount]) {
-            params += "&condition" + extCount + "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
-            params += "&condition" + extCount + "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
-            params += "&condition" + extCount + "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
+            params += "&condition" + extCount;
+            params += "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
+            params += "&condition" + extCount;
+            params += "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
+            params += "&condition" + extCount;
+            params += "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
             extCount++;
         }
         criteriaObject = INTERMediator.additionalCondition[args['name']];
@@ -346,12 +349,15 @@ INTERMediator_DBAdapter = {
                 if (criteriaObject[index]
                     && criteriaObject[index]["field"]
                     && criteriaObject[index]["value"]) {
-                    params += "&condition" + extCount + "field=" + encodeURIComponent(criteriaObject[index]["field"]);
+                    params += "&condition" + extCount;
+                    params += "field=" + encodeURIComponent(criteriaObject[index]["field"]);
                     if (criteriaObject[index]["operator"] !== undefined) {
-                        params += "&condition" + extCount + "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
+                        params += "&condition" + extCount;
+                        params += "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
                     }
                     if (criteriaObject[index]["value"] !== undefined) {
-                        params += "&condition" + extCount + "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                        params += "&condition" + extCount;
+                        params += "value=" + encodeURIComponent(criteriaObject[index]["value"]);
                     }
                     extCount++;
                 }
@@ -366,8 +372,10 @@ INTERMediator_DBAdapter = {
                 sortkeyObject = [sortkeyObject];
             }
             for (index = 0; index < sortkeyObject.length; index++) {
-                params += "&sortkey" + extCount + "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
-                params += "&sortkey" + extCount + "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
+                params += "&sortkey" + extCount;
+                params += "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
+                params += "&sortkey" + extCount;
+                params += "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
                 extCount++;
             }
 
@@ -385,7 +393,8 @@ INTERMediator_DBAdapter = {
                 returnValue.count++;
             }
             if (( args['paging'] != null) && ( args['paging'] == true )) {
-                if (!(Number(args['records']) >= Number(INTERMediator.pagedSize) && Number(INTERMediator.pagedSize) > 0)) {
+                if (!(Number(args['records']) >= Number(INTERMediator.pagedSize)
+                    && Number(INTERMediator.pagedSize) > 0)) {
                     INTERMediator.pagedSize = Number(args['records']);
                 }
                 INTERMediator.pagedAllCount = Number(result.resultCount);

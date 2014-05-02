@@ -56,9 +56,9 @@ IMLibContextPool = {
         if (!idValue) {
             return result;
         }
+        targetName = target == "" ? "_im_no_target" : target;
         for (i = 0; i < this.poolingContexts.length; i++) {
             targetContext = this.poolingContexts[i];
-            targetName = target == "" ? "_im_no_target" : target;
             if (targetContext.contextInfo[idValue]
                 && targetContext.contextInfo[idValue][targetName]) {
                 return targetContext.contextInfo[idValue][targetName];
@@ -76,7 +76,34 @@ IMLibContextPool = {
         }
     },
 
-    dependingObjects: function (idValue) {
+    contextFromEnclosureId: function (idValue) {
+        var i, enclosure;
+        if (!idValue) {
+            return false;
+        }
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            enclosure = this.poolingContexts[i].enclosureNode;
+            if (enclosure.getAttribute('id') == idValue) {
+                return this.poolingContexts[i];
+            }
+        }
+        return null;
+    },
+
+    contextFromName: function (cName) {
+        var i, j, result = [];
+        if (!cName) {
+            return false;
+        }
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            if (this.poolingContexts[i].contextName == cName) {
+                return this.poolingContexts[i];
+            }
+        }
+        return null;
+    },
+
+   dependingObjects: function (idValue) {
         var i, j, result = [];
         if (!idValue) {
             return false;
@@ -90,6 +117,7 @@ IMLibContextPool = {
         }
         return result.length == 0 ? false : result;
     }
+
 }
 
 IMLibContext = function (contextName) {
@@ -98,6 +126,7 @@ IMLibContext = function (contextName) {
     this.store = {};
     this.binding = {};
     this.contextInfo = {};
+    this.modified = {};
     IMLibContextPool.registerContext(this);
 
     this.foreignValue = null;
@@ -135,6 +164,21 @@ IMLibContext = function (contextName) {
 
     this.setTable(this);
 
+    this.setModified = function (recKey, key, value) {
+        if (this.modified[recKey] === undefined) {
+            this.modified[recKey] = {};
+        }
+        this.modified[recKey][key] = value;
+    }
+
+    this.getModified = function () {
+        return this.modified;
+    }
+
+    this.clearModified = function () {
+        this.modified = {};
+    }
+
     this.setValue = function (recKey, key, value, nodeId, target) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
         if (recKey != undefined && recKey != null) {
@@ -150,8 +194,8 @@ IMLibContext = function (contextName) {
             if (key != undefined && key != null) {
                 this.store[recKey][key] = value;
                 if (nodeId) {
-                    this.binding[recKey][key].push({id:nodeId, target:target});
-                    if(this.contextInfo[nodeId] === undefined)  {
+                    this.binding[recKey][key].push({id: nodeId, target: target});
+                    if (this.contextInfo[nodeId] === undefined) {
                         this.contextInfo[nodeId] = {};
                     }
                     this.contextInfo[nodeId][target == "" ? "_im_no_target" : target]
@@ -166,6 +210,25 @@ IMLibContext = function (contextName) {
     this.getValue = function (recKey, key) {
         try {
             var value = this.store[recKey][key];
+            return value === undefined ? null : value;
+        } catch (ex) {
+            return null;
+        }
+    }
+
+    this.getContextInfo = function (nodeId, target) {
+        try {
+            var info = this.contextInfo[nodeId][target == "" ? "_im_no_target" : target];
+            return info === undefined ? null : info;
+        } catch (ex) {
+            return null;
+        }
+    }
+
+    this.getContextValue = function (nodeId, target) {
+        try {
+            var info = this.contextInfo[nodeId][target == "" ? "_im_no_target" : target];
+            var value = info.context.getValue(info.record, info.field);
             return value === undefined ? null : value;
         } catch (ex) {
             return null;
@@ -428,7 +491,11 @@ INTERMediatorLib.addEvent(document, "click", function (e) {
 
 function IM_Init() {
     INTERMediatorOnPage.removeCookie('_im_localcontext');
-    INTERMediatorOnPage.removeCookie('_im_username');
-    INTERMediatorOnPage.removeCookie('_im_credential');
-    INTERMediatorOnPage.removeCookie('_im_mediatoken');
+//    INTERMediatorOnPage.removeCookie('_im_username');
+//    INTERMediatorOnPage.removeCookie('_im_credential');
+//    INTERMediatorOnPage.removeCookie('_im_mediatoken');
+
+    INTERMediator.additionalCondition = {};
+    INTERMediator.additionalSortKey = {};
+    IMLibLocalContext.archive();
 };
