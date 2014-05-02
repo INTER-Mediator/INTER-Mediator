@@ -346,20 +346,20 @@ INTERMediator_DBAdapter = {
                 criteriaObject = [criteriaObject];
             }
             for (index = 0; index < criteriaObject.length; index++) {
-                if (criteriaObject[index]
-                    && criteriaObject[index]["field"]
-                    && criteriaObject[index]["value"]) {
-                    params += "&condition" + extCount;
-                    params += "field=" + encodeURIComponent(criteriaObject[index]["field"]);
-                    if (criteriaObject[index]["operator"] !== undefined) {
+                if (criteriaObject[index] && criteriaObject[index]["field"]) {
+                    if (criteriaObject[index]["value"] || criteriaObject[index]["field"] == "__operation__") {
                         params += "&condition" + extCount;
-                        params += "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
+                        params += "field=" + encodeURIComponent(criteriaObject[index]["field"]);
+                        if (criteriaObject[index]["operator"] !== undefined) {
+                            params += "&condition" + extCount;
+                            params += "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
+                        }
+                        if (criteriaObject[index]["value"] !== undefined) {
+                            params += "&condition" + extCount;
+                            params += "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                        }
+                        extCount++;
                     }
-                    if (criteriaObject[index]["value"] !== undefined) {
-                        params += "&condition" + extCount;
-                        params += "value=" + encodeURIComponent(criteriaObject[index]["value"]);
-                    }
-                    extCount++;
                 }
 
             }
