@@ -1481,7 +1481,7 @@ var INTERMediator = {
                     }
                 }
 
-                if (!isInsidePostOnly) {
+                if (currentRecord) {
                     try {
                         relationValue = null;
                         dependObject = [];

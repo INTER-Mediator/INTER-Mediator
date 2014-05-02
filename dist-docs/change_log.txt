@@ -30,6 +30,8 @@ Ver.4.4 (in development)
 - [BUG FIX] Avoid an error in getValueFromIMNode() of INTER-Mediator-Lib.js if the parameter is null.
 - [BUG FIX] Fix handling the 'maxrecords' key and INTERMediator.pagedSize.
 - [BUG FIX] The JS program of the Sample_chat has been modified.
+- [BUG FIX] Fix not to show the error message ("currentRecord is null - EXCEPTION-25") when using the PostOnlyContext 
+  and the related context is exisiting.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
