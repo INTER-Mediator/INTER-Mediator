@@ -9,6 +9,7 @@
 window.onload = function () {
     var nodeUnsupport = document.getElementById('nonsupportmessage');
     if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
+        IM_Init();
         INTERMediator.construct(true);
     }
 }

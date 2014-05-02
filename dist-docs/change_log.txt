@@ -29,6 +29,7 @@ Ver.4.4 (in development)
   key in the 'file-upload' key of the definition file.
 - [BUG FIX] Avoid an error in getValueFromIMNode() of INTER-Mediator-Lib.js if the parameter is null.
 - [BUG FIX] Fix handling the 'maxrecords' key and INTERMediator.pagedSize.
+- [BUG FIX] The JS program of the Sample_chat has been modified.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.

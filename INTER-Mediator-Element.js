@@ -152,6 +152,7 @@ var IMLibElement = {
                 }
             } else if (nodeTag == "SELECT") {
                 needPostValueSet = true;
+                element.value = curVal;
             } else { // include option tag node
                 if (INTERMediator.defaultTargetInnerHTML) {
                     if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
@@ -225,14 +226,14 @@ var IMLibElement = {
         return newValue;
     },
 
-    checkOptimisticLock: function (element) {
-        var idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter, currentVal, response;
-        var targetField, targetContext, initialvalue, newValue, isOthersModified;
+    checkOptimisticLock: function (element, taret) {
+        var idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter, currentVal, response,
+            targetField, targetContext, initialvalue, newValue, isOthersModified;
         if (!element) {
             return false;
         }
         idValue = element.getAttribute('id');
-        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, "");   // suppose to target = ""
+        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, taret);   // suppose to target = ""
         if (INTERMediator.ignoreOptimisticLocking) {
             return true;
         }

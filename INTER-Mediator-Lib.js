@@ -717,6 +717,16 @@ function INTERMediatorLib() {
             }
         },
 
+        isPopupMenu: function (element) {
+            if (!element || !element.tagName)  {
+                return false;
+            }
+            if (element.tagName == "SELECT")   {
+                return true;
+            }
+            return false;
+        },
+
         /*
          If the cNode parameter is like '_im_post', this function will search data-im-control="post" elements.
          */
