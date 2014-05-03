@@ -66,6 +66,8 @@ done
 echo "PROCESSING: Merging JS files"
 sed -f "${sedrule}" "${originalPath}/Adapter_DBServer.js"      > "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Lib.js"                   >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
 sed -f "${sedrule}" "${originalPath}/INTER-Mediator.js"       >> "${buildPath}/temp.js"

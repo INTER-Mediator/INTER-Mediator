@@ -4,7 +4,8 @@
     "author" : "Masayuki Nii",
     "contributors": [
         {"name" : "Atsushi Matsuo"},
-        {"name" : "Kiyonori Ito"}
+        {"name" : "Kiyonori Ito"},
+        {"name" : "Kentaro Suzuki"}
     ],
     "scripts" : {
         "test" : "node_modules/.bin/buster-test -r specification",
@@ -15,6 +16,6 @@
         "phantomjs" : ">=1.0.0"
     },
     "engines" : {
-        "node" : "~0.8"
+        "node" : "~0.10"
     }
 }
