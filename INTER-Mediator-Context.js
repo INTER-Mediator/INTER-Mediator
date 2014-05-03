@@ -129,10 +129,10 @@ IMLibContext = function (contextName) {
     this.modified = {};
     IMLibContextPool.registerContext(this);
 
-    this.foreignValue = null;
+    this.foreignValue = {};
     this.enclosureNode = null;
     this.repeaterNodes = null;
-    this.dependingObject = null;
+    this.dependingObject = [];
     this.original = null;
 
     this.clearAll = function () {
@@ -146,6 +146,21 @@ IMLibContext = function (contextName) {
 
     this.setTableName = function (name) {
         this.tableName = name;
+    }
+
+    this.addDependingObject = function (idNumber)   {
+        this.dependingObject.push(idNumber);
+    }
+
+    this.addForeignValue = function (field, value)   {
+        this.foreignValue[field] = value;
+    }
+
+    this.setOriginal = function(repeaters)   {
+        this.original = [];
+        for (i = 0; i < repeaters.length; i++) {
+            this.original.push(repeaters[i].cloneNode(true));
+        }
     }
 
     this.setTable = function (context) {

@@ -1436,7 +1436,7 @@ var INTERMediator = {
 
         function expandEnclosure(node, currentRecord, parentEnclosure, parentObjectInfo) {
             var objectReference = {}, linkedNodes, encNodeTag, repeatersOriginal, repeaters,
-                linkDefs, voteResult, currentContext, fieldList, repNodeTag, relationValue, dependObject,
+                linkDefs, voteResult, currentContext, fieldList, repNodeTag, joinField,
                 relationDef, index, fieldName, i, j, k, ix, targetRecords, newNode,
                 nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue,
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
@@ -1483,31 +1483,23 @@ var INTERMediator = {
 
                 if (currentRecord) {
                     try {
-                        relationValue = null;
-                        dependObject = [];
                         relationDef = currentContext['relation'];
+                        contextObj.setOriginal(repeatersOriginal);
                         if (relationDef) {
-                            relationValue = {};
                             for (index in relationDef) {
-                                relationValue[ relationDef[index]['join-field'] ]
-                                    = currentRecord[relationDef[index]['join-field']];
                                 if (relationDef[index]['portal'] == true) {
                                     currentContext['portal'] = true;
                                 }
+                                joinField = relationDef[index]['join-field'];
+                                contextObj.addForeignValue(joinField, currentRecord[joinField]);
                                 for (fieldName in parentObjectInfo) {
                                     if (fieldName == relationDef[index]['join-field']) {
-                                        dependObject.push(parentObjectInfo[fieldName]);
+                                        contextObj.addDependingObject(parentObjectInfo[fieldName]);
                                     }
                                 }
                             }
                         }
 
-                        contextObj.foreignValue = relationValue;
-                        contextObj.dependingObject = dependObject;
-                        contextObj.original = [];
-                        for (i = 0; i < repeatersOriginal.length; i++) {
-                            contextObj.original.push(repeatersOriginal[i].cloneNode(true));
-                        }
 
                         // Access database and get records
                         pagingValue = false;
@@ -1527,7 +1519,7 @@ var INTERMediator = {
                     }
                 }
 
-                targetRecords = retrieveDataForEnclosure(currentContext, fieldList, relationValue);
+                targetRecords = retrieveDataForEnclosure(currentContext, fieldList, contextObj.foreignValue);
 
                 if (targetRecords.count == 0) {
                     for (i = 0; i < repeaters.length; i++) {
@@ -1680,7 +1672,7 @@ var INTERMediator = {
                                             postSetFields.push({'id': nodeId, 'value': curVal});
                                         }
                                     } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                                        if (curVal.length > 0) {
+                                        if (curVal && curVal.length > 0) {
                                             if (IMLibElement.setValueToIMNode(
                                                 currentLinkedNodes[k],
                                                 curTarget,
@@ -1775,7 +1767,7 @@ var INTERMediator = {
                     }
 
                 }
-                setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue);
+                setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, contextObj.foreignValue);
 
                 if (setupWidget) {
                     for (var plugin in IMParts_Catalog) {
