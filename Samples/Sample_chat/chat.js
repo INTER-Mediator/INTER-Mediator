@@ -8,22 +8,33 @@
  */
 window.onload = function () {
     INTERMediator.construct(true);
+}
 
-    document.getElementById("postbutton").onclick = function () {
-        INTERMediator_DBAdapter.db_createRecordWithAuth({
-                    name:"chat",
-                    dataset:[{
-                        field: "message",
-                        value: document.getElementById("message").value}]},
+var doAfter = false;
+// The flag to prevent executing the INTERMediatorOnPage.doAfterConstruct method more than once.
+
+INTERMediatorOnPage.doAfterConstruct = function () {
+    if (!doAfter) {
+        INTERMediatorLib.addEvent(document.getElementById("postbutton"), "click", function () {
+            INTERMediator_DBAdapter.db_createRecordWithAuth({
+                    name: "chat",
+                    dataset: [
+                        {
+                            field: "message",
+                            value: document.getElementById("message").value
+                        }
+                    ]},
                 function () {
-                    INTERMediator.construct(0);
+                    INTERMediator.constructMain(IMLibContextPool.contextFromName("chat"));
                     document.getElementById("message").value = "";
                     INTERMediator.flushMessage();
                 });
-    }
-    
-    document.getElementById("logoutbutton").onclick = function () {
-        INTERMediatorOnPage.logout();
-        INTERMediator.construct(true);
+        });
+
+        document.getElementById("logoutbutton").onclick = function () {
+            INTERMediatorOnPage.logout();
+            INTERMediator.construct(true);
+        }
+        doAfter = true;
     }
 }

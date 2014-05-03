@@ -8,8 +8,8 @@
  */
 window.onload = function () {
     INTERMediator.navigationLabel = [null, null, null, null, null, null, null, null, false];
-    IMLibLocalContext.setValue("placeCondition", "");
-    IMLibLocalContext.setValue("zipCondition", "");
+//    IMLibLocalContext.setValue("placeCondition", "");
+//    IMLibLocalContext.setValue("zipCondition", "");
     INTERMediator.construct(true);
     
     INTERMediatorOnPage.doAfterConstruct = function () {
@@ -36,33 +36,26 @@ window.onload = function () {
 }
 
 function doSearch() {
-    INTERMediator.additionalCondition = {};
-    INTERMediator.additionalCondition["postalcode"] = [];
+    var criteria;
     var c1 = IMLibLocalContext.getValue("placeCondition");
     if (c1 && c1.length > 0) {
         if (window.document.title.indexOf("FileMaker") == -1) {
-            INTERMediator.additionalCondition["postalcode"].push({
-                field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'
-            });
+            criteria ={field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'};
         } else {
-            INTERMediator.additionalCondition["postalcode"].push({
-                field: 'f9', operator: 'cn', value: c1
-            });
+            criteria ={field: 'f9', operator: 'cn', value: c1};
         }
     }
     var c2 = IMLibLocalContext.getValue("zipCondition");
     if (c2 && c2.length > 0) {
         if (window.document.title.indexOf("FileMaker") == -1) {
-            INTERMediator.additionalCondition["postalcode"].push({
-                field: 'f3', operator: 'LIKE', value: c2 + '%'
-            });
+            criteria ={field: 'f3', operator: 'LIKE', value: c2 + '%'};
         } else {
-            INTERMediator.additionalCondition["postalcode"].push({
-                field: 'f3', operator: 'bw', value: c2
-            });
+            criteria ={field: 'f3', operator: 'bw', value: c2};
         }
     }
-    IMLibLocalContext.archive();    // This isn't required other than IE8.
+    INTERMediator.additionalCondition = {postalcode:[criteria]};
+
+//    IMLibLocalContext.archive();    // This isn't required other than IE8.
     INTERMediator.startFrom = 0;
     INTERMediator.construct(true);
 }

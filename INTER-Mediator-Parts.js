@@ -70,7 +70,7 @@ var IMParts_tinymce = {
             if (targetNode) {
                 targetNode._im_getValue = function () {
                     var thisId = this.id;
-                    console.error(tinymce.EditorManager.get(thisId).getContent());
+                    //console.error(tinymce.EditorManager.get(thisId).getContent());
                     return tinymce.EditorManager.get(thisId).getContent();
                 }
             }
@@ -294,7 +294,8 @@ var IMParts_im_fileupload = {
                                 fileNameNode.style.textAlign = "center";
                                 event.target.appendChild(fileNameNode);
                             }
-                            var updateInfo = INTERMediator.updateRequiredObject[eventTarget.getAttribute('id')];
+                            var updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), "");
+                            //INTERMediator.updateRequiredObject[eventTarget.getAttribute('id')];
 
                             if (IMParts_im_fileupload.progressSupported) {
                                 infoFrame.style.display = "block";
@@ -305,10 +306,10 @@ var IMParts_im_fileupload = {
                             }
 
                             INTERMediator_DBAdapter.uploadFile(
-                                '&_im_contextname=' + encodeURIComponent(updateInfo['name'])
-                                    + '&_im_field=' + encodeURIComponent(updateInfo['field'])
-                                    + '&_im_keyfield=' + encodeURIComponent(updateInfo['keying'].split("=")[0])
-                                    + '&_im_keyvalue=' + encodeURIComponent(updateInfo['keying'].split("=")[1])
+                                '&_im_contextname=' + encodeURIComponent(updateInfo.context.contextName)
+                                    + '&_im_field=' + encodeURIComponent(updateInfo.field)
+                                    + '&_im_keyfield=' + encodeURIComponent(updateInfo.record.split("=")[0])
+                                    + '&_im_keyvalue=' + encodeURIComponent(updateInfo.record.split("=")[1])
                                     + '&_im_contextnewrecord=' + encodeURIComponent('uploadfile')
                                     + (IMParts_im_fileupload.progressSupported ?
                                     ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(
@@ -320,28 +321,18 @@ var IMParts_im_fileupload = {
                                 function () {
                                     var indexContext = true;
                                     var context = INTERMediatorLib.getNamedObject(
-                                        INTERMediatorOnPage.getDataSources(), 'name', updateInfo['name']);
+                                        INTERMediatorOnPage.getDataSources(), 'name', updateInfo.context.contextName);
                                     if (context['file-upload']) {
                                         var relatedContextName = '';
                                         for (var i = 0; i < context['file-upload'].length; i++) {
-                                            if (context['file-upload'][i]['field'] == updateInfo['field']) {
+                                            if (context['file-upload'][i]['field'] == updateInfo.field) {
                                                 relatedContextName = context['file-upload'][i]['context'];
                                                 break;
                                             }
                                         }
-                                        for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
-                                            if (INTERMediator.keyFieldObject[i]['name'] == relatedContextName) {
-                                                indexContext = i;
-                                                break;
-                                            }
-                                        }
+                                        indexContext = IMLibContextPool.contextFromName(relatedContextName);
                                     } else {
-                                        for (var i = 0; i < INTERMediator.keyFieldObject.length; i++) {
-                                            if (INTERMediator.keyFieldObject[i]['name'] == updateInfo['name']) {
-                                                indexContext = i;
-                                                break;
-                                            }
-                                        }
+                                        indexContext = IMLibContextPool.contextFromName(updateInfo.context.contextName);
                                     }
                                     INTERMediator.construct(indexContext);
                                 });
@@ -354,30 +345,31 @@ var IMParts_im_fileupload = {
             for (var i = 0; i < IMParts_im_fileupload.ids.length; i++) {
                 var targetNode = document.getElementById(IMParts_im_fileupload.ids[i]);
                 if (targetNode) {
-                    var updateInfo = INTERMediator.updateRequiredObject[IMParts_im_fileupload.ids[i]];
+                    var updateInfo = IMLibContextPool.getContextInfoFromId(IMParts_im_fileupload.ids[i], "");
+                    //= INTERMediator.updateRequiredObject[IMParts_im_fileupload.ids[i]];
                     var formNode = targetNode.getElementsByTagName('FORM')[0];
                     var inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_contextname');
-                    inputNode.setAttribute('value', updateInfo['name']);
+                    inputNode.setAttribute('value', updateInfo.context.contextName);
                     formNode.appendChild(inputNode);
 
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_field');
-                    inputNode.setAttribute('value', updateInfo['field']);
+                    inputNode.setAttribute('value', updateInfo.field);
                     formNode.appendChild(inputNode);
 
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_keyfield');
-                    inputNode.setAttribute('value', updateInfo['keying'].split("=")[0]);
+                    inputNode.setAttribute('value', updateInfo.record.split("=")[0]);
                     formNode.appendChild(inputNode);
 
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_keyvalue');
-                    inputNode.setAttribute('value', updateInfo['keying'].split("=")[1]);
+                    inputNode.setAttribute('value', updateInfo.record.split("=")[1]);
                     formNode.appendChild(inputNode);
 
                     inputNode = document.createElement('INPUT');
@@ -456,42 +448,43 @@ var IMParts_im_fileupload = {
             return null;
         }
 
-        function createRecordOnRelatedTable(updateInfo, path) {
-            var index, ix, dataset, filesContext;
-            var context = INTERMediatorLib.getNamedObject(
-                INTERMediatorOnPage.getDataSources(), 'name', updateInfo['name']);
-            if (context['file-upload']) {
-                for (index in context['file-upload']) {
-                    if (context['file-upload'][index]['field'] == updateInfo['field']) {
-                        filesContext = INTERMediatorLib.getNamedObject(
-                            INTERMediatorOnPage.getDataSources(),
-                            'name',
-                            context['file-upload'][index]['context']);
-                        dataset = [
-                            {field: "path", value: path}
-                        ];
-                        if (filesContext['relation']) {
-                            for (ix in filesContext['relation']) {
-                                dataset.push({
-                                    field: filesContext['relation'][ix]['foreign-key'],
-                                    value: updateInfo['keying'].split("=")[1]});
-                            }
-                        }
-                        if (filesContext['query']) {
-                            for (ix in filesContext['query']) {
-                                dataset.push({
-                                    field: filesContext['query'][ix]['field'],
-                                    value: filesContext['query'][ix]['value']});
-                            }
-                        }
-                        INTERMediator_DBAdapter.db_createRecord({
-                            name: context['file-upload'][index]['context'],
-                            dataset: dataset
-                        });
-                    }
-                }
-            }
-        }
+        /*
+         function createRecordOnRelatedTable(updateInfo, path) {
+         var index, ix, dataset, filesContext;
+         var context = INTERMediatorLib.getNamedObject(
+         INTERMediatorOnPage.getDataSources(), 'name', updateInfo['name']);
+         if (context['file-upload']) {
+         for (index in context['file-upload']) {
+         if (context['file-upload'][index]['field'] == updateInfo['field']) {
+         filesContext = INTERMediatorLib.getNamedObject(
+         INTERMediatorOnPage.getDataSources(),
+         'name',
+         context['file-upload'][index]['context']);
+         dataset = [
+         {field: "path", value: path}
+         ];
+         if (filesContext['relation']) {
+         for (ix in filesContext['relation']) {
+         dataset.push({
+         field: filesContext['relation'][ix]['foreign-key'],
+         value: updateInfo['keying'].split("=")[1]});
+         }
+         }
+         if (filesContext['query']) {
+         for (ix in filesContext['query']) {
+         dataset.push({
+         field: filesContext['query'][ix]['field'],
+         value: filesContext['query'][ix]['value']});
+         }
+         }
+         INTERMediator_DBAdapter.db_createRecord({
+         name: context['file-upload'][index]['context'],
+         dataset: dataset
+         });
+         }
+         }
+         }
+         }*/
     }
 };
 

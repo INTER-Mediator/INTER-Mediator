@@ -9,7 +9,7 @@
 
 //"use strict"
 
-var INTERMediatorLib = new INTERMediatorLib();
+var INTERMediatorLib = INTERMediatorLib();
 
 function INTERMediatorLib() {
     var instance = {
@@ -20,25 +20,27 @@ function INTERMediatorLib() {
         rollingEnclocureClassName: "_im_enclosure",
         rollingRepeaterDataControlName: "repeater",
         rollingEnclocureDataControlName: "enclosure",
-        
+
         initialize: function () {
-            INTERMediator.startFrom = 0;
-            INTERMediator.pagedSize = 0;
-            INTERMediator.additionalCondition = {};
-            INTERMediator.additionalSortKey = {};
-            
+//            INTERMediator.startFrom = 0;
+//            INTERMediator.pagedSize = 0;
+//            INTERMediator.additionalCondition = {};
+//            INTERMediator.additionalSortKey = {};
+
+            IMLibLocalContext.unarchive();
+
             return null;
         },
-        
+
         setup: function () {
             if (window.addEventListener) {
                 window.addEventListener("load", this.initialize, false);
             } else if (window.attachEvent) { // for IE
                 window.attachEvent("onload", this.initialize);
-            } else  {
+            } else {
                 window.onload = this.initialize;
             }
-            
+
             return null;
         },
 
@@ -429,7 +431,7 @@ function INTERMediatorLib() {
         getNodeInfoArray: function (nodeInfo) {
             var comps, tableName, fieldName, targetName;
 
-            if(! nodeInfo.split)  {
+            if (!nodeInfo.split) {
                 return {
                     'table': null,
                     'field': null,
@@ -460,6 +462,9 @@ function INTERMediatorLib() {
         getCalcNodeInfoArray: function (nodeInfo) {
             var comps, tableName, fieldName, targetName;
 
+            if (! nodeInfo) {
+                return null;
+            }
             comps = nodeInfo.split(INTERMediator.separator);
             tableName = '', fieldName = '', targetName = '';
             if (comps.length == 3) {
@@ -712,6 +717,16 @@ function INTERMediatorLib() {
             }
         },
 
+        isPopupMenu: function (element) {
+            if (!element || !element.tagName)  {
+                return false;
+            }
+            if (element.tagName == "SELECT")   {
+                return true;
+            }
+            return false;
+        },
+
         /*
          If the cNode parameter is like '_im_post', this function will search data-im-control="post" elements.
          */
@@ -903,190 +918,3 @@ var IMLibNodeGraph = {
 
     }
 };
-
-var IMLibElement = {
-    setValueToIMNode: function (element, curTarget, curVal, clearField) {
-        var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i;
-        // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
-
-        if (curVal === undefined) {
-            return false;   // Or should be an error?
-        }
-        if (!element) {
-            return false;   // Or should be an error?
-        }
-        if (curVal == null) {
-            curVal = '';
-        }
-
-        nodeTag = element.tagName;
-
-        if (clearField === true && curTarget == "") {
-            switch (nodeTag) {
-                case "INPUT":
-                    element.value = "";
-                    break;
-                default:
-                    while (element.childNodes.length > 0) {
-                        element.removeChild(element.childNodes[0]);
-                    }
-                    break;
-            }
-        }
-
-        if (curTarget != null && curTarget.length > 0) { //target is specified
-            if (curTarget.charAt(0) == '#') { // Appending
-                curTarget = curTarget.substring(1);
-                if (curTarget == 'innerHTML') {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
-                    }
-                    element.innerHTML += curVal;
-                } else if (curTarget == 'textNode' || curTarget == 'script') {
-                    textNode = document.createTextNode(curVal);
-                    if (nodeTag == "TEXTAREA") {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-                    }
-                    element.appendChild(textNode);
-                } else if (curTarget.indexOf('style.') == 0) {
-                    styleName = curTarget.substring(6, curTarget.length);
-                    element.style[styleName] = curVal;
-                } else {
-                    currentValue = element.getAttribute(curTarget);
-                    element.setAttribute(curTarget, currentValue + curVal);
-                }
-            }
-            else if (curTarget.charAt(0) == '$') { // Replacing
-                curTarget = curTarget.substring(1);
-                if (curTarget == 'innerHTML') {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
-                    }
-                    element.innerHTML = element.innerHTML.replace("$", curVal);
-                } else if (curTarget == 'textNode' || curTarget == 'script') {
-                    if (nodeTag == "TEXTAREA") {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-                    }
-                    element.innerHTML = element.innerHTML.replace("$", curVal);
-                } else if (curTarget.indexOf('style.') == 0) {
-                    styleName = curTarget.substring(6, curTarget.length);
-                    element.style[styleName] = curVal;
-                } else {
-                    currentValue = element.getAttribute(curTarget);
-                    element.setAttribute(curTarget, currentValue.replace("$", curVal));
-                }
-            } else { // Setting
-                if (INTERMediatorLib.isWidgetElement(element)) {
-                    element._im_setValue(curVal);
-                } else if (curTarget == 'innerHTML') { // Setting
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
-                    }
-                    element.innerHTML = curVal;
-                } else if (curTarget == 'textNode') {
-                    if (nodeTag == "TEXTAREA") {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-                    }
-                    textNode = document.createTextNode(curVal);
-                    element.appendChild(textNode);
-                } else if (curTarget == 'script') {
-                    textNode = document.createTextNode(curVal);
-                    if (nodeTag == "SCRIPT") {
-                        element.appendChild(textNode);
-                    } else {
-                        scriptNode = document.createElement("script");
-                        scriptNode.type = "text/javascript";
-                        scriptNode.appendChild(textNode);
-                        element.appendChild(scriptNode);
-                    }
-                } else if (curTarget.indexOf('style.') == 0) {
-                    styleName = curTarget.substring(6, curTarget.length);
-                    element.style[styleName] = curVal;
-                } else {
-                    element.setAttribute(curTarget, curVal);
-                }
-            }
-        } else { // if the 'target' is not specified.
-            if (INTERMediatorLib.isWidgetElement(element)) {
-                element._im_setValue(curVal);
-            } else if (nodeTag == "INPUT") {
-                typeAttr = element.getAttribute('type');
-                if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
-                    valueAttr = element.value;
-                    curValues = curVal.toString().split("\n");
-                    if (typeAttr == 'checkbox' && curValues.length > 1) {
-                        element.checked = false;
-                        for (i = 0; i < curValues.length; i++) {
-                            if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
-                                if (INTERMediator.isIE) {
-                                    element.setAttribute('checked', 'checked');
-                                } else {
-                                    element.checked = true;
-                                }
-                            }
-                        }
-                    } else {
-                        if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
-                            if (INTERMediator.isIE) {
-                                element.setAttribute('checked', 'checked');
-                            } else {
-                                element.checked = true;
-                            }
-                        } else {
-                            element.checked = false;
-                        }
-                    }
-                } else { // this node must be text field
-                    element.value = curVal;
-                }
-            } else if (nodeTag == "SELECT") {
-                needPostValueSet = true;
-            } else { // include option tag node
-                if (INTERMediator.defaultTargetInnerHTML) {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
-                    }
-                    element.innerHTML = curVal;
-                } else {
-                    if (nodeTag == "TEXTAREA") {
-                        if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
-                            // for IE11
-                            curVal = curVal.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-                        } else {
-                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-                        }
-                    }
-                    textNode = document.createTextNode(curVal);
-                    element.appendChild(textNode);
-                }
-            }
-        }
-        return needPostValueSet;
-    },
-    getValueFromIMNode: function (element) {
-        var nodeTag, typeAttr;
-        
-        if (element) {
-            nodeTag = element.tagName;
-        } else {
-            return "";
-        }
-        if (INTERMediatorLib.isWidgetElement(element)) {
-            return element._im_getValue();
-        } else if (nodeTag == "INPUT") {
-            typeAttr = element.getAttribute('type');
-            if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
-                return element.value;
-            } else { // this node must be text field
-                return element.value;
-            }
-        } else if (nodeTag == "SELECT") {
-            return element.value;
-        } else if (nodeTag == "TEXTAREA") {
-            return element.value;
-        } else {
-            return element.innerHTML;
-        }
-    }
-}
