@@ -507,11 +507,26 @@ function INTERMediatorLib() {
             }
         },
 
+        eventInfos: [],
+
         addEvent: function (node, evt, func) {
             if (node.addEventListener) {
                 node.addEventListener(evt, func, false);
+                this.eventInfos.push({node: node, event: evt, function: func});
+                return this.eventInfos.length - 1;
             } else if (node.attachEvent) {
                 node.attachEvent('on' + evt, func);
+                this.eventInfos.push({node: node, event: evt, function: func});
+                return this.eventInfos.length - 1;
+            }
+            return -1;
+        },
+
+        removeEvent: function (serialId)    {
+            if (eventInfos[serialId].node.removeEventListener) {
+                eventInfos[serialId].node.removeEventListener(eventInfos[serialId].evt, eventInfos[serialId].func, false);
+            } else if (eventInfos[serialId].node.detachEvent) {
+                eventInfos[serialId].node.detachEvent('on' + eventInfos[serialId].evt, eventInfos[serialId].func);
             }
         },
 
