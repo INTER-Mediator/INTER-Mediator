@@ -185,7 +185,8 @@ var IMLibElement = {
         } else {
             return "";
         }
-        if (INTERMediatorLib.isWidgetElement(element)) {
+        if (INTERMediatorLib.isWidgetElement(element)
+            || (INTERMediatorLib.isWidgetElement(element.parentNode))) {
             newValue = element._im_getValue();
         } else if (nodeTag == "INPUT") {
             if (typeAttr == 'checkbox') {

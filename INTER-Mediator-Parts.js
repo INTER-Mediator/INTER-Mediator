@@ -14,132 +14,13 @@
 
 //"use strict"
 
-var IMParts_tinymce = {
-    instanciate: function (parentNode) {
-        var newId = parentNode.getAttribute('id') + '-e';
-        this.ids.push(newId);
-        var newNode = document.createElement('TEXTAREA');
-        newNode.setAttribute('id', newId);
-        INTERMediatorLib.setClassAttributeToNode(newNode, '_im_tinymce');
-        parentNode.appendChild(newNode);
-        this.ids.push(newId);
-
-        newNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
-        parentNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
-        parentNode._im_getComponentId = function () {
-            var theId = newId;
-            return theId;
-        };
-
-        // This method will be called before tinyMCE isn't initialized
-        parentNode._im_setValue = function (str) {
-            var targetNode = newNode;
-            targetNode.innerHTML = str;
-        };
-    },
-    ids: [],
-    finish: function () {
-        if (!tinymceOption) {
-            tinymceOption = {};
-        }
-        tinymceOption['mode'] = 'specific_textareas';
-        tinymceOption['editor_selector'] = '_im_tinymce';
-        tinymceOption['elements'] = this.ids.join(',');
-        tinymceOption.setup = function (ed) {
-            ed.on('change', function (ev) {
-                INTERMediator.valueChange(ed.id);
-            });
-            ed.on('keydown', function (ev) {
-                INTERMediator.keyDown(ev);
-            });
-            ed.on('keyup', function (ev) {
-                INTERMediator.keyUp(ev);
-            });
-        };
-
-        tinyMCE.init(tinymceOption);
-
-        for (var i = 0; i < IMParts_tinymce.ids.length; i++) {
-            var targetNode = document.getElementById(IMParts_tinymce.ids[i]);
-            if (targetNode) {
-                targetNode._im_getValue = function () {
-                    var thisId = this.id;
-                    //console.error(tinymce.EditorManager.get(thisId).getContent());
-                    return tinymce.EditorManager.get(thisId).getContent();
-                }
-            }
-        }
-        IMParts_tinymce.ids = [];
-    }
-};
-var IMParts_codemirror = {
-    instanciate: function (parentNode) {
-        var newId = parentNode.getAttribute('id') + '-e';
-        var newNode = document.createElement('TEXTAREA');
-        newNode.setAttribute('id', newId);
-        INTERMediatorLib.setClassAttributeToNode(newNode, '_im_codemirror');
-        parentNode.appendChild(newNode);
-        this.ids.push(newId);
-
-        newNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.getValue();
-        };
-        parentNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
-        parentNode._im_getComponentId = function () {
-            var theId = newId;
-            return theId;
-        };
-
-        parentNode._im_setValue = function (str) {
-            var theId = newId;
-            IMParts_codemirror.initialValues[theId] = str;
-        };
-    },
-    ids: [],
-    initialValues: {},
-    mode: "text/html",
-    finish: function () {
-        for (var i = 0; i < this.ids.length; i++) {
-            var targetId = this.ids[i];
-            var targetNode = document.getElementById(targetId);
-            if (targetNode) {
-                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode});
-                editor.setValue(this.initialValues[targetId]);
-                editor.on("change", function () {
-                    var nodeId = targetId;
-                    return function (instance, obj) {
-                        INTERMediator.valueChange(nodeId)
-                    };
-                }());
-                targetNode._im_getValue = function () {
-                    var insideEditor = editor;
-                    return function () {
-                        return insideEditor.getValue();
-                    }
-                }();
-            }
-        }
-        this.ids = [];
-        this.initialValues = {};
-    }
-};
-
+var IMParts_Catalog = {};
 /*********
  *
  * File Uploader
  * @type {{html5DDSuported: boolean, instanciate: Function, ids: Array, finish: Function}}
  */
-var IMParts_im_fileupload = {
+IMParts_Catalog["im_fileupload"] = {
     html5DDSuported: false,
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
     forceOldStyleForm: false,
@@ -150,19 +31,19 @@ var IMParts_im_fileupload = {
         var newNode = document.createElement('DIV');
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
-        IMParts_im_fileupload.ids.push(newId);
-        if (IMParts_im_fileupload.forceOldStyleForm) {
-            IMParts_im_fileupload.html5DDSuported = false;
+        this.ids.push(newId);
+        if (this.forceOldStyleForm) {
+            this.html5DDSuported = false;
         } else {
-            IMParts_im_fileupload.html5DDSuported = true;
+            this.html5DDSuported = true;
             try {
                 var x = new FileReader();
                 var y = new FormData();
             } catch (ex) {
-                IMParts_im_fileupload.html5DDSuported = false;
+                this.html5DDSuported = false;
             }
         }
-        if (IMParts_im_fileupload.html5DDSuported) {
+        if (this.html5DDSuported) {
             newNode.dropzone = "copy";
             newNode.style.width = "200px";
             newNode.style.height = "100px";
@@ -487,9 +368,3 @@ var IMParts_im_fileupload = {
          }*/
     }
 };
-
-var IMParts_Catalog = {
-    "tinymce": IMParts_tinymce,
-    "codemirror": IMParts_codemirror,
-    "im_fileupload": IMParts_im_fileupload
-}
