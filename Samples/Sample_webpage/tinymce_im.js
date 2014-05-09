@@ -9,7 +9,7 @@
 
 tinymceOption = {
     theme: "modern",
-    width: 500,
+    width: 900,
     height: 100,
     plugins: ["advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
         "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",

@@ -249,7 +249,7 @@ INTERMediator_DBAdapter = {
                         }
                         INTERMediatorOnPage.authCount = 0;
                         INTERMediatorOnPage.storeCredencialsToCookie();
-                        doItOnFinish();
+                        doItOnFinish(dbresult);
                         break;
                 }
             }

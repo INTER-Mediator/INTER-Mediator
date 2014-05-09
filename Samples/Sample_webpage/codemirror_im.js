@@ -29,21 +29,23 @@ IMParts_Catalog["codemirror"] = {
             return theId;
         };
 
+        var self = this;
         parentNode._im_setValue = function (str) {
             var theId = newId;
-            IMParts_codemirror.initialValues[theId] = str;
+            self.initialValues[theId] = str;
         };
     },
     ids: [],
     initialValues: {},
-    mode: "text/html",
+    mode: "htmlmixed",
     finish: function () {
         for (var i = 0; i < this.ids.length; i++) {
             var targetId = this.ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
-                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode});
-                editor.setValue(this.initialValues[targetId]);
+                var editor = CodeMirror.fromTextArea(targetNode);
+                                editor.setValue(this.initialValues[targetId]);
+/*
                 editor.on("change", function () {
                     var nodeId = targetId;
                     return function (instance, obj) {
@@ -61,7 +63,7 @@ IMParts_Catalog["codemirror"] = {
                     return function () {
                         return insideEditor.getValue();
                     }
-                }();
+                }();*/
             }
         }
         this.ids = [];

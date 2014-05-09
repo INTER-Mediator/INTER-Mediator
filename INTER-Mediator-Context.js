@@ -67,6 +67,24 @@ IMLibContextPool = {
         return result;
     },
 
+    getKeyFieldValueFromId: function (idValue, target)   {
+        var contextInfo = this.getContextInfoFromId(idValue, target);
+        if (! contextInfo)  {
+            return null;
+        }
+        var contextName = contextInfo.context.contextName;
+        var contextDef = IMLibContextPool.getContextDef(contextName);
+        if (! contextDef)  {
+            return null;
+        }
+        var keyField = contextDef.key ? contextDef.key : "id";
+        return contextInfo.record.substr(keyField.length + 1);
+    },
+
+    getContextDef: function (contextName)   {
+        return INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName);
+    },
+
     updateContext: function (idValue, target) {
         var contextInfo, value;
         contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);
@@ -91,7 +109,7 @@ IMLibContextPool = {
     },
 
     contextFromName: function (cName) {
-        var i, j, result = [];
+        var i;
         if (!cName) {
             return false;
         }
@@ -103,7 +121,35 @@ IMLibContextPool = {
         return null;
     },
 
-   dependingObjects: function (idValue) {
+    getContextFromName: function (cName) {
+        var i, result = [];
+        if (!cName) {
+            return false;
+        }
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            if (this.poolingContexts[i].contextName == cName) {
+                result.push(this.poolingContexts[i]);
+            }
+        }
+        return result;
+    },
+
+    getContextsFromNameAndForeignValue: function (cName, fValue) {
+        var i, j, result = [], parentKeyField;
+        if (!cName) {
+            return false;
+        }
+        parentKeyField = "id";
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            if (this.poolingContexts[i].contextName == cName
+                && this.poolingContexts[i].foreignValue[parentKeyField] == fValue) {
+                result.push(this.poolingContexts[i]);
+            }
+        }
+        return result;
+    },
+
+    dependingObjects: function (idValue) {
         var i, j, result = [];
         if (!idValue) {
             return false;

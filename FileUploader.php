@@ -65,10 +65,10 @@ class FileUploader
         $filePathInfo = pathinfo($fileInfo["name"]);
         $dirPath = $_POST["_im_contextname"] . '/'
             . $_POST["_im_keyfield"] . "=" . $_POST["_im_keyvalue"] . '/' . $_POST["_im_field"];
-        $filePath = $fileRoot . $dirPath . '/' . $filePathInfo['filename'] . '_'
-            . rand(1000, 9999) . '.' . $filePathInfo['extension'];
+        $rand4Digits = rand(1000, 9999);
         $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
-            . rand(1000, 9999) . '.' . $filePathInfo['extension'];
+            . $rand4Digits . '.' . $filePathInfo['extension'];
+        $filePath = $fileRoot . $filePartialPath;
         if (!file_exists($fileRoot . $dirPath)) {
             $result = mkdir($fileRoot . $dirPath, 0744, true);
             if (!$result) {
@@ -157,8 +157,8 @@ class FileUploader
                     $relatedContext->dbSettings->setTargetFields($fields);
                     $relatedContext->dbSettings->setValue($values);
                     $relatedContext->processingRequest($options, "new", true);
-                    $relatedContext->finishCommunication(true);
-                    $relatedContext->exportOutputDataAsJason();
+                //    $relatedContext->finishCommunication(true);
+                //    $relatedContext->exportOutputDataAsJason();
                 }
             }
         }
