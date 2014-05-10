@@ -19,7 +19,7 @@ var IMLibElement = {
         if (!element) {
             return false;   // Or should be an error?
         }
-        if (curVal == null) {
+        if (curVal === null || curVal === false) {
             curVal = '';
         }
 
