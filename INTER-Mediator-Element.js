@@ -228,9 +228,13 @@ var IMLibElement = {
     },
 
     checkOptimisticLock: function (element, taret) {
-        var idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter, currentVal, response,
-            targetField, targetContext, initialvalue, newValue, isOthersModified;
+        var elementInfo, idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter, currentVal,
+            response, targetField, targetContext, initialvalue, newValue, isOthersModified;
         if (!element) {
+            return false;
+        }
+        elementInfo = INTERMediatorLib.getLinkedElementInfo(element);
+        if (elementInfo[0] && elementInfo[0].indexOf(IMLibLocalContext.contextName + INTERMediator.separator) === 0) {
             return false;
         }
         idValue = element.getAttribute('id');
