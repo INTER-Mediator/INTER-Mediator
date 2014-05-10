@@ -2154,47 +2154,6 @@ var INTERMediator = {
             return repeaters;
         }
 
-//        var linkedNodesCollection;
-//        var widgetNodesCollection;
-//
-//        function collectLinkedElement(repeaters) {
-//            var i;
-//            linkedNodesCollection = []; // Collecting linked elements to this array.
-//            widgetNodesCollection = [];
-//            for (i = 0; i < repeaters.length; i++) {
-//                seekLinkedElement(repeaters[i]);
-//            }
-//            return {linkedNode: linkedNodesCollection, widgetNode: widgetNodesCollection};
-//        }
-//
-//        function seekLinkedElement(node) {
-//            var nType, currentEnclosure, children, detectedEnclosure, i;
-//            nType = node.nodeType;
-//            if (nType === 1) {
-//                if (INTERMediatorLib.isLinkedElement(node)) {
-//                    currentEnclosure = INTERMediatorLib.getEnclosure(node);
-//                    if (currentEnclosure === null) {
-//                        linkedNodesCollection.push(node);
-//                    } else {
-//                        return currentEnclosure;
-//                    }
-//                }
-//                if (INTERMediatorLib.isWidgetElement(node)) {
-//                    currentEnclosure = INTERMediatorLib.getEnclosure(node);
-//                    if (currentEnclosure === null) {
-//                        widgetNodesCollection.push(node);
-//                    } else {
-//                        return currentEnclosure;
-//                    }
-//                }
-//                children = node.childNodes;
-//                for (i = 0; i < children.length; i++) {
-//                    detectedEnclosure = seekLinkedElement(children[i]);
-//                }
-//            }
-//            return null;
-//        }
-//
         function collectLinkDefinitions(linkedNodes) {
             var linkDefs = [], nodeDefs, j, k;
             for (j = 0; j < linkedNodes.length; j++) {
