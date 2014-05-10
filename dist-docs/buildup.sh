@@ -70,6 +70,7 @@ cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/t
 cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
 sed -f "${sedrule}" "${originalPath}/INTER-Mediator.js"       >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/js_lib/sha1.js"                      >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/js_lib/sha256.js"                    >> "${buildPath}/temp.js"

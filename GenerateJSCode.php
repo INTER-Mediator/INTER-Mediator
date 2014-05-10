@@ -67,6 +67,7 @@ class GenerateJSCode
             echo file_get_contents($currentDir . 'INTER-Mediator-Context.js');
             echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
             echo file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
             echo file_get_contents($jsLibDir .   'sha1.js');
             echo file_get_contents($jsLibDir .   'sha256.js');

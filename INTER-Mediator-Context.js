@@ -554,15 +554,3 @@ INTERMediatorLib.addEvent(document, "click", function (e) {
     }
     executable(event);
 });
-
-
-function IM_Init() {
-    INTERMediatorOnPage.removeCookie('_im_localcontext');
-//    INTERMediatorOnPage.removeCookie('_im_username');
-//    INTERMediatorOnPage.removeCookie('_im_credential');
-//    INTERMediatorOnPage.removeCookie('_im_mediatoken');
-
-    INTERMediator.additionalCondition = {};
-    INTERMediator.additionalSortKey = {};
-    IMLibLocalContext.archive();
-};
