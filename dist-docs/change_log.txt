@@ -18,10 +18,10 @@ Ver.4.4 (in development)
   key in a definition file.
 - Update the Local Content to improve compatibility with INTERMediator.pagedSize and update the "Practices" sample.
 - INTERMediatorOnPage.additionalExpandingEnclosureFinish and INTERMediatorOnPage.additionalExpandingRecordFinish
-  are supported. These are programable interfaces associated with 'post-enclosure' and 'post-repeater' in a context.
+  are supported. These are programmable interfaces associated with 'post-enclosure' and 'post-repeater' in a context.
 - [BUG FIX] Fix compatibility when using INTERMediator.additionalCondition or INTERMediator.additionalSortKey.
   The affected version is 4.3 only (Thanks to Kentaro Suzuki).
-- [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in addtionalCondition with FileMaker Server.
+- [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in additionalCondition with FileMaker Server.
   The affected versions are 3.11, 4.0, 4.1, 4.2 and 4.3 (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix not to show the error message (message id: 1024) when updating data using Safari (version 4.3 only).
 - [BUG FIX] Fix an error in "Master-Detail Style Page" Sample for PostgreSQL (version 4.3 only).
@@ -34,6 +34,7 @@ Ver.4.4 (in development)
   and the related context is exisiting.
 - [BUG FIX] Fix not to show the error message ("curVal.replace is not a function - EXCEPTION-27") in 
   IMLibElement.setValueToIMNode() if the element of the parameter is a textarea element and the value is false.
+- [WARRING] The JavaScript code editor "codemirror" isn't temporally supported for the updated version doesn't work fine.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.

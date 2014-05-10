@@ -270,117 +270,137 @@ var INTERMediator = {
 
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
-            validation(changedObj);
+            if (!validation(changedObj)) {   // Validation error.
+                return;
+            }
             objType = changedObj.getAttribute('type');
             if (objType == 'radio' && !changedObj.checked) {
                 INTERMediatorOnPage.hideProgress();
                 return;
             }
             linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
+            // for js-widget support
+            if (!linkInfo && INTERMediatorLib.isWidgetElement(changedObj.parentNode)) {
+                linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj.parentNode);
+            }
+
             nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);  // Suppose to be the first definition.
             contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
-            newValue = IMLibElement.getValueFromIMNode(changedObj);
-            if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
-                // Just supporting NON-target info.
+            if (contextInfo) {
+                newValue = IMLibElement.getValueFromIMNode(changedObj);
+                if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
+                    // Just supporting NON-target info.
 //                contextInfo.context.setValue(
 //                    contextInfo.record, contextInfo.field, newValue);
-                contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
-            } else {
-                INTERMediatorOnPage.showProgress();
-                if (!IMLibElement.checkOptimisticLock(changedObj, nodeInfo.target)) {
-                    INTERMediatorOnPage.hideProgress();
+                    contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
                 } else {
-                    IMLibContextPool.updateContext(idValue, nodeInfo.target);
-                    updateDB(changedObj, idValue, nodeInfo.target);
+                    INTERMediatorOnPage.showProgress();
+                    if (!IMLibElement.checkOptimisticLock(changedObj, nodeInfo.target)) {
+                        INTERMediatorOnPage.hideProgress();
+                    } else {
+                        IMLibContextPool.updateContext(idValue, nodeInfo.target);
+                        updateDB(changedObj, idValue, nodeInfo.target);
 
-                    updateRequiredContext = IMLibContextPool.dependingObjects(idValue);
-                    for (i = 0; i < updateRequiredContext.length; i++) {
-                        updateRequiredContext[i].foreignValue = {};
-                        updateRequiredContext[i].foreignValue[contextInfo.field] = newValue;
-                        if (updateRequiredContext[i]) {
-                            INTERMediator.constructMain(updateRequiredContext[i]);
-                            associatedNode = updateRequiredContext[i].enclosureNode;
-                            if (INTERMediatorLib.isPopupMenu(associatedNode)) {
-                                currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
-                                IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
+                        updateRequiredContext = IMLibContextPool.dependingObjects(idValue);
+                        for (i = 0; i < updateRequiredContext.length; i++) {
+                            updateRequiredContext[i].foreignValue = {};
+                            updateRequiredContext[i].foreignValue[contextInfo.field] = newValue;
+                            if (updateRequiredContext[i]) {
+                                INTERMediator.constructMain(updateRequiredContext[i]);
+                                associatedNode = updateRequiredContext[i].enclosureNode;
+                                if (INTERMediatorLib.isPopupMenu(associatedNode)) {
+                                    currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
+                                    IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
+                                }
                             }
                         }
                     }
                 }
-                INTERMediator.recalculation(idValue);
-                INTERMediator.flushMessage();
             }
+            INTERMediator.recalculation(idValue);
+            INTERMediator.flushMessage();
         }
 
         function validation(changedObj) {
             var linkInfo, matched, context, i, j, index, didValidate, contextInfo, result, messageNode, errorMsgs;
-            linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
-            didValidate = false;
-            if (linkInfo.length > 0) {
-                matched = linkInfo[0].match(/([^@]+)/);
-                if (matched[1] != IMLibLocalContext.contextName) {
-                    context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
-                    if (context["validation"] != null) {
-                        for (i = 0; i < linkInfo.length; i++) {
-                            matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
-                            for (index in context["validation"]) {
-                                if (context["validation"][index]["field"] == matched[2]) {
-                                    didValidate = true;
-                                    result = Parser.evaluate(
-                                        context["validation"][index]["rule"],
-                                        {"value": changedObj.value, "target": changedObj});
-                                    if (!result) {
-                                        switch (context["validation"][index]["notify"]) {
-                                            case 'inline':
-                                                messageNode = document.createElement('SPAN');
-                                                INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
-                                                messageNode.appendChild(
-                                                    document.createTextNode(context["validation"][index]["message"]));
-                                                changedObj.parentNode.insertBefore(messageNode, changedObj.nextSibling);
-                                                break;
-                                            case 'end-of-sibling':
-                                                messageNode = document.createElement('DIV');
-                                                INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
-                                                messageNode.appendChild(
-                                                    document.createTextNode(context["validation"][index]["message"]));
-                                                changedObj.parentNode.appendChild(messageNode);
-                                                break;
-                                            default:
-                                                alert(context["validation"][index]["message"]);
-                                        }
-                                        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, "");
-                                        // Just supporting NON-target info.
-                                        changedObj.value = contextInfo.context.getValue(
-                                            contextInfo.record, contextInfo.field);
-                                        window.setTimeout(function () {
-                                            changedObj.focus();
-                                        }, 0);
-                                        if (INTERMediatorOnPage.doAfterValidationFailure != null) {
-                                            INTERMediatorOnPage.doAfterValidationFailure(changedObj, linkInfo[i]);
-                                        }
-                                        return result;
-                                    } else {
-                                        switch (context["validation"][index]["notify"]) {
-                                            case 'inline':
-                                            case 'end-of-sibling':
-                                                errorMsgs = INTERMediatorLib.getElementsByClassName(
-                                                    changedObj.parentNode, '_im_alertmessage');
-                                                for (j = 0; j < errorMsgs.length; j++) {
-                                                    errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
-                                                }
-                                                break;
+            try {
+                linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
+                didValidate = false;
+                result = true;
+                if (linkInfo.length > 0) {
+                    matched = linkInfo[0].match(/([^@]+)/);
+                    if (matched[1] != IMLibLocalContext.contextName) {
+                        context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
+                        if (context["validation"] != null) {
+                            for (i = 0; i < linkInfo.length; i++) {
+                                matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
+                                for (index in context["validation"]) {
+                                    if (context["validation"][index]["field"] == matched[2]) {
+                                        didValidate = true;
+                                        result = Parser.evaluate(
+                                            context["validation"][index]["rule"],
+                                            {"value": changedObj.value, "target": changedObj});
+                                        if (!result) {
+                                            switch (context["validation"][index]["notify"]) {
+                                                case 'inline':
+                                                    messageNode = document.createElement('SPAN');
+                                                    INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
+                                                    messageNode.appendChild(
+                                                        document.createTextNode(context["validation"][index]["message"]));
+                                                    changedObj.parentNode.insertBefore(messageNode, changedObj.nextSibling);
+                                                    break;
+                                                case 'end-of-sibling':
+                                                    messageNode = document.createElement('DIV');
+                                                    INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
+                                                    messageNode.appendChild(
+                                                        document.createTextNode(context["validation"][index]["message"]));
+                                                    changedObj.parentNode.appendChild(messageNode);
+                                                    break;
+                                                default:
+                                                    alert(context["validation"][index]["message"]);
+                                            }
+                                            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, "");
+                                            // Just supporting NON-target info.
+                                            changedObj.value = contextInfo.context.getValue(
+                                                contextInfo.record, contextInfo.field);
+                                            window.setTimeout(function () {
+                                                changedObj.focus();
+                                            }, 0);
+                                            if (INTERMediatorOnPage.doAfterValidationFailure != null) {
+                                                INTERMediatorOnPage.doAfterValidationFailure(changedObj, linkInfo[i]);
+                                            }
+                                            return result;
+                                        } else {
+                                            switch (context["validation"][index]["notify"]) {
+                                                case 'inline':
+                                                case 'end-of-sibling':
+                                                    errorMsgs = INTERMediatorLib.getElementsByClassName(
+                                                        changedObj.parentNode, '_im_alertmessage');
+                                                    for (j = 0; j < errorMsgs.length; j++) {
+                                                        errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
+                                                    }
+                                                    break;
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
-                }
-                if (didValidate) {
-                    if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
-                        INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
+                    if (didValidate) {
+                        if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
+                            INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
+                        }
                     }
                 }
+                return result;
+            } catch (ex) {
+                if (ex == "_im_requath_request_") {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex, "EXCEPTION-32: on the validation process.");
+                }
+                return false;
             }
         }
 
@@ -764,13 +784,13 @@ var INTERMediator = {
     },
 
     saveRecordFromNavi: function (dontUpdate) {
-        var contextName, keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i,initialValue,
+        var contextName, keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i, initialValue,
             currentVal, fieldArray, valueArray, diffrence, needUpdate = true, context, updateData;
 
         INTERMediatorOnPage.showProgress();
         INTERMediatorOnPage.retrieveAuthInfo();
-        for (i = 0 ; i < IMLibContextPool.poolingContexts.length ; i++) {
-            context  = IMLibContextPool.poolingContexts[i];
+        for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
+            context = IMLibContextPool.poolingContexts[i];
             updateData = context.getModified();
             for (keying in updateData) {
                 fieldArray = [];
@@ -965,7 +985,7 @@ var INTERMediator = {
                                                 alertmessage += validationInfo.message + "\n";
                                         }
                                         if (INTERMediatorOnPage.doAfterValidationFailure != null) {
-                                            INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i], linkInfo[i]);
+                                            INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i]);
                                         }
                                     } else {
                                         switch (validationInfo.notify) {
@@ -1202,7 +1222,7 @@ var INTERMediator = {
 
     constructMain: function (updateRequiredContext) {
         var i, theNode, currentLevel = 0, postSetFields = [], buttonIdNum = 1,
-            eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1;
+            eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [];
         INTERMediator.deleteInsertOnNavi = [];
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
@@ -1232,6 +1252,11 @@ var INTERMediator = {
                 INTERMediator.setErrorMessage(ex, "EXCEPTION-7");
             }
         }
+
+        for (i = 0; i < imPartsShouldFinished.length; i++) {
+            imPartsShouldFinished[i].finish();
+        }
+
         INTERMediatorOnPage.hideProgress();
 
         // Event listener should add after adding node to document.
@@ -1289,10 +1314,8 @@ var INTERMediator = {
         }
 
         function pageConstruct() {
-            var i, bodyNode, currentNode, currentID, enclosure, targetNode, emptyElement;
+            var i, bodyNode, emptyElement;
 
-//            INTERMediator.keyFieldObject = [];
-            // INTERMediator.updateRequiredObject = {};
             INTERMediator.calculateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
             INTERMediator.elementIds = [];
@@ -1387,7 +1410,7 @@ var INTERMediator = {
         }
 
         function setupPostOnlyEnclosure(node) {
-            var nodes;
+            var nodes, k, currentWidgetNodes, plugin, setupWidget = false;
             var postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post');
             for (var i = 1; i < postNodes.length; i++) {
                 INTERMediatorLib.addEvent(
@@ -1401,17 +1424,33 @@ var INTERMediator = {
                     })());
             }
             nodes = node.childNodes;
+
             isInsidePostOnly = true;
             for (i = 0; i < nodes.length; i++) {
                 seekEnclosureInPostOnly(nodes[i]);
             }
+//            if (setupWidget) {
+//                for (plugin in IMParts_Catalog) {
+//                    IMParts_Catalog[plugin].finish(false);
+//                }
+//            }
             isInsidePostOnly = false;
             // -------------------------------------------
             function seekEnclosureInPostOnly(node) {
-                var children, i;
+                var children, i, wInfo;
                 if (node.nodeType === 1) { // Work for an element
                     try {
-                        if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
+                        if (INTERMediatorLib.isWidgetElement(node)) {
+                            wInfo = INTERMediatorLib.getWidgetInfo(node);
+                            if (wInfo[0]) {
+//                                setupWidget = true;
+                                //IMParts_Catalog[wInfo[0]].instanciate.apply(IMParts_Catalog[wInfo[0]], [node]);
+                                IMParts_Catalog[wInfo[0]].instanciate(node);
+                                if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
+                                    imPartsShouldFinished.push(IMParts_Catalog[wInfo[0]]);
+                                }
+                            }
+                        } else if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
                             expandEnclosure(node, null, null, null);
                         } else {
                             children = node.childNodes; // Check all child nodes.
@@ -1436,11 +1475,11 @@ var INTERMediator = {
 
         function expandEnclosure(node, currentRecord, parentEnclosure, parentObjectInfo) {
             var objectReference = {}, linkedNodes, encNodeTag, repeatersOriginal, repeaters,
-                linkDefs, voteResult, currentContext, fieldList, repNodeTag, joinField,
-                relationDef, index, fieldName, i, j, k, ix, targetRecords, newNode,
+                linkDefs, voteResult, currentContext, fieldList, repNodeTag, joinField, plugin,
+                relationDef, index, fieldName, i, j, k, ix, targetRecords, newNode, wInfo,
                 nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue,
                 nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
-                curTarget, newlyAddedNodes, keyingValue, pagingValue, widgetSupport,
+                curTarget, newlyAddedNodes, keyingValue, pagingValue, widgetSupport, linkedElements,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
                 selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, setupWidget,
                 nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, contextObj;
@@ -1458,7 +1497,7 @@ var INTERMediator = {
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
             repeatersOriginal = collectRepeatersOriginal(node, repNodeTag); // Collecting repeaters to this array.
             repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
-            linkedNodes = collectLinkedElement(repeaters).linkedNode;
+            linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters).linkedNode;
             linkDefs = collectLinkDefinitions(linkedNodes);
             voteResult = tableVoting(linkDefs);
             currentContext = voteResult.targettable;
@@ -1467,6 +1506,7 @@ var INTERMediator = {
                 contextObj = new IMLibContext(currentContext['name']);
                 contextObj.enclosureNode = node;
                 contextObj.repeaterNodes = repeaters;
+                contextObj.original = repeatersOriginal;
 
                 setupWidget = false;
                 fieldList = []; // Create field list for database fetch.
@@ -1499,17 +1539,9 @@ var INTERMediator = {
                                 }
                             }
                         }
+                        pagingValue = currentContext['paging'] ? currentContext['paging'] : false;
+                        recordsValue = currentContext['records'] ? currentContext['records'] : 10000000000;
 
-
-                        // Access database and get records
-                        pagingValue = false;
-                        if (currentContext['paging']) {
-                            pagingValue = currentContext['paging'];
-                        }
-                        recordsValue = 10000000000;
-                        if (currentContext['records']) {
-                            recordsValue = currentContext['records'];
-                        }
                     } catch (ex) {
                         if (ex == "_im_requath_request_") {
                             throw ex;
@@ -1538,8 +1570,9 @@ var INTERMediator = {
                     try {
                         RecordCounter++;
                         repeatersOneRec = cloneEveryNodes(repeatersOriginal);
-                        currentWidgetNodes = collectLinkedElement(repeatersOneRec).widgetNode;
-                        currentLinkedNodes = collectLinkedElement(repeatersOneRec).linkedNode;
+                        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec);
+                        currentWidgetNodes = linkedElements.widgetNode;
+                        currentLinkedNodes = linkedElements.linkedNode;
                         shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
                         dbspec = INTERMediatorOnPage.getDBSpecification();
                         if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
@@ -1577,11 +1610,14 @@ var INTERMediator = {
                             }
                         }
                         for (k = 0; k < currentWidgetNodes.length; k++) {
-                            var wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
+                            wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
                             if (wInfo[0]) {
-                                setupWidget = true;
-                                IMParts_Catalog[wInfo[0]].instanciate.apply(
-                                    IMParts_Catalog[wInfo[0]], [currentWidgetNodes[k]]);
+                                IMParts_Catalog[wInfo[0]].instanciate(currentWidgetNodes[k]);
+                                if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
+                                    imPartsShouldFinished.push(IMParts_Catalog[wInfo[0]]);
+                                }//                                setupWidget = true;
+//                                IMParts_Catalog[wInfo[0]].instanciate.apply(
+//                                    IMParts_Catalog[wInfo[0]], [currentWidgetNodes[k]]);
                             }
                         }
                     } catch (ex) {
@@ -1674,9 +1710,7 @@ var INTERMediator = {
                                     } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
                                         if (curVal && curVal.length > 0) {
                                             if (IMLibElement.setValueToIMNode(
-                                                currentLinkedNodes[k],
-                                                curTarget,
-                                                curVal[0])) {
+                                                currentLinkedNodes[k], curTarget, curVal[0])) {
                                                 postSetFields.push({'id': nodeId, 'value': curVal[0]});
                                             }
                                         }
@@ -1769,11 +1803,11 @@ var INTERMediator = {
                 }
                 setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, contextObj.foreignValue);
 
-                if (setupWidget) {
-                    for (var plugin in IMParts_Catalog) {
-                        IMParts_Catalog[plugin].finish();
-                    }
-                }
+//                if (setupWidget) {
+//                    for (plugin in IMParts_Catalog) {
+//                        IMParts_Catalog[plugin].finish();
+//                    }
+//                }
                 try {
                     if (INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContext['name']]) {
                         INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContext['name']](node);
@@ -2118,47 +2152,6 @@ var INTERMediator = {
                 parentOfRep.removeChild(inDocNode);
             }
             return repeaters;
-        }
-
-        var linkedNodesCollection;
-        var widgetNodesCollection;
-
-        function collectLinkedElement(repeaters) {
-            var i;
-            linkedNodesCollection = []; // Collecting linked elements to this array.
-            widgetNodesCollection = [];
-            for (i = 0; i < repeaters.length; i++) {
-                seekLinkedElement(repeaters[i]);
-            }
-            return {linkedNode: linkedNodesCollection, widgetNode: widgetNodesCollection};
-        }
-
-        function seekLinkedElement(node) {
-            var nType, currentEnclosure, children, detectedEnclosure, i;
-            nType = node.nodeType;
-            if (nType === 1) {
-                if (INTERMediatorLib.isLinkedElement(node)) {
-                    currentEnclosure = INTERMediatorLib.getEnclosure(node);
-                    if (currentEnclosure === null) {
-                        linkedNodesCollection.push(node);
-                    } else {
-                        return currentEnclosure;
-                    }
-                }
-                if (INTERMediatorLib.isWidgetElement(node)) {
-                    currentEnclosure = INTERMediatorLib.getEnclosure(node);
-                    if (currentEnclosure === null) {
-                        widgetNodesCollection.push(node);
-                    } else {
-                        return currentEnclosure;
-                    }
-                }
-                children = node.childNodes;
-                for (i = 0; i < children.length; i++) {
-                    detectedEnclosure = seekLinkedElement(children[i]);
-                }
-            }
-            return null;
         }
 
         function collectLinkDefinitions(linkedNodes) {

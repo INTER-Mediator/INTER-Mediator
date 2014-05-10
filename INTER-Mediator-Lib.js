@@ -208,9 +208,12 @@ function INTERMediatorLib() {
         },
 
         isWidgetElement: function (node) {
-            var classInfo, matched;
+            var classInfo, matched, attr, parentNode;
 
-            if (node != null) {
+            if (!node) {
+                return false;
+            }
+            if (INTERMediatorLib.getLinkedElementInfo(node)) {
                 attr = node.getAttribute("data-im-widget")
                 if (attr) {
                     return true;
@@ -222,7 +225,21 @@ function INTERMediatorLib() {
                         return true;
                     }
                 }
-
+            } else {
+                parentNode = node.parentNode;
+                if (!parentNode && INTERMediatorLib.getLinkedElementInfo(parentNode)) {
+                    attr = parentNode.getAttribute("data-im-widget")
+                    if (attr) {
+                        return true;
+                    }
+                    classInfo = INTERMediatorLib.getClassAttributeFromNode(parentNode);
+                    if (classInfo != null) {
+                        matched = classInfo.match(/IM_WIDGET\[.*\]/);
+                        if (matched) {
+                            return true;
+                        }
+                    }
+                }
             }
             return false;
         },
@@ -462,7 +479,7 @@ function INTERMediatorLib() {
         getCalcNodeInfoArray: function (nodeInfo) {
             var comps, tableName, fieldName, targetName;
 
-            if (! nodeInfo) {
+            if (!nodeInfo) {
                 return null;
             }
             comps = nodeInfo.split(INTERMediator.separator);
@@ -507,11 +524,26 @@ function INTERMediatorLib() {
             }
         },
 
+        eventInfos: [],
+
         addEvent: function (node, evt, func) {
             if (node.addEventListener) {
                 node.addEventListener(evt, func, false);
+                this.eventInfos.push({node: node, event: evt, function: func});
+                return this.eventInfos.length - 1;
             } else if (node.attachEvent) {
                 node.attachEvent('on' + evt, func);
+                this.eventInfos.push({node: node, event: evt, function: func});
+                return this.eventInfos.length - 1;
+            }
+            return -1;
+        },
+
+        removeEvent: function (serialId) {
+            if (eventInfos[serialId].node.removeEventListener) {
+                eventInfos[serialId].node.removeEventListener(eventInfos[serialId].evt, eventInfos[serialId].func, false);
+            } else if (eventInfos[serialId].node.detachEvent) {
+                eventInfos[serialId].node.detachEvent('on' + eventInfos[serialId].evt, eventInfos[serialId].func);
             }
         },
 
@@ -718,10 +750,10 @@ function INTERMediatorLib() {
         },
 
         isPopupMenu: function (element) {
-            if (!element || !element.tagName)  {
+            if (!element || !element.tagName) {
                 return false;
             }
-            if (element.tagName == "SELECT")   {
+            if (element.tagName == "SELECT") {
                 return true;
             }
             return false;
@@ -792,6 +824,49 @@ function INTERMediatorLib() {
                 for (var i = 0; i < target.children.length; i++) {
                     checkNode(target.children[i]);
                 }
+            }
+        },
+
+        seekLinkedAndWidgetNodes: function (nodes, ignoreEnclosureCheck) {
+            var linkedNodesCollection = []; // Collecting linked elements to this array.;
+            var widgetNodesCollection = [];
+            var i, doEncCheck = ignoreEnclosureCheck;
+
+            if (ignoreEnclosureCheck === undefined || ignoreEnclosureCheck === null) {
+                doEncCheck = false;
+            }
+
+            for (i = 0; i < nodes.length; i++) {
+                seekLinkedElement(nodes[i]);
+            }
+            return {linkedNode: linkedNodesCollection, widgetNode: widgetNodesCollection};
+
+            function seekLinkedElement(node) {
+                var nType, currentEnclosure, children, detectedEnclosure, i;
+                nType = node.nodeType;
+                if (nType === 1) {
+                    if (INTERMediatorLib.isLinkedElement(node)) {
+                        currentEnclosure = doEncCheck ? INTERMediatorLib.getEnclosure(node) : null;
+                        if (currentEnclosure === null) {
+                            linkedNodesCollection.push(node);
+                        } else {
+                            return currentEnclosure;
+                        }
+                    }
+                    if (INTERMediatorLib.isWidgetElement(node)) {
+                        currentEnclosure = doEncCheck ? INTERMediatorLib.getEnclosure(node) : null;
+                        if (currentEnclosure === null) {
+                            widgetNodesCollection.push(node);
+                        } else {
+                            return currentEnclosure;
+                        }
+                    }
+                    children = node.childNodes;
+                    for (i = 0; i < children.length; i++) {
+                        detectedEnclosure = seekLinkedElement(children[i]);
+                    }
+                }
+                return null;
             }
         }
     };
