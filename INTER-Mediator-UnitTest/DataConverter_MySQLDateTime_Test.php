@@ -63,6 +63,18 @@ class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
         $string = '';
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($string));
 
+        $expected = '2013-12-31';
+        $dateString = '2013-12-31';
+        $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($dateString));
+
+        $expected = '2013-12-31';
+        $dateString = '2013/12/31';
+        $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($dateString));
+
+        $expected = '2013-12-31';
+        $dateString = '2013.12.31';
+        $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($dateString));
+
         $expected = '12:34:56';
         $timeString = '12:34:56';
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($timeString));
