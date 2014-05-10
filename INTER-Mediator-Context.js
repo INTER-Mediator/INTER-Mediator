@@ -373,7 +373,7 @@ IMLibLocalContext = {
         } else {
             localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
         }
-        if (localContext.length > 0) {
+        if (localContext && localContext.length > 0) {
             this.store = JSON.parse(localContext);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
