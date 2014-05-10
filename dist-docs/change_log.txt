@@ -32,6 +32,8 @@ Ver.4.4 (in development)
 - [BUG FIX] The JS program of the Sample_chat has been modified.
 - [BUG FIX] Fix not to show the error message ("currentRecord is null - EXCEPTION-25") when using the PostOnlyContext 
   and the related context is exisiting.
+- [BUG FIX] Fix not to show the error message ("curVal.replace is not a function - EXCEPTION-27") in 
+  IMLibElement.setValueToIMNode() if the element of the parameter is a textarea element and the value is false.
 
 Ver.4.3 (2014/4/7)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
