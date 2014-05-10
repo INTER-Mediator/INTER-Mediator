@@ -63,7 +63,7 @@ var INTERMediator = {
     errorMessages: [],
     debugMessages: [],
 
-    /* These following properties moved to the setter/getter archtecture, and defined out side of this object.*/
+    /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
     //startFrom: 0,
     // Start from this number of record for "skipping" records.
     //pagedSize: 0,
@@ -1492,28 +1492,30 @@ var INTERMediator = {
                                     if (!INTERMediator.isDBDataPreferable || curVal != null) {
                                         updateCalcurationInfo(currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
                                     }
-                                    curTarget = nInfo['target'];
-                                    objectReference[nInfo['field']] = nodeId;
+                                    if (nInfo['table'] == currentContext['name']) {
+                                        curTarget = nInfo['target'];
+                                        objectReference[nInfo['field']] = nodeId;
 
-                                    // Set data to the element.
-                                    if (curVal === null) {
-                                        if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
-                                            postSetFields.push({'id': nodeId, 'value': curVal});
-                                        }
-                                    } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                                        if (curVal && curVal.length > 0) {
-                                            if (IMLibElement.setValueToIMNode(
-                                                currentLinkedNodes[k], curTarget, curVal[0])) {
-                                                postSetFields.push({'id': nodeId, 'value': curVal[0]});
+                                        // Set data to the element.
+                                        if (curVal === null) {
+                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
+                                                postSetFields.push({'id': nodeId, 'value': curVal});
+                                            }
+                                        } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
+                                            if (curVal && curVal.length > 0) {
+                                                if (IMLibElement.setValueToIMNode(
+                                                    currentLinkedNodes[k], curTarget, curVal[0])) {
+                                                    postSetFields.push({'id': nodeId, 'value': curVal[0]});
+                                                }
+                                            }
+                                        } else {
+                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
+                                                postSetFields.push({'id': nodeId, 'value': curVal});
                                             }
                                         }
-                                    } else {
-                                        if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
-                                            postSetFields.push({'id': nodeId, 'value': curVal});
-                                        }
+                                        contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
                                     }
                                 }
-                                contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
 
                             } catch (ex) {
                                 if (ex == "_im_requath_request_") {
@@ -1596,11 +1598,6 @@ var INTERMediator = {
                 }
                 setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, contextObj.foreignValue);
 
-//                if (setupWidget) {
-//                    for (plugin in IMParts_Catalog) {
-//                        IMParts_Catalog[plugin].finish();
-//                    }
-//                }
                 try {
                     if (INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContext['name']]) {
                         INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContext['name']](node);
@@ -2090,7 +2087,7 @@ var INTERMediator = {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
                 firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec;
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
-                if (relationValue || !currentContext['paging'] || currentContext['paging'] === false) {
+                if (relationValue.length > 0 || !currentContext['paging'] || currentContext['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
                     INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Insert");
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
@@ -2308,11 +2305,11 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
     });
 }
 
-if (! INTERMediator.additionalCondition)    {
+if (!INTERMediator.additionalCondition) {
     INTERMediator.additionalCondition = {};
 }
 
 
-if (! INTERMediator.additionalSortKey)    {
+if (!INTERMediator.additionalSortKey) {
     INTERMediator.additionalSortKey = {};
 }
