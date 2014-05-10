@@ -267,8 +267,6 @@ var INTERMediator = {
         INTERMediator.isShiftKeyDown = false;
         INTERMediator.isControlKeyDown = false;
 
-        console.error("#####");
-
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
             if (!validation(changedObj)) {   // Validation error.
