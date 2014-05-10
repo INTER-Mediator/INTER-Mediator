@@ -1,8 +1,8 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2014 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -359,13 +359,22 @@ IMLibLocalContext = {
         } else {
             jsonString = JSON.stringify(this.store);
         }
-        INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 300000);
+        if (typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+            sessionStorage.setItem("_im_localcontext", jsonString);
+        } else {
+            INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
+        }
     },
 
     unarchive: function () {
-        var persistentData = INTERMediatorOnPage.getCookie('_im_localcontext');
-        if (persistentData.length > 0) {
-            this.store = JSON.parse(persistentData);
+        var localContext = "";
+        if (typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+            localContext = sessionStorage.getItem("_im_localcontext");
+        } else {
+            localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
+        }
+        if (localContext.length > 0) {
+            this.store = JSON.parse(localContext);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
                     INTERMediator.additionalCondition = this.store._im_additionalCondition;
