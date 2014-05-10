@@ -52,16 +52,22 @@ IMLibContextPool = {
     },
 
     getContextInfoFromId: function (idValue, target) {
-        var i, targetContext, targetName, result = null;
+        var i, targetContext, element, linkInfo, nodeInfo, targetName, result = null;
         if (!idValue) {
             return result;
         }
-        targetName = target == "" ? "_im_no_target" : target;
+        
+        element = document.getElementById(idValue);
+        linkInfo = INTERMediatorLib.getLinkedElementInfo(element);
+        nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
+        
+        targetName = target === "" ? "_im_no_target" : target;
         for (i = 0; i < this.poolingContexts.length; i++) {
             targetContext = this.poolingContexts[i];
-            if (targetContext.contextInfo[idValue]
-                && targetContext.contextInfo[idValue][targetName]) {
-                return targetContext.contextInfo[idValue][targetName];
+            if (targetContext.contextInfo[idValue] && 
+                targetContext.contextInfo[idValue][targetName] && 
+                targetContext.contextInfo[idValue][targetName].context.contextName == nodeInfo.table) {
+                result = targetContext.contextInfo[idValue][targetName];
             }
         }
         return result;

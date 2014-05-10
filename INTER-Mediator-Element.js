@@ -227,18 +227,19 @@ var IMLibElement = {
         return newValue;
     },
 
-    checkOptimisticLock: function (element, taret) {
-        var elementInfo, idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter, currentVal,
-            response, targetField, targetContext, initialvalue, newValue, isOthersModified;
+    checkOptimisticLock: function (element, target) {
+        var linkInfo, nodeInfo, idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter, 
+            currentVal, response, targetField, targetContext, initialvalue, newValue, isOthersModified;
         if (!element) {
             return false;
         }
-        elementInfo = INTERMediatorLib.getLinkedElementInfo(element);
-        if (elementInfo[0] && elementInfo[0].indexOf(IMLibLocalContext.contextName + INTERMediator.separator) === 0) {
+        linkInfo = INTERMediatorLib.getLinkedElementInfo(element);
+        nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
+        if (nodeInfo.table == IMLibLocalContext.contextName) {
             return false;
         }
         idValue = element.getAttribute('id');
-        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, taret);   // suppose to target = ""
+        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);   // suppose to target = ""
         if (INTERMediator.ignoreOptimisticLocking) {
             return true;
         }
