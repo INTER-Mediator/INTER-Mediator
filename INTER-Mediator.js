@@ -7,7 +7,6 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
-
 //"use strict"
 
 var INTERMediator = {
@@ -341,18 +340,14 @@ var INTERMediator = {
                                             {"value": changedObj.value, "target": changedObj});
                                         if (!result) {
                                             switch (context["validation"][index]["notify"]) {
-                                                case 'inline':
-                                                    messageNode = document.createElement('SPAN');
-                                                    INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
-                                                    messageNode.appendChild(
-                                                        document.createTextNode(context["validation"][index]["message"]));
+                                                case "inline":
+                                                    INTERMediatorLib.clearErrorMessage(changedObj);
+                                                    messageNode = INTERMediatorLib.createErrorMessageNode("SPAN", context["validation"][index].message);
                                                     changedObj.parentNode.insertBefore(messageNode, changedObj.nextSibling);
                                                     break;
-                                                case 'end-of-sibling':
-                                                    messageNode = document.createElement('DIV');
-                                                    INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
-                                                    messageNode.appendChild(
-                                                        document.createTextNode(context["validation"][index]["message"]));
+                                                case "end-of-sibling":
+                                                    INTERMediatorLib.clearErrorMessage(changedObj);
+                                                    messageNode = INTERMediatorLib.createErrorMessageNode("DIV", context["validation"][index].message);
                                                     changedObj.parentNode.appendChild(messageNode);
                                                     break;
                                                 default:
@@ -371,13 +366,9 @@ var INTERMediator = {
                                             return result;
                                         } else {
                                             switch (context["validation"][index]["notify"]) {
-                                                case 'inline':
-                                                case 'end-of-sibling':
-                                                    errorMsgs = INTERMediatorLib.getElementsByClassName(
-                                                        changedObj.parentNode, '_im_alertmessage');
-                                                    for (j = 0; j < errorMsgs.length; j++) {
-                                                        errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
-                                                    }
+                                                case "inline":
+                                                case "end-of-sibling":
+                                                    INTERMediatorLib.clearErrorMessage(changedObj);
                                                     break;
                                             }
                                         }
@@ -753,14 +744,14 @@ var INTERMediator = {
                                     if (!result) {
                                         hasInvalid = true;
                                         switch (validationInfo.notify) {
-                                            case 'inline':
-                                                clearErrorMessage(linkedNodes[i]);
-                                                messageNode = createErrorMessageNode('SPAN', validationInfo.message);
+                                            case "inline":
+                                                INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
+                                                messageNode = INTERMediatorLib.createErrorMessageNode("SPAN", validationInfo.message);
                                                 linkedNodes[i].parentNode.insertBefore(messageNode, linkedNodes[i].nextSibling);
                                                 break;
-                                            case 'end-of-sibling':
-                                                clearErrorMessage(linkedNodes[i]);
-                                                messageNode = createErrorMessageNode('DIV', validationInfo.message);
+                                            case "end-of-sibling":
+                                                INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
+                                                messageNode = INTERMediatorLib.createErrorMessageNode("DIV", validationInfo.message);
                                                 linkedNodes[i].parentNode.appendChild(messageNode);
                                                 break;
                                             default:
@@ -771,9 +762,9 @@ var INTERMediator = {
                                         }
                                     } else {
                                         switch (validationInfo.notify) {
-                                            case 'inline':
-                                            case 'end-of-sibling':
-                                                clearErrorMessage(linkedNodes[i]);
+                                            case "inline":
+                                            case "end-of-sibling":
+                                                INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
                                                 break;
                                         }
                                     }
@@ -885,21 +876,6 @@ var INTERMediator = {
             }
         }
 
-        function createErrorMessageNode(tag, message) {
-            var messageNode;
-            messageNode = document.createElement(tag);
-            INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
-            messageNode.appendChild(document.createTextNode(message));
-            return messageNode;
-        }
-
-        function clearErrorMessage(node) {
-            var errorMsgs, j;
-            errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');
-            for (j = 0; j < errorMsgs.length; j++) {
-                errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
-            }
-        }
     },
 
     /*
