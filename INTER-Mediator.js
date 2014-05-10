@@ -267,6 +267,8 @@ var INTERMediator = {
         INTERMediator.isShiftKeyDown = false;
         INTERMediator.isControlKeyDown = false;
 
+        console.error("#####");
+
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
             if (!validation(changedObj)) {   // Validation error.
@@ -1454,8 +1456,43 @@ var INTERMediator = {
                                     }
                                 }
 
-                                if (!isInsidePostOnly
+                                var isContext = false;
+                                for (j = 0; j < linkInfoArray.length; j++) {
+                                    nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
+                                    curVal = targetRecords.recordset[ix][nInfo['field']];
+                                    if (!INTERMediator.isDBDataPreferable || curVal != null) {
+                                        updateCalcurationInfo(currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
+                                    }
+                                    if (nInfo['table'] == currentContext['name']) {
+                                        isContext = true;
+                                        curTarget = nInfo['target'];
+                                        objectReference[nInfo['field']] = nodeId;
+
+                                        // Set data to the element.
+                                        if (curVal === null) {
+                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
+                                                postSetFields.push({'id': nodeId, 'value': curVal});
+                                            }
+                                        } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
+                                            if (curVal && curVal.length > 0) {
+                                                if (IMLibElement.setValueToIMNode(
+                                                    currentLinkedNodes[k], curTarget, curVal[0])) {
+                                                    postSetFields.push({'id': nodeId, 'value': curVal[0]});
+                                                }
+                                            }
+                                        } else {
+                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
+                                                postSetFields.push({'id': nodeId, 'value': curVal});
+                                            }
+                                        }
+                                        contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
+                                    }
+                                }
+
+                                if (isContext
+                                    && !isInsidePostOnly
                                     && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
+
                                     valueChangeFunction = function (targetId) {
                                         var theId = targetId;
                                         return function (evt) {
@@ -1481,39 +1518,6 @@ var INTERMediator = {
                                             'event': 'keyup',
                                             'todo': INTERMediator.keyUp
                                         });
-                                    }
-                                }
-
-                                for (j = 0; j < linkInfoArray.length; j++) {
-                                    // for each info Multiple replacement definitions
-                                    // for one node is prohibited.
-                                    nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
-                                    curVal = targetRecords.recordset[ix][nInfo['field']];
-                                    if (!INTERMediator.isDBDataPreferable || curVal != null) {
-                                        updateCalcurationInfo(currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
-                                    }
-                                    if (nInfo['table'] == currentContext['name']) {
-                                        curTarget = nInfo['target'];
-                                        objectReference[nInfo['field']] = nodeId;
-
-                                        // Set data to the element.
-                                        if (curVal === null) {
-                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
-                                                postSetFields.push({'id': nodeId, 'value': curVal});
-                                            }
-                                        } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                                            if (curVal && curVal.length > 0) {
-                                                if (IMLibElement.setValueToIMNode(
-                                                    currentLinkedNodes[k], curTarget, curVal[0])) {
-                                                    postSetFields.push({'id': nodeId, 'value': curVal[0]});
-                                                }
-                                            }
-                                        } else {
-                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
-                                                postSetFields.push({'id': nodeId, 'value': curVal});
-                                            }
-                                        }
-                                        contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
                                     }
                                 }
 
