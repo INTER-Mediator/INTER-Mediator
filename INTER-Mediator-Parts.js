@@ -14,132 +14,13 @@
 
 //"use strict"
 
-var IMParts_tinymce = {
-    instanciate: function (parentNode) {
-        var newId = parentNode.getAttribute('id') + '-e';
-        this.ids.push(newId);
-        var newNode = document.createElement('TEXTAREA');
-        newNode.setAttribute('id', newId);
-        INTERMediatorLib.setClassAttributeToNode(newNode, '_im_tinymce');
-        parentNode.appendChild(newNode);
-        this.ids.push(newId);
-
-        newNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
-        parentNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
-        parentNode._im_getComponentId = function () {
-            var theId = newId;
-            return theId;
-        };
-
-        // This method will be called before tinyMCE isn't initialized
-        parentNode._im_setValue = function (str) {
-            var targetNode = newNode;
-            targetNode.innerHTML = str;
-        };
-    },
-    ids: [],
-    finish: function () {
-        if (!tinymceOption) {
-            tinymceOption = {};
-        }
-        tinymceOption['mode'] = 'specific_textareas';
-        tinymceOption['editor_selector'] = '_im_tinymce';
-        tinymceOption['elements'] = this.ids.join(',');
-        tinymceOption.setup = function (ed) {
-            ed.on('change', function (ev) {
-                INTERMediator.valueChange(ed.id);
-            });
-            ed.on('keydown', function (ev) {
-                INTERMediator.keyDown(ev);
-            });
-            ed.on('keyup', function (ev) {
-                INTERMediator.keyUp(ev);
-            });
-        };
-
-        tinyMCE.init(tinymceOption);
-
-        for (var i = 0; i < IMParts_tinymce.ids.length; i++) {
-            var targetNode = document.getElementById(IMParts_tinymce.ids[i]);
-            if (targetNode) {
-                targetNode._im_getValue = function () {
-                    var thisId = this.id;
-                    //console.error(tinymce.EditorManager.get(thisId).getContent());
-                    return tinymce.EditorManager.get(thisId).getContent();
-                }
-            }
-        }
-        IMParts_tinymce.ids = [];
-    }
-};
-var IMParts_codemirror = {
-    instanciate: function (parentNode) {
-        var newId = parentNode.getAttribute('id') + '-e';
-        var newNode = document.createElement('TEXTAREA');
-        newNode.setAttribute('id', newId);
-        INTERMediatorLib.setClassAttributeToNode(newNode, '_im_codemirror');
-        parentNode.appendChild(newNode);
-        this.ids.push(newId);
-
-        newNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.getValue();
-        };
-        parentNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
-        parentNode._im_getComponentId = function () {
-            var theId = newId;
-            return theId;
-        };
-
-        parentNode._im_setValue = function (str) {
-            var theId = newId;
-            IMParts_codemirror.initialValues[theId] = str;
-        };
-    },
-    ids: [],
-    initialValues: {},
-    mode: "text/html",
-    finish: function () {
-        for (var i = 0; i < this.ids.length; i++) {
-            var targetId = this.ids[i];
-            var targetNode = document.getElementById(targetId);
-            if (targetNode) {
-                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode});
-                editor.setValue(this.initialValues[targetId]);
-                editor.on("change", function () {
-                    var nodeId = targetId;
-                    return function (instance, obj) {
-                        INTERMediator.valueChange(nodeId)
-                    };
-                }());
-                targetNode._im_getValue = function () {
-                    var insideEditor = editor;
-                    return function () {
-                        return insideEditor.getValue();
-                    }
-                }();
-            }
-        }
-        this.ids = [];
-        this.initialValues = {};
-    }
-};
-
+var IMParts_Catalog = {};
 /*********
  *
  * File Uploader
  * @type {{html5DDSuported: boolean, instanciate: Function, ids: Array, finish: Function}}
  */
-var IMParts_im_fileupload = {
+IMParts_Catalog["fileupload"] = {
     html5DDSuported: false,
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
     forceOldStyleForm: false,
@@ -150,19 +31,19 @@ var IMParts_im_fileupload = {
         var newNode = document.createElement('DIV');
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
-        IMParts_im_fileupload.ids.push(newId);
-        if (IMParts_im_fileupload.forceOldStyleForm) {
-            IMParts_im_fileupload.html5DDSuported = false;
+        this.ids.push(newId);
+        if (this.forceOldStyleForm) {
+            this.html5DDSuported = false;
         } else {
-            IMParts_im_fileupload.html5DDSuported = true;
+            this.html5DDSuported = true;
             try {
                 var x = new FileReader();
                 var y = new FormData();
             } catch (ex) {
-                IMParts_im_fileupload.html5DDSuported = false;
+                this.html5DDSuported = false;
             }
         }
-        if (IMParts_im_fileupload.html5DDSuported) {
+        if (this.html5DDSuported) {
             newNode.dropzone = "copy";
             newNode.style.width = "200px";
             newNode.style.height = "100px";
@@ -185,13 +66,13 @@ var IMParts_im_fileupload = {
             formNode.setAttribute('enctype', 'multipart/form-data');
             newNode.appendChild(formNode);
 
-            if (IMParts_im_fileupload.progressSupported) {
+            if (this.progressSupported) {
                 inputNode = document.createElement('INPUT');
                 inputNode.setAttribute('type', 'hidden');
                 inputNode.setAttribute('name', 'APC_UPLOAD_PROGRESS');
                 inputNode.setAttribute('id', 'progress_key');
                 inputNode.setAttribute('value',
-                    IMParts_im_fileupload.uploadId + (IMParts_im_fileupload.ids.length - 1));
+                    this.uploadId + (this.ids.length - 1));
                 formNode.appendChild(inputNode);
             }
 
@@ -223,7 +104,7 @@ var IMParts_im_fileupload = {
             buttonNode.setAttribute('type', 'submit');
             buttonNode.appendChild(document.createTextNode('送信'));
             formNode.appendChild(buttonNode);
-            IMParts_im_fileupload.formFromId[newId] = formNode;
+            this.formFromId[newId] = formNode;
         }
         parentNode.appendChild(newNode);
 
@@ -242,7 +123,7 @@ var IMParts_im_fileupload = {
 
         parentNode._im_setValue = function (str) {
             var targetNode = newNode;
-            if (IMParts_im_fileupload.html5DDSuported) {
+            if (this.html5DDSuported) {
                 //    targetNode.innerHTML = str;
             } else {
 
@@ -254,9 +135,11 @@ var IMParts_im_fileupload = {
     finish: function () {
         var shaObj, hmacValue;
 
-        if (IMParts_im_fileupload.html5DDSuported) {
-            for (var i = 0; i < IMParts_im_fileupload.ids.length; i++) {
-                var targetNode = document.getElementById(IMParts_im_fileupload.ids[i]);
+        if (this.html5DDSuported) {
+            for (var i = 0; i < this.ids.length; i++) {
+                var tagetIdLocal = this.ids[i];
+                var targetNode = document.getElementById(tagetIdLocal);
+                var contextInfo = IMLibContextPool.getContextInfoFromId(tagetIdLocal);
                 if (targetNode) {
                     INTERMediatorLib.addEvent(targetNode, "dragleave", function (event) {
                         event.preventDefault();
@@ -266,15 +149,22 @@ var IMParts_im_fileupload = {
                         event.preventDefault();
                         event.target.style.backgroundColor = "#AADDFF";
                     });
+                    var isProgressingLocal = this.progressSupported;
+                    var serialIdLocal = this.ids.length;
+                    var uploadIdLocal = this.uploadId;
                     INTERMediatorLib.addEvent(targetNode, "drop", (function () {
                         var iframeId = i;
+                        var isProgressing = isProgressingLocal;
+                        var serialId = serialIdLocal;
+                        var uploadId = uploadIdLocal;
+                        var tagetId = tagetIdLocal;
                         return function (event) {
                             var file, fileNameNode;
                             event.preventDefault();
                             var eventTarget = event.currentTarget;
-                            if (IMParts_im_fileupload.progressSupported) {
+                            if (isProgressing) {
                                 var infoFrame = document.createElement('iframe');
-                                infoFrame.setAttribute('id', 'upload_frame' + (IMParts_im_fileupload.ids.length - 1));
+                                infoFrame.setAttribute('id', 'upload_frame' + serialId);
                                 infoFrame.setAttribute('name', 'upload_frame');
                                 infoFrame.setAttribute('frameborder', '0');
                                 infoFrame.setAttribute('border', '0');
@@ -297,11 +187,11 @@ var IMParts_im_fileupload = {
                             var updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), "");
                             //INTERMediator.updateRequiredObject[eventTarget.getAttribute('id')];
 
-                            if (IMParts_im_fileupload.progressSupported) {
+                            if (isProgressing) {
                                 infoFrame.style.display = "block";
                                 setTimeout(function () {
                                     infoFrame.setAttribute('src',
-                                        'upload_frame.php?up_id=' + IMParts_im_fileupload.uploadId + iframeId);
+                                        'upload_frame.php?up_id=' + uploadId + iframeId);
                                 });
                             }
 
@@ -311,30 +201,39 @@ var IMParts_im_fileupload = {
                                     + '&_im_keyfield=' + encodeURIComponent(updateInfo.record.split("=")[0])
                                     + '&_im_keyvalue=' + encodeURIComponent(updateInfo.record.split("=")[1])
                                     + '&_im_contextnewrecord=' + encodeURIComponent('uploadfile')
-                                    + (IMParts_im_fileupload.progressSupported ?
-                                    ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(
-                                        IMParts_im_fileupload.uploadId + iframeId)) : ""),
+                                    + (isProgressing ?
+                                    ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : ""),
                                 {
                                     fileName: file.name,
                                     content: file
                                 },
-                                function () {
-                                    var indexContext = true;
-                                    var context = INTERMediatorLib.getNamedObject(
-                                        INTERMediatorOnPage.getDataSources(), 'name', updateInfo.context.contextName);
+                                function (dbresult) {
+                                    var contextObj, contextInfo, contextObjects = null, fvalue, i, context;
+                                    context = IMLibContextPool.getContextDef(updateInfo.context.contextName);
                                     if (context['file-upload']) {
                                         var relatedContextName = '';
-                                        for (var i = 0; i < context['file-upload'].length; i++) {
-                                            if (context['file-upload'][i]['field'] == updateInfo.field) {
-                                                relatedContextName = context['file-upload'][i]['context'];
+                                        for (var index in context['file-upload']) {
+                                            if (context['file-upload'][index]['field'] == updateInfo.field) {
+                                                relatedContextName = context['file-upload'][index]['context'];
                                                 break;
                                             }
                                         }
-                                        indexContext = IMLibContextPool.contextFromName(relatedContextName);
+                                        fvalue = IMLibContextPool.getKeyFieldValueFromId(tagetId, "")
+                                        contextObjects
+                                            = IMLibContextPool.getContextsFromNameAndForeignValue(relatedContextName, fvalue);
                                     } else {
-                                        indexContext = IMLibContextPool.contextFromName(updateInfo.context.contextName);
+                                        contextObjects = IMLibContextPool.getContextFromName(updateInfo.context.contextName);
                                     }
-                                    INTERMediator.construct(indexContext);
+                                    contextInfo = IMLibContextPool.getContextInfoFromId(tagetId, "");
+                                    contextInfo.context.setValue(contextInfo.record, contextInfo.field, dbresult);
+                                    if (contextObjects) {
+                                        for (i = 0; i < contextObjects.length; i++) {
+                                            contextObj = contextObjects[i];
+                                            INTERMediator.construct(contextObj);
+                                        }
+                                    } else {
+                                        INTERMediator.flushMessage();
+                                    }
                                 });
                         }
                     })());
@@ -342,10 +241,10 @@ var IMParts_im_fileupload = {
             }
 
         } else {
-            for (var i = 0; i < IMParts_im_fileupload.ids.length; i++) {
-                var targetNode = document.getElementById(IMParts_im_fileupload.ids[i]);
+            for (var i = 0; i < this.ids.length; i++) {
+                var targetNode = document.getElementById(this.ids[i]);
                 if (targetNode) {
-                    var updateInfo = IMLibContextPool.getContextInfoFromId(IMParts_im_fileupload.ids[i], "");
+                    var updateInfo = IMLibContextPool.getContextInfoFromId(this.ids[i], "");
                     //= INTERMediator.updateRequiredObject[IMParts_im_fileupload.ids[i]];
                     var formNode = targetNode.getElementsByTagName('FORM')[0];
                     var inputNode = document.createElement('INPUT');
@@ -405,7 +304,7 @@ var IMParts_im_fileupload = {
                         }
                     }
                     formNode.appendChild(inputNode);
-                    if (IMParts_im_fileupload.progressSupported) {
+                    if (this.progressSupported) {
 
                         inputNode = document.createElement('iframe');
                         inputNode.setAttribute('id', 'upload_frame' + i);
@@ -424,7 +323,7 @@ var IMParts_im_fileupload = {
                                 iframeNode.style.display = "block";
                                 setTimeout(function () {
                                     var infoURL = selfURL() + '?uploadprocess='
-                                        + IMParts_im_fileupload.uploadId + iframeId;
+                                        + this.uploadId + iframeId;
                                     iframeNode.setAttribute('src', infoURL);
                                 });
                                 return true;
@@ -487,9 +386,3 @@ var IMParts_im_fileupload = {
          }*/
     }
 };
-
-var IMParts_Catalog = {
-    "tinymce": IMParts_tinymce,
-    "codemirror": IMParts_codemirror,
-    "im_fileupload": IMParts_im_fileupload
-}
