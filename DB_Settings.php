@@ -366,6 +366,9 @@ class DB_Settings
      */
     public function setAuthentication($authentication)
     {
+        if (isset($authentication['authexpired']) && $authentication['authexpired'] == 0) {
+            $authentication['authexpired'] = $this->getAuthenticationItem('authexpired');
+        }
         $this->authentication = $authentication;
     }
 
