@@ -868,6 +868,22 @@ function INTERMediatorLib() {
                 }
                 return null;
             }
+        },
+        
+        createErrorMessageNode: function (tag, message) {
+            var messageNode;
+            messageNode = document.createElement(tag);
+            INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
+            messageNode.appendChild(document.createTextNode(message));
+            return messageNode;
+        },
+
+        clearErrorMessage: function (node) {
+            var errorMsgs, j;
+            errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');
+            for (j = 0; j < errorMsgs.length; j++) {
+                errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
+            }
         }
     };
 

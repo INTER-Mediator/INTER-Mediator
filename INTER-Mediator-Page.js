@@ -692,11 +692,11 @@ INTERMediatorOnPage = {
     setCookieWorker: function (key, val, isDomain, expired) {
         var cookieString;
         var d = new Date();
-        d.setTime(d.getTime() + INTERMediatorOnPage.authExpired * 1000);
-        cookieString = key + "=" + encodeURIComponent(val)
-            + ( isDomain ? ";path=/" : "" )
-            + ";max-age=" + expired
-            + ";expires=" + d.toGMTString() + ';';
+        d.setTime(d.getTime() + expired * 1000);
+        cookieString = key + "=" + encodeURIComponent(val) + ( isDomain ? ";path=/" : "" ) + ";";
+        if (expired > 0) {
+           cookieString += "max-age=" + expired + ";expires=" + d.toGMTString() + ";";
+        }
         if (document.URL.substring(0, 8) == "https://") {
             cookieString += "secure;";
         }
