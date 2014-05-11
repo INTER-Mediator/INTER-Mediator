@@ -59,6 +59,9 @@ var INTERMediator = {
      "refers": {}
      }
      */
+    useSessionStorage: true,
+    // Use sessionStorage for the Local Context instead of Cookie.
+    
     errorMessages: [],
     debugMessages: [],
 
