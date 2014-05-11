@@ -36,6 +36,7 @@ Ver.4.4 (in development)
 - [BUG FIX] Fix not to show the error message ("curVal.replace is not a function - EXCEPTION-27") in 
   IMLibElement.setValueToIMNode() if the element of the parameter is a textarea element and the value is false.
 - [BUG FIX] Fix not to show the dialog message when the value of the Local Context is updated.
+- [BUG FIX] Avoid outputting duplicated alert messages of the validation when changing the value.
 - [WARNING] The JavaScript code editor "codemirror" isn't temporally supported for the updated version doesn't work fine.
 
 Ver.4.3 (2014/4/7)
