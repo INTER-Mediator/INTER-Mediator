@@ -132,26 +132,38 @@ INTERMediatorOnPage = {
         this.authUserSalt = "";
         this.authChallenge = "";
         this.clientId = "";
-        this.removeCookie('_im_username');
-        this.removeCookie('_im_credential');
-        this.removeCookie('_im_mediatoken');
-        this.removeCookie('_im_localcontext');
+        this.removeCookie("_im_username");
+        this.removeCookie("_im_credential");
+        this.removeCookie("_im_mediatoken");
+        if (typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+            sessionStorage.removeItem("_im_localcontext");
+        } else {
+            this.removeCookie("_im_localcontext");
+        }
     },
 
     storeCredencialsToCookie: function () {
         switch (INTERMediatorOnPage.authStoring) {
             case 'cookie':
-                INTERMediatorOnPage.setCookie('_im_username', INTERMediatorOnPage.authUser);
-                INTERMediatorOnPage.setCookie('_im_credential', INTERMediatorOnPage.authHashedPassword);
+                if (INTERMediatorOnPage.authUser) {
+                    INTERMediatorOnPage.setCookie("_im_username", INTERMediatorOnPage.authUser);
+                }
+                if (INTERMediatorOnPage.authHashedPassword) {
+                    INTERMediatorOnPage.setCookie("_im_credential", INTERMediatorOnPage.authHashedPassword);
+                }
                 if (INTERMediatorOnPage.mediaToken) {
-                    INTERMediatorOnPage.setCookie('_im_mediatoken', INTERMediatorOnPage.mediaToken);
+                    INTERMediatorOnPage.setCookie("_im_mediatoken", INTERMediatorOnPage.mediaToken);
                 }
                 break;
             case 'cookie-domainwide':
-                INTERMediatorOnPage.setCookieDomainWide('_im_username', INTERMediatorOnPage.authUser);
-                INTERMediatorOnPage.setCookieDomainWide('_im_credential', INTERMediatorOnPage.authHashedPassword);
+                if (INTERMediatorOnPage.authUser) {
+                    INTERMediatorOnPage.setCookieDomainWide("_im_username", INTERMediatorOnPage.authUser);
+                }
+                if (INTERMediatorOnPage.authHashedPassword) {
+                    INTERMediatorOnPage.setCookieDomainWide("_im_credential", INTERMediatorOnPage.authHashedPassword);
+                }
                 if (INTERMediatorOnPage.mediaToken) {
-                    INTERMediatorOnPage.setCookieDomainWide('_im_mediatoken', INTERMediatorOnPage.mediaToken);
+                    INTERMediatorOnPage.setCookieDomainWide("_im_mediatoken", INTERMediatorOnPage.mediaToken);
                 }
                 break;
         }

@@ -20,7 +20,11 @@ Ver.4.4 (in development)
 - INTERMediatorOnPage.additionalExpandingEnclosureFinish and INTERMediatorOnPage.additionalExpandingRecordFinish
   are supported. These are programmable interfaces associated with 'post-enclosure' and 'post-repeater' in a context.
 - DataConverter_MySQLDateTime class supports 'YYYY.MM.DD' date format.
+<<<<<<< HEAD
+- Use sessionStorage for the Local Context instead of Cookie by default.
+=======
 - Cookie is now destroyed when browser is closed when the value of 'authexpired' key is 0.
+>>>>>>> master
 - [BUG FIX] Fix compatibility when using INTERMediator.additionalCondition or INTERMediator.additionalSortKey.
   The affected version is 4.3 only (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in additionalCondition with FileMaker Server.
