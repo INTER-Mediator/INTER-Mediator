@@ -135,7 +135,7 @@ INTERMediatorOnPage = {
         this.removeCookie("_im_username");
         this.removeCookie("_im_credential");
         this.removeCookie("_im_mediatoken");
-        if (typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+        if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
             sessionStorage.removeItem("_im_localcontext");
         } else {
             this.removeCookie("_im_localcontext");

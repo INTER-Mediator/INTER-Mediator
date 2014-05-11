@@ -354,12 +354,12 @@ IMLibLocalContext = {
              http://blogs.msdn.com/b/jscript/archive/2009/06/23/serializing-the-value-of-empty-dom-elements-using-native-json-in-ie8.aspx
              */
             jsonString = JSON.stringify(this.store, function (k, v) {
-                return v === "" ? "" : v
+                return v === "" ? "" : v;
             });
         } else {
             jsonString = JSON.stringify(this.store);
         }
-        if (typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+        if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
             sessionStorage.setItem("_im_localcontext", jsonString);
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
@@ -368,7 +368,7 @@ IMLibLocalContext = {
 
     unarchive: function () {
         var localContext = "";
-        if (typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+        if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
             localContext = sessionStorage.getItem("_im_localcontext");
         } else {
             localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
