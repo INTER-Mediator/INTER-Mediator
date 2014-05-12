@@ -53,8 +53,7 @@ function doSearch() {
             criteria ={field: 'f3', operator: 'bw', value: c2};
         }
     }
-    INTERMediator.additionalCondition = {postalcode:[criteria]};
-
+    INTERMediator.additionalCondition["postalcode"] = criteria;
 //    IMLibLocalContext.archive();    // This isn't required other than IE8.
     INTERMediator.startFrom = 0;
     INTERMediator.construct(true);

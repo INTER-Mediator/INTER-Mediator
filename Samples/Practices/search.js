@@ -38,18 +38,17 @@ window.onload = function () {
 };
 
 function doSearch() {
-    INTERMediator.additionalCondition = {};
     var c1 = IMLibLocalContext.getValue("condition");
     if (c1 && c1.length > 0) {
-        INTERMediator.additionalCondition = {"postalcode": [
+        INTERMediator.additionalCondition["postalcode"] = [
             {field: 'f3', operator: 'LIKE', value: c1 + '%'},
             {field: 'f7', operator: 'LIKE', value: '%' + c1 + '%'},
             {field: 'f8', operator: 'LIKE', value: '%' + c1 + '%'},
             {field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'},
             {field: '__operation__', operator: 'ex'}
-        ]};
+        ];
     }
     INTERMediator.startFrom = 0;
-    IMLibLocalContext.archive();    // This isn't required other than IE8.
+    //IMLibLocalContext.archive();    // This isn't required other than IE8.
     INTERMediator.construct(true);
 }
