@@ -1094,7 +1094,6 @@ var INTERMediator = {
             INTERMediator.widgetElementIds = [];
             isInsidePostOnly = false;
 
-            IMLibLocalContext.unarchive();
             // Restoring original HTML Document from backup data.
             bodyNode = document.getElementsByTagName('BODY')[0];
             if (INTERMediator.rootEnclosure === null) {
