@@ -471,8 +471,6 @@ IMLibLocalContext = {
     }
 };
 
-INTERMediatorLib.setup();
-
 IMLibKeyEventDispatch = {
     dispatchTable: {},
 
