@@ -24,8 +24,8 @@ function INTERMediatorLib() {
         initialize: function () {
 //            INTERMediator.startFrom = 0;
 //            INTERMediator.pagedSize = 0;
-//            INTERMediator.additionalCondition = {};
-//            INTERMediator.additionalSortKey = {};
+            INTERMediator.additionalCondition = {};
+            INTERMediator.additionalSortKey = {};
 
             IMLibLocalContext.unarchive();
 
