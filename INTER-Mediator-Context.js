@@ -59,6 +59,9 @@ IMLibContextPool = {
         
         element = document.getElementById(idValue);
         linkInfo = INTERMediatorLib.getLinkedElementInfo(element);
+        if (!linkInfo && INTERMediatorLib.isWidgetElement(element.parentNode)) {
+            linkInfo = INTERMediatorLib.getLinkedElementInfo(element.parentNode);
+        }
         nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
         
         targetName = target === "" ? "_im_no_target" : target;
