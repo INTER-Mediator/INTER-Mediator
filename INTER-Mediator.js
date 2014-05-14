@@ -738,6 +738,17 @@ var INTERMediator = {
                     if (contextInfo.validation) {
                         for (index in contextInfo.validation) {
                             validationInfo = contextInfo.validation[index];
+                            if (validationInfo && validationInfo.field == comp[1]) {
+                                switch (validationInfo.notify) {
+                                    case "inline":
+                                    case "end-of-sibling":
+                                        INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
+                                        break;
+                                }
+                            }
+                        }
+                        for (index in contextInfo.validation) {
+                            validationInfo = contextInfo.validation[index];
                             if (validationInfo.field == comp[1]) {
                                 if (validationInfo) {
                                     result = Parser.evaluate(
@@ -762,13 +773,6 @@ var INTERMediator = {
                                         }
                                         if (INTERMediatorOnPage.doAfterValidationFailure != null) {
                                             INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i]);
-                                        }
-                                    } else {
-                                        switch (validationInfo.notify) {
-                                            case "inline":
-                                            case "end-of-sibling":
-                                                INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
-                                                break;
                                         }
                                     }
                                 }
