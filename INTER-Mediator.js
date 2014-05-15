@@ -1272,7 +1272,7 @@ var INTERMediator = {
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
             repeatersOriginal = collectRepeatersOriginal(node, repNodeTag); // Collecting repeaters to this array.
             repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
-            linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters).linkedNode;
+            linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
             linkDefs = collectLinkDefinitions(linkedNodes);
             voteResult = tableVoting(linkDefs);
             currentContext = voteResult.targettable;
@@ -1345,7 +1345,7 @@ var INTERMediator = {
                     try {
                         RecordCounter++;
                         repeatersOneRec = cloneEveryNodes(repeatersOriginal);
-                        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec);
+                        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
                         currentWidgetNodes = linkedElements.widgetNode;
                         currentLinkedNodes = linkedElements.linkedNode;
                         shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
@@ -1473,20 +1473,21 @@ var INTERMediator = {
                                     && !isInsidePostOnly
                                     && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
 
-                                    valueChangeFunction = function (targetId) {
-                                        var theId = targetId;
-                                        return function (evt) {
-                                            var result = INTERMediator.valueChange(theId);
-                                            if (!result) {
-                                                evt.preventDefault();
-                                            }
-                                        }
-                                    };
-                                    eventListenerPostAdding.push({
-                                        'id': nodeId,
-                                        'event': 'change',
-                                        'todo': valueChangeFunction(nodeId)
-                                    });
+//                                    valueChangeFunction = function (targetId) {
+//                                        var theId = targetId;
+//                                        return function (evt) {
+//                                            var result = INTERMediator.valueChange(theId);
+//                                            if (!result) {
+//                                                evt.preventDefault();
+//                                            }
+//                                        }
+//                                    };
+//                                    eventListenerPostAdding.push({
+//                                        'id': nodeId,
+//                                        'event': 'change',
+//                                        'todo': valueChangeFunction(nodeId)
+//                                    });
+                                    IMLibChangeEventDispatch.setExecute(nodeId, INTERMediator.valueChange);
                                     if (nodeTag != 'SELECT') {
                                         eventListenerPostAdding.push({
                                             'id': nodeId,
@@ -2038,6 +2039,7 @@ var INTERMediator = {
                         shouldDeleteNodes,
                         currentContext['repeat-control'].match(/confirm-delete/i))
                 });
+
                 // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
                 switch (encNodeTag) {
                     case 'TBODY':
@@ -2069,12 +2071,15 @@ var INTERMediator = {
 
         function setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
-                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec;
+                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec, thisId;
             if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
                 if (relationValue.length > 0 || !currentContext['paging'] || currentContext['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
                     INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Insert");
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
+                    thisId = 'IM_Button_' + buttonIdNum;
+                    buttonNode.setAttribute('id', thisId);
+                    buttonIdNum++;
                     shouldRemove = [];
                     switch (encNodeTag) {
                         case 'TBODY':
@@ -2152,6 +2157,7 @@ var INTERMediator = {
                             shouldRemove,
                             currentContext['repeat-control'].match(/confirm-insert/i))
                     );
+
                 } else {
                     dbspec = INTERMediatorOnPage.getDBSpecification();
                     if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
