@@ -412,11 +412,14 @@ IMLibLocalContext = {
                     this.binding[nodeInfo.field] = [];
                 }
                 this.binding[nodeInfo.field].push(idValue);
-                var nodeId = idValue;
-                var self = this;
-                INTERMediatorLib.addEvent(node, 'change', function () {
-                    self.update(nodeId);
-                });
+                INTERMediatorLib.addEvent(node, 'change', (function () {
+                    var nodeId = idValue;
+                    var self = this;
+                    return function () {
+                        IMLibLocalContext.update(nodeId);
+                    };
+                })());
+                IMLibChangeEventDispatch.setExecute(idValue, INTERMediator.valueChange);
 
                 value = this.store[nodeInfo.field];
                 IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true);
@@ -565,4 +568,47 @@ INTERMediatorLib.addEvent(document, "click", function (e) {
         return;
     }
     executable(event);
+});
+
+IMLibChangeEventDispatch = {
+    dispatchTable: {},
+
+    clearAll: function () {
+        this.dispatchTable = {};
+    },
+
+    setExecute: function (idValue, exec) {
+        if (idValue && exec) {
+            this.dispatchTable[idValue] = exec;
+        }
+    },
+
+    setTargetExecute: function (targetValue, exec) {
+        if (targetValue && exec) {
+            //    this.dispatchTable[idValue] = exec;
+        }
+    }
+};
+
+INTERMediatorLib.addEvent(document, "change", function (e) {
+    var event = e ? e : window.event;
+    if (!event) {
+        return;
+    }
+    var target = event.target;
+    if (!target) {
+        target = event.srcElement;
+        if (!target) {
+            return;
+        }
+    }
+    var idValue = target.id;
+    if (!idValue) {
+        return;
+    }
+    var executable = IMLibChangeEventDispatch.dispatchTable[idValue];
+    if (!executable) {
+        return;
+    }
+    executable(idValue);
 });
