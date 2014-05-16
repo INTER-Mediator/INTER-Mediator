@@ -439,11 +439,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     foreach ($dataArray as $portalKey => $portalValue) {
                         if (strpos($field, '::') !== false) {
                             $existsRelated = true;
-                            if (strpos($field, $dataSourceName . '::') !== false) {
+//                            if (strpos($field, $dataSourceName . '::') !== false) {
                                 $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
                                 $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                     "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
-                            }
+//                            }
                         } else {
                             $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
                                 "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
