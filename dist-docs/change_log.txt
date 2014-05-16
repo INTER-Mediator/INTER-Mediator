@@ -23,6 +23,7 @@ Ver.4.4 (in development)
 - Use sessionStorage for the Local Context instead of Cookie by default.
 - Cookie is now destroyed when browser is closed when the value of 'authexpired' key in a definition file is 0.
 - Divide the pagination codes to INTER-Mediator-Navi.js.
+- Update OME.php to sending to the email address including '+' (especially for Gmail users).
 - [BUG FIX] Fix compatibility when using INTERMediator.additionalCondition or INTERMediator.additionalSortKey.
   The affected version is 4.3 only (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in additionalCondition with FileMaker Server.
