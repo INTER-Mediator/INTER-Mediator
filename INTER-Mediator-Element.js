@@ -228,8 +228,10 @@ var IMLibElement = {
     },
 
     checkOptimisticLock: function (element, target) {
-        var linkInfo, nodeInfo, idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter, 
-            currentVal, response, targetField, targetContext, initialvalue, newValue, isOthersModified;
+        var linkInfo, nodeInfo, idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter,
+            currentVal, response, targetField, targetContext, initialvalue, newValue, isOthersModified,
+            isCheckResult, portalKey, portalIndex, currentFieldVal;
+
         if (!element) {
             return false;
         }
@@ -279,53 +281,72 @@ var IMLibElement = {
                 INTERMediator.setErrorMessage(ex, "EXCEPTION-1");
             }
         }
-
-        if (currentVal.recordset === null
-            || currentVal.recordset[0] === null
-            || currentVal.recordset[0][targetField] === undefined) {
-            alert(INTERMediatorLib.getInsertedString(
-                INTERMediatorOnPage.getMessages()[1003], [targetField]));
-            return false;
-        }
-        if (currentVal.count > 1) {
-            response = confirm(INTERMediatorOnPage.getMessages()[1024]);
-            if (!response) {
+        if (contextInfo.portal) {
+            isCheckResult = false;
+            portalKey = contextInfo.context.contextName + "::-recid";
+            if (currentVal.recordset && currentVal.recordset[0]) {
+                for (portalIndex in currentVal.recordset[0]) {
+                    if (currentVal.recordset[0][portalIndex][portalKey]
+                        && currentVal.recordset[0][portalIndex][targetField]
+                        && currentVal.recordset[0][portalIndex][portalKey] == contextInfo.portal) {
+                        currentFieldVal = currentVal.recordset[0][portalIndex][targetField];
+                        isCheckResult = true;
+                    }
+                }
+            }
+            if (! isCheckResult) {
+                alert(INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[1003], [targetField]));
                 return false;
             }
+        } else {
+            if (currentVal.recordset === null
+                || currentVal.recordset[0] === null
+                || currentVal.recordset[0][targetField] === undefined) {
+                alert(INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[1003], [targetField]));
+                return false;
+            }
+            if (currentVal.count > 1) {
+                response = confirm(INTERMediatorOnPage.getMessages()[1024]);
+                if (!response) {
+                    return false;
+                }
+            }
+            currentFieldVal = currentVal.recordset[0][targetField];
         }
-        currentVal = currentVal.recordset[0][targetField];
-        initialvalue = targetContext.getValue(contextInfo['record'], targetField);
+        initialvalue = targetContext.getValue(contextInfo['record'], targetField, contextInfo.portal);
 
         switch (element.tagName) {
             case "INPUT":
                 switch (element.getAttribute("type")) {
                     case "checkbox":
-                        if (initialvalue == element.value)  {
+                        if (initialvalue == element.value) {
                             isOthersModified = false;
-                        } else if (! parseInt(currentVal))    {
+                        } else if (!parseInt(currentFieldVal)) {
                             isOthersModified = false;
                         } else {
                             isOthersModified = true;
                         }
                         break;
                     default:
-                        isOthersModified = (initialvalue != currentVal);
+                        isOthersModified = (initialvalue != currentFieldVal);
                         break;
                 }
                 break;
             default:
-                isOthersModified = (initialvalue != currentVal);
+                isOthersModified = (initialvalue != currentFieldVal);
                 break;
         }
 
-//        console.error(isOthersModified, initialvalue, newValue, currentVal);
+//        console.error(isOthersModified, initialvalue, newValue, currentFieldVal);
 
         if (isOthersModified) {
             // The value of database and the field is different. Others must be changed this field.
             newValue = IMLibElement.getValueFromIMNode(element);
             if (!confirm(INTERMediatorLib.getInsertedString(
-                INTERMediatorOnPage.getMessages()[1001], [initialvalue, newValue, currentVal]))) {
-                window.setTimeout(function (){
+                INTERMediatorOnPage.getMessages()[1001], [initialvalue, newValue, currentFieldVal]))) {
+                window.setTimeout(function () {
                     element.focus();
                 }, 0);
 

@@ -7,6 +7,7 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
+
 /**
  * Created by JetBrains PhpStorm.
  * User: msyk
@@ -14,7 +15,6 @@
  * Time: 20:24
  * To change this template use File | Settings | File Templates.
  */
-
 class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
     /**
@@ -107,14 +107,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterSetToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
             }
-            if (isset($currentDataSource['send-mail']['load']))   {
+            if (isset($currentDataSource['send-mail']['load'])) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);
                 $mailSender = new SendMail();
                 $mailResult = $mailSender->processing(
                     $currentDataSource['send-mail']['load'],
                     $result,
                     $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true)   {
+                if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -152,7 +152,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeSetToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['edit']))   {
+                if (isset($currentDataSource['send-mail']['edit'])) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $result = $this->dbClass->setToDB($dataSourceName);
@@ -160,14 +160,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
                 $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
             }
-            if (isset($currentDataSource['send-mail']['edit']))   {
+            if (isset($currentDataSource['send-mail']['edit'])) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);
                 $mailSender = new SendMail();
                 $mailResult = $mailSender->processing(
                     $currentDataSource['send-mail']['edit'],
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true)   {
+                if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -191,7 +191,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeNewToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['new']))   {
+                if (isset($currentDataSource['send-mail']['new'])) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
@@ -199,14 +199,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
                 $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
             }
-            if (isset($currentDataSource['send-mail']['new']))   {
+            if (isset($currentDataSource['send-mail']['new'])) {
                 $this->logger->setDebugMessage("Try to send an email.");
                 $mailSender = new SendMail();
                 $mailResult = $mailSender->processing(
                     $currentDataSource['send-mail']['new'],
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true)   {
+                if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -504,7 +504,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
         $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
 
-        if (isset($options['smtp']))    {
+        if (isset($options['smtp'])) {
             $this->dbSettings->setSmtpConfiguration($options['smtp']);
         }
 
@@ -677,7 +677,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $this->outputOfProcessing['changePasswordResult'] = ($changeResult ? true : false);
                 } else {
 //                    $this->outputOfProcessing = "changePasswordResult=false;";
-                    $this->outputOfProcessing['changePasswordResult']=false;
+                    $this->outputOfProcessing['changePasswordResult'] = false;
                 }
                 break;
         }
@@ -689,9 +689,22 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $fInfo = $this->getFieldInfo($this->dbSettings->getTargetName());
             if ($fInfo != null) {
                 foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                    if (!in_array($fieldName, $fInfo)) {
+                    $altField = "";
+                    $checkAltName = false;
+                    $field = $fieldName;
+                    if (strpos($field, "::") !== false) { // for FileMaker Server, this should be moved to DB-class someday.
+                    $lastPeriodPosition = strrpos($field, ".");
+                        if ($lastPeriodPosition !== false) {
+                            $checkAltName = true;
+                            $altField = substr($field, 0, $lastPeriodPosition);
+                        }
+                    }
+                    $positiveJudge = in_array($field, $fInfo);
+                    $positiveJudge = $positiveJudge || ($altField && in_array($altField, $fInfo));
+                    if (! $positiveJudge) {
                         $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
                     }
+
                 }
             }
         }

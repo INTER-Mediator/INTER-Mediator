@@ -61,19 +61,15 @@ var INTERMediator = {
      */
     useSessionStorage: true,
     // Use sessionStorage for the Local Context instead of Cookie.
-    
+
     errorMessages: [],
     debugMessages: [],
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
     //startFrom: 0,
-    // Start from this number of record for "skipping" records.
     //pagedSize: 0,
-    // 
     //additionalCondition: {},
-    // This array should be [{tableName: [{field:xxx,operator:xxx,value:xxxx}]}, ... ]
     //additionalSortKey: {},
-    // This array should be [{tableName: [{field:xxx,direction:xxx}]}, ... ]
 
     //=================================
     // Message for Programmers
@@ -413,7 +409,10 @@ var INTERMediator = {
                             {field: criteria[0], operator: '=', value: criteria[1]}
                         ],
                         dataset: [
-                            {field: contextInfo.field, value: newValue}
+                            {
+                                field: contextInfo.field + (contextInfo.portal ? ("."+contextInfo.portal) : ""),
+                                value: newValue
+                            }
                         ]
                     });
                 } catch (ex) {
@@ -1250,13 +1249,13 @@ var INTERMediator = {
 
         function expandEnclosure(node, currentRecord, parentEnclosure, parentObjectInfo) {
             var objectReference = {}, linkedNodes, encNodeTag, repeatersOriginal, repeaters,
-                linkDefs, voteResult, currentContext, fieldList, repNodeTag, joinField, plugin,
+                linkDefs, voteResult, currentContext, fieldList, repNodeTag, joinField,
                 relationDef, index, fieldName, i, j, k, ix, targetRecords, newNode, wInfo,
                 nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue,
-                nodeTag, typeAttr, linkInfoArray, RecordCounter, valueChangeFunction, nInfo, curVal,
+                nodeTag, typeAttr, linkInfoArray, RecordCounter, nInfo, curVal,
                 curTarget, newlyAddedNodes, keyingValue, pagingValue, widgetSupport, linkedElements,
                 recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, setupWidget,
+                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, contextKey,
                 nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, contextObj;
 
             currentLevel++;
@@ -1283,7 +1282,6 @@ var INTERMediator = {
                 contextObj.repeaterNodes = repeaters;
                 contextObj.original = repeatersOriginal;
 
-                setupWidget = false;
                 fieldList = []; // Create field list for database fetch.
                 calcDef = currentContext['calculation'];
                 calcFields = [];
@@ -1362,6 +1360,7 @@ var INTERMediator = {
                             foreignFieldValue = foreignField + "=" + foreignValue;
                         } else {
                             foreignFieldValue = "=";
+                            foreignValue = null;
                         }
                         keyValue = targetRecords.recordset[ix][keyField];
                         keyingValue = keyField + "=" + keyValue;
@@ -1390,9 +1389,7 @@ var INTERMediator = {
                                 IMParts_Catalog[wInfo[0]].instanciate(currentWidgetNodes[k]);
                                 if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
                                     imPartsShouldFinished.push(IMParts_Catalog[wInfo[0]]);
-                                }//                                setupWidget = true;
-//                                IMParts_Catalog[wInfo[0]].instanciate.apply(
-//                                    IMParts_Catalog[wInfo[0]], [currentWidgetNodes[k]]);
+                                }
                             }
                         }
                     } catch (ex) {
@@ -1403,7 +1400,6 @@ var INTERMediator = {
                         }
                     }
 
-//                        repeaterCalcItems = [];
                     if (currentContext['portal'] != true
                         || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
                         nameTable = {};
@@ -1465,28 +1461,13 @@ var INTERMediator = {
                                                 postSetFields.push({'id': nodeId, 'value': curVal});
                                             }
                                         }
-                                        contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
+                                        contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue);
                                     }
                                 }
 
                                 if (isContext
                                     && !isInsidePostOnly
                                     && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
-
-//                                    valueChangeFunction = function (targetId) {
-//                                        var theId = targetId;
-//                                        return function (evt) {
-//                                            var result = INTERMediator.valueChange(theId);
-//                                            if (!result) {
-//                                                evt.preventDefault();
-//                                            }
-//                                        }
-//                                    };
-//                                    eventListenerPostAdding.push({
-//                                        'id': nodeId,
-//                                        'event': 'change',
-//                                        'todo': valueChangeFunction(nodeId)
-//                                    });
                                     IMLibChangeEventDispatch.setExecute(nodeId, INTERMediator.valueChange);
                                     if (nodeTag != 'SELECT') {
                                         eventListenerPostAdding.push({
@@ -1579,7 +1560,6 @@ var INTERMediator = {
                             }
                         }
                     }
-
                 }
                 setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, contextObj.foreignValue);
 
