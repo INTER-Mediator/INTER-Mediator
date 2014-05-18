@@ -43,6 +43,7 @@ buster.testCase("Remote Context Test", {
 
     },
     "Remote-Context-Test2": function () {
+        var i, j;
         IMLibContextPool.clearAll();
         var context1 = new IMLibContext("context1");
         assert.equals(IMLibContextPool.poolingContexts.length, 1);
@@ -53,9 +54,10 @@ buster.testCase("Remote Context Test", {
         var context = [context1, context2, context3];
 
         var counter = 1;
-        for (var j = 0; j < 3; j++) {
+        for (j = 0; j < 3; j++) {
             context[j].setTableName("table");
-            for (var i = 1; i < 4; i++) {
+            context[j].setViewName("table");
+            for (i = 1; i < 4; i++) {
                 context[j].setValue(i, 'test1', 'value1', 'node-'+(counter++));
                 context[j].setValue(i, 'test2', 'value2', 'node-'+(counter++));
                 context[j].setValue(i, 'test3', 'value3', 'node-'+(counter++));
@@ -66,15 +68,15 @@ buster.testCase("Remote Context Test", {
         assert.equals(context1.getValue(2, 'test2'), 'value2');
         assert.equals(context1.getValue(3, 'test3'), 'value3');
 
-        // console.log(context);
+//        console.log(context);
 
         context1.setValue(1, 'test1', 'change1');
         context2.setValue(2, 'test2', 'change2');
 
-       // console.log(context);
+//       console.log(context);
 
-        for (var j = 0; j < 3; j++) {
-            for (var i = 1; i < 4; i++) {
+        for (j = 0; j < 3; j++) {
+            for (i = 1; i < 4; i++) {
                 assert.equals(context[j].getValue(i, 'test1'), i == 1 ? 'change1' : 'value1');
                 assert.equals(context[j].getValue(i, 'test2'), i == 2 ? 'change2' : 'value2');
                 assert.equals(context[j].getValue(i, 'test3'), 'value3');
