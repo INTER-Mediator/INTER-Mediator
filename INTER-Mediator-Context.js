@@ -24,26 +24,48 @@ IMLibContextPool = {
 
     excludingNode: null,
 
-    synchronize: function (context, recKey, key, value, target) {
+    synchronize: function (context, recKey, key, value, target, portal) {
         // console.log("SYNC:"+context+"/"+recKey+"/"+key+"/"+value);
-        var i, j, contextName, refNode, targetNodes, result = false;
-        tableName = context.tableName;
+        var i, j, viewName, refNode, targetNodes, result = false;
+        viewName = context.viewName;
         if (this.poolingContexts == null) {
             return null;
         }
-        for (i = 0; i < this.poolingContexts.length; i++) {
-            if (this.poolingContexts[i].tableName === tableName
-                && this.poolingContexts[i].binding[recKey] !== undefined
-                && this.poolingContexts[i].binding[recKey][key] !== undefined
-                && this.poolingContexts[i].store[recKey] !== undefined
-                && this.poolingContexts[i].store[recKey][key] !== undefined) {
+        if (portal) {
+            for (i = 0; i < this.poolingContexts.length; i++) {
+                if (this.poolingContexts[i].viewName === viewName
+                    && this.poolingContexts[i].binding[recKey] !== undefined
+                    && this.poolingContexts[i].binding[recKey][key] !== undefined
+                    && this.poolingContexts[i].binding[recKey][key][portal] !== undefined
+                    && this.poolingContexts[i].store[recKey] !== undefined
+                    && this.poolingContexts[i].store[recKey][key] !== undefined
+                    && this.poolingContexts[i].store[recKey][key][portal] !== undefined) {
 
-                this.poolingContexts[i].store[recKey][key] = value;
-                targetNodes = this.poolingContexts[i].binding[recKey][key];
-                for (j = 0; j < targetNodes.length; j++) {
-                    refNode = document.getElementById(targetNodes[j].id);
-                    if (refNode) {
-                        IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
+                    this.poolingContexts[i].store[recKey][key][portal] = value;
+                    targetNodes = this.poolingContexts[i].binding[recKey][key][portal];
+                    for (j = 0; j < targetNodes.length; j++) {
+                        refNode = document.getElementById(targetNodes[j].id);
+                        if (refNode) {
+                            IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
+                        }
+                    }
+                }
+            }
+        } else {
+            for (i = 0; i < this.poolingContexts.length; i++) {
+                if (this.poolingContexts[i].viewName === viewName
+                    && this.poolingContexts[i].binding[recKey] !== undefined
+                    && this.poolingContexts[i].binding[recKey][key] !== undefined
+                    && this.poolingContexts[i].store[recKey] !== undefined
+                    && this.poolingContexts[i].store[recKey][key] !== undefined) {
+
+                    this.poolingContexts[i].store[recKey][key] = value;
+                    targetNodes = this.poolingContexts[i].binding[recKey][key];
+                    for (j = 0; j < targetNodes.length; j++) {
+                        refNode = document.getElementById(targetNodes[j].id);
+                        if (refNode) {
+                            IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
+                        }
                     }
                 }
             }
@@ -56,19 +78,19 @@ IMLibContextPool = {
         if (!idValue) {
             return result;
         }
-        
+
         element = document.getElementById(idValue);
         linkInfo = INTERMediatorLib.getLinkedElementInfo(element);
         if (!linkInfo && INTERMediatorLib.isWidgetElement(element.parentNode)) {
             linkInfo = INTERMediatorLib.getLinkedElementInfo(element.parentNode);
         }
         nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
-        
+
         targetName = target === "" ? "_im_no_target" : target;
         for (i = 0; i < this.poolingContexts.length; i++) {
             targetContext = this.poolingContexts[i];
-            if (targetContext.contextInfo[idValue] && 
-                targetContext.contextInfo[idValue][targetName] && 
+            if (targetContext.contextInfo[idValue] &&
+                targetContext.contextInfo[idValue][targetName] &&
                 targetContext.contextInfo[idValue][targetName].context.contextName == nodeInfo.table) {
                 result = targetContext.contextInfo[idValue][targetName];
             }
@@ -76,21 +98,21 @@ IMLibContextPool = {
         return result;
     },
 
-    getKeyFieldValueFromId: function (idValue, target)   {
+    getKeyFieldValueFromId: function (idValue, target) {
         var contextInfo = this.getContextInfoFromId(idValue, target);
-        if (! contextInfo)  {
+        if (!contextInfo) {
             return null;
         }
         var contextName = contextInfo.context.contextName;
         var contextDef = IMLibContextPool.getContextDef(contextName);
-        if (! contextDef)  {
+        if (!contextDef) {
             return null;
         }
         var keyField = contextDef.key ? contextDef.key : "id";
         return contextInfo.record.substr(keyField.length + 1);
     },
 
-    getContextDef: function (contextName)   {
+    getContextDef: function (contextName) {
         return INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName);
     },
 
@@ -99,7 +121,7 @@ IMLibContextPool = {
         contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);
         value = IMLibElement.getValueFromIMNode(document.getElementById(idValue));
         if (contextInfo) {
-            contextInfo.context.setValue(contextInfo['record'], contextInfo.field, value, false, target);
+            contextInfo.context.setValue(contextInfo['record'], contextInfo.field, value, false, target, contextInfo.portal);
         }
     },
 
@@ -178,6 +200,7 @@ IMLibContextPool = {
 IMLibContext = function (contextName) {
     this.contextName = contextName;
     this.tableName = null;
+    this.viewName = null;
     this.store = {};
     this.binding = {};
     this.contextInfo = {};
@@ -203,15 +226,19 @@ IMLibContext = function (contextName) {
         this.tableName = name;
     }
 
-    this.addDependingObject = function (idNumber)   {
+    this.setViewName = function (name) {
+        this.viewName = name;
+    }
+
+    this.addDependingObject = function (idNumber) {
         this.dependingObject.push(idNumber);
     }
 
-    this.addForeignValue = function (field, value)   {
+    this.addForeignValue = function (field, value) {
         this.foreignValue[field] = value;
     }
 
-    this.setOriginal = function(repeaters)   {
+    this.setOriginal = function (repeaters) {
         this.original = [];
         for (i = 0; i < repeaters.length; i++) {
             this.original.push(repeaters[i].cloneNode(true));
@@ -223,12 +250,14 @@ IMLibContext = function (contextName) {
         var contextDef;
         if (!context || !INTERMediatorOnPage.getDataSources) {
             this.tableName = this.contextName;
+            this.viewName = this.contextName;
             // This is not a valid case, it just prevent the error in the unit test.
             return;
         }
         contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), "name", context.contextName)
         if (contextDef) {
-            this.tableName = contextDef['view'] ? contextDef['view'] : contextDef['name'];
+            this.viewName = contextDef['view'] ? contextDef['view'] : contextDef['name'];
+            this.tableName = contextDef['table'] ? contextDef['table'] : contextDef['name'];
         }
     }
 
@@ -249,11 +278,14 @@ IMLibContext = function (contextName) {
         this.modified = {};
     }
 
-    this.setValue = function (recKey, key, value, nodeId, target) {
+    this.setValue = function (recKey, key, value, nodeId, target, portal) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
         if (recKey != undefined && recKey != null) {
             if (this.store[recKey] === undefined) {
                 this.store[recKey] = {};
+            }
+            if (portal && this.store[recKey][key] === undefined) {
+                this.store[recKey][key] = {};
             }
             if (this.binding[recKey] === undefined) {
                 this.binding[recKey] = {};
@@ -261,25 +293,47 @@ IMLibContext = function (contextName) {
             if (this.binding[recKey][key] === undefined) {
                 this.binding[recKey][key] = [];
             }
+            if (portal && this.binding[recKey][key][portal] === undefined) {
+                if (this.binding[recKey][key].length < 1) {
+                    this.binding[recKey][key] = {};
+                }
+                this.binding[recKey][key][portal] = [];
+            }
             if (key != undefined && key != null) {
-                this.store[recKey][key] = value;
+                if (portal) {
+                    this.store[recKey][key][portal] = value;
+                } else {
+                    this.store[recKey][key] = value;
+                }
                 if (nodeId) {
-                    this.binding[recKey][key].push({id: nodeId, target: target});
+                    if (portal) {
+                        this.binding[recKey][key][portal].push({id: nodeId, target: target});
+                    } else {
+                        this.binding[recKey][key].push({id: nodeId, target: target});
+                    }
                     if (this.contextInfo[nodeId] === undefined) {
                         this.contextInfo[nodeId] = {};
                     }
                     this.contextInfo[nodeId][target == "" ? "_im_no_target" : target]
                         = {context: this, record: recKey, field: key};
+                    if (portal) {
+                        this.contextInfo[nodeId][target == "" ? "_im_no_target" : target].portal = portal;
+                    }
                 } else {
-                    IMLibContextPool.synchronize(this, recKey, key, value, target);
+                    IMLibContextPool.synchronize(this, recKey, key, value, target, portal);
                 }
             }
         }
     }
 
-    this.getValue = function (recKey, key) {
+    this.getValue = function (recKey, key, portal) {
+        var value;
         try {
-            var value = this.store[recKey][key];
+            if (portal) {
+                value = this.store[recKey][key][portal];
+            } else {
+                value = this.store[recKey][key];
+            }
             return value === undefined ? null : value;
         } catch (ex) {
             return null;
