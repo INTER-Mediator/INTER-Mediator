@@ -411,7 +411,7 @@ var INTERMediator = {
                         ],
                         dataset: [
                             {
-                                field: contextInfo.field + (contextInfo.portal ? ("."+contextInfo.portal) : ""),
+                                field: contextInfo.field + (contextInfo.portal ? ("." + contextInfo.portal) : ""),
                                 value: newValue
                             }
                         ]
@@ -1630,13 +1630,17 @@ var INTERMediator = {
         }
 
         function updateCalcurationInfo(currentContext, nodeId, nInfo, currentRecord) {
-            var calcDef, exp, field, elements, i, index, objectKey, calcFieldInfo, itemIndex, values, referes;
+            var calcDef, exp, field, elements, i, index, objectKey, calcFieldInfo, itemIndex, values, referes,
+                calcDefField, atPos, fieldLength;
 
             calcDef = currentContext['calculation'];
             field = null;
             exp = null;
             for (index in calcDef) {
-                if (calcDef[index]["field"].indexOf(nInfo["field"]) == 0) {
+                atPos = calcDef[index]["field"].indexOf("@");
+                fieldLength = calcDef[index]["field"].length;
+                calcDefField = calcDef[index]["field"].substring(0, atPos >= 0 ? atPos : fieldLength);
+                if (calcDefField == nInfo["field"]) {
                     try {
                         exp = calcDef[index]["expression"];
                         field = calcDef[index]["field"];
@@ -1675,7 +1679,7 @@ var INTERMediator = {
 
         function updateCalculationFields() {
             var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, calcFieldInfo;
-            var targetNode, targetExp, field, valueSeries, targetElement, targetIds, field, counter;
+            var targetNode, targetExp, field, valueSeries, targetElement, targetIds, i, counter, hasReferes;
 
             IMLibNodeGraph.clear();
             for (nodeId in INTERMediator.calculateRequiredObject) {
@@ -1715,10 +1719,15 @@ var INTERMediator = {
                         }
                     }
 
+                    hasReferes = false;
                     for (field in calcObject.referes) {
                         for (ix = 0; ix < calcObject.referes[field].length; ix++) {
                             IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
+                            hasReferes = false;
                         }
+                    }
+                    if (!hasReferes) {
+                        IMLibNodeGraph.addEdge(nodeId);
                     }
                 }
             }

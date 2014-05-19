@@ -8,11 +8,10 @@
     <script src="contexttest.php"></script>
     <script type="text/javascript">
         window.onload = function () {
-            INTERMediator.construct(true);
-        }
-
-        function showDetail(id) {
-            INTERMediator.additionalCondition = {persondetail:{field:'id', operator:'=', value: id}};
+            IMLibMouseEventDispatch.setTargetExecute("personlist@id@data-x", function(value, target){
+                INTERMediator.additionalCondition = {persondetail:{field:'id', operator:'=', value: value}};
+                INTERMediator.construct(IMLibContextPool.contextFromName("persondetail"));
+            });
             INTERMediator.construct(true);
         }
     </script>
@@ -34,11 +33,10 @@
     <tbody>
     <tr>
         <td>
-            <!--<span data-im="personlist@id"></span>-->
-            <button onclick="showDetail($)" data-im="personlist@id@$onclick">詳細</button>
+            <button data-im="personlist@id@data-x">詳細</button>
         </td>
         <td data-im="personlist@name"></td>
-        <td><input type="text" data-im="personlist@mail"/></td>
+        <td data-im="personlist@mail"></td>
         <td data-im="personlist@category"></td>
         <td data-im="personlist@location"></td>
         <td data-im="personlist@checking"></td>

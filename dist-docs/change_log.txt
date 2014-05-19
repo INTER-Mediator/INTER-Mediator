@@ -24,6 +24,7 @@ Ver.4.4 (in development)
 - Cookie is now destroyed when browser is closed when the value of 'authexpired' key in a definition file is 0.
 - Divide the pagination codes to INTER-Mediator-Navi.js.
 - Update OME.php to sending to the email address including '+' (especially for Gmail users).
+- Added class IMLibChangeEventDispatch, IMLibMouseEventDispatch, IMLibKeyEventDispatch for dispatching events.
 - [BUG FIX] Fix compatibility when using INTERMediator.additionalCondition or INTERMediator.additionalSortKey.
   The affected version is 4.3 only (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in additionalCondition with FileMaker Server.
@@ -43,6 +44,8 @@ Ver.4.4 (in development)
 - [BUG FIX] Avoid outputting duplicated alert messages of the validation when changing the value.
 - [BUG FIX] Enable outputting an alert message of the validation correctly when the validation rules of the field are 
   multiple on the post only mode.
+- [BUG FIX] The calculated property didn't work in case of just a constant expression.
+- [BUG FIX] The calculated property's 'field' detection was wrong.
 - [WARNING] The JavaScript code editor "codemirror" isn't temporally supported for the updated version doesn't work fine.
 
 Ver.4.3 (2014/4/7)

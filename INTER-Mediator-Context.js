@@ -584,9 +584,11 @@ INTERMediatorLib.addEvent(document, "keydown", function (e) {
 
 IMLibMouseEventDispatch = {
     dispatchTable: {},
+    dispatchTableTarget: {},
 
     clearAll: function () {
         this.dispatchTable = {};
+        this.dispatchTableTarget = {};
     },
 
     setExecute: function (idValue, exec) {
@@ -597,39 +599,56 @@ IMLibMouseEventDispatch = {
 
     setTargetExecute: function (targetValue, exec) {
         if (targetValue && exec) {
-            //    this.dispatchTable[idValue] = exec;
+            this.dispatchTableTarget[targetValue] = exec;
         }
     }
 };
 
 INTERMediatorLib.addEvent(document, "click", function (e) {
-    var event = e ? e : window.event;
+    var event, target, idValue, executable, targetDefs, i, nodeInfo, value;
+    event = e ? e : window.event;
     if (!event) {
         return;
     }
-    var target = event.target;
+    target = event.target;
     if (!target) {
         target = event.srcElement;
         if (!target) {
             return;
         }
     }
-    var idValue = target.id;
+    idValue = target.id;
     if (!idValue) {
         return;
     }
-    var executable = IMLibMouseEventDispatch.dispatchTable[idValue];
-    if (!executable) {
+    executable = IMLibMouseEventDispatch.dispatchTable[idValue];
+    if (executable) {
+        executable(event);
         return;
     }
-    executable(event);
+    targetDefs = INTERMediatorLib.getLinkedElementInfo(target);
+    for (i = 0 ; i < targetDefs.length; i++)    {
+        executable = IMLibMouseEventDispatch.dispatchTableTarget[targetDefs[i]];
+        if (executable) {
+            nodeInfo = INTERMediatorLib.getNodeInfoArray(targetDefs[i]);
+            if (nodeInfo.target) {
+                value = target.getAttribute(nodeInfo.target);
+            } else {
+                value = IMLibElement.getValueFromIMNode(target);
+            }
+            executable(value, target);
+            return;
+        }
+    }
 });
 
 IMLibChangeEventDispatch = {
     dispatchTable: {},
+    dispatchTableTarget: {},
 
     clearAll: function () {
         this.dispatchTable = {};
+        this.dispatchTableTarget = {};
     },
 
     setExecute: function (idValue, exec) {
@@ -640,7 +659,7 @@ IMLibChangeEventDispatch = {
 
     setTargetExecute: function (targetValue, exec) {
         if (targetValue && exec) {
-            //    this.dispatchTable[idValue] = exec;
+            this.dispatchTableTarget[targetValue] = exec;
         }
     }
 };

@@ -15,7 +15,6 @@ IM_Entry(
             'table' => 'person',
             'key' => 'id',
             'records' => 10,
-            'records' => 10,
             'paging' => true,
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(
@@ -33,8 +32,7 @@ IM_Entry(
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
         ),
     ),
-    array(
-    ),
+    array(),
     array('db-class' => 'PDO'),
-    1
+    false
 );
