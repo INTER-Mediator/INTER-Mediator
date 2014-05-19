@@ -1436,4 +1436,19 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         
         return $direction;
     }
+
+    public function alternativeFieldName($fname)    {
+        if (strpos($fname, "::") !== false) {
+            $lastPeriodPosition = strrpos($fname, ".");
+            if ($lastPeriodPosition !== false) {
+                return substr($fname, 0, $lastPeriodPosition);
+            }
+        }
+        return null;
+    }
+
+    public function isNullAcceptable()  {
+        return false;
+    }
+
 }

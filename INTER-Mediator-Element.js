@@ -286,10 +286,11 @@ var IMLibElement = {
             portalKey = contextInfo.context.contextName + "::-recid";
             if (currentVal.recordset && currentVal.recordset[0]) {
                 for (portalIndex in currentVal.recordset[0]) {
-                    if (currentVal.recordset[0][portalIndex][portalKey]
-                        && currentVal.recordset[0][portalIndex][targetField]
-                        && currentVal.recordset[0][portalIndex][portalKey] == contextInfo.portal) {
-                        currentFieldVal = currentVal.recordset[0][portalIndex][targetField];
+                    var portalRecord = currentVal.recordset[0][portalIndex];
+                    if (portalRecord[portalKey]
+                        && portalRecord[targetField] !== undefined
+                        && portalRecord[portalKey] == contextInfo.portal) {
+                        currentFieldVal = portalRecord[targetField];
                         isCheckResult = true;
                     }
                 }

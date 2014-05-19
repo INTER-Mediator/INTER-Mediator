@@ -30,6 +30,8 @@ interface DB_Interface
     public function isPossibleOrderSpecifier($specifier);
     public function requireUpdatedRecord($value);
     public function updatedRecord();
+    public function alternativeFieldName($fname);
+    public function isNullAcceptable();
 }
 
 interface Auth_Interface_DB					// with using table for authentication/authorization

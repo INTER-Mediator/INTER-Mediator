@@ -105,6 +105,7 @@ INTERMediator_DBAdapter = {
             for (i = 0 ; i < jsonObject.debugMessages.length; i++) {
                 INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
             }
+            INTERMediator.nullAcceptable = jsonObject.usenull;
 
             INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);

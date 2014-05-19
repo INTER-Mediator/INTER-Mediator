@@ -44,6 +44,7 @@ var INTERMediator = {
     classAsLinkInfo: true,
     isDBDataPreferable: false,
     noRecordClassName: "_im_for_noresult_",
+    nullAcceptable: true,
 
     rootEnclosure: null,
     // Storing to retrieve the page to initial condition.
@@ -1325,6 +1326,7 @@ var INTERMediator = {
                 }
 
                 targetRecords = retrieveDataForEnclosure(currentContext, fieldList, contextObj.foreignValue);
+                contextObj.nullAcceptable = INTERMediator.nullAcceptable;
 
                 if (targetRecords.count == 0) {
                     for (i = 0; i < repeaters.length; i++) {

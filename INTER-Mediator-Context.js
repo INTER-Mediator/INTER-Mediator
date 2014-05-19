@@ -212,6 +212,7 @@ IMLibContext = function (contextName) {
     this.repeaterNodes = null;
     this.dependingObject = [];
     this.original = null;
+    this.nullAcceptable = true;
 
     this.clearAll = function () {
         this.store = {};

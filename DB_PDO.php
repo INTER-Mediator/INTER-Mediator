@@ -1618,4 +1618,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
+    public function alternativeFieldName($fname)    {
+        return null;
+    }
+
+    public function isNullAcceptable()  {
+        return true;
+    }
+
 }

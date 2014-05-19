@@ -689,22 +689,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $fInfo = $this->getFieldInfo($this->dbSettings->getTargetName());
             if ($fInfo != null) {
                 foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                    $altField = "";
-                    $checkAltName = false;
-                    $field = $fieldName;
-                    if (strpos($field, "::") !== false) { // for FileMaker Server, this should be moved to DB-class someday.
-                    $lastPeriodPosition = strrpos($field, ".");
-                        if ($lastPeriodPosition !== false) {
-                            $checkAltName = true;
-                            $altField = substr($field, 0, $lastPeriodPosition);
-                        }
-                    }
-                    $positiveJudge = in_array($field, $fInfo);
-                    $positiveJudge = $positiveJudge || ($altField && in_array($altField, $fInfo));
+                    $altField = $this->dbClass->alternativeFieldName($fieldName);
+                    $positiveJudge = in_array($fieldName, $fInfo);
+                    $positiveJudge = $positiveJudge || ($altField != null && in_array($altField, $fInfo));
                     if (! $positiveJudge) {
                         $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
                     }
-
                 }
             }
         }
@@ -721,6 +711,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if ($notFinish || !$this->dbSettings->getRequireAuthorization()) {
             $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
             $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
+            $this->outputOfProcessing['usenull'] = $this->dbClass->isNullAcceptable();
             return;
         }
         $generatedChallenge = $this->generateChallenge();
@@ -735,6 +726,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
         $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
         $this->outputOfProcessing['clientid'] = $generatedUID;
+        $this->outputOfProcessing['usenull'] = $this->dbClass->isNullAcceptable();
         if ($this->dbSettings->getRequireAuthentication()) {
             $this->outputOfProcessing['requireAuth'] = true;
         }
@@ -997,4 +989,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         // TODO: Implement isPossibleOrderSpecifier() method.
     }
+
+    public function alternativeFieldName($fname)    {
+        return null;
+    }
+
+    public function isNullAcceptable()  {
+        return true;
+    }
+
 }
