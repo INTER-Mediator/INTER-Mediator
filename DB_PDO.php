@@ -139,7 +139,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             if (!$this->isPossibleOperator($condition['operator'])) {
-                                throw new Exception("Invalid Operator.");
+                                throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
                             $queryClauseArray[$chunkCount][]
                                 = "{$escapedField} {$condition['operator']} {$escapedValue}";
@@ -149,7 +149,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         }
                     } else {
                         if (!$this->isPossibleOperator($condition['operator'])) {
-                            throw new Exception("Invalid Operator.");
+                            throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $queryClauseArray[$chunkCount][]
                             = "{$escapedField} {$condition['operator']}";
@@ -192,7 +192,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         }
                     } else {
                         if (!$this->isPossibleOperator($condition['operator'])) {
-                            throw new Exception("Invalid Operator.");
+                            throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $queryClauseArray[$chunkCount][]
                             = "{$escapedField} {$condition['operator']}";
@@ -1618,8 +1618,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    public function alternativeFieldName($fname)    {
-        return null;
+    public function isContainingFieldName($fname, $fieldnames)    {
+        return in_array($fname, $fieldnames);
     }
 
     public function isNullAcceptable()  {

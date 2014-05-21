@@ -30,7 +30,7 @@ interface DB_Interface
     public function isPossibleOrderSpecifier($specifier);
     public function requireUpdatedRecord($value);
     public function updatedRecord();
-    public function alternativeFieldName($fname);
+    public function isContainingFieldName($fname, $fieldnames);
     public function isNullAcceptable();
 }
 

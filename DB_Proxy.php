@@ -689,10 +689,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $fInfo = $this->getFieldInfo($this->dbSettings->getTargetName());
             if ($fInfo != null) {
                 foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                    $altField = $this->dbClass->alternativeFieldName($fieldName);
-                    $positiveJudge = in_array($fieldName, $fInfo);
-                    $positiveJudge = $positiveJudge || ($altField != null && in_array($altField, $fInfo));
-                    if (! $positiveJudge) {
+                    if (! $this->dbClass->isContainingFieldName($fieldName, $fInfo)) {
                         $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
                     }
                 }
@@ -990,7 +987,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // TODO: Implement isPossibleOrderSpecifier() method.
     }
 
-    public function alternativeFieldName($fname)    {
+    public function isContainingFieldName($fname, $fieldnames)    {
         return null;
     }
 

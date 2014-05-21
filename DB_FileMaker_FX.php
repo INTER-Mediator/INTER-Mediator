@@ -186,7 +186,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 } else {
                     if (isset($condition['operator'])) {
                         if (!$this->isPossibleOperator($condition['operator'])) {
-                            throw new Exception("Invalid Operator.");
+                            throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
                     } else {
@@ -205,7 +205,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     } else {
                         if (isset($condition['operator'])) {
                             if (!$this->isPossibleOperator($condition['operator'])) {
-                                throw new Exception("Invalid Operator.");
+                                throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
                             $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
                         } else {
@@ -226,8 +226,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $this->fx->SetLogicalOR();
                 } else {
                     $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
+                    if($condition['field'] == "-recid" && $condition['operator'] == 'undefined')    {
+                        $op = "eq";
+                    }
                     if (!$this->isPossibleOperator($op)) {
-                        throw new Exception("Invalid Operator.");
+                        throw new Exception("Invalid Operator.: {$condition['field']}/{$condition['operator']}");
                     }
                     $this->fx->AddDBParam($condition['field'], $condition['value'], $op);
                     $hasFindParams = true;
@@ -253,7 +256,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             "{$dataSourceName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$usePortal) {
                             if (!$this->isPossibleOperator($foreignOperator)) {
-                                throw new Exception("Invalid Operator.");
+                                throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
                             $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
                             $hasFindParams = true;
@@ -303,7 +306,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 return null;
             }
         }
-        
+
         if (isset($context['sort'])) {
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
@@ -440,9 +443,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         if (strpos($field, '::') !== false) {
                             $existsRelated = true;
 //                            if (strpos($field, $dataSourceName . '::') !== false) {
-                                $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
-                                $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
-                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                            $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
+                            $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
+                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
 //                            }
                         } else {
                             $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
@@ -539,7 +542,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             if (!$this->dbSettings->getPrimaryKeyOnly() || $value['field'] == $primaryKey) {
                 $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
                 if (!$this->isPossibleOperator($op)) {
-                    throw new Exception("Invalid Operator.");
+                    throw new Exception("Invalid Operator.: {$condition['operator']}");
                 }
                 $convertedValue = $this->formatter->formatterToDB(
                     "{$dataSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
@@ -1426,28 +1429,41 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     {
         return !(array_search(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')) === FALSE);
     }
-    
-    protected function _adjustSortDirection($direction) {
+
+    protected function _adjustSortDirection($direction)
+    {
         if (strtoupper($direction) == 'ASC') {
             $direction = 'ASCEND';
         } else if (strtoupper($direction) == 'DESC') {
             $direction = 'DESCEND';
         }
-        
+
         return $direction;
     }
 
-    public function alternativeFieldName($fname)    {
+    public function isContainingFieldName($fname, $fieldnames)
+    {
+        if (in_array($fname, $fieldnames)) {
+            return true;
+        }
+
         if (strpos($fname, "::") !== false) {
             $lastPeriodPosition = strrpos($fname, ".");
             if ($lastPeriodPosition !== false) {
-                return substr($fname, 0, $lastPeriodPosition);
+                if (in_array(substr($fname, 0, $lastPeriodPosition), $fieldnames)) {
+                    return true;
+                }
             }
         }
-        return null;
+        if ($fname == "-delete.related") {
+            return true;
+        }
+        return false;
     }
 
-    public function isNullAcceptable()  {
+    public
+    function isNullAcceptable()
+    {
         return false;
     }
 
