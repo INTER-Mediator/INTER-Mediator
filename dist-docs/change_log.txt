@@ -18,7 +18,7 @@ Ver.4.4 (2014/5/22)
 - Update sample_schema_mysql.txt to merge schema_data.txt of Sample_Extensible Sample.
 - Avoid outputting error messages in an error log file when not specifying the 'context' key of the 'file-upload' 
   key in a definition file.
-- Update the Local Content to improve compatibility with INTERMediator.pagedSize and update the "Practices".
+- Update the Local Context to improve compatibility with INTERMediator.pagedSize and update the "Practices".
 - INTERMediatorOnPage.additionalExpandingEnclosureFinish and INTERMediatorOnPage.additionalExpandingRecordFinish
   are supported. These are programmable interfaces associated with 'post-enclosure' and 'post-repeater' in a context.
 - DataConverter_MySQLDateTime class supports 'YYYY.MM.DD' date format.
