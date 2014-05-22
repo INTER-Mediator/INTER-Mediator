@@ -8,7 +8,9 @@ http://inter-mediator.org/
 Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.4 (in development)
+Ver.4.5 (in development)
+
+Ver.4.4 (2014/5/22)
 - Multiple elements bound to the same field of the same table can synchronize in a page.
 - Update samples to improve compatibility with CSP (Content Security Policy).
   (except Asset Management, Account Manager and JS Components Sample)
