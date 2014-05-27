@@ -9,6 +9,7 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.5 (in development)
+- [BUG FIX] The JavaScript code editor "codemirror" support plugin was modified. It works fine.
 
 Ver.4.4 (2014/5/22)
 - Multiple elements bound to the same field of the same table can synchronize in a page.

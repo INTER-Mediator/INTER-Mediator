@@ -9,21 +9,13 @@
 
 IMParts_Catalog["codemirror"] = {
     instanciate: function (parentNode) {
-        var newId = parentNode.getAttribute('id') + '-e';
+        var newId = parentNode.getAttribute('id') + '-cm';
         var newNode = document.createElement('TEXTAREA');
         newNode.setAttribute('id', newId);
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_codemirror');
         parentNode.appendChild(newNode);
         this.ids.push(newId);
 
-        newNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.getValue();
-        };
-        parentNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
         parentNode._im_getComponentId = function () {
             var theId = newId;
             return theId;
@@ -35,17 +27,18 @@ IMParts_Catalog["codemirror"] = {
             self.initialValues[theId] = str;
         };
     },
+
     ids: [],
     initialValues: {},
     mode: "htmlmixed",
+
     finish: function () {
         for (var i = 0; i < this.ids.length; i++) {
             var targetId = this.ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
-                var editor = CodeMirror.fromTextArea(targetNode);
-                                editor.setValue(this.initialValues[targetId]);
-/*
+                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode});
+                editor.setValue(this.initialValues[targetId]);
                 editor.on("change", function () {
                     var nodeId = targetId;
                     return function (instance, obj) {
@@ -58,15 +51,9 @@ IMParts_Catalog["codemirror"] = {
                         return insideEditor.getValue();
                     }
                 }();
-                targetNode.parentNode._im_getValue = function () {
-                    var insideEditor = editor;
-                    return function () {
-                        return insideEditor.getValue();
-                    }
-                }();*/
             }
         }
         this.ids = [];
         this.initialValues = {};
     }
-};
+}
