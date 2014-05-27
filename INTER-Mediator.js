@@ -25,7 +25,7 @@ var INTERMediator = {
     navigationLabel: null,
     // Navigation is controlled by this parameter.
     elementIds: [],
-    widgetElementIds: [],
+    //widgetElementIds: [],
     radioNameMode: false,
     dontSelectRadioCheck: false,
     ignoreOptimisticLocking: false,
@@ -1095,7 +1095,7 @@ var INTERMediator = {
             INTERMediator.calculateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
             INTERMediator.elementIds = [];
-            INTERMediator.widgetElementIds = [];
+            //INTERMediator.widgetElementIds = [];
             isInsidePostOnly = false;
 
             // Restoring original HTML Document from backup data.
@@ -1411,7 +1411,7 @@ var INTERMediator = {
                                 nodeId = currentLinkedNodes[k].getAttribute('id');
                                 if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
                                     nodeId = currentLinkedNodes[k]._im_getComponentId();
-                                    INTERMediator.widgetElementIds.push(nodeId);
+                                   // INTERMediator.widgetElementIds.push(nodeId);
                                 }
                                 // get the tag name of the element
                                 typeAttr = currentLinkedNodes[k].getAttribute('type');

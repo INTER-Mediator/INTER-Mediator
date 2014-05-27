@@ -448,7 +448,7 @@ function INTERMediatorLib() {
         getNodeInfoArray: function (nodeInfo) {
             var comps, tableName, fieldName, targetName;
 
-            if (!nodeInfo.split) {
+            if (! nodeInfo || ! nodeInfo.split) {
                 return {
                     'table': null,
                     'field': null,

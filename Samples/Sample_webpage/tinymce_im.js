@@ -39,20 +39,11 @@ IMParts_Catalog["tinymce"] = {
         parentNode.appendChild(newNode);
         this.ids.push(newId);
 
-        newNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
-        parentNode._im_getValue = function () {
-            var targetNode = newNode;
-            return targetNode.value;
-        };
         parentNode._im_getComponentId = function () {
             var theId = newId;
             return theId;
         };
 
-        // This method will be called before tinyMCE isn't initialized
         parentNode._im_setValue = function (str) {
             var targetNode = newNode;
             targetNode.innerHTML = str;
@@ -65,7 +56,6 @@ IMParts_Catalog["tinymce"] = {
             tinymceOption = {};
         }
         tinymceOption['mode'] = 'specific_textareas';
-//        tinymceOption['editor_selector'] = '_im_tinymce';
         tinymceOption['elements'] = this.ids.join(',');
         if (update) {
             tinymceOption.setup = function (ed) {
@@ -99,17 +89,9 @@ IMParts_Catalog["tinymce"] = {
                         return tinymce.EditorManager.get(thisId).getContent();
                     }
                 })();
-                targetNode.parentNode._im_getValue = (function () {
-                    var thisId = targetId;
-                    return function () {
-                        return tinymce.EditorManager.get(thisId).getContent();
-                    }
-                })();
             }
         }
 
         this.ids = [];
     }
 }
-
-//IMParts_Catalog["tinymce"] = IMParts_tinymce;

@@ -7,5 +7,8 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 window.onload = function () {
+//    INTERMediatorOnPage.processingBeforePostOnlyContext = function(node) {
+//        return confirm("");
+//    }
     INTERMediator.construct(true);
 }
