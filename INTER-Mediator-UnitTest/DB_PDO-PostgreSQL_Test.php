@@ -22,6 +22,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
     function dbProxySetupForAccess($contextName, $maxRecord)
     {
         $this->schemaName = "im_sample.";
+        $seqName = ($contextName == "person") ? "im_sample.person_id_seq" : "im_sample.serial";
         $contexts = array(
             array(
                 'records' => $maxRecord,
@@ -30,9 +31,9 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                 'table' => "{$this->schemaName}{$contextName}",
                 'key' => 'id',
                 'sort' => array(
-                    array('field'=>'id','direction'=>'asc'),
+                    array('field' => 'id', 'direction' => 'asc'),
                 ),
-                'sequence' => 'im_sample.serial',
+                'sequence' => $seqName,
             )
         );
         $options = null;
@@ -49,7 +50,8 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
     function dbProxySetupForAuth()
     {
         $this->db_proxy = new DB_Proxy(true);
-        $this->db_proxy->initialize(array(
+        $this->db_proxy->initialize(
+            array(
                 array(
                     'records' => 1,
                     'paging' => true,
@@ -57,7 +59,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                     'key' => 'id',
                     'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
                     'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
-                    'sequence' => 'im_sample.serial',
+                    'sequence' => 'im_sample.person_id_seq',
                 )
             ),
             array(
