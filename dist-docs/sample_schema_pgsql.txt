@@ -44,7 +44,8 @@ ALTER USER web SET search_path TO im_sample,public;
 /*  The schema for the "Sample_form" and "Sample_Auth" sample set. */
 CREATE SEQUENCE serial START 1000;
 CREATE TABLE person	(
-	id			INTEGER DEFAULT nextval('serial'),
+/*	id			INTEGER DEFAULT nextval('serial'),*/
+	id			SERIAL PRIMARY KEY,
 	name		VARCHAR(20),
 	address		VARCHAR(40),
 	mail			VARCHAR(40),
@@ -53,9 +54,10 @@ CREATE TABLE person	(
 	location		INTEGER
 );
 
-INSERT INTO person(id,name,address,mail) VALUES (1,'Masayuki Nii','Saitama, Japan','msyk@msyk.net');
-INSERT INTO person(id,name,address,mail) VALUES (2,'Someone','Tokyo, Japan','msyk@msyk.net');
-INSERT INTO person(id,name,address,mail) VALUES (3,'Anyone','Osaka, Japan','msyk@msyk.net');
+/* Don't assing values to the SERIAL type field. It can cause duplicated values. */
+INSERT INTO person(name,address,mail) VALUES ('Masayuki Nii','Saitama, Japan','msyk@msyk.net');
+INSERT INTO person(name,address,mail) VALUES ('Someone','Tokyo, Japan','msyk@msyk.net');
+INSERT INTO person(name,address,mail) VALUES ('Anyone','Osaka, Japan','msyk@msyk.net');
 
 CREATE TABLE contact	(
 	id			INTEGER   DEFAULT nextval('serial'),
@@ -406,6 +408,8 @@ GRANT ALL PRIVILEGES ON im_sample.asset TO web;
 GRANT ALL PRIVILEGES ON im_sample.rent TO web;
 GRANT ALL PRIVILEGES ON im_sample.staff TO web;
 GRANT ALL PRIVILEGES ON im_sample.category TO web;
+/* This sequence is automatically generated with SERIAL type.*/
+GRANT ALL PRIVILEGES ON im_sample.person_id_seq TO web;
 
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link) 

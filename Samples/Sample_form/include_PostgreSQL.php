@@ -21,7 +21,7 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
-            'sequence' => 'im_sample.serial',
+            'sequence' => 'im_sample.person_id_seq',
         ),
         array(
             'name' => 'contact',
