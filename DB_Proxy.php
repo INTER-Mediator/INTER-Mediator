@@ -394,6 +394,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->authDbClass = $this->dbClass;
         }
 
+        require_once("NotifyServer.php");
         $this->dbSettings->notifyServer = new NotifyServer();
         if (isset($_POST['notifyid'])
             && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $_POST['notifyid'])
