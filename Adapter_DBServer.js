@@ -19,9 +19,8 @@ INTERMediator_DBAdapter = {
     generate_authParams: function () {
         var authParams = '', shaObj, hmacValue;
         if (INTERMediatorOnPage.authUser.length > 0) {
-            authParams
-                = "&clientid=" + encodeURIComponent(INTERMediatorOnPage.clientId)
-                + "&authuser=" + encodeURIComponent(INTERMediatorOnPage.authUser);
+            authParams = "&clientid=" + encodeURIComponent(INTERMediatorOnPage.clientId);
+            authParams += "&authuser=" + encodeURIComponent(INTERMediatorOnPage.authUser);
             if (INTERMediatorOnPage.isNativeAuth) {
                 authParams += "&response=" + encodeURIComponent(
                     INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authHashedPassword
@@ -36,6 +35,9 @@ INTERMediator_DBAdapter = {
                 }
             }
         }
+
+        authParams += "&notifyid=";
+        authParams += encodeURIComponent(INTERMediatorOnPage.clientNotificationIdentifier())
         return authParams;
     },
 
@@ -80,10 +82,11 @@ INTERMediator_DBAdapter = {
     server_access: function (accessURL, debugMessageNumber, errorMessageNumber) {
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-            mediatoken = null, appPath, authParams, jsonObject, i;
+            mediatoken = null, appPath, authParams, jsonObject, i, notifySupport = false;
         appPath = INTERMediatorOnPage.getEntryPath();
         authParams = INTERMediator_DBAdapter.generate_authParams();
-        INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams)
+        INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams);
+        INTERMediatorOnPage.notifySupport = notifySupport;
         try {
             myRequest = new XMLHttpRequest();
             myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
@@ -99,6 +102,7 @@ INTERMediator_DBAdapter = {
             newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
             changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
             mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
+            notifySupport = jsonObject.notifySupport;
             for (i = 0 ; i < jsonObject.errorMessages.length; i++) {
                 INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
             }
@@ -132,6 +136,7 @@ INTERMediator_DBAdapter = {
             INTERMediatorOnPage.authCount = 0;
         }
         INTERMediatorOnPage.storeCredencialsToCookie();
+        INTERMediatorOnPage.notifySupport = notifySupport;
         return {dbresult: dbresult,
             resultCount: resultCount,
             newRecordKeyValue: newRecordKeyValue,
@@ -382,8 +387,11 @@ INTERMediator_DBAdapter = {
 
         }
 
-        params += "&randkey" + Math.random();    // For ie...
+        // params += "&randkey" + Math.random();    // For ie...
         // IE uses caches as the result in spite of several headers. So URL should be randomly.
+        //
+        // This is not requred because the Notification feature adds the client Identifier for each communication.
+        // msyk June 1, 2014
         returnValue = {};
         try {
             result = this.server_access(params, 1012, 1004);
@@ -685,5 +693,11 @@ INTERMediator_DBAdapter = {
         if (completion) {
             completion(returnValue);
         }
+    },
+
+    unregister: function () {
+        var result;
+        result = this.server_access("access=unregister", 1018, 1016);
+        return result;
     }
 };

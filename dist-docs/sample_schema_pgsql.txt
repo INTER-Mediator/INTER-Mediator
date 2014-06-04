@@ -321,6 +321,16 @@ CREATE TABLE chat (
 	PRIMARY KEY(id)
 );
 
+/* Observable */
+
+CREATE TABLE registeredcontext (
+	id	           SERIAL PRIMARY KEY,
+	clientid       VARCHAR(64),
+	entity         VARCHAR(100),
+	conditions     VARCHAR(250),
+	registereddt   TIMESTAMP
+);
+
 /* Authetication tables */
 CREATE TABLE authuser (
 	id					INTEGER   DEFAULT nextval('serial'),

@@ -686,3 +686,15 @@ INTERMediatorLib.addEvent(document, "change", function (e) {
     }
     executable(idValue);
 });
+
+INTERMediatorLib.addEvent(window, "beforeunload", function (e) {
+    var confirmationMessage = "\o/";
+
+//    (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+//    return confirmationMessage;                                //Webkit, Safari, Chrome etc.
+
+});
+
+INTERMediatorLib.addEvent(window, "unload", function (e) {
+    INTERMediator_DBAdapter.unregister();
+});

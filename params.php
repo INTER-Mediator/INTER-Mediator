@@ -106,3 +106,12 @@ $sendMailSMTP = array(
 );
 */
 
+/*
+ * If you want to specify the Pusher information, set them below.
+$pusherParameters = array(
+    'app_id' => '',
+    'key' => '',
+    'secret' => '',
+    'channel' => ''
+);
+*/

@@ -34,6 +34,16 @@ interface DB_Interface
     public function isNullAcceptable();
 }
 
+interface DB_Interface_Registering
+{
+    public function isExistRequiredTable();
+    public function queriedEntity();
+    public function queriedCondition();
+    public function register($clientId, $entity, $condition);
+    public function unregister($clientId);
+}
+
+
 interface Auth_Interface_DB					// with using table for authentication/authorization
 {
     function authSupportStoreChallenge($uid, $challenge, $clientId);	// issuedhash

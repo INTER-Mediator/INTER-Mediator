@@ -11,7 +11,7 @@
 /**
  * Class DB_PDO
  */
-class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
+class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_Registering
 {
     /**
      * @var null
@@ -29,6 +29,16 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     private $isAlreadySetup = false;
     private $isRequiredUpdated = false;
     private $updatedRecord = null;
+    private $queriedEntity = null;
+    private $queriedCondition = null;
+
+    public function queriedEntity() {
+        return $this->queriedEntity;
+    }
+
+    public function queriedCondition()  {
+        return $this->queriedCondition;
+    }
 
     public function requireUpdatedRecord($value)
     {
@@ -40,7 +50,66 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         return $this->updatedRecord;
     }
 
-    /**
+    public function isExistRequiredTable()  {
+        $regTable = $this->dbSettings->registerTableName;
+        if ($regTable == null) {
+            $this->logger->errorMessageStore("The table doesn't specified.");
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            $this->logger->errorMessageStore("Can't open db connection.");
+            return false;
+        }
+        $sql = "SELECT id FROM {$regTable} LIMIT 1";
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore("The table '{$regTable}' doesn't exist in the database.");
+            return false;
+        }
+        return true;
+
+    }
+
+    public function register($clientId, $entity, $condition)    {
+        $regTable = $this->dbSettings->registerTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $currentDT = new DateTime();
+        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
+        $sql = "INSERT INTO {$regTable} (clientid,entity,conditions,registereddt) VALUES("
+            . implode(',', array(
+                $this->link->quote($clientId),
+                $this->link->quote($entity),
+                $this->link->quote($condition),
+                $this->link->quote($currentDTFormat),
+            )) . ')';
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Insert:' . $sql);
+            return false;
+        }
+        return true;
+    }
+
+    public function unregister($clientId)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "DELETE FROM {$regTable} WHERE clientid=" . $this->link->quote($clientId);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Delete:' . $sql);
+            return false;
+        }
+        return true;
+    }
+        /**
      * @param $str
      */
     private function errorMessageStore($str)
@@ -381,6 +450,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$sortClause} "
             . " LIMIT {$limitParam} OFFSET {$skipParam}";
         $this->logger->setDebugMessage($sql);
+        $this->queriedEntity = $viewOrTableName;
+        $this->queriedCondition = "{$queryClause} LIMIT {$limitParam} OFFSET {$skipParam}";
 
         // Query
         $result = $this->link->query($sql);

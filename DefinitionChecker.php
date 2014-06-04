@@ -185,6 +185,12 @@ class DefinitionChecker
             'port' => 'integer',
             'username' => 'string',
             'password' => 'string',
+        ),
+        'pusher' => array(
+            'app_id' => 'string',
+            'key' => 'integer',
+            'secret' => 'string',
+            'channel' => 'string',
         )
     );
     private

@@ -304,6 +304,16 @@ CREATE TABLE chat (
 	message     TEXT
 );
 
+/* Observable */
+
+CREATE TABLE registeredcontext (
+	id	           INTEGER PRIMARY KEY AUTOINCREMENT,
+	clientid       TEXT,
+	entity         TEXT,
+	conditions     TEXT,
+	registereddt   DATETIME
+);
+
 CREATE TABLE authuser (
 	id					INTEGER PRIMARY KEY AUTOINCREMENT,
 	username			TEXT,

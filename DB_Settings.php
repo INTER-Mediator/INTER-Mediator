@@ -50,10 +50,23 @@ class DB_Settings
     private $requireAuthentication = false;
 
     private $smtpConfiguration = null;
+    /**
+     * @var
+     */
+    public $notifyServer = null;
+    public $clientNotificationId = null;
+    public $registerTableName = "registeredcontext";
 
+    public $pusherAppId = null;
+    public $pusherKey = null;
+    public $pusherSecret = null;
+    public $pusherChannel = "_im_pusher_default_channel";
     /**
      * @param string $dataSourceName
      */
+
+
+
     public function setSmtpConfiguration($config)
     {
         $this->smtpConfiguration = $config;
