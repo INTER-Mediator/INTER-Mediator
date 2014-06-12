@@ -100,8 +100,8 @@ if [ -f "${topOfDir}/${YUICOMP}" ]; then
     	yuiLogPath="${buildDir}/${YUICOMPLOG}"
     fi
     java -jar "${jarPath}"  "${temp2Path}" -v --charset UTF-8 -o "${temp3Path}" 2> "${yuiLogPath}"
-    sed '1s/*!/*/' "${buildPath}/temp3.js" > "${buildPath}/INTER-Mediator.js"
-    rm  "${buildPath}/temp.js" "${buildPath}/temp2.js" "${buildPath}/temp3.js"
+    sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/INTER-Mediator.js"
+    rm  "${buildPath}/temp.js" "${temp2Path}" "${temp3Path}"
 fi
 
 # Copy "lib" path php contents.
