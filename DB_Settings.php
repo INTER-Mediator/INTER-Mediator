@@ -537,6 +537,11 @@ class DB_Settings
         return $this->extraCriteria;
     }
 
+    function unsetExtraCriteria($index)
+    {
+        unset($this->extraCriteria[$index]);
+    }
+
     function addExtraCriteria($field, $operator, $value)
     {
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);

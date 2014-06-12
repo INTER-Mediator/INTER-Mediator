@@ -6,7 +6,7 @@
 # This project started at the end of 2009.
 # INTER-Mediator is supplied under MIT License.
 
-version="4.3"
+version="4.31"
 
 # The jar file of YUI can be donwloaded from below.
 # http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7
@@ -41,9 +41,9 @@ echo " Build to: ${buildPath}"
 
 echo "-------------------------------------------------"
 echo "Choose the build result from these:"
-echo " (1) Complete (everything contains)"
-echo " (2) Core only (the least set to work wep applications)"
-echo " (3) Core + Support (add Auth_Support and INTER-Mediator-Support)"
+echo ' (1) Complete (everything contains)'
+echo ' (2) Core only (the least set to work wep applications)'
+echo ' (3) Core + Support (add Auth_Support and INTER-Mediator-Support)'
 /bin/echo -n "Type 1, 2 or 3, and then type return----> "
 read choice
 echo ""
@@ -191,13 +191,13 @@ echo "OS Info: $(uname -a)" >> "${buildDir}/${receipt}"
 echo "Original: ${originalPath}" >> "${buildDir}/${receipt}"
 echo "Build to: ${buildPath}" >> "${buildDir}/${receipt}"
 if [ $choice = 1 ]; then
-    echo "Your Choice: (1) Complete (everything contains)" >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (1) Complete (everything contains)' >> "${buildDir}/${receipt}"
 elif [ $choice = 2 ]; then
-    echo "Your Choice: (2) Core only (the least set to work wep applications)" >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (2) Core only (the least set to work wep applications)' >> "${buildDir}/${receipt}"
 elif [ $choice = 3 ]; then
-    echo "Your Choice: (3) Core + Support (add Auth_Support and INTER-Mediator-Support)" >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (3) Core + Support (add Auth_Support and INTER-Mediator-Support)' >> "${buildDir}/${receipt}"
 else
-    echo "Your Choice: (1) Complete (everything contains)" >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (1) Complete (everything contains)' >> "${buildDir}/${receipt}"
 fi
 echo "" >> "${buildDir}/${receipt}"
 echo "You can deploy the 'INTER-Mediator' folder into your web applications. Enjoy!!" >> "${buildDir}/${receipt}"
