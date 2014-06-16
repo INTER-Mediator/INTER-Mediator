@@ -39,8 +39,10 @@ interface DB_Interface_Registering
     public function isExistRequiredTable();
     public function queriedEntity();
     public function queriedCondition();
-    public function register($clientId, $entity, $condition);
+    public function queriedPrimaryKeys();
+    public function register($clientId, $entity, $condition, $pkArray);
     public function unregister($clientId);
+    public function matchInRegisterd($clientId, $entity, $pkArray);
 }
 
 

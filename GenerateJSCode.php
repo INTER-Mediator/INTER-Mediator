@@ -206,7 +206,11 @@ class GenerateJSCode
             $pusherParams = $options['pusher'];
         }
         if (!is_null($pusherParams)) {
+            $appKey = isset($pusherParams['key']) ? $pusherParams['key'] : "_im_key_isnt_supplied";
             $chName = isset($pusherParams['channel']) ? $pusherParams['channel'] : "_im_pusher_default_channel";
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.clientNotificationKey",
+                "function(){return ", arrayToJS($appKey, ''), ";}");
             $this->generateAssignJS(
                 "INTERMediatorOnPage.clientNotificationChannel",
                 "function(){return ", arrayToJS($chName, ''), ";}");

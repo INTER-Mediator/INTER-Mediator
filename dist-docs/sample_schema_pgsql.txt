@@ -328,7 +328,8 @@ CREATE TABLE registeredcontext (
 	clientid       VARCHAR(64),
 	entity         VARCHAR(100),
 	conditions     VARCHAR(250),
-	registereddt   TIMESTAMP
+	registereddt   TIMESTAMP,
+	pks            TEXT
 );
 
 /* Authetication tables */

@@ -110,7 +110,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if ($this->dbSettings->notifyServer) {
                 $this->dbSettings->notifyServer->register(
                     $this->dbClass->queriedEntity(),
-                    $this->dbClass->queriedCondition()
+                    $this->dbClass->queriedCondition(),
+                    $this->dbClass->queriedPrimaryKeys()
                 );
             }
             if (isset($currentDataSource['send-mail']['load'])) {
@@ -158,13 +159,32 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeSetToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['edit'])) {
+                if (isset($currentDataSource['send-mail']['edit'])||$this->dbSettings->notifyServer) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $result = $this->dbClass->setToDB($dataSourceName);
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
                 $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
+            }
+            if ($this->dbSettings->notifyServer) {
+
+                try {
+                    $this->dbSettings->notifyServer->updated(
+                        $_POST['notifyid'],
+                        $this->dbClass->queriedEntity(),
+                        $this->dbClass->queriedPrimaryKeys(),
+                        $this->dbSettings->getFieldsRequired(),
+                        $this->dbSettings->getValue()
+                    );
+                } catch (Exception $ex) {
+                    if ($ex->getMessage() == '_im_no_pusher_exception') {
+                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
+                    } else {
+                        throw $ex;
+                    }
+                }
+
             }
             if (isset($currentDataSource['send-mail']['edit'])) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);

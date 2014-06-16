@@ -25,7 +25,7 @@ IMLibContextPool = {
     excludingNode: null,
 
     synchronize: function (context, recKey, key, value, target, portal) {
-        // console.log("SYNC:"+context+"/"+recKey+"/"+key+"/"+value);
+//        console.log("SYNC:"+context+"/"+recKey+"/"+key+"/"+value);
         var i, j, viewName, refNode, targetNodes, result = false;
         viewName = context.viewName;
         if (this.poolingContexts == null) {
@@ -193,8 +193,22 @@ IMLibContextPool = {
             }
         }
         return result.length == 0 ? false : result;
-    }
+    },
 
+    updateOnAnotherClient: function (info) {
+//        alert("entity=" + info.entity + "\npk-value=" + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
+
+        var i, result = [], entityName = info.entity, contextDef, contextView, keyField;
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            contextDef = this.getContextDef(this.poolingContexts[i].contextName);
+            contextView = contextDef.view ? contextDef.view : contextDef.name;
+            if (contextView == entityName) {
+                keyField = contextDef.key;
+                this.poolingContexts[i].setValue(keyField + "=" + info.pkvalue, info.field[0], info.value[0]);
+            }
+        }
+        INTERMediator.recalculation();
+    }
 }
 
 IMLibContext = function (contextName) {
@@ -217,34 +231,34 @@ IMLibContext = function (contextName) {
     this.clearAll = function () {
         this.store = {};
         this.binding = {};
-    }
+    };
 
     this.setContextName = function (name) {
         this.contextName = name;
-    }
+    };
 
     this.setTableName = function (name) {
         this.tableName = name;
-    }
+    };
 
     this.setViewName = function (name) {
         this.viewName = name;
-    }
+    };
 
     this.addDependingObject = function (idNumber) {
         this.dependingObject.push(idNumber);
-    }
+    };
 
     this.addForeignValue = function (field, value) {
         this.foreignValue[field] = value;
-    }
+    };
 
     this.setOriginal = function (repeaters) {
         this.original = [];
         for (i = 0; i < repeaters.length; i++) {
             this.original.push(repeaters[i].cloneNode(true));
         }
-    }
+    };
 
     this.setTable = function (context) {
         // console.error(context);
@@ -260,7 +274,7 @@ IMLibContext = function (contextName) {
             this.viewName = contextDef['view'] ? contextDef['view'] : contextDef['name'];
             this.tableName = contextDef['table'] ? contextDef['table'] : contextDef['name'];
         }
-    }
+    };
 
     this.setTable(this);
 
@@ -269,15 +283,15 @@ IMLibContext = function (contextName) {
             this.modified[recKey] = {};
         }
         this.modified[recKey][key] = value;
-    }
+    };
 
     this.getModified = function () {
         return this.modified;
-    }
+    };
 
     this.clearModified = function () {
         this.modified = {};
-    }
+    };
 
     this.setValue = function (recKey, key, value, nodeId, target, portal) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
@@ -325,7 +339,7 @@ IMLibContext = function (contextName) {
                 }
             }
         }
-    }
+    };
 
     this.getValue = function (recKey, key, portal) {
         var value;
@@ -339,7 +353,7 @@ IMLibContext = function (contextName) {
         } catch (ex) {
             return null;
         }
-    }
+    };
 
     this.getContextInfo = function (nodeId, target) {
         try {
@@ -348,7 +362,7 @@ IMLibContext = function (contextName) {
         } catch (ex) {
             return null;
         }
-    }
+    };
 
     this.getContextValue = function (nodeId, target) {
         try {
@@ -359,7 +373,7 @@ IMLibContext = function (contextName) {
             return null;
         }
     }
-}
+};
 
 IMLibLocalContext = {
     contextName: "_",
@@ -552,23 +566,24 @@ IMLibKeyEventDispatch = {
 };
 
 INTERMediatorLib.addEvent(document, "keydown", function (e) {
-    var event = e ? e : window.event;
+    var event, charCode, target, idValue;
+    event = e ? e : window.event;
     if (event.charCode) {
-        var charCode = event.charCode;
+        charCode = event.charCode;
     } else {
-        var charCode = event.keyCode;
+        charCode = event.keyCode;
     }
     if (!event) {
         return;
     }
-    var target = event.target;
+    target = event.target;
     if (!target) {
         target = event.srcElement;
         if (!target) {
             return;
         }
     }
-    var idValue = target.id;
+    idValue = target.id;
     if (!idValue) {
         return;
     }
@@ -627,7 +642,7 @@ INTERMediatorLib.addEvent(document, "click", function (e) {
         return;
     }
     targetDefs = INTERMediatorLib.getLinkedElementInfo(target);
-    for (i = 0 ; i < targetDefs.length; i++)    {
+    for (i = 0; i < targetDefs.length; i++) {
         executable = IMLibMouseEventDispatch.dispatchTableTarget[targetDefs[i]];
         if (executable) {
             nodeInfo = INTERMediatorLib.getNodeInfoArray(targetDefs[i]);
@@ -688,7 +703,7 @@ INTERMediatorLib.addEvent(document, "change", function (e) {
 });
 
 INTERMediatorLib.addEvent(window, "beforeunload", function (e) {
-    var confirmationMessage = "\o/";
+    var confirmationMessage = "";
 
 //    (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
 //    return confirmationMessage;                                //Webkit, Safari, Chrome etc.

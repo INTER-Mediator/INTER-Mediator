@@ -31,6 +31,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     private $updatedRecord = null;
     private $queriedEntity = null;
     private $queriedCondition = null;
+    private $queriedPrimaryKeys = null;
 
     public function queriedEntity() {
         return $this->queriedEntity;
@@ -43,6 +44,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     public function requireUpdatedRecord($value)
     {
         $this->isRequiredUpdated = $value;
+    }
+
+    public function queriedPrimaryKeys()    {
+        return $this->queriedPrimaryKeys;
     }
 
     public function updatedRecord()
@@ -71,19 +76,20 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     }
 
-    public function register($clientId, $entity, $condition)    {
+    public function register($clientId, $entity, $condition, $pkArray)    {
         $regTable = $this->dbSettings->registerTableName;
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
-        $sql = "INSERT INTO {$regTable} (clientid,entity,conditions,registereddt) VALUES("
+        $sql = "INSERT INTO {$regTable} (clientid,entity,conditions,registereddt,pks) VALUES("
             . implode(',', array(
                 $this->link->quote($clientId),
                 $this->link->quote($entity),
                 $this->link->quote($condition),
                 $this->link->quote($currentDTFormat),
+                $this->link->quote(implode(',', $pkArray)),
             )) . ')';
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
@@ -109,7 +115,33 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         return true;
     }
-        /**
+
+    public function matchInRegisterd($clientId, $entity, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "SELECT clientid, pks FROM {$regTable} WHERE " .
+                "clientid <> " . $this->link->quote($clientId) .
+                " AND entity = " . $this->link->quote($entity) .
+                " ORDER BY clientid, registereddt";
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        $originPK = $pkArray[0];
+        $targetClients = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            if (in_array($originPK, explode(",", $row['pks']))) {
+                $targetClients[] = $row['clientid'];
+            }
+        }
+        return array_unique($targetClients);
+    }
+    /**
      * @param $str
      */
     private function errorMessageStore($str)
@@ -164,6 +196,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return "id";
     }
 
+    private function getKeyFieldOfContext($context)  {
+        if (isset($context) && isset($context['key']))  {
+            return $context['key'];
+        }
+        return $this->getDefaultKey();
+    }
     /**
      * @param $fname
      * @return mixed
@@ -451,7 +489,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             . " LIMIT {$limitParam} OFFSET {$skipParam}";
         $this->logger->setDebugMessage($sql);
         $this->queriedEntity = $viewOrTableName;
-        $this->queriedCondition = "{$queryClause} LIMIT {$limitParam} OFFSET {$skipParam}";
+        $this->queriedCondition = "{$queryClause} {$sortClause} LIMIT {$limitParam} OFFSET {$skipParam}";
 
         // Query
         $result = $this->link->query($sql);
@@ -459,6 +497,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore('Select:' . $sql);
             return array();
         }
+        $this->queriedPrimaryKeys = array();
+        $keyField = $this->getKeyFieldOfContext($tableInfo);
         $sqlResult = array();
         $isFirstRow = true;
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -471,6 +511,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
             }
             $sqlResult[] = $rowArray;
+            $this->queriedPrimaryKeys[] = $rowArray[$keyField];
             $isFirstRow = false;
         }
 
@@ -565,6 +606,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $sql = "UPDATE {$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
+        $this->queriedEntity = $tableName;
 
         $this->logger->setDebugMessage(
             $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true)));
@@ -582,6 +624,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
             } else {
+                $this->queriedPrimaryKeys = array();
+                $keyField = $this->getKeyFieldOfContext($tableInfo);
                 $sqlResult = array();
                 $isFirstRow = true;
                 foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -594,6 +638,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
                     }
                     $sqlResult[] = $rowArray;
+                    $this->queriedPrimaryKeys[] = $rowArray[$keyField];
                     $isFirstRow = false;
                 }
                 $this->updatedRecord = $sqlResult;

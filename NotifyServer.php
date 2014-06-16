@@ -33,9 +33,9 @@ class NotifyServer
         return true;
     }
 
-    function register($entity, $condition)
+    function register($entity, $condition, $pkArray)
     {
-        $this->dbClass->register($this->clientId, $entity, $condition);
+        $this->dbClass->register($this->clientId, $entity, $condition, $pkArray);
     }
 
     function unregister($client)
@@ -43,9 +43,20 @@ class NotifyServer
         $this->dbClass->unregister($client);
     }
 
-    function updated($entity, $keying)
+    function updated($clientId, $entity, $pkArray, $field, $value)
     {
+        $channels = $this->dbClass->matchInRegisterd($clientId, $entity, $pkArray);
 
+        if (!@include_once('Pusher.php')) {
+            throw new Exception('_im_no_pusher_exception');
+        }
+        $pusher = new Pusher(
+            $this->dbSettings->pusherKey,
+            $this->dbSettings->pusherSecret,
+            $this->dbSettings->pusherAppId
+        );
+        $data = array('entity'=>$entity, 'pkvalue'=>$pkArray, 'field'=>$field, 'value'=>$value);
+        $response = $pusher->trigger($channels, 'update', $data);
     }
 
     function created($entity, $keying)

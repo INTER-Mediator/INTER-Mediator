@@ -388,6 +388,7 @@ CREATE TABLE registeredcontext (
 	entity         TEXT,
 	conditions     TEXT,
 	registereddt   DATETIME,
+	pks            TEXT,
 	PRIMARY KEY(id)
 )       CHARACTER SET utf8,
         COLLATE utf8_unicode_ci

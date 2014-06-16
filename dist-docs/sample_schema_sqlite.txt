@@ -311,7 +311,8 @@ CREATE TABLE registeredcontext (
 	clientid       TEXT,
 	entity         TEXT,
 	conditions     TEXT,
-	registereddt   DATETIME
+	registereddt   DATETIME,
+	pks            TEXT
 );
 
 CREATE TABLE authuser (
