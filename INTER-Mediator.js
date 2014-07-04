@@ -49,17 +49,7 @@ var INTERMediator = {
     rootEnclosure: null,
     // Storing to retrieve the page to initial condition.
     // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
-    calculateRequiredObject: null,
-    /*
-     key => {    // Key is the id attribute of the node which is defined as "calcuration"
-     "field":
-     "expression": exp.replace(/ /g, ""),   // expression
-     "nodeInfo": nInfo,     // node if object i.e. {field:.., table:.., target:..., tableidnex:....}
-     "values": {}   // key=target name in expression, value=real value.
-     // if value=undefined, it shows the value is calculation field
-     "refers": {}
-     }
-     */
+
     useSessionStorage: true,
     // Use sessionStorage for the Local Context instead of Cookie.
 
@@ -315,7 +305,7 @@ var INTERMediator = {
                     }
                 }
             }
-            INTERMediator.recalculation(idValue);
+            IMLibCalc.recalculation(idValue);
             INTERMediator.flushMessage();
         }
 
@@ -494,14 +484,14 @@ var INTERMediator = {
             if (removingNodes) {
                 for (i = 0; i < removingNodes.length; i++) {
                     removeNodeId = removingNodes[i].id;
-                    if (removeNodeId in INTERMediator.calculateRequiredObject) {
-                        delete INTERMediator.calculateRequiredObject[removeNodeId];
+                    if (removeNodeId in IMLibCalc.calculateRequiredObject) {
+                        delete IMLibCalc.calculateRequiredObject[removeNodeId];
                     }
                 }
                 for (i = 0; i < removingNodes.length; i++) {
                     removeNodeId = removingNodes[i].id;
-                    for (nodeId in INTERMediator.calculateRequiredObject) {
-                        calcObject = INTERMediator.calculateRequiredObject[nodeId];
+                    for (nodeId in IMLibCalc.calculateRequiredObject) {
+                        calcObject = IMLibCalc.calculateRequiredObject[nodeId];
                         referes = {};
                         values = {};
                         for (j in calcObject.referes) {
@@ -525,7 +515,7 @@ var INTERMediator = {
                 // Avoid an error for Safari
             }
         }
-        INTERMediator.recalculation();
+        IMLibCalc.recalculation();
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
     },
@@ -682,7 +672,7 @@ var INTERMediator = {
             INTERMediator.constructMain(associatedContext);
         }
 
-        INTERMediator.recalculation();
+        IMLibCalc.recalculation();
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
     },
@@ -892,80 +882,6 @@ var INTERMediator = {
 
     },
 
-    /*
-     On updating, the updatedNodeId should be set to the updating node id.
-     On deleting, parameter doesn't required.
-     */
-    recalculation: function (updatedNodeId) {
-        var nodeId, newValueAdded, leafNodes, calcObject, ix, calcFieldInfo, updatedValue, isRecalcAll = false;
-        var targetNode, newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex;
-
-        if (updatedNodeId === undefined) {
-            isRecalcAll = true;
-            updatedNodeIds = [];
-            updateNodeValues = [];
-        } else {
-            newValue = IMLibElement.getValueFromIMNode(document.getElementById(updatedNodeId));
-            updatedNodeIds = [updatedNodeId];
-            updateNodeValues = [newValue];
-        }
-
-        IMLibNodeGraph.clear();
-        for (nodeId in INTERMediator.calculateRequiredObject) {
-            calcObject = INTERMediator.calculateRequiredObject[nodeId];
-            calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
-            targetNode = document.getElementById(calcFieldInfo.field);
-            for (field in calcObject.referes) {
-                for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                    IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
-                }
-            }
-        }
-        do {
-            leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
-            for (i = 0; i < leafNodes.length; i++) {
-                calcObject = INTERMediator.calculateRequiredObject[leafNodes[i]];
-                calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
-                if (calcObject) {
-                    if (isRecalcAll) {
-                        newValueAdded = true;
-                    } else {
-                        newValueAdded = false;
-                        for (field in calcObject.referes) {
-                            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                                cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix]);
-                                if (cachedIndex >= 0) {
-                                    calcObject.values[field][ix] = updateNodeValues[cachedIndex];
-                                    newValueAdded = true;
-                                }
-                            }
-                        }
-                    }
-                    if (newValueAdded) {
-                        updatedValue = Parser.evaluate(
-                            calcObject.expression,
-                            calcObject.values
-                        );
-                        IMLibElement.setValueToIMNode(
-                            document.getElementById(calcFieldInfo.field),
-                            calcFieldInfo.target,
-                            updatedValue,
-                            true);
-                        updatedNodeIds.push(calcFieldInfo.field);
-                        updateNodeValues.push(updatedValue);
-                    }
-                }
-                else {
-
-                }
-            }
-        } while (leafNodes.length > 0);
-        if (IMLibNodeGraph.nodes.length > 0) {
-            // Spanning Tree Detected.
-        }
-
-    },
-
     initialize: function () {
         INTERMediatorOnPage.removeCookie('_im_localcontext');
 //    INTERMediatorOnPage.removeCookie('_im_username');
@@ -1094,13 +1010,13 @@ var INTERMediator = {
             for (i = 0; i < postSetFields.length; i++) {
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
-            updateCalculationFields();
+            IMLibCalc.updateCalculationFields();
         }
 
         function pageConstruct() {
             var i, bodyNode, emptyElement;
 
-            INTERMediator.calculateRequiredObject = {};
+            IMLibCalc.calculateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
             INTERMediator.elementIds = [];
             //INTERMediator.widgetElementIds = [];
@@ -1139,7 +1055,7 @@ var INTERMediator = {
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
             IMLibLocalContext.bindingDescendant(bodyNode);
-            updateCalculationFields();
+            IMLibCalc.updateCalculationFields();
             IMLibPageNavigation.navigationSetup();
 
             if (isAcceptNotify) {
@@ -1472,7 +1388,8 @@ var INTERMediator = {
                                     nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
                                     curVal = targetRecords.recordset[ix][nInfo['field']];
                                     if (!INTERMediator.isDBDataPreferable || curVal != null) {
-                                        updateCalcurationInfo(currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
+                                        IMLibCalc.updateCalculationInfo(
+                                            currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
                                     }
                                     if (nInfo['table'] == currentContext['name']) {
                                         isContext = true;
@@ -1659,149 +1576,6 @@ var INTERMediator = {
                 }
             }
             currentLevel--;
-        }
-
-        function updateCalcurationInfo(currentContext, nodeId, nInfo, currentRecord) {
-            var calcDef, exp, field, elements, i, index, objectKey, calcFieldInfo, itemIndex, values, referes,
-                calcDefField, atPos, fieldLength;
-
-            calcDef = currentContext['calculation'];
-            field = null;
-            exp = null;
-            for (index in calcDef) {
-                atPos = calcDef[index]["field"].indexOf("@");
-                fieldLength = calcDef[index]["field"].length;
-                calcDefField = calcDef[index]["field"].substring(0, atPos >= 0 ? atPos : fieldLength);
-                if (calcDefField == nInfo["field"]) {
-                    try {
-                        exp = calcDef[index]["expression"];
-                        field = calcDef[index]["field"];
-                        elements = Parser.parse(exp).variables();
-                        calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
-                        objectKey = nodeId
-                        + (calcFieldInfo.target.length > 0 ? (INTERMediator.separator + calcFieldInfo.target) : "");
-                    } catch (ex) {
-                        INTERMediator.setErrorMessage(ex,
-                            INTERMediatorLib.getInsertedString(
-                                INTERMediatorOnPage.getMessages()[1036], [field, exp]));
-                    }
-                    if (elements) {
-                        values = {};
-                        referes = {};
-                        for (i = 0; i < elements.length; i++) {
-                            itemIndex = elements[i];
-                            if (itemIndex) {
-                                values[itemIndex] = [currentRecord[itemIndex]];
-                                referes[itemIndex] = [undefined];
-                            }
-                        }
-                        INTERMediator.calculateRequiredObject[objectKey] = {
-                            "field": field,
-                            "expression": exp,
-                            "nodeInfo": nInfo,
-                            "values": values,
-                            "referes": referes
-                        };
-                    }
-                }
-            }
-//                console.error(INTERMediator.calculateRequiredObject);
-        }
-
-
-        function updateCalculationFields() {
-            var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, calcFieldInfo;
-            var targetNode, targetExp, field, valueSeries, targetElement, targetIds, i, counter, hasReferes;
-
-            IMLibNodeGraph.clear();
-            for (nodeId in INTERMediator.calculateRequiredObject) {
-                calcObject = INTERMediator.calculateRequiredObject[nodeId];
-                if (calcObject) {
-                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
-                    targetNode = document.getElementById(calcFieldInfo.field);
-                    for (field in calcObject.values) {
-                        if (field.indexOf(INTERMediator.separator) > -1) {
-                            targetExp = field;
-                        } else {
-                            targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
-                        }
-                        do {
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetNode = INTERMediatorLib.getParentRepeater(
-                                INTERMediatorLib.getParentEnclosure(targetNode));
-                        } while (targetNode);
-                        if (INTERMediatorLib.is_array(targetIds)) {
-                            INTERMediator.calculateRequiredObject[nodeId].referes[field] = targetIds;
-                            if (targetIds.length != INTERMediator.calculateRequiredObject[nodeId].values[field].length) {
-                                counter = targetIds.length;
-                                valuesArray = [];
-                                while (counter > 0) {
-                                    counter--;
-                                    valuesArray.push(undefined);
-                                }
-                                INTERMediator.calculateRequiredObject[nodeId].values[field] = valuesArray;
-                            }
-                        }
-                    }
-
-                    hasReferes = false;
-                    for (field in calcObject.referes) {
-                        for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                            IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
-                            hasReferes = false;
-                        }
-                    }
-                    if (!hasReferes) {
-                        IMLibNodeGraph.addEdge(nodeId);
-                    }
-                }
-            }
-
-            do {
-                leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
-                for (i = 0; i < leafNodes.length; i++) {
-                    calcObject = INTERMediator.calculateRequiredObject[leafNodes[i]];
-                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
-                    if (calcObject) {
-                        targetNode = document.getElementById(calcFieldInfo.field);
-                        exp = calcObject.expression;
-                        nInfo = calcObject.nodeInfo;
-                        valuesArray = calcObject.values;
-                        refersArray = calcObject.referes;
-                        for (field in valuesArray) {
-                            valueSeries = [];
-                            for (ix = 0; ix < valuesArray[field].length; ix++) {
-                                if (valuesArray[field][ix] == undefined) {
-                                    targetElement = document.getElementById(refersArray[field][ix]);
-                                    valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
-                                } else {
-                                    valueSeries.push(valuesArray[field][ix]);
-                                }
-                            }
-                            calcObject.values[field] = valueSeries;
-                        }
-                        IMLibElement.setValueToIMNode(
-                            targetNode,
-                            calcFieldInfo.target,
-                            Parser.evaluate(exp, valuesArray),
-                            true);
-                    } else {
-
-                    }
-                }
-            } while (leafNodes.length > 0);
-            if (IMLibNodeGraph.nodes.length > 0) {
-                INTERMediator.setErrorMessage(new Exception(),
-                    INTERMediatorLib.getInsertedString(
-                        INTERMediatorOnPage.getMessages()[1037], []));
-            }
         }
 
         function retrieveDataForEnclosure(currentContext, fieldList, relationValue) {

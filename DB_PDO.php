@@ -57,6 +57,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function isExistRequiredTable()  {
         $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
         if ($regTable == null) {
             $this->logger->errorMessageStore("The table doesn't specified.");
             return false;
@@ -78,19 +79,36 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function register($clientId, $entity, $condition, $pkArray)    {
         $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
         $currentDT = new DateTime();
         $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
-        $sql = "INSERT INTO {$regTable} (clientid,entity,conditions,registereddt,pks) VALUES("
+        $sql = "INSERT INTO {$regTable} (clientid,entity,conditions,registereddt) VALUES("
             . implode(',', array(
                 $this->link->quote($clientId),
                 $this->link->quote($entity),
                 $this->link->quote($condition),
                 $this->link->quote($currentDTFormat),
-                $this->link->quote(implode(',', $pkArray)),
             )) . ')';
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Insert:' . $sql);
+            return false;
+        }
+        $newContextId = $this->link->lastInsertId();
+        $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES";
+        $isFirstRow = true;
+        foreach($pkArray as $pk)    {
+            $qPk = $this->link->quote($pk);
+            if (!$isFirstRow)   {
+                $sql .= ",";
+            }
+            $sql .= "({$newContextId},{$qPk})";
+            $isFirstRow = false;
+        }
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -103,6 +121,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     public function unregister($clientId)
     {
         $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -119,25 +138,25 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     public function matchInRegisterd($clientId, $entity, $pkArray)
     {
         $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT clientid, pks FROM {$regTable} WHERE " .
+        $originPK = $pkArray[0];
+        $sql = "SELECT clientid FROM affectedpks WHERE " .
                 "clientid <> " . $this->link->quote($clientId) .
                 " AND entity = " . $this->link->quote($entity) .
-                " ORDER BY clientid, registereddt";
+                " AND pk = " . $this->link->quote($originPK) .
+                " ORDER BY clientid";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
-        $originPK = $pkArray[0];
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if (in_array($originPK, explode(",", $row['pks']))) {
-                $targetClients[] = $row['clientid'];
-            }
+            $targetClients[] = $row['clientid'];
         }
         return array_unique($targetClients);
     }

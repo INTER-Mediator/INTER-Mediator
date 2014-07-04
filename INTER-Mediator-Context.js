@@ -196,7 +196,7 @@ IMLibContextPool = {
     },
 
     updateOnAnotherClient: function (info) {
-//        alert("entity=" + info.entity + "\npk-value=" + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
+        console.error("entity=" + info.entity + "\npk-value=" + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
 
         var i, result = [], entityName = info.entity, contextDef, contextView, keyField;
         for (i = 0; i < this.poolingContexts.length; i++) {
@@ -207,7 +207,7 @@ IMLibContextPool = {
                 this.poolingContexts[i].setValue(keyField + "=" + info.pkvalue, info.field[0], info.value[0]);
             }
         }
-        INTERMediator.recalculation();
+        IMLibCalc.recalculation();
     }
 }
 

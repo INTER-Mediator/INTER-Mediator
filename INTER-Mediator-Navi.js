@@ -269,7 +269,7 @@ IMLibPageNavigation = {
             INTERMediator.constructMain(true);
             INTERMediator.additionalCondition = restore;
         }
-        INTERMediator.recalculation();
+        IMLibCalc.recalculation();
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
     },

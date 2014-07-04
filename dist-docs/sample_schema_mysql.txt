@@ -388,11 +388,23 @@ CREATE TABLE registeredcontext (
 	entity         TEXT,
 	conditions     TEXT,
 	registereddt   DATETIME,
-	pks            TEXT,
 	PRIMARY KEY(id)
 )       CHARACTER SET utf8,
         COLLATE utf8_unicode_ci
         ENGINE=InnoDB;
+
+
+CREATE TABLE registeredpks (
+	context_id INT,
+	pk         INT,
+	PRIMARY KEY(context_id, pk),
+	FOREIGN KEY(context_id) REFERENCES registeredcontext(id) ON DELETE CASCADE
+)       CHARACTER SET utf8,
+        COLLATE utf8_unicode_ci
+        ENGINE=InnoDB;
+
+CREATE VIEW affectedpks AS
+    SELECT DISTINCT pk, clientid, entity FROM registeredpks, registeredcontext WHERE context_id = id;
 
 #
 #

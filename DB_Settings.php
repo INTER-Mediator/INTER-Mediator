@@ -56,6 +56,7 @@ class DB_Settings
     public $notifyServer = null;
     public $clientNotificationId = null;
     public $registerTableName = "registeredcontext";
+    public $registerPKTableName = "registeredpks";
 
     public $pusherAppId = null;
     public $pusherKey = null;
