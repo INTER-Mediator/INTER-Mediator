@@ -168,7 +168,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
             }
             if ($this->dbSettings->notifyServer) {
-
                 try {
                     $this->dbSettings->notifyServer->updated(
                         $_POST['notifyid'],
@@ -184,7 +183,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         throw $ex;
                     }
                 }
-
             }
             if (isset($currentDataSource['send-mail']['edit'])) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);
@@ -217,13 +215,29 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeNewToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['new'])) {
+                if (isset($currentDataSource['send-mail']['new'])||$this->dbSettings->notifyServer) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
                 $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
+            }
+            if ($this->dbSettings->notifyServer) {
+                try {
+                    $this->dbSettings->notifyServer->created(
+                        $_POST['notifyid'],
+                        $this->dbClass->queriedEntity(),
+                        $this->dbClass->queriedPrimaryKeys(),
+                        $this->dbClass->updatedRecord()
+                    );
+                } catch (Exception $ex) {
+                    if ($ex->getMessage() == '_im_no_pusher_exception') {
+                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
+                    } else {
+                        throw $ex;
+                    }
+                }
             }
             if (isset($currentDataSource['send-mail']['new'])) {
                 $this->logger->setDebugMessage("Try to send an email.");
@@ -259,6 +273,21 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
                 $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);
+            }
+            if ($this->dbSettings->notifyServer) {
+                try {
+                    $this->dbSettings->notifyServer->deleted(
+                        $_POST['notifyid'],
+                        $this->dbClass->queriedEntity(),
+                        $this->dbClass->queriedPrimaryKeys()
+                    );
+                } catch (Exception $ex) {
+                    if ($ex->getMessage() == '_im_no_pusher_exception') {
+                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
+                    } else {
+                        throw $ex;
+                    }
+                }
             }
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");

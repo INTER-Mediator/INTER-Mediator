@@ -121,7 +121,8 @@ IMLibContextPool = {
         contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);
         value = IMLibElement.getValueFromIMNode(document.getElementById(idValue));
         if (contextInfo) {
-            contextInfo.context.setValue(contextInfo['record'], contextInfo.field, value, false, target, contextInfo.portal);
+            contextInfo.context.setValue(
+                contextInfo['record'], contextInfo.field, value, false, target, contextInfo.portal);
         }
     },
 
@@ -195,19 +196,47 @@ IMLibContextPool = {
         return result.length == 0 ? false : result;
     },
 
-    updateOnAnotherClient: function (info) {
-        console.error("entity=" + info.entity + "\npk-value=" + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
+    updateOnAnotherClient: function (eventName, info) {
+        var keying, i, entityName = info.entity, contextDef, contextView, keyField, bindingInfo, fieldName, cIndex,
+            targetNode;
+        console.error("eventName=" + eventName + "\nentity=" + info.entity + "\npk-value="
+            + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
 
-        var i, result = [], entityName = info.entity, contextDef, contextView, keyField;
-        for (i = 0; i < this.poolingContexts.length; i++) {
-            contextDef = this.getContextDef(this.poolingContexts[i].contextName);
-            contextView = contextDef.view ? contextDef.view : contextDef.name;
-            if (contextView == entityName) {
-                keyField = contextDef.key;
-                this.poolingContexts[i].setValue(keyField + "=" + info.pkvalue, info.field[0], info.value[0]);
+        if (eventName == 'update') {
+            for (i = 0; i < this.poolingContexts.length; i++) {
+                contextDef = this.getContextDef(this.poolingContexts[i].contextName);
+                contextView = contextDef.view ? contextDef.view : contextDef.name;
+                if (contextView == entityName) {
+                    keyField = contextDef.key;
+                    this.poolingContexts[i].setValue(keyField + "=" + info.pkvalue, info.field[0], info.value[0]);
+                }
             }
+            IMLibCalc.recalculation();
+        } else if (eventName == 'create') {
+        } else if (eventName == 'delete') {
+            for (i = 0; i < this.poolingContexts.length; i++) {
+                contextDef = this.getContextDef(this.poolingContexts[i].contextName);
+                contextView = contextDef.view ? contextDef.view : contextDef.name;
+                if (contextView == entityName) {
+                    keyField = contextDef.key;
+                    keying = keyField + "=" + info.pkvalue;
+                    bindingInfo = this.poolingContexts[i].binding[keying];
+                    for (fieldName in bindingInfo) {
+                        for (cIndex = 0; cIndex < bindingInfo[fieldName].length; cIndex++) {
+                            targetNode = document.getElementById(bindingInfo[fieldName][cIndex].id);
+                            if (targetNode) {
+                                targetNode = INTERMediatorLib.getParentRepeater(targetNode);
+                                if (targetNode) {
+                                    targetNode.parentNode.removeChild(targetNode);
+                                }
+                            }
+                        }
+                    }
+                    delete this.poolingContexts[i].binding[keying];
+                }
+            }
+            IMLibCalc.recalculation();
         }
-        IMLibCalc.recalculation();
     }
 }
 
@@ -488,7 +517,7 @@ IMLibLocalContext = {
                         IMLibLocalContext.update(nodeId);
                     };
                 })());
-                IMLibChangeEventDispatch.setExecute(idValue, INTERMediator.valueChange);
+                IMLibChangeEventDispatch.setExecute(idValue, IMLibUI.valueChange);
 
                 value = this.store[nodeInfo.field];
                 IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true);

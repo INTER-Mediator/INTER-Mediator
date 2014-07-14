@@ -63,15 +63,15 @@ IMParts_Catalog["tinymce"] = {
                     var updateRquired = update;
                     return function (ev) {
                         if (updateRquired) {
-                            INTERMediator.valueChange(ed.id);
+                            IMLibUI.valueChange(ed.id);
                         }
                     }
                 })());
                 ed.on('keydown', function (ev) {
-                    INTERMediator.keyDown(ev);
+                    IMLibUI.keyDown(ev);
                 });
                 ed.on('keyup', function (ev) {
-                    INTERMediator.keyUp(ev);
+                    IMLibUI.keyUp(ev);
                 });
             };
         } else {

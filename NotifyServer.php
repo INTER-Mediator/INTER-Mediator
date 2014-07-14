@@ -59,14 +59,41 @@ class NotifyServer
         $response = $pusher->trigger($channels, 'update', $data);
     }
 
-    function created($entity, $keying)
+    function created($clientId, $entity, $pkArray, $record)
     {
+        $channels = $this->dbClass->appendIntoRegisterd($clientId, $entity, $pkArray);
 
+        if (!@include_once('Pusher.php')) {
+            throw new Exception('_im_no_pusher_exception');
+        }
+        $pusher = new Pusher(
+            $this->dbSettings->pusherKey,
+            $this->dbSettings->pusherSecret,
+            $this->dbSettings->pusherAppId
+        );
+        $data = array(
+            'entity'=>$entity,
+            'pkvalue'=>$pkArray,
+            'field'=>array_keys($record),
+            'value'=>array_values($record)
+        );
+        $response = $pusher->trigger($channels, 'create', $data);
     }
 
-    function deleted($entity, $keying)
+    function deleted($clientId, $entity, $pkArray)
     {
+        $channels = $this->dbClass->removeFromRegisterd($clientId, $entity, $pkArray);
 
+        if (!@include_once('Pusher.php')) {
+            throw new Exception('_im_no_pusher_exception');
+        }
+        $pusher = new Pusher(
+            $this->dbSettings->pusherKey,
+            $this->dbSettings->pusherSecret,
+            $this->dbSettings->pusherAppId
+        );
+        $data = array('entity'=>$entity, 'pkvalue'=>$pkArray);
+        $response = $pusher->trigger($channels, 'delete', $data);
     }
 
     function notify($client, $entity, $keying)

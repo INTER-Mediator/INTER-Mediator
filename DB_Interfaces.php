@@ -43,6 +43,8 @@ interface DB_Interface_Registering
     public function register($clientId, $entity, $condition, $pkArray);
     public function unregister($clientId);
     public function matchInRegisterd($clientId, $entity, $pkArray);
+    public function appendIntoRegisterd($clientId, $entity, $pkArray);
+    public function removeFromRegisterd($clientId, $entity, $pkArray);
 }
 
 

@@ -42,7 +42,7 @@ IMParts_Catalog["codemirror"] = {
                 editor.on("change", function () {
                     var nodeId = targetId;
                     return function (instance, obj) {
-                        INTERMediator.valueChange(nodeId)
+                        IMLibUI.valueChange(nodeId)
                     };
                 }());
                 targetNode._im_getValue = function () {

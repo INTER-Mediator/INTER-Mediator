@@ -33,11 +33,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     private $queriedCondition = null;
     private $queriedPrimaryKeys = null;
 
-    public function queriedEntity() {
+    public function queriedEntity()
+    {
         return $this->queriedEntity;
     }
 
-    public function queriedCondition()  {
+    public function queriedCondition()
+    {
         return $this->queriedCondition;
     }
 
@@ -46,7 +48,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $this->isRequiredUpdated = $value;
     }
 
-    public function queriedPrimaryKeys()    {
+    public function queriedPrimaryKeys()
+    {
         return $this->queriedPrimaryKeys;
     }
 
@@ -55,7 +58,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $this->updatedRecord;
     }
 
-    public function isExistRequiredTable()  {
+    public function isExistRequiredTable()
+    {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         if ($regTable == null) {
@@ -77,7 +81,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     }
 
-    public function register($clientId, $entity, $condition, $pkArray)    {
+    public function register($clientId, $entity, $condition, $pkArray)
+    {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         if (!$this->setupConnection()) { //Establish the connection
@@ -101,9 +106,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $newContextId = $this->link->lastInsertId();
         $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES";
         $isFirstRow = true;
-        foreach($pkArray as $pk)    {
+        foreach ($pkArray as $pk) {
             $qPk = $this->link->quote($pk);
-            if (!$isFirstRow)   {
+            if (!$isFirstRow) {
                 $sql .= ",";
             }
             $sql .= "({$newContextId},{$qPk})";
@@ -144,10 +149,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $originPK = $pkArray[0];
         $sql = "SELECT clientid FROM affectedpks WHERE " .
-                "clientid <> " . $this->link->quote($clientId) .
-                " AND entity = " . $this->link->quote($entity) .
-                " AND pk = " . $this->link->quote($originPK) .
-                " ORDER BY clientid";
+            "clientid <> " . $this->link->quote($clientId) .
+            " AND entity = " . $this->link->quote($entity) .
+            " AND pk = " . $this->link->quote($originPK) .
+            " ORDER BY clientid";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -160,6 +165,68 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         return array_unique($targetClients);
     }
+
+    public function appendIntoRegisterd($clientId, $entity, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->link->quote($entity);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        $targetClients = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $targetClients[] = $row['clientid'];
+            $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES(" . $this->link->quote($row['id']) .
+                "," . $this->link->quote($pkArray[0]) . ")";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Insert:' . $sql);
+                return false;
+            }
+            $this->logger->setDebugMessage("Deleted count: " . $result->rowCount(), 2);
+        }
+        return array_diff(array_unique($targetClients), array($clientId));
+    }
+
+    public function removeFromRegisterd($clientId, $entity, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->link->quote($entity);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        $this->logger->setDebugMessage(var_export($result, true));
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        $targetClients = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $targetClients[] = $row['clientid'];
+            $sql = "DELETE FROM {$pksTable} WHERE context_id = " . $this->link->quote($row['id']).
+                " AND pk = " . $this->link->quote($pkArray[0]);
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Delete:' . $sql);
+                return false;
+            }
+            $this->logger->setDebugMessage("Deleted count: " . $result->rowCount(), 2);
+        }
+        return array_diff(array_unique($targetClients), array($clientId));
+    }
+
     /**
      * @param $str
      */
@@ -215,12 +282,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return "id";
     }
 
-    private function getKeyFieldOfContext($context)  {
-        if (isset($context) && isset($context['key']))  {
+    private function getKeyFieldOfContext($context)
+    {
+        if (isset($context) && isset($context['key'])) {
             return $context['key'];
         }
         return $this->getDefaultKey();
     }
+
     /**
      * @param $fname
      * @return mixed
@@ -296,6 +365,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $insideOp = ' AND ';
             $outsideOp = ' OR ';
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
+                if ($condition['field'] == $primaryKey && isset($condition['value'])) {
+                    $this->queriedPrimaryKeys = array($condition['value']);
+                }
                 if ($condition['field'] == '__operation__') {
                     $chunkCount++;
                     if ($condition['operator'] == 'ex') {
@@ -606,7 +678,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $counter++;
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
 
-        //    $this->logger->setDebugMessage(" ###### " . "{$tableName}{$this->settings->getSeparator()}{$field}");
+            //    $this->logger->setDebugMessage(" ###### " . "{$tableName}{$this->settings->getSeparator()}{$field}");
             $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
 
             $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
@@ -768,6 +840,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
         $lastKeyValue = $this->link->lastInsertId($seqObject);
 
+        $this->queriedPrimaryKeys = array($lastKeyValue);
+        $this->queriedEntity = $tableName;
+
         if ($this->isRequiredUpdated) {
             $sql = "SELECT * FROM " . $tableName
                 . " WHERE " . $keyField . "=" . $this->link->quote($lastKeyValue);
@@ -851,6 +926,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore('Delete Error:' . $sql);
             return false;
         }
+        $this->queriedEntity = $tableName;
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -1753,11 +1829,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
     }
 
-    public function isContainingFieldName($fname, $fieldnames)    {
+    public function isContainingFieldName($fname, $fieldnames)
+    {
         return in_array($fname, $fieldnames);
     }
 
-    public function isNullAcceptable()  {
+    public function isNullAcceptable()
+    {
         return true;
     }
 

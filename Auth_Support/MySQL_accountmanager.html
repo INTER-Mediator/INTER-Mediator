@@ -20,7 +20,7 @@
             passwd = document.getElementById('inputpassword').value;
             passwdField = INTERMediatorOnPage.getNodeIdFromIMDefinition("authuser@hashedpasswd", button);
             document.getElementById(passwdField).value = INTERMediatorLib.generatePasswordHash(passwd);
-            INTERMediator.valueChange(passwdField);
+            IMLibUI.valueChange(passwdField);
         }
     </script>
 </head>
