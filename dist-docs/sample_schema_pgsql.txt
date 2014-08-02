@@ -425,6 +425,8 @@ GRANT ALL PRIVILEGES ON im_sample.asset TO web;
 GRANT ALL PRIVILEGES ON im_sample.rent TO web;
 GRANT ALL PRIVILEGES ON im_sample.staff TO web;
 GRANT ALL PRIVILEGES ON im_sample.category TO web;
+GRANT ALL PRIVILEGES ON im_sample.registeredcontext TO web;
+GRANT ALL PRIVILEGES ON im_sample.registeredpks TO web;
 /* This sequence is automatically generated with SERIAL type.*/
 GRANT ALL PRIVILEGES ON im_sample.person_id_seq TO web;
 
