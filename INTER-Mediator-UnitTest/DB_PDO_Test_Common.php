@@ -266,4 +266,191 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($presetValue == $value, $testName);
     }
 
+    public function testMultiClientSyncTableExsistence()    {
+        $testName = "Tables for storing the context and ids should be existing.";
+        $this->dbProxySetupForAuth();
+        $this->assertTrue($this->db_proxy->dbClass->isExistRequiredTable(), $testName);
+    }
+
+    public function testMultiClientSyncRegisterAndUnregister()    {
+        $testName = "Register and Unregister.";
+        $this->dbProxySetupForAuth();
+        $this->db_proxy->dbClass->deleteForTest("registeredcontext");
+        $this->db_proxy->dbClass->deleteForTest("registeredpks");
+        $clientId = "123456789ABCDEF";
+        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $pkArray = array(1001, 2001, 3003, 4004);
+
+        $entity = "table1";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredcontext",
+            array("clientId"=>$clientId, "entity"=>$entity));
+        $this->assertTrue(count($recSet) == 1, "Count table1");
+        $this->assertTrue($recSet[0]["conditions"] == $condition, "tha 'clientId' value in table1");
+        $regId = $recSet[0]["id"];
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredpks",
+            array("context_id"=>$regId));
+        $this->assertTrue(count($recSet) == 4, "Count pk values");
+        $this->assertTrue(count(array_diff(
+                $pkArray,
+                array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
+            )) == 0, "Stored pk values");
+
+        $entity = "table2";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredcontext",
+            array("clientId"=>$clientId, "entity"=>$entity));
+        $this->assertTrue(count($recSet) == 1, "Count table1");
+        $this->assertTrue($recSet[0]["conditions"] == $condition, "tha 'clientId' value in table1");
+        $regId = $recSet[0]["id"];
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredpks",
+            array("context_id"=>$regId));
+        $this->assertTrue(count($recSet) == 4, "Count pk values");
+        $this->assertTrue(count(array_diff(
+                $pkArray,
+                array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
+            )) == 0, "Stored pk values");
+
+        $entity = "table3";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredcontext",
+            array("clientId"=>$clientId, "entity"=>$entity));
+        $this->assertTrue(count($recSet) == 1, "Count table1");
+        $this->assertTrue($recSet[0]["conditions"] == $condition, "tha 'clientId' value in table1");
+        $regId = $recSet[0]["id"];
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredpks",
+            array("context_id"=>$regId));
+        $this->assertTrue(count($recSet) == 4, "Count pk values");
+        $this->assertTrue(count(array_diff(
+                $pkArray,
+                array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
+            )) == 0, "Stored pk values");
+
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
+        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
+        $this->assertTrue(count($recSet) == 0, "Count pk values");
+
+    }
+
+    public function testMultiClientSyncMatching()    {
+        $testName = "Match the sync info.";
+        $this->dbProxySetupForAuth();
+        $this->db_proxy->dbClass->deleteForTest("registeredcontext");
+        $this->db_proxy->dbClass->deleteForTest("registeredpks");
+        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $pkArray1 = array(1001, 2001, 3003, 4004);
+        $pkArray2 = array(9001, 8001, 3003, 4004);
+
+        $entity = "table1";
+        $clientId1 = "123456789ABCDEF";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1), $testName);
+        $clientId2 = "ZZYYEEDDFF39887";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2), $testName);
+
+        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(3003));
+        $this->assertTrue(count($result) == 1, "Count matching");
+        $this->assertTrue($result[0] == $clientId1, "Matched client id");
+
+        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(2001));
+        $this->assertTrue(count($result) == 1, "Count matching");
+        $this->assertTrue($result[0] == $clientId1, "Matched client id");
+
+        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(4567));
+        $this->assertTrue(count($result) == 0, "Count matching");
+
+        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(8001));
+        $this->assertTrue(count($result) == 0, "Count matching");
+
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
+        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
+        $this->assertTrue(count($recSet) == 0, "Count pk values");
+    }
+
+    public function testMultiClientSyncAppend()    {
+        $testName = "Append Sync Info.";
+        $this->dbProxySetupForAuth();
+        $this->db_proxy->dbClass->deleteForTest("registeredcontext");
+        $this->db_proxy->dbClass->deleteForTest("registeredpks");
+        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $pkArray1 = array(1001, 2001, 3003, 4004);
+        $pkArray2 = array(9001, 8001, 3003, 4004);
+
+        $entity = "table1";
+        $clientId1 = "123456789ABCDEF";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1), $testName);
+        $clientId2 = "ZZYYEEDDFF39887";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2), $testName);
+        $clientId3 = "555588888DDDDDD";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId3, "table2", $condition, $pkArray2), $testName);
+
+        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId1, $entity, array(101));
+        $this->assertTrue($result[0] == $clientId2, $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>101));
+        $this->assertTrue(count($recSet) == 2 , $testName);
+
+        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId2, $entity, array(102));
+        $this->assertTrue($result[0] == $clientId1, $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>102));
+        $this->assertTrue(count($recSet) == 2 , $testName);
+
+        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId3, "table2", array(103));
+        $this->assertTrue(count($result) == 0, $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>103));
+        $this->assertTrue(count($recSet) == 1 , $testName);
+
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId3), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
+        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
+        $this->assertTrue(count($recSet) == 0, "Count pk values");
+
+        //$reult = $this->db_proxy->dbClass->removeFromRegisterd($clientId, $entity, $pkArray);
+
+    }
+
+    public function testMultiClientSyncRemove()    {
+        $testName = "Remove Sync Info.";
+        $this->dbProxySetupForAuth();
+        $this->db_proxy->dbClass->deleteForTest("registeredcontext");
+        $this->db_proxy->dbClass->deleteForTest("registeredpks");
+        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $pkArray1 = array(1001, 2001, 3003, 4004);
+        $pkArray2 = array(9001, 8001, 3003, 4004);
+
+        $entity = "table1";
+        $clientId1 = "123456789ABCDEF";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1), $testName);
+        $clientId2 = "ZZYYEEDDFF39887";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2), $testName);
+        $clientId3 = "555588888DDDDDD";
+
+        $result = $this->db_proxy->dbClass->removeFromRegisterd($clientId1, $entity, array(3003));
+        $this->assertTrue($result[0] == $clientId2, $testName);
+
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>3003));
+        var_dump($recSet);
+        $this->assertTrue(count($recSet) == 0 , $testName);
+
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId3), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
+        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
+        $this->assertTrue(count($recSet) == 0, "Count pk values");
+    }
+
 }

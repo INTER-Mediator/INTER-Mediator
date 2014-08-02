@@ -213,26 +213,21 @@ IMLibContextPool = {
             }
             IMLibCalc.recalculation();
         } else if (eventName == 'create') {
+            for (i = 0; i < this.poolingContexts.length; i++) {
+                contextDef = this.getContextDef(this.poolingContexts[i].contextName);
+                contextView = contextDef.view ? contextDef.view : contextDef.name;
+                if (contextView == entityName) {
+                    this.poolingContexts[i].insertEntry(info.pkvalue, info.field, info.value);
+                    INTERMediator.constructMain(this.poolingContexts[i]);
+                }
+            }
+            IMLibCalc.recalculation();
         } else if (eventName == 'delete') {
             for (i = 0; i < this.poolingContexts.length; i++) {
                 contextDef = this.getContextDef(this.poolingContexts[i].contextName);
                 contextView = contextDef.view ? contextDef.view : contextDef.name;
                 if (contextView == entityName) {
-                    keyField = contextDef.key;
-                    keying = keyField + "=" + info.pkvalue;
-                    bindingInfo = this.poolingContexts[i].binding[keying];
-                    for (fieldName in bindingInfo) {
-                        for (cIndex = 0; cIndex < bindingInfo[fieldName].length; cIndex++) {
-                            targetNode = document.getElementById(bindingInfo[fieldName][cIndex].id);
-                            if (targetNode) {
-                                targetNode = INTERMediatorLib.getParentRepeater(targetNode);
-                                if (targetNode) {
-                                    targetNode.parentNode.removeChild(targetNode);
-                                }
-                            }
-                        }
-                    }
-                    delete this.poolingContexts[i].binding[keying];
+                    this.poolingContexts[i].removeEntry(info.pkvalue);
                 }
             }
             IMLibCalc.recalculation();
@@ -256,6 +251,7 @@ IMLibContext = function (contextName) {
     this.dependingObject = [];
     this.original = null;
     this.nullAcceptable = true;
+    this.parentContext = null;
 
     this.clearAll = function () {
         this.store = {};
@@ -283,6 +279,7 @@ IMLibContext = function (contextName) {
     };
 
     this.setOriginal = function (repeaters) {
+        var i;
         this.original = [];
         for (i = 0; i < repeaters.length; i++) {
             this.original.push(repeaters[i].cloneNode(true));
@@ -298,14 +295,12 @@ IMLibContext = function (contextName) {
             // This is not a valid case, it just prevent the error in the unit test.
             return;
         }
-        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), "name", context.contextName)
+        contextDef = this.getContextDef();
         if (contextDef) {
             this.viewName = contextDef['view'] ? contextDef['view'] : contextDef['name'];
             this.tableName = contextDef['table'] ? contextDef['table'] : contextDef['name'];
         }
     };
-
-    this.setTable(this);
 
     this.setModified = function (recKey, key, value) {
         if (this.modified[recKey] === undefined) {
@@ -320,6 +315,12 @@ IMLibContext = function (contextName) {
 
     this.clearModified = function () {
         this.modified = {};
+    };
+
+    this.getContextDef = function () {
+        var contextDef;
+        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), "name", this.contextName);
+        return contextDef;
     };
 
     this.setValue = function (recKey, key, value, nodeId, target, portal) {
@@ -402,6 +403,37 @@ IMLibContext = function (contextName) {
             return null;
         }
     }
+
+    this.removeEntry = function (pkvalue) {
+        var keyField, keying, bindingInfo, contextDef, fieldName, cIndex, targetNode;
+        contextDef = this.this.getContextDef()
+        keyField = contextDef.key;
+        keying = keyField + "=" + pkvalue;
+        bindingInfo = this.binding[keying];
+        for (fieldName in bindingInfo) {
+            for (cIndex = 0; cIndex < bindingInfo[fieldName].length; cIndex++) {
+                targetNode = document.getElementById(bindingInfo[fieldName][cIndex].id);
+                if (targetNode) {
+                    targetNode = INTERMediatorLib.getParentRepeater(targetNode);
+                    if (targetNode) {
+                        targetNode.parentNode.removeChild(targetNode);
+                    }
+                }
+            }
+        }
+        delete this.binding[keying];
+    }
+
+    this.insertEntry = function (pkvalue, fields, values)  {
+        var i, field, value;
+        for (i = 0 ; i < fields.length ; i++)   {
+            field = fields[i];
+            value = values[i];
+            this.setValue(pkvalue, field, value);
+        }
+    }
+
+    this.setTable(this);
 };
 
 IMLibLocalContext = {

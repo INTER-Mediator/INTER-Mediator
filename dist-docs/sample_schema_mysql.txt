@@ -403,9 +403,6 @@ CREATE TABLE registeredpks (
         COLLATE utf8_unicode_ci
         ENGINE=InnoDB;
 
-CREATE VIEW affectedpks AS
-    SELECT DISTINCT pk, clientid, entity FROM registeredpks, registeredcontext WHERE context_id = id;
-
 #
 #
 #

@@ -148,8 +148,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $originPK = $pkArray[0];
-        $sql = "SELECT clientid FROM affectedpks WHERE " .
-            "clientid <> " . $this->link->quote($clientId) .
+        $sql = "SELECT DISTINCT clientid FROM registeredpks, registeredcontext WHERE " .
+            "context_id = id AND clientid <> " . $this->link->quote($clientId) .
             " AND entity = " . $this->link->quote($entity) .
             " AND pk = " . $this->link->quote($originPK) .
             " ORDER BY clientid";
@@ -193,7 +193,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
             $this->logger->setDebugMessage("Deleted count: " . $result->rowCount(), 2);
         }
-        return array_diff(array_unique($targetClients), array($clientId));
+        return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
     public function removeFromRegisterd($clientId, $entity, $pkArray)
@@ -214,17 +214,17 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $sql = "DELETE FROM {$pksTable} WHERE context_id = " . $this->link->quote($row['id']).
+            $sql = "DELETE FROM {$pksTable} WHERE context_id = " . $this->link->quote($row['id']) .
                 " AND pk = " . $this->link->quote($pkArray[0]);
             $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
+            $resultDelete = $this->link->query($sql);
+            if ($resultDelete === false) {
                 $this->errorMessageStore('Delete:' . $sql);
                 return false;
             }
-            $this->logger->setDebugMessage("Deleted count: " . $result->rowCount(), 2);
+            $this->logger->setDebugMessage("Deleted count: " . $resultDelete->rowCount(), 2);
         }
-        return array_diff(array_unique($targetClients), array($clientId));
+        return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
     /**
@@ -1839,4 +1839,73 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return true;
     }
 
+    public function queryForTest($table, $conditions = null)
+    {
+        if ($table == null) {
+            $this->logger->errorMessageStore("The table doesn't specified.");
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            $this->logger->errorMessageStore("Can't open db connection.");
+            return false;
+        }
+        $sql = "SELECT * FROM " . $this->quotedFieldName($table);
+        if (count($conditions) > 0) {
+            $sql .= " WHERE ";
+            $first = true;
+            foreach ($conditions as $field => $value) {
+                if (! $first)   {
+                    $sql .= " AND ";
+                }
+                $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
+                $first = false;
+            }
+        }
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            var_dump($this->link->errorInfo());
+            return false;
+        }
+        $recordSet = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $oneRecord = array();
+            foreach ($row as $field => $value) {
+                $oneRecord[$field] = $value;
+            }
+            $recordSet[] = $oneRecord;
+        }
+        return $recordSet;
+    }
+
+    public function deleteForTest($table, $conditions = null)
+    {
+        if ($table == null) {
+            $this->logger->errorMessageStore("The table doesn't specified.");
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            $this->logger->errorMessageStore("Can't open db connection.");
+            return false;
+        }
+        $sql = "DELETE FROM " . $this->quotedFieldName($table);
+        if (count($conditions) > 0) {
+            $sql .= " WHERE ";
+            $first = true;
+            foreach ($conditions as $field => $value) {
+                if (! $first)   {
+                    $sql .= " AND ";
+                }
+                $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
+                $first = false;
+            }
+        }
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->exec($sql);
+        if ($result === false) {
+            var_dump($this->link->errorInfo());
+            return false;
+        }
+        return true;
+    }
 }

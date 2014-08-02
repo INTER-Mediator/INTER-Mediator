@@ -16,7 +16,7 @@ IM_Entry(
             'records' => 1,
             'paging' => true,
             'key' => 'id',
-            'query' => array(//    array('field' => 'issued', 'value' => '2012-01-01', 'operator' => '>=')
+            'query' => array( //    array('field' => 'issued', 'value' => '2012-01-01', 'operator' => '>=')
             ),
             'sort' => array(
                 array('field' => 'id', 'direction' => 'ASC'),
