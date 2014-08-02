@@ -286,7 +286,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
             "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
-            array("clientId"=>$clientId, "entity"=>$entity));
+            array("clientid"=>$clientId, "entity"=>$entity));
         $this->assertTrue(count($recSet) == 1, "Count table1");
         $this->assertTrue($recSet[0]["conditions"] == $condition, "the 'clientId' value in table1");
         $regId = $recSet[0]["id"];
@@ -304,7 +304,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
             "Register table2");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
-            array("clientId"=>$clientId, "entity"=>$entity));
+            array("clientid"=>$clientId, "entity"=>$entity));
         $this->assertTrue(count($recSet) == 1, "Count table1");
         $this->assertTrue($recSet[0]["conditions"] == $condition, "tha 'clientId' value in table1");
         $regId = $recSet[0]["id"];
@@ -322,7 +322,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
             "Register table3");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
-            array("clientId"=>$clientId, "entity"=>$entity));
+            array("clientid"=>$clientId, "entity"=>$entity));
         $this->assertTrue(count($recSet) == 1, "Count table1");
         $this->assertTrue($recSet[0]["conditions"] == $condition, "tha 'clientId' value in table1");
         $regId = $recSet[0]["id"];
