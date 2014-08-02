@@ -429,6 +429,7 @@ GRANT ALL PRIVILEGES ON im_sample.registeredcontext TO web;
 GRANT ALL PRIVILEGES ON im_sample.registeredpks TO web;
 /* This sequence is automatically generated with SERIAL type.*/
 GRANT ALL PRIVILEGES ON im_sample.person_id_seq TO web;
+GRANT ALL PRIVILEGES ON im_sample.registeredcontext_id_seq TO web;
 
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link) 

@@ -103,7 +103,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore('Insert:' . $sql);
             return false;
         }
-        $newContextId = $this->link->lastInsertId();
+        $newContextId = $this->link->lastInsertId("registeredcontext_id_seq");
         $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES";
         $isFirstRow = true;
         foreach ($pkArray as $pk) {

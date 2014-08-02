@@ -282,12 +282,13 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $pkArray = array(1001, 2001, 3003, 4004);
 
         $entity = "table1";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray),
+            "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientId"=>$clientId, "entity"=>$entity));
         $this->assertTrue(count($recSet) == 1, "Count table1");
-        $this->assertTrue($recSet[0]["conditions"] == $condition, "tha 'clientId' value in table1");
+        $this->assertTrue($recSet[0]["conditions"] == $condition, "the 'clientId' value in table1");
         $regId = $recSet[0]["id"];
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredpks",
@@ -299,7 +300,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
             )) == 0, "Stored pk values");
 
         $entity = "table2";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray),
+            "Register table2");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientId"=>$clientId, "entity"=>$entity));
@@ -316,7 +318,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
             )) == 0, "Stored pk values");
 
         $entity = "table3";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray),
+            "Register table3");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientId"=>$clientId, "entity"=>$entity));
