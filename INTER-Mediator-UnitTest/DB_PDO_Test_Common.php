@@ -205,8 +205,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $password = "testuser1";
 
         $addUserResult = $this->db_proxy->addUser($username, $password);
-        var_export($this->db_proxy->logger->getAllErrorMessages());
-        var_export($this->db_proxy->logger->getDebugMessage());
+//        var_export($this->db_proxy->logger->getAllErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessage());
         $this->assertTrue($addUserResult);
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
@@ -282,8 +282,9 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $pkArray = array(1001, 2001, 3003, 4004);
 
         $entity = "table1";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray),
-            "Register table1");
+        $registResult = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
+        //var_export($this->db_proxy->logger->getDebugMessage());
+        $this->assertTrue($registResult, "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientid"=>$clientId, "entity"=>$entity));
@@ -339,6 +340,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
+        var_dump($recSet);
         $this->assertTrue(count($recSet) == 0, "Count pk values");
 
     }

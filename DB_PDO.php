@@ -98,27 +98,42 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $this->link->quote($currentDTFormat),
             )) . ')';
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
-        if ($result === false) {
+        $result = $this->link->exec($sql);
+        if ($result !== 1) {
             $this->errorMessageStore('Insert:' . $sql);
             return false;
         }
         $newContextId = $this->link->lastInsertId("registeredcontext_id_seq");
-        $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES";
-        $isFirstRow = true;
-        foreach ($pkArray as $pk) {
-            $qPk = $this->link->quote($pk);
-            if (!$isFirstRow) {
-                $sql .= ",";
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            foreach ($pkArray as $pk) {
+                $qPk = $this->link->quote($pk);
+                $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES ({$newContextId},{$qPk})";
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->exec($sql);
+                if ($result < 1) {
+                    $this->logger->setDebugMessage($this->link->errorInfo());
+                    $this->errorMessageStore('Insert:' . $sql);
+                    return false;
+                }
             }
-            $sql .= "({$newContextId},{$qPk})";
-            $isFirstRow = false;
-        }
-        $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
-        if ($result === false) {
-            $this->errorMessageStore('Insert:' . $sql);
-            return false;
+        } else {
+            $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES ";
+            $isFirstRow = true;
+            foreach ($pkArray as $pk) {
+                $qPk = $this->link->quote($pk);
+                if (!$isFirstRow) {
+                    $sql .= ",";
+                }
+                $sql .= "({$newContextId},{$qPk})";
+                $isFirstRow = false;
+            }
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->exec($sql);
+            if ($result < 1) {
+                $this->logger->setDebugMessage($this->link->errorInfo());
+                $this->errorMessageStore('Insert:' . $sql);
+                return false;
+            }
         }
         return true;
     }
@@ -130,9 +145,18 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            $sql = "PRAGMA foreign_keys = ON";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore( 'Pragma:' . $sql);
+                return false;
+            }
+        }
         $sql = "DELETE FROM {$regTable} WHERE clientid=" . $this->link->quote($clientId);
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
+        $result = $this->link->exec($sql);
         if ($result === false) {
             $this->errorMessageStore('Delete:' . $sql);
             return false;
