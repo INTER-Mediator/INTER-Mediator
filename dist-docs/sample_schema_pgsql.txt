@@ -328,8 +328,14 @@ CREATE TABLE registeredcontext (
 	clientid       VARCHAR(64),
 	entity         VARCHAR(100),
 	conditions     VARCHAR(250),
-	registereddt   TIMESTAMP,
-	pks            TEXT
+	registereddt   TIMESTAMP
+);
+
+CREATE TABLE registeredpks (
+	context_id INTEGER,
+	pk         INTEGER,
+	PRIMARY KEY(context_id, pk),
+	FOREIGN KEY(context_id) REFERENCES registeredcontext(id) ON DELETE CASCADE
 );
 
 /* Authetication tables */

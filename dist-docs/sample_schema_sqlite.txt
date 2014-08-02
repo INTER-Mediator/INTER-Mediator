@@ -311,8 +311,14 @@ CREATE TABLE registeredcontext (
 	clientid       TEXT,
 	entity         TEXT,
 	conditions     TEXT,
-	registereddt   DATETIME,
-	pks            TEXT
+	registereddt   DATETIME
+);
+
+CREATE TABLE registeredpks (
+	context_id INTEGER,
+	pk         INTEGER,
+	PRIMARY KEY(context_id, pk),
+	FOREIGN KEY(context_id) REFERENCES registeredcontext(id) ON DELETE CASCADE
 );
 
 CREATE TABLE authuser (
