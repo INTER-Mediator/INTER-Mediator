@@ -145,6 +145,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
+
+        $contextIds = array();
+        // SQLite initially doesn't support delete cascade. To support it,
+        // the PRAGMA statement as below should be executed. But PHP 5.2 doens't
+        // work, so it must delete
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
             $sql = "PRAGMA foreign_keys = ON";
             $this->logger->setDebugMessage($sql);
@@ -153,6 +158,19 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $this->errorMessageStore( 'Pragma:' . $sql);
                 return false;
             }
+            $versionSign = explode('.', phpversion());
+            if ($versionSign[0] <= 5 && $versionSign[1] <= 2)   {
+                $sql = "SELECT id FROM {$regTable} WHERE clientid=" . $this->link->quote($clientId);
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->query($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Select:' . $sql);
+                    return false;
+                }
+                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    $contextIds[] = $row['id'];
+                }
+            }
         }
         $sql = "DELETE FROM {$regTable} WHERE clientid=" . $this->link->quote($clientId);
         $this->logger->setDebugMessage($sql);
@@ -160,6 +178,17 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if ($result === false) {
             $this->errorMessageStore('Delete:' . $sql);
             return false;
+        }
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
+            foreach($contextIds as $cId)    {
+                $sql = "DELETE FROM {$pksTable} WHERE context_id=" . $this->link->quote($cId);
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->exec($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Delete:' . $sql);
+                    return false;
+                }
+            }
         }
         return true;
     }
@@ -172,7 +201,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $originPK = $pkArray[0];
-        $sql = "SELECT DISTINCT clientid FROM registeredpks, registeredcontext WHERE " .
+        $sql = "SELECT DISTINCT clientid FROM " .$pksTable . "," . $regTable . " WHERE " .
             "context_id = id AND clientid <> " . $this->link->quote($clientId) .
             " AND entity = " . $this->link->quote($entity) .
             " AND pk = " . $this->link->quote($originPK) .

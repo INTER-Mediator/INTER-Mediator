@@ -127,7 +127,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
         $retrievedPasswd = $this->db_proxy->dbClass->authSupportRetrieveHashedPassword($username);
-        echo var_export($this->db_proxy->logger->getDebugMessage(), true);
+//        echo var_export($this->db_proxy->logger->getDebugMessage(), true);
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
 
 //        var_export($this->db_proxy->logger->getAllErrorMessages());
@@ -340,7 +340,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
-        var_dump($recSet);
         $this->assertTrue(count($recSet) == 0, "Count pk values");
 
     }
@@ -446,7 +445,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($result[0] == $clientId2, $testName);
 
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>3003));
-        var_dump($recSet);
         $this->assertTrue(count($recSet) == 0 , $testName);
 
         $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1), $testName);
