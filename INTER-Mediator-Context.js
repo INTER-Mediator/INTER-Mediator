@@ -196,11 +196,34 @@ IMLibContextPool = {
         return result.length == 0 ? false : result;
     },
 
+    getChildContexts: function (parentContext) {
+        var i, childContexts = [];
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            if (this.poolingContexts[i].parentContext == parentContext) {
+                childContexts.push(this.poolingContexts[i]);
+            }
+        }
+        return childContexts;
+    },
+
+    childContexts: null,
+
+    removeContextsFromPool: function (contexts) {
+        var i, regIds = [];
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            if (this.poolingContexts[i] in contexts) {
+                regIds.push(poolingContexts[i].registeredId);
+                delete this.poolingContexts[i];
+            }
+        }
+        return regIds;
+    },
+
     updateOnAnotherClient: function (eventName, info) {
         var keying, i, entityName = info.entity, contextDef, contextView, keyField, bindingInfo, fieldName, cIndex,
             targetNode;
         console.error("eventName=" + eventName + "\nentity=" + info.entity + "\npk-value="
-            + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
+        + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
 
         if (eventName == 'update') {
             for (i = 0; i < this.poolingContexts.length; i++) {
@@ -252,6 +275,7 @@ IMLibContext = function (contextName) {
     this.original = null;
     this.nullAcceptable = true;
     this.parentContext = null;
+    this.registeredId = null;
 
     this.clearAll = function () {
         this.store = {};
@@ -301,6 +325,29 @@ IMLibContext = function (contextName) {
             this.tableName = contextDef['table'] ? contextDef['table'] : contextDef['name'];
         }
     };
+
+    this.removeContext = function () {
+        var regIds;
+        IMLibContextPool.childContexts = [];
+        this.seekRemovingContext(this);
+        regIds = IMLibContextPool.removeContextsFromPool(IMLibContextPool.childContexts);
+        while (this.enclosureNode.firstChild) {
+            this.enclosureNode.removeChild(this.enclosureNode.firstChild);
+        }
+        INTERMediator_DBAdapter.unregister(regIds);
+    }
+
+    /* =================== */
+    /* Internal use only for the removeContext method. */
+    this.seekRemovingContext = function () {
+        var i, index, keyLength, keyValue, myChildren;
+        IMLibContextPool.childContexts.push(this);
+        myChildren = IMLibContextPool.getChildContexts(this);
+        for (i = 0; i < myChildren.length; i++) {
+            myChildren[i].seekRemovingContext();
+        }
+    }
+    /* =================== */
 
     this.setModified = function (recKey, key, value) {
         if (this.modified[recKey] === undefined) {
@@ -424,9 +471,9 @@ IMLibContext = function (contextName) {
         delete this.binding[keying];
     }
 
-    this.insertEntry = function (pkvalue, fields, values)  {
+    this.insertEntry = function (pkvalue, fields, values) {
         var i, field, value;
-        for (i = 0 ; i < fields.length ; i++)   {
+        for (i = 0; i < fields.length; i++) {
             field = fields[i];
             value = values[i];
             this.setValue(pkvalue, field, value);

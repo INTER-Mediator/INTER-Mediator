@@ -108,7 +108,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
             }
             if ($this->dbSettings->notifyServer) {
-                $this->dbSettings->notifyServer->register(
+                $this->outputOfProcessing['registeredid'] = $this->dbSettings->notifyServer->register(
                     $this->dbClass->queriedEntity(),
                     $this->dbClass->queriedCondition(),
                     $this->dbClass->queriedPrimaryKeys()
@@ -760,7 +760,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             case 'unregister':
                 if (! is_null($this->dbSettings->notifyServer)) {
-                    $this->dbSettings->notifyServer->unregister($_POST['notifyid']);
+                    $tableKeys = null;
+                    if(isset($_POST['pks']))    {
+                        $tableKeys = json_decode($_POST['pks'], true);
+                    }
+                    $this->dbSettings->notifyServer->unregister($_POST['notifyid'], $tableKeys);
                 }
                 break;
         }

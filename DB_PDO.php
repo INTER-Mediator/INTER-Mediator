@@ -105,6 +105,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $newContextId = $this->link->lastInsertId("registeredcontext_id_seq");
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            // SQLite supports multiple records inserting, but it reported error.
+            // PDO driver doesn't recognize it, does it ?
             foreach ($pkArray as $pk) {
                 $qPk = $this->link->quote($pk);
                 $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES ({$newContextId},{$qPk})";
@@ -135,16 +137,25 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 return false;
             }
         }
-        return true;
+        return $newContextId;
     }
 
-    public function unregister($clientId)
-    {
+    public function unregister($clientId, $tableKeys)   {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
+
+        $criteria = array("clientid=" . $this->link->quote($clientId));
+        if ($tableKeys) {
+            $subCriteria = array();
+            foreach($tableKeys as $regId)   {
+                $subCriteria[] = "id=" . $this->link->quote($regId);
+            }
+            $criteria[] = "(" . implode(" OR ", $subCriteria) . ")";
+        }
+        $criteriaString = implode(" AND ", $criteria);
 
         $contextIds = array();
         // SQLite initially doesn't support delete cascade. To support it,
@@ -155,12 +166,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if ($result === false) {
-                $this->errorMessageStore( 'Pragma:' . $sql);
+                $this->errorMessageStore('Pragma:' . $sql);
                 return false;
             }
             $versionSign = explode('.', phpversion());
-            if ($versionSign[0] <= 5 && $versionSign[1] <= 2)   {
-                $sql = "SELECT id FROM {$regTable} WHERE clientid=" . $this->link->quote($clientId);
+            if ($versionSign[0] <= 5 && $versionSign[1] <= 2) {
+                $sql = "SELECT id FROM {$regTable} WHERE {$criteriaString}";
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
                 if ($result === false) {
@@ -172,7 +183,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 }
             }
         }
-        $sql = "DELETE FROM {$regTable} WHERE clientid=" . $this->link->quote($clientId);
+        $sql = "DELETE FROM {$regTable} WHERE {$criteriaString}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->exec($sql);
         if ($result === false) {
@@ -180,7 +191,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
-            foreach($contextIds as $cId)    {
+            foreach ($contextIds as $cId) {
                 $sql = "DELETE FROM {$pksTable} WHERE context_id=" . $this->link->quote($cId);
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->exec($sql);
@@ -201,7 +212,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $originPK = $pkArray[0];
-        $sql = "SELECT DISTINCT clientid FROM " .$pksTable . "," . $regTable . " WHERE " .
+        $sql = "SELECT DISTINCT clientid FROM " . $pksTable . "," . $regTable . " WHERE " .
             "context_id = id AND clientid <> " . $this->link->quote($clientId) .
             " AND entity = " . $this->link->quote($entity) .
             " AND pk = " . $this->link->quote($originPK) .
@@ -1907,7 +1918,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $sql .= " WHERE ";
             $first = true;
             foreach ($conditions as $field => $value) {
-                if (! $first)   {
+                if (!$first) {
                     $sql .= " AND ";
                 }
                 $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
@@ -1946,7 +1957,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $sql .= " WHERE ";
             $first = true;
             foreach ($conditions as $field => $value) {
-                if (! $first)   {
+                if (!$first) {
                     $sql .= " AND ";
                 }
                 $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);

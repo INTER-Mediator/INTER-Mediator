@@ -35,12 +35,12 @@ class NotifyServer
 
     function register($entity, $condition, $pkArray)
     {
-        $this->dbClass->register($this->clientId, $entity, $condition, $pkArray);
+        return $this->dbClass->register($this->clientId, $entity, $condition, $pkArray);
     }
 
-    function unregister($client)
+    function unregister($client, $tableKeys)
     {
-        $this->dbClass->unregister($client);
+        return $this->dbClass->unregister($client, $tableKeys);
     }
 
     function updated($clientId, $entity, $pkArray, $field, $value)

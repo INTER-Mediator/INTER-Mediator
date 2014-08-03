@@ -284,7 +284,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $entity = "table1";
         $registResult = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
         //var_export($this->db_proxy->logger->getDebugMessage());
-        $this->assertTrue($registResult, "Register table1");
+        $this->assertTrue($registResult !== false, "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
             array("clientid"=>$clientId, "entity"=>$entity));
@@ -301,7 +301,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
             )) == 0, "Stored pk values");
 
         $entity = "table2";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray),
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray) !== false,
             "Register table2");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -319,7 +319,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
             )) == 0, "Stored pk values");
 
         $entity = "table3";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray),
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray) !== false,
             "Register table3");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -336,7 +336,52 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
                 array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
             )) == 0, "Stored pk values");
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId, null), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
+        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
+        $this->assertTrue(count($recSet) == 0, "Count pk values");
+
+    }
+
+    public function testMultiClientSyncRegisterAndUnregisterPartial()    {
+        $testName = "Register and Unregister partically.";
+        $this->dbProxySetupForAuth();
+        $this->db_proxy->dbClass->deleteForTest("registeredcontext");
+        $this->db_proxy->dbClass->deleteForTest("registeredpks");
+        $clientId = "123456789ABCDEF";
+        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $pkArray = array(1001, 2001, 3003, 4004);
+
+        $entity = "table1";
+        $registResult1 = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
+        $registResult2 = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
+        $registResult3 = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
+        //var_export($this->db_proxy->logger->getDebugMessage());
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredcontext",
+            array("clientid"=>$clientId, "entity"=>$entity));
+        $this->assertTrue(count($recSet) == 3, "Count table1");
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredpks",
+            array("context_id"=>$registResult1));
+        $this->assertTrue(count($recSet) == 4, "Count pk values");
+        $this->assertTrue(count(array_diff(
+                $pkArray,
+                array($recSet[0]["pk"], $recSet[1]["pk"], $recSet[2]["pk"], $recSet[3]["pk"])
+            )) == 0, "Stored pk values");
+
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId, array($registResult2)), $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredcontext",
+            array("clientid"=>$clientId, "entity"=>$entity));
+        $this->assertTrue(count($recSet) == 2, "Count table1");
+        $recSet = $this->db_proxy->dbClass->queryForTest(
+            "registeredpks",
+            array("context_id"=>$registResult2));
+        $this->assertTrue(count($recSet) == 0, "Count pk values");
+
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId, null), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
@@ -355,9 +400,9 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
 
         $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(3003));
         $this->assertTrue(count($result) == 1, "Count matching");
@@ -373,8 +418,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(8001));
         $this->assertTrue(count($result) == 0, "Count matching");
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1), $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2, null) !== false, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
@@ -392,11 +437,11 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
         $clientId3 = "555588888DDDDDD";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId3, "table2", $condition, $pkArray2), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId3, "table2", $condition, $pkArray2) !== false, $testName);
 
         $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId1, $entity, array(101));
         $this->assertTrue($result[0] == $clientId2, $testName);
@@ -413,9 +458,9 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>103));
         $this->assertTrue(count($recSet) == 1 , $testName);
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1), $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2), $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId3), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId3, null) !== false, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
@@ -436,9 +481,9 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $entity = "table1";
         $clientId1 = "123456789ABCDEF";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
         $clientId2 = "ZZYYEEDDFF39887";
-        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
         $clientId3 = "555588888DDDDDD";
 
         $result = $this->db_proxy->dbClass->removeFromRegisterd($clientId1, $entity, array(3003));
@@ -447,9 +492,9 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk"=>3003));
         $this->assertTrue(count($recSet) == 0 , $testName);
 
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1), $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2), $testName);
-        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId3), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1, null), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2, null), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId3, null), $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
         $this->assertTrue(count($recSet) == 0, "Count table1");
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");

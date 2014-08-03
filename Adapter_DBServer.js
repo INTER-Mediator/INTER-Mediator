@@ -109,7 +109,7 @@ INTERMediator_DBAdapter = {
             for (i = 0 ; i < jsonObject.debugMessages.length; i++) {
                 INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
             }
-            INTERMediator.nullAcceptable = jsonObject.usenull;
+            //INTERMediator.nullAcceptable = jsonObject.usenull;
 
             INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
@@ -137,10 +137,14 @@ INTERMediator_DBAdapter = {
         }
         INTERMediatorOnPage.storeCredencialsToCookie();
         INTERMediatorOnPage.notifySupport = notifySupport;
-        return {dbresult: dbresult,
+        return {
+            dbresult: dbresult,
             resultCount: resultCount,
             newRecordKeyValue: newRecordKeyValue,
-            newPasswordResult: changePasswordResult};
+            newPasswordResult: changePasswordResult,
+            registeredId: jsonObject.registeredid,
+            nullAcceptable: jsonObject.usenull
+        };
     },
 
     changePassowrd: function (username, oldpassword, newpassword) {
@@ -398,6 +402,8 @@ INTERMediator_DBAdapter = {
             returnValue.recordset = result.dbresult;
             returnValue.totalCount = result.resultCount;
             returnValue.count = 0;
+            returnValue.registeredId = result.registeredId;
+            returnValue.nullAcceptable = result.nullAcceptable;
             for (ix in result.dbresult) {
                 returnValue.count++;
             }
@@ -417,6 +423,8 @@ INTERMediator_DBAdapter = {
             returnValue.recordset = null;
             returnValue.totalCount = 0;
             returnValue.count = 0;
+            returnValue.registeredid = null;
+            returnValue.nullAcceptable = null;
         }
         return returnValue;
     },
@@ -695,9 +703,14 @@ INTERMediator_DBAdapter = {
         }
     },
 
-    unregister: function () {
-        var result;
-        result = this.server_access("access=unregister", 1018, 1016);
+    unregister: function (entityPkInfo) {
+        console.log(entityPkInfo);
+        var result, params;
+        params = "access=unregister";
+        if (entityPkInfo) {
+            params += "&pks=" + encodeURIComponent(JSON.stringify(entityPkInfo));
+        }
+        result = this.server_access(params, 1018, 1016);
         return result;
     }
 };
