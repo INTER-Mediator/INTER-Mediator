@@ -673,7 +673,10 @@ INTERMediator_DBAdapter = {
         }
         result = this.server_access(params, 1018, 1016);
 //        INTERMediator.flushMessage();
-        return result.newRecordKeyValue;
+        return {
+            newKeyValue: result.newRecordKeyValue,
+            recordset: result.dbresult
+        };
     },
 
     db_createRecordWithAuth: function (args, completion) {
@@ -699,7 +702,7 @@ INTERMediator_DBAdapter = {
             }
         }
         if (completion) {
-            completion(returnValue);
+            completion(returnValue.newKeyValue);
         }
     },
 

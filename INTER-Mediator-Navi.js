@@ -223,7 +223,7 @@ IMLibPageNavigation = {
     },
 
     insertRecordFromNavi: function (targetName, keyField, isConfirm) {
-        var newId, restore, fieldObj, contextDef;
+        var newId, restore, fieldObj, contextDef, responseCreateRecord;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
@@ -240,7 +240,8 @@ IMLibPageNavigation = {
 
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            newId = INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: []});
+            responseCreateRecord = INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: []});
+            newId = responseCreateRecord.newKeyValue
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {

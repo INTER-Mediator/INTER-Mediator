@@ -219,11 +219,49 @@ IMLibContextPool = {
         return regIds;
     },
 
+    removeRecordFromPool: function (repeaterIdValue) {
+        var i, j, targetContext, keying, field, nodeIds = [], targetContextIndex = -1, targetKeying,
+            targetKeyingObj = null, idValue;
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            for (keying in this.poolingContexts[i].binding) {
+                for (field in this.poolingContexts[i].binding[keying]) {
+                    if (field == '_im_repeater') {
+                        for (j = 0; j < this.poolingContexts[i].binding[keying][field].length; j++) {
+                            if (repeaterIdValue == this.poolingContexts[i].binding[keying][field][j].id) {
+                                targetKeyingObj = this.poolingContexts[i].binding[keying];
+                                targetKeying = keying;
+                                targetContextIndex = i;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for (field in targetKeyingObj) {
+            for (j = 0; j < targetKeyingObj[field].length; j++) {
+                nodeIds.push(targetKeyingObj[field][j].id);
+            }
+        }
+        if (targetContextIndex > -1) {
+            for (idValue in this.poolingContexts[targetContextIndex].contextInfo) {
+                if (nodeIds.indexOf(idValue) >= 0) {
+                    delete this.poolingContexts[targetContextIndex].contextInfo[idValue];
+                }
+            }
+            delete this.poolingContexts[targetContextIndex].binding[targetKeying];
+            delete this.poolingContexts[targetContextIndex].store[targetKeying];
+        }
+        this.poolingContexts = this.poolingContexts.filter(function (context) {
+            return nodeIds.indexOf(context.enclosureNode.id) < 0;
+        });
+    },
+
     updateOnAnotherClient: function (eventName, info) {
         var keying, i, entityName = info.entity, contextDef, contextView, keyField, bindingInfo, fieldName, cIndex,
             targetNode;
         console.error("eventName=" + eventName + "\nentity=" + info.entity + "\npk-value="
-        + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
+            + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
 
         if (eventName == 'update') {
             for (i = 0; i < this.poolingContexts.length; i++) {
@@ -240,8 +278,8 @@ IMLibContextPool = {
                 contextDef = this.getContextDef(this.poolingContexts[i].contextName);
                 contextView = contextDef.view ? contextDef.view : contextDef.name;
                 if (contextView == entityName) {
-                    this.poolingContexts[i].insertEntry(info.pkvalue, info.field, info.value);
-                    INTERMediator.constructMain(this.poolingContexts[i]);
+                    //this.poolingContexts[i].insertEntry(info.pkvalue, info.field, info.value);
+                    INTERMediator.constructMain(this.poolingContexts[i], info.value);
                 }
             }
             IMLibCalc.recalculation();
@@ -452,23 +490,34 @@ IMLibContext = function (contextName) {
     }
 
     this.removeEntry = function (pkvalue) {
-        var keyField, keying, bindingInfo, contextDef, fieldName, cIndex, targetNode;
-        contextDef = this.this.getContextDef()
+        var keyField, keying, bindingInfo, contextDef, keyingIndex, cIndex, targetNode, repeaterNodes, i, parentNode,
+            removingNodeIds = [];
+        contextDef = this.getContextDef()
         keyField = contextDef.key;
         keying = keyField + "=" + pkvalue;
         bindingInfo = this.binding[keying];
-        for (fieldName in bindingInfo) {
-            for (cIndex = 0; cIndex < bindingInfo[fieldName].length; cIndex++) {
-                targetNode = document.getElementById(bindingInfo[fieldName][cIndex].id);
+        if (bindingInfo) {
+            repeaterNodes = bindingInfo['_im_repeater'];
+            if (repeaterNodes) {
+                for (i = 0; i < repeaterNodes.length; i++) {
+                    removingNodeIds.push(repeaterNodes[i].id);
+                }
+            }
+        }
+        if (removingNodeIds.length > 0) {
+            for (i = 0; i < removingNodeIds.length; i++) {
+                IMLibContextPool.removeRecordFromPool(removingNodeIds[i]);
+            }
+            for (i = 0; i < removingNodeIds.length; i++) {
+                targetNode = document.getElementById(removingNodeIds[i]);
                 if (targetNode) {
-                    targetNode = INTERMediatorLib.getParentRepeater(targetNode);
-                    if (targetNode) {
-                        targetNode.parentNode.removeChild(targetNode);
+                    parentNode = INTERMediatorLib.getParentRepeater(targetNode);
+                    if (parentNode) {
+                        parentNode.parentNode.removeChild(targetNode);
                     }
                 }
             }
         }
-        delete this.binding[keying];
     }
 
     this.insertEntry = function (pkvalue, fields, values) {

@@ -193,7 +193,11 @@ var IMLibUI = {
                     INTERMediator_DBAdapter.db_update({
                         name: contextInfo.context.contextName,
                         conditions: [
-                            {field: criteria[0], operator: '=', value: criteria[1]}
+                            {
+                                field: criteria[0],
+                                operator: '=',
+                                value: criteria[1]
+                            }
                         ],
                         dataset: [
                             {
@@ -222,9 +226,9 @@ var IMLibUI = {
         }
     },
 
-
     deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
-        var key, removeNode, removingNodes;
+        var i;
+
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                 return;
@@ -272,45 +276,10 @@ var IMLibUI = {
                 INTERMediator.setErrorMessage(ex, "EXCEPTION-3");
             }
         }
-
-        var i, j, k, removeNodeId, nodeId, calcObject, referes, values;
-        for (key in removeNodes) {
-            removeNode = document.getElementById(removeNodes[key]);
-            removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
-            if (removingNodes) {
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    if (removeNodeId in IMLibCalc.calculateRequiredObject) {
-                        delete IMLibCalc.calculateRequiredObject[removeNodeId];
-                    }
-                }
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    for (nodeId in IMLibCalc.calculateRequiredObject) {
-                        calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                        referes = {};
-                        values = {};
-                        for (j in calcObject.referes) {
-                            referes[j] = [], values[j] = [];
-                            for (k = 0; k < calcObject.referes[j].length; k++) {
-                                if (removeNodeId != calcObject.referes[j][k]) {
-                                    referes[j].push(calcObject.referes[j][k]);
-                                    values[j].push(calcObject.values[j][k]);
-                                }
-                            }
-                        }
-                        calcObject.referes = referes;
-                        calcObject.values = values;
-                    }
-                }
-            }
-            try {
-                removeNode.parentNode.removeChild(removeNode);
-            } catch
-                (ex) {
-                // Avoid an error for Safari
-            }
+        for (i = 0; i < removeNodes.length ; i++)   {
+            IMLibContextPool.removeRecordFromPool(removeNodes[i]);
         }
+        IMLibElement.deleteNodes(removeNodes);
         IMLibCalc.recalculation();
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
@@ -318,7 +287,9 @@ var IMLibUI = {
 
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
         var currentContext, recordSet, index, key, removeNode, i, relationDef, targetRecord, portalField,
-            targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet;
+            targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet, newRecordId,
+            keyField, associatedContext, createdRecord, newRecord;
+
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
@@ -427,7 +398,8 @@ var IMLibUI = {
                     dataset: relatedRecordSet
                 });
             } else {
-                INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
+                newRecord = INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
+                newRecordId = newRecord.newKeyValue;
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
@@ -446,26 +418,29 @@ var IMLibUI = {
             }
         }
 
-        for (key in removeNodes) {
-            removeNode = document.getElementById(removeNodes[key]);
-            try {
-                removeNode.parentNode.removeChild(removeNode);
-            } catch (ex) {
-                // Avoid an error for Safari
-            }
-        }
+//        for (key in removeNodes) {
+//            removeNode = document.getElementById(removeNodes[key]);
+//            try {
+//                removeNode.parentNode.removeChild(removeNode);
+//            } catch (ex) {
+//                // Avoid an error for Safari
+//            }
+//        }
 
-        var associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodes);
+        keyField = currentContext["key"] ? currentContext["key"] : "-recid";
+        associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodes);
         if (associatedContext) {
             associatedContext.foreignValue = foreignValues;
             if (currentContext["portal"] == true && existRelated == false) {
                 INTERMediator.additionalCondition[targetName] = {
-                    field: currentContext["key"] ? currentContext["key"] : "-recid",
+                    field: keyField,
                     operator: "=",
                     value: keyValue
                 };
             }
-            INTERMediator.constructMain(associatedContext);
+            createdRecord = [{}];
+            createdRecord[0][keyField] = newRecordId;
+            INTERMediator.constructMain(associatedContext, newRecord.recordset);
         }
 
         IMLibCalc.recalculation();

@@ -742,6 +742,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $result = $this->newToDB($this->dbSettings->getTargetName(), $bypassAuth);
 //                $this->outputOfProcessing = "newRecordKeyValue='{$result}';";
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'delete':
                 $this->deleteFromDB($this->dbSettings->getTargetName());

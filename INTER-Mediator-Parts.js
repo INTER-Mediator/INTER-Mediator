@@ -346,43 +346,5 @@ IMParts_Catalog["fileupload"] = {
             }
             return null;
         }
-
-        /*
-         function createRecordOnRelatedTable(updateInfo, path) {
-         var index, ix, dataset, filesContext;
-         var context = INTERMediatorLib.getNamedObject(
-         INTERMediatorOnPage.getDataSources(), 'name', updateInfo['name']);
-         if (context['file-upload']) {
-         for (index in context['file-upload']) {
-         if (context['file-upload'][index]['field'] == updateInfo['field']) {
-         filesContext = INTERMediatorLib.getNamedObject(
-         INTERMediatorOnPage.getDataSources(),
-         'name',
-         context['file-upload'][index]['context']);
-         dataset = [
-         {field: "path", value: path}
-         ];
-         if (filesContext['relation']) {
-         for (ix in filesContext['relation']) {
-         dataset.push({
-         field: filesContext['relation'][ix]['foreign-key'],
-         value: updateInfo['keying'].split("=")[1]});
-         }
-         }
-         if (filesContext['query']) {
-         for (ix in filesContext['query']) {
-         dataset.push({
-         field: filesContext['query'][ix]['field'],
-         value: filesContext['query'][ix]['value']});
-         }
-         }
-         INTERMediator_DBAdapter.db_createRecord({
-         name: context['file-upload'][index]['context'],
-         dataset: dataset
-         });
-         }
-         }
-         }
-         }*/
     }
 };
