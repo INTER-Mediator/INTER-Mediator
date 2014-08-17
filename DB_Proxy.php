@@ -211,6 +211,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
         try {
+            $className = get_class($this->userExpanded);
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeNewToDB")) {
                 $this->userExpanded->doBeforeNewToDB($dataSourceName);
             }
@@ -221,6 +222,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
+                $this->logger->setDebugMessage("The method 'newToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
             }
             if ($this->dbSettings->notifyServer) {

@@ -74,7 +74,7 @@ class NotifyServer
         $data = array(
             'entity'=>$entity,
             'pkvalue'=>$pkArray,
-            'field'=>array_keys($record),
+         //   'field'=>array_keys($record),
             'value'=>array_values($record)
         );
         $response = $pusher->trigger($channels, 'create', $data);

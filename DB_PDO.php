@@ -255,7 +255,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $this->errorMessageStore('Insert:' . $sql);
                 return false;
             }
-            $this->logger->setDebugMessage("Deleted count: " . $result->rowCount(), 2);
+            $this->logger->setDebugMessage("Inserted count: " . $result->rowCount(), 2);
         }
         return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }

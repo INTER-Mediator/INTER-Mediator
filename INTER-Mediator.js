@@ -58,6 +58,7 @@ var INTERMediator = {
 
     partialConstructing: false,
     linkedElmCounter: 0,
+    pusherObject: null,
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
     //startFrom: 0,
@@ -410,7 +411,7 @@ var INTERMediator = {
             if (isAcceptNotify) {
                 var channelName = INTERMediatorOnPage.clientNotificationIdentifier();
                 var appKey = INTERMediatorOnPage.clientNotificationKey();
-                if (appKey && appKey != "_im_key_isnt_supplied") {
+                if (appKey && appKey != "_im_key_isnt_supplied" && ! INTERMediator.pusherObject) {
                     try {
                         Pusher.log = function (message) {
                             if (window.console && window.console.log) {
@@ -555,7 +556,7 @@ var INTERMediator = {
             currentLevel++;
             INTERMediator.currentEncNumber++;
 
-            window.console.log(currentRecord);
+            //window.console.log(currentRecord);
 
             if (!node.getAttribute('id')) {
                 node.setAttribute('id', nextIdValue());

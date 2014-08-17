@@ -65,6 +65,7 @@ IMLibPageNavigation = {
                     (navLabel === null || navLabel[0] === null) ? '<<' : navLabel[0]));
                 node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
                 INTERMediatorLib.addEvent(node, 'click', function () {
+                    INTERMediator_DBAdapter.unregister();
                     INTERMediator.startFrom = 0;
                     INTERMediator.constructMain(true);
                 });
@@ -76,6 +77,7 @@ IMLibPageNavigation = {
                 node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
                 prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
                 INTERMediatorLib.addEvent(node, 'click', function () {
+                    INTERMediator_DBAdapter.unregister();
                     INTERMediator.startFrom = prevPageCount;
                     INTERMediator.constructMain(true);
                 });
@@ -88,6 +90,7 @@ IMLibPageNavigation = {
                 nextPageCount
                     = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
                 INTERMediatorLib.addEvent(node, 'click', function () {
+                    INTERMediator_DBAdapter.unregister();
                     INTERMediator.startFrom = nextPageCount;
                     INTERMediator.constructMain(true);
                 });
@@ -103,6 +106,7 @@ IMLibPageNavigation = {
                     endPageCount = allCount - (allCount % pageSize);
                 }
                 INTERMediatorLib.addEvent(node, 'click', function () {
+                    INTERMediator_DBAdapter.unregister();
                     INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
                     INTERMediator.constructMain(true);
                 });
@@ -267,6 +271,7 @@ IMLibPageNavigation = {
                 INTERMediator.additionalCondition[targetName] = {field: keyField, value: newId};
                 IMLibLocalContext.archive();
             }
+            INTERMediator_DBAdapter.unregister();
             INTERMediator.constructMain(true);
             INTERMediator.additionalCondition = restore;
         }

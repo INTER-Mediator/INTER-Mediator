@@ -260,8 +260,8 @@ IMLibContextPool = {
     updateOnAnotherClient: function (eventName, info) {
         var keying, i, entityName = info.entity, contextDef, contextView, keyField, bindingInfo, fieldName, cIndex,
             targetNode;
-        console.error("eventName=" + eventName + "\nentity=" + info.entity + "\npk-value="
-            + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
+//        console.error("eventName=" + eventName + "\nentity=" + info.entity + "\npk-value="
+//            + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
 
         if (eventName == 'update') {
             for (i = 0; i < this.poolingContexts.length; i++) {
@@ -278,8 +278,9 @@ IMLibContextPool = {
                 contextDef = this.getContextDef(this.poolingContexts[i].contextName);
                 contextView = contextDef.view ? contextDef.view : contextDef.name;
                 if (contextView == entityName) {
-                    //this.poolingContexts[i].insertEntry(info.pkvalue, info.field, info.value);
-                    INTERMediator.constructMain(this.poolingContexts[i], info.value);
+                    if (this.poolingContexts[i].isContaining(info.value[0])) {
+                        INTERMediator.constructMain(this.poolingContexts[i], info.value);
+                    }
                 }
             }
             IMLibCalc.recalculation();
@@ -404,7 +405,8 @@ IMLibContext = function (contextName) {
 
     this.getContextDef = function () {
         var contextDef;
-        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), "name", this.contextName);
+        contextDef = INTERMediatorLib.getNamedObject(
+            INTERMediatorOnPage.getDataSources(), "name", this.contextName);
         return contextDef;
     };
 
@@ -490,7 +492,7 @@ IMLibContext = function (contextName) {
     }
 
     this.removeEntry = function (pkvalue) {
-        var keyField, keying, bindingInfo, contextDef, keyingIndex, cIndex, targetNode, repeaterNodes, i, parentNode,
+        var keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i, parentNode,
             removingNodeIds = [];
         contextDef = this.getContextDef()
         keyField = contextDef.key;
@@ -520,6 +522,121 @@ IMLibContext = function (contextName) {
         }
     }
 
+    this.isContaining = function (value) {
+        var contextDef, contextName, checkResult = [], i, fieldName, result, opePosition, leftHand, rightHand,
+            leftResult, rightResult;
+
+        contextDef = this.getContextDef();
+        contextName = contextDef.name;
+        if (contextDef.query) {
+            for (i in contextDef.query) {
+                checkResult.push(checkCondition(contextDef.query[i], value));
+            }
+        }
+        if (INTERMediator.additionalCondition[contextName]) {
+            for (i = 0; i < INTERMediator.additionalCondition[contextName].length; i++) {
+                checkResult.push(checkCondition(INTERMediator.additionalCondition[contextName][i], value));
+            }
+        }
+
+        result = true;
+        if (checkResult.length != 0) {
+            opePosition = checkResult.indexOf("D");
+            if (opePosition > -1) {
+                leftHand = checkResult.slice(0, opePosition);
+                rightHand = opePosition.slice(opePosition + 1);
+                if (rightHand.length == 0) {
+                    result = (leftHand.indexOf(false) < 0);
+                } else {
+                    leftResult = (leftHand.indexOf(false) < 0);
+                    rightResult = (rightHand.indexOf(false) < 0);
+                    result = leftResult || rightResult;
+                }
+            } else {
+                opePosition = checkResult.indexOf("EX");
+                if (opePosition > -1) {
+                    leftHand = checkResult.slice(0, opePosition);
+                    rightHand = opePosition.slice(opePosition + 1);
+                    if (rightHand.length == 0) {
+                        result = (leftHand.indexOf(true) > -1);
+                    } else {
+                        leftResult = (leftHand.indexOf(true) > -1);
+                        rightResult = (rightHand.indexOf(true) > -1);
+                        result = leftResult && rightResult;
+                    }
+                } else {
+                    opePosition = checkResult.indexOf(false);
+                    if (opePosition > -1) {
+                        result = (checkResult.indexOf(false) < 0);
+                    }
+                }
+            }
+
+            if (result == false) {
+                return false;
+            }
+        }
+
+        if (this.foreignValue) {
+            for (fieldName in this.foreignValue) {
+                if (contextDef.relation) {
+                    for (i in contextDef.relation) {
+                        if (contextDef.relation[i]['join-field'] == fieldName)  {
+                            result &= (checkCondition({
+                                field: contextDef.relation[i]['foreign-key'],
+                                operator: "=",
+                                value: this.foreignValue[fieldName]
+                            }, value));
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
+
+        function checkCondition(conditionDef, oneRecord) {
+            var realValue;
+
+            if (conditionDef.field == '__operation__') {
+                return conditionDef.operator == 'ex' ? "EX" : "D";
+            }
+
+            realValue = oneRecord[conditionDef.field];
+            if (!realValue) {
+                return false;
+            }
+            switch (conditionDef.operator) {
+                case "=":
+                case "eq":
+                    return realValue == conditionDef.value;
+                    break;
+                case ">":
+                case "gt":
+                    return realValue > conditionDef.value;
+                    break;
+                case "<":
+                case "lt":
+                    return realValue < conditionDef.value;
+                    break;
+                case ">=":
+                case "gte":
+                    return realValue >= conditionDef.value;
+                    break;
+                case "<=":
+                case "lte":
+                    return realValue <= conditionDef.value;
+                    break;
+                case "!=":
+                case "neq":
+                    return realValue != conditionDef.value;
+                    break;
+                default:
+                    return false;
+            }
+        }
+    }
+
     this.insertEntry = function (pkvalue, fields, values) {
         var i, field, value;
         for (i = 0; i < fields.length; i++) {
@@ -530,7 +647,8 @@ IMLibContext = function (contextName) {
     }
 
     this.setTable(this);
-};
+}
+;
 
 IMLibLocalContext = {
     contextName: "_",

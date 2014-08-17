@@ -672,7 +672,7 @@ INTERMediator_DBAdapter = {
             counter++;
         }
         result = this.server_access(params, 1018, 1016);
-//        INTERMediator.flushMessage();
+        INTERMediator.flushMessage();
         return {
             newKeyValue: result.newRecordKeyValue,
             recordset: result.dbresult
@@ -707,7 +707,7 @@ INTERMediator_DBAdapter = {
     },
 
     unregister: function (entityPkInfo) {
-        console.log(entityPkInfo);
+        //console.log(entityPkInfo);
         var result, params;
         params = "access=unregister";
         if (entityPkInfo) {
