@@ -707,14 +707,16 @@ INTERMediator_DBAdapter = {
     unregister: function (entityPkInfo) {
         //console.log(entityPkInfo);
         var result = null, params;
-        var appKey = INTERMediatorOnPage.clientNotificationKey();
-        if (appKey && appKey != "_im_key_isnt_supplied") {
-            params = "access=unregister";
-            if (entityPkInfo) {
-                params += "&pks=" + encodeURIComponent(JSON.stringify(entityPkInfo));
+        if (INTERMediatorOnPage.clientNotificationKey) {
+            var appKey = INTERMediatorOnPage.clientNotificationKey();
+            if (appKey && appKey != "_im_key_isnt_supplied") {
+                params = "access=unregister";
+                if (entityPkInfo) {
+                    params += "&pks=" + encodeURIComponent(JSON.stringify(entityPkInfo));
+                }
+                result = this.server_access(params, 1018, 1016);
+                return result;
             }
-            result = this.server_access(params, 1018, 1016);
-            return result;
         }
     }
 };
