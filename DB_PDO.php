@@ -587,7 +587,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         $this->logger->setDebugMessage($sql);
                         $result = $this->link->query($sql);
                         if ($result === false) {
-                            $this->errorMessageStore('Pre-script:' + $sql);
+                            $this->errorMessageStore('Pre-script:' . $sql);
                         }
                     }
                 }
@@ -768,7 +768,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
         $result = $prepSQL->execute($setParameter);
         if ($result === false) {
-            $this->errorMessageStore('Update:' + $prepSQL->erroInfo);
+            $this->errorMessageStore('Update:' . $sql);
             return false;
         }
 

@@ -529,11 +529,11 @@ function INTERMediatorLib() {
         addEvent: function (node, evt, func) {
             if (node.addEventListener) {
                 node.addEventListener(evt, func, false);
-                this.eventInfos.push({node: node, event: evt, function: func});
+                this.eventInfos.push({"node": node, "event": evt, "function": func});
                 return this.eventInfos.length - 1;
             } else if (node.attachEvent) {
                 node.attachEvent('on' + evt, func);
-                this.eventInfos.push({node: node, event: evt, function: func});
+                this.eventInfos.push({"node": node, "event": evt, "function": func});
                 return this.eventInfos.length - 1;
             }
             return -1;
