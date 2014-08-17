@@ -9,6 +9,7 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.5 (in development)
+- Sync with multiple clients in update/insert/delete with Pusher.
 - Modify setToDB() of DB_PDO.php to avoid outputting error messages in an error log file.
 - [BUG FIX] The JavaScript code editor "codemirror" support plugin was modified. It works fine.
 
