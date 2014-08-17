@@ -59,9 +59,7 @@ INTERMediator_DBAdapter = {
                 + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
     },
 
-    logging_comResult: function (
-        myRequest, resultCount, dbresult, requireAuth, challenge,
-        clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
+    logging_comResult: function (myRequest, resultCount, dbresult, requireAuth, challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
         var responseTextTrancated;
         if (INTERMediator.debugMode > 1) {
             if (myRequest.responseText.length > 1000) {
@@ -103,10 +101,10 @@ INTERMediator_DBAdapter = {
             changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
             mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
             notifySupport = jsonObject.notifySupport;
-            for (i = 0 ; i < jsonObject.errorMessages.length; i++) {
+            for (i = 0; i < jsonObject.errorMessages.length; i++) {
                 INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
             }
-            for (i = 0 ; i < jsonObject.debugMessages.length; i++) {
+            for (i = 0; i < jsonObject.debugMessages.length; i++) {
                 INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
             }
             //INTERMediator.nullAcceptable = jsonObject.usenull;
@@ -236,10 +234,10 @@ INTERMediator_DBAdapter = {
                         newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
                         changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
                         mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
-                        for (i = 0 ; i < jsonObject.errorMessages.length; i++) {
+                        for (i = 0; i < jsonObject.errorMessages.length; i++) {
                             INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
                         }
-                        for (i = 0 ; i < jsonObject.debugMessages.length; i++) {
+                        for (i = 0; i < jsonObject.debugMessages.length; i++) {
                             INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
                         }
 
@@ -708,12 +706,15 @@ INTERMediator_DBAdapter = {
 
     unregister: function (entityPkInfo) {
         //console.log(entityPkInfo);
-        var result, params;
-        params = "access=unregister";
-        if (entityPkInfo) {
-            params += "&pks=" + encodeURIComponent(JSON.stringify(entityPkInfo));
+        var result = null, params;
+        var appKey = INTERMediatorOnPage.clientNotificationKey();
+        if (appKey && appKey != "_im_key_isnt_supplied") {
+            params = "access=unregister";
+            if (entityPkInfo) {
+                params += "&pks=" + encodeURIComponent(JSON.stringify(entityPkInfo));
+            }
+            result = this.server_access(params, 1018, 1016);
+            return result;
         }
-        result = this.server_access(params, 1018, 1016);
-        return result;
     }
 };
