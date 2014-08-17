@@ -356,5 +356,47 @@ var IMLibElement = {
             INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
         }
         return true;
+    },
+
+    deleteNodes: function(removeNodes) {
+        var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;
+
+        for (key in removeNodes) {
+            removeNode = document.getElementById(removeNodes[key]);
+            removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
+            if (removingNodes) {
+                for (i = 0; i < removingNodes.length; i++) {
+                    removeNodeId = removingNodes[i].id;
+                    if (removeNodeId in IMLibCalc.calculateRequiredObject) {
+                        delete IMLibCalc.calculateRequiredObject[removeNodeId];
+                    }
+                }
+                for (i = 0; i < removingNodes.length; i++) {
+                    removeNodeId = removingNodes[i].id;
+                    for (nodeId in IMLibCalc.calculateRequiredObject) {
+                        calcObject = IMLibCalc.calculateRequiredObject[nodeId];
+                        referes = {};
+                        values = {};
+                        for (j in calcObject.referes) {
+                            referes[j] = [], values[j] = [];
+                            for (k = 0; k < calcObject.referes[j].length; k++) {
+                                if (removeNodeId != calcObject.referes[j][k]) {
+                                    referes[j].push(calcObject.referes[j][k]);
+                                    values[j].push(calcObject.values[j][k]);
+                                }
+                            }
+                        }
+                        calcObject.referes = referes;
+                        calcObject.values = values;
+                    }
+                }
+            }
+            try {
+                removeNode.parentNode.removeChild(removeNode);
+            } catch
+                (ex) {
+                // Avoid an error for Safari
+            }
+        }
     }
 }

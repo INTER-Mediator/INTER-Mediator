@@ -321,6 +321,23 @@ CREATE TABLE chat (
 	PRIMARY KEY(id)
 );
 
+/* Observable */
+
+CREATE TABLE registeredcontext (
+	id	           SERIAL PRIMARY KEY,
+	clientid       VARCHAR(64),
+	entity         VARCHAR(100),
+	conditions     VARCHAR(250),
+	registereddt   TIMESTAMP
+);
+
+CREATE TABLE registeredpks (
+	context_id INTEGER,
+	pk         INTEGER,
+	PRIMARY KEY(context_id, pk),
+	FOREIGN KEY(context_id) REFERENCES registeredcontext(id) ON DELETE CASCADE
+);
+
 /* Authetication tables */
 CREATE TABLE authuser (
 	id					INTEGER   DEFAULT nextval('serial'),
@@ -408,8 +425,11 @@ GRANT ALL PRIVILEGES ON im_sample.asset TO web;
 GRANT ALL PRIVILEGES ON im_sample.rent TO web;
 GRANT ALL PRIVILEGES ON im_sample.staff TO web;
 GRANT ALL PRIVILEGES ON im_sample.category TO web;
+GRANT ALL PRIVILEGES ON im_sample.registeredcontext TO web;
+GRANT ALL PRIVILEGES ON im_sample.registeredpks TO web;
 /* This sequence is automatically generated with SERIAL type.*/
 GRANT ALL PRIVILEGES ON im_sample.person_id_seq TO web;
+GRANT ALL PRIVILEGES ON im_sample.registeredcontext_id_seq TO web;
 
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link) 

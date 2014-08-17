@@ -107,6 +107,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterSetToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
             }
+            if ($this->dbSettings->notifyServer) {
+                $this->outputOfProcessing['registeredid'] = $this->dbSettings->notifyServer->register(
+                    $this->dbClass->queriedEntity(),
+                    $this->dbClass->queriedCondition(),
+                    $this->dbClass->queriedPrimaryKeys()
+                );
+            }
             if (isset($currentDataSource['send-mail']['load'])) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);
                 $mailSender = new SendMail();
@@ -152,13 +159,30 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeSetToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['edit'])) {
+                if (isset($currentDataSource['send-mail']['edit'])||$this->dbSettings->notifyServer) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $result = $this->dbClass->setToDB($dataSourceName);
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
                 $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
+            }
+            if ($this->dbSettings->notifyServer) {
+                try {
+                    $this->dbSettings->notifyServer->updated(
+                        $_POST['notifyid'],
+                        $this->dbClass->queriedEntity(),
+                        $this->dbClass->queriedPrimaryKeys(),
+                        $this->dbSettings->getFieldsRequired(),
+                        $this->dbSettings->getValue()
+                    );
+                } catch (Exception $ex) {
+                    if ($ex->getMessage() == '_im_no_pusher_exception') {
+                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
+                    } else {
+                        throw $ex;
+                    }
+                }
             }
             if (isset($currentDataSource['send-mail']['edit'])) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);
@@ -187,17 +211,35 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
         try {
+            $className = get_class($this->userExpanded);
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeNewToDB")) {
                 $this->userExpanded->doBeforeNewToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['new'])) {
+                if (isset($currentDataSource['send-mail']['new'])||$this->dbSettings->notifyServer) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
+                $this->logger->setDebugMessage("The method 'newToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
+            }
+            if ($this->dbSettings->notifyServer) {
+                try {
+                    $this->dbSettings->notifyServer->created(
+                        $_POST['notifyid'],
+                        $this->dbClass->queriedEntity(),
+                        $this->dbClass->queriedPrimaryKeys(),
+                        $this->dbClass->updatedRecord()
+                    );
+                } catch (Exception $ex) {
+                    if ($ex->getMessage() == '_im_no_pusher_exception') {
+                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
+                    } else {
+                        throw $ex;
+                    }
+                }
             }
             if (isset($currentDataSource['send-mail']['new'])) {
                 $this->logger->setDebugMessage("Try to send an email.");
@@ -233,6 +275,21 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
                 $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);
+            }
+            if ($this->dbSettings->notifyServer) {
+                try {
+                    $this->dbSettings->notifyServer->deleted(
+                        $_POST['notifyid'],
+                        $this->dbClass->queriedEntity(),
+                        $this->dbClass->queriedPrimaryKeys()
+                    );
+                } catch (Exception $ex) {
+                    if ($ex->getMessage() == '_im_no_pusher_exception') {
+                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
+                    } else {
+                        throw $ex;
+                    }
+                }
             }
         } catch (Exception $e) {
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
@@ -342,6 +399,21 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         (isset ($dbDSN) ? $dbDSN : '')));
         }
 
+        $pusherParams = null;
+        if (isset($pusherParameters)) {
+            $pusherParams = $pusherParameters;
+        } else if (isset($options['pusher'])) {
+            $pusherParams = $options['pusher'];
+        }
+        if (!is_null($pusherParams)) {
+            $this->dbSettings->pusherAppId = $pusherParams['app_id'];
+            $this->dbSettings->pusherKey = $pusherParams['key'];
+            $this->dbSettings->pusherSecret = $pusherParams['secret'];
+            if (isset($pusherParams['channel']))    {
+                $this->dbSettings->pusherChannel = $pusherParams['channel'];
+            }
+        }
+
         require_once("{$dbClassName}.php");
         $this->dbClass = new $dbClassName();
         if ($this->dbClass == null) {
@@ -373,7 +445,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->authDbClass = $this->dbClass;
         }
 
-//        $this->dbSettings->currentProxy = $this;
+        require_once("NotifyServer.php");
+        $this->dbSettings->notifyServer = new NotifyServer();
+        if (isset($_POST['notifyid'])
+            && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $_POST['notifyid'])
+        ) {
+            $this->logger->setDebugMessage("The NotifyServer was instanciated.", 2);
+        } else {
+            $this->dbSettings->notifyServer = null;
+        }
         $this->dbSettings->setCurrentDataAccess($this->dbClass);
 
         if (isset($context['extending-class'])) {
@@ -664,6 +744,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $result = $this->newToDB($this->dbSettings->getTargetName(), $bypassAuth);
 //                $this->outputOfProcessing = "newRecordKeyValue='{$result}';";
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'delete':
                 $this->deleteFromDB($this->dbSettings->getTargetName());
@@ -680,6 +761,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $this->outputOfProcessing['changePasswordResult'] = false;
                 }
                 break;
+            case 'unregister':
+                if (! is_null($this->dbSettings->notifyServer)) {
+                    $tableKeys = null;
+                    if(isset($_POST['pks']))    {
+                        $tableKeys = json_decode($_POST['pks'], true);
+                    }
+                    $this->dbSettings->notifyServer->unregister($_POST['notifyid'], $tableKeys);
+                }
+                break;
         }
 
 //        $this->logger->setDebugMessage("requireAuthentication={$this->dbSettings->getRequireAuthentication()}", 2);
@@ -689,7 +779,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $fInfo = $this->getFieldInfo($this->dbSettings->getTargetName());
             if ($fInfo != null) {
                 foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
-                    if (! $this->dbClass->isContainingFieldName($fieldName, $fInfo)) {
+                    if (!$this->dbClass->isContainingFieldName($fieldName, $fInfo)) {
                         $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
                     }
                 }
@@ -705,10 +795,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
 
+        $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
+        $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
+        $this->outputOfProcessing['usenull'] = $this->dbClass->isNullAcceptable();
+        $this->outputOfProcessing['notifySupport']
+            = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
         if ($notFinish || !$this->dbSettings->getRequireAuthorization()) {
-            $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
-            $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
-            $this->outputOfProcessing['usenull'] = $this->dbClass->isNullAcceptable();
             return;
         }
         $generatedChallenge = $this->generateChallenge();
@@ -719,11 +811,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
         $this->previousClientid = "{$generatedUID}";
-        $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
-        $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
+//        $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
+//        $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
         $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
         $this->outputOfProcessing['clientid'] = $generatedUID;
-        $this->outputOfProcessing['usenull'] = $this->dbClass->isNullAcceptable();
+//        $this->outputOfProcessing['usenull'] = $this->dbClass->isNullAcceptable();
         if ($this->dbSettings->getRequireAuthentication()) {
             $this->outputOfProcessing['requireAuth'] = true;
         }
@@ -987,11 +1079,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // TODO: Implement isPossibleOrderSpecifier() method.
     }
 
-    public function isContainingFieldName($fname, $fieldnames)    {
+    public function isContainingFieldName($fname, $fieldnames)
+    {
         return null;
     }
 
-    public function isNullAcceptable()  {
+    public function isNullAcceptable()
+    {
         return true;
     }
 

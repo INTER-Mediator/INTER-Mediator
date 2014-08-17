@@ -381,6 +381,30 @@ CREATE TABLE survey (
 
 #
 #
+
+CREATE TABLE registeredcontext (
+	id	           INT AUTO_INCREMENT,
+	clientid       TEXT,
+	entity         TEXT,
+	conditions     TEXT,
+	registereddt   DATETIME,
+	PRIMARY KEY(id)
+)       CHARACTER SET utf8,
+        COLLATE utf8_unicode_ci
+        ENGINE=InnoDB;
+
+
+CREATE TABLE registeredpks (
+	context_id INT,
+	pk         INT,
+	PRIMARY KEY(context_id, pk),
+	FOREIGN KEY(context_id) REFERENCES registeredcontext(id) ON DELETE CASCADE
+)       CHARACTER SET utf8,
+        COLLATE utf8_unicode_ci
+        ENGINE=InnoDB;
+
+#
+#
 #
 
 CREATE TABLE authuser (

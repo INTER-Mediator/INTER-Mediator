@@ -11,7 +11,7 @@
 /**
  * Class DB_PDO
  */
-class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
+class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_Registering
 {
     /**
      * @var null
@@ -29,15 +29,266 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     private $isAlreadySetup = false;
     private $isRequiredUpdated = false;
     private $updatedRecord = null;
+    private $queriedEntity = null;
+    private $queriedCondition = null;
+    private $queriedPrimaryKeys = null;
+
+    public function queriedEntity()
+    {
+        return $this->queriedEntity;
+    }
+
+    public function queriedCondition()
+    {
+        return $this->queriedCondition;
+    }
 
     public function requireUpdatedRecord($value)
     {
         $this->isRequiredUpdated = $value;
     }
 
+    public function queriedPrimaryKeys()
+    {
+        return $this->queriedPrimaryKeys;
+    }
+
     public function updatedRecord()
     {
         return $this->updatedRecord;
+    }
+
+    public function isExistRequiredTable()
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if ($regTable == null) {
+            $this->logger->errorMessageStore("The table doesn't specified.");
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            $this->logger->errorMessageStore("Can't open db connection.");
+            return false;
+        }
+        $sql = "SELECT id FROM {$regTable} LIMIT 1";
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore("The table '{$regTable}' doesn't exist in the database.");
+            return false;
+        }
+        return true;
+
+    }
+
+    public function register($clientId, $entity, $condition, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $currentDT = new DateTime();
+        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
+        $sql = "INSERT INTO {$regTable} (clientid,entity,conditions,registereddt) VALUES("
+            . implode(',', array(
+                $this->link->quote($clientId),
+                $this->link->quote($entity),
+                $this->link->quote($condition),
+                $this->link->quote($currentDTFormat),
+            )) . ')';
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->exec($sql);
+        if ($result !== 1) {
+            $this->errorMessageStore('Insert:' . $sql);
+            return false;
+        }
+        $newContextId = $this->link->lastInsertId("registeredcontext_id_seq");
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            // SQLite supports multiple records inserting, but it reported error.
+            // PDO driver doesn't recognize it, does it ?
+            foreach ($pkArray as $pk) {
+                $qPk = $this->link->quote($pk);
+                $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES ({$newContextId},{$qPk})";
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->exec($sql);
+                if ($result < 1) {
+                    $this->logger->setDebugMessage($this->link->errorInfo());
+                    $this->errorMessageStore('Insert:' . $sql);
+                    return false;
+                }
+            }
+        } else {
+            $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES ";
+            $isFirstRow = true;
+            foreach ($pkArray as $pk) {
+                $qPk = $this->link->quote($pk);
+                if (!$isFirstRow) {
+                    $sql .= ",";
+                }
+                $sql .= "({$newContextId},{$qPk})";
+                $isFirstRow = false;
+            }
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->exec($sql);
+            if ($result < 1) {
+                $this->logger->setDebugMessage($this->link->errorInfo());
+                $this->errorMessageStore('Insert:' . $sql);
+                return false;
+            }
+        }
+        return $newContextId;
+    }
+
+    public function unregister($clientId, $tableKeys)   {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+
+        $criteria = array("clientid=" . $this->link->quote($clientId));
+        if ($tableKeys) {
+            $subCriteria = array();
+            foreach($tableKeys as $regId)   {
+                $subCriteria[] = "id=" . $this->link->quote($regId);
+            }
+            $criteria[] = "(" . implode(" OR ", $subCriteria) . ")";
+        }
+        $criteriaString = implode(" AND ", $criteria);
+
+        $contextIds = array();
+        // SQLite initially doesn't support delete cascade. To support it,
+        // the PRAGMA statement as below should be executed. But PHP 5.2 doens't
+        // work, so it must delete
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            $sql = "PRAGMA foreign_keys = ON";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Pragma:' . $sql);
+                return false;
+            }
+            $versionSign = explode('.', phpversion());
+            if ($versionSign[0] <= 5 && $versionSign[1] <= 2) {
+                $sql = "SELECT id FROM {$regTable} WHERE {$criteriaString}";
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->query($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Select:' . $sql);
+                    return false;
+                }
+                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    $contextIds[] = $row['id'];
+                }
+            }
+        }
+        $sql = "DELETE FROM {$regTable} WHERE {$criteriaString}";
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->exec($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Delete:' . $sql);
+            return false;
+        }
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
+            foreach ($contextIds as $cId) {
+                $sql = "DELETE FROM {$pksTable} WHERE context_id=" . $this->link->quote($cId);
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->exec($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Delete:' . $sql);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public function matchInRegisterd($clientId, $entity, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $originPK = $pkArray[0];
+        $sql = "SELECT DISTINCT clientid FROM " . $pksTable . "," . $regTable . " WHERE " .
+            "context_id = id AND clientid <> " . $this->link->quote($clientId) .
+            " AND entity = " . $this->link->quote($entity) .
+            " AND pk = " . $this->link->quote($originPK) .
+            " ORDER BY clientid";
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        $targetClients = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $targetClients[] = $row['clientid'];
+        }
+        return array_unique($targetClients);
+    }
+
+    public function appendIntoRegisterd($clientId, $entity, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->link->quote($entity);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        $targetClients = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $targetClients[] = $row['clientid'];
+            $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES(" . $this->link->quote($row['id']) .
+                "," . $this->link->quote($pkArray[0]) . ")";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Insert:' . $sql);
+                return false;
+            }
+            $this->logger->setDebugMessage("Inserted count: " . $result->rowCount(), 2);
+        }
+        return array_values(array_diff(array_unique($targetClients), array($clientId)));
+    }
+
+    public function removeFromRegisterd($clientId, $entity, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->link->quote($entity);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        $this->logger->setDebugMessage(var_export($result, true));
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return false;
+        }
+        $targetClients = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $targetClients[] = $row['clientid'];
+            $sql = "DELETE FROM {$pksTable} WHERE context_id = " . $this->link->quote($row['id']) .
+                " AND pk = " . $this->link->quote($pkArray[0]);
+            $this->logger->setDebugMessage($sql);
+            $resultDelete = $this->link->query($sql);
+            if ($resultDelete === false) {
+                $this->errorMessageStore('Delete:' . $sql);
+                return false;
+            }
+            $this->logger->setDebugMessage("Deleted count: " . $resultDelete->rowCount(), 2);
+        }
+        return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
     /**
@@ -93,6 +344,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
     public function getDefaultKey()
     {
         return "id";
+    }
+
+    private function getKeyFieldOfContext($context)
+    {
+        if (isset($context) && isset($context['key'])) {
+            return $context['key'];
+        }
+        return $this->getDefaultKey();
     }
 
     /**
@@ -170,6 +429,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $insideOp = ' AND ';
             $outsideOp = ' OR ';
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
+                if ($condition['field'] == $primaryKey && isset($condition['value'])) {
+                    $this->queriedPrimaryKeys = array($condition['value']);
+                }
                 if ($condition['field'] == '__operation__') {
                     $chunkCount++;
                     if ($condition['operator'] == 'ex') {
@@ -381,6 +643,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$sortClause} "
             . " LIMIT {$limitParam} OFFSET {$skipParam}";
         $this->logger->setDebugMessage($sql);
+        $this->queriedEntity = $viewOrTableName;
+        $this->queriedCondition = "{$queryClause} {$sortClause} LIMIT {$limitParam} OFFSET {$skipParam}";
 
         // Query
         $result = $this->link->query($sql);
@@ -388,6 +652,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->errorMessageStore('Select:' . $sql);
             return array();
         }
+        $this->queriedPrimaryKeys = array();
+        $keyField = $this->getKeyFieldOfContext($tableInfo);
         $sqlResult = array();
         $isFirstRow = true;
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -400,6 +666,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                 $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
             }
             $sqlResult[] = $rowArray;
+            $this->queriedPrimaryKeys[] = $rowArray[$keyField];
             $isFirstRow = false;
         }
 
@@ -475,7 +742,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $counter++;
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
 
-        //    $this->logger->setDebugMessage(" ###### " . "{$tableName}{$this->settings->getSeparator()}{$field}");
+            //    $this->logger->setDebugMessage(" ###### " . "{$tableName}{$this->settings->getSeparator()}{$field}");
             $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
 
             $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
@@ -494,6 +761,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
         $sql = "UPDATE {$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
+        $this->queriedEntity = $tableName;
 
         $this->logger->setDebugMessage(
             $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true)));
@@ -511,6 +779,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
             } else {
+                $this->queriedPrimaryKeys = array();
+                $keyField = $this->getKeyFieldOfContext($tableInfo);
                 $sqlResult = array();
                 $isFirstRow = true;
                 foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -523,6 +793,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
                     }
                     $sqlResult[] = $rowArray;
+                    $this->queriedPrimaryKeys[] = $rowArray[$keyField];
                     $isFirstRow = false;
                 }
                 $this->updatedRecord = $sqlResult;
@@ -633,6 +904,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
         $lastKeyValue = $this->link->lastInsertId($seqObject);
 
+        $this->queriedPrimaryKeys = array($lastKeyValue);
+        $this->queriedEntity = $tableName;
+
         if ($this->isRequiredUpdated) {
             $sql = "SELECT * FROM " . $tableName
                 . " WHERE " . $keyField . "=" . $this->link->quote($lastKeyValue);
@@ -716,6 +990,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
             $this->errorMessageStore('Delete Error:' . $sql);
             return false;
         }
+        $this->queriedEntity = $tableName;
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -1618,12 +1893,83 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    public function isContainingFieldName($fname, $fieldnames)    {
+    public function isContainingFieldName($fname, $fieldnames)
+    {
         return in_array($fname, $fieldnames);
     }
 
-    public function isNullAcceptable()  {
+    public function isNullAcceptable()
+    {
         return true;
     }
 
+    public function queryForTest($table, $conditions = null)
+    {
+        if ($table == null) {
+            $this->logger->errorMessageStore("The table doesn't specified.");
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            $this->logger->errorMessageStore("Can't open db connection.");
+            return false;
+        }
+        $sql = "SELECT * FROM " . $this->quotedFieldName($table);
+        if (count($conditions) > 0) {
+            $sql .= " WHERE ";
+            $first = true;
+            foreach ($conditions as $field => $value) {
+                if (!$first) {
+                    $sql .= " AND ";
+                }
+                $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
+                $first = false;
+            }
+        }
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            var_dump($this->link->errorInfo());
+            return false;
+        }
+        $recordSet = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $oneRecord = array();
+            foreach ($row as $field => $value) {
+                $oneRecord[$field] = $value;
+            }
+            $recordSet[] = $oneRecord;
+        }
+        return $recordSet;
+    }
+
+    public function deleteForTest($table, $conditions = null)
+    {
+        if ($table == null) {
+            $this->logger->errorMessageStore("The table doesn't specified.");
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            $this->logger->errorMessageStore("Can't open db connection.");
+            return false;
+        }
+        $sql = "DELETE FROM " . $this->quotedFieldName($table);
+        if (count($conditions) > 0) {
+            $sql .= " WHERE ";
+            $first = true;
+            foreach ($conditions as $field => $value) {
+                if (!$first) {
+                    $sql .= " AND ";
+                }
+                $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
+                $first = false;
+            }
+        }
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->exec($sql);
+        if ($result === false) {
+            var_dump($this->link->errorInfo());
+            return false;
+        }
+        return true;
+    }
 }

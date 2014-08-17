@@ -888,4 +888,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     {
         // TODO: Implement updatedRecord() method.
     }
+
+    public function isContainingFieldName($fname, $fieldnames)
+    {
+        // TODO: Implement isContainingFieldName() method.
+    }
+
+    public function isNullAcceptable()
+    {
+        // TODO: Implement isNullAcceptable() method.
+    }
 }

@@ -44,27 +44,21 @@ var INTERMediator = {
     classAsLinkInfo: true,
     isDBDataPreferable: false,
     noRecordClassName: "_im_for_noresult_",
-    nullAcceptable: true,
+//    nullAcceptable: true,
 
     rootEnclosure: null,
     // Storing to retrieve the page to initial condition.
     // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
-    calculateRequiredObject: null,
-    /*
-     key => {    // Key is the id attribute of the node which is defined as "calcuration"
-     "field":
-     "expression": exp.replace(/ /g, ""),   // expression
-     "nodeInfo": nInfo,     // node if object i.e. {field:.., table:.., target:..., tableidnex:....}
-     "values": {}   // key=target name in expression, value=real value.
-     // if value=undefined, it shows the value is calculation field
-     "refers": {}
-     }
-     */
+
     useSessionStorage: true,
     // Use sessionStorage for the Local Context instead of Cookie.
 
     errorMessages: [],
     debugMessages: [],
+
+    partialConstructing: false,
+    linkedElmCounter: 0,
+    pusherObject: null,
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
     //startFrom: 0,
@@ -221,744 +215,6 @@ var INTERMediator = {
         }
     },
 
-    /*
-     =================================
-     User interactions
-     =================================
-     */
-    isShiftKeyDown: false,
-    isControlKeyDown: false,
-
-    keyDown: function (evt) {
-        var keyCode = (window.event) ? evt.which : evt.keyCode;
-        if (keyCode == 16) {
-            INTERMediator.isShiftKeyDown = true;
-        }
-        if (keyCode == 17) {
-            INTERMediator.isControlKeyDown = true;
-        }
-    },
-
-    keyUp: function (evt) {
-        var keyCode = (window.event) ? evt.which : evt.keyCode;
-        if (keyCode == 16) {
-            INTERMediator.isShiftKeyDown = false;
-        }
-        if (keyCode == 17) {
-            INTERMediator.isControlKeyDown = false;
-        }
-    },
-    /*
-     valueChange
-     Parameters:
-     */
-    valueChange: function (idValue) {
-        var changedObj, objType, contextInfo, i, updateRequiredContext, associatedNode, currentValue, newValue,
-            linkInfo, nodeInfo;
-
-        if (INTERMediator.isShiftKeyDown && INTERMediator.isControlKeyDown) {
-            INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
-            INTERMediator.flushMessage();
-            INTERMediator.isShiftKeyDown = false;
-            INTERMediator.isControlKeyDown = false;
-            return;
-        }
-        INTERMediator.isShiftKeyDown = false;
-        INTERMediator.isControlKeyDown = false;
-
-        changedObj = document.getElementById(idValue);
-        if (changedObj != null) {
-            if (!validation(changedObj)) {   // Validation error.
-                return;
-            }
-            objType = changedObj.getAttribute('type');
-            if (objType == 'radio' && !changedObj.checked) {
-                INTERMediatorOnPage.hideProgress();
-                return;
-            }
-            linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
-            // for js-widget support
-            if (!linkInfo && INTERMediatorLib.isWidgetElement(changedObj.parentNode)) {
-                linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj.parentNode);
-            }
-
-            nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);  // Suppose to be the first definition.
-            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
-            if (contextInfo) {
-                newValue = IMLibElement.getValueFromIMNode(changedObj);
-                if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
-                    // Just supporting NON-target info.
-//                contextInfo.context.setValue(
-//                    contextInfo.record, contextInfo.field, newValue);
-                    contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
-                } else {
-                    INTERMediatorOnPage.showProgress();
-                    if (!IMLibElement.checkOptimisticLock(changedObj, nodeInfo.target)) {
-                        INTERMediatorOnPage.hideProgress();
-                    } else {
-                        IMLibContextPool.updateContext(idValue, nodeInfo.target);
-                        updateDB(changedObj, idValue, nodeInfo.target);
-
-                        updateRequiredContext = IMLibContextPool.dependingObjects(idValue);
-                        for (i = 0; i < updateRequiredContext.length; i++) {
-                            updateRequiredContext[i].foreignValue = {};
-                            updateRequiredContext[i].foreignValue[contextInfo.field] = newValue;
-                            if (updateRequiredContext[i]) {
-                                INTERMediator.constructMain(updateRequiredContext[i]);
-                                associatedNode = updateRequiredContext[i].enclosureNode;
-                                if (INTERMediatorLib.isPopupMenu(associatedNode)) {
-                                    currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
-                                    IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            INTERMediator.recalculation(idValue);
-            INTERMediator.flushMessage();
-        }
-
-        function validation(changedObj) {
-            var linkInfo, matched, context, i, j, index, didValidate, contextInfo, result, messageNode, errorMsgs;
-            try {
-                linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
-                didValidate = false;
-                result = true;
-                if (linkInfo.length > 0) {
-                    matched = linkInfo[0].match(/([^@]+)/);
-                    if (matched[1] != IMLibLocalContext.contextName) {
-                        context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
-                        if (context["validation"] != null) {
-                            for (i = 0; i < linkInfo.length; i++) {
-                                matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
-                                for (index in context["validation"]) {
-                                    if (context["validation"][index]["field"] == matched[2]) {
-                                        didValidate = true;
-                                        result = Parser.evaluate(
-                                            context["validation"][index]["rule"],
-                                            {"value": changedObj.value, "target": changedObj});
-                                        if (!result) {
-                                            switch (context["validation"][index]["notify"]) {
-                                                case "inline":
-                                                    INTERMediatorLib.clearErrorMessage(changedObj);
-                                                    messageNode = INTERMediatorLib.createErrorMessageNode("SPAN", context["validation"][index].message);
-                                                    changedObj.parentNode.insertBefore(messageNode, changedObj.nextSibling);
-                                                    break;
-                                                case "end-of-sibling":
-                                                    INTERMediatorLib.clearErrorMessage(changedObj);
-                                                    messageNode = INTERMediatorLib.createErrorMessageNode("DIV", context["validation"][index].message);
-                                                    changedObj.parentNode.appendChild(messageNode);
-                                                    break;
-                                                default:
-                                                    alert(context["validation"][index]["message"]);
-                                            }
-                                            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, "");
-                                            // Just supporting NON-target info.
-                                            changedObj.value = contextInfo.context.getValue(
-                                                contextInfo.record, contextInfo.field);
-                                            window.setTimeout(function () {
-                                                changedObj.focus();
-                                            }, 0);
-                                            if (INTERMediatorOnPage.doAfterValidationFailure != null) {
-                                                INTERMediatorOnPage.doAfterValidationFailure(changedObj, linkInfo[i]);
-                                            }
-                                            return result;
-                                        } else {
-                                            switch (context["validation"][index]["notify"]) {
-                                                case "inline":
-                                                case "end-of-sibling":
-                                                    INTERMediatorLib.clearErrorMessage(changedObj);
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (didValidate) {
-                        if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
-                            INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
-                        }
-                    }
-                }
-                return result;
-            } catch (ex) {
-                if (ex == "_im_requath_request_") {
-                    throw ex;
-                } else {
-                    INTERMediator.setErrorMessage(ex, "EXCEPTION-32: on the validation process.");
-                }
-                return false;
-            }
-        }
-
-        function updateDB(changedObj, idValue, target) {
-            var newValue, contextInfo, criteria;
-
-            INTERMediatorOnPage.retrieveAuthInfo();
-            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);   // Just supporting NON-target info.
-            newValue = IMLibElement.getValueFromIMNode(changedObj);
-
-            if (newValue != null) {
-                criteria = contextInfo.record.split('=');
-                try {
-                    INTERMediator_DBAdapter.db_update({
-                        name: contextInfo.context.contextName,
-                        conditions: [
-                            {field: criteria[0], operator: '=', value: criteria[1]}
-                        ],
-                        dataset: [
-                            {
-                                field: contextInfo.field + (contextInfo.portal ? ("." + contextInfo.portal) : ""),
-                                value: newValue
-                            }
-                        ]
-                    });
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        if (INTERMediatorOnPage.requireAuthentication
-                            && !INTERMediatorOnPage.isComplementAuthData()) {
-                            INTERMediatorOnPage.authChallenge = null;
-                            INTERMediatorOnPage.authHashedPassword = null;
-                            INTERMediatorOnPage.authenticating(function () {
-                                updateDB(changedObj, idValue);
-                            });
-                            return;
-                        }
-                    } else {
-                        INTERMediator.setErrorMessage(ex, "EXCEPTION-2");
-                    }
-                }
-            }
-            INTERMediatorOnPage.hideProgress();
-        }
-    },
-
-
-    deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
-        var key, removeNode, removingNodes;
-        if (isConfirm) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
-                return;
-            }
-        }
-        INTERMediatorOnPage.showProgress();
-        try {
-            INTERMediatorOnPage.retrieveAuthInfo();
-            if (foreignField != "") {
-                INTERMediator_DBAdapter.db_update({
-                    name: targetName,
-                    conditions: [
-                        {field: keyField, operator: "=", value: keyValue}
-                    ],
-                    dataset: [
-                        {
-                            field: "-delete.related",
-                            operator: "=",
-                            value: foreignField.replace("\:\:-recid", "") + "." + foreignValue
-                        }
-                    ]
-                });
-            } else {
-                INTERMediator_DBAdapter.db_delete({
-                    name: targetName,
-                    conditions: [
-                        {field: keyField, operator: '=', value: keyValue}
-                    ]
-                });
-            }
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                    INTERMediatorOnPage.authChallenge = null;
-                    INTERMediatorOnPage.authHashedPassword = null;
-                    INTERMediatorOnPage.authenticating(
-                        function () {
-                            INTERMediator.deleteButton(
-                                targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, false);
-                        }
-                    );
-                    return;
-                }
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-3");
-            }
-        }
-
-        var i, j, k, removeNodeId, nodeId, calcObject, referes, values;
-        for (key in removeNodes) {
-            removeNode = document.getElementById(removeNodes[key]);
-            removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
-            if (removingNodes) {
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    if (removeNodeId in INTERMediator.calculateRequiredObject) {
-                        delete INTERMediator.calculateRequiredObject[removeNodeId];
-                    }
-                }
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    for (nodeId in INTERMediator.calculateRequiredObject) {
-                        calcObject = INTERMediator.calculateRequiredObject[nodeId];
-                        referes = {};
-                        values = {};
-                        for (j in calcObject.referes) {
-                            referes[j] = [], values[j] = [];
-                            for (k = 0; k < calcObject.referes[j].length; k++) {
-                                if (removeNodeId != calcObject.referes[j][k]) {
-                                    referes[j].push(calcObject.referes[j][k]);
-                                    values[j].push(calcObject.values[j][k]);
-                                }
-                            }
-                        }
-                        calcObject.referes = referes;
-                        calcObject.values = values;
-                    }
-                }
-            }
-            try {
-                removeNode.parentNode.removeChild(removeNode);
-            } catch
-                (ex) {
-                // Avoid an error for Safari
-            }
-        }
-        INTERMediator.recalculation();
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
-    },
-
-    insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
-        var currentContext, recordSet, index, key, removeNode, i, relationDef, targetRecord, portalField,
-            targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet;
-        if (isConfirm) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
-                return;
-            }
-        }
-        INTERMediatorOnPage.showProgress();
-        currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
-        recordSet = [], relatedRecordSet = [];
-        if (foreignValues != null) {
-            for (index in currentContext['relation']) {
-                recordSet.push({
-                    field: currentContext['relation'][index]["foreign-key"],
-                    value: foreignValues[currentContext['relation'][index]["join-field"]]
-                });
-            }
-        }
-        try {
-            INTERMediatorOnPage.retrieveAuthInfo();
-
-            relationDef = currentContext["relation"];
-            if (relationDef) {
-                for (index in relationDef) {
-                    if (relationDef[index]["portal"] == true) {
-                        currentContext["portal"] = true;
-                    }
-                }
-            }
-            if (currentContext["portal"] == true) {
-                relatedRecordSet = [];
-                for (index in currentContext["default-values"]) {
-                    relatedRecordSet.push({
-                        field: targetName + "::" + currentContext["default-values"][index]["field"] + ".0",
-                        value: currentContext["default-values"][index]["value"]
-                    });
-                }
-
-                if (relatedRecordSet.length == 0) {
-                    targetPortalValue = "";
-
-                    targetRecord = INTERMediator_DBAdapter.db_query({
-                            name: targetName,
-                            records: 1,
-                            conditions: [
-                                {
-                                    field: currentContext["key"] ? currentContext["key"] : "-recid",
-                                    operator: "=",
-                                    value: keyValue}
-                            ]}
-                    );
-                    for (portalField in targetRecord["recordset"][0][0]) {
-                        if (portalField.indexOf(targetName + "::") > -1) {
-                            existRelated = true;
-                            targetPortalField = portalField;
-                            if (portalField == targetName + "::" + recordSet[0]['field']) {
-                                targetPortalValue = recordSet[0]['value'];
-                                break;
-                            }
-                            if (portalField != targetName + "::id"
-                                && portalField != targetName + "::" + recordSet[0]['field']) {
-                                break;
-                            }
-                        }
-                    }
-
-                    if (existRelated == false) {
-                        targetRecord = INTERMediator_DBAdapter.db_query({
-                                name: targetName,
-                                records: 0,
-                                conditions: [
-                                    {
-                                        field: currentContext["key"] ? currentContext["key"] : "-recid",
-                                        operator: "=",
-                                        value: keyValue}
-                                ]}
-                        );
-                        for (portalField in targetRecord["recordset"]) {
-                            if (portalField.indexOf(targetName + "::") > -1) {
-                                targetPortalField = portalField;
-                                if (portalField == targetName + "::" + recordSet[0]['field']) {
-                                    targetPortalValue = recordSet[0]['value'];
-                                    break;
-                                }
-                                if (portalField != targetName + "::id"
-                                    && portalField != targetName + "::" + recordSet[0]['field']) {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    relatedRecordSet.push({field: targetPortalField + ".0", value: targetPortalValue});
-                }
-
-                INTERMediator_DBAdapter.db_update({
-                    name: targetName,
-                    conditions: [
-                        {
-                            field: currentContext["key"] ? currentContext["key"] : "-recid",
-                            operator: "=",
-                            value: keyValue}
-                    ],
-                    dataset: relatedRecordSet
-                });
-            } else {
-                INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
-            }
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                INTERMediatorOnPage.authChallenge = null;
-                INTERMediatorOnPage.authHashedPassword = null;
-                INTERMediatorOnPage.authenticating(
-                    function () {
-                        INTERMediator.insertButton(
-                            targetName, keyValue, foreignValues, updateNodes, removeNodes, false);
-                    }
-                );
-                INTERMediator.flushMessage();
-                return;
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-4");
-            }
-        }
-
-        for (key in removeNodes) {
-            removeNode = document.getElementById(removeNodes[key]);
-            try {
-                removeNode.parentNode.removeChild(removeNode);
-            } catch (ex) {
-                // Avoid an error for Safari
-            }
-        }
-
-        var associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodes);
-        if (associatedContext) {
-            associatedContext.foreignValue = foreignValues;
-            if (currentContext["portal"] == true && existRelated == false) {
-                INTERMediator.additionalCondition[targetName] = {
-                    field: currentContext["key"] ? currentContext["key"] : "-recid",
-                    operator: "=",
-                    value: keyValue
-                };
-            }
-            INTERMediator.constructMain(associatedContext);
-        }
-
-        INTERMediator.recalculation();
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
-    },
-
-    partialConstructing: false,
-    objectReference: {
-    },
-
-    linkedElmCounter: 0,
-
-    clickPostOnlyButton: function (node) {
-        var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
-        var mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage;
-        var linkedNodes, namedNodes, index, hasInvalid;
-        var targetNode = node.parentNode;
-        while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
-            targetNode = targetNode.parentNode;
-            if (!targetNode) {
-                return;
-            }
-        }
-        linkedNodes = []; // Collecting linked elements to this array.
-        namedNodes = [];
-        for (i = 0; i < targetNode.childNodes.length; i++) {
-            seekLinkedElement(targetNode.childNodes[i]);
-        }
-        contextCount = {};
-        for (i = 0; i < linkedNodes.length; i++) {
-            elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
-            for (j = 0; j < elementInfo.length; j++) {
-                comp = elementInfo[j].split(INTERMediator.separator);
-                if (!contextCount[comp[j]]) {
-                    contextCount[comp[j]] = 0;
-                }
-                contextCount[comp[j]]++;
-            }
-        }
-        if (contextCount.length < 1) {
-            return;
-        }
-        var maxCount = -100;
-        for (var contextName in contextCount) {
-            if (maxCount < contextCount[contextName]) {
-                maxCount = contextCount[contextName];
-                selectedContext = contextName;
-                contextInfo = INTERMediatorOnPage.getContextInfo(contextName);
-            }
-        }
-
-        alertmessage = '';
-        fieldData = [];
-        hasInvalid = false;
-        for (i = 0; i < linkedNodes.length; i++) {
-            elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
-            for (j = 0; j < elementInfo.length; j++) {
-                comp = elementInfo[j].split(INTERMediator.separator);
-                if (comp[0] == selectedContext) {
-                    if (contextInfo.validation) {
-                        for (index in contextInfo.validation) {
-                            validationInfo = contextInfo.validation[index];
-                            if (validationInfo && validationInfo.field == comp[1]) {
-                                switch (validationInfo.notify) {
-                                    case "inline":
-                                    case "end-of-sibling":
-                                        INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
-                                        break;
-                                }
-                            }
-                        }
-                        for (index in contextInfo.validation) {
-                            validationInfo = contextInfo.validation[index];
-                            if (validationInfo.field == comp[1]) {
-                                if (validationInfo) {
-                                    result = Parser.evaluate(
-                                        validationInfo.rule,
-                                        {"value": linkedNodes[i].value, "target": linkedNodes[i]}
-                                    );
-                                    if (!result) {
-                                        hasInvalid = true;
-                                        switch (validationInfo.notify) {
-                                            case "inline":
-                                                INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
-                                                messageNode = INTERMediatorLib.createErrorMessageNode("SPAN", validationInfo.message);
-                                                linkedNodes[i].parentNode.insertBefore(messageNode, linkedNodes[i].nextSibling);
-                                                break;
-                                            case "end-of-sibling":
-                                                INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
-                                                messageNode = INTERMediatorLib.createErrorMessageNode("DIV", validationInfo.message);
-                                                linkedNodes[i].parentNode.appendChild(messageNode);
-                                                break;
-                                            default:
-                                                alertmessage += validationInfo.message + "\n";
-                                        }
-                                        if (INTERMediatorOnPage.doAfterValidationFailure != null) {
-                                            INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
-                        fieldData.push({field: comp[1], value: linkedNodes[i]._im_getValue()});
-                    } else if (linkedNodes[i].tagName == 'SELECT') {
-                        fieldData.push({field: comp[1], value: linkedNodes[i].value});
-                    } else if (linkedNodes[i].tagName == 'TEXTAREA') {
-                        fieldData.push({field: comp[1], value: linkedNodes[i].value});
-                    } else if (linkedNodes[i].tagName == 'INPUT') {
-                        if (( linkedNodes[i].getAttribute('type') == 'radio' )
-                            || ( linkedNodes[i].getAttribute('type') == 'checkbox' )) {
-                            if (linkedNodes[i].checked) {
-                                fieldData.push({field: comp[1], value: linkedNodes[i].value});
-                            }
-                        } else {
-                            fieldData.push({field: comp[1], value: linkedNodes[i].value});
-                        }
-                    }
-                }
-            }
-        }
-        for (i = 0; i < namedNodes.length; i++) {
-            elementInfo = INTERMediatorLib.getNamedInfo(namedNodes[i]);
-            for (j = 0; j < elementInfo.length; j++) {
-                comp = elementInfo[j].split(INTERMediator.separator);
-                if (comp[0] == selectedContext) {
-                    mergedValues = [];
-                    inputNodes = namedNodes[i].getElementsByTagName('INPUT');
-                    for (k = 0; k < inputNodes.length; k++) {
-                        typeAttr = inputNodes[k].getAttribute('type');
-                        if (typeAttr == 'radio' || typeAttr == 'checkbox') {
-                            if (inputNodes[k].checked) {
-                                mergedValues.push(inputNodes[k].value);
-                            }
-                        } else {
-                            mergedValues.push(inputNodes[k].value);
-                        }
-                    }
-                    fieldData.push({field: comp[1],
-                        value: mergedValues.join("\n") + "\n"});
-                }
-            }
-        }
-
-        if (alertmessage.length > 0) {
-            window.alert(alertmessage);
-            return;
-        }
-        if (hasInvalid) {
-            return;
-        }
-
-        if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
-            if (!INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
-                return;
-            }
-        }
-
-        contextInfo = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);
-        INTERMediator_DBAdapter.db_createRecordWithAuth(
-            {name: selectedContext, dataset: fieldData},
-            function (returnValue) {
-                var newNode, parentOfTarget, targetNode = node, thisContext = contextInfo, isSetMsg = false;
-                INTERMediator.flushMessage();
-                if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
-                    INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, returnValue);
-                }
-                if (thisContext['post-dismiss-message']) {
-                    parentOfTarget = targetNode.parentNode;
-                    parentOfTarget.removeChild(targetNode);
-                    newNode = document.createElement('SPAN');
-                    INTERMediatorLib.setClassAttributeToNode(newNode, 'IM_POSTMESSAGE');
-                    newNode.appendChild(document.createTextNode(thisContext['post-dismiss-message']));
-                    parentOfTarget.appendChild(newNode);
-                    isSetMsg = true;
-                }
-                if (thisContext['post-reconstruct']) {
-                    setTimeout(function () {
-                        INTERMediator.construct(true);
-                    }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0);
-                }
-                if (thisContext['post-move-url']) {
-                    setTimeout(function () {
-                        location.href = thisContext['post-move-url'];
-                    }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0);
-                }
-            });
-
-        function seekLinkedElement(node) {
-            var children, i;
-            if (node.nodeType === 1) {
-                if (INTERMediatorLib.isLinkedElement(node)) {
-                    linkedNodes.push(node);
-                } else if (INTERMediatorLib.isWidgetElement(node)) {
-                    linkedNodes.push(node);
-                } else if (INTERMediatorLib.isNamedElement(node)) {
-                    namedNodes.push(node);
-                } else {
-                    children = node.childNodes;
-                    for (i = 0; i < children.length; i++) {
-                        seekLinkedElement(children[i]);
-                    }
-                }
-            }
-        }
-
-    },
-
-    /*
-     On updating, the updatedNodeId should be set to the updating node id.
-     On deleting, parameter doesn't required.
-     */
-    recalculation: function (updatedNodeId) {
-        var nodeId, newValueAdded, leafNodes, calcObject, ix, calcFieldInfo, updatedValue, isRecalcAll = false;
-        var targetNode, newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex;
-
-        if (updatedNodeId === undefined) {
-            isRecalcAll = true;
-            updatedNodeIds = [];
-            updateNodeValues = [];
-        } else {
-            newValue = IMLibElement.getValueFromIMNode(document.getElementById(updatedNodeId));
-            updatedNodeIds = [updatedNodeId];
-            updateNodeValues = [newValue];
-        }
-
-        IMLibNodeGraph.clear();
-        for (nodeId in INTERMediator.calculateRequiredObject) {
-            calcObject = INTERMediator.calculateRequiredObject[nodeId];
-            calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
-            targetNode = document.getElementById(calcFieldInfo.field);
-            for (field in calcObject.referes) {
-                for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                    IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
-                }
-            }
-        }
-        do {
-            leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
-            for (i = 0; i < leafNodes.length; i++) {
-                calcObject = INTERMediator.calculateRequiredObject[leafNodes[i]];
-                calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
-                if (calcObject) {
-                    if (isRecalcAll) {
-                        newValueAdded = true;
-                    } else {
-                        newValueAdded = false;
-                        for (field in calcObject.referes) {
-                            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                                cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix]);
-                                if (cachedIndex >= 0) {
-                                    calcObject.values[field][ix] = updateNodeValues[cachedIndex];
-                                    newValueAdded = true;
-                                }
-                            }
-                        }
-                    }
-                    if (newValueAdded) {
-                        updatedValue = Parser.evaluate(
-                            calcObject.expression,
-                            calcObject.values
-                        );
-                        IMLibElement.setValueToIMNode(
-                            document.getElementById(calcFieldInfo.field),
-                            calcFieldInfo.target,
-                            updatedValue,
-                            true);
-                        updatedNodeIds.push(calcFieldInfo.field);
-                        updateNodeValues.push(updatedValue);
-                    }
-                }
-                else {
-
-                }
-            }
-        } while (leafNodes.length > 0);
-        if (IMLibNodeGraph.nodes.length > 0) {
-            // Spanning Tree Detected.
-        }
-
-    },
-
     initialize: function () {
         INTERMediatorOnPage.removeCookie('_im_localcontext');
 //    INTERMediatorOnPage.removeCookie('_im_username');
@@ -995,10 +251,28 @@ var INTERMediator = {
         setTimeout(timerTask, 0);
     },
 
+    /* ===========================================================
 
-    constructMain: function (updateRequiredContext) {
+    INTERMediator.constructMain() is the public entry for generating page.
+    This has 3-way calling conventions.
+
+    [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
+      This happens to generate page from scratch.
+
+    [2] INTERMediator.constructMain(context)
+      This will be reconstracted to nodes of the "context" parameter.
+      The context parameter should be refered to a IMLIbContext object.
+
+    [3] INTERMediator.constructMain(context, recordset)
+      This will append nodes to the enclocure of the "context" as a repeater.
+      The context parameter should be refered to a IMLIbContext object.
+      The recordset parameter is the newly created record as the form of an array of an dictionary.
+
+     */
+    constructMain: function (updateRequiredContext, recordset) {
         var i, theNode, currentLevel = 0, postSetFields = [], buttonIdNum = 1,
-            eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [];
+            eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
+            isAcceptNotify = false;
         IMLibPageNavigation.deleteInsertOnNavi = [];
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
@@ -1008,7 +282,41 @@ var INTERMediator = {
                 pageConstruct();
             } else {
                 this.partialConstructing = true;
-                partialConstruct(updateRequiredContext);
+                isInsidePostOnly = false;
+                postSetFields = [];
+
+                try {
+                    if (!recordset) {
+                        updateRequiredContext.removeContext();
+                        originalNodes = updateRequiredContext.original;
+                        for (i = 0; i < originalNodes.length; i++) {
+                            updateRequiredContext.enclosureNode.appendChild(originalNodes[i]);
+                        }
+                        seekEnclosureNode(
+                            updateRequiredContext.enclosureNode,
+                            updateRequiredContext.foreignValue,
+                            null,
+                            updateRequiredContext);
+                    }
+                    else {
+                        expandRepeaters(
+                            updateRequiredContext,
+                            updateRequiredContext.enclosureNode,
+                            {recordset: recordset, targetTotalCount: 1, targetCount: 1}
+                        );
+                    }
+                } catch (ex) {
+                    if (ex == "_im_requath_request_") {
+                        throw ex;
+                    } else {
+                        INTERMediator.setErrorMessage(ex, "EXCEPTION-8");
+                    }
+                }
+
+                for (i = 0; i < postSetFields.length; i++) {
+                    document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
+                }
+                IMLibCalc.updateCalculationFields();
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
@@ -1050,49 +358,15 @@ var INTERMediator = {
 
         INTERMediator.flushMessage(); // Show messages
 
-        /*
+        /* --------------------------------------------------------------------
+         This function is called on case of below.
 
+         [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
          */
-
-        function partialConstruct(updateRequiredContext) {
-            var updateNode, originalNodes, i;
-
-            isInsidePostOnly = false;
-
-            updateNode = updateRequiredContext.enclosureNode;
-            while (updateNode.firstChild) {
-                updateNode.removeChild(updateNode.firstChild);
-            }
-            originalNodes = updateRequiredContext.original;
-            for (i = 0; i < originalNodes.length; i++) {
-                updateNode.appendChild(originalNodes[i]);
-            }
-            postSetFields = [];
-            try {
-                seekEnclosureNode(
-                    updateNode,
-                    updateRequiredContext.foreignValue,
-                    INTERMediatorLib.getEnclosureSimple(updateNode),
-                    null
-                );
-            } catch (ex) {
-                if (ex == "_im_requath_request_") {
-                    throw ex;
-                } else {
-                    INTERMediator.setErrorMessage(ex, "EXCEPTION-8");
-                }
-            }
-
-            for (i = 0; i < postSetFields.length; i++) {
-                document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
-            }
-            updateCalculationFields();
-        }
-
         function pageConstruct() {
             var i, bodyNode, emptyElement;
 
-            INTERMediator.calculateRequiredObject = {};
+            IMLibCalc.calculateRequiredObject = {};
             INTERMediator.currentEncNumber = 1;
             INTERMediator.elementIds = [];
             //INTERMediator.widgetElementIds = [];
@@ -1131,16 +405,44 @@ var INTERMediator = {
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
             IMLibLocalContext.bindingDescendant(bodyNode);
-            updateCalculationFields();
+            IMLibCalc.updateCalculationFields();
             IMLibPageNavigation.navigationSetup();
+
+            if (isAcceptNotify) {
+                var channelName = INTERMediatorOnPage.clientNotificationIdentifier();
+                var appKey = INTERMediatorOnPage.clientNotificationKey();
+                if (appKey && appKey != "_im_key_isnt_supplied" && ! INTERMediator.pusherObject) {
+                    try {
+                        Pusher.log = function (message) {
+                            if (window.console && window.console.log) {
+                                window.console.log(message);
+                            }
+                        };
+
+                        INTERMediator.pusherObject = new Pusher(appKey);
+                        INTERMediator.pusherChannel = INTERMediator.pusherObject.subscribe(channelName);
+                        INTERMediator.pusherChannel.bind('update', function (data) {
+                            IMLibContextPool.updateOnAnotherClient('update', data);
+                        });
+                        INTERMediator.pusherChannel.bind('create', function (data) {
+                            IMLibContextPool.updateOnAnotherClient('create', data);
+                        });
+                        INTERMediator.pusherChannel.bind('delete', function (data) {
+                            IMLibContextPool.updateOnAnotherClient('delete', data);
+                        });
+                    } catch (ex) {
+                        INTERMediator.setErrorMessage(ex, "EXCEPTION-47");
+                    }
+                }
+            }
             appendCredit();
         }
 
-        /**
+        /** --------------------------------------------------------------------
          * Seeking nodes and if a node is an enclosure, proceed repeating.
          */
 
-        function seekEnclosureNode(node, currentRecord, parentEnclosure, objectReference) {
+        function seekEnclosureNode(node, currentRecord, parentObjectInfo, currentContextObj) {
             var children, className, i, attr;
             if (node.nodeType === 1) { // Work for an element
                 try {
@@ -1153,14 +455,14 @@ var INTERMediator = {
                         } else {
                             if (INTERMediator.isIE) {
                                 try {
-                                    expandEnclosure(node, currentRecord, parentEnclosure, objectReference);
+                                    expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
                                 } catch (ex) {
                                     if (ex == "_im_requath_request_") {
                                         throw ex;
                                     }
                                 }
                             } else {
-                                expandEnclosure(node, currentRecord, parentEnclosure, objectReference);
+                                expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
                             }
                         }
                     } else {
@@ -1168,7 +470,7 @@ var INTERMediator = {
                         if (children) {
                             for (i = 0; i < children.length; i++) {
                                 if (children[i].nodeType === 1) {
-                                    seekEnclosureNode(children[i], currentRecord, parentEnclosure, objectReference);
+                                    seekEnclosureNode(children[i], currentRecord, parentObjectInfo, currentContextObj);
                                 }
                             }
                         }
@@ -1184,6 +486,9 @@ var INTERMediator = {
             }
         }
 
+        /* --------------------------------------------------------------------
+        Post only mode.
+         */
         function setupPostOnlyEnclosure(node) {
             var nodes, k, currentWidgetNodes, plugin, setupWidget = false;
             var postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post');
@@ -1194,7 +499,7 @@ var INTERMediator = {
                     (function () {
                         var targetNode = postNodes[i];
                         return function () {
-                            INTERMediator.clickPostOnlyButton(targetNode);
+                            IMLibUI.clickPostOnlyButton(targetNode);
                         }
                     })());
             }
@@ -1204,11 +509,6 @@ var INTERMediator = {
             for (i = 0; i < nodes.length; i++) {
                 seekEnclosureInPostOnly(nodes[i]);
             }
-//            if (setupWidget) {
-//                for (plugin in IMParts_Catalog) {
-//                    IMParts_Catalog[plugin].finish(false);
-//                }
-//            }
             isInsidePostOnly = false;
             // -------------------------------------------
             function seekEnclosureInPostOnly(node) {
@@ -1244,25 +544,19 @@ var INTERMediator = {
             }
         }
 
-        /**
+        /** --------------------------------------------------------------------
          * Expanding an enclosure.
          */
 
-        function expandEnclosure(node, currentRecord, parentEnclosure, parentObjectInfo) {
-            var objectReference = {}, linkedNodes, encNodeTag, repeatersOriginal, repeaters,
-                linkDefs, voteResult, currentContext, fieldList, repNodeTag, joinField,
-                relationDef, index, fieldName, i, j, k, ix, targetRecords, newNode, wInfo,
-                nodeClass, repeatersOneRec, currentLinkedNodes, shouldDeleteNodes, keyField, keyValue,
-                nodeTag, typeAttr, linkInfoArray, RecordCounter, nInfo, curVal,
-                curTarget, newlyAddedNodes, keyingValue, pagingValue, widgetSupport, linkedElements,
-                recordsValue, currentWidgetNodes, widgetSupport, nodeId, nameAttr, nameNumber, nameTable,
-                selectedNode, foreignField, foreignValue, foreignFieldValue, dbspec, contextKey,
-                nameTableKey, replacedNode, children, dataAttr, calcDef, calcFields, contextObj;
+        function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
+            var linkedNodes, encNodeTag, repeatersOriginal, repeaters, linkDefs, voteResult, currentContextDef,
+                fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
+                keyValue, selectedNode, calcDef, calcFields, contextObj;
 
             currentLevel++;
             INTERMediator.currentEncNumber++;
 
-            widgetSupport = {};
+            //window.console.log(currentRecord);
 
             if (!node.getAttribute('id')) {
                 node.setAttribute('id', nextIdValue());
@@ -1275,16 +569,31 @@ var INTERMediator = {
             linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
             linkDefs = collectLinkDefinitions(linkedNodes);
             voteResult = tableVoting(linkDefs);
-            currentContext = voteResult.targettable;
+            currentContextDef = voteResult.targettable;
 
-            if (currentContext) {
-                contextObj = new IMLibContext(currentContext['name']);
+            if (!currentContextDef) {
+                for (i = 0; i < repeatersOriginal.length; i++) {
+                    newNode = node.appendChild(repeatersOriginal[i]);
+
+                    // for compatibility with Firefox
+                    if (repeatersOriginal[i].getAttribute("selected") != null) {
+                        selectedNode = newNode;
+                    }
+                    if (selectedNode !== undefined) {
+                        selectedNode.selected = true;
+                    }
+
+                    seekEnclosureNode(newNode, null, node, currentContextObj);
+                }
+            } else {
+                contextObj = new IMLibContext(currentContextDef['name']);
                 contextObj.enclosureNode = node;
                 contextObj.repeaterNodes = repeaters;
                 contextObj.original = repeatersOriginal;
+                contextObj.parentContext = currentContextObj;
 
                 fieldList = []; // Create field list for database fetch.
-                calcDef = currentContext['calculation'];
+                calcDef = currentContextDef['calculation'];
                 calcFields = [];
                 for (ix in calcDef) {
                     calcFields.push(calcDef[ix]["field"]);
@@ -1297,12 +606,12 @@ var INTERMediator = {
 
                 if (currentRecord) {
                     try {
-                        relationDef = currentContext['relation'];
+                        relationDef = currentContextDef['relation'];
                         contextObj.setOriginal(repeatersOriginal);
                         if (relationDef) {
                             for (index in relationDef) {
                                 if (relationDef[index]['portal'] == true) {
-                                    currentContext['portal'] = true;
+                                    currentContextDef['portal'] = true;
                                 }
                                 joinField = relationDef[index]['join-field'];
                                 contextObj.addForeignValue(joinField, currentRecord[joinField]);
@@ -1313,9 +622,6 @@ var INTERMediator = {
                                 }
                             }
                         }
-                        pagingValue = currentContext['paging'] ? currentContext['paging'] : false;
-                        recordsValue = currentContext['records'] ? currentContext['records'] : 10000000000;
-
                     } catch (ex) {
                         if (ex == "_im_requath_request_") {
                             throw ex;
@@ -1325,480 +631,276 @@ var INTERMediator = {
                     }
                 }
 
-                targetRecords = retrieveDataForEnclosure(currentContext, fieldList, contextObj.foreignValue);
-                contextObj.nullAcceptable = INTERMediator.nullAcceptable;
+                targetRecords = retrieveDataForEnclosure(currentContextDef, fieldList, contextObj.foreignValue);
+                contextObj.registeredId = targetRecords.registeredId;
+                contextObj.nullAcceptable = targetRecords.nullAcceptable;
+                isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false);
+                expandRepeaters(contextObj, node, targetRecords);
+                setupInsertButton(currentContextDef, keyValue, node, contextObj.foreignValue);
+                callbackForEnclosure(currentContextDef, node);
 
-                if (targetRecords.count == 0) {
-                    for (i = 0; i < repeaters.length; i++) {
-                        newNode = repeaters[i].cloneNode(true);
-                        nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                        dataAttr = newNode.getAttribute("data-im-control");
-                        if (nodeClass == INTERMediator.noRecordClassName || dataAttr == "noresult") {
-                            node.appendChild(newNode);
-                            setIdValue(newNode);
-                        }
-                    }
-                }
-
-                RecordCounter = 0;
-                for (ix in targetRecords.recordset) { // for each record
-                    try {
-                        RecordCounter++;
-                        repeatersOneRec = cloneEveryNodes(repeatersOriginal);
-                        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
-                        currentWidgetNodes = linkedElements.widgetNode;
-                        currentLinkedNodes = linkedElements.linkedNode;
-                        shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
-                        dbspec = INTERMediatorOnPage.getDBSpecification();
-                        if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
-                            keyField = currentContext["key"] ? currentContext["key"] : "-recid";
-                        } else {
-                            keyField = currentContext["key"] ? currentContext["key"] : "id";
-                        }
-                        if (currentContext['portal'] == true) {
-                            keyField = "-recid";
-                            foreignField = currentContext['name'] + "::-recid";
-                            foreignValue = targetRecords.recordset[ix][foreignField];
-                            foreignFieldValue = foreignField + "=" + foreignValue;
-                        } else {
-                            foreignFieldValue = "=";
-                            foreignValue = null;
-                        }
-                        keyValue = targetRecords.recordset[ix][keyField];
-                        keyingValue = keyField + "=" + keyValue;
-
-                        for (k = 0; k < currentLinkedNodes.length; k++) {
-                            // for each linked element
-                            nodeId = currentLinkedNodes[k].getAttribute("id");
-                            replacedNode = setIdValue(currentLinkedNodes[k]);
-
-                            if (targetRecords.recordset.length > 1) {
-                                if (replacedNode.getAttribute("type") == "checkbox") {
-                                    children = replacedNode.parentNode.childNodes;
-                                    for (i = 0; i < children.length; i++) {
-                                        if (children[i].nodeType === 1 && children[i].tagName == "LABEL"
-                                            && nodeId == children[i].getAttribute("for")) {
-                                            children[i].setAttribute("for", replacedNode.getAttribute("id"));
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        for (k = 0; k < currentWidgetNodes.length; k++) {
-                            wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
-                            if (wInfo[0]) {
-                                IMParts_Catalog[wInfo[0]].instanciate(currentWidgetNodes[k]);
-                                if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
-                                    imPartsShouldFinished.push(IMParts_Catalog[wInfo[0]]);
-                                }
-                            }
-                        }
-                    } catch (ex) {
-                        if (ex == "_im_requath_request_") {
-                            throw ex;
-                        } else {
-                            INTERMediator.setErrorMessage(ex, "EXCEPTION-26");
-                        }
-                    }
-
-                    if (currentContext['portal'] != true
-                        || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
-                        nameTable = {};
-                        for (k = 0; k < currentLinkedNodes.length; k++) {
-                            try {
-                                nodeTag = currentLinkedNodes[k].tagName;
-                                nodeId = currentLinkedNodes[k].getAttribute('id');
-                                if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
-                                    nodeId = currentLinkedNodes[k]._im_getComponentId();
-                                   // INTERMediator.widgetElementIds.push(nodeId);
-                                }
-                                // get the tag name of the element
-                                typeAttr = currentLinkedNodes[k].getAttribute('type');
-                                // type attribute
-                                linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k]);
-                                // info array for it  set the name attribute of radio button
-                                // should be different for each group
-                                if (typeAttr == 'radio') { // set the value to radio button
-                                    nameTableKey = linkInfoArray.join('|');
-                                    if (!nameTable[nameTableKey]) {
-                                        nameTable[nameTableKey] = nameAttrCounter;
-                                        nameAttrCounter++
-                                    }
-                                    nameNumber = nameTable[nameTableKey];
-                                    nameAttr = currentLinkedNodes[k].getAttribute('name');
-                                    if (nameAttr) {
-                                        currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + nameNumber);
-                                    } else {
-                                        currentLinkedNodes[k].setAttribute('name', 'IM-R-' + nameNumber);
-                                    }
-                                }
-
-                                var isContext = false;
-                                for (j = 0; j < linkInfoArray.length; j++) {
-                                    nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
-                                    curVal = targetRecords.recordset[ix][nInfo['field']];
-                                    if (!INTERMediator.isDBDataPreferable || curVal != null) {
-                                        updateCalcurationInfo(currentContext, nodeId, nInfo, targetRecords.recordset[ix]);
-                                    }
-                                    if (nInfo['table'] == currentContext['name']) {
-                                        isContext = true;
-                                        curTarget = nInfo['target'];
-                                        objectReference[nInfo['field']] = nodeId;
-
-                                        // Set data to the element.
-                                        if (curVal === null) {
-                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
-                                                postSetFields.push({'id': nodeId, 'value': curVal});
-                                            }
-                                        } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                                            if (curVal && curVal.length > 0) {
-                                                if (IMLibElement.setValueToIMNode(
-                                                    currentLinkedNodes[k], curTarget, curVal[0])) {
-                                                    postSetFields.push({'id': nodeId, 'value': curVal[0]});
-                                                }
-                                            }
-                                        } else {
-                                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
-                                                postSetFields.push({'id': nodeId, 'value': curVal});
-                                            }
-                                        }
-                                        contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue);
-                                    }
-                                }
-
-                                if (isContext
-                                    && !isInsidePostOnly
-                                    && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
-                                    IMLibChangeEventDispatch.setExecute(nodeId, INTERMediator.valueChange);
-                                    if (nodeTag != 'SELECT') {
-                                        eventListenerPostAdding.push({
-                                            'id': nodeId,
-                                            'event': 'keydown',
-                                            'todo': INTERMediator.keyDown
-                                        });
-                                        eventListenerPostAdding.push({
-                                            'id': nodeId,
-                                            'event': 'keyup',
-                                            'todo': INTERMediator.keyUp
-                                        });
-                                    }
-                                }
-
-                            } catch (ex) {
-                                if (ex == "_im_requath_request_") {
-                                    throw ex;
-                                } else {
-                                    INTERMediator.setErrorMessage(ex, "EXCEPTION-27");
-                                }
-                            }
-                        }
-                    }
-
-                    if (currentContext['portal'] == true) {
-                        keyField = "-recid";
-                        foreignField = currentContext['name'] + "::-recid";
-                        foreignValue = targetRecords.recordset[ix][foreignField];
-                        foreignFieldValue = foreignField + "=" + foreignValue;
-                    } else {
-                        foreignField = "";
-                        foreignValue = "";
-                        foreignFieldValue = "=";
-                    }
-
-                    setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
-                        currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
-
-                    if (currentContext['portal'] != true
-                        || (currentContext['portal'] == true && targetRecords["totalCount"] > 0)) {
-                        newlyAddedNodes = [];
-                        for (i = 0; i < repeatersOneRec.length; i++) {
-                            newNode = repeatersOneRec[i].cloneNode(true);
-                            nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                            dataAttr = newNode.getAttribute("data-im-control");
-                            if ((nodeClass != INTERMediator.noRecordClassName) && (dataAttr != "noresult")) {
-                                node.appendChild(newNode);
-                                newlyAddedNodes.push(newNode);
-                                setIdValue(newNode);
-                                seekEnclosureNode(newNode, targetRecords.recordset[ix], node, objectReference);
-                            }
-                        }
-
-                        try {
-                            if (INTERMediatorOnPage.additionalExpandingRecordFinish[currentContext['name']]) {
-                                INTERMediatorOnPage.additionalExpandingRecordFinish[currentContext['name']](node);
-                                INTERMediator.setDebugMessage(
-                                    "Call the post enclosure method 'INTERMediatorOnPage.additionalExpandingRecordFinish["
-                                        + currentContext['name'] + "] with the context.", 2);
-                            }
-                        } catch (ex) {
-                            if (ex == "_im_requath_request_") {
-                                throw ex;
-                            } else {
-                                INTERMediator.setErrorMessage(ex,
-                                    "EXCEPTION-33: hint: post-repeater of " + currentContext.name);
-                            }
-                        }
-                        try {
-                            if (INTERMediatorOnPage.expandingRecordFinish != null) {
-                                INTERMediatorOnPage.expandingRecordFinish(currentContext['name'], newlyAddedNodes);
-                                INTERMediator.setDebugMessage(
-                                    "Call INTERMediatorOnPage.expandingRecordFinish with the context: "
-                                        + currentContext['name'], 2);
-                            }
-
-                            if (currentContext['post-repeater']) {
-                                INTERMediatorOnPage[currentContext['post-repeater']](newlyAddedNodes);
-
-                                INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
-                                    + currentContext['post-repeater'] + "' with the context: "
-                                    + currentContext['name'], 2);
-                            }
-                        } catch (ex) {
-                            if (ex == "_im_requath_request_") {
-                                throw ex;
-                            } else {
-                                INTERMediator.setErrorMessage(ex, "EXCEPTION-23");
-                            }
-                        }
-                    }
-                }
-                setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, contextObj.foreignValue);
-
-                try {
-                    if (INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContext['name']]) {
-                        INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContext['name']](node);
-                        INTERMediator.setDebugMessage(
-                            "Call the post enclosure method 'INTERMediatorOnPage.additionalExpandingEnclosureFinish["
-                                + currentContext['name'] + "] with the context.", 2);
-                    }
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        throw ex;
-                    } else {
-                        INTERMediator.setErrorMessage(ex,
-                            "EXCEPTION-32: hint: post-enclosure of " + currentContext.name);
-                    }
-                }
-                try {
-                    if (INTERMediatorOnPage.expandingEnclosureFinish != null) {
-                        INTERMediatorOnPage.expandingEnclosureFinish(currentContext['name'], node);
-                        INTERMediator.setDebugMessage(
-                            "Call INTERMediatorOnPage.expandingEnclosureFinish with the context: "
-                                + currentContext['name'], 2);
-                    }
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        throw ex;
-                    } else {
-                        INTERMediator.setErrorMessage(ex, "EXCEPTION-21");
-                    }
-                }
-                try {
-                    if (currentContext['post-enclosure']) {
-                        INTERMediatorOnPage[currentContext['post-enclosure']](node);
-                        INTERMediator.setDebugMessage(
-                            "Call the post enclosure method 'INTERMediatorOnPage." + currentContext['post-enclosure']
-                                + "' with the context: " + currentContext['name'], 2);
-                    }
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        throw ex;
-                    } else {
-                        INTERMediator.setErrorMessage(ex,
-                            "EXCEPTION-22: hint: post-enclosure of " + currentContext.name);
-                    }
-                }
-
-            } else {
-                repeaters = [];
-                for (i = 0; i < repeatersOriginal.length; i++) {
-                    newNode = node.appendChild(repeatersOriginal[i]);
-
-                    // for compatibility with Firefox
-                    if (repeatersOriginal[i].getAttribute("selected") != null) {
-                        selectedNode = newNode;
-                    }
-                    if (selectedNode !== undefined) {
-                        selectedNode.selected = true;
-                    }
-
-                    seekEnclosureNode(newNode, null, node, null);
-                }
             }
             currentLevel--;
         }
 
-        function updateCalcurationInfo(currentContext, nodeId, nInfo, currentRecord) {
-            var calcDef, exp, field, elements, i, index, objectKey, calcFieldInfo, itemIndex, values, referes,
-                calcDefField, atPos, fieldLength;
+        /** --------------------------------------------------------------------
+         * Expanding an repeater.
+         */
 
-            calcDef = currentContext['calculation'];
-            field = null;
-            exp = null;
-            for (index in calcDef) {
-                atPos = calcDef[index]["field"].indexOf("@");
-                fieldLength = calcDef[index]["field"].length;
-                calcDefField = calcDef[index]["field"].substring(0, atPos >= 0 ? atPos : fieldLength);
-                if (calcDefField == nInfo["field"]) {
-                    try {
-                        exp = calcDef[index]["expression"];
-                        field = calcDef[index]["field"];
-                        elements = Parser.parse(exp).variables();
-                        calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
-                        objectKey = nodeId
-                            + (calcFieldInfo.target.length > 0 ? (INTERMediator.separator + calcFieldInfo.target) : "");
-                    } catch (ex) {
-                        INTERMediator.setErrorMessage(ex,
-                            INTERMediatorLib.getInsertedString(
-                                INTERMediatorOnPage.getMessages()[1036], [field, exp]));
-                    }
-                    if (elements) {
-                        values = {};
-                        referes = {};
-                        for (i = 0; i < elements.length; i++) {
-                            itemIndex = elements[i];
-                            if (itemIndex) {
-                                values[itemIndex] = [currentRecord[itemIndex]];
-                                referes[itemIndex] = [undefined];
-                            }
-                        }
-                        INTERMediator.calculateRequiredObject[objectKey] = {
-                            "field": field,
-                            "expression": exp,
-                            "nodeInfo": nInfo,
-                            "values": values,
-                            "referes": referes
-                        };
-                    }
-                }
-            }
-//                console.error(INTERMediator.calculateRequiredObject);
-        }
+        function expandRepeaters(contextObj, node, targetRecords) {
+            var newNode, nodeClass, dataAttr, recordCounter, repeatersOneRec, linkedElements, currentWidgetNodes,
+                currentLinkedNodes, shouldDeleteNodes, dbspec, keyField, foreignField, foreignValue, foreignFieldValue,
+                keyValue, keyingValue, k, nodeId, replacedNode, children, wInfo, nameTable, nodeTag, typeAttr,
+                linkInfoArray, nameTableKey, nameNumber, nameAttr, nInfo, curVal, j, curTarget, newlyAddedNodes,
+                encNodeTag, repNodeTag, ix, repeatersOriginal, targetRecordset, targetCount, targetTotalCount, i,
+                currentContextDef, idValuesForFieldName;
 
+            encNodeTag = node.tagName;
+            repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
 
-        function updateCalculationFields() {
-            var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, calcFieldInfo;
-            var targetNode, targetExp, field, valueSeries, targetElement, targetIds, i, counter, hasReferes;
+            idValuesForFieldName = {};
+            repeatersOriginal = contextObj.original;
+            currentContextDef = contextObj.getContextDef();
+            targetRecordset = targetRecords.recordset;
+            targetTotalCount = targetRecords.totalCount;
+            targetCount = targetRecords.count;
 
-            IMLibNodeGraph.clear();
-            for (nodeId in INTERMediator.calculateRequiredObject) {
-                calcObject = INTERMediator.calculateRequiredObject[nodeId];
-                if (calcObject) {
-                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
-                    targetNode = document.getElementById(calcFieldInfo.field);
-                    for (field in calcObject.values) {
-                        if (field.indexOf(INTERMediator.separator) > -1) {
-                            targetExp = field;
-                        } else {
-                            targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
-                        }
-                        do {
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetNode = INTERMediatorLib.getParentRepeater(
-                                INTERMediatorLib.getParentEnclosure(targetNode));
-                        } while (targetNode);
-                        if (INTERMediatorLib.is_array(targetIds)) {
-                            INTERMediator.calculateRequiredObject[nodeId].referes[field] = targetIds;
-                            if (targetIds.length != INTERMediator.calculateRequiredObject[nodeId].values[field].length) {
-                                counter = targetIds.length;
-                                valuesArray = [];
-                                while (counter > 0) {
-                                    counter--;
-                                    valuesArray.push(undefined);
-                                }
-                                INTERMediator.calculateRequiredObject[nodeId].values[field] = valuesArray;
-                            }
-                        }
-                    }
-
-                    hasReferes = false;
-                    for (field in calcObject.referes) {
-                        for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                            IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
-                            hasReferes = false;
-                        }
-                    }
-                    if (!hasReferes) {
-                        IMLibNodeGraph.addEdge(nodeId);
+            if (targetCount == 0) {
+                for (i = 0; i < repeatersOriginal.length; i++) {
+                    newNode = repeatersOriginal[i].cloneNode(true);
+                    nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
+                    dataAttr = newNode.getAttribute("data-im-control");
+                    if (nodeClass == INTERMediator.noRecordClassName || dataAttr == "noresult") {
+                        node.appendChild(newNode);
+                        setIdValue(newNode);
                     }
                 }
             }
 
-            do {
-                leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
-                for (i = 0; i < leafNodes.length; i++) {
-                    calcObject = INTERMediator.calculateRequiredObject[leafNodes[i]];
-                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
-                    if (calcObject) {
-                        targetNode = document.getElementById(calcFieldInfo.field);
-                        exp = calcObject.expression;
-                        nInfo = calcObject.nodeInfo;
-                        valuesArray = calcObject.values;
-                        refersArray = calcObject.referes;
-                        for (field in valuesArray) {
-                            valueSeries = [];
-                            for (ix = 0; ix < valuesArray[field].length; ix++) {
-                                if (valuesArray[field][ix] == undefined) {
-                                    targetElement = document.getElementById(refersArray[field][ix]);
-                                    valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
-                                } else {
-                                    valueSeries.push(valuesArray[field][ix]);
-                                }
-                            }
-                            calcObject.values[field] = valueSeries;
-                        }
-                        IMLibElement.setValueToIMNode(
-                            targetNode,
-                            calcFieldInfo.target,
-                            Parser.evaluate(exp, valuesArray),
-                            true);
-                    } else {
-
-                    }
-                }
-            } while (leafNodes.length > 0);
-            if (IMLibNodeGraph.nodes.length > 0) {
-                INTERMediator.setErrorMessage(new Exception(),
-                    INTERMediatorLib.getInsertedString(
-                        INTERMediatorOnPage.getMessages()[1037], []));
-            }
-        }
-
-        function retrieveDataForEnclosure(currentContext, fieldList, relationValue) {
-            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition,
-                recordNumber, useLimit, optionalCondition = [];
-
-            if (currentContext['cache'] == true) {
+            recordCounter = 0;
+            for (ix in targetRecordset) { // for each record
                 try {
-                    if (!INTERMediatorOnPage.dbCache[currentContext['name']]) {
-                        INTERMediatorOnPage.dbCache[currentContext['name']] = INTERMediator_DBAdapter.db_query({
-                            name: currentContext['name'],
+                    recordCounter++;
+                    repeatersOneRec = cloneEveryNodes(repeatersOriginal);
+                    linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
+                    currentWidgetNodes = linkedElements.widgetNode;
+                    currentLinkedNodes = linkedElements.linkedNode;
+                    shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
+                    dbspec = INTERMediatorOnPage.getDBSpecification();
+                    if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
+                        keyField = currentContextDef["key"] ? currentContextDef["key"] : "-recid";
+                    } else {
+                        keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
+                    }
+                    if (currentContextDef['portal'] == true) {
+                        keyField = "-recid";
+                        foreignField = currentContextDef['name'] + "::-recid";
+                        foreignValue = targetRecordset[ix][foreignField];
+                        foreignFieldValue = foreignField + "=" + foreignValue;
+                    } else {
+                        foreignFieldValue = "=";
+                        foreignValue = null;
+                    }
+                    keyValue = targetRecordset[ix][keyField];
+                    keyingValue = keyField + "=" + keyValue;
+
+                    for (k = 0; k < currentLinkedNodes.length; k++) {
+                        // for each linked element
+                        nodeId = currentLinkedNodes[k].getAttribute("id");
+                        replacedNode = setIdValue(currentLinkedNodes[k]);
+
+                        //    if (targetRecords.recordset.length > 1) {
+                        if (replacedNode.getAttribute("type") == "checkbox") {
+                            children = replacedNode.parentNode.childNodes;
+                            for (i = 0; i < children.length; i++) {
+                                if (children[i].nodeType === 1 && children[i].tagName == "LABEL"
+                                    && nodeId == children[i].getAttribute("for")) {
+                                    children[i].setAttribute("for", replacedNode.getAttribute("id"));
+                                    break;
+                                }
+                            }
+                        }
+                        //    }
+                    }
+                    for (k = 0; k < currentWidgetNodes.length; k++) {
+                        wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
+                        if (wInfo[0]) {
+                            IMParts_Catalog[wInfo[0]].instanciate(currentWidgetNodes[k]);
+                            if (imPartsShouldFinished.indexOf(IMParts_Catalog[wInfo[0]]) < 0) {
+                                imPartsShouldFinished.push(IMParts_Catalog[wInfo[0]]);
+                            }
+                        }
+                    }
+                } catch (ex) {
+                    if (ex == "_im_requath_request_") {
+                        throw ex;
+                    } else {
+                        INTERMediator.setErrorMessage(ex, "EXCEPTION-26");
+                    }
+                }
+
+                if (currentContextDef['portal'] != true
+                    || (currentContextDef['portal'] == true && targetTotalCount > 0)) {
+                    nameTable = {};
+                    for (k = 0; k < currentLinkedNodes.length; k++) {
+                        try {
+                            nodeTag = currentLinkedNodes[k].tagName;
+                            nodeId = currentLinkedNodes[k].getAttribute('id');
+                            if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
+                                nodeId = currentLinkedNodes[k]._im_getComponentId();
+                                // INTERMediator.widgetElementIds.push(nodeId);
+                            }
+                            // get the tag name of the element
+                            typeAttr = currentLinkedNodes[k].getAttribute('type');
+                            // type attribute
+                            linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k]);
+                            // info array for it  set the name attribute of radio button
+                            // should be different for each group
+                            if (typeAttr == 'radio') { // set the value to radio button
+                                nameTableKey = linkInfoArray.join('|');
+                                if (!nameTable[nameTableKey]) {
+                                    nameTable[nameTableKey] = nameAttrCounter;
+                                    nameAttrCounter++
+                                }
+                                nameNumber = nameTable[nameTableKey];
+                                nameAttr = currentLinkedNodes[k].getAttribute('name');
+                                if (nameAttr) {
+                                    currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + nameNumber);
+                                } else {
+                                    currentLinkedNodes[k].setAttribute('name', 'IM-R-' + nameNumber);
+                                }
+                            }
+
+                            var isContext = false;
+                            for (j = 0; j < linkInfoArray.length; j++) {
+                                nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
+                                curVal = targetRecordset[ix][nInfo['field']];
+                                if (!INTERMediator.isDBDataPreferable || curVal != null) {
+                                    IMLibCalc.updateCalculationInfo(
+                                        currentContextDef, nodeId, nInfo, targetRecordset[ix]);
+                                }
+                                if (nInfo['table'] == currentContextDef['name']) {
+                                    isContext = true;
+                                    curTarget = nInfo['target'];
+                                    //    objectReference[nInfo['field']] = nodeId;
+
+                                    // Set data to the element.
+                                    if (curVal === null) {
+                                        if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
+                                            postSetFields.push({'id': nodeId, 'value': curVal});
+                                        }
+                                    } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
+                                        if (curVal && curVal.length > 0) {
+                                            if (IMLibElement.setValueToIMNode(
+                                                currentLinkedNodes[k], curTarget, curVal[0])) {
+                                                postSetFields.push({'id': nodeId, 'value': curVal[0]});
+                                            }
+                                        }
+                                    } else {
+                                        if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
+                                            postSetFields.push({'id': nodeId, 'value': curVal});
+                                        }
+                                    }
+                                    contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue);
+                                    idValuesForFieldName[nInfo['field']] = nodeId;
+                                }
+                            }
+
+                            if (isContext
+                                && !isInsidePostOnly
+                                && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
+                                IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
+                                if (nodeTag != 'SELECT') {
+                                    eventListenerPostAdding.push({
+                                        'id': nodeId,
+                                        'event': 'keydown',
+                                        'todo': IMLibUI.keyDown
+                                    });
+                                    eventListenerPostAdding.push({
+                                        'id': nodeId,
+                                        'event': 'keyup',
+                                        'todo': IMLibUI.keyUp
+                                    });
+                                }
+                            }
+
+                        } catch (ex) {
+                            if (ex == "_im_requath_request_") {
+                                throw ex;
+                            } else {
+                                INTERMediator.setErrorMessage(ex, "EXCEPTION-27");
+                            }
+                        }
+                    }
+                }
+
+                if (currentContextDef['portal'] == true) {
+                    keyField = "-recid";
+                    foreignField = currentContextDef['name'] + "::-recid";
+                    foreignValue = targetRecordset[ix][foreignField];
+                    foreignFieldValue = foreignField + "=" + foreignValue;
+                } else {
+                    foreignField = "";
+                    foreignValue = "";
+                    foreignFieldValue = "=";
+                }
+
+                setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
+                    currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
+
+                if (currentContextDef['portal'] != true
+                    || (currentContextDef['portal'] == true && targetTotalCount > 0)) {
+                    newlyAddedNodes = [];
+                    for (i = 0; i < repeatersOneRec.length; i++) {
+                        newNode = repeatersOneRec[i];
+                        //newNode = repeatersOneRec[i].cloneNode(true);
+                        nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
+                        dataAttr = newNode.getAttribute("data-im-control");
+                        if ((nodeClass != INTERMediator.noRecordClassName) && (dataAttr != "noresult")) {
+                            node.appendChild(newNode);
+                            newlyAddedNodes.push(newNode);
+                            setIdValue(newNode);
+                            contextObj.setValue(keyingValue, "_im_repeater", "", newNode.id, "", foreignValue);
+                            idValuesForFieldName[nInfo['field']] = nodeId;
+                            seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj);
+                        }
+                    }
+                    callbackForRepeaters(currentContextDef, node, newlyAddedNodes);
+                }
+            }
+        }
+
+        /* --------------------------------------------------------------------
+
+         */
+        function retrieveDataForEnclosure(currentContextDef, fieldList, relationValue) {
+            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition,
+                recordNumber, useLimit, optionalCondition = [], pagingValue, recordsValue;
+
+            if (currentContextDef['cache'] == true) {
+                try {
+                    if (!INTERMediatorOnPage.dbCache[currentContextDef['name']]) {
+                        INTERMediatorOnPage.dbCache[currentContextDef['name']] = INTERMediator_DBAdapter.db_query({
+                            name: currentContextDef['name'],
                             records: null,
                             paging: null,
                             fields: fieldList,
                             parentkeyvalue: null,
                             conditions: null,
-                            useoffset: false});
+                            useoffset: false
+                        });
                     }
                     if (relationValue === null) {
-                        targetRecords = INTERMediatorOnPage.dbCache[currentContext['name']];
+                        targetRecords = INTERMediatorOnPage.dbCache[currentContextDef['name']];
                     } else {
                         targetRecords = {recordset: [], count: 0};
                         counter = 0;
-                        for (ix in INTERMediatorOnPage.dbCache[currentContext['name']].recordset) {
-                            oneRecord = INTERMediatorOnPage.dbCache[currentContext['name']].recordset[ix];
+                        for (ix in INTERMediatorOnPage.dbCache[currentContextDef['name']].recordset) {
+                            oneRecord = INTERMediatorOnPage.dbCache[currentContextDef['name']].recordset[ix];
                             isMatch = true;
                             index = 0;
                             for (keyField in relationValue) {
-                                fieldName = currentContext['relation'][index]['foreign-key'];
+                                fieldName = currentContextDef['relation'][index]['foreign-key'];
                                 if (oneRecord[fieldName] != relationValue[keyField]) {
                                     isMatch = false;
                                     break;
@@ -1806,6 +908,9 @@ var INTERMediator = {
                                 index++;
                             }
                             if (isMatch) {
+                                pagingValue = currentContextDef['paging'] ? currentContextDef['paging'] : false;
+                                recordsValue = currentContextDef['records'] ? currentContextDef['records'] : 10000000000;
+
                                 if (!pagingValue || (pagingValue && ( counter >= INTERMediator.startFrom ))) {
                                     targetRecords.recordset.push(oneRecord);
                                     targetRecords.count++;
@@ -1826,31 +931,32 @@ var INTERMediator = {
                 }
             } else {   // cache is not active.
                 try {
-                    if (currentContext["portal"] == true) {
+                    if (currentContextDef["portal"] == true) {
                         for (condition in INTERMediator.additionalCondition) {
                             optionalCondition.push(INTERMediator.additionalCondition[condition]);
                             break;
                         }
                     }
                     useLimit = true;
-                    if (currentContext["relation"] !== undefined) {
+                    if (currentContextDef["relation"] !== undefined) {
                         useLimit = false;
                     }
-                    if (currentContext['maxrecords'] && useLimit && Number(INTERMediator.pagedSize) > 0
-                        && Number(currentContext['maxrecords']) >= Number(INTERMediator.pagedSize)) {
+                    if (currentContextDef['maxrecords'] && useLimit && Number(INTERMediator.pagedSize) > 0
+                        && Number(currentContextDef['maxrecords']) >= Number(INTERMediator.pagedSize)) {
                         recordNumber = Number(INTERMediator.pagedSize);
                     } else {
-                        recordNumber = Number(currentContext['records']);
+                        recordNumber = Number(currentContextDef['records']);
                     }
                     targetRecords = INTERMediator_DBAdapter.db_query({
-                        "name": currentContext['name'],
+                        "name": currentContextDef['name'],
                         "records": recordNumber,
-                        "paging": currentContext['paging'],
+                        "paging": currentContextDef['paging'],
                         "fields": fieldList,
                         "parentkeyvalue": relationValue,
                         "conditions": optionalCondition,
                         "useoffset": true,
-                        "useLimit": useLimit});
+                        "useLimit": useLimit
+                    });
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
                         throw ex;
@@ -1862,6 +968,9 @@ var INTERMediator = {
             return targetRecords;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function setIdValue(node) {
             var i, elementInfo, comp, overwrite = true;
 
@@ -1885,15 +994,118 @@ var INTERMediator = {
             return node;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function nextIdValue() {
             INTERMediator.linkedElmCounter++;
             return currentIdValue();
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function currentIdValue() {
             return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
+        function callbackForRepeaters(currentContextDef, node, newlyAddedNodes) {
+            try {
+                if (INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef['name']]) {
+                    INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef['name']](node);
+                    INTERMediator.setDebugMessage(
+                        "Call the post enclosure method 'INTERMediatorOnPage.additionalExpandingRecordFinish["
+                            + currentContextDef['name'] + "] with the context.", 2);
+                }
+            } catch (ex) {
+                if (ex == "_im_requath_request_") {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex,
+                        "EXCEPTION-33: hint: post-repeater of " + currentContextDef.name);
+                }
+            }
+            try {
+                if (INTERMediatorOnPage.expandingRecordFinish != null) {
+                    INTERMediatorOnPage.expandingRecordFinish(currentContextDef['name'], newlyAddedNodes);
+                    INTERMediator.setDebugMessage(
+                        "Call INTERMediatorOnPage.expandingRecordFinish with the context: "
+                            + currentContextDef['name'], 2);
+                }
+
+                if (currentContextDef['post-repeater']) {
+                    INTERMediatorOnPage[currentContextDef['post-repeater']](newlyAddedNodes);
+
+                    INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
+                        + currentContextDef['post-repeater'] + "' with the context: "
+                        + currentContextDef['name'], 2);
+                }
+            } catch (ex) {
+                if (ex == "_im_requath_request_") {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex, "EXCEPTION-23");
+                }
+            }
+
+        }
+
+        /* --------------------------------------------------------------------
+
+         */
+        function callbackForEnclosure(currentContextDef, node) {
+            try {
+                if (INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef['name']]) {
+                    INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef['name']](node);
+                    INTERMediator.setDebugMessage(
+                        "Call the post enclosure method 'INTERMediatorOnPage.additionalExpandingEnclosureFinish["
+                            + currentContextDef['name'] + "] with the context.", 2);
+                }
+            } catch (ex) {
+                if (ex == "_im_requath_request_") {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex,
+                        "EXCEPTION-32: hint: post-enclosure of " + currentContextDef.name);
+                }
+            }
+            try {
+                if (INTERMediatorOnPage.expandingEnclosureFinish != null) {
+                    INTERMediatorOnPage.expandingEnclosureFinish(currentContextDef['name'], node);
+                    INTERMediator.setDebugMessage(
+                        "Call INTERMediatorOnPage.expandingEnclosureFinish with the context: "
+                            + currentContextDef['name'], 2);
+                }
+            } catch (ex) {
+                if (ex == "_im_requath_request_") {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex, "EXCEPTION-21");
+                }
+            }
+            try {
+                if (currentContextDef['post-enclosure']) {
+                    INTERMediatorOnPage[currentContextDef['post-enclosure']](node);
+                    INTERMediator.setDebugMessage(
+                        "Call the post enclosure method 'INTERMediatorOnPage." + currentContextDef['post-enclosure']
+                            + "' with the context: " + currentContextDef['name'], 2);
+                }
+            } catch (ex) {
+                if (ex == "_im_requath_request_") {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex,
+                        "EXCEPTION-22: hint: post-enclosure of " + currentContextDef.name);
+                }
+            }
+        }
+
+        /* --------------------------------------------------------------------
+
+         */
         function collectRepeatersOriginal(node, repNodeTag) {
             var i, repeatersOriginal = [], children;
 
@@ -1907,6 +1119,9 @@ var INTERMediator = {
             return repeatersOriginal;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function collectRepeaters(repeatersOriginal) {
             var i, repeaters = [], inDocNode, parentOfRep, cloneNode;
             for (i = 0; i < repeatersOriginal.length; i++) {
@@ -1920,6 +1135,9 @@ var INTERMediator = {
             return repeaters;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function collectLinkDefinitions(linkedNodes) {
             var linkDefs = [], nodeDefs, j, k;
             for (j = 0; j < linkedNodes.length; j++) {
@@ -1933,6 +1151,9 @@ var INTERMediator = {
             return linkDefs;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function tableVoting(linkDefs) {
             var j, nodeInfoArray, nodeInfoField, nodeInfoTable, maxVoted, maxTableName, tableName,
                 nodeInfoTableIndex, context,
@@ -1977,6 +1198,9 @@ var INTERMediator = {
             return {targettable: context, fieldlist: fieldList["_im_index_" + maxTableName]};
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function cloneEveryNodes(originalNodes) {
             var i, clonedNodes = [];
             for (i = 0; i < originalNodes.length; i++) {
@@ -1985,6 +1209,9 @@ var INTERMediator = {
             return clonedNodes;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function shouldDeleteNodeIds(repeatersOneRec) {
             var shouldDeleteNodes = [], i;
             for (i = 0; i < repeatersOneRec.length; i++) {
@@ -1994,17 +1221,20 @@ var INTERMediator = {
             return shouldDeleteNodes;
         }
 
-        function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContext, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
+        /* --------------------------------------------------------------------
+
+         */
+        function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
             // Handling Delete buttons
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
 
-            if (!currentContext['repeat-control']
-                || !currentContext['repeat-control'].match(/delete/i)) {
+            if (!currentContextDef['repeat-control']
+                || !currentContextDef['repeat-control'].match(/delete/i)) {
                 return;
             }
-            if (currentContext['relation']
-                || currentContext['records'] === undefined
-                || (currentContext['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
+            if (currentContextDef['relation']
+                || currentContextDef['records'] === undefined
+                || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
 
                 buttonNode = document.createElement('BUTTON');
                 INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Delete");
@@ -2016,7 +1246,7 @@ var INTERMediator = {
                     var contextName = a, keyField = b, keyValue = c, removeNodes = d, confirming = e;
 
                     return function () {
-                        INTERMediator.deleteButton(
+                        IMLibUI.deleteButton(
                             contextName, keyField, keyValue, foreignField, foreignValue, removeNodes, confirming);
                     };
                 };
@@ -2024,11 +1254,11 @@ var INTERMediator = {
                     'id': thisId,
                     'event': 'click',
                     'todo': deleteJSFunction(
-                        currentContext['name'],
+                        currentContextDef['name'],
                         keyField,
                         keyValue,
                         shouldDeleteNodes,
-                        currentContext['repeat-control'].match(/confirm-delete/i))
+                        currentContextDef['repeat-control'].match(/confirm-delete/i))
                 });
 
                 // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
@@ -2052,19 +1282,26 @@ var INTERMediator = {
             } else {
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'DELETE',
-                    name: currentContext['name'],
+                    name: currentContextDef['name'],
                     key: keyField,
                     value: keyValue,
-                    confirm: currentContext['repeat-control'].match(/confirm-delete/i)
+                    confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
                 });
             }
         }
 
-        function setupInsertButton(currentContext, keyValue, encNodeTag, repNodeTag, node, relationValue) {
+        /* --------------------------------------------------------------------
+
+         */
+        function setupInsertButton(currentContextDef, keyValue, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
-                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec, thisId;
-            if (currentContext['repeat-control'] && currentContext['repeat-control'].match(/insert/i)) {
-                if (relationValue.length > 0 || !currentContext['paging'] || currentContext['paging'] === false) {
+                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec, thisId, encNodeTag, repNodeTag;
+
+            encNodeTag = node.tagName;
+            repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
+
+            if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
+                if (relationValue.length > 0 || !currentContextDef['paging'] || currentContextDef['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
                     INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Insert");
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
@@ -2075,7 +1312,7 @@ var INTERMediator = {
                     switch (encNodeTag) {
                         case 'TBODY':
                             targetNodeTag = "TFOOT";
-                            if (currentContext['repeat-control'].match(/top/i)) {
+                            if (currentContextDef['repeat-control'].match(/top/i)) {
                                 targetNodeTag = "THEAD";
                             }
                             enclosedNode = node.parentNode;
@@ -2108,7 +1345,7 @@ var INTERMediator = {
                             existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert');
                             if (existingButtons.length == 0) {
                                 liNode.appendChild(buttonNode);
-                                if (currentContext['repeat-control'].match(/top/i)) {
+                                if (currentContextDef['repeat-control'].match(/top/i)) {
                                     node.insertBefore(liNode, node.firstChild);
                                 } else {
                                     node.appendChild(liNode);
@@ -2122,7 +1359,7 @@ var INTERMediator = {
                                 existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
                                 if (existingButtons.length == 0) {
                                     divNode.appendChild(buttonNode);
-                                    if (currentContext['repeat-control'].match(/top/i)) {
+                                    if (currentContextDef['repeat-control'].match(/top/i)) {
                                         node.insertBefore(divNode, node.firstChild);
                                     } else {
                                         node.appendChild(divNode);
@@ -2134,7 +1371,7 @@ var INTERMediator = {
                     insertJSFunction = function (a, b, c, d, e) {
                         var contextName = a, relationValue = b, nodeId = c, removeNodes = d, confirming = e;
                         return function () {
-                            INTERMediator.insertButton(contextName, keyValue, relationValue, nodeId, removeNodes, confirming);
+                            IMLibUI.insertButton(contextName, keyValue, relationValue, nodeId, removeNodes, confirming);
                         }
                     };
 
@@ -2142,30 +1379,33 @@ var INTERMediator = {
                         buttonNode,
                         'click',
                         insertJSFunction(
-                            currentContext['name'],
+                            currentContextDef['name'],
                             relationValue,
                             node.getAttribute('id'),
                             shouldRemove,
-                            currentContext['repeat-control'].match(/confirm-insert/i))
+                            currentContextDef['repeat-control'].match(/confirm-insert/i))
                     );
 
                 } else {
                     dbspec = INTERMediatorOnPage.getDBSpecification();
                     if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
-                        keyField = currentContext["key"] ? currentContext["key"] : "-recid";
+                        keyField = currentContextDef["key"] ? currentContextDef["key"] : "-recid";
                     } else {
-                        keyField = currentContext["key"] ? currentContext["key"] : "id";
+                        keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
                     }
                     IMLibPageNavigation.deleteInsertOnNavi.push({
                         kind: 'INSERT',
-                        name: currentContext['name'],
+                        name: currentContextDef['name'],
                         key: keyField,
-                        confirm: currentContext['repeat-control'].match(/confirm-insert/i)
+                        confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
                     });
                 }
             }
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function getEnclosedNode(rootNode, tableName, fieldName) {
             var i, j, nodeInfo, nInfo, children, r;
 
@@ -2188,6 +1428,9 @@ var INTERMediator = {
             return null;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
         function appendCredit() {
             var bodyNode, creditNode, cNode, spNode, aNode;
 
