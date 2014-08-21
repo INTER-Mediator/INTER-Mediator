@@ -100,7 +100,6 @@ IM_Entry(
             'app_id' => 'string',
             'key' => 'integer',
             'secret' => 'string',
-            'channel' => 'string',
         )
         */
     ),

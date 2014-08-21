@@ -112,6 +112,5 @@ $pusherParameters = array(
     'app_id' => '',
     'key' => '',
     'secret' => '',
-    'channel' => ''
 );
 */
