@@ -101,7 +101,7 @@ class RetrieveFM7Data extends RetrieveFMXML {
             
         }
         $data = '';
-        if ($this->FX->DBPassword != '' || $this->FX->DBUser != 'FX') {     // Assemble the Password Data
+        if (($this->FX->DBPassword != '' || $this->FX->DBUser != 'FX') && !defined('CURLOPT_HTTPAUTH')) {     // Assemble the Password Data
             $this->FX->userPass = rawurlencode($this->FX->DBUser) . ':' . rawurlencode($this->FX->DBPassword) . '@';
         }
         if ($this->FX->layout != '') {                                      // Set up the layout portion of the query.
@@ -145,8 +145,20 @@ class RetrieveFM7Data extends RetrieveFMXML {
             $data = $data["Body"];
         } elseif( $this->FX->isFOpenQuery ) {
 /*
-Amendment by G G Thorsen -> ggt667@gmail.com, this function is written to read files exported using File Export in FMSA 10 and newer
+Amendment by Gjermund G Thorsen -> ggt667@me.com, this function is written to read files exported using File Export in FMSA 10 and newer
 This function is particularly written for huge queries of data that are less likely to change often and that would otherwise choke FM WPE
+
+It will also prove beneficiary for queries that are frequent, and where data is updated through publishing to file,
+such as news articles, product descriptions, and similar use.
+
+Suggested use, export as XML without XSLT to xslt folder of webserver as an example:
+
+/var/www/com.example.www/xml/product/<<productnumber>>.xml
+/var/www/com.example.www/xml/news/<<newsnumber>>.xml
+/var/www/com.example.www/xml/article/<<articlenumber>>.xml
+
+The only thing that should be left for direct communication via WPE now should be live order data,
+and places where you will have to set flags in the order process.
 */
             $f = fopen( $this->FX->dataServer, 'rb' );
             $data = '';
@@ -165,8 +177,8 @@ This function is particularly written for huge queries of data that are less lik
                 curl_setopt($curlHandle, CURLOPT_POST, 1);
                 if ($this->FX->verifyPeer == false) curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER,false);
                 curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $this->dataURLParams);
-                if ($this->FX->DBPassword != '' || $this->FX->DBUser != 'FX') {
-                    curl_setopt($curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                if (($this->FX->DBPassword != '' || $this->FX->DBUser != 'FX') && defined('CURLOPT_HTTPAUTH')) {
+                    curl_setopt($curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
                     curl_setopt($curlHandle, CURLOPT_USERPWD, $this->FX->DBUser . ':' . $this->FX->DBPassword);
                 }
                 ob_start();
