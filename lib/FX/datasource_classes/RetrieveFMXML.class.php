@@ -25,10 +25,8 @@ class RetrieveFMXML extends RetrieveFXData {
     var $invalidXMLChars = array("\x0B", "\x0C", "\x12");
 
     /*
-        Translation arrays used with str_replace to handle special
-        characters in UTF-8 data received from FileMaker. The two arrays
-        should have matching numeric indexes such that $UTF8SpecialChars[0]
-        contains the raw binary equivalent of $UTF8HTMLEntities[0].
+        Translation array and callback function used with preg_replace_callback
+        to handle special characters in UTF-8 data received from FileMaker.
 
         This would be a perfect use for strtr(), except that it only works
         with single-byte data. Instead, we use preg_replace, which means
@@ -42,22 +40,24 @@ class RetrieveFMXML extends RetrieveFXData {
         be found in the FX Links section of www.iViking.org.
      */
     var $UTF8SpecialChars = array(
-        "|([\xC2-\xDF])([\x80-\xBF])|e",
-        "|(\xE0)([\xA0-\xBF])([\x80-\xBF])|e",
-        "|([\xE1-\xEF])([\x80-\xBF])([\x80-\xBF])|e",
-        "|(\xF0)([\x90-\xBF])([\x80-\xBF])([\x80-\xBF])|e",
-        "|([\xF1-\xF3])([\x80-\xBF])([\x80-\xBF])([\x80-\xBF])|e",
-        "|(\xF4)([\x80-\x8F])([\x80-\xBF])([\x80-\xBF])|e"
+        "|([\xC2-\xDF])([\x80-\xBF])|",
+        "|(\xE0)([\xA0-\xBF])([\x80-\xBF])|",
+        "|([\xE1-\xEF])([\x80-\xBF])([\x80-\xBF])|",
+        "|(\xF0)([\x90-\xBF])([\x80-\xBF])([\x80-\xBF])|",
+        "|([\xF1-\xF3])([\x80-\xBF])([\x80-\xBF])([\x80-\xBF])|",
+        "|(\xF4)([\x80-\x8F])([\x80-\xBF])([\x80-\xBF])|"
     );
 
-    var $UTF8HTMLEntities = array(
-        "\$this->FX->BuildExtendedChar('\\1','\\2')",
-        "\$this->FX->BuildExtendedChar('\\1','\\2','\\3')",
-        "\$this->FX->BuildExtendedChar('\\1','\\2','\\3')",
-        "\$this->FX->BuildExtendedChar('\\1','\\2','\\3','\\4')",
-        "\$this->FX->BuildExtendedChar('\\1','\\2','\\3','\\4')",
-        "\$this->FX->BuildExtendedChar('\\1','\\2','\\3','\\4')"
-    );
+	function utf8HTMLEntities($matches) {
+		if(count($matches) == 2){
+			return $this->FX->BuildExtendedChar($matches[0],$matches[1]);
+		}elseif(count($matches) == 3){
+			return $this->FX->BuildExtendedChar($matches[0],$matches[1],$matches[2]);
+		}elseif(count($matches) == 4){
+			return $this->FX->BuildExtendedChar($matches[0],$matches[1],$matches[2],$matches[3]);
+		}
+        return ''; // TODO something went wrong, but this should be explicit someday
+	}
 
     function getTOCName($fieldName) {
         $p = strpos($fieldName,'::');
@@ -71,7 +71,7 @@ class RetrieveFMXML extends RetrieveFXData {
         return $tocName;
     }
 
-    // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010, Move to hear Feb 6, 2012
+    // Added by Masayuki Nii(nii@msyk.net) Dec 18, 2010, Move to here Feb 6, 2012
     function isRemainName($fieldName) {
         foreach($this->FX->remainNames as $fName) {
             if (strpos($fieldName,$fName) === 0) {
@@ -115,6 +115,7 @@ class RetrieveFMXML extends RetrieveFXData {
                 break;
             case "row":
                 $recordid = ''; // prevent IDE complaint. (msyk, Feb 1, 2012)
+                $modid = 0;
                 foreach ($attrs as $key => $value) {
                     $key = strtolower($key);
                     $$key = $value;
@@ -203,7 +204,7 @@ class RetrieveFMXML extends RetrieveFXData {
                         $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= mb_convert_encoding($data, $this->FX->charSet, 'UTF-8');
                     } else {
                         if ($this->isRemainName($this->currentField))    {
-                            if ( $this->FX->portalAsRecord )    {
+                            if ( $this->FX->portalAsRecord ) {
                                 $this->FX->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= mb_convert_encoding($data, $this->FX->charSet, 'UTF-8');
                             } else {
                                 $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= mb_convert_encoding($data, $this->FX->charSet, 'UTF-8');
@@ -214,16 +215,16 @@ class RetrieveFMXML extends RetrieveFXData {
                     }
                 } else {
                     if ($this->FX->useInnerArray) {
-                        $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                        $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace_callback($this->UTF8SpecialChars, array($this, 'utf8HTMLEntities'), $data);
                     } else {
                         if ($this->isRemainName($this->currentField)) {
                             if ($this->FX->portalAsRecord) {
-                                   $this->FX->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                                   $this->FX->currentData[$this->currentRecord][$this->getTOCName($this->currentField)][$this->currentSubrecordIndex][$this->currentField] .= preg_replace_callback($this->UTF8SpecialChars, array($this, 'utf8HTMLEntities'), $data);
                                } else {
-                                   $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                                   $this->FX->currentData[$this->currentRecord][$this->currentField][$this->currentFieldIndex] .= preg_replace_callback($this->UTF8SpecialChars, array($this, 'utf8HTMLEntities'), $data);
                             }
                         } else {
-                            $this->FX->currentData[$this->currentRecord][$this->currentField] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                            $this->FX->currentData[$this->currentRecord][$this->currentField] .= preg_replace_callback($this->UTF8SpecialChars, array($this, 'utf8HTMLEntities'), $data);
                         }
                     }
                 }
@@ -239,7 +240,7 @@ class RetrieveFMXML extends RetrieveFXData {
                 // Modified by Masayuki Nii, Sept 11, 2012. Abobe code is just applied when the setCharacterEncoding('UTF-8') is written.
                 //  The below code is applied in case of the default status and it doesn't require the mb_string module.
                 else {
-                    $this->FX->valueLists[$this->currentValueList][$this->currentValueListElement] .= preg_replace($this->UTF8SpecialChars, $this->UTF8HTMLEntities, $data);
+                    $this->FX->valueLists[$this->currentValueList][$this->currentValueListElement] .= preg_replace_callback($this->UTF8SpecialChars, array($this, 'utf8HTMLEntities'), $data);
                 }
                 break;
         }
