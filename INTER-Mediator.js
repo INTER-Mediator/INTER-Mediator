@@ -59,6 +59,7 @@ var INTERMediator = {
     partialConstructing: false,
     linkedElmCounter: 0,
     pusherObject: null,
+    buttonIdNum: 0,
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
     //startFrom: 0,
@@ -270,14 +271,16 @@ var INTERMediator = {
 
      */
     constructMain: function (updateRequiredContext, recordset) {
-        var i, theNode, currentLevel = 0, postSetFields = [], buttonIdNum = 1,
+        var i, theNode, currentLevel = 0, postSetFields = [],
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false;
+
         IMLibPageNavigation.deleteInsertOnNavi = [];
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
             if (updateRequiredContext === true || updateRequiredContext === undefined) {
                 this.partialConstructing = false;
+                INTERMediator.buttonIdNum = 1;
                 IMLibContextPool.clearAll();
                 pageConstruct();
             } else {
@@ -1239,9 +1242,9 @@ var INTERMediator = {
                 buttonNode = document.createElement('BUTTON');
                 INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Delete");
                 buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
-                thisId = 'IM_Button_' + buttonIdNum;
+                thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
                 buttonNode.setAttribute('id', thisId);
-                buttonIdNum++;
+                INTERMediator.buttonIdNum++;
                 deleteJSFunction = function (a, b, c, d, e) {
                     var contextName = a, keyField = b, keyValue = c, removeNodes = d, confirming = e;
 
@@ -1305,9 +1308,9 @@ var INTERMediator = {
                     buttonNode = document.createElement('BUTTON');
                     INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Insert");
                     buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
-                    thisId = 'IM_Button_' + buttonIdNum;
+                    thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
                     buttonNode.setAttribute('id', thisId);
-                    buttonIdNum++;
+                    INTERMediator.buttonIdNum++;
                     shouldRemove = [];
                     switch (encNodeTag) {
                         case 'TBODY':
