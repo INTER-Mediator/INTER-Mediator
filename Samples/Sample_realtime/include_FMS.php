@@ -104,8 +104,7 @@ IM_Entry(
             'app_id' => 'string',
             'key' => 'integer',
             'secret' => 'string',
-            'channel' => 'string',
-        )
+        ),
         */
     ),
     array('db-class' => 'FileMaker_FX'),

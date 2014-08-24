@@ -27,6 +27,7 @@ http://msyk.dyndns.org/im-sample.html
 - Miyuki Imaizumi
 - Yukio Murakami
 - Akinori Mizoguchi
+- Motofumi Iijima
 
 ## Contributing
 
