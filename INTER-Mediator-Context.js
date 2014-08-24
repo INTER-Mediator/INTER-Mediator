@@ -294,6 +294,28 @@ IMLibContextPool = {
             }
             IMLibCalc.recalculation();
         }
+    },
+
+    getMasterContext: function () {
+        var i, contextDef;
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            contextDef = this.poolingContexts[i].getContextDef();
+            if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
+                return this.poolingContexts[i];
+            }
+        }
+        return null;
+    },
+
+    getDetailContext: function () {
+        var i, contextDef;
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            contextDef = this.poolingContexts[i].getContextDef();
+            if (contextDef['navi-control'] && contextDef['navi-control'].match(/detail/)) {
+                return this.poolingContexts[i];
+            }
+        }
+        return null;
     }
 }
 

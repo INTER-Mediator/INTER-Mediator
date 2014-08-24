@@ -254,20 +254,20 @@ var INTERMediator = {
 
     /* ===========================================================
 
-    INTERMediator.constructMain() is the public entry for generating page.
-    This has 3-way calling conventions.
+     INTERMediator.constructMain() is the public entry for generating page.
+     This has 3-way calling conventions.
 
-    [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
-      This happens to generate page from scratch.
+     [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
+     This happens to generate page from scratch.
 
-    [2] INTERMediator.constructMain(context)
-      This will be reconstracted to nodes of the "context" parameter.
-      The context parameter should be refered to a IMLIbContext object.
+     [2] INTERMediator.constructMain(context)
+     This will be reconstracted to nodes of the "context" parameter.
+     The context parameter should be refered to a IMLIbContext object.
 
-    [3] INTERMediator.constructMain(context, recordset)
-      This will append nodes to the enclocure of the "context" as a repeater.
-      The context parameter should be refered to a IMLIbContext object.
-      The recordset parameter is the newly created record as the form of an array of an dictionary.
+     [3] INTERMediator.constructMain(context, recordset)
+     This will append nodes to the enclocure of the "context" as a repeater.
+     The context parameter should be refered to a IMLIbContext object.
+     The recordset parameter is the newly created record as the form of an array of an dictionary.
 
      */
     constructMain: function (updateRequiredContext, recordset) {
@@ -414,7 +414,7 @@ var INTERMediator = {
             if (isAcceptNotify) {
                 var channelName = INTERMediatorOnPage.clientNotificationIdentifier();
                 var appKey = INTERMediatorOnPage.clientNotificationKey();
-                if (appKey && appKey != "_im_key_isnt_supplied" && ! INTERMediator.pusherObject) {
+                if (appKey && appKey != "_im_key_isnt_supplied" && !INTERMediator.pusherObject) {
                     try {
                         Pusher.log = function (message) {
                             if (window.console && window.console.log) {
@@ -490,7 +490,7 @@ var INTERMediator = {
         }
 
         /* --------------------------------------------------------------------
-        Post only mode.
+         Post only mode.
          */
         function setupPostOnlyEnclosure(node) {
             var nodes, k, currentWidgetNodes, plugin, setupWidget = false;
@@ -850,6 +850,8 @@ var INTERMediator = {
 
                 setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                     currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
+                setupNavigationButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
+                    currentContextDef, keyField, keyValue, foreignField, foreignValue);
 
                 if (currentContextDef['portal'] != true
                     || (currentContextDef['portal'] == true && targetTotalCount > 0)) {
@@ -952,7 +954,7 @@ var INTERMediator = {
                     }
                     targetRecords = INTERMediator_DBAdapter.db_query({
                         "name": currentContextDef['name'],
-                        "records": recordNumber,
+                        "records": isNaN(recordNumber) ? 100000000 : recordNumber,
                         "paging": currentContextDef['paging'],
                         "fields": fieldList,
                         "parentkeyvalue": relationValue,
@@ -1403,6 +1405,92 @@ var INTERMediator = {
                         confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
                     });
                 }
+            }
+        }
+
+        /* --------------------------------------------------------------------
+
+         */
+        function setupNavigationButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
+            // Handling Detail buttons
+            var buttonNode, thisId, navigateJSFunction, tdNodes, tdNode, firstInNode, contextDef, isHide;
+
+            if (!currentContextDef['navi-control']
+                || !currentContextDef['navi-control'].match(/master/i)) {
+                return;
+            }
+
+            isHide = currentContextDef['navi-control'].match(/hide/i);
+
+            buttonNode = document.createElement('BUTTON');
+            INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Master");
+            buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[12]));
+            thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
+            buttonNode.setAttribute('id', thisId);
+            INTERMediator.buttonIdNum++;
+            navigateJSFunction = function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide) {
+                var f = keyField, v = keyValue, ff = foreignField, fv = foreignValue;
+                var fvalue = {}, etag = encNodeTag, isMasterHide = isHide;
+                fvalue[ff] = fv;
+
+                return function () {
+                    var masterContext, detailContext, contextName, masterEnclosure;
+
+                    masterContext = IMLibContextPool.getMasterContext();
+                    detailContext = IMLibContextPool.getDetailContext();
+                    if (detailContext) {
+                        contextDef = detailContext.getContextDef();
+                        contextName = contextDef.name;
+                        INTERMediator.additionalCondition[contextName] = {field: f, operator: "=", value: v};
+                        INTERMediator.constructMain(detailContext);
+                        if (isMasterHide) {
+                            masterEnclosure = masterContext.enclosureNode;
+                            if (etag == 'TBODY') {
+                                masterEnclosure = masterEnclosure.parentNode;
+                            }
+                            masterEnclosure.style.display = "none";
+                        }
+                    }
+                };
+            };
+            eventListenerPostAdding.push({
+                'id': thisId,
+                'event': 'click',
+                'todo': navigateJSFunction(encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide)
+            });
+
+            // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
+            switch (encNodeTag) {
+                case 'TBODY':
+                    tdNodes = endOfRepeaters.getElementsByTagName('TD');
+                    tdNode = tdNodes[0];
+                    firstInNode = tdNode.childNodes[0];
+                    if (firstInNode) {
+                        tdNode.insertBefore(buttonNode, firstInNode);
+                    } else {
+                        tdNode.appendChild(buttonNode);
+                    }
+                    break;
+                case 'UL':
+                case 'OL':
+                    firstInNode = endOfRepeaters.childNodes[0];
+                    if (firstInNode) {
+                        endOfRepeaters.insertBefore(buttonNode, firstInNode);
+                    } else {
+                        endOfRepeaters.appendChild(buttonNode);
+                    }
+                    break;
+                case 'DIV':
+                case 'SPAN':
+                    if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
+                        firstInNode = endOfRepeaters.childNodes[0];
+                        if (firstInNode) {
+                            endOfRepeaters.insertBefore(buttonNode, firstInNode);
+                        } else {
+                            endOfRepeaters.appendChild(buttonNode);
+                        }
+                    }
+                    break;
             }
         }
 
