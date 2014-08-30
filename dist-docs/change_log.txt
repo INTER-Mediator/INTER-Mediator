@@ -10,6 +10,8 @@ Latest changes might exist on the GitHub repository. Please check https://github
 
 Ver.4.5 (in development)
 - Sync with multiple clients in update/insert/delete with Pusher.
+- The 'navi-control' key can be specified in a context. The value for it are 'master', 'detail' and 'master-hide'.
+  See the Practice/navi.html.
 - Update FX.php (July 29, 2014) for DB_FileMaker_FX class.
 - Modify setToDB() of DB_PDO.php to avoid outputting error messages in an error log file.
 - Added the new sample 'Sample_pdf' to demonstrate how to create pdf file with the data from database.
