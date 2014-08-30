@@ -60,6 +60,8 @@ var INTERMediator = {
     linkedElmCounter: 0,
     pusherObject: null,
     buttonIdNum: 0,
+    masterNodeOriginalDisplay: null,
+    detailNodeOriginalDisplay: null,
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
     //startFrom: 0,
@@ -273,7 +275,7 @@ var INTERMediator = {
     constructMain: function (updateRequiredContext, recordset) {
         var i, theNode, currentLevel = 0, postSetFields = [],
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
-            isAcceptNotify = false;
+            isAcceptNotify = false, originalNodes;
 
         IMLibPageNavigation.deleteInsertOnNavi = [];
         INTERMediatorOnPage.retrieveAuthInfo();
@@ -293,11 +295,11 @@ var INTERMediator = {
                         updateRequiredContext.removeContext();
                         originalNodes = updateRequiredContext.original;
                         for (i = 0; i < originalNodes.length; i++) {
-                            updateRequiredContext.enclosureNode.appendChild(originalNodes[i]);
+                            updateRequiredContext.enclosureNode.appendChild(originalNodes[i].cloneNode(true));
                         }
                         seekEnclosureNode(
                             updateRequiredContext.enclosureNode,
-                            updateRequiredContext.foreignValue,
+                            recordset, //updateRequiredContext.foreignValue,
                             null,
                             updateRequiredContext);
                     }
@@ -559,8 +561,6 @@ var INTERMediator = {
             currentLevel++;
             INTERMediator.currentEncNumber++;
 
-            //window.console.log(currentRecord);
-
             if (!node.getAttribute('id')) {
                 node.setAttribute('id', nextIdValue());
             }
@@ -640,6 +640,7 @@ var INTERMediator = {
                 isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false);
                 expandRepeaters(contextObj, node, targetRecords);
                 setupInsertButton(currentContextDef, keyValue, node, contextObj.foreignValue);
+                setupBackNaviButton(contextObj, node);
                 callbackForEnclosure(currentContextDef, node);
 
             }
@@ -1413,7 +1414,8 @@ var INTERMediator = {
          */
         function setupNavigationButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
             // Handling Detail buttons
-            var buttonNode, thisId, navigateJSFunction, tdNodes, tdNode, firstInNode, contextDef, isHide;
+            var buttonNode, thisId, navigateJSFunction, tdNodes, tdNode, firstInNode, contextDef, isHide,
+                detailContext, showingNode;
 
             if (!currentContextDef['navi-control']
                 || !currentContextDef['navi-control'].match(/master/i)) {
@@ -1421,6 +1423,17 @@ var INTERMediator = {
             }
 
             isHide = currentContextDef['navi-control'].match(/hide/i);
+
+            if (INTERMediator.detailNodeOriginalDisplay) {
+                detailContext = IMLibContextPool.getDetailContext();
+                if (detailContext) {
+                    showingNode = detailContext.enclosureNode;
+                    if (showingNode.tagName == 'TBODY') {
+                        showingNode = showingNode.parentNode;
+                    }
+                    INTERMediator.detailNodeOriginalDisplay = showingNode.style.display;
+                }
+            }
 
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Master");
@@ -1434,7 +1447,7 @@ var INTERMediator = {
                 fvalue[ff] = fv;
 
                 return function () {
-                    var masterContext, detailContext, contextName, masterEnclosure;
+                    var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure;
 
                     masterContext = IMLibContextPool.getMasterContext();
                     detailContext = IMLibContextPool.getDetailContext();
@@ -1448,7 +1461,14 @@ var INTERMediator = {
                             if (etag == 'TBODY') {
                                 masterEnclosure = masterEnclosure.parentNode;
                             }
+                            INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display;
                             masterEnclosure.style.display = "none";
+
+                            detailEnclosure = detailContext.enclosureNode;
+                            if (detailEnclosure.tagName == 'TBODY') {
+                                detailEnclosure = detailEnclosure.parentNode;
+                            }
+                            detailEnclosure.style.display = INTERMediator.detailNodeOriginalDisplay;
                         }
                     }
                 };
@@ -1459,7 +1479,6 @@ var INTERMediator = {
                 'todo': navigateJSFunction(encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide)
             });
 
-            // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
             switch (encNodeTag) {
                 case 'TBODY':
                     tdNodes = endOfRepeaters.getElementsByTagName('TD');
@@ -1492,6 +1511,137 @@ var INTERMediator = {
                     }
                     break;
             }
+
+        }
+
+        /* --------------------------------------------------------------------
+
+         */
+        function setupBackNaviButton(currentContext, node) {
+            var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode,
+                insertJSFunction, i, firstLevelNodes, targetNodeTag, existingButtons, masterContext,
+                naviControlValue, thisId, repNodeTag, currentContextDef, showingNode, targetNode;
+
+            currentContextDef = currentContext.getContextDef();
+
+            if (!currentContextDef['navi-control']
+                || !currentContextDef['navi-control'].match(/detail/i)) {
+                return;
+            }
+
+            masterContext = IMLibContextPool.getMasterContext();
+            naviControlValue = masterContext.getContextDef()['navi-control'];
+            if (!naviControlValue
+                || (!naviControlValue.match(/hide/i))) {
+                return;
+            }
+
+            showingNode = currentContext.enclosureNode;
+            if (showingNode.tagName == "TBODY") {
+                showingNode = showingNode.parentNode;
+            }
+            if (INTERMediator.detailNodeOriginalDisplay) {
+                INTERMediator.detailNodeOriginalDisplay = showingNode.style.display;
+            }
+            showingNode.style.display = "none";
+
+            buttonNode = document.createElement('BUTTON');
+            INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_BackNavi");
+            buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[13]));
+            thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
+            buttonNode.setAttribute('id', thisId);
+            INTERMediator.buttonIdNum++;
+
+            shouldRemove = [];
+            switch (node.tagName) {
+                case 'TBODY':
+                    if (currentContextDef['navi-control'].match(/top/i)) {
+                        targetNodeTag = "THEAD";
+                    } else {
+                        targetNodeTag = "TFOOT";
+                    }
+                    enclosedNode = node.parentNode;
+                    firstLevelNodes = enclosedNode.childNodes;
+                    targetNode = null;
+                    for (i = 0; i < firstLevelNodes.length; i++) {
+                        if (firstLevelNodes[i].tagName === targetNodeTag) {
+                            targetNode = firstLevelNodes[i];
+                            break;
+                        }
+                    }
+                    if (targetNode === null) {
+                        targetNode = document.createElement(targetNodeTag);
+                        if (targetNodeTag == "THEAD") {
+                            enclosedNode.insertBefore(targetNode, enclosedNode.firstChild);
+                        } else {
+                            enclosedNode.appendChild(targetNode);
+                        }
+                    }
+                    existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi');
+                    if (existingButtons.length == 0) {
+                        trNode = document.createElement('TR');
+                        tdNode = document.createElement('TD');
+                        setIdValue(trNode);
+                        targetNode.appendChild(trNode);
+                        trNode.appendChild(tdNode);
+                        tdNode.appendChild(buttonNode);
+                        shouldRemove = [trNode.getAttribute('id')];
+                    }
+                    break;
+                case 'UL':
+                case 'OL':
+                    liNode = document.createElement('LI');
+                    existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_BackNavi');
+                    if (existingButtons.length == 0) {
+                        liNode.appendChild(buttonNode);
+                        if (currentContextDef['repeat-control'].match(/top/i)) {
+                            node.insertBefore(liNode, node.firstChild);
+                        } else {
+                            node.appendChild(liNode);
+                        }
+                    }
+                    break;
+                case 'DIV':
+                case 'SPAN':
+                    repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(node.tagName);
+                    if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
+                        divNode = document.createElement(repNodeTag);
+                        existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi');
+                        if (existingButtons.length == 0) {
+                            divNode.appendChild(buttonNode);
+                            if (currentContextDef['repeat-control'].match(/top/i)) {
+                                node.insertBefore(divNode, node.firstChild);
+                            } else {
+                                node.appendChild(divNode);
+                            }
+                        }
+                    }
+                    break;
+            }
+            insertJSFunction = function (a, b) {
+                var masterContextCL = a, detailContextCL = b;
+                return function () {
+                    var showingNode;
+                    showingNode = detailContextCL.enclosureNode;
+                    if (showingNode.tagName == "TBODY") {
+                        showingNode = showingNode.parentNode;
+                    }
+                    showingNode.style.display = "none";
+
+                    showingNode = masterContextCL.enclosureNode;
+                    if (showingNode.tagName == "TBODY") {
+                        showingNode = showingNode.parentNode;
+                    }
+                    showingNode.style.display = INTERMediator.masterNodeOriginalDisplay
+                }
+            };
+
+            INTERMediatorLib.addEvent(
+                buttonNode,
+                'click',
+                insertJSFunction(masterContext, currentContext)
+            );
+
         }
 
         /* --------------------------------------------------------------------

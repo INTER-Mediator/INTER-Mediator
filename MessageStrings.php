@@ -40,6 +40,7 @@ class MessageStrings
         10 => "Move to page:",
         11 => "",
         12 => 'Detail',
+        13 => 'Show List',
         1001 => "Other people might be updated.\n\nInitially=@1@\nCurrent=@2@\nDatabase=@3@\n\nYou can overwrite with your data if you select OK.",
         1002 => "Can't determine the Table Name: @1@",
         1003 => "No information to update: field=@1@",
