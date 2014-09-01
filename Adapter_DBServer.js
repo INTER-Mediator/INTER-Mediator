@@ -37,7 +37,8 @@ INTERMediator_DBAdapter = {
         }
 
         authParams += "&notifyid=";
-        authParams += encodeURIComponent(INTERMediatorOnPage.clientNotificationIdentifier())
+        authParams += encodeURIComponent(INTERMediatorOnPage.clientNotificationIdentifier());
+        authParams += ("&pusher=" + (INTERMediator.pusherAvailable ? "yes" : ""));
         return authParams;
     },
 

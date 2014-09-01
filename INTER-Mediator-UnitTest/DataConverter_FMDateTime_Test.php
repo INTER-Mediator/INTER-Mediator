@@ -112,7 +112,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
             'weekdayName' => '金',
             'weekday' => '5',
             'longdate' => '1926/12/24',
-            'jlongdate' => '大正 15 年 12 月 24 日 木曜日'
+            'jlongdate' => '大正 15 年 12 月 24 日 金曜日'
         );
         $string = '12/24/1926 12:34:56';
         $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
@@ -129,7 +129,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
             'weekdayName' => '土',
             'weekday' => '6',
             'longdate' => '1926/12/25',
-            'jlongdate' => '昭和 元 年 12 月 25 日 金曜日'
+            'jlongdate' => '昭和 元 年 12 月 25 日 土曜日'
         );
         $string = '12/25/1926 12:34:56';
         $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));

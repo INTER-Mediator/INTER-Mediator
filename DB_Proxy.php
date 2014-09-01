@@ -51,6 +51,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     private $previousClientid;
 
+    private $clientPusherAvailable;
+
     public static function defaultKey()
     {
         trigger_error("Don't call the static method defaultKey of DB_Proxy class.");
@@ -107,7 +109,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->logger->setDebugMessage("The method 'doAfterSetToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
             }
-            if ($this->dbSettings->notifyServer) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 $this->outputOfProcessing['registeredid'] = $this->dbSettings->notifyServer->register(
                     $this->dbClass->queriedEntity(),
                     $this->dbClass->queriedCondition(),
@@ -167,7 +169,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
                 $result = $this->userExpanded->doAfterSetToDB($dataSourceName, $result);
             }
-            if ($this->dbSettings->notifyServer) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->updated(
                         $_POST['notifyid'],
@@ -225,7 +227,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->logger->setDebugMessage("The method 'newToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
             }
-            if ($this->dbSettings->notifyServer) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->created(
                         $_POST['notifyid'],
@@ -276,7 +278,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
                 $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);
             }
-            if ($this->dbSettings->notifyServer) {
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
                     $this->dbSettings->notifyServer->deleted(
                         $_POST['notifyid'],
@@ -519,6 +521,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
             $this->dbSettings->setEmailAsAccount($options['authentication']['email-as-username']);
         }
+
+        $this->clientPusherAvailable = (isset($_POST["pusher"]) && $_POST["pusher"] == "yes");
     }
 
     /*

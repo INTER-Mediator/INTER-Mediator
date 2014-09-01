@@ -62,6 +62,7 @@ var INTERMediator = {
     buttonIdNum: 0,
     masterNodeOriginalDisplay: null,
     detailNodeOriginalDisplay: null,
+    pusherAvailable: false,
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
     //startFrom: 0,
@@ -280,6 +281,14 @@ var INTERMediator = {
         IMLibPageNavigation.deleteInsertOnNavi = [];
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
+            if (Pusher.VERSION) {
+                INTERMediator.pusherAvailable = true;
+            }
+        } catch (ex) {
+            INTERMediator.pusherAvailable = false;
+        }
+
+        try {
             if (updateRequiredContext === true || updateRequiredContext === undefined) {
                 this.partialConstructing = false;
                 INTERMediator.buttonIdNum = 1;
@@ -413,7 +422,7 @@ var INTERMediator = {
             IMLibCalc.updateCalculationFields();
             IMLibPageNavigation.navigationSetup();
 
-            if (isAcceptNotify) {
+            if (isAcceptNotify && INTERMediator.pusherAvailable) {
                 var channelName = INTERMediatorOnPage.clientNotificationIdentifier();
                 var appKey = INTERMediatorOnPage.clientNotificationKey();
                 if (appKey && appKey != "_im_key_isnt_supplied" && !INTERMediator.pusherObject) {
