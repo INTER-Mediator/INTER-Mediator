@@ -118,7 +118,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
 
         $expected = array(
-            'unixtime' => '-1389126304',
+            'unixtime' => '-1357590304',
             'year' => '1926',
             'jyear' => '昭和元年',
             'month' => '12',
