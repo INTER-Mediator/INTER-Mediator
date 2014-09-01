@@ -16,6 +16,8 @@ Ver.4.5 (in development)
 - Modify setToDB() of DB_PDO.php to avoid outputting error messages in an error log file.
 - Added the new sample 'Sample_pdf' to demonstrate how to create pdf file with the data from database.
 - [BUG FIX] The JavaScript code editor "codemirror" support plugin was modified. It works fine.
+- [BUG FIX] DataConverter_FMDateTime class's dateArrayFromFMDate method can convert the Japanese Nengo style date
+  expression, but the start date of Showa wasn't right date, it was backward to one year.
 
 Ver.4.4 (2014/5/22)
 - Multiple elements bound to the same field of the same table can synchronize in a page.

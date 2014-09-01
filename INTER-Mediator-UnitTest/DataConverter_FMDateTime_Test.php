@@ -119,7 +119,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
 
         $expected = array(
             'unixtime' => '-1389126304',
-            'year' => '1925',
+            'year' => '1926',
             'jyear' => '昭和元年',
             'month' => '12',
             'day' => '25',
@@ -128,7 +128,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
             'second' => '56',
             'weekdayName' => '金',
             'weekday' => '5',
-            'longdate' => '1925/12/25',
+            'longdate' => '1926/12/25',
             'jlongdate' => '昭和 元 年 12 月 25 日 金曜日'
         );
         $string = '12/25/1925 12:34:56';
