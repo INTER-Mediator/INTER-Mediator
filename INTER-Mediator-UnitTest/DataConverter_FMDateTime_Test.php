@@ -137,7 +137,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $expected = array(
             'unixtime' => '600147296',
             'year' => '1989',
-            'jyear' => '昭和65年',
+            'jyear' => '昭和64年',
             'month' => '01',
             'day' => '07',
             'hour' => '12',
@@ -146,7 +146,7 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
             'weekdayName' => '土',
             'weekday' => '6',
             'longdate' => '1989/01/07',
-            'jlongdate' => '昭和 65 年 1 月 7 日 土曜日'
+            'jlongdate' => '昭和 64 年 1 月 7 日 土曜日'
         );
         $string = '01/07/1989 12:34:56';
         $this->assertSame($expected, $this->dataconverter->dateArrayFromFMDate($string));
