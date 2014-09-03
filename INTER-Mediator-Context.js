@@ -338,6 +338,25 @@ IMLibContext = function (contextName) {
     this.parentContext = null;
     this.registeredId = null;
 
+    this.getInsertOrder = function (record) {
+        var cName, sortKeys = [], contextDef, i, sortFields = [], sortDirections = [];
+        for (cName in INTERMediator.additionalSortKey) {
+            if (cName == this.contextName) {
+                sortKeys.push(INTERMediator.additionalSortKey[cName]);
+            }
+        }
+        contextDef = this.getContextDef();
+        if (contextDef.sort) {
+            sortKeys.push(contextDef.sort);
+        }
+        for (i = 0; i < sortKeys.length; i++) {
+            if (sortFields.indexOf(sortKeys[i].field) < 0) {
+                sortFields.push(sortKeys[i].field);
+                sortDirections.push(sortKeys[i].direction);
+            }
+        }
+    }
+
     this.clearAll = function () {
         this.store = {};
         this.binding = {};
@@ -603,7 +622,7 @@ IMLibContext = function (contextName) {
             for (fieldName in this.foreignValue) {
                 if (contextDef.relation) {
                     for (i in contextDef.relation) {
-                        if (contextDef.relation[i]['join-field'] == fieldName)  {
+                        if (contextDef.relation[i]['join-field'] == fieldName) {
                             result &= (checkCondition({
                                 field: contextDef.relation[i]['foreign-key'],
                                 operator: "=",

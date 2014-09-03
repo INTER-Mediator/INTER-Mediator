@@ -161,7 +161,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeSetToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['edit'])||$this->dbSettings->notifyServer) {
+                if (isset($currentDataSource['send-mail']['edit']) || $this->dbSettings->notifyServer) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $result = $this->dbClass->setToDB($dataSourceName);
@@ -218,7 +218,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeNewToDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['new'])||$this->dbSettings->notifyServer) {
+                if (isset($currentDataSource['send-mail']['new']) || $this->dbSettings->notifyServer) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $result = $this->dbClass->newToDB($dataSourceName, $bypassAuth);
@@ -349,6 +349,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             include($currentDirParam);
         }
 
+        $this->clientPusherAvailable = (isset($_POST["pusher"]) && $_POST["pusher"] == "yes");
         $this->dbSettings->setDataSource($datasource);
 
         $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
@@ -411,7 +412,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->dbSettings->pusherAppId = $pusherParams['app_id'];
             $this->dbSettings->pusherKey = $pusherParams['key'];
             $this->dbSettings->pusherSecret = $pusherParams['secret'];
-            if (isset($pusherParams['channel']))    {
+            if (isset($pusherParams['channel'])) {
                 $this->dbSettings->pusherChannel = $pusherParams['channel'];
             }
         }
@@ -447,15 +448,17 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->authDbClass = $this->dbClass;
         }
 
-        require_once("NotifyServer.php");
-        $this->dbSettings->notifyServer = new NotifyServer();
-        if (isset($_POST['notifyid'])
-            && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $_POST['notifyid'])
-        ) {
-            $this->logger->setDebugMessage("The NotifyServer was instanciated.", 2);
-        } else {
-            $this->dbSettings->notifyServer = null;
+        $this->dbSettings->notifyServer = null;
+        if ($this->clientPusherAvailable) {
+            require_once("NotifyServer.php");
+            $this->dbSettings->notifyServer = new NotifyServer();
+            if (isset($_POST['notifyid'])
+                && $this->dbSettings->notifyServer->initialize($this->authDbClass, $this->dbSettings, $_POST['notifyid'])
+            ) {
+                $this->logger->setDebugMessage("The NotifyServer was instanciated.", 2);
+            }
         }
+
         $this->dbSettings->setCurrentDataAccess($this->dbClass);
 
         if (isset($context['extending-class'])) {
@@ -522,7 +525,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->dbSettings->setEmailAsAccount($options['authentication']['email-as-username']);
         }
 
-        $this->clientPusherAvailable = (isset($_POST["pusher"]) && $_POST["pusher"] == "yes");
     }
 
     /*
@@ -766,9 +768,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
                 break;
             case 'unregister':
-                if (! is_null($this->dbSettings->notifyServer)) {
+                if (!is_null($this->dbSettings->notifyServer) && $this->clientPusherAvailable) {
                     $tableKeys = null;
-                    if(isset($_POST['pks']))    {
+                    if (isset($_POST['pks'])) {
                         $tableKeys = json_decode($_POST['pks'], true);
                     }
                     $this->dbSettings->notifyServer->unregister($_POST['notifyid'], $tableKeys);

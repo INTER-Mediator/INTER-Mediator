@@ -308,7 +308,7 @@ var INTERMediator = {
                         }
                         seekEnclosureNode(
                             updateRequiredContext.enclosureNode,
-                            recordset, //updateRequiredContext.foreignValue,
+                            updateRequiredContext.foreignValue,
                             null,
                             updateRequiredContext);
                     }
