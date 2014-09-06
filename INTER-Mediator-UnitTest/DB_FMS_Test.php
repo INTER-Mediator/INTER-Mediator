@@ -23,8 +23,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
-
-        $this->db_proxy = new DB_Proxy();
+        /*
+        $this->db_proxy = new DB_Proxy(true);
         $this->db_proxy->initialize(array(),
             array(
                 'authentication' => array( // table only, for all operations
@@ -41,7 +41,6 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
             ),
             array(
                 'db-class' => 'FileMaker_FX',
-                'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
                 'user' => 'web',
                 'password' => 'password',
             ),
@@ -66,6 +65,138 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
             'authexpired' => '300', // Set as seconds.
             'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
         );
+        */
+    }
+
+    function dbProxySetupForAccess($contextName, $maxRecord)
+    {
+        $this->schemaName = "";
+        $contexts = array(
+            array(
+                'records' => $maxRecord,
+                'name' => $contextName,
+                'key' => 'id',
+                'sort' => array(
+                    array('field'=>'id','direction'=>'asc'),
+                ),
+            )
+        );
+        $options = null;
+        $dbSettings = array(
+            'db-class' => 'FileMaker_FX',
+            'user' => 'web',
+            'password' => 'password',
+        );
+        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy->initialize($contexts, $options, $dbSettings, false, $contextName);
+    }
+
+    function dbProxySetupForAuth()
+    {
+        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy->initialize(array(
+                array(
+                'records' => 1,
+                'paging' => true,
+                'name' => 'person',
+                'key' => 'id',
+                'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
+                'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
+                'sequence' => 'im_sample.serial',
+                )
+            ),
+            array(
+                'authentication' => array( // table only, for all operations
+                'user' => array('user1'), // Itemize permitted users
+                'group' => array('group2'), // Itemize permitted groups
+                'privilege' => array(), // Itemize permitted privileges
+                'user-table' => 'authuser', // Default value
+                'group-table' => 'authgroup',
+                'corresponding-table' => 'authcor',
+                'challenge-table' => 'issuedhash',
+                'authexpired' => '300', // Set as seconds.
+                'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+                ),
+            ),
+            array(
+                'db-class' => 'FileMaker_FX',
+                'user' => 'web',
+                'password' => 'password',
+            ),
+            false);
+    }
+
+    public function testQuery1_singleRecord()
+    {
+        $this->dbProxySetupForAccess("person_layout", 1);
+        $result = $this->db_proxy->getFromDB("person_layout");
+        $recordCount = $this->db_proxy->countQueryResult("person_layout");
+        $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
+        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
+        //        var_export($this->db_proxy->logger->getAllErrorMessages());
+        //        var_export($this->db_proxy->logger->getDebugMessage());
+    }
+
+    public function testQuery2_multipleRecord()
+    {
+        $this->dbProxySetupForAccess("person_layout", 1000000);
+        $result = $this->db_proxy->getFromDB("person_layout");
+        $recordCount = $this->db_proxy->countQueryResult("person_layout");
+        $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
+        $this->assertTrue($recordCount == 3, "This table contanins 3 records");
+        $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
+        $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
+        
+        //        var_export($this->db_proxy->logger->getAllErrorMessages());
+        //        var_export($this->db_proxy->logger->getDebugMessage());
+    }
+
+    public function testInsertAndUpdateRecord()
+    {
+        $this->dbProxySetupForAccess("contact_to", 1000000);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $newKeyValue = $this->db_proxy->newToDB("contact_to", true);
+        $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertTrue($createdRecord != null, "Created record should be exists.");
+        $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
+        
+        $this->dbProxySetupForAccess("person_layout", 1000000);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $newKeyValue = $this->db_proxy->newToDB("person_layout", true);
+        $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertTrue($createdRecord != null, "Created record should be exists.");
+        $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
+        
+        $nameValue = "unknown, oh mygod!";
+        $addressValue = "anyplace, who knows!";
+        $this->dbProxySetupForAccess("person_layout", 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
+        $this->db_proxy->dbSettings->addTargetField("name");
+        $this->db_proxy->dbSettings->addValue($nameValue);
+        $this->db_proxy->dbSettings->addTargetField("address");
+        $this->db_proxy->dbSettings->addValue($addressValue);
+        $this->db_proxy->requireUpdatedRecord(true);
+        $result = $this->db_proxy->setToDB("person_layout", true);
+        $createdRecord = $this->db_proxy->updatedRecord();
+        $this->assertTrue($createdRecord != null, "Update record should be exists.");
+        $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
+        $this->assertTrue($createdRecord[0]["name"] === $nameValue, "Field value is not same as the definition.");
+        $this->assertTrue($createdRecord[0]["address"] === $addressValue, "Field value is not same as the definition.");
+        
+        $this->dbProxySetupForAccess("person_layout", 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
+        $result = $this->db_proxy->getFromDB("person_layout");
+        $recordCount = $this->db_proxy->countQueryResult("person_layout");
+        $this->assertTrue(count($result) == 1, "It should be just one record.");
+        $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
+        $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
+        
+        //        var_export($this->db_proxy->logger->getAllErrorMessages());
+        //        var_export($this->db_proxy->logger->getDebugMessage());
+        
     }
 
     /**
@@ -92,6 +223,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
      */
     public function testAuthUser2()
     {
+        $this->dbProxySetupForAuth();
+
         $testName = "Password Retrieving";
         $username = 'user1';
         $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
@@ -108,6 +241,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
      */
     public function testAuthUser3()
     {
+        $this->dbProxySetupForAuth();
+
         $testName = "Salt retrieving";
         $username = 'user1';
         $retrievedSalt = $this->db_proxy->authSupportGetSalt($username);
@@ -121,6 +256,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
      */
     public function testAuthUser4()
     {
+        $this->dbProxySetupForAuth();
+
         $testName = "Generate Challenge and Retrieve it";
         $username = 'user1';
         $challenge = $this->db_proxy->generateChallenge();
@@ -141,6 +278,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
      */
     public function testAuthUser5()
     {
+        $this->dbProxySetupForAuth();
+
         $testName = "Simulation of Authentication";
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
@@ -166,6 +305,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
      */
     public function testAuthUser6()
     {
+        $this->dbProxySetupForAuth();
+
         $testName = "Create New User and Authenticate";
         $username = "testuser1";
         $password = "testuser1";
@@ -196,6 +337,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
      */
     function testUserGroup()
     {
+        $this->dbProxySetupForAuth();
+
         $testName = "Resolve containing group";
         $groupArray = $this->db_proxy->dbClass->authSupportGetGroupsOfUser('user1');
         echo var_export($groupArray);
@@ -208,6 +351,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
      */
     public function testNativeUser()
     {
+        $this->dbProxySetupForAuth();
+
         $testName = "Native User Challenge Check";
         $cliendId = "12345";
 
@@ -225,6 +370,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
      */
     public function testDefaultKey()
     {
+        $this->dbProxySetupForAccess("person_layout", 1);
+
         $testName = "The default key field name";
         $presetValue = "-recid";
         $value = $this->db_proxy->dbClass->getDefaultKey();
