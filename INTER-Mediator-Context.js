@@ -327,6 +327,8 @@ IMLibContext = function (contextName) {
     this.binding = {};
     this.contextInfo = {};
     this.modified = {};
+    this.recordOrder = [];
+    this.pendingOrder = [];
     IMLibContextPool.registerContext(this);
 
     this.foreignValue = {};
@@ -337,6 +339,7 @@ IMLibContext = function (contextName) {
     this.nullAcceptable = true;
     this.parentContext = null;
     this.registeredId = null;
+    this.sequencing = false;
 
     this.getInsertOrder = function (record) {
         var cName, sortKeys = [], contextDef, i, sortFields = [], sortDirections = [];
@@ -451,6 +454,146 @@ IMLibContext = function (contextName) {
         return contextDef;
     };
 
+    /*
+     The isDebug parameter is for debugging and testing. Usually you should not specify it.
+     */
+    this.checkOrder = function (oneRecord, isDebug) {
+        var i, j, fields = [], directions = [], oneSortKey, condtextDef, lower, upper, index, targetRecord,
+            contextValue, checkingValue, stop;
+        if (isDebug !== true) {
+            if (INTERMediator && INTERMediator.additionalSortKey[this.contextName]) {
+                for (i = 0; i < INTERMediator.additionalSortKey[this.contextName].length; i++) {
+                    oneSortKey = INTERMediator.additionalSortKey[this.contextName][i];
+                    if (!oneSortKey.field in fields) {
+                        fields.push(oneSortKey.field);
+                        directions.push(oneSortKey.direction);
+                    }
+                }
+            }
+            condtextDef = this.getContextDef();
+            if (condtextDef && condtextDef.sort) {
+                for (i = 0; i < condtextDef.sort.length; i++) {
+                    oneSortKey = condtextDef.sort[i];
+                    if (!oneSortKey.field in fields) {
+                        fields.push(oneSortKey.field);
+                        directions.push(oneSortKey.direction);
+                    }
+                }
+            }
+        } else {
+            fields = ['field1', 'field2'];
+        }
+        lower = 0;
+        upper = this.recordOrder.length;
+        for (i = 0; i < fields.length; i++) {
+            if (oneRecord[fields[i]]) {
+//                if (isDebug === true) {
+//                    console.log("field=" + fields[i] + ",lower=" + lower + ",upper=" + upper);
+//                }
+                index = parseInt((upper + lower) / 2);
+                do {
+                    targetRecord = this.store[this.recordOrder[index]];
+                    contextValue = targetRecord[fields[i]];
+                    checkingValue = oneRecord[fields[i]];
+//                    if (isDebug === true) {
+//                        console.log("lower=" + lower + ",upper=" + upper + ",index=" + index
+//                            + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
+//                    }
+                    if (contextValue < checkingValue) {
+                        lower = index;
+                    } else if (contextValue > checkingValue) {
+                        upper = index;
+                    } else {
+                        lower = upper = index;
+                    }
+                    index = parseInt((upper + lower) / 2);
+                } while (upper - lower > 1);
+                targetRecord = this.store[this.recordOrder[index]];
+                contextValue = targetRecord[fields[i]];
+                if (contextValue == checkingValue) {
+                    lower = upper = index;
+                    stop = false;
+                    do {
+                        targetRecord = this.store[this.recordOrder[lower - 1]];
+                        if (targetRecord && targetRecord[fields[i]] && targetRecord[fields[i]] == checkingValue) {
+                            lower--;
+                        } else {
+                            stop = true;
+                        }
+                    } while (!stop);
+                    stop = false;
+                    do {
+                        targetRecord = this.store[this.recordOrder[upper + 1]];
+                        if (targetRecord && targetRecord[fields[i]] && targetRecord[fields[i]] == checkingValue) {
+                            upper++;
+                        } else {
+                            stop = true;
+                        }
+                    } while (!stop);
+                    if (lower == upper) {
+                        // index is the valid order number.
+                        break;
+                    }
+                    upper++;
+                } else if (contextValue < checkingValue) {
+                    // index is the valid order number.
+                    break;
+                } else if (contextValue > checkingValue) {
+                    index--;
+                    break;
+                }
+            }
+        }
+        if (isDebug === true) {
+            console.log("#lower=" + lower + ",upper=" + upper + ",index=" + index
+                + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
+        }
+        return index;
+    };
+
+    /*
+     The isDebug parameter is for debugging and testing. Usually you should not specify it.
+     */
+    this.rearrangePendingOrder = function (isDebug) {
+        var i, index, targetRecord;
+        for (i = 0; i < this.pendingOrder.length; i++) {
+            targetRecord = this.store[this.pendingOrder[i]];
+            index = this.checkOrder(targetRecord, isDebug);
+            if (index >= -1) {
+                this.recordOrder.splice(index + 1, 0, this.pendingOrder[i]);
+            } else {
+                // something wrong...
+            }
+        }
+        this.pendingOrder = [];
+    };
+
+    this.getRepeaterEndNode = function(index)   {
+        var nodeId, field, repeaters = [], repeater, node, i, sibling, enclosure, children;
+
+        var recKey = this.recordOrder[index];
+        for (field in this.binding[recKey]) {
+            nodeId = this.binding[recKey][field].nodeId;
+            repeater = INTERMediatorLib.getParentRepeater(doument.getElementById(nodeId));
+            if (! repeater in repeaters)  {
+                repeaters.push(repeater);
+            }
+        }
+        if (repeaters.length < 1)   {
+            return null;
+        }
+        node = repeaters[0];
+        enclosure = INTERMediatorLib.getParentEnclosure(node);
+        children = enclosure.childNodes;
+        for (i = 0 ; i < children.length ; i++)    {
+            if(children[i] in repeaters)    {
+                node = repeaters[i];
+                break;
+            }
+        }
+        return node;
+    };
+
     this.setValue = function (recKey, key, value, nodeId, target, portal) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
         if (recKey != undefined && recKey != null) {
@@ -462,6 +605,11 @@ IMLibContext = function (contextName) {
             }
             if (this.binding[recKey] === undefined) {
                 this.binding[recKey] = {};
+                if (this.sequencing) {
+                    this.recordOrder.push(recKey);
+                } else {
+                    this.pendingOrder.push(recKey);
+                }
             }
             if (this.binding[recKey][key] === undefined) {
                 this.binding[recKey][key] = [];
@@ -676,7 +824,7 @@ IMLibContext = function (contextName) {
                     return false;
             }
         }
-    }
+    };
 
     this.insertEntry = function (pkvalue, fields, values) {
         var i, field, value;
@@ -685,11 +833,14 @@ IMLibContext = function (contextName) {
             value = values[i];
             this.setValue(pkvalue, field, value);
         }
-    }
+    };
 
+    /*
+    Initialize this object
+     */
     this.setTable(this);
-}
-;
+};
+
 
 IMLibLocalContext = {
     contextName: "_",
