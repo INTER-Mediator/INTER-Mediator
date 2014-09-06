@@ -8,7 +8,6 @@
  *
  */
 
-require_once('PHPUnit/Framework/TestCase.php');
 require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
 require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
 require_once(dirname(__FILE__) . '/../DB_AuthCommon.php');
@@ -51,12 +50,12 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $this->db_proxy->dbSettings->setDbSpecUser('web');
         $this->db_proxy->dbSettings->setDbSpecPassword('password');
         $this->db_proxy->dbSettings->setDbSpecPort('80');
-        $this->db_proxy->dbSettings->setDbSpecDataType('FMPro7');
+        $this->db_proxy->dbSettings->setDbSpecDataType('FMPro12');
         $this->db_proxy->dbSettings->setDbSpecServer('127.0.0.1');
         $this->db_proxy->dbSettings->setDbSpecDatabase('TestDB');
         $this->db_proxy->dbSettings->setDbSpecProtocol('http');
 
-        $this->db_filemaker_fx->authentication = array( // table only, for all operations
+        $this->db_proxy->authentication = array( // table only, for all operations
             'user' => array('user1'), // Itemize permitted users
             'group' => array('group2'), // Itemize permitted groups
             'privilege' => array(), // Itemize permitted privileges
