@@ -232,7 +232,7 @@ class DefinitionChecker
                 )
             ),
             'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete)',
-            'navi-control' => 'string(master|detail|master-hide)',
+            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom)',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',

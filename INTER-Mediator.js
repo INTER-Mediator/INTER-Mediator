@@ -699,7 +699,6 @@ var INTERMediator = {
                         linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
                         currentWidgetNodes = linkedElements.widgetNode;
                         currentLinkedNodes = linkedElements.linkedNode;
-//                    shouldDeleteNodes = shouldDeleteNodeIds(repeatersOneRec);
                         shouldDeleteNodes = [];
                         for (i = 0; i < repeatersOneRec.length; i++) {
                             setIdValue(repeatersOneRec[i]);
@@ -898,6 +897,7 @@ var INTERMediator = {
                         }
                         callbackForRepeaters(currentContextDef, node, newlyAddedNodes);
                     }
+                    contextObj.rearrangePendingOrder();
                 }
             }
 
@@ -1243,10 +1243,6 @@ var INTERMediator = {
             /* --------------------------------------------------------------------
 
              */
-
-            /* --------------------------------------------------------------------
-
-             */
             function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
                 // Handling Delete buttons
                 var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
@@ -1574,8 +1570,10 @@ var INTERMediator = {
                     case 'TBODY':
                         if (currentContextDef['navi-control'].match(/top/i)) {
                             targetNodeTag = "THEAD";
-                        } else {
+                        } else if (currentContextDef['navi-control'].match(/bottom/i)) {
                             targetNodeTag = "TFOOT";
+                        } else {
+                            targetNodeTag = "THEAD";
                         }
                         enclosedNode = node.parentNode;
                         firstLevelNodes = enclosedNode.childNodes;
@@ -1611,10 +1609,10 @@ var INTERMediator = {
                         existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_BackNavi');
                         if (existingButtons.length == 0) {
                             liNode.appendChild(buttonNode);
-                            if (currentContextDef['repeat-control'].match(/top/i)) {
-                                node.insertBefore(liNode, node.firstChild);
-                            } else {
+                            if (currentContextDef['repeat-control'].match(/bottom/i)) {
                                 node.appendChild(liNode);
+                            } else {
+                                node.insertBefore(liNode, node.firstChild);
                             }
                         }
                         break;
@@ -1626,10 +1624,10 @@ var INTERMediator = {
                             existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi');
                             if (existingButtons.length == 0) {
                                 divNode.appendChild(buttonNode);
-                                if (currentContextDef['repeat-control'].match(/top/i)) {
-                                    node.insertBefore(divNode, node.firstChild);
-                                } else {
+                                if (currentContextDef['repeat-control'].match(/bottom/i)) {
                                     node.appendChild(divNode);
+                                } else {
+                                    node.insertBefore(divNode, node.firstChild);
                                 }
                             }
                         }
