@@ -8,14 +8,16 @@ http://inter-mediator.org/
 Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.5 (in development)
+Ver.4.6 (in development)
+
+Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
 - The 'navi-control' key can be specified in a context. The value for it are 'master', 'detail' and 'master-hide'. See the Practice/navi.html.
 - Update FX.php (July 29, 2014) for DB_FileMaker_FX class.
 - Modify setToDB() of DB_PDO.php to avoid outputting error messages in an error log file.
 - Added the new sample 'Sample_pdf' to demonstrate how to create pdf file with the data from database.
-- Update sample_schema_mysql.txt/sample_schema_sqlite.txt/sample_schema_pgsql.txt for syncing with multiple client.
-- Update TestDB.fmp12 to add tables ("registeredcontext" and "registeredpks") for syncing with multiple client.
+- Update sample_schema_mysql.txt/sample_schema_sqlite.txt/sample_schema_pgsql.txt for syncing with multiple clients.
+- Update TestDB.fmp12 to add tables ("registeredcontext" and "registeredpks") for syncing with multiple clients.
 - [BUG FIX] The JavaScript code editor "codemirror" support plugin was modified. It works fine.
 - [BUG FIX] DataConverter_FMDateTime class's dateArrayFromFMDate method can convert the Japanese Nengo style date
   expression, but the start date of Showa wasn't right date, it was backward to one year.
