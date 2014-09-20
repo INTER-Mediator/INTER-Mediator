@@ -185,6 +185,12 @@ class DefinitionChecker
             'port' => 'integer',
             'username' => 'string',
             'password' => 'string',
+        ),
+        'pusher' => array(
+            'app_id' => 'string',
+            'key' => 'integer',
+            'secret' => 'string',
+            'channel' => 'string',
         )
     );
     private
@@ -226,11 +232,13 @@ class DefinitionChecker
                 )
             ),
             'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete)',
+            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom)',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',
                     'rule' => 'string',
                     'message' => 'string',
+                    'notify' => 'string(alert|inline|end-of-sibling)',
                 )
             ),
             'post-repeater' => 'string',

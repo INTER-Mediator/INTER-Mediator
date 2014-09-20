@@ -1,7 +1,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -65,10 +65,14 @@ span.IM_POSTMESSAGE {
 #_im_authbutton{}
 #_im_changebutton{}
 
+._im_alertmessage   {
+    color: red;
+}
+
 table {
     border-collapse: collapse;
     background-color: #EEEEEE;
-    font-size: 10pt;;
+    font-size: 10pt;
 }
 
 th {
@@ -84,17 +88,17 @@ td {
 }
 
 input   {
-    font-size: 10pt;;
+    font-size: 10pt;
 }
 
 textarea   {
-    font-size: 10pt;;
+    font-size: 10pt;
 }
 
 option   {
-    font-size: 10pt;;
+    font-size: 10pt;
 }
 
 button   {
-    font-size: 10pt;;
+    font-size: 10pt;
 }

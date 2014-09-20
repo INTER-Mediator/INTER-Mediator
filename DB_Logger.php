@@ -21,14 +21,14 @@ class DB_Logger
     private $errorMessage = array();
     private $debugMessage = array();
 
-    function setDebugMessage($str, $level = 1)
+    public function setDebugMessage($str, $level = 1)
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level) {
             $this->debugMessage[] = $str;
         }
     }
 
-    function setErrorMessage($str)
+    public function setErrorMessage($str)
     {
         $this->errorMessage[] = $str;
     }
@@ -48,6 +48,16 @@ class DB_Logger
         return $returnData;
     }
 
+    public function getErrorMessages()
+    {
+        return $this->errorMessage;
+    }
+
+    public function getDebugMessages()
+    {
+        return $this->debugMessage;
+    }
+
     function getAllErrorMessages()
     {
         $returnData = "";
@@ -57,7 +67,7 @@ class DB_Logger
         return $returnData;
     }
 
-    function setDebugMode($val)
+    public function setDebugMode($val)
     {
         if ($val === true) {
             $this->debugLevel = 1;
@@ -66,12 +76,12 @@ class DB_Logger
         }
     }
 
-    function getDebugMessage()
+    public function getDebugMessage()
     {
         return $this->debugMessage;
     }
 
-    function getDebugLevel()
+    public function getDebugLevel()
     {
         return $this->debugLevel;
     }

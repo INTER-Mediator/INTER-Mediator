@@ -2,6 +2,10 @@ language:
   - php
   - node_js
 
+os:
+  - linux
+  - osx
+
 php:
   - 5.6
   - 5.5
@@ -17,9 +21,9 @@ node_js:
 #  - DB=sqlite3
 #  - DB=postgres
 
-matrix:
-  allow_failures:
-    - php: 5.6
+#matrix:
+#  allow_failures:
+#    - php: 5.6
 #    - env: "DB=sqlite3"
 #    - env: "DB=postgres"
 
@@ -31,6 +35,8 @@ before_script:
   - node_modules/.bin/buster-server &
   - sleep 5
   - firefox http://localhost:1111/capture &
+  - sleep 5
+  - phantomjs node_modules/buster/script/phantom.js http://localhost:1111/capture &
   - sleep 5
   - mysql -u root < ./dist-docs/sample_schema_mysql.txt
   - sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
@@ -45,7 +51,9 @@ before_script:
 #  - sh -c "if [ '$DB' = 'sqlite3' ]; then cat DB_PDO_Test.php | sed -e 's/mysql:dbname=test_db;host=127.0.0.1/sqlite:\/tmp\/sample.sq3/'; fi"
 #  - sh -c "if [ '$DB' = 'postgres' ]; then cat DB_PDO_Test.php | sed -e s/mysql\:dbname=test_db\;host=127.0.0.1/pgsql\:host=127.0.0.1\;port=5432\;dbname=test_db/ > DB_PDO_Test.tmp; mv DB_PDO_Test.tmp DB_PDO_Test.php; fi"
 #  - cd ..
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then composer require 'phpunit/phpunit=3.7.x'; composer install; fi"
 
 script:
-  - phpunit ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
+  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
   - npm test

@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <!--
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
@@ -9,71 +8,25 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */  -->
-
-<html>
+<html lang="ja">
 <head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Form Style/SQLite</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
     <script type="text/javascript" src="include_SQLite.php"></script>
-    <script type="text/javascript">
-        var searchCriteriaTown;
-        var searchCriteriaZip;
-        var whichSearch;
-        INTERMediator.navigationLabel = [null, null, null, null, null, null, null, null, false];
-        function doSearchFromTown(key, direction) {
-            searchCriteriaTown = document.getElementById('place').value;
-            searchCriteriaZip = document.getElementById('zipcode').value;
-            whichSearch = 1;
-            INTERMediator.additionalCondition["postalcode"]
-                    = {field:'f9', operator:'LIKE', value:'%' + searchCriteriaTown + '%'};
-            INTERMediator.additionalSortKey["postalcode"]
-                    = {field:key, direction:direction};
-            INTERMediator.startFrom = 0;
-            INTERMediator.pagedSize = 5;
-            INTERMediator.construct(true);
-
-            document.getElementById('place').value = searchCriteriaTown;
-            document.getElementById('zipcode').value = searchCriteriaZip;
-        }
-        function doSearchFromZipcode(key, direction) {
-            searchCriteriaTown = document.getElementById('place').value;
-            searchCriteriaZip = document.getElementById('zipcode').value;
-            whichSearch = 2;
-            INTERMediator.additionalCondition["postalcode"]
-                    = {field:'f3', operator:'LIKE', value:searchCriteriaZip + '%'};
-            INTERMediator.additionalSortKey["postalcode"]
-                    = {field:key, direction:direction};
-            INTERMediator.startFrom = 0;
-            INTERMediator.pagedSize = 0;
-            INTERMediator.construct(true);
-
-            document.getElementById('place').value = searchCriteriaTown;
-            document.getElementById('zipcode').value = searchCriteriaZip;
-        }
-        function doSortFieldChange(key, direction)  {
-            if (whichSearch == 1)   {
-                doSearchFromTown(key, direction)
-            } else if (whichSearch == 2)  {
-                doSearchFromZipcode(key, direction)
-            }
-        }
-    </script>
+    <script type="text/javascript" src="search.js"></script>
 </head>
 <body>
 <div>
     地名(Place Name):
-    <input type="text" id="place" value="落合"
-           onkeydown="if(event.keyCode==13){doSearchFromTown('f3','ASC')}"/>
-    <button onclick="doSearchFromTown('f3','ASC')">Search</button>
+    <input type="text" data-im="_@placeCondition"/>
     検索は住所の「町域名」に一部分でも含まれる文字列を検索します。
 </div>
 <div>
     郵便番号(Zipcode):
-    <input type="text" id="zipcode" value="123"
-           onkeydown="if(event.keyCode==13){doSearchFromZipcode('f3','ASC')}"/>
-    <button onclick="doSearchFromZipcode('f3','ASC')">search</button>
+    <input type="text" data-im="_@zipCondition"/>
+    <button id="searchbutton">search</button>
     郵便番号を前方一致で検索します。
 </div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
@@ -81,14 +34,14 @@
     <thead>
     <tr>
         <th>郵便番号
-            <a href="javascript:doSortFieldChange('f3','ASC')">▼</a>
-            <a href="javascript:doSortFieldChange('f3','DESC')">▲</a>
+            <a id="ascendingsortbypostalcode" href="#">▲</a>
+            <a id="descendingsortbypostalcode" href="#">▼</a>
         </th>
         <th>都道府県</th>
         <th>市区町村</th>
         <th>町域名
-            <a href="javascript:doSortFieldChange('f9','ASC')">▼</a>
-            <a href="javascript:doSortFieldChange('f9','DESC')">▲</a>
+            <a id="ascendingsortbyname" href="#">▲</a>
+            <a id="descendingsortbyname" href="#">▼</a>
         </th>
     </tr>
     </thead>

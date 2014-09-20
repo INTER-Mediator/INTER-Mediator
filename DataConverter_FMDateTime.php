@@ -79,7 +79,7 @@ class DataConverter_FMDateTime
             return '';
         }
         $jYearStartDate = array(
-            '1989-1-8' => '平成', '1925-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
+            '1989-1-8' => '平成', '1926-12-25' => '昭和', '1912-7-30' => '大正', '1868-1-25' => '明治');
         $wStrArray = array('日', '月', '火', '水', '木', '金', '土');
 
         // @codeCoverageIgnoreStart

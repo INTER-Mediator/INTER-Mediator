@@ -28,7 +28,7 @@ class DataConverter_Number extends DataConverter_NumberBase
 
     function converterFromDBtoUser($str)
     {
-        return number_format($str, $this->d, $this->decimalMark, $this->thSepMark);
+        return number_format((double)$str, $this->d, $this->decimalMark, $this->thSepMark);
     }
 }
 

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */ -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - List-Detail Style Navigation/MySQL</title>
+    <link type="text/css" rel="stylesheet" href="../sample.css">
+    <link type="text/css" rel="stylesheet" href="list_detail.css">
+    <script type="text/javascript" src="contexts_MySQL.php"></script>
+    <script type="text/javascript" src="list_detail.js"></script>
+</head>
+<body>
+<!-- Table for the list view -->
+<div id="listarea">
+    <table border="1">
+        <thead>
+        <tr>
+            <th>PDF</th><th>name</th><th>unitprice</th><th>photo</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <a href="contexts_MySQL.php?media=class://PDFSample/productlist/id=$/"
+                   data-im="productlist@id@$href">PDF</a>
+            </td>
+            <td data-im="productlist@name"></td>
+            <td class="price" data-im="productlist@unitprice"></td>
+            <td>
+                <img width="30" src="../Sample_products/images/" data-im="productlist@photofile@#src">
+                <a data-im="productlist@ack_link@href|productlist@acknowledgement"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

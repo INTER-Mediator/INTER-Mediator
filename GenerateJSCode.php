@@ -7,6 +7,7 @@
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
+
 /**
  * Created by JetBrains PhpStorm.
  * User: msyk
@@ -63,8 +64,13 @@ class GenerateJSCode
             $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
             $bi2phpDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'bi2php' . DIRECTORY_SEPARATOR;
             echo file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-Element.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-Context.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
             echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
             echo file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
+            echo file_get_contents($currentDir . 'INTER-Mediator-UI.js');
             echo file_get_contents($currentDir . 'INTER-Mediator.js');
             echo file_get_contents($jsLibDir . 'sha1.js');
             echo file_get_contents($jsLibDir . 'sha256.js');
@@ -151,7 +157,7 @@ class GenerateJSCode
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDBSpecification", "function(){return ",
-            arrayToJSExcluding($dbspecification, '', 
+            arrayToJSExcluding($dbspecification, '',
                 array('dsn', 'option', 'database', 'user', 'password', 'server', 'port', 'protocol', 'datatype')), ";}");
         $isEmailAsUsernae = isset($options['authentication'])
             && isset($options['authentication']['email-as-username'])
@@ -186,6 +192,32 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.browserCompatibility",
             "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
+
+        $clientIdSeed = time() + $_SERVER['REMOTE_ADDR'] + mt_rand();
+        $randomSecret = mt_rand();
+        $clientId = hash_hmac('sha256', $clientIdSeed, $randomSecret);
+
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.clientNotificationIdentifier",
+            "function(){return ", arrayToJS($clientId, ''), ";}");
+
+        $pusherParams = null;
+        if (isset($pusherParameters)) {
+            $pusherParams = $pusherParameters;
+        } else if (isset($options['pusher'])) {
+            $pusherParams = $options['pusher'];
+        }
+        if (!is_null($pusherParams)) {
+            $appKey = isset($pusherParams['key']) ? $pusherParams['key'] : "_im_key_isnt_supplied";
+            $chName = isset($pusherParams['channel']) ? $pusherParams['channel'] : "_im_pusher_default_channel";
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.clientNotificationKey",
+                "function(){return ", arrayToJS($appKey, ''), ";}");
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.clientNotificationChannel",
+                "function(){return ", arrayToJS($chName, ''), ";}");
+        }
+
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
             $this->generateAssignJS("INTERMediator.debugMode", "false");
         } else {

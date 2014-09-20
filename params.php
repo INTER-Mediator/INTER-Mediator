@@ -94,6 +94,8 @@ EOL;
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
+//$emailAsAliasOfUserName = true;
+
 $customLoginPanel = '';
 
 /*
@@ -103,5 +105,14 @@ $sendMailSMTP = array(
     'port' => 'integer',
     'username' => 'string',
     'password' => 'string',
+);
+*/
+
+/*
+ * If you want to specify the Pusher information, set them below.
+$pusherParameters = array(
+    'app_id' => '',
+    'key' => '',
+    'secret' => '',
 );
 */

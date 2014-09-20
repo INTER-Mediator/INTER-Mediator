@@ -1,74 +1,94 @@
+=================================
 INTER-Mediator Change Log
 by Masayuki Nii
 msyk@msyk.net
+=================================
 
 http://inter-mediator.org/
 Change Log will be supplied by English only.
-
-=================================
-To Do, that is left-over. Or Plan
-=================================
-
-To Do List for the INTER-Mediator developer(s)
-- Documentations, especially English documentations.
-- Working with the cloud infrastructures.
-- Generating the page on the server-side initially. Now the IMCake is going on.
-- Client-side evaluated field as like FileMaker's calculation field.
-- The list-detail style page navigation without JavaScript programming.
-- Showing as the alert box when any errors occurred ??
-- Password policy when the password is changed.
-- Supports HTML5's datalist tag elements
-- Server side processing with Ruby on Rails or kind of.
-- Single query can retrieve main and related tables simultaneously.
-- Caching the result of queries.
-- FileMaker's Find style database search. To do that, the Record-set feature must be support for context.
-- Store NULL for empty string.
-- HTML5's local database supporting.
-- The meter tag, INPUT#range tag, INPUT#number tag etc, HTML5 new comers supporting.
-- DL/DT/DD tags supporting.
-- SECTION/ARTICLE tags for enclosure/repeater, supporting the semantic markup.
-- Amazon Web Service supporting.
-- Searching in PDFs or any kind of files.
-- Popup menu's default value; if there isn't the value of them, set first one.
-- PayPal support or sort of.
-- The Observer Architecture for both client and server.
- (Followings are from INTER-Mediator Study Meeting 2003#1)
-- Calendar/Time Component Support.
-- Tab Component Support.
-- The database class DB_PDO should use the prepare method instead of the query method.
-  Most parts are using the quote method to prevent SQL injection attacks but it should do for improvements.
-- Authentication UI should generate on the server side.
-- Working with FileMaker's ODBC sharing instead of XML sharing (FX.php) when using FileMaker Server 13.
-- Support uploading a file to FileMaker's container field when using FileMaker Server 13.
- (Calculation Field issues)
-- Security Issue: The eval function is used to calculate the expression. Should it replace some wrong characters?
-- Formatting: How to apply a format to a value? Should we support a formatter function? Or other solutions?
-- Error Detection: Any error doesn't arise so far.
-- Functions: The SUM function is just defined so far.
-
-=================================
-Known Issues for Browsers:
-=================================
-For every version of Internet Explorer
-- Don't use on Compatibility mode, please. (Also Quirk mode.)
-
-Internet Explorer 7
-- Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
-- As far as above reason, IE7 must be partially supported forever.
-
-Internet Explorer 6 or under are NOT supported!
-FireFox/Safari/Chrome/Opera will work fine as for HTML5 supported version.
-It's hard to check all versions above browsers as you know. I hope you understand.
-
-=================================
-Change Log
-=================================
-
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.2 (in development)
-- Calculation Field started to work (but it has some limitations).
+Ver.4.6 (in development)
+- [BUG FIX] DB_FileMaker_FX used the alternative data source not only the 'issuedhash' table also 'authuer' and some
+  tables for authorization/authentication. Now, it uses just the 'issuedhash' table for the alternative data source.
+- [BUG FIX] Calculation for strings didn't work, ex. >...
+- [BUG FIX] The target description with "style.display" for the calculated field is working.
+- [BUG FIX] The file upload component failed to update the related context.
+
+Ver.4.5 (2014/9/15)
+- Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
+- The 'navi-control' key can be specified in a context. The value for it are 'master', 'detail' and 'master-hide'. See the Practice/navi.html.
+- Update FX.php (July 29, 2014) for DB_FileMaker_FX class.
+- Modify setToDB() of DB_PDO.php to avoid outputting error messages in an error log file.
+- Added the new sample 'Sample_pdf' to demonstrate how to create pdf file with the data from database.
+- Update sample_schema_mysql.txt/sample_schema_sqlite.txt/sample_schema_pgsql.txt for syncing with multiple clients.
+- Update TestDB.fmp12 to add tables ("registeredcontext" and "registeredpks") for syncing with multiple clients.
+- [BUG FIX] The JavaScript code editor "codemirror" support plugin was modified. It works fine.
+- [BUG FIX] DataConverter_FMDateTime class's dateArrayFromFMDate method can convert the Japanese Nengo style date
+  expression, but the start date of Showa wasn't right date, it was backward to one year.
+
+Ver.4.4 (2014/5/22)
+- Multiple elements bound to the same field of the same table can synchronize in a page.
+- Update samples to improve compatibility with CSP (Content Security Policy).
+  (except Asset Management, Account Manager and JS Components Sample)
+- Add Client-Side Calculation Page Samples for SQLite and PostgreSQL.
+- Update sample_schema_mysql.txt to merge schema_data.txt of Sample_Extensible Sample.
+- Avoid outputting error messages in an error log file when not specifying the 'context' key of the 'file-upload' 
+  key in a definition file.
+- Update the Local Context to improve compatibility with INTERMediator.pagedSize and update the "Practices".
+- INTERMediatorOnPage.additionalExpandingEnclosureFinish and INTERMediatorOnPage.additionalExpandingRecordFinish
+  are supported. These are programmable interfaces associated with 'post-enclosure' and 'post-repeater' in a context.
+- DataConverter_MySQLDateTime class supports 'YYYY.MM.DD' date format.
+- Use sessionStorage for the Local Context instead of Cookie by default.
+- Cookie is now destroyed when browser is closed when the value of 'authexpired' key in a definition file is 0.
+- Divide the pagination codes to INTER-Mediator-Navi.js.
+- Update OME.php to sending to the email address including '+' (especially for Gmail users).
+- Added class IMLibChangeEventDispatch, IMLibMouseEventDispatch, IMLibKeyEventDispatch for dispatching events.
+- [BUG FIX] Fix compatibility when using INTERMediator.additionalCondition or INTERMediator.additionalSortKey.
+  The affected version is 4.3 only (Thanks to Kentaro Suzuki).
+- [BUG FIX] Fix an error when the value of 'operator' is 'or' or 'and' in additionalCondition with FileMaker Server.
+  The affected versions are 3.11, 4.0, 4.1, 4.2 and 4.3 (Thanks to Kentaro Suzuki).
+- [BUG FIX] Fix not to show the error message (message id: 1024) when updating data using Safari (version 4.3 only).
+- [BUG FIX] Fix an error in "Master-Detail Style Page" Sample for PostgreSQL (version 4.3 only).
+- [BUG FIX] Fix updating data when uploading a file and specifying the 'field' key and not specifying the 'context' 
+  key in the 'file-upload' key of the definition file.
+- [BUG FIX] Avoid an error in getValueFromIMNode() of INTER-Mediator-Lib.js if the parameter is null.
+- [BUG FIX] Fix handling the 'maxrecords' key and INTERMediator.pagedSize.
+- [BUG FIX] The JS program of the Sample_chat has been modified.
+- [BUG FIX] Fix not to show the error message ("currentRecord is null - EXCEPTION-25") when using the PostOnlyContext 
+  and the related context is exisiting.
+- [BUG FIX] Fix not to show the error message ("curVal.replace is not a function - EXCEPTION-27") in 
+  IMLibElement.setValueToIMNode() if the element of the parameter is a textarea element and the value is false.
+- [BUG FIX] Fix not to show the dialog message when the value of the Local Context is updated.
+- [BUG FIX] Avoid outputting duplicated alert messages of the validation when changing the value.
+- [BUG FIX] Enable outputting an alert message of the validation correctly when the validation rules of the field are 
+  multiple on the post only mode.
+- [BUG FIX] The calculated property didn't work in case of just a constant expression.
+- [BUG FIX] The calculated property's 'field' detection was wrong.
+- [WARNING] The JavaScript code editor "codemirror" isn't temporally supported for the updated version doesn't work fine.
+
+Ver.4.3 (2014/4/7)
+- The Local Context is supported. You can bind the context named "_" at any place in a page file.
+  The method IMLibLocalContext.getValue/setValue can be used for getting/setting the value.
+- Validation doesn't call the eval function, but it changes to evaluate the expression to validate.
+- The 'validation' in a context can set the 'notify' parameter. Its value can be 'alert', 'inline' and 'end-of-sibling'.
+- The DataConverter_NullZeroString class added. This is for numeric field that the blank is treated as NULL.
+- TinyMCE Ver.4.0.19 supported.
+- "new Function()" statements have gone away. Moreover no eval function so far.
+- The length function which returns the length of string added to the expression.
+- The new area named "Practices" in the "Samples" directory is added.
+- Enable specifying values 'ASC' and 'DESC' for the direction of sorting when using DB_FileMaker_FX class.
+- [BUG FIX] In case of a validation didn't meet, all calculation fields updated.
+- [BUG FIX] Parser recognized some operators as a part of variables.
+- [BUG FIX] The sum function couldn't aggregate formatted values.
+- [BUG FIX] Formatter classes didn't work in the updating task in PDO.
+- [BUG FIX] JSON supported communication branch wasn't merged.
+- [BUG FIX] Debug messages weren't shown in the browser's window.
+
+Ver.4.2 (2014/3/13)
+- Calculation Field started to work. See the 'Sample_invoice'.
 - Send emails after the load/edit/new database operations.
+- Installation procedure is changed. We recommend to clone the repository and use the 'buildup.sh' script.
 - INTERMediatorOnPage.processingAfterPostOnlyContext has TWO parameters.
 - DataConverter_HTMLString supports double and single quote to convert to reference character.
 - DataConverter_HTMLString supports disabling HTML escaping (by specifying 'parameter' => 'noescape' ).
@@ -117,6 +137,7 @@ Ver.4.0 (2013/12/4)
 - Modify FX.php to fix compatibility with FileMaker Server 13.
 - Also updates below from Ver.3.0
 
+
 Ver.4 (2013/12/4)=========================================================
 
 [Major differences from Ver.3]
@@ -134,6 +155,22 @@ Ver.4 (2013/12/4)=========================================================
 - Support displaying of the FileMaker's container fields.
 - Started CI!
 ===========================================================================
+
+The Browser Information won't need anymore. Oldies have gone. We can go forward at this time (the end of 2013).
+
+=================================
+Known Issues for Browsers:
+=================================
+For every version of Internet Explorer
+- Don't use on Compatibility mode, please. (Also Quirk mode.)
+
+Internet Explorer 7
+- Checkbox and Radio Button doesn't work. Oops! I won't fix it (I can't!).
+- As far as above reason, IE7 must be partially supported forever.
+
+Internet Explorer 6 or under are NOT supported!
+FireFox/Safari/Chrome/Opera will work fine as for HTML5 supported version.
+It's hard to check all versions above browsers as you know. I hope you understand.
 
 Ver.3.11 (2013/11/30)
 - The code editor "codemirror" is supported. See Sample_webpage folder.

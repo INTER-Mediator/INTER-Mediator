@@ -116,6 +116,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
         $dbInstance->processingRequest($options);
         $dbInstance->finishCommunication(false);
+        $dbInstance->exportOutputDataAsJason();
     }
 }
 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010 Masayuki Nii, All rights reserved.
+ * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" type="text/css" href="../sample.css"/>
+    <link rel="stylesheet" type="text/css" href="codemirror/lib/codemirror.css"/>
+    <title>INTER-Mediator - Sample - Authorized Chat / MySQL</title>
+    <script type="text/javascript" src="include_MySQL.php"></script>
+    <script type="text/javascript" src="codemirror/lib/codemirror.js"></script>
+    <script type="text/javascript" src="codemirror/addon/runmode/runmode.js"></script>
+    <script type="text/javascript" src="codemirror/addon/runmode/colorize.js"></script>
+    <script type="text/javascript" src="codemirror/mode/javascript/javascript.js"></script>
+    <script type="text/javascript" src="codemirror/mode/xml/xml.js"></script>
+    <script type="text/javascript" src="codemirror/mode/css/css.js"></script>
+    <script type="text/javascript" src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script type="text/javascript" src="codemirror_im.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            INTERMediator.construct(true);
+        }
+    </script>
+</head>
+<body>
+<h1>JavaScript Component Test</h1>
+<!--<table>-->
+    <!--<tbody data-im-control="post">-->
+    <!--<tr>-->
+        <!--<td>-->
+            <!--<div data-im="testtable@text1" id="html1" data-im-widget="codemirror"></div>-->
+        <!--</td>-->
+        <!--<td>-->
+            <!--<button data-im-control="post">追加</button>-->
+        <!--</td>-->
+    <!--</tr>-->
+    <!--</tbody>-->
+<!--</table>-->
+<table>
+    <thead>
+    <tr>
+        <th>Date and Time</th>
+        <th>Message</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td data-im="testtable@dt1"></td>
+        <td data-im="testtable@text1" data-im-widget="codemirror"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

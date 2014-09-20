@@ -71,8 +71,13 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         assert.equals(INTERMediatorLib.numberFormat(-1000000.678, 1), "-1,000,000.7");
         assert.equals(INTERMediatorLib.numberFormat(-1000000.678, 2), "-1,000,000.68");
         assert.equals(INTERMediatorLib.numberFormat(-1000000.678, 3), "-1,000,000.678");
-        assert.equals(INTERMediatorLib.numberFormat(999999, -1), "999,999.0");
+        assert.equals(INTERMediatorLib.numberFormat(999999, -1), "1,000,000");
+        assert.equals(INTERMediatorLib.numberFormat(999999, -2), "1,000,000");
+        assert.equals(INTERMediatorLib.numberFormat(999999, -3), "1,000,000");
         // A negative second parameter doesn't support so far.
+    },
+    "format string detection": function()   {
+        assert.equals(INTERMediatorLib.digitSeparator(), [".", ",", 3]);
     }
 });
 
@@ -92,5 +97,11 @@ buster.testCase("INTERMediatorLib.Round() Test", {
         assert.equals(INTERMediatorLib.Round(v, -4), 50000);
         assert.equals(INTERMediatorLib.Round(v, -5), 0);
         assert.equals(INTERMediatorLib.Round(v, -6), 0);
+    }
+});
+
+buster.testCase("IMLibElement.getValueFromIMNode() Test", {
+    "should return '' if parameter is null.": function () {
+        assert.equals(IMLibElement.getValueFromIMNode(null), "");
     }
 });

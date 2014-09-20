@@ -6,7 +6,7 @@
 # This project started at the end of 2009.
 # INTER-Mediator is supplied under MIT License.
 
-version="4.1.6"
+version="4.4"
 
 # The jar file of YUI can be donwloaded from below.
 # http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7
@@ -41,9 +41,9 @@ echo " Build to: ${buildPath}"
 
 echo "-------------------------------------------------"
 echo "Choose the build result from these:"
-echo " (1) Complete (everything contains)"
-echo " (2) Core only (the least set to work wep applications)"
-echo " (3) Core + Support (add Auth_Support and INTER-Mediator-Support)"
+echo ' (1) Complete (everything contains)'
+echo ' (2) Core only (the least set to work wep applications)'
+echo ' (3) Core + Support (add Auth_Support and INTER-Mediator-Support)'
 /bin/echo -n "Type 1, 2 or 3, and then type return----> "
 read choice
 echo ""
@@ -64,17 +64,23 @@ done
 
 #### Merge js files
 echo "PROCESSING: Merging JS files"
-sed -f "${sedrule}" "${originalPath}/Adapter_DBServer.js" > "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Lib.js"   >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Page.js"  >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Parts.js" >> "${buildPath}/temp.js"
-sed -f "${sedrule}" "${originalPath}/INTER-Mediator.js" >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/js_lib/sha1.js"          >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/js_lib/sha256.js"        >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biBigInt.js"      >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biMontgomery.js" >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/bi2php/biRSA.js"         >> "${buildPath}/temp.js"
+sed -f "${sedrule}" "${originalPath}/Adapter_DBServer.js"      > "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Lib.js"                   >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Calc.js"                  >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-UI.js"                    >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
+sed -f "${sedrule}" "${originalPath}/INTER-Mediator.js"       >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/js_lib/sha1.js"                      >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/js_lib/sha256.js"                    >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
 
 sed -f "${sedrule}" "${buildPath}/temp.js" > "${buildPath}/INTER-Mediator.js"
 
@@ -96,22 +102,22 @@ if [ -f "${topOfDir}/${YUICOMP}" ]; then
     	yuiLogPath="${buildDir}/${YUICOMPLOG}"
     fi
     java -jar "${jarPath}"  "${temp2Path}" -v --charset UTF-8 -o "${temp3Path}" 2> "${yuiLogPath}"
-    sed '1s/*!/*/' "${buildPath}/temp3.js" > "${buildPath}/INTER-Mediator.js"
-    rm  "${buildPath}/temp.js" "${buildPath}/temp2.js" "${buildPath}/temp3.js"
+    sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/INTER-Mediator.js"
+    rm  "${buildPath}/temp.js" "${temp2Path}" "${temp3Path}"
 fi
 
 # Copy "lib" path php contents.
 echo "PROCESSING: ${originalPath}/lib"
 mkdir -p "${buildPath}/lib/bi2php"
-cp "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
-cp -rf "${originalPath}/lib/FX" "${buildPath}/lib"
-cp -rf "${originalPath}/lib/phpseclib" "${buildPath}/lib"
-cp -rf "${originalPath}/lib/mailsend" "${buildPath}/lib"
+cp -p "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
+cp -prf "${originalPath}/lib/FX" "${buildPath}/lib"
+cp -prf "${originalPath}/lib/phpseclib" "${buildPath}/lib"
+cp -prf "${originalPath}/lib/mailsend" "${buildPath}/lib"
 
 if [ $choice = 3 ]; then
-    dirs=""
-elif [ $choice = 2 ]; then
     dirs="Auth_Support INTER-Mediator-Support"
+elif [ $choice = 2 ]; then
+    dirs=""
 else
     dirs="Auth_Support INTER-Mediator-Support INTER-Mediator-UnitTest Samples"
 fi
@@ -138,7 +144,7 @@ do
                             ;;
                         *)
 #                            echo "CP: ${originalPath}/${TARGET}/${DIR}/${FILE}"
-                            cp "${originalPath}/${TARGET}/${DIR}/${FILE}" "${buildPath}/${TARGET}/${DIR}/${FILE}"
+                            cp -p "${originalPath}/${TARGET}/${DIR}/${FILE}" "${buildPath}/${TARGET}/${DIR}/${FILE}"
                             ;;
                     esac
                 fi
@@ -148,21 +154,28 @@ do
 done
 
 if [ $choice = 1 ]; then
-    echo "PROCESSING: ${originalPath}/readme.md"
-    cp     "${originalPath}/readme.md" "${buildPath}"
+    echo "PROCESSING: ${originalPath}/README.md"
+    cp -p   "${originalPath}/README.md" "${buildPath}"
 
     echo "PROCESSING: ${originalPath}/dist-docs"
-    cp -rf "${originalPath}/dist-docs" "${buildPath}"
+    cp -prf "${originalPath}/dist-docs" "${buildPath}"
 
     echo "PROCESSING: Rest of ${originalPath}/Samples"
-    cp -r  "${originalPath}/Samples/Sample_products/images" "${buildPath}/Samples/Sample_products/"
-    cp -r  "${originalPath}/Samples/WebSite/previous_rsrcs" "${buildPath}/Samples/WebSite/"
+    cp -pr  "${originalPath}/Samples/Sample_products/images" "${buildPath}/Samples/Sample_products/"
+    cp -pr  "${originalPath}/Samples/WebSite/previous_rsrcs" "${buildPath}/Samples/WebSite/"
 
 # Invalidate the definition file of the DefEditor.
     echo "PROCESSING: Invalidate the Definition File Editor for security reason."
     defeditdeffile="${buildPath}/INTER-Mediator-Support/defedit.php"
     sed 's|IM_Entry|/* IM_Entry|' "${defeditdeffile}" > /tmp/defedit.php
-    cp /tmp/defedit.php "${defeditdeffile}"
+    cp -p /tmp/defedit.php "${defeditdeffile}"
+else
+    echo "PROCESSING: ${originalPath}/dist-docs/License.txt"
+    cp -p   "${originalPath}/dist-docs/License.txt" "${buildPath}"
+	readmeLines=`wc -l "${originalPath}/dist-docs/readme.txt" | awk '{print $1}'`
+	lines=`expr $readmeLines - 8`
+    echo "PROCESSING: ${originalPath}/dist-docs/readme.txt"
+    head -n `echo $lines` "${originalPath}/dist-docs/readme.txt" > "${buildPath}/readme.txt"
 fi
 
 find "${buildPath}" -name "\.*" -exec rm -rf {} \;
@@ -180,13 +193,13 @@ echo "OS Info: $(uname -a)" >> "${buildDir}/${receipt}"
 echo "Original: ${originalPath}" >> "${buildDir}/${receipt}"
 echo "Build to: ${buildPath}" >> "${buildDir}/${receipt}"
 if [ $choice = 1 ]; then
-    echo "Your Choice: (1) Complete (everything contains)" >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (1) Complete (everything contains)' >> "${buildDir}/${receipt}"
 elif [ $choice = 2 ]; then
-    echo "Your Choice: (2) Core only (the least set to work wep applications)" >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (2) Core only (the least set to work wep applications)' >> "${buildDir}/${receipt}"
 elif [ $choice = 3 ]; then
-    echo "Your Choice: (3) Core + Support (add Auth_Support and INTER-Mediator-Support)" >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (3) Core + Support (add Auth_Support and INTER-Mediator-Support)' >> "${buildDir}/${receipt}"
 else
-    echo "Your Choice: (1) Complete (everything contains)" >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (1) Complete (everything contains)' >> "${buildDir}/${receipt}"
 fi
 echo "" >> "${buildDir}/${receipt}"
 echo "You can deploy the 'INTER-Mediator' folder into your web applications. Enjoy!!" >> "${buildDir}/${receipt}"

@@ -50,10 +50,24 @@ class DB_Settings
     private $requireAuthentication = false;
 
     private $smtpConfiguration = null;
+    /**
+     * @var
+     */
+    public $notifyServer = null;
+    public $clientNotificationId = null;
+    public $registerTableName = "registeredcontext";
+    public $registerPKTableName = "registeredpks";
 
+    public $pusherAppId = null;
+    public $pusherKey = null;
+    public $pusherSecret = null;
+    public $pusherChannel = "_im_pusher_default_channel";
     /**
      * @param string $dataSourceName
      */
+
+
+
     public function setSmtpConfiguration($config)
     {
         $this->smtpConfiguration = $config;
@@ -366,6 +380,9 @@ class DB_Settings
      */
     public function setAuthentication($authentication)
     {
+        if (isset($authentication['authexpired']) && $authentication['authexpired'] == 0) {
+            $authentication['authexpired'] = $this->getAuthenticationItem('authexpired');
+        }
         $this->authentication = $authentication;
     }
 
@@ -532,6 +549,11 @@ class DB_Settings
     function getExtraCriteria()
     {
         return $this->extraCriteria;
+    }
+
+    function unsetExtraCriteria($index)
+    {
+        unset($this->extraCriteria[$index]);
     }
 
     function addExtraCriteria($field, $operator, $value)

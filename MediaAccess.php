@@ -48,10 +48,15 @@ class MediaAccess
              * style URL. In case of an image, $file is just the path info as like above.
              */
             $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
-            if (isset($options['media-context'])) {
+//            if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
-            }
-            //    var_export($file);var_export($target);return;
+//
+//                var_export($file);
+//                var_export($target);
+//                var_export($this->contextRecord);
+//                return;
+//            }
+
             $content = false;
             $dq = '"';
             if (!$isURL) { // File path.
@@ -69,7 +74,7 @@ class MediaAccess
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
                 header('X-Frame-Options: SAMEORIGIN');
                 echo $content;
-            } else if (stripos($target, 'http://') == 0 || stripos($target, 'https://') == 0) { // http or https
+            } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 if (intval(get_cfg_var('allow_url_fopen')) === 1) {
                     $content = file_get_contents($target);
                 } else {
@@ -255,6 +260,27 @@ class MediaAccess
                     $this->exitAsError(400);
                 }
             }
+        } else {
+            $endOfPath = strpos($target, "?");
+            $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
+            $pathComponents = explode('/', substr($target, 0, $endOfPath));
+            $indexKeying = -1;
+            $contextName = '';
+            foreach ($pathComponents as $index => $dname) {
+                $decodedComponent = urldecode($dname);
+                if (strpos($decodedComponent, '=') !== false) {
+                    $indexKeying = $index;
+                    $fieldComponents = explode('=', $decodedComponent);
+                    $keyField = $fieldComponents[0];
+                    $keyValue = $fieldComponents[1];
+                    $contextName = $pathComponents[$index - 1];
+                }
+            }
+            if ($indexKeying == -1) {
+                $this->exitAsError(401);
+            }
+            $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
+            $this->contextRecord = $dbProxyInstance->dbClass->getFromDB($contextName);
         }
     }
 
