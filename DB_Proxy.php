@@ -523,6 +523,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
             $this->dbSettings->setEmailAsAccount($options['authentication']['email-as-username']);
+        } else if (isset($emailAsAliasOfUserName) && $emailAsAliasOfUserName) {
+            $this->dbSettings->setEmailAsAccount($emailAsAliasOfUserName);
         }
 
     }
