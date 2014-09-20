@@ -219,8 +219,8 @@ IMParts_Catalog["fileupload"] = {
                                             }
                                         }
                                         fvalue = IMLibContextPool.getKeyFieldValueFromId(tagetId, "")
-                                        contextObjects
-                                            = IMLibContextPool.getContextsFromNameAndForeignValue(relatedContextName, fvalue);
+                                        contextObjects = IMLibContextPool.getContextsFromNameAndForeignValue(
+                                            relatedContextName, fvalue, context.key);
                                     } else {
                                         contextObjects = IMLibContextPool.getContextFromName(updateInfo.context.contextName);
                                     }

@@ -13,6 +13,7 @@ Ver.4.6 (in development)
   tables for authorization/authentication. Now, it uses just the 'issuedhash' table for the alternative data source.
 - [BUG FIX] Calculation for strings didn't work, ex. >...
 - [BUG FIX] The target description with "style.display" for the calculated field is working.
+- [BUG FIX] The file upload component failed to update the related context.
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
