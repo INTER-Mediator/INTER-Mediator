@@ -93,14 +93,8 @@ INTERMediator_DBAdapter = {
             myRequest.setRequestHeader("charset", "utf-8");
             myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             myRequest.send(accessURL + authParams);
-
-            console.log(myRequest.responseText);
-
             jsonObject = JSON.parse(myRequest.responseText);
-
-            console.log(jsonObject);
-
-            resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
+           resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
             dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
             requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
             challenge = jsonObject.challenge ? jsonObject.challenge : null;
