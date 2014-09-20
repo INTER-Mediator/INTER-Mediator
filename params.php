@@ -94,6 +94,8 @@ EOL;
 // The 'issuedhash' table for storing challenges of authentication can be use another database.
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
+//$emailAsAliasOfUserName = true;
+
 $customLoginPanel = '';
 
 /*

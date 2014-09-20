@@ -117,7 +117,7 @@ var IMLibCalc = {
                     }
                     IMLibElement.setValueToIMNode(
                         targetNode,
-                        calcFieldInfo.target,
+                        calcFieldInfo.target.length > 0 ? calcFieldInfo.target : calcObject.nodeInfo.target,
                         Parser.evaluate(exp, valuesArray),
                         true);
                 } else {

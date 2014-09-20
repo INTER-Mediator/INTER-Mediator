@@ -166,12 +166,12 @@ IMLibContextPool = {
         return result;
     },
 
-    getContextsFromNameAndForeignValue: function (cName, fValue) {
+    getContextsFromNameAndForeignValue: function (cName, fValue, parentKeyField) {
         var i, j, result = [], parentKeyField;
         if (!cName) {
             return false;
         }
-        parentKeyField = "id";
+        //parentKeyField = "id";
         for (i = 0; i < this.poolingContexts.length; i++) {
             if (this.poolingContexts[i].contextName == cName
                 && this.poolingContexts[i].foreignValue[parentKeyField] == fValue) {

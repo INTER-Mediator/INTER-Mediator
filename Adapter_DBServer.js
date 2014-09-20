@@ -81,7 +81,8 @@ INTERMediator_DBAdapter = {
     server_access: function (accessURL, debugMessageNumber, errorMessageNumber) {
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-            mediatoken = null, appPath, authParams, jsonObject, i, notifySupport = false;
+            mediatoken = null, appPath, authParams, jsonObject, i, notifySupport = false, useNull = false,
+            registeredID = "";
         appPath = INTERMediatorOnPage.getEntryPath();
         authParams = INTERMediator_DBAdapter.generate_authParams();
         INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams);
@@ -92,7 +93,13 @@ INTERMediator_DBAdapter = {
             myRequest.setRequestHeader("charset", "utf-8");
             myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             myRequest.send(accessURL + authParams);
+
+            console.log(myRequest.responseText);
+
             jsonObject = JSON.parse(myRequest.responseText);
+
+            console.log(jsonObject);
+
             resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
             dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
             requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
@@ -108,7 +115,8 @@ INTERMediator_DBAdapter = {
             for (i = 0; i < jsonObject.debugMessages.length; i++) {
                 INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
             }
-            //INTERMediator.nullAcceptable = jsonObject.usenull;
+            useNull = jsonObject.usenull;
+            registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : "";
 
             INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
@@ -141,8 +149,8 @@ INTERMediator_DBAdapter = {
             resultCount: resultCount,
             newRecordKeyValue: newRecordKeyValue,
             newPasswordResult: changePasswordResult,
-            registeredId: jsonObject.registeredid,
-            nullAcceptable: jsonObject.usenull
+            registeredId: registeredID,
+            nullAcceptable: useNull
         };
     },
 
