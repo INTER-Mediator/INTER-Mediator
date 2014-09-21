@@ -213,7 +213,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $intervalDT = $expiredDT->diff($currentDate, true);
         // var_export($intervalDT);
         $calc = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
-        echo $calc;
+        //echo $calc;
         $this->assertTrue($calc === (11 + 3600 * 24), $testName);
     }
 
@@ -230,7 +230,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
         $retrievedPasswd = $this->db_proxy->dbClass->authSupportRetrieveHashedPassword($username);
-        echo var_export($this->db_proxy->logger->getDebugMessage(), true);
+        //echo var_export($this->db_proxy->logger->getDebugMessage(), true);
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
 
     }
@@ -312,8 +312,8 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $password = "testuser1";
 
         $addUserResult = $this->db_proxy->addUser($username, $password);
-        var_export($this->db_proxy->logger->getAllErrorMessages());
-        var_export($this->db_proxy->logger->getDebugMessage());
+        //var_export($this->db_proxy->logger->getAllErrorMessages());
+        //var_export($this->db_proxy->logger->getDebugMessage());
         $this->assertTrue($addUserResult);
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
@@ -324,7 +324,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        echo $hashedvalue;
+        //echo $hashedvalue;
 
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
@@ -341,7 +341,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
 
         $testName = "Resolve containing group";
         $groupArray = $this->db_proxy->dbClass->authSupportGetGroupsOfUser('user1');
-        echo var_export($groupArray);
+        //echo var_export($groupArray);
         $this->assertTrue(count($groupArray) > 0, $testName);
     }
 
@@ -357,7 +357,7 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $cliendId = "12345";
 
         $challenge = $this->db_proxy->generateChallenge();
-        echo "\ngenerated=", $challenge;
+        //echo "\ngenerated=", $challenge;
         $this->db_proxy->dbClass->authSupportStoreChallenge(0, $challenge, $cliendId);
 
         $this->assertTrue(
@@ -381,5 +381,12 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
             $value = $className::defaultKey();
         }
         $this->assertTrue($presetValue == $value, $testName);
+    }
+
+    public function testMultiClientSyncTableExsistence()
+    {
+        $testName = "Tables for storing the context and ids should be existing.";
+        $this->dbProxySetupForAuth();
+        $this->assertTrue($this->db_proxy->dbClass->isExistRequiredTable(), $testName);
     }
 }
