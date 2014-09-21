@@ -79,6 +79,87 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
+    public function register($clientId, $entity, $condition, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        $currentDT = new DateTime();
+        $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
+        $this->setupFXforDB($regTable, 1);
+        $this->fx->AddDBParam('clientid', $clientId);
+        $this->fx->AddDBParam('entity', $entity);
+        $this->fx->AddDBParam('conditions', $condition);
+        $this->fx->AddDBParam('registereddt', $currentDTFormat);
+        $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
+        if (!is_array($result)) {
+            $this->errorMessageStore(
+                $this->stringWithoutCredential("FX reports error at insert action: " . 
+                    "code={$result['errorCode']}, url={$result['URL']}"));
+            return false;
+        }
+        foreach($result['data'] as $recmodid => $recordData) {
+            foreach($recordData as $field => $value) {
+                if ($field == 'id') {
+                    $newContextId = $value[0];
+                }
+            }
+        }
+        foreach ($pkArray as $pk) {
+            $this->setupFXforDB($pksTable, 1);
+            $this->fx->AddDBParam('context_id', $newContextId);
+            $this->fx->AddDBParam('pk', $pk);
+            $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
+            if (!is_array($result)) {
+                $this->logger->setDebugMessage(
+                    $this->stringWithoutCredential("FX reports error at insert action: " . 
+                        "code={$result['errorCode']}, url={$result['URL']}"));
+                $this->errorMessageStore(
+                    $this->stringWithoutCredential("FX reports error at insert action: " . 
+                        "code={$result['errorCode']}, url={$result['URL']}"));
+                return false;
+            }
+        }
+        return $newContextId;
+    }
+
+    public function unregister($clientId, $tableKeys)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+
+        $hasFindParams = false;
+        $this->setupFXforDB($regTable, 'all');
+        if ($tableKeys) {
+            $subCriteria = array();
+            foreach($tableKeys as $regId)   {
+                $hasFindParams = true;
+                $this->fx->AddDBParam('id', $regId, 'eq');
+            }
+        }
+
+        if ($hasFindParams) {
+            $result = $this->fx->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        } else {
+            $result = $this->fx->DoFxAction("show_all", TRUE, TRUE, 'full');
+        }
+        if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
+            $this->errorMessageStore(
+                $this->stringWithoutCredential("FX reports error at delete action: " . 
+                    "code={$result['errorCode']}, url={$result['URL']}"));
+            return false;
+        } else {
+            if ($result['foundCount'] > 0) {
+                $this->setupFXforDB($regTable, '');
+                foreach ($result['data'] as $key => $row) {
+                    $recId = substr($key, 0, strpos($key, '.'));
+                    $this->fx->SetRecordID($recId);
+                    $this->fx->DoFxAction('delete', TRUE, TRUE, 'full');
+                }
+            }
+        }
+        return true;
+    }
+    
     private function setupFXforAuth($layoutName, $recordCount)
     {
         $this->fx = null;
@@ -805,7 +886,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
-        $result = $this->fx->DoFxAction("new", TRUE, TRUE, 'full');
+        $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             if ($this->dbSettings->isDBNative()) {
                 $this->dbSettings->setRequireAuthentication(true);
@@ -1156,7 +1237,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->setupFXforDB($userTable, 1);
         $this->fx->AddDBParam('username', $username);
         $this->fx->AddDBParam('hashedpasswd', $hashedpassword);
-        $result = $this->fx->DoFxAction("new", TRUE, TRUE, 'full');
+        $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
@@ -1494,12 +1575,43 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    public
-    function isNullAcceptable()
+    public function isNullAcceptable()
     {
         return false;
     }
 
+    public function queryForTest($table, $conditions = null)
+    {
+        if ($table == null) {
+            $this->errorMessageStore("The table doesn't specified.");
+            return false;
+        }
+        $this->setupFXforAuth($table, 'all');
+        if (count($conditions) > 0) {
+            foreach ($conditions as $field => $value) {
+                $this->fxAuth->AddDBParam($field, $value, 'eq');
+            }
+        }
+        if (count($conditions) > 0) {
+            $result = $this->fxAuth->DoFxAction("perform_find", TRUE, TRUE, 'full');
+        } else {
+            $result = $this->fxAuth->DoFxAction("show_all", TRUE, TRUE, 'full');
+        }
+        if ($result === false) {
+            return false;
+        }
+        $recordSet = array();
+        foreach ($result['data'] as $key => $row) {
+        //foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $oneRecord = array();
+            foreach ($row as $field => $value) {
+                $oneRecord[$field] = $value[0];
+            }
+            $recordSet[] = $oneRecord;
+        }
+        return $recordSet;
+    }
+    
     function authSupportGetSalt($username)
     {
         // TODO: Implement authSupportGetSalt() method.

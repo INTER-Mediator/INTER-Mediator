@@ -3855,6 +3855,9 @@ if ('y' == trim(fgets($stdin, 64))) {
 
     odbc_exec($conn, 'DELETE FROM "testtable"');
 
+    odbc_exec($conn, 'DELETE FROM "registeredcontext"');
+
+    odbc_exec($conn, 'DELETE FROM "registeredpks"');
 
     odbc_close($conn);
 } else {
