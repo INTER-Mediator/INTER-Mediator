@@ -28,6 +28,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $fieldInfo = null;
     private $updatedRecord = null;
 
+    /**
+     * @param $str
+     */
+    private function errorMessageStore($str)
+    {
+        $this->logger->setErrorMessage("Query Error: [{$str}] Error Code={$this->fx->lastErrorCode}");
+    }
+
     public function setupConnection()
     {
 
@@ -51,6 +59,24 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function updatedRecord()
     {
         return $this->updatedRecord;
+    }
+
+    public function isExistRequiredTable()
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        if ($regTable == null) {
+            $this->errorMessageStore("The table doesn't specified.");
+            return false;
+        }
+        
+        $this->setupFXforDB($regTable, 1);
+        $this->fxResult = $this->fx->DoFxAction("show_all", TRUE, TRUE, 'full');
+        if ($this->fxResult['errorCode'] != 0 && $this->fxResult['errorCode'] != 401) {
+            $this->errorMessageStore("The table '{$regTable}' doesn't exist in the database.");
+            return false;
+        }
+        return true;
     }
 
     private function setupFXforAuth($layoutName, $recordCount)
