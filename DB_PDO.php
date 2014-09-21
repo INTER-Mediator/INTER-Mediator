@@ -63,11 +63,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         if ($regTable == null) {
-            $this->logger->errorMessageStore("The table doesn't specified.");
+            $this->errorMessageStore("The table doesn't specified.");
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->logger->errorMessageStore("Can't open db connection.");
+            $this->errorMessageStore("Can't open db connection.");
             return false;
         }
         $sql = "SELECT id FROM {$regTable} LIMIT 1";
@@ -1906,11 +1906,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     public function queryForTest($table, $conditions = null)
     {
         if ($table == null) {
-            $this->logger->errorMessageStore("The table doesn't specified.");
+            $this->errorMessageStore("The table doesn't specified.");
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->logger->errorMessageStore("Can't open db connection.");
+            $this->errorMessageStore("Can't open db connection.");
             return false;
         }
         $sql = "SELECT * FROM " . $this->quotedFieldName($table);
@@ -1945,11 +1945,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     public function deleteForTest($table, $conditions = null)
     {
         if ($table == null) {
-            $this->logger->errorMessageStore("The table doesn't specified.");
+            $this->errorMessageStore("The table doesn't specified.");
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
-            $this->logger->errorMessageStore("Can't open db connection.");
+            $this->errorMessageStore("Can't open db connection.");
             return false;
         }
         $sql = "DELETE FROM " . $this->quotedFieldName($table);
