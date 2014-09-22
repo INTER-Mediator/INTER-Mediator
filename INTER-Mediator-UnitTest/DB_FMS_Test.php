@@ -506,4 +506,42 @@ class DB_FMS_Test extends PHPUnit_Framework_TestCase
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
+
+    public function testMultiClientSyncMatching()
+    {
+        $testName = "Match the sync info.";
+        $this->dbProxySetupForAuth();
+        //$this->db_proxy->dbClass->deleteForTest("registeredcontext");
+        //$this->db_proxy->dbClass->deleteForTest("registeredpks");
+        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $pkArray1 = array(1001, 2001, 3003, 4004);
+        $pkArray2 = array(9001, 8001, 3003, 4004);
+
+        $entity = "table1";
+        $clientId1 = "123456789ABCDEF";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId1, $entity, $condition, $pkArray1) !== false, $testName);
+        $clientId2 = "ZZYYEEDDFF39887";
+        $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
+
+        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(3003));
+        $this->assertTrue(count($result) == 1, "Count matching");
+        $this->assertTrue($result[0] == $clientId1, "Matched client id");
+
+        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(2001));
+        $this->assertTrue(count($result) == 1, "Count matching");
+        $this->assertTrue($result[0] == $clientId1, "Matched client id");
+
+        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(4567));
+        $this->assertTrue(count($result) == 0, "Count matching 3");
+
+        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(8001));
+        $this->assertTrue(count($result) == 0, "Count matching 4");
+
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1, null) !== false, $testName);
+        $this->assertTrue($this->db_proxy->dbClass->unregister($clientId2, null) !== false, $testName);
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredcontext");
+        $this->assertTrue(count($recSet) == 0, "Count table1");
+        $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
+        $this->assertTrue(count($recSet) == 0, "Count pk values");
+    }
 }
