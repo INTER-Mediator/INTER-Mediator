@@ -144,7 +144,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at delete action: " . 
+                $this->stringWithoutCredential("FX reports error at find action: " . 
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return false;
         } else {
@@ -174,8 +174,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $targetClients = array();
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->errorMessageStore(
-            $this->stringWithoutCredential("FX reports error at find action: " . 
-                "code={$result['errorCode']}, url={$result['URL']}"));
+                $this->stringWithoutCredential("FX reports error at find action: " . 
+                    "code={$result['errorCode']}, url={$result['URL']}"));
         } else {
             if ($result['foundCount'] > 0) {
                 foreach ($result['data'] as $recmodid => $recordData) {
@@ -199,8 +199,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $result = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
             if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
                 $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " . 
-                "code={$result['errorCode']}, url={$result['URL']}"));
+                    $this->stringWithoutCredential("FX reports error at find action: " . 
+                        "code={$result['errorCode']}, url={$result['URL']}"));
             } else {
                 if ($result['foundCount'] > 0) {
                     $targetClients[] = $context[1];
@@ -209,6 +209,92 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
 
         return array_unique($targetClients);
+    }
+
+    public function appendIntoRegisterd($clientId, $entity, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+
+        $this->setupFXforDB($regTable, 'all');
+        $this->fx->AddDBParam('entity', $entity, 'eq');
+        $result = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $targetClients = array();
+        if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
+            $this->errorMessageStore(
+                $this->stringWithoutCredential("FX reports error at find action: " . 
+                    "code={$result['errorCode']}, url={$result['URL']}"));
+            return false;
+        } else {
+            if ($result['foundCount'] > 0) {
+                foreach ($result['data'] as $recmodid => $recordData) {
+                    foreach ($recordData as $field => $value) {
+                        if ($field == 'id') {
+                            $targetId = $value[0];
+                        }
+                        if ($field == 'clientid') {
+                            $targetClients[] = $value[0];
+                        }
+                    }
+                    $this->setupFXforDB($pksTable, 1);
+                    $this->fx->AddDBParam('context_id', $targetId);
+                    $this->fx->AddDBParam('pk', $pkArray[0]);
+                    $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
+                    if (!is_array($result)) {
+                        $this->errorMessageStore(
+                            $this->stringWithoutCredential("FX reports error at insert action: " . 
+                                "code={$result['errorCode']}, url={$result['URL']}"));
+                        return false;
+                    }
+                    $this->logger->setDebugMessage("Inserted count: " . $result['foundCount'], 2);
+                }
+            }
+        }
+        return array_values(array_diff(array_unique($targetClients), array($clientId)));
+    }
+
+    public function removeFromRegisterd($clientId, $entity, $pkArray)
+    {
+        $regTable = $this->dbSettings->registerTableName;
+        $pksTable = $this->dbSettings->registerPKTableName;
+        $this->setupFXforDB($regTable, 'all');
+        $this->fx->AddDBParam('entity', $entity, 'eq');
+        $result = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $this->logger->setDebugMessage(var_export($result, true));
+        $targetClients = array();
+        if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
+            $this->errorMessageStore(
+                $this->stringWithoutCredential("FX reports error at find action: " . 
+                    "code={$result['errorCode']}, url={$result['URL']}"));
+            return false;
+        } else {
+            if ($result['foundCount'] > 0) {
+                foreach ($result['data'] as $recmodid => $recordData) {
+                    foreach ($recordData as $field => $value) {
+                        if ($field == 'id') {
+                            $targetId = $value[0];
+                        }
+                        if ($field == 'clientid') {
+                            $targetClients[] = $value[0];
+                        }
+                    }
+                    $this->setupFXforDB($pksTable, 'all');
+                    $this->fx->AddDBParam('context_id', $targetId, 'eq');
+                    $this->fx->AddDBParam('pk', $pkArray[0], 'eq');
+                    $resultForRemove = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+                    if ($resultForRemove['foundCount'] > 0) {
+                        $this->setupFXforDB($pksTable, '');
+                        foreach ($resultForRemove['data'] as $key => $row) {
+                            $recId = substr($key, 0, strpos($key, '.'));
+                            $this->fx->SetRecordID($recId);
+                            $this->fx->DoFxAction('delete', TRUE, TRUE, 'full');
+                        }
+                    }
+                    $this->logger->setDebugMessage("Deleted count: " . $resultForRemove['foundCount'], 2);
+                }
+            }
+        }
+        return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
     private function setupFXforAuth($layoutName, $recordCount)
