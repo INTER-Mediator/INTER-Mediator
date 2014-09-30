@@ -94,11 +94,11 @@ INTERMediator_DBAdapter = {
             myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             myRequest.send(accessURL + authParams);
 
-            console.log(myRequest.responseText);
+            //console.log(myRequest.responseText);
 
             jsonObject = JSON.parse(myRequest.responseText);
 
-            console.log(jsonObject);
+            //console.log(jsonObject);
 
             resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
             dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
@@ -598,8 +598,8 @@ INTERMediator_DBAdapter = {
             params += "&condition" + i + "value=" + encodeURIComponent(args['conditions'][i]['value']);
         }
         result = this.server_access(params, 1017, 1015);
+        INTERMediator.flushMessage();
         return result;
-//        INTERMediator.flushMessage();
     },
 
     db_deleteWithAuth: function (args, completion) {
