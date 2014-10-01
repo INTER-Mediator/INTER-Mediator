@@ -231,9 +231,8 @@ IMParts_Catalog["fileupload"] = {
                                             contextObj = contextObjects[i];
                                             INTERMediator.construct(contextObj);
                                         }
-                                    } else {
-                                        INTERMediator.flushMessage();
                                     }
+                                    INTERMediator.flushMessage();
                                 });
                         }
                     })());
