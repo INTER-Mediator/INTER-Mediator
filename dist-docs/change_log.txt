@@ -16,6 +16,8 @@ Ver.4.6 (in development)
 - [BUG FIX] The target description with "style.display" for the calculated field is working.
 - [BUG FIX] The file upload component failed to update the related context.
 - [BUG FIX] Fix outputting error messages in DB_PDO class correctly in some cases.
+- [BUG FIX] Handle 'for' attribute of the 'label' element to enable editing a correct record using radio button when 
+  displaying multiple records.
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
