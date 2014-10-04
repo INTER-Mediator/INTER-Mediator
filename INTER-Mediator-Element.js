@@ -126,7 +126,6 @@ var IMLibElement = {
                     valueAttr = element.value;
                     curValues = curVal.toString().split("\n");
                     if (typeAttr == 'checkbox' && curValues.length > 1) {
-                        element.checked = false;
                         for (i = 0; i < curValues.length; i++) {
                             if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                                 if (INTERMediator.isIE) {
