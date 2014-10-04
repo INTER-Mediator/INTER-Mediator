@@ -101,6 +101,13 @@ buster.testCase("Functions Test", {
 
         assert.equals(Parser.evaluate("min(a)", {a: [3,3,2,1,5,1]}), 1);
         assert.equals(Parser.evaluate("max(a)", {a: [3,3,2,1,5,1]}), 5);
+
+        assert.equals(Parser.evaluate("length(f)", {f: "Test"}), 4);
+        assert.equals(Parser.evaluate("length(f)", {f: "日本語"}), 3);
+        assert.equals(Parser.evaluate("length(f)", {f: -3152}), 5);
+        assert.equals(Parser.evaluate("length(f)", {f: 23.5678}), 7);
+        assert.equals(Parser.evaluate("length(f)", {f: true}), 4);
+        assert.equals(Parser.evaluate("length(f)", {f: false}), 5);
     }
 });
 
@@ -229,7 +236,7 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         assert.equals(Parser.evaluate("items(x,4,2)", {x: items}), "wer\ntfv\n");
         assert.equals(Parser.evaluate("items(x,4,20)", {x: items}), "wer\ntfv\n");
         assert.equals(Parser.evaluate("items(x,4)", {x: items}), "wer\ntfv\n");
+
     }
 
 });
-

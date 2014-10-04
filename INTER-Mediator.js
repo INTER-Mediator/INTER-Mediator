@@ -727,19 +727,17 @@ var INTERMediator = {
                             // for each linked element
                             nodeId = currentLinkedNodes[k].getAttribute("id");
                             replacedNode = setIdValue(currentLinkedNodes[k]);
-
-                            //    if (targetRecords.recordset.length > 1) {
-                            if (replacedNode.getAttribute("type") == "checkbox") {
+                            typeAttr = replacedNode.getAttribute("type");
+                            if (typeAttr == "checkbox" || typeAttr == "radio") {
                                 children = replacedNode.parentNode.childNodes;
                                 for (i = 0; i < children.length; i++) {
-                                    if (children[i].nodeType === 1 && children[i].tagName == "LABEL"
-                                        && nodeId == children[i].getAttribute("for")) {
+                                    if (children[i].nodeType === 1 && children[i].tagName == "LABEL" && 
+                                            nodeId == children[i].getAttribute("for")) {
                                         children[i].setAttribute("for", replacedNode.getAttribute("id"));
                                         break;
                                     }
                                 }
                             }
-                            //    }
                         }
                         for (k = 0; k < currentWidgetNodes.length; k++) {
                             wInfo = INTERMediatorLib.getWidgetInfo(currentWidgetNodes[k]);
