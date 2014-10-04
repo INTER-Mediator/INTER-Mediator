@@ -142,14 +142,18 @@ class FileUploader
                     $values = array();
                     if (isset($relatedContextInfo["query"])) {
                         foreach ($relatedContextInfo["query"] as $cItem) {
-                            $fields[] = $cItem['field'];
-                            $values[] = $cItem['value'];
+                            if ($cItem['operator'] == "=" || $cItem['operator'] == "eq" ) {
+                                $fields[] = $cItem['field'];
+                                $values[] = $cItem['value'];
+                            }
                         }
                     }
                     if (isset($relatedContextInfo["relation"])) {
                         foreach ($relatedContextInfo["relation"] as $cItem) {
-                            $fields[] = $cItem['foreign-key'];
-                            $values[] = $dbKeyValue;
+                            if ($cItem['operator'] == "=" || $cItem['operator'] == "eq" ) {
+                                $fields[] = $cItem['foreign-key'];
+                                $values[] = $dbKeyValue;
+                            }
                         }
                     }
                     $fields[] = "path";

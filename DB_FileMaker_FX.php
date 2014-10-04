@@ -477,7 +477,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $this->fx->SetLogicalOR();
                 } else {
                     $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
-                    if($condition['field'] == "-recid" && $condition['operator'] == 'undefined')    {
+                    if ($condition['field'] == "-recid" && $condition['operator'] == 'undefined') {
                         $op = "eq";
                     }
                     if (!$this->isPossibleOperator($op)) {
@@ -488,9 +488,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if ($condition['field'] == $this->getDefaultKey()) {
                         $this->fx->FMSkipRecords(0);
                     }
-                    if (strpos($condition['field'], '::') !== false) {
-                        $childRecordId = $condition['field'];
-                        $childRecordIdValue = $condition['value'];
+                    if ($usePortal) {
+                        if (strpos($condition['field'], '::') !== false) {
+                            $childRecordId = $condition['field'];
+                            $childRecordIdValue = $condition['value'];
+                        }
                     }
                 }
             }
@@ -626,6 +628,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         } catch (Exception $e) {
             $this->logger->setErrorMessage(var_export($this->fx, true));
         }
+//        $this->logger->setErrorMessage(var_export($this->fxResult, true));
 
         if (!is_array($this->fxResult)) {
             if ($this->dbSettings->isDBNative()) {
@@ -1070,9 +1073,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
 
         if ($usePortal) {
-            $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
+            $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 10000000);
         } else {
-            $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
+            $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 10000000);
         }
 
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
@@ -1132,6 +1135,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        //$this->logger->setDebugMessage($this->stringWithoutCredential(var_export($result['data'],true)));
         if ($result['errorCode'] > 0) {
             $this->errorMessage[] = "FX reports error at find action: code={$result['errorCode']}, url={$result['URL']}<hr>";
             return false;
