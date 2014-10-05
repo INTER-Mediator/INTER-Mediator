@@ -1426,7 +1426,7 @@ var INTERMediator = {
             function setupNavigationButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
                 // Handling Detail buttons
                 var buttonNode, thisId, navigateJSFunction, tdNodes, tdNode, firstInNode, contextDef, isHide,
-                    detailContext, showingNode;
+                    detailContext, showingNode, isHidePageNavi;
 
                 if (!currentContextDef['navi-control']
                     || !currentContextDef['navi-control'].match(/master/i)) {
@@ -1434,6 +1434,7 @@ var INTERMediator = {
                 }
 
                 isHide = currentContextDef['navi-control'].match(/hide/i);
+                isHidePageNavi = isHide && (currentContextDef['paging'] == true);
 
                 if (INTERMediator.detailNodeOriginalDisplay) {
                     detailContext = IMLibContextPool.getDetailContext();
@@ -1452,9 +1453,9 @@ var INTERMediator = {
                 thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
                 buttonNode.setAttribute('id', thisId);
                 INTERMediator.buttonIdNum++;
-                navigateJSFunction = function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide) {
+                navigateJSFunction = function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi) {
                     var f = keyField, v = keyValue, ff = foreignField, fv = foreignValue;
-                    var fvalue = {}, etag = encNodeTag, isMasterHide = isHide;
+                    var fvalue = {}, etag = encNodeTag, isMasterHide = isHide, isPageHide = isHidePageNavi;
                     fvalue[ff] = fv;
 
                     return function () {
@@ -1481,13 +1482,16 @@ var INTERMediator = {
                                 }
                                 detailEnclosure.style.display = INTERMediator.detailNodeOriginalDisplay;
                             }
+                            if (isPageHide) {
+                                document.getElementById("IM_NAVIGATOR").style.display = "none";
+                            }
                         }
                     };
                 };
                 eventListenerPostAdding.push({
                     'id': thisId,
                     'event': 'click',
-                    'todo': navigateJSFunction(encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide)
+                    'todo': navigateJSFunction(encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi)
                 });
 
                 switch (encNodeTag) {
@@ -1531,7 +1535,7 @@ var INTERMediator = {
             function setupBackNaviButton(currentContext, node) {
                 var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode,
                     insertJSFunction, i, firstLevelNodes, targetNodeTag, existingButtons, masterContext,
-                    naviControlValue, thisId, repNodeTag, currentContextDef, showingNode, targetNode;
+                    naviControlValue, thisId, repNodeTag, currentContextDef, showingNode, targetNode, isHidePageNavi;
 
                 currentContextDef = currentContext.getContextDef();
 
@@ -1546,6 +1550,7 @@ var INTERMediator = {
                     || (!naviControlValue.match(/hide/i))) {
                     return;
                 }
+                isHidePageNavi = masterContext.getContextDef()['paging'] == true;
 
                 showingNode = currentContext.enclosureNode;
                 if (showingNode.tagName == "TBODY") {
@@ -1631,8 +1636,8 @@ var INTERMediator = {
                         }
                         break;
                 }
-                insertJSFunction = function (a, b) {
-                    var masterContextCL = a, detailContextCL = b;
+                insertJSFunction = function (a, b, c) {
+                    var masterContextCL = a, detailContextCL = b, pageNaviShow = c;
                     return function () {
                         var showingNode;
                         showingNode = detailContextCL.enclosureNode;
@@ -1646,13 +1651,17 @@ var INTERMediator = {
                             showingNode = showingNode.parentNode;
                         }
                         showingNode.style.display = INTERMediator.masterNodeOriginalDisplay
+
+                        if (pageNaviShow)   {
+                            document.getElementById("IM_NAVIGATOR").style.display = "block";
+                        }
                     }
                 };
 
                 INTERMediatorLib.addEvent(
                     buttonNode,
                     'click',
-                    insertJSFunction(masterContext, currentContext)
+                    insertJSFunction(masterContext, currentContext, isHidePageNavi)
                 );
 
             }
