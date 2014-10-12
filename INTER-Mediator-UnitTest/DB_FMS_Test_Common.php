@@ -269,14 +269,17 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person_layout", 1);
 
         $testName = "The default key field name";
-        $presetValue = "-recid";
+        $presetValue = "id";
+        if (get_class($this->db_proxy->dbClass) == "DB_FileMaker_FX") {
+            $presetValue = "-recid";
+        }
         $value = $this->db_proxy->dbClass->getDefaultKey();
         $this->assertTrue($presetValue == $value, $testName);
         if (((int)phpversion()) >= 5.3) {
-            $className = "DB_FileMaker_FX";
+            $className = get_class($this->db_proxy->dbClass);
             $value = $className::defaultKey();
+            $this->assertTrue($presetValue == $value, $testName);
         }
-        $this->assertTrue($presetValue == $value, $testName);
     }
 
     public function testMultiClientSyncTableExsistence()
