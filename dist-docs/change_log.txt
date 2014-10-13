@@ -9,9 +9,9 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.6 (in development)
+- In case of 'navi-control' is 'master-hide', the pagenation control is going to hide when the detail area appears.
 - Add errorMessageStore(), isExistRequiredTable(), register(), unregister(), matchInRegisterd(), queryForTest(), 
   appendIntoRegisterd() and removeFromRegisterd() to DB_FileMaker_FX class.
-- In case of 'navi-control' is 'master-hide', the pagenation control is going to hide when the detail area apears.
 - [BUG FIX] DB_FileMaker_FX used the alternative data source not only the 'issuedhash' table also 'authuer' and some
   tables for authorization/authentication. Now, it uses just the 'issuedhash' table for the alternative data source.
 - [BUG FIX] Calculation for strings didn't work, ex. >...
@@ -21,6 +21,8 @@ Ver.4.6 (in development)
 - [BUG FIX] Handle 'for' attribute of the 'label' element to enable editing a correct record using radio button when 
   displaying multiple records (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix the FileMaker's checkbox set feature when using Internet Explorer 9 or 10 (Thanks to Kentaro Suzuki).
+- [BUG FIX] Modify IMLibUI.valueChange method to fix compatibility with Internet Explorer (for handling readOnly 
+  property).
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
