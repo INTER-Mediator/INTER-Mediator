@@ -23,11 +23,13 @@ http://msyk.dyndns.org/im-sample.html
 - Kentaro Suzuki
 
 ### Special Thanks to:
-- Tsutomu Yuasa
-- Miyuki Imaizumi
-- Yukio Murakami
-- Akinori Mizoguchi
 - Motofumi Iijima
+- Miyuki Imaizumi
+- Yukihiko Kobayashi
+- Akinori Mizoguchi
+- Hiromi Morita
+- Yukio Murakami
+- Tsutomu Yuasa
 
 ## Contributing
 
