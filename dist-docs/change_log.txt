@@ -21,6 +21,7 @@ Ver.4.6 (in development)
 - [BUG FIX] Handle 'for' attribute of the 'label' element to enable editing a correct record using radio button when 
   displaying multiple records (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix the FileMaker's checkbox set feature when using Internet Explorer 9 or 10 (Thanks to Kentaro Suzuki).
+- [BUG FIX] Fix showing related fields not on the FileMaker's portal objects in some cases.
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
