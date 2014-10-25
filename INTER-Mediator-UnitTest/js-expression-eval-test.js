@@ -2,65 +2,65 @@ var assert = buster.assertions.assert;
 
 buster.testCase("Parser.evaluate Test", {
     "should be equal to": function () {
-        assert.equals(Parser.evaluate("2 ^ x", { x: 3 }), 8);
-        assert.equals(Parser.evaluate("x + y", { x: 3, y: 5 }), 8);
-        assert.equals(Parser.evaluate("2 * x + 1", { x: 3 }), 7);
-        assert.equals(Parser.evaluate("2 + 3 * x", { x: 4 }), 14);
-        assert.equals(Parser.evaluate("(2 + 3) * x", { x: 4 }), 20);
-        assert.equals(Parser.evaluate("2-3^x", { x: 4 }), -79);
-        assert.equals(Parser.evaluate("-2-3^x", { x: 4 }), -83);
-        assert.equals(Parser.evaluate("-3^x", { x: 4 }), -81);
-        assert.equals(Parser.evaluate("(-3)^x", { x: 4 }), 81);
-        assert.equals(Parser.evaluate("(x+(x-3)*2)", { x: 5 }), 9);
-        assert.equals(Parser.evaluate("(x/(x-3)*2)", { x: 5 }), 5);
-        assert.equals(Parser.evaluate("x + y", { x: 5.1, y:3.1 }), 8.2);
+        assert.equals(Parser.evaluate("2 ^ x", {x: 3}), 8);
+        assert.equals(Parser.evaluate("x + y", {x: 3, y: 5}), 8);
+        assert.equals(Parser.evaluate("2 * x + 1", {x: 3}), 7);
+        assert.equals(Parser.evaluate("2 + 3 * x", {x: 4}), 14);
+        assert.equals(Parser.evaluate("(2 + 3) * x", {x: 4}), 20);
+        assert.equals(Parser.evaluate("2-3^x", {x: 4}), -79);
+        assert.equals(Parser.evaluate("-2-3^x", {x: 4}), -83);
+        assert.equals(Parser.evaluate("-3^x", {x: 4}), -81);
+        assert.equals(Parser.evaluate("(-3)^x", {x: 4}), 81);
+        assert.equals(Parser.evaluate("(x+(x-3)*2)", {x: 5}), 9);
+        assert.equals(Parser.evaluate("(x/(x-3)*2)", {x: 5}), 5);
+        assert.equals(Parser.evaluate("x + y", {x: 5.1, y: 3.1}), 8.2);
     }
 });
 buster.testCase("Operators Test", {
     "should be equal to": function () {
-        assert.equals(Parser.evaluate("a = b ", { a: 100, b: 100 }), true);
-        assert.equals(Parser.evaluate("a = b ", { a: 99, b: 100 }), false);
-        assert.equals(Parser.evaluate("a == b ", { a: 100, b: 100 }), true);
-        assert.equals(Parser.evaluate("a == b ", { a: 99, b: 100 }), false);
-        assert.equals(Parser.evaluate("a >= b ", { a: 99, b: 100 }), false);
-        assert.equals(Parser.evaluate("a <= b ", { a: 99, b: 100 }), true);
-        assert.equals(Parser.evaluate("a > b ", { a: 99, b: 100 }), false);
-        assert.equals(Parser.evaluate("a < b ", { a: 99, b: 100 }), true);
-        assert.equals(Parser.evaluate("a != b ", { a: 99, b: 100 }), true);
-        assert.equals(Parser.evaluate("a != b ", { a: 100, b: 100 }), false);
-        assert.equals(Parser.evaluate("a <> b ", { a: 99, b: 100 }), true);
-        assert.equals(Parser.evaluate("a && b ", { a: true, b: false }), false);
-        assert.equals(Parser.evaluate("a || b ", { a: true, b: false }), true);
-        assert.equals(Parser.evaluate("a > 10 && b < 10", { a: 11, b: 9 }), true);
-        assert.equals(Parser.evaluate("a > 10 || b < 10", { a: 11, b: 12 }), true);
+        assert.equals(Parser.evaluate("a = b ", {a: 100, b: 100}), true);
+        assert.equals(Parser.evaluate("a = b ", {a: 99, b: 100}), false);
+        assert.equals(Parser.evaluate("a == b ", {a: 100, b: 100}), true);
+        assert.equals(Parser.evaluate("a == b ", {a: 99, b: 100}), false);
+        assert.equals(Parser.evaluate("a >= b ", {a: 99, b: 100}), false);
+        assert.equals(Parser.evaluate("a <= b ", {a: 99, b: 100}), true);
+        assert.equals(Parser.evaluate("a > b ", {a: 99, b: 100}), false);
+        assert.equals(Parser.evaluate("a < b ", {a: 99, b: 100}), true);
+        assert.equals(Parser.evaluate("a != b ", {a: 99, b: 100}), true);
+        assert.equals(Parser.evaluate("a != b ", {a: 100, b: 100}), false);
+        assert.equals(Parser.evaluate("a <> b ", {a: 99, b: 100}), true);
+        assert.equals(Parser.evaluate("a && b ", {a: true, b: false}), false);
+        assert.equals(Parser.evaluate("a || b ", {a: true, b: false}), true);
+        assert.equals(Parser.evaluate("a > 10 && b < 10", {a: 11, b: 9}), true);
+        assert.equals(Parser.evaluate("a > 10 || b < 10", {a: 11, b: 12}), true);
     }
 });
 buster.testCase("Operators Test2", {
     "should be equal to": function () {
-        assert.equals(Parser.evaluate("a + b ", { a: 'abc', b: 'def' }), 'abcdef');
-        assert.equals(Parser.evaluate("a - b ", { a: 'abcdef', b: 'def' }), 'abc');
-        assert.equals(Parser.evaluate("a - b ", { a: 'abcdef', b: 'xyz' }), 'abcdef');
-        assert.equals(Parser.evaluate("a - b ", { a: 'abcdef', b: 'dbfx' }), 'abcdef');
-        assert.equals(Parser.evaluate("a ∩ b ", { a: 'abcdef', b: 'bdfx' }), 'bdf');
-        assert.equals(Parser.evaluate("a ∪ b ", { a: 'abcdef', b: 'bdfx' }), 'abcdefx');
-        assert.equals(Parser.evaluate("a ⊁ b ", { a: 'abcdef', b: 'bdfx' }), 'ace');
-        assert.equals(Parser.evaluate("a ⋀ b ", { a: "abc\ndff\nghi", b: "dff\nstu\n" }), "dff\n");
-        assert.equals(Parser.evaluate("a ⋀ b ", { a: "abc\rdff\r\nghi", b: "dff\r\nstu" }), "dff\r");
-        assert.equals(Parser.evaluate("a ⋀ b ", { a: "abc\r\ndff\r\nghi", b: "dff\r\nstu" }), "dff\r\n");
-        assert.equals(Parser.evaluate("a ⋁ b ", { a: "abc\ndff\nghi", b: "xyz\nstu\n" }), "abc\ndff\nghi\nxyz\nstu\n");
-        assert.equals(Parser.evaluate("a ⊬ b ", { a: "abc\ndff\nghi", b: "ghi\ndkg\n" }), "abc\ndff\n");
+        assert.equals(Parser.evaluate("a + b ", {a: 'abc', b: 'def'}), 'abcdef');
+        assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'def'}), 'abc');
+        assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'xyz'}), 'abcdef');
+        assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'dbfx'}), 'abcdef');
+        assert.equals(Parser.evaluate("a ∩ b ", {a: 'abcdef', b: 'bdfx'}), 'bdf');
+        assert.equals(Parser.evaluate("a ∪ b ", {a: 'abcdef', b: 'bdfx'}), 'abcdefx');
+        assert.equals(Parser.evaluate("a ⊁ b ", {a: 'abcdef', b: 'bdfx'}), 'ace');
+        assert.equals(Parser.evaluate("a ⋀ b ", {a: "abc\ndff\nghi", b: "dff\nstu\n"}), "dff\n");
+        assert.equals(Parser.evaluate("a ⋀ b ", {a: "abc\rdff\r\nghi", b: "dff\r\nstu"}), "dff\r");
+        assert.equals(Parser.evaluate("a ⋀ b ", {a: "abc\r\ndff\r\nghi", b: "dff\r\nstu"}), "dff\r\n");
+        assert.equals(Parser.evaluate("a ⋁ b ", {a: "abc\ndff\nghi", b: "xyz\nstu\n"}), "abc\ndff\nghi\nxyz\nstu\n");
+        assert.equals(Parser.evaluate("a ⊬ b ", {a: "abc\ndff\nghi", b: "ghi\ndkg\n"}), "abc\ndff\n");
     }
 });
 
 buster.testCase("Functions Test", {
     "should be equal to": function () {
-        assert.equals(Math.round(Parser.evaluate("sin(PI/4)")*100), 71);
-        assert.equals(Math.round(Parser.evaluate("cos(PI/4)")*100), 71);
-        assert.equals(Math.round(Parser.evaluate("tan(PI/4)")*100), 100);
+        assert.equals(Math.round(Parser.evaluate("sin(PI/4)") * 100), 71);
+        assert.equals(Math.round(Parser.evaluate("cos(PI/4)") * 100), 71);
+        assert.equals(Math.round(Parser.evaluate("tan(PI/4)") * 100), 100);
         assert.equals(Math.round(Parser.evaluate("asin(0.707106781186547)/PI*4*100")), 100);
         assert.equals(Math.round(Parser.evaluate("acos(0.707106781186547)/PI*4*100")), 100);
         assert.equals(Parser.evaluate("atan(1)/PI*4"), 1);
-        assert.equals(Math.round(Parser.evaluate("sqrt(3)")*100), 173);
+        assert.equals(Math.round(Parser.evaluate("sqrt(3)") * 100), 173);
         assert.equals(Parser.evaluate("abs(3.6)"), 3.6);
         assert.equals(Parser.evaluate("abs(-3.6)"), 3.6);
         assert.equals(Parser.evaluate("ceil(4.6)"), 5);
@@ -86,8 +86,8 @@ buster.testCase("Functions Test", {
         assert.equals(Parser.evaluate("format(1500.9)"), "1,501");
         assert.equals(Parser.evaluate("format(-1500)"), "-1,500");
         assert.equals(Parser.evaluate("format(-1500.9)"), "-1,501");
-        assert.equals(Math.round(Parser.evaluate("exp(0.5)")*100), 165);
-        assert.equals(Math.round(Parser.evaluate("log(0.5)")*100), -69);
+        assert.equals(Math.round(Parser.evaluate("exp(0.5)") * 100), 165);
+        assert.equals(Math.round(Parser.evaluate("log(0.5)") * 100), -69);
         var x = Parser.evaluate("random()");
         assert.equals(x > 0 && x < 1, true);
         var x = Parser.evaluate("random()+1");
@@ -99,8 +99,8 @@ buster.testCase("Functions Test", {
         assert.equals(Parser.evaluate("pyt(3,4)"), 5);
         assert.equals(Parser.evaluate("atan2(0.5, 0.5)/PI"), 0.25);
 
-        assert.equals(Parser.evaluate("min(a)", {a: [3,3,2,1,5,1]}), 1);
-        assert.equals(Parser.evaluate("max(a)", {a: [3,3,2,1,5,1]}), 5);
+        assert.equals(Parser.evaluate("min(a)", {a: [3, 3, 2, 1, 5, 1]}), 1);
+        assert.equals(Parser.evaluate("max(a)", {a: [3, 3, 2, 1, 5, 1]}), 5);
 
         assert.equals(Parser.evaluate("length(f)", {f: "Test"}), 4);
         assert.equals(Parser.evaluate("length(f)", {f: "日本語"}), 3);
@@ -239,9 +239,9 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
     },
 
     "date time functions.": function () {
-        if(false) {
-            assert.greater(Parser.evaluate("date()"), 15000);
-            assert.greater(Parser.evaluate("datetime()"), 40000000);
+        assert.greater(Parser.evaluate("date()"), 15000);
+        assert.greater(Parser.evaluate("datetime()"), 40000000);
+        if (false) {
             assert.equals(Parser.evaluate("date('1970-01-02')"), 1);
             assert.equals(Parser.evaluate("date('2014-02-17')"), 16118);
             //assert.equals(Parser.evaluate("date('2014-02-17 09:00:00')"), 16118); //browser dependency (Ch:ok, Ff:no)
