@@ -621,6 +621,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
         $queryString = '-db=' . urlencode($this->fx->database);
         $queryString .= '&-lay=' . urlencode($this->fx->layout);
+        $queryString .= '&-lay.response=' . urlencode($this->fx->layout);
         $skipRequest = '';
         if ($this->fx->currentSkip > 0) {
             $skipRequest = '&-skip=' . $this->fx->currentSkip;
@@ -650,12 +651,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             libxml_use_internal_errors(true);
             $parsedData = simplexml_load_string($xml);
             if ($parsedData === false) {
+                if ($this->dbSettings->isDBNative()) {
+                    $this->dbSettings->setRequireAuthentication(true);
+                }
                 $errorMessage = 'Failed loading XML' . "\n";
                 foreach(libxml_get_errors() as $error) {
                     $errorMessage .= $error->message;
                 }
                 $this->logger->setErrorMessage($errorMessage);
-                return array();
+                return null;
             }
             $data = json_decode(json_encode($parsedData), true);
             $i = 0;
@@ -713,22 +717,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setErrorMessage('INTER-Mediator reports error at find action: Exception error occurred.');
         }
 
-        /*
-        if (!is_array($this->fxResult)) {
-            if ($this->dbSettings->isDBNative()) {
-                $this->logger->setErrorMessage(
-                $this->stringWithoutCredential(get_class($this->fxResult)
-                . ': ' . $this->fxResult->getDebugInfo()));
-                $this->dbSettings->setRequireAuthentication(true);
-            } else {
-                $this->logger->setErrorMessage(
-                $this->stringWithoutCredential(get_class($this->fxResult)
-                . ': ' . $this->fxResult->getDebugInfo()));
-            }
-            return null;
-        }
-        */
-        
         $errorCode = intval($data['error']['@attributes']['code']);
         if ($errorCode != 0 && $errorCode != 401) {
             $this->logger->setErrorMessage('INTER-Mediator reports error at find action: ' . 
