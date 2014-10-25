@@ -1058,6 +1058,8 @@ IMLibLocalContext = {
     }
 };
 
+var INTERMediatorLib = INTERMediatorLib();
+
 INTERMediatorLib.setup();
 
 IMLibKeyEventDispatch = {
