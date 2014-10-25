@@ -209,12 +209,15 @@ IMLibContextPool = {
     childContexts: null,
 
     removeContextsFromPool: function (contexts) {
-        var i, regIds = [];
+        var i, regIds = [], delIds = [];
         for (i = 0; i < this.poolingContexts.length; i++) {
-            if (this.poolingContexts[i] in contexts) {
-                regIds.push(poolingContexts[i].registeredId);
-                delete this.poolingContexts[i];
+            if (contexts.indexOf(this.poolingContexts[i]) > -1) {
+                regIds.push(this.poolingContexts[i].registeredId);
+                delIds.push(i);
             }
+        }
+        for (i = delIds.length - 1 ; i > -1 ; i--)  {
+            this.poolingContexts.splice(delIds[i],1);
         }
         return regIds;
     },
@@ -298,6 +301,9 @@ IMLibContextPool = {
 
     getMasterContext: function () {
         var i, contextDef;
+        if (!this.poolingContexts)  {
+            return null;
+        }
         for (i = 0; i < this.poolingContexts.length; i++) {
             contextDef = this.poolingContexts[i].getContextDef();
             if (contextDef['navi-control'] && contextDef['navi-control'].match(/master/)) {
@@ -309,6 +315,9 @@ IMLibContextPool = {
 
     getDetailContext: function () {
         var i, contextDef;
+        if (!this.poolingContexts)  {
+            return null;
+        }
         for (i = 0; i < this.poolingContexts.length; i++) {
             contextDef = this.poolingContexts[i].getContextDef();
             if (contextDef['navi-control'] && contextDef['navi-control'].match(/detail/)) {
@@ -410,27 +419,24 @@ IMLibContext = function (contextName) {
     };
 
     this.removeContext = function () {
-        var regIds;
-        IMLibContextPool.childContexts = [];
-        this.seekRemovingContext(this);
-        regIds = IMLibContextPool.removeContextsFromPool(IMLibContextPool.childContexts);
+        var regIds = [], childContexts = [];
+        seekRemovingContext(this);
+        regIds = IMLibContextPool.removeContextsFromPool(childContexts);
         while (this.enclosureNode.firstChild) {
             this.enclosureNode.removeChild(this.enclosureNode.firstChild);
         }
         INTERMediator_DBAdapter.unregister(regIds);
-    }
 
-    /* =================== */
-    /* Internal use only for the removeContext method. */
-    this.seekRemovingContext = function () {
-        var i, index, keyLength, keyValue, myChildren;
-        IMLibContextPool.childContexts.push(this);
-        myChildren = IMLibContextPool.getChildContexts(this);
-        for (i = 0; i < myChildren.length; i++) {
-            myChildren[i].seekRemovingContext();
+        function seekRemovingContext(context) {
+            var i, myChildren;
+            childContexts.push(context);
+            regIds.push(context.registeredId);
+            myChildren = IMLibContextPool.getChildContexts(context);
+            for (i = 0; i < myChildren.length; i++) {
+                seekRemovingContext(myChildren[i]);
+            }
         }
     }
-    /* =================== */
 
     this.setModified = function (recKey, key, value) {
         if (this.modified[recKey] === undefined) {
@@ -593,6 +599,45 @@ IMLibContext = function (contextName) {
         }
         return node;
     };
+
+    // setData____ methods are for storing data both the model and the database.
+    //
+    this.setDataAtLastRecord = function (key, value)   {
+        var lastKey, keyAndValue;
+        var storekeys = Object.keys(this.store);
+        if (storekeys.length > 0)   {
+            lastKey = storekeys[storekeys.length - 1];
+            this.setValue(lastKey, key, value);
+            keyAndValue = lastKey.split("=");
+            INTERMediator_DBAdapter.db_update({
+                name:this.contextName,
+                conditions:[{field:keyAndValue[0], operator:'=', value:keyAndValue[1]}],
+                dataset:[{field:key, value:value}]
+            });
+            IMLibCalc.recalculation();
+            INTERMediator.flushMessage();
+        }
+    };
+
+    this.setDataWithKey = function(pkValue, key, value) {
+        var targetKey, contextDef, keyAndValue, storeElements;
+        var storekeys = Object.keys(this.store);
+        contextDef = this.getContextDef();
+        if (! contextDef)   {
+            return;
+        }
+        targetKey = contextDef.key + "=" + pkValue;
+        storeElements = this.store[targetKey];
+        if (storeElements)   {
+            this.setValue(targetKey, key, value);
+            INTERMediator_DBAdapter.db_update({
+                name: this.contextName,
+                conditions: [{field:contextDef.key, operator:'=', value:pkValue}],
+                dataset: [{field:key, value:value}]
+            });
+            INTERMediator.flushMessage();
+        }
+    }
 
     this.setValue = function (recKey, key, value, nodeId, target, portal) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);

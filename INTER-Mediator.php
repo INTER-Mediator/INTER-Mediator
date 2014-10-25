@@ -43,7 +43,7 @@ if (isset($defaultTimezone)) {
     date_default_timezone_set('UTC');
 }
 
-
+define("IM_TODAY", strftime('%Y-%m-%d'));
 $g_dbInstance = null;
 
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)

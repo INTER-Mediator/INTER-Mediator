@@ -22,7 +22,7 @@ IM_Entry(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
             'default-values'=>array(
-                array('field'=>'purchase', 'value'=> strftime('%Y-%m-%d')),
+                array('field'=>'purchase', 'value'=> IM_TODAY),
             ),
             'navi-control'=>'master-hide',
         ),
@@ -35,11 +35,12 @@ IM_Entry(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
             'query' => array(
-                array('field' => 'discard', 'operator' => '<', 'value'=>'1990-1-1'),
+            //    array('field' => 'discard', 'operator' => '>', 'value'=>'1990-1-1'),
             ),
             'repeat-control'=>'insert delete',
             'records' => 5,
             'paging' => true,
+            'navi-control'=>'master-hide',
         ),
         // [END OF] Modification 2
         array(
@@ -49,6 +50,10 @@ IM_Entry(
             'records' => 1,
             'key' => 'asset_id',
             'navi-control' => 'detail-top',
+            // Modify
+            'calculation'=>array(
+                array("field"=>"avglength","expression"=>"average(rent@datelength)"),
+            )
         ),
         array(
             'name' => 'rent',
@@ -61,7 +66,11 @@ IM_Entry(
             ),
             'repeat-control'=>'insert delete',
             'default-values'=>array(
-                array('field'=>'rentdate', 'value'=> strftime('%Y-%m-%d')),
+                array('field'=>'rentdate', 'value'=> IM_TODAY),
+            ),
+            // Modify
+            'calculation'=>array(
+                array("field"=>"datelength","expression"=>"if(backdate = '', '', date(backdate) - date(rentdate))"),
             )
         ),
         array(
@@ -90,8 +99,8 @@ IM_Entry(
         // Modification 3: Modification for a data in single field.
         // - This context is copied from the above one, and modified.
         'formatter' => array(
-            array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
-            array('field' => 'asset@discard', 'converter-class' => 'MySQLDateTime'),
+//            array('field' => 'asset@purchase', 'converter-class' => 'MySQLDateTime', 'parameter'=>'%y/%m/%d'),
+//            array('field' => 'asset@discard', 'converter-class' => 'MySQLDateTime'),
         ),
         // [END OF] Modification 3
     ),
@@ -102,5 +111,5 @@ IM_Entry(
         'user' => 'web',
         'password' => 'password',
     ),
-    false
+    2
 );

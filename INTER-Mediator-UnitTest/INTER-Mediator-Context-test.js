@@ -125,12 +125,12 @@ buster.testCase("Remote Context Test", {
         assert.equals(context1.checkOrder({field1: 60, field2:999}, true), 7);
         assert.equals(context1.checkOrder({field1: -1}, true), -1);
         assert.equals(context1.checkOrder({field1: 550}, true), 7);
-        console.log("context1.recordOrder="+context1.recordOrder.toString());
+        //console.log("context1.recordOrder="+context1.recordOrder.toString());
         context1.rearrangePendingOrder(true);
         assert.equals(context1.recordOrder.length, 15);
         assert.equals(Object.keys(context1.store).length, 15);
         assert.equals(context1.pendingOrder.length, 0);
-        console.log("context1.recordOrder="+context1.recordOrder.toString());
+        //console.log("context1.recordOrder="+context1.recordOrder.toString());
         assert.equals(context1.recordOrder[0], "id=12");
         assert.equals(context1.recordOrder[1], "id=1");
         assert.equals(context1.recordOrder[2], "id=2");
