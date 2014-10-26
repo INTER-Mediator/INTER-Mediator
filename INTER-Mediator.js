@@ -64,6 +64,8 @@ var INTERMediator = {
         detailNodeOriginalDisplay: null,
         pusherAvailable: false,
 
+    dateTimeFunction: false,
+
         /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
         //startFrom: 0,
         //pagedSize: 0,
@@ -276,9 +278,10 @@ var INTERMediator = {
         constructMain: function (updateRequiredContext, recordset) {
             var i, theNode, currentLevel = 0, postSetFields = [],
                 eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
-                isAcceptNotify = false, originalNodes;
+                isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
             IMLibPageNavigation.deleteInsertOnNavi = [];
+            appendingNodesAtLast = [];
             INTERMediatorOnPage.retrieveAuthInfo();
             try {
                 if (Pusher.VERSION) {
@@ -356,6 +359,19 @@ var INTERMediator = {
             }
 
             INTERMediatorOnPage.hideProgress();
+
+            for (i = 0; i < appendingNodesAtLast.length; i++) {
+                theNode = appendingNodesAtLast[i].targetNode;
+                parentNode = appendingNodesAtLast[i].parentNode;
+                sybilingNode = appendingNodesAtLast[i].siblingNode;
+                if (theNode && parentNode) {
+                    if (sybilingNode)   {
+                        parentNode.insertBefore(theNode, sybilingNode);
+                    } else {
+                        parentNode.appendChild(theNode);
+                    }
+                }
+            }
 
             // Event listener should add after adding node to document.
             for (i = 0; i < eventListenerPostAdding.length; i++) {
@@ -565,14 +581,10 @@ var INTERMediator = {
             function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
                 var linkedNodes, encNodeTag, repeatersOriginal, repeaters, linkDefs, voteResult, currentContextDef,
                     fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
-                    keyValue, selectedNode, calcDef, calcFields, contextObj;
+                    keyValue, selectedNode, calcDef, calcFields, contextObj, masterContext, masterNaviControlValue,
+                    currentNaviControlValue;
 
                 currentLevel++;
-                INTERMediator.currentEncNumber++;
-
-                if (!node.getAttribute('id')) {
-                    node.setAttribute('id', nextIdValue());
-                }
 
                 encNodeTag = node.tagName;
                 repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -582,6 +594,26 @@ var INTERMediator = {
                 linkDefs = collectLinkDefinitions(linkedNodes);
                 voteResult = tableVoting(linkDefs);
                 currentContextDef = voteResult.targettable;
+
+                //masterContext = IMLibContextPool.getMasterContext();
+                //if (masterContext) {
+                //    masterNaviControlValue = masterContext.getContextDef()['navi-control'];
+                //    currentNaviControlValue = currentContextDef['navi-control'];
+                //    if (masterNaviControlValue
+                //        && currentNaviControlValue
+                //        && masterNaviControlValue.match(/hide/i)
+                //        && currentNaviControlValue.match(/detail/i))
+                //    {
+                //        currentLevel--;
+                //        return;
+                //    }
+                //}
+                //
+                INTERMediator.currentEncNumber++;
+
+                if (!node.getAttribute('id')) {
+                    node.setAttribute('id', nextIdValue());
+                }
 
                 if (!currentContextDef) {
                     for (i = 0; i < repeatersOriginal.length; i++) {
@@ -731,8 +763,8 @@ var INTERMediator = {
                             if (typeAttr == "checkbox" || typeAttr == "radio") {
                                 children = replacedNode.parentNode.childNodes;
                                 for (i = 0; i < children.length; i++) {
-                                    if (children[i].nodeType === 1 && children[i].tagName == "LABEL" && 
-                                            nodeId == children[i].getAttribute("for")) {
+                                    if (children[i].nodeType === 1 && children[i].tagName == "LABEL" &&
+                                        nodeId == children[i].getAttribute("for")) {
                                         children[i].setAttribute("for", replacedNode.getAttribute("id"));
                                         break;
                                     }
@@ -809,7 +841,7 @@ var INTERMediator = {
                                         } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
                                             if (curVal && curVal.length > 0) {
                                                 if (IMLibElement.setValueToIMNode(
-                                                    currentLinkedNodes[k], curTarget, curVal[0])) {
+                                                        currentLinkedNodes[k], curTarget, curVal[0])) {
                                                     postSetFields.push({'id': nodeId, 'value': curVal[0]});
                                                 }
                                             }
@@ -871,7 +903,7 @@ var INTERMediator = {
                         || (currentContextDef['portal'] == true && targetTotalCount > 0)) {
                         newlyAddedNodes = [];
                         insertNode = null;
-                        if (! contextObj.sequencing)  {
+                        if (!contextObj.sequencing) {
                             indexContext = contextObj.checkOrder(targetRecordset[ix]);
                             insertNode = contextObj.getRepeaterEndNode(indexContext + 1)
                         }
@@ -881,7 +913,7 @@ var INTERMediator = {
                             nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                             dataAttr = newNode.getAttribute("data-im-control");
                             if ((nodeClass != INTERMediator.noRecordClassName) && (dataAttr != "noresult")) {
-                                if (! insertNode)   {
+                                if (!insertNode) {
                                     node.appendChild(newNode);
                                 } else {
                                     insertNode.parentNode.insertBefore(newNode, insertNode);
@@ -1047,7 +1079,7 @@ var INTERMediator = {
                         INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef['name']](node);
                         INTERMediator.setDebugMessage(
                             "Call the post enclosure method 'INTERMediatorOnPage.additionalExpandingRecordFinish["
-                                + currentContextDef['name'] + "] with the context.", 2);
+                            + currentContextDef['name'] + "] with the context.", 2);
                     }
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
@@ -1062,15 +1094,15 @@ var INTERMediator = {
                         INTERMediatorOnPage.expandingRecordFinish(currentContextDef['name'], newlyAddedNodes);
                         INTERMediator.setDebugMessage(
                             "Call INTERMediatorOnPage.expandingRecordFinish with the context: "
-                                + currentContextDef['name'], 2);
+                            + currentContextDef['name'], 2);
                     }
 
                     if (currentContextDef['post-repeater']) {
                         INTERMediatorOnPage[currentContextDef['post-repeater']](newlyAddedNodes);
 
                         INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
-                            + currentContextDef['post-repeater'] + "' with the context: "
-                            + currentContextDef['name'], 2);
+                        + currentContextDef['post-repeater'] + "' with the context: "
+                        + currentContextDef['name'], 2);
                     }
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
@@ -1091,7 +1123,7 @@ var INTERMediator = {
                         INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef['name']](node);
                         INTERMediator.setDebugMessage(
                             "Call the post enclosure method 'INTERMediatorOnPage.additionalExpandingEnclosureFinish["
-                                + currentContextDef['name'] + "] with the context.", 2);
+                            + currentContextDef['name'] + "] with the context.", 2);
                     }
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
@@ -1106,7 +1138,7 @@ var INTERMediator = {
                         INTERMediatorOnPage.expandingEnclosureFinish(currentContextDef['name'], node);
                         INTERMediator.setDebugMessage(
                             "Call INTERMediatorOnPage.expandingEnclosureFinish with the context: "
-                                + currentContextDef['name'], 2);
+                            + currentContextDef['name'], 2);
                     }
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
@@ -1120,7 +1152,7 @@ var INTERMediator = {
                         INTERMediatorOnPage[currentContextDef['post-enclosure']](node);
                         INTERMediator.setDebugMessage(
                             "Call the post enclosure method 'INTERMediatorOnPage." + currentContextDef['post-enclosure']
-                                + "' with the context: " + currentContextDef['name'], 2);
+                            + "' with the context: " + currentContextDef['name'], 2);
                     }
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
@@ -1589,11 +1621,16 @@ var INTERMediator = {
                         }
                         if (targetNode === null) {
                             targetNode = document.createElement(targetNodeTag);
-                            if (targetNodeTag == "THEAD") {
-                                enclosedNode.insertBefore(targetNode, enclosedNode.firstChild);
-                            } else {
-                                enclosedNode.appendChild(targetNode);
-                            }
+                            //if (targetNodeTag == "THEAD") {
+                            //    enclosedNode.insertBefore(targetNode, enclosedNode.firstChild);
+                            //} else {
+                            //    enclosedNode.appendChild(targetNode);
+                            //}
+                            appendingNodesAtLast.push({
+                                targetNode: targetNode,
+                                parentNode: enclosedNode,
+                                siblingNode:  (targetNodeTag == "THEAD") ? enclosedNode.firstChild : null
+                            });
                         }
                         existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi');
                         if (existingButtons.length == 0) {
@@ -1652,7 +1689,7 @@ var INTERMediator = {
                         }
                         showingNode.style.display = INTERMediator.masterNodeOriginalDisplay
 
-                        if (pageNaviShow)   {
+                        if (pageNaviShow) {
                             document.getElementById("IM_NAVIGATOR").style.display = "block";
                         }
                     }

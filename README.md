@@ -17,17 +17,19 @@ Sample pages with this archived file are published at below.
 You don't have to deploy the samples if you just want to just a glance.
 http://msyk.dyndns.org/im-sample.html
 
-### Contributer:
+### Contributor:
 - Atsushi Matsuo
 - Kiyonori Ito
 - Kentaro Suzuki
 
 ### Special Thanks to:
-- Tsutomu Yuasa
-- Miyuki Imaizumi
-- Yukio Murakami
-- Akinori Mizoguchi
 - Motofumi Iijima
+- Miyuki Imaizumi
+- Yukihiko Kobayashi
+- Akinori Mizoguchi
+- Hiromi Morita
+- Yukio Murakami
+- Tsutomu Yuasa
 
 ## Contributing
 
@@ -36,3 +38,4 @@ http://msyk.dyndns.org/im-sample.html
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
+

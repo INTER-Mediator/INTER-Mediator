@@ -9,8 +9,6 @@
 
 //"use strict"
 
-var INTERMediatorLib = INTERMediatorLib();
-
 function INTERMediatorLib() {
     var instance = {
 
@@ -903,6 +901,175 @@ function INTERMediatorLib() {
     return instance;
 }
 
+var INTERMediatorLib = INTERMediatorLib();
+
+INTERMediatorLib.setup();
+
+IMLibKeyEventDispatch = {
+    dispatchTable: {},
+
+    clearAll: function () {
+        this.dispatchTable = {};
+    },
+
+    setExecute: function (idValue, charCode, exec) {
+        if (idValue && charCode) {
+            if (!this.dispatchTable[idValue]) {
+                this.dispatchTable[idValue] = {};
+            }
+            this.dispatchTable[idValue][charCode] = exec;
+        }
+    }
+};
+
+INTERMediatorLib.addEvent(document, "keydown", function (e) {
+    var event, charCode, target, idValue;
+    event = e ? e : window.event;
+    if (event.charCode) {
+        charCode = event.charCode;
+    } else {
+        charCode = event.keyCode;
+    }
+    if (!event) {
+        return;
+    }
+    target = event.target;
+    if (!target) {
+        target = event.srcElement;
+        if (!target) {
+            return;
+        }
+    }
+    idValue = target.id;
+    if (!idValue) {
+        return;
+    }
+    if (!IMLibKeyEventDispatch.dispatchTable[idValue]) {
+        return;
+    }
+    var executable = IMLibKeyEventDispatch.dispatchTable[idValue][charCode];
+    if (!executable) {
+        return;
+    }
+    executable(event);
+});
+
+IMLibMouseEventDispatch = {
+    dispatchTable: {},
+    dispatchTableTarget: {},
+
+    clearAll: function () {
+        this.dispatchTable = {};
+        this.dispatchTableTarget = {};
+    },
+
+    setExecute: function (idValue, exec) {
+        if (idValue && exec) {
+            this.dispatchTable[idValue] = exec;
+        }
+    },
+
+    setTargetExecute: function (targetValue, exec) {
+        if (targetValue && exec) {
+            this.dispatchTableTarget[targetValue] = exec;
+        }
+    }
+};
+
+INTERMediatorLib.addEvent(document, "click", function (e) {
+    var event, target, idValue, executable, targetDefs, i, nodeInfo, value;
+    event = e ? e : window.event;
+    if (!event) {
+        return;
+    }
+    target = event.target;
+    if (!target) {
+        target = event.srcElement;
+        if (!target) {
+            return;
+        }
+    }
+    idValue = target.id;
+    if (!idValue) {
+        return;
+    }
+    executable = IMLibMouseEventDispatch.dispatchTable[idValue];
+    if (executable) {
+        executable(event);
+        return;
+    }
+    targetDefs = INTERMediatorLib.getLinkedElementInfo(target);
+    for (i = 0; i < targetDefs.length; i++) {
+        executable = IMLibMouseEventDispatch.dispatchTableTarget[targetDefs[i]];
+        if (executable) {
+            nodeInfo = INTERMediatorLib.getNodeInfoArray(targetDefs[i]);
+            if (nodeInfo.target) {
+                value = target.getAttribute(nodeInfo.target);
+            } else {
+                value = IMLibElement.getValueFromIMNode(target);
+            }
+            executable(value, target);
+            return;
+        }
+    }
+});
+
+IMLibChangeEventDispatch = {
+    dispatchTable: {},
+    dispatchTableTarget: {},
+
+    clearAll: function () {
+        this.dispatchTable = {};
+        this.dispatchTableTarget = {};
+    },
+
+    setExecute: function (idValue, exec) {
+        if (idValue && exec) {
+            this.dispatchTable[idValue] = exec;
+        }
+    },
+
+    setTargetExecute: function (targetValue, exec) {
+        if (targetValue && exec) {
+            this.dispatchTableTarget[targetValue] = exec;
+        }
+    }
+};
+
+INTERMediatorLib.addEvent(document, "change", function (e) {
+    var event = e ? e : window.event;
+    if (!event) {
+        return;
+    }
+    var target = event.target;
+    if (!target) {
+        target = event.srcElement;
+        if (!target) {
+            return;
+        }
+    }
+    var idValue = target.id;
+    if (!idValue) {
+        return;
+    }
+    var executable = IMLibChangeEventDispatch.dispatchTable[idValue];
+    if (!executable) {
+        return;
+    }
+    executable(idValue);
+});
+
+INTERMediatorLib.addEvent(window, "beforeunload", function (e) {
+    var confirmationMessage = "";
+
+//    (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
+//    return confirmationMessage;                                //Webkit, Safari, Chrome etc.
+
+});
+
+INTERMediatorLib.addEvent(window, "unload", function (e) {
+    INTERMediator_DBAdapter.unregister();
+});
 
 /*
 
