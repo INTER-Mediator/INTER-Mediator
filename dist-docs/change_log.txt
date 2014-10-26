@@ -9,10 +9,11 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.6 (in development)
-- [INFO] FileMaker Server 10 has been deprecated. INTER-Mediator will require FileMaker Server 11 or later if using 
-  FileMaker Server.
+- In case of 'navi-control' is 'master-hide', the pagenation control is going to hide when the detail area appears.
 - Add errorMessageStore(), isExistRequiredTable(), register(), unregister(), matchInRegisterd(), queryForTest(), 
   appendIntoRegisterd() and removeFromRegisterd() to DB_FileMaker_FX class.
+- [INFO] FileMaker Server 10 has been deprecated. INTER-Mediator will require FileMaker Server 11 or later if using 
+  FileMaker Server.
 - In case of 'navi-control' is 'master-hide', the pagenation control is going to hide when the detail area apears.
 - The Date/Time functions are available in the expression of 'calculation' value.
 - [BUG FIX] DB_FileMaker_FX used the alternative data source not only the 'issuedhash' table also 'authuer' and some
@@ -24,6 +25,8 @@ Ver.4.6 (in development)
 - [BUG FIX] Handle 'for' attribute of the 'label' element to enable editing a correct record using radio button when 
   displaying multiple records (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix the FileMaker's checkbox set feature when using Internet Explorer 9 or 10 (Thanks to Kentaro Suzuki).
+- [BUG FIX] Modify IMLibUI.valueChange method to fix compatibility with Internet Explorer (for handling readOnly 
+  property).
 - [BUG FIX] When a context should be removed, but it wasn't. A context is surely removed when nodes go away.
 
 Ver.4.5 (2014/9/15)
