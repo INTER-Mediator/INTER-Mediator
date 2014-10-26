@@ -11,6 +11,7 @@
 $currentEr = error_reporting();
 error_reporting(0);
 require_once('lib/FX/FX.php');
+require_once('lib/FX/datasource_classes/RetrieveFM7Data.class.php');
 if (error_get_last() !== null) {
 // If FX.php isn't installed in valid directories, it shows error message and finishes.
     echo 'INTER-Mediator Error: Data Access Class "FileMaker_FX" requires FX.php on any right directory.';
@@ -617,46 +618,116 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
-//        $this->logger->setErrorMessage(var_export($this->fx, true));
 
+        $queryString = '-db=' . urlencode($this->fx->database);
+        $queryString .= '&-lay=' . urlencode($this->fx->layout);
+        $queryString .= '&-lay.response=' . urlencode($this->fx->layout);
+        $skipRequest = '';
+        if ($this->fx->currentSkip > 0) {
+            $skipRequest = '&-skip=' . $this->fx->currentSkip;
+        }
+        $queryString .= '&-max=' . $this->fx->groupSize . $skipRequest;
+        $fxUtility = new RetrieveFM7Data($this->fx);
+        $currentSort = $fxUtility->CreateCurrentSort();
+        $currentSearch = $fxUtility->CreateCurrentSearch();
+        if ($hasFindParams) {
+            $queryString .= $currentSort . $currentSearch . '&-find';
+        } else {
+            $queryString .= $currentSort . $currentSearch . '&-findall';
+        }
+        
+        $recordArray = array();
         try {
-            if ($hasFindParams) {
-                $this->fxResult = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
-            } else {
-                $this->fxResult = $this->fx->DoFxAction('show_all', TRUE, TRUE, 'full');
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 
+                $this->fx->urlScheme . '://' . $this->fx->dataServer . $this->fx->dataPortSuffix . '/fmi/xml/fmresultset.xml');
+            curl_setopt($ch, CURLOPT_USERPWD, $this->dbSettings->getAccessUser() . ':' . $this->dbSettings->getAccessPassword());
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $queryString);
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $xml = curl_exec($ch);
+            curl_close($ch);
+            libxml_use_internal_errors(true);
+            $parsedData = simplexml_load_string($xml);
+            if ($parsedData === false) {
+                if ($this->dbSettings->isDBNative()) {
+                    $this->dbSettings->setRequireAuthentication(true);
+                }
+                $errorMessage = 'Failed loading XML' . "\n";
+                foreach(libxml_get_errors() as $error) {
+                    $errorMessage .= $error->message;
+                }
+                $this->logger->setErrorMessage($errorMessage);
+                return null;
+            }
+            $data = json_decode(json_encode($parsedData), true);
+            $i = 0;
+            if (isset($data['resultset']['record']) && isset($data['resultset']['@attributes'])) {
+                foreach($data['resultset']['record'] as $record) {
+                    if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
+                        $record = $data['resultset']['record'];
+                    }
+                    $dataArray = array('-recid' => $record['@attributes']['record-id']);
+                    foreach ($record['field'] as $field) {
+                        $dataArray = $dataArray + array(
+                            $field['@attributes']['name'] => isset($field['data']) && !is_null($field['data']) ? $field['data'] : ''
+                        );
+                    }
+                    
+                    $relatedsetArray = array();
+                    if (isset($record['relatedset'])) {
+                        foreach ($record['relatedset'] as $relatedset) {
+                            $j = 0;
+                            if (isset($relatedset['record'])) {
+                                foreach ($relatedset['record'] as $relatedrecord) {
+                                    $relatedArray = array('-recid' => $record['@attributes']['record-id']);
+                                    $relatedArray += array(
+                                        $relatedset['@attributes']['table'] . '::-recid' => $relatedrecord['@attributes']['record-id']
+                                    );
+                                    foreach ($relatedrecord['field'] as $relatedfield) {
+                                        $relatedArray += array(
+                                            $relatedfield['@attributes']['name'] => 
+                                                isset($relatedfield['data']) && !is_null($relatedfield['data']) ? $relatedfield['data'] : ''
+                                        );
+                                    }
+                                    if (isset($relatedsetArray[$j]) && !is_null($relatedsetArray[$j])) {
+                                        $relatedsetArray[$j] += $relatedArray;
+                                    } else {
+                                        $relatedsetArray[$j] = $relatedArray;
+                                    }
+                                    $j++;
+                                }
+                            }
+                        }
+                    }
+                    
+                    foreach ($relatedsetArray as $j => $relatedset) {
+                        $dataArray = $dataArray + array($j => $relatedset);
+                    }
+                    
+                    array_push($recordArray, $dataArray);
+                    if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
+                        break;
+                    }
+                    $i++;
+                }
             }
         } catch (Exception $e) {
-            $this->logger->setErrorMessage(var_export($this->fx, true));
+            $this->logger->setErrorMessage('INTER-Mediator reports error at find action: Exception error occurred.');
         }
-//        $this->logger->setErrorMessage(var_export($this->fxResult, true));
 
-        if (!is_array($this->fxResult)) {
-            if ($this->dbSettings->isDBNative()) {
-                $this->logger->setErrorMessage(
-                    $this->stringWithoutCredential(get_class($this->fxResult)
-                        . ': ' . $this->fxResult->getDebugInfo()));
-                $this->dbSettings->setRequireAuthentication(true);
-            } else {
-                $this->logger->setErrorMessage(
-                    $this->stringWithoutCredential(get_class($this->fxResult)
-                        . ': ' . $this->fxResult->getDebugInfo()));
-            }
+        $errorCode = intval($data['error']['@attributes']['code']);
+        if ($errorCode != 0 && $errorCode != 401) {
+            $this->logger->setErrorMessage('INTER-Mediator reports error at find action: ' . 
+                'errorcode=' . $errorCode . ', querystring=' . $queryString);
             return null;
         }
-        if ($this->fxResult['errorCode'] != 0 && $this->fxResult['errorCode'] != 401) {
-            $this->logger->setErrorMessage(
-                $this->stringWithoutCredential("FX reports error at find action: "
-                    . "code={$this->fxResult['errorCode']}, url={$this->fxResult['URL']}"));
-            return null;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($this->fxResult['URL']));
-        $this->mainTableCount = $this->fxResult['foundCount'];
+        $this->logger->setDebugMessage($queryString);
+        
+        $this->mainTableCount = intval($data['datasource']['@attributes']['total-count']);
 
-        if (isset($this->fxResult['data'])) {
-            return $this->createRecordset($this->fxResult['data'], $dataSourceName,
-                $usePortal, $childRecordId, $childRecordIdValue);
-        }
-        return array();
+        return $recordArray;
     }
 
     private function createRecordset($resultData, $dataSourceName, $usePortal, $childRecordId, $childRecordIdValue)
@@ -696,11 +767,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     foreach ($dataArray as $portalKey => $portalValue) {
                         if (strpos($field, '::') !== false) {
                             $existsRelated = true;
-//                            if (strpos($field, $dataSourceName . '::') !== false) {
                             $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
                             $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                 "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
-//                            }
                         } else {
                             $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
                                 "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
