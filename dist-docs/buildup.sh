@@ -6,7 +6,7 @@
 # This project started at the end of 2009.
 # INTER-Mediator is supplied under MIT License.
 
-version="4.4"
+version="4.5.1"
 
 # The jar file of YUI can be donwloaded from below.
 # http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7

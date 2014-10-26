@@ -51,6 +51,9 @@ var IMLibUI = {
 
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
+            if (changedObj.readOnly) {  // for Internet Explorer
+                return;
+            }
             if (!validation(changedObj)) {   // Validation error.
                 return;
             }
