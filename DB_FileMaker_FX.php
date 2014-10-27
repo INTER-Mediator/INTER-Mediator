@@ -670,8 +670,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     }
                     $dataArray = array('-recid' => $record['@attributes']['record-id']);
                     foreach ($record['field'] as $field) {
+                        $fieldName = $field['@attributes']['name'];
+                        $fieldValue = '';
+                        if (isset($field['data']) && !is_null($field['data'])) {
+                            $fieldValue = $this->formatter->formatterFromDB(
+                                "{$dataSourceName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                        }
                         $dataArray = $dataArray + array(
-                            $field['@attributes']['name'] => isset($field['data']) && !is_null($field['data']) ? $field['data'] : ''
+                            $fieldName => $fieldValue
                         );
                     }
                     
@@ -686,9 +692,16 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                         $relatedset['@attributes']['table'] . '::-recid' => $relatedrecord['@attributes']['record-id']
                                     );
                                     foreach ($relatedrecord['field'] as $relatedfield) {
+                                        $relatedFieldName = $relatedfield['@attributes']['name'];
+                                        $relatedFieldValue = '';
+                                        if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
+                                            $relatedFieldValue = $this->formatter->formatterFromDB(
+                                                "{$dataSourceName}{$this->dbSettings->getSeparator()}{$relatedFieldName}", 
+                                                $relatedfield['data']
+                                            );
+                                        }
                                         $relatedArray += array(
-                                            $relatedfield['@attributes']['name'] => 
-                                                isset($relatedfield['data']) && !is_null($relatedfield['data']) ? $relatedfield['data'] : ''
+                                            $relatedFieldName => $relatedFieldValue
                                         );
                                     }
                                     if (isset($relatedsetArray[$j]) && !is_null($relatedsetArray[$j])) {
