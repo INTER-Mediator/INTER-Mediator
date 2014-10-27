@@ -728,6 +728,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         } catch (Exception $e) {
             $this->logger->setErrorMessage('INTER-Mediator reports error at find action: Exception error occurred.');
+            return null;
         }
 
         $errorCode = intval($data['error']['@attributes']['code']);
@@ -738,7 +739,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         $this->logger->setDebugMessage($queryString);
         
-        $this->mainTableCount = intval($data['datasource']['@attributes']['total-count']);
+        $this->mainTableCount = intval($data['resultset']['@attributes']['count']);
 
         return $recordArray;
     }
