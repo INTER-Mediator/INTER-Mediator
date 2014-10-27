@@ -376,6 +376,27 @@ INTERMediator_DBAdapter = {
             }
         }
 
+        for(var key in IMLibLocalContext.store) {
+            var value = IMLibLocalContext.store[key];
+            var keyParams = key.split(":");
+            if (keyParams[0].trim() == "condition" && keyParams[1].trim() == args['name'] && value.length > 0)  {
+                var fields = keyParams[2].split(",");
+                var operator = keyParams[3].trim();
+                if (fields.length > 1)  {
+                    params += "&condition" + extCount + "field=__operation__";
+                    params += "&condition" + extCount + "operator=ex";
+                    extCount++;
+                }
+                for (var index = 0 ; index < fields.length ; index++) {
+                    var field = fields[index].trim();
+                    params += "&condition" + extCount + "field=" + encodeURIComponent(field);
+                    params += "&condition" + extCount + "operator=" + encodeURIComponent(operator);
+                    params += "&condition" + extCount + "value=" + encodeURIComponent(value);
+                    extCount++;
+                }
+            }
+        }
+
         extCount = 0;
         sortkeyObject = INTERMediator.additionalSortKey[args['name']];
         if (sortkeyObject) {

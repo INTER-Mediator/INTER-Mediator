@@ -650,5 +650,15 @@ var IMLibUI = {
                 }
             }
         }
+    },
+
+    eventUpdateHandler: function(contextName)  {
+        IMLibLocalContext.updateAll();
+        var context = IMLibContextPool.getContextFromName(contextName);
+        INTERMediator.constructMain(context[0]);
+    },
+
+    eventAddOrderHandler: function()  {
+
     }
 }

@@ -216,8 +216,8 @@ IMLibContextPool = {
                 delIds.push(i);
             }
         }
-        for (i = delIds.length - 1 ; i > -1 ; i--)  {
-            this.poolingContexts.splice(delIds[i],1);
+        for (i = delIds.length - 1; i > -1; i--) {
+            this.poolingContexts.splice(delIds[i], 1);
         }
         return regIds;
     },
@@ -301,7 +301,7 @@ IMLibContextPool = {
 
     getMasterContext: function () {
         var i, contextDef;
-        if (!this.poolingContexts)  {
+        if (!this.poolingContexts) {
             return null;
         }
         for (i = 0; i < this.poolingContexts.length; i++) {
@@ -315,7 +315,7 @@ IMLibContextPool = {
 
     getDetailContext: function () {
         var i, contextDef;
-        if (!this.poolingContexts)  {
+        if (!this.poolingContexts) {
             return null;
         }
         for (i = 0; i < this.poolingContexts.length; i++) {
@@ -552,7 +552,7 @@ IMLibContext = function (contextName) {
         }
         if (isDebug === true) {
             console.log("#lower=" + lower + ",upper=" + upper + ",index=" + index
-                + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
+            + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
         }
         return index;
     };
@@ -574,25 +574,25 @@ IMLibContext = function (contextName) {
         this.pendingOrder = [];
     };
 
-    this.getRepeaterEndNode = function(index)   {
+    this.getRepeaterEndNode = function (index) {
         var nodeId, field, repeaters = [], repeater, node, i, sibling, enclosure, children;
 
         var recKey = this.recordOrder[index];
         for (field in this.binding[recKey]) {
             nodeId = this.binding[recKey][field].nodeId;
             repeater = INTERMediatorLib.getParentRepeater(doument.getElementById(nodeId));
-            if (! repeater in repeaters)  {
+            if (!repeater in repeaters) {
                 repeaters.push(repeater);
             }
         }
-        if (repeaters.length < 1)   {
+        if (repeaters.length < 1) {
             return null;
         }
         node = repeaters[0];
         enclosure = INTERMediatorLib.getParentEnclosure(node);
         children = enclosure.childNodes;
-        for (i = 0 ; i < children.length ; i++)    {
-            if(children[i] in repeaters)    {
+        for (i = 0; i < children.length; i++) {
+            if (children[i] in repeaters) {
                 node = repeaters[i];
                 break;
             }
@@ -602,38 +602,38 @@ IMLibContext = function (contextName) {
 
     // setData____ methods are for storing data both the model and the database.
     //
-    this.setDataAtLastRecord = function (key, value)   {
+    this.setDataAtLastRecord = function (key, value) {
         var lastKey, keyAndValue;
         var storekeys = Object.keys(this.store);
-        if (storekeys.length > 0)   {
+        if (storekeys.length > 0) {
             lastKey = storekeys[storekeys.length - 1];
             this.setValue(lastKey, key, value);
             keyAndValue = lastKey.split("=");
             INTERMediator_DBAdapter.db_update({
-                name:this.contextName,
-                conditions:[{field:keyAndValue[0], operator:'=', value:keyAndValue[1]}],
-                dataset:[{field:key, value:value}]
+                name: this.contextName,
+                conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
+                dataset: [{field: key, value: value}]
             });
             IMLibCalc.recalculation();
             INTERMediator.flushMessage();
         }
     };
 
-    this.setDataWithKey = function(pkValue, key, value) {
+    this.setDataWithKey = function (pkValue, key, value) {
         var targetKey, contextDef, keyAndValue, storeElements;
         var storekeys = Object.keys(this.store);
         contextDef = this.getContextDef();
-        if (! contextDef)   {
+        if (!contextDef) {
             return;
         }
         targetKey = contextDef.key + "=" + pkValue;
         storeElements = this.store[targetKey];
-        if (storeElements)   {
+        if (storeElements) {
             this.setValue(targetKey, key, value);
             INTERMediator_DBAdapter.db_update({
                 name: this.contextName,
-                conditions: [{field:contextDef.key, operator:'=', value:pkValue}],
-                dataset: [{field:key, value:value}]
+                conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
+                dataset: [{field: key, value: value}]
             });
             INTERMediator.flushMessage();
         }
@@ -881,7 +881,7 @@ IMLibContext = function (contextName) {
     };
 
     /*
-    Initialize this object
+     Initialize this object
      */
     this.setTable(this);
 };
@@ -977,7 +977,7 @@ IMLibLocalContext = {
     },
 
     binding: function (node) {
-        var linkInfos, nodeInfo, idValue, i, value;
+        var linkInfos, nodeInfo, idValue, i, value, params;
         if (node.nodeType != 1) {
             return;
         }
@@ -993,14 +993,31 @@ IMLibLocalContext = {
                     this.binding[nodeInfo.field] = [];
                 }
                 this.binding[nodeInfo.field].push(idValue);
-                INTERMediatorLib.addEvent(node, 'change', (function () {
-                    var nodeId = idValue;
-                    var self = this;
-                    return function () {
-                        IMLibLocalContext.update(nodeId);
-                    };
-                })());
-                IMLibChangeEventDispatch.setExecute(idValue, IMLibUI.valueChange);
+
+                params = nodeInfo.field.split(":");
+                switch (params[0]) {
+                    case "addorder":
+                        IMLibMouseEventDispatch.setExecute(idValue, IMLibUI.eventAddOrderHaldler);
+                        break;
+                    case "update":
+                        INTERMediatorLib.addEvent(node, 'click', (function () {
+                            var contextName = params[1];
+                            return function () {
+                                IMLibUI.eventUpdateHandler(contextName);
+                            };
+                        })());
+                        break;
+                    case "condition":
+                    case "limitnumber":
+                    default:
+                        INTERMediatorLib.addEvent(node, 'change', (function () {
+                            var nodeId = idValue;
+                            return function () {
+                                IMLibLocalContext.update(nodeId);
+                            };
+                        })());
+                        IMLibChangeEventDispatch.setExecute(idValue, IMLibUI.valueChange);
+                }
 
                 value = this.store[nodeInfo.field];
                 IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true);
@@ -1027,6 +1044,23 @@ IMLibLocalContext = {
             nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i]);
             if (nodeInfo.table == this.contextName) {
                 this.setValue(nodeInfo.field, nodeValue);
+            }
+        }
+    },
+
+    updateAll: function()   {
+        var index, key, nodeIds, idValue, targetNode;
+        for(key in this.binding)    {
+            nodeIds = this.binding[key];
+            for (index = 0 ; index < nodeIds.length ; index++)    {
+                idValue = nodeIds[index];
+                targetNode = document.getElementById(idValue);
+                if (   targetNode.tagName=="INPUT"
+                    || targetNode.tagName=="TEXTAREA"
+                    || targetNode.tagName=="SELECT")   {
+                    IMLibLocalContext.update(idValue);
+                    break;
+                }
             }
         }
     },

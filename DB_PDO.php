@@ -140,7 +140,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $newContextId;
     }
 
-    public function unregister($clientId, $tableKeys)   {
+    public function unregister($clientId, $tableKeys)
+    {
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
         if (!$this->setupConnection()) { //Establish the connection
@@ -150,7 +151,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $criteria = array("clientid=" . $this->link->quote($clientId));
         if ($tableKeys) {
             $subCriteria = array();
-            foreach($tableKeys as $regId)   {
+            foreach ($tableKeys as $regId) {
                 $subCriteria[] = "id=" . $this->link->quote($regId);
             }
             $criteria[] = "(" . implode(" OR ", $subCriteria) . ")";
@@ -397,6 +398,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     if (isset($condition['value']) && $condition['value'] != null) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
+                            $condition = $this->normalizedCondition($condition);
                             if (!$this->isPossibleOperator($condition['operator'])) {
                                 throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
@@ -441,6 +443,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
                     $escapedField = $this->quotedFieldName($condition['field']);
                     if (isset($condition['value']) && $condition['value'] != null) {
+                        $condition = $this->normalizedCondition($condition);
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             if (!$this->isPossibleOperator($condition['operator'])) {
@@ -1869,6 +1872,45 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             /* for SQLite */
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
             return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
+
+        } else { // others don' define so far
+            return FALSE;
+        }
+    }
+
+    public function normalizedCondition($condition)
+    {
+        /* for MySQL */
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
+            if ($condition['operator'] == 'match%') {
+                return array(
+                    'field' => $condition['field'],
+                    'operator' => 'LIKE',
+                    'value' => "{$condition['value']}%",
+                );
+            } else if ($condition['operator'] == '%match') {
+                return array(
+                    'field' => $condition['field'],
+                    'operator' => 'LIKE',
+                    'value' => "%{$condition['value']}",
+                );
+            } else if ($condition['operator'] == '%match%') {
+                return array(
+                    'field' => $condition['field'],
+                    'operator' => 'LIKE',
+                    'value' => "%{$condition['value']}%",
+                );
+            } else {
+                    return $condition;
+            }
+
+            /* for PostgreSQL */
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
+            return $condition;
+
+            /* for SQLite */
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            return $condition;
 
         } else { // others don' define so far
             return FALSE;
