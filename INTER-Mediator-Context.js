@@ -896,7 +896,7 @@ IMLibLocalContext = {
         this.store = {};
     },
 
-    setValue: function (key, value) {
+    setValue: function (key, value, withoutArchive) {
         var i, hasUpdated, refIds, node;
 
         hasUpdated = false;
@@ -915,7 +915,7 @@ IMLibLocalContext = {
                 }
             }
         }
-        if (hasUpdated) {
+        if (hasUpdated && !(withoutArchive === true)) {
             this.archive();
         }
     },
@@ -943,7 +943,9 @@ IMLibLocalContext = {
         } else {
             jsonString = JSON.stringify(this.store);
         }
-        if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+        if (INTERMediator.useSessionStorage === true
+            && typeof sessionStorage !== 'undefined'
+            && sessionStorage !== null) {
             sessionStorage.setItem("_im_localcontext", jsonString);
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
@@ -952,7 +954,9 @@ IMLibLocalContext = {
 
     unarchive: function () {
         var localContext = "";
-        if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+        if (   INTERMediator.useSessionStorage === true
+            && typeof sessionStorage !== 'undefined'
+            && sessionStorage !== null) {
             localContext = sessionStorage.getItem("_im_localcontext");
         } else {
             localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
@@ -973,6 +977,7 @@ IMLibLocalContext = {
                     INTERMediator.pagedSize = this.store._im_pagedSize;
                 }
             }
+            this.updateAll();
         }
     },
 
@@ -1016,7 +1021,8 @@ IMLibLocalContext = {
                                 IMLibLocalContext.update(nodeId);
                             };
                         })());
-                        IMLibChangeEventDispatch.setExecute(idValue, IMLibUI.valueChange);
+                       // IMLibChangeEventDispatch.setExecute(idValue, IMLibUI.valueChange);
+                        break;
                 }
 
                 value = this.store[nodeInfo.field];

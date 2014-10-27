@@ -1783,7 +1783,7 @@ var INTERMediator = {
         },
 
         setLocalProperty: function (localKey, value) {
-            IMLibLocalContext.setValue(localKey, value);
+            IMLibLocalContext.setValue(localKey, value, true);
         }
     }
     ;
