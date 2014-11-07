@@ -27,7 +27,27 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $fxAlt = null;
     private $mainTableCount = 0;
     private $fieldInfo = null;
+
+    private $isRequiredUpdated = false;
     private $updatedRecord = null;
+    private $queriedEntity = null;
+    private $queriedCondition = null;
+    private $queriedPrimaryKeys = null;
+
+    public function queriedEntity()
+    {
+        return $this->queriedEntity;
+    }
+
+    public function queriedCondition()
+    {
+        return $this->queriedCondition;
+    }
+
+    public function queriedPrimaryKeys()
+    {
+        return $this->queriedPrimaryKeys;
+    }
 
     /**
      * @param $str
@@ -105,19 +125,21 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
-        foreach ($pkArray as $pk) {
-            $this->setupFXforDB($pksTable, 1);
-            $this->fx->AddDBParam('context_id', $newContextId);
-            $this->fx->AddDBParam('pk', $pk);
-            $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
-            if (!is_array($result)) {
-                $this->logger->setDebugMessage(
-                    $this->stringWithoutCredential("FX reports error at insert action: " . 
-                        "code={$result['errorCode']}, url={$result['URL']}"));
-                $this->errorMessageStore(
-                    $this->stringWithoutCredential("FX reports error at insert action: " . 
-                        "code={$result['errorCode']}, url={$result['URL']}"));
-                return false;
+        if (is_array($pkArray)) {
+            foreach ($pkArray as $pk) {
+                $this->setupFXforDB($pksTable, 1);
+                $this->fx->AddDBParam('context_id', $newContextId);
+                $this->fx->AddDBParam('pk', $pk);
+                $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
+                if (!is_array($result)) {
+                    $this->logger->setDebugMessage(
+                        $this->stringWithoutCredential("FX reports error at insert action: " . 
+                            "code={$result['errorCode']}, url={$result['URL']}"));
+                    $this->errorMessageStore(
+                        $this->stringWithoutCredential("FX reports error at insert action: " . 
+                            "code={$result['errorCode']}, url={$result['URL']}"));
+                    return false;
+                }
             }
         }
         return $newContextId;
@@ -390,7 +412,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     {
         //    $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}", 2);
         $this->fieldInfo = null;
-
+        $this->mainTableCount = 0;
         $context = $this->dbSettings->getDataSourceTargetArray();
 
         $usePortal = false;
@@ -484,6 +506,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if (!$this->isPossibleOperator($op)) {
                         throw new Exception("Invalid Operator.: {$condition['field']}/{$condition['operator']}");
                     }
+
+                    $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+                    $primaryKey = isset($tableInfo['key']) ? $tableInfo['key'] : $this->getDefaultKey();
+                    if ($condition['field'] == $primaryKey && isset($condition['value'])) {
+                        $this->queriedPrimaryKeys = array($condition['value']);
+                    }
+
                     $this->fx->AddDBParam($condition['field'], $condition['value'], $op);
                     $hasFindParams = true;
                     if ($condition['field'] == $this->getDefaultKey()) {
@@ -636,7 +665,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $queryString .= $currentSort . $currentSearch . '&-findall';
         }
         
+        $this->queriedEntity = $this->fx->layout;
+        $this->queriedCondition = $queryString;
+
         $recordArray = array();
+        $this->queriedPrimaryKeys = array();
+        $keyField = isset($context['key']) ? $context['key'] : $this->getDefaultKey();
         try {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, 
@@ -668,13 +702,19 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
                         $record = $data['resultset']['record'];
                     }
-                    $dataArray = array('-recid' => $record['@attributes']['record-id']);
+                    $dataArray = array($this->getDefaultKey() => $record['@attributes']['record-id']);
+                    if ($keyField == $this->getDefaultKey()) {
+                        $this->queriedPrimaryKeys[] = $record['@attributes']['record-id'];
+                    }
                     foreach ($record['field'] as $field) {
                         $fieldName = $field['@attributes']['name'];
                         $fieldValue = '';
                         if (isset($field['data']) && !is_null($field['data'])) {
                             $fieldValue = $this->formatter->formatterFromDB(
                                 "{$dataSourceName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                            if ($fieldName == $keyField && $keyField != $this->getDefaultKey()) {
+                                $this->queriedPrimaryKeys[] = $field['data'];
+                            }
                         }
                         $dataArray = $dataArray + array(
                             $fieldName => $fieldValue
@@ -942,8 +982,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         if ($result['foundCount'] == 1) {
+            $this->queriedPrimaryKeys = array();
+            $keyField = isset($context['key']) ? $context['key'] : $this->getDefaultKey();
             foreach ($result['data'] as $key => $row) {
                 $recId = substr($key, 0, strpos($key, '.'));
+                if ($keyField == $this->getDefaultKey()) {
+                    $this->queriedPrimaryKeys[] = $recId;
+                }
                 if ($usePortal) {
                     $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
                 } else {
@@ -991,6 +1036,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         }
                     }
                 }
+
+                $this->queriedEntity = $this->fx->layout;
+
                 $result = $this->fx->DoFxAction("update", TRUE, TRUE, 'full');
                 if (!is_array($result)) {
                     $this->logger->setErrorMessage($this->stringWithoutCredential(
@@ -1109,6 +1157,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
+
+        $this->queriedEntity = $this->fx->layout;
+
         $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             if ($this->dbSettings->isDBNative()) {
@@ -1248,6 +1299,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         }
                     }
                 }
+
+                $this->queriedEntity = $this->fx->layout;
+
                 $result = $this->fx->DoFxAction("delete", TRUE, TRUE, 'full');
                 if (!is_array($result)) {
                     if ($this->dbSettings->isDBNative()) {
