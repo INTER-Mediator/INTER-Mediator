@@ -118,6 +118,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return false;
         }
+        $newContextId = null;
         foreach ($result['data'] as $recmodid => $recordData) {
             foreach ($recordData as $field => $value) {
                 if ($field == 'id') {
@@ -988,6 +989,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $recId = substr($key, 0, strpos($key, '.'));
                 if ($keyField == $this->getDefaultKey()) {
                     $this->queriedPrimaryKeys[] = $recId;
+                } else {
+                    $this->queriedPrimaryKeys[] = $row[$keyField][0];
                 }
                 if ($usePortal) {
                     $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), 1);
@@ -1039,7 +1042,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
                 $this->queriedEntity = $this->fx->layout;
 
-                $result = $this->fx->DoFxAction("update", TRUE, TRUE, 'full');
+                $result = $this->fx->DoFxAction('update', TRUE, TRUE, 'full');
                 if (!is_array($result)) {
                     $this->logger->setErrorMessage($this->stringWithoutCredential(
                         get_class($result) . ': ' . $result->getDebugInfo()));
@@ -1158,8 +1161,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
-        $this->queriedEntity = $this->fx->layout;
-
         $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             if ($this->dbSettings->isDBNative()) {
@@ -1169,6 +1170,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
             return false;
         }
+
         $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
         if ($result['errorCode'] > 0 && $result['errorCode'] != 401) {
             $this->logger->setErrorMessage($this->stringWithoutCredential(
@@ -1183,6 +1185,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $keyValue = $row[$keyFieldName][0];
             }
         }
+
+        $this->queriedPrimaryKeys = array($keyValue);
+        $this->queriedEntity = $this->fx->layout;
+
         $this->updatedRecord = $this->createRecordset($result['data'], $dataSourceName, null, null, null);
         return $keyValue;
     }
@@ -1275,8 +1281,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return false;
         }
         if ($result['foundCount'] != 0) {
+            $keyField = isset($context['key']) ? $context['key'] : $this->getDefaultKey();
             foreach ($result['data'] as $key => $row) {
                 $recId = substr($key, 0, strpos($key, '.'));
+                if ($keyField == $this->getDefaultKey()) {
+                    $this->queriedPrimaryKeys[] = $recId;
+                } else {
+                    $this->queriedPrimaryKeys[] = $row[$keyField][0];
+                }
                 $this->setupFXforDB($this->dbSettings->getEntityForUpdate(), 1);
                 $this->fx->SetRecordID($recId);
                 if (isset($context['global'])) {
@@ -1302,7 +1314,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
                 $this->queriedEntity = $this->fx->layout;
 
-                $result = $this->fx->DoFxAction("delete", TRUE, TRUE, 'full');
+                $result = $this->fx->DoFxAction('delete', TRUE, TRUE, 'full');
                 if (!is_array($result)) {
                     if ($this->dbSettings->isDBNative()) {
                         $this->dbSettings->setRequireAuthentication(true);
