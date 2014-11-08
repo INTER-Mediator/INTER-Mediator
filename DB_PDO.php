@@ -1882,19 +1882,19 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         /* for MySQL */
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
-            if ($condition['operator'] == 'match%') {
+            if ($condition['operator'] == 'match*') {
                 return array(
                     'field' => $condition['field'],
                     'operator' => 'LIKE',
                     'value' => "{$condition['value']}%",
                 );
-            } else if ($condition['operator'] == '%match') {
+            } else if ($condition['operator'] == '*match') {
                 return array(
                     'field' => $condition['field'],
                     'operator' => 'LIKE',
                     'value' => "%{$condition['value']}",
                 );
-            } else if ($condition['operator'] == '%match%') {
+            } else if ($condition['operator'] == '*match*') {
                 return array(
                     'field' => $condition['field'],
                     'operator' => 'LIKE',

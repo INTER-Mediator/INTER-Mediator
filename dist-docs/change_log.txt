@@ -31,6 +31,7 @@ Ver.4.6 (in development)
 - [BUG FIX] Modify IMLibUI.valueChange method to fix compatibility with Internet Explorer (for handling readOnly 
   property).
 - [BUG FIX] When a context should be removed, but it wasn't. A context is surely removed when nodes go away.
+- [BUG FIX] FileMaker_FX didn't respond collectively in case of email as user name.
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)

@@ -1,8 +1,8 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- * 
+ *
  *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- * 
+ *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -44,7 +44,7 @@ var INTERMediator = {
         classAsLinkInfo: true,
         isDBDataPreferable: false,
         noRecordClassName: "_im_for_noresult_",
-//    nullAcceptable: true,
+        //   nullAcceptable: true,
 
         rootEnclosure: null,
         // Storing to retrieve the page to initial condition.
@@ -64,7 +64,7 @@ var INTERMediator = {
         detailNodeOriginalDisplay: null,
         pusherAvailable: false,
 
-    dateTimeFunction: false,
+        dateTimeFunction: false,
 
         /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
         //startFrom: 0,
@@ -223,9 +223,9 @@ var INTERMediator = {
 
         initialize: function () {
             INTERMediatorOnPage.removeCookie('_im_localcontext');
-//    INTERMediatorOnPage.removeCookie('_im_username');
-//    INTERMediatorOnPage.removeCookie('_im_credential');
-//    INTERMediatorOnPage.removeCookie('_im_mediatoken');
+//      INTERMediatorOnPage.removeCookie('_im_username');
+//      INTERMediatorOnPage.removeCookie('_im_credential');
+//      INTERMediatorOnPage.removeCookie('_im_mediatoken');
 
             INTERMediator.additionalCondition = {};
             INTERMediator.additionalSortKey = {};
@@ -282,6 +282,7 @@ var INTERMediator = {
 
             IMLibPageNavigation.deleteInsertOnNavi = [];
             appendingNodesAtLast = [];
+            IMLibEventResponder.setup();
             INTERMediatorOnPage.retrieveAuthInfo();
             try {
                 if (Pusher.VERSION) {
@@ -334,6 +335,7 @@ var INTERMediator = {
                         document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
                     }
                     IMLibCalc.updateCalculationFields();
+                    IMLibPageNavigation.navigationSetup();
                 }
             } catch (ex) {
                 if (ex == "_im_requath_request_") {
@@ -365,7 +367,7 @@ var INTERMediator = {
                 parentNode = appendingNodesAtLast[i].parentNode;
                 sybilingNode = appendingNodesAtLast[i].siblingNode;
                 if (theNode && parentNode) {
-                    if (sybilingNode)   {
+                    if (sybilingNode) {
                         parentNode.insertBefore(theNode, sybilingNode);
                     } else {
                         parentNode.appendChild(theNode);
@@ -1629,7 +1631,7 @@ var INTERMediator = {
                             appendingNodesAtLast.push({
                                 targetNode: targetNode,
                                 parentNode: enclosedNode,
-                                siblingNode:  (targetNodeTag == "THEAD") ? enclosedNode.firstChild : null
+                                siblingNode: (targetNodeTag == "THEAD") ? enclosedNode.firstChild : null
                             });
                         }
                         existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi');
@@ -1785,56 +1787,4 @@ var INTERMediator = {
         setLocalProperty: function (localKey, value) {
             IMLibLocalContext.setValue(localKey, value, true);
         }
-    }
-    ;
-
-INTERMediator.propertyIETridentSetup();
-
-if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
-    INTERMediator.startFrom = 0;
-    INTERMediator.pagedSize = 0;
-    INTERMediator.additionalCondition = {};
-    INTERMediator.additionalSortKey = {};
-} else {
-    Object.defineProperty(INTERMediator, 'startFrom', {
-        get: function () {
-            return INTERMediator.getLocalProperty("_im_startFrom", 0);
-        },
-        set: function (value) {
-            INTERMediator.setLocalProperty("_im_startFrom", value);
-        }
-    });
-    Object.defineProperty(INTERMediator, 'pagedSize', {
-        get: function () {
-            return INTERMediator.getLocalProperty("_im_pagedSize", 0);
-        },
-        set: function (value) {
-            INTERMediator.setLocalProperty("_im_pagedSize", value);
-        }
-    });
-    Object.defineProperty(INTERMediator, 'additionalCondition', {
-        get: function () {
-            return INTERMediator.getLocalProperty("_im_additionalCondition", {});
-        },
-        set: function (value) {
-            INTERMediator.setLocalProperty("_im_additionalCondition", value);
-        }
-    });
-    Object.defineProperty(INTERMediator, 'additionalSortKey', {
-        get: function () {
-            return INTERMediator.getLocalProperty("_im_additionalSortKey", {});
-        },
-        set: function (value) {
-            INTERMediator.setLocalProperty("_im_additionalSortKey", value);
-        }
-    });
-}
-
-if (!INTERMediator.additionalCondition) {
-    INTERMediator.additionalCondition = {};
-}
-
-
-if (!INTERMediator.additionalSortKey) {
-    INTERMediator.additionalSortKey = {};
-}
+    };
