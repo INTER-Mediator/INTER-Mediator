@@ -19,7 +19,9 @@ IM_Entry(
             'query' => array(array('field' => 'name', 'value' => '%', 'operator' => 'LIKE')),
             'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
             'post-repeater' => 'move',
-            'authentication'=> array( 'media-handling' => true ),
+            'authentication'=> array(
+//                'media-handling' => true,
+            ),
         ),
         array(
             'records' => 1,

@@ -13,12 +13,12 @@ IM_Entry(
     array(
         array(
             'name' => 'postalcode',
-            'records' => 10,
+            'records' => 20,
             'maxrecords' => 30,
             'paging' => true,
         ),
     ),
     null,
     array('db-class' => 'PDO'),
-    2
+    1
 );
