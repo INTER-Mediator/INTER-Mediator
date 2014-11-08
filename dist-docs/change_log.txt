@@ -12,8 +12,7 @@ Ver.4.6 (in development)
 - In case of 'navi-control' is 'master-hide', the pagenation control is going to hide when the detail area appears.
 - Use fmresultset XML grammer internally in getFromDB method of DB_FileMaker_FX class.
 - The Date/Time functions are available in the expression of 'calculation' value.
-- Add errorMessageStore(), isExistRequiredTable(), register(), unregister(), matchInRegisterd(), queryForTest(), 
-  appendIntoRegisterd() and removeFromRegisterd() to DB_FileMaker_FX class experimentally.
+- Support syncing with multiple clients with Pusher using FileMaker datasource (except for portal=>true context).
 - [INFO] FileMaker Server 10 has been deprecated. INTER-Mediator will require FileMaker Server 11 or later if using 
   FileMaker Server.
 - [BUG FIX] DB_FileMaker_FX used the alternative data source not only the 'issuedhash' table also 'authuer' and some

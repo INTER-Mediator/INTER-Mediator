@@ -698,12 +698,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
             $data = json_decode(json_encode($parsedData), true);
             $i = 0;
+            $dataArray = array();
             if (isset($data['resultset']['record']) && isset($data['resultset']['@attributes'])) {
                 foreach($data['resultset']['record'] as $record) {
                     if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
                         $record = $data['resultset']['record'];
                     }
-                    $dataArray = array($this->getDefaultKey() => $record['@attributes']['record-id']);
+                    if (!$usePortal) {
+                        $dataArray = array($this->getDefaultKey() => $record['@attributes']['record-id']);
+                    }
                     if ($keyField == $this->getDefaultKey()) {
                         $this->queriedPrimaryKeys[] = $record['@attributes']['record-id'];
                     }
@@ -717,13 +720,18 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                 $this->queriedPrimaryKeys[] = $field['data'];
                             }
                         }
-                        $dataArray = $dataArray + array(
-                            $fieldName => $fieldValue
-                        );
+                        if (!$usePortal) {
+                            $dataArray = $dataArray + array(
+                                $fieldName => $fieldValue
+                            );
+                        }
                     }
                     
                     $relatedsetArray = array();
                     if (isset($record['relatedset'])) {
+                        if (isset($record['relatedset']['record'])) {
+                            $record['relatedset'] = array($record['relatedset']);
+                        }
                         foreach ($record['relatedset'] as $relatedset) {
                             $j = 0;
                             if (isset($relatedset['record'])) {
@@ -759,8 +767,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     foreach ($relatedsetArray as $j => $relatedset) {
                         $dataArray = $dataArray + array($j => $relatedset);
                     }
-                    
-                    array_push($recordArray, $dataArray);
+                    if ($usePortal) {
+                        $recordArray = $dataArray;
+                        $this->mainTableCount = count($recordArray);
+                        break;
+                    } else {
+                        array_push($recordArray, $dataArray);
+                    }
                     if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
                         break;
                     }
@@ -780,7 +793,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         $this->logger->setDebugMessage($queryString);
         
-        $this->mainTableCount = intval($data['resultset']['@attributes']['count']);
+        if (!$usePortal) {
+            $this->mainTableCount = intval($data['resultset']['@attributes']['count']);
+        }
 
         return $recordArray;
     }
