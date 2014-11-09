@@ -15,16 +15,16 @@ IM_Entry(
             'name' => 'asset',
             'view' => 'asset',
             'key' => 'asset_id',
-            'repeat-control'=>'insert delete',
+            'repeat-control' => 'insert delete',
             'records' => 5,
             'paging' => true,
             'sort' => array(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
-            'default-values'=>array(
-                array('field'=>'purchase', 'value'=> IM_TODAY),
+            'default-values' => array(
+                array('field' => 'purchase', 'value' => IM_TODAY),
             ),
-            'navi-control'=>'master-hide',
+            'navi-control' => 'master-hide',
         ),
         // Modification 2: Modification for contexts
         // - This context is copied from the above one, and modified.
@@ -34,13 +34,12 @@ IM_Entry(
             'sort' => array(
                 array('field' => 'purchase', 'direction' => 'ASC'),
             ),
-            'query' => array(
-            //    array('field' => 'discard', 'operator' => '>', 'value'=>'1990-1-1'),
+            'query' => array(//    array('field' => 'discard', 'operator' => '>', 'value'=>'1990-1-1'),
             ),
-            'repeat-control'=>'insert delete',
+            'repeat-control' => 'insert delete',
             'records' => 5,
             'paging' => true,
-            'navi-control'=>'master-hide',
+            'navi-control' => 'master-hide',
         ),
         // [END OF] Modification 2
         array(
@@ -51,8 +50,8 @@ IM_Entry(
             'key' => 'asset_id',
             'navi-control' => 'detail-top',
             // Modify
-            'calculation'=>array(
-                array("field"=>"avglength","expression"=>"average(rent@datelength)"),
+            'calculation' => array(
+                array("field" => "avglength", "expression" => "average(rent@datelength)"),
             )
         ),
         array(
@@ -62,15 +61,15 @@ IM_Entry(
                 array('field' => 'rentdate', 'direction' => 'ASC'),
             ),
             'relation' => array(
-                array('foreign-key' => 'asset_id', 'join-field'=> 'asset_id', 'operator' => '='),
+                array('foreign-key' => 'asset_id', 'join-field' => 'asset_id', 'operator' => '='),
             ),
-            'repeat-control'=>'insert delete',
-            'default-values'=>array(
-                array('field'=>'rentdate', 'value'=> IM_TODAY),
+            'repeat-control' => 'insert delete',
+            'default-values' => array(
+                array('field' => 'rentdate', 'value' => IM_TODAY),
             ),
             // Modify
-            'calculation'=>array(
-                array("field"=>"datelength","expression"=>"if(backdate = '', '', date(backdate) - date(rentdate))"),
+            'calculation' => array(
+                array("field" => "datelength", "expression" => "if(backdate = '', '', date(backdate) - date(rentdate))"),
             )
         ),
         array(
@@ -90,8 +89,8 @@ IM_Entry(
         array(
             'name' => 'category-in-list',
             'view' => 'category',
-            'relation' => array (
-                array('foreign-key' => 'category_id', 'join-field'=> 'category', 'operator' => '=')
+            'relation' => array(
+                array('foreign-key' => 'category_id', 'join-field' => 'category', 'operator' => '=')
             )
         ),
     ),
