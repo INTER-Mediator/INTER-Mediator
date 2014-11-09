@@ -58,10 +58,10 @@ buster.testCase("Remote Context Test", {
             context[j].setTableName("table");
             context[j].setViewName("table");
             for (i = 1; i < 4; i++) {
-                context[j].setValue(i, 'test1', 'value1', 'node-'+(counter++));
-                context[j].setValue(i, 'test2', 'value2', 'node-'+(counter++));
-                context[j].setValue(i, 'test3', 'value3', 'node-'+(counter++));
-                context[j].setValue(i, 'test4', 'value4', 'node-'+(counter++));
+                context[j].setValue(i, 'test1', 'value1', 'node-' + (counter++));
+                context[j].setValue(i, 'test2', 'value2', 'node-' + (counter++));
+                context[j].setValue(i, 'test3', 'value3', 'node-' + (counter++));
+                context[j].setValue(i, 'test4', 'value4', 'node-' + (counter++));
             }
         }
         assert.equals(context1.getValue(1, 'test1'), 'value1');
@@ -85,6 +85,48 @@ buster.testCase("Remote Context Test", {
         }
     },
     "Remote-Context-Test3": function () {
+        Object.defineProperty(INTERMediator, 'startFrom', {
+            get: function () {
+                return INTERMediator.getLocalProperty("_im_startFrom", 0);
+            },
+            set: function (value) {
+                INTERMediator.setLocalProperty("_im_startFrom", value);
+            }
+        });
+        Object.defineProperty(INTERMediator, 'pagedSize', {
+            get: function () {
+                return INTERMediator.getLocalProperty("_im_pagedSize", 0);
+            },
+            set: function (value) {
+                INTERMediator.setLocalProperty("_im_pagedSize", value);
+            }
+        });
+        Object.defineProperty(INTERMediator, 'additionalCondition', {
+            get: function () {
+                return INTERMediator.getLocalProperty("_im_additionalCondition", {});
+            },
+            set: function (value) {
+                INTERMediator.setLocalProperty("_im_additionalCondition", value);
+            }
+        });
+        Object.defineProperty(INTERMediator, 'additionalSortKey', {
+            get: function () {
+                return INTERMediator.getLocalProperty("_im_additionalSortKey", {});
+            },
+            set: function (value) {
+                INTERMediator.setLocalProperty("_im_additionalSortKey", value);
+            }
+        });
+
+        if (!INTERMediator.additionalCondition) {
+            INTERMediator.additionalCondition = {};
+        }
+
+        if (!INTERMediator.additionalSortKey) {
+            INTERMediator.additionalSortKey = {};
+        }
+
+
         var context1 = new IMLibContext("test");
         context1.sequencing = true;
         context1.setValue('id=1', 'field1', 10);
@@ -119,10 +161,10 @@ buster.testCase("Remote Context Test", {
         assert.equals(context1.checkOrder({field1: 45}, true), 3);
         assert.equals(context1.checkOrder({field1: 50}, true), 4);
         assert.equals(context1.checkOrder({field1: 55}, true), 4);
-        assert.equals(context1.checkOrder({field1: 60, field2:505}, true), 5);
-        assert.equals(context1.checkOrder({field1: 60, field2:515}, true), 6);
-        assert.equals(context1.checkOrder({field1: 60, field2:99}, true), 4);
-        assert.equals(context1.checkOrder({field1: 60, field2:999}, true), 7);
+        assert.equals(context1.checkOrder({field1: 60, field2: 505}, true), 5);
+        assert.equals(context1.checkOrder({field1: 60, field2: 515}, true), 6);
+        assert.equals(context1.checkOrder({field1: 60, field2: 99}, true), 4);
+        assert.equals(context1.checkOrder({field1: 60, field2: 999}, true), 7);
         assert.equals(context1.checkOrder({field1: -1}, true), -1);
         assert.equals(context1.checkOrder({field1: 550}, true), 7);
         //console.log("context1.recordOrder="+context1.recordOrder.toString());

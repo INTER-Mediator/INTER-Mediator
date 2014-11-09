@@ -24,7 +24,7 @@ INTERMediator_DBAdapter = {
             if (INTERMediatorOnPage.isNativeAuth) {
                 authParams += "&response=" + encodeURIComponent(
                     INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authHashedPassword
-                        + "\n" + INTERMediatorOnPage.authChallenge));
+                    + "\n" + INTERMediatorOnPage.authChallenge));
             } else {
                 if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
                     shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
@@ -57,7 +57,7 @@ INTERMediator_DBAdapter = {
     logging_comAction: function (debugMessageNumber, appPath, accessURL, authParams) {
         INTERMediator.setDebugMessage(
             INTERMediatorOnPage.getMessages()[debugMessageNumber]
-                + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
+            + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
     },
 
     logging_comResult: function (myRequest, resultCount, dbresult, requireAuth, challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
@@ -164,7 +164,7 @@ INTERMediator_DBAdapter = {
             }
             INTERMediatorOnPage.authHashedPassword
                 = SHA1(oldpassword + INTERMediatorOnPage.authUserSalt)
-                + INTERMediatorOnPage.authUserHexSalt;
+            + INTERMediatorOnPage.authUserHexSalt;
         } else {
             INTERMediatorOnPage.retrieveAuthInfo();
         }
@@ -177,7 +177,7 @@ INTERMediator_DBAdapter = {
                 } else {
                     INTERMediatorOnPage.authHashedPassword
                         = SHA1(newpassword + INTERMediatorOnPage.authUserSalt)
-                        + INTERMediatorOnPage.authUserHexSalt;
+                    + INTERMediatorOnPage.authUserHexSalt;
                 }
                 INTERMediatorOnPage.storeCredencialsToCookie();
             }
@@ -291,7 +291,7 @@ INTERMediator_DBAdapter = {
      */
     db_query: function (args) {
         var noError = true, i, index, params, counter, extCount, criteriaObject, sortkeyObject,
-            returnValue, result, ix;
+            returnValue, result, ix, extCountSort, recordLimit = 10000000;
 
         if (args.name === null || args.name === "") {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
@@ -302,17 +302,19 @@ INTERMediator_DBAdapter = {
         }
 
         if (args['records'] == null) {
-            params = "access=select&name=" + encodeURIComponent(args['name']) + "&records=10000000";
+            params = "access=select&name=" + encodeURIComponent(args['name']) ;
         } else {
             if (Number(args.records) === 0) {
                 params = "access=describe&name=" + encodeURIComponent(args['name']);
             } else {
                 params = "access=select&name=" + encodeURIComponent(args['name']);
             }
-            if (args['uselimit'] === true && Number(args.records) >= INTERMediator.pagedSize && Number(INTERMediator.pagedSize) > 0) {
-                params += "&records=" + encodeURIComponent(INTERMediator.pagedSize);
+            if (args['uselimit'] === true
+                && Number(args.records) >= INTERMediator.pagedSize
+                && Number(INTERMediator.pagedSize) > 0) {
+                recordLimit =INTERMediator.pagedSize;
             } else {
-                params += "&records=" + encodeURIComponent(args['records']);
+                recordLimit =args['records'];
             }
         }
 
@@ -331,9 +333,9 @@ INTERMediator_DBAdapter = {
             for (index in args['parentkeyvalue']) {
                 if (args['parentkeyvalue'].hasOwnProperty(index)) {
                     params += "&foreign" + counter
-                        + "field=" + encodeURIComponent(index);
+                    + "field=" + encodeURIComponent(index);
                     params += "&foreign" + counter
-                        + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
+                    + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
                     counter++;
                 }
             }
@@ -376,48 +378,60 @@ INTERMediator_DBAdapter = {
             }
         }
 
-        for(var key in IMLibLocalContext.store) {
-            var value = IMLibLocalContext.store[key];
-            var keyParams = key.split(":");
-            if (keyParams[0].trim() == "condition" && keyParams[1].trim() == args['name'] && value.length > 0)  {
-                var fields = keyParams[2].split(",");
-                var operator = keyParams[3].trim();
-                if (fields.length > 1)  {
-                    params += "&condition" + extCount + "field=__operation__";
-                    params += "&condition" + extCount + "operator=ex";
-                    extCount++;
-                }
-                for (var index = 0 ; index < fields.length ; index++) {
-                    var field = fields[index].trim();
-                    params += "&condition" + extCount + "field=" + encodeURIComponent(field);
-                    params += "&condition" + extCount + "operator=" + encodeURIComponent(operator);
-                    params += "&condition" + extCount + "value=" + encodeURIComponent(value);
-                    extCount++;
-                }
-            }
-        }
-
-        extCount = 0;
+        extCountSort = 0;
         sortkeyObject = INTERMediator.additionalSortKey[args['name']];
         if (sortkeyObject) {
             if (sortkeyObject["field"]) {
                 sortkeyObject = [sortkeyObject];
             }
             for (index = 0; index < sortkeyObject.length; index++) {
-                params += "&sortkey" + extCount;
+                params += "&sortkey" + extCountSort;
                 params += "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
-                params += "&sortkey" + extCount;
+                params += "&sortkey" + extCountSort;
                 params += "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
-                extCount++;
+                extCountSort++;
             }
 
         }
 
-        // params += "&randkey" + Math.random();    // For ie...
-        // IE uses caches as the result in spite of several headers. So URL should be randomly.
-        //
-        // This is not requred because the Notification feature adds the client Identifier for each communication.
-        // msyk June 1, 2014
+        var orderFields = {};
+        for (var key in IMLibLocalContext.store) {
+            var value = new String(IMLibLocalContext.store[key]);
+            var keyParams = key.split(":");
+            if (keyParams && keyParams.length > 1 && keyParams[1].trim() == args['name'] && value.length > 0) {
+                if (keyParams[0].trim() == "condition") {
+                    var fields = keyParams[2].split(",");
+                    var operator = keyParams[3].trim();
+                    if (fields.length > 1) {
+                        params += "&condition" + extCount + "field=__operation__";
+                        params += "&condition" + extCount + "operator=ex";
+                        extCount++;
+                    }
+                    for (var index = 0; index < fields.length; index++) {
+                        params += "&condition" + extCount + "field=" + encodeURIComponent(fields[index].trim());
+                        params += "&condition" + extCount + "operator=" + encodeURIComponent(operator);
+                        params += "&condition" + extCount + "value=" + encodeURIComponent(value);
+                        extCount++;
+                    }
+                } else if (keyParams[0].trim() == "valueofaddorder") {
+                    orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()];
+                } else if (keyParams[0].trim() == "limitnumber") {
+                    recordLimit = parseInt(value);
+                }
+            }
+        }
+        params += "&records=" + encodeURIComponent(recordLimit);
+        var orderedKeys = Object.keys(orderFields);
+        for (var i = 0; i < orderedKeys.length; i++) {
+            params += "&sortkey" + extCountSort + "field=" + encodeURIComponent(orderFields[orderedKeys[i]][0]);
+            params += "&sortkey" + extCountSort + "direction=" + encodeURIComponent(orderFields[orderedKeys[i]][1]);
+            extCountSort++;
+        }
+// params += "&randkey" + Math.random();    // For ie...
+// IE uses caches as the result in spite of several headers. So URL should be randomly.
+//
+// This is not requred because the Notification feature adds the client Identifier for each communication.
+// msyk June 1, 2014
         returnValue = {};
         try {
             result = this.server_access(params, 1012, 1004);
@@ -743,4 +757,5 @@ INTERMediator_DBAdapter = {
             }
         }
     }
-};
+}
+;

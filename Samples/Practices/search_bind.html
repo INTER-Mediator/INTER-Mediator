@@ -20,12 +20,12 @@
 <body onload="INTERMediator.construct()">
 <div>
     検索条件:
-    <input type="text" data-im="_@condition:postalcode:f3,f7,f8,f9:%match%">
+    <input type="text" data-im="_@condition:postalcode:f3,f7,f8,f9:*match*">
     表示件数：
     <select type="text" data-im="_@limitnumber:postalcode">
         <option value="4">4</option>
         <option value="10">10</option>
-        <option value="40">40</option>
+        <option value="20" selected>20</option>
     </select>
     <button data-im="_@update:postalcode">search</button>
 </div>
@@ -34,14 +34,14 @@
     <thead>
     <tr>
         <th>郵便番号
-            <span data-im="_@addorder:postalcode:f3:asc">▲</span>
-            <span data-im="_@addorder:postalcode:f3:desc">▼</span>
+            <span style="cursor: pointer" data-im="_@addorder:postalcode:f3:asc">▲</span>
+            <span style="cursor: pointer" data-im="_@addorder:postalcode:f3:desc">▼</span>
         </th>
         <th>都道府県</th>
         <th>市区町村</th>
         <th>町域名
-            <span data-im="_@addorder:postalcode:f9:asc">▲</span>
-            <span data-im="_@addorder:postalcode:f9:desc">▼</span>
+            <span style="cursor: pointer" data-im="_@addorder:postalcode:f9:asc">▲</span>
+            <span style="cursor: pointer" data-im="_@addorder:postalcode:f9:desc">▼</span>
         </th>
     </tr>
     </thead>

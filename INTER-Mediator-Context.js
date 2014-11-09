@@ -25,7 +25,6 @@ IMLibContextPool = {
     excludingNode: null,
 
     synchronize: function (context, recKey, key, value, target, portal) {
-//        console.log("SYNC:"+context+"/"+recKey+"/"+key+"/"+value);
         var i, j, viewName, refNode, targetNodes, result = false;
         viewName = context.viewName;
         if (this.poolingContexts == null) {
@@ -261,10 +260,7 @@ IMLibContextPool = {
     },
 
     updateOnAnotherClient: function (eventName, info) {
-        var keying, i, entityName = info.entity, contextDef, contextView, keyField, bindingInfo, fieldName, cIndex,
-            targetNode;
-//        console.error("eventName=" + eventName + "\nentity=" + info.entity + "\npk-value="
-//            + info.pkvalue + "\nfield=" + info.field + "\nvalue=" + info.value);
+        var i, entityName = info.entity, contextDef, contextView, keyField;
 
         if (eventName == 'update') {
             for (i = 0; i < this.poolingContexts.length; i++) {
@@ -436,7 +432,7 @@ IMLibContext = function (contextName) {
                 seekRemovingContext(myChildren[i]);
             }
         }
-    }
+    };
 
     this.setModified = function (recKey, key, value) {
         if (this.modified[recKey] === undefined) {
@@ -464,7 +460,7 @@ IMLibContext = function (contextName) {
      The isDebug parameter is for debugging and testing. Usually you should not specify it.
      */
     this.checkOrder = function (oneRecord, isDebug) {
-        var i, j, fields = [], directions = [], oneSortKey, condtextDef, lower, upper, index, targetRecord,
+        var i, fields = [], directions = [], oneSortKey, condtextDef, lower, upper, index, targetRecord,
             contextValue, checkingValue, stop;
         if (isDebug !== true) {
             if (INTERMediator && INTERMediator.additionalSortKey[this.contextName]) {
@@ -493,18 +489,11 @@ IMLibContext = function (contextName) {
         upper = this.recordOrder.length;
         for (i = 0; i < fields.length; i++) {
             if (oneRecord[fields[i]]) {
-//                if (isDebug === true) {
-//                    console.log("field=" + fields[i] + ",lower=" + lower + ",upper=" + upper);
-//                }
                 index = parseInt((upper + lower) / 2);
                 do {
                     targetRecord = this.store[this.recordOrder[index]];
                     contextValue = targetRecord[fields[i]];
                     checkingValue = oneRecord[fields[i]];
-//                    if (isDebug === true) {
-//                        console.log("lower=" + lower + ",upper=" + upper + ",index=" + index
-//                            + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
-//                    }
                     if (contextValue < checkingValue) {
                         lower = index;
                     } else if (contextValue > checkingValue) {
@@ -580,7 +569,7 @@ IMLibContext = function (contextName) {
         var recKey = this.recordOrder[index];
         for (field in this.binding[recKey]) {
             nodeId = this.binding[recKey][field].nodeId;
-            repeater = INTERMediatorLib.getParentRepeater(doument.getElementById(nodeId));
+            repeater = INTERMediatorLib.getParentRepeater(document.getElementById(nodeId));
             if (!repeater in repeaters) {
                 repeaters.push(repeater);
             }
@@ -637,7 +626,7 @@ IMLibContext = function (contextName) {
             });
             INTERMediator.flushMessage();
         }
-    }
+    };
 
     this.setValue = function (recKey, key, value, nodeId, target, portal) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
@@ -723,7 +712,7 @@ IMLibContext = function (contextName) {
         } catch (ex) {
             return null;
         }
-    }
+    };
 
     this.removeEntry = function (pkvalue) {
         var keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i, parentNode,
@@ -754,7 +743,7 @@ IMLibContext = function (contextName) {
                 }
             }
         }
-    }
+    };
 
     this.isContaining = function (value) {
         var contextDef, contextName, checkResult = [], i, fieldName, result, opePosition, leftHand, rightHand,
@@ -896,7 +885,7 @@ IMLibLocalContext = {
         this.store = {};
     },
 
-    setValue: function (key, value) {
+    setValue: function (key, value, withoutArchive) {
         var i, hasUpdated, refIds, node;
 
         hasUpdated = false;
@@ -915,7 +904,7 @@ IMLibLocalContext = {
                 }
             }
         }
-        if (hasUpdated) {
+        if (hasUpdated && !(withoutArchive === true)) {
             this.archive();
         }
     },
@@ -943,7 +932,9 @@ IMLibLocalContext = {
         } else {
             jsonString = JSON.stringify(this.store);
         }
-        if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+        if (INTERMediator.useSessionStorage === true
+            && typeof sessionStorage !== 'undefined'
+            && sessionStorage !== null) {
             sessionStorage.setItem("_im_localcontext", jsonString);
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
@@ -952,7 +943,9 @@ IMLibLocalContext = {
 
     unarchive: function () {
         var localContext = "";
-        if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
+        if (INTERMediator.useSessionStorage === true
+            && typeof sessionStorage !== 'undefined'
+            && sessionStorage !== null) {
             localContext = sessionStorage.getItem("_im_localcontext");
         } else {
             localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
@@ -973,6 +966,7 @@ IMLibLocalContext = {
                     INTERMediator.pagedSize = this.store._im_pagedSize;
                 }
             }
+            this.updateAll();
         }
     },
 
@@ -997,10 +991,10 @@ IMLibLocalContext = {
                 params = nodeInfo.field.split(":");
                 switch (params[0]) {
                     case "addorder":
-                        IMLibMouseEventDispatch.setExecute(idValue, IMLibUI.eventAddOrderHaldler);
+                        IMLibMouseEventDispatch.setExecute(idValue, IMLibUI.eventAddOrderHandler);
                         break;
                     case "update":
-                        INTERMediatorLib.addEvent(node, 'click', (function () {
+                        IMLibMouseEventDispatch.setExecute(idValue, (function () {
                             var contextName = params[1];
                             return function () {
                                 IMLibUI.eventUpdateHandler(contextName);
@@ -1008,15 +1002,24 @@ IMLibLocalContext = {
                         })());
                         break;
                     case "condition":
-                    case "limitnumber":
-                    default:
-                        INTERMediatorLib.addEvent(node, 'change', (function () {
-                            var nodeId = idValue;
+                        IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
+                            var contextName = params[1];
                             return function () {
-                                IMLibLocalContext.update(nodeId);
+                                IMLibUI.eventUpdateHandler(contextName);
                             };
                         })());
+                        break;
+                    case "limitnumber":
+                        IMLibChangeEventDispatch.setExecute(idValue, (function () {
+                            var contextName = params[1];
+                            return function () {
+                                IMLibUI.eventUpdateHandler(contextName);
+                            };
+                        })());
+                        break;
+                    default:
                         IMLibChangeEventDispatch.setExecute(idValue, IMLibUI.valueChange);
+                        break;
                 }
 
                 value = this.store[nodeInfo.field];
@@ -1048,16 +1051,15 @@ IMLibLocalContext = {
         }
     },
 
-    updateAll: function()   {
+    updateAll: function () {
         var index, key, nodeIds, idValue, targetNode;
-        for(key in this.binding)    {
+        for (key in this.binding) {
             nodeIds = this.binding[key];
-            for (index = 0 ; index < nodeIds.length ; index++)    {
+            for (index = 0; index < nodeIds.length; index++) {
                 idValue = nodeIds[index];
                 targetNode = document.getElementById(idValue);
-                if (   targetNode.tagName=="INPUT"
-                    || targetNode.tagName=="TEXTAREA"
-                    || targetNode.tagName=="SELECT")   {
+                if (targetNode &&
+                    ( targetNode.tagName == "INPUT" || targetNode.tagName == "TEXTAREA" || targetNode.tagName == "SELECT")) {
                     IMLibLocalContext.update(idValue);
                     break;
                 }

@@ -1597,6 +1597,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return 0;
         }
 
+        $username = $this->authSupportUnifyUsernameAndEmail($username);
+
         $this->setupFXforDB_Alt($userTable, 1);
         $this->fxAlt->AddDBParam('username', $username, "eq");
         $result = $this->fxAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
@@ -1822,6 +1824,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
     {
+        $user = $this->authSupportUnifyUsernameAndEmail($user);
+
         $this->setupFXforAuth($tableName, 1);
         $this->fxAuth->AddDBParam($userField, $user, 'eq');
         $this->fxAuth->AddDBParam($keyField, $keyValue, 'eq');

@@ -279,7 +279,7 @@ var IMLibUI = {
                 INTERMediator.setErrorMessage(ex, "EXCEPTION-3");
             }
         }
-        for (i = 0; i < removeNodes.length ; i++)   {
+        for (i = 0; i < removeNodes.length; i++) {
             IMLibContextPool.removeRecordFromPool(removeNodes[i]);
         }
         IMLibElement.deleteNodes(removeNodes);
@@ -652,13 +652,29 @@ var IMLibUI = {
         }
     },
 
-    eventUpdateHandler: function(contextName)  {
+    eventUpdateHandler: function (contextName) {
         IMLibLocalContext.updateAll();
         var context = IMLibContextPool.getContextFromName(contextName);
         INTERMediator.constructMain(context[0]);
     },
 
-    eventAddOrderHandler: function()  {
-
+    eventAddOrderHandler: function (e) {    // e is mouse event
+        var targetKey, targetSplit, key, itemSplit, extValue;
+        targetKey = e.target.getAttribute("data-im");
+        targetSplit = targetKey.split(":");
+        if (targetSplit[0] != "_@addorder" || targetSplit.length < 3) {
+            return;
+        }
+        for (key in IMLibLocalContext.store) {
+            itemSplit = key.split(":");
+            if (itemSplit.length > 3 && itemSplit[0] == "valueofaddorder" && itemSplit[1] == targetSplit[1]) {
+                extValue = IMLibLocalContext.getValue(key);
+                if (extValue) {
+                    IMLibLocalContext.store[key]++;
+                }
+            }
+        }
+        IMLibLocalContext.setValue("valueof" + targetKey.substring(2), 1);
+        IMLibUI.eventUpdateHandler(targetSplit[1]);
     }
 }
