@@ -151,21 +151,16 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $regTable = $this->dbSettings->registerTableName;
         $pksTable = $this->dbSettings->registerPKTableName;
 
-        $hasFindParams = false;
         $this->setupFXforDB($regTable, 'all');
+        $this->fx->AddDBParam('clientid', $clientId, 'eq');
         if ($tableKeys) {
             $subCriteria = array();
             foreach ($tableKeys as $regId)   {
-                $hasFindParams = true;
                 $this->fx->AddDBParam('id', $regId, 'eq');
             }
         }
+        $result = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
 
-        if ($hasFindParams) {
-            $result = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        } else {
-            $result = $this->fx->DoFxAction('show_all', TRUE, TRUE, 'full');
-        }
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->errorMessageStore(
                 $this->stringWithoutCredential("FX reports error at find action: " . 
@@ -181,6 +176,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
+
         return true;
     }
 
