@@ -48,14 +48,13 @@ class MediaAccess
              * style URL. In case of an image, $file is just the path info as like above.
              */
             $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
-//            if (isset($options['media-context'])) {
+            if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
-//
 //                var_export($file);
 //                var_export($target);
 //                var_export($this->contextRecord);
 //                return;
-//            }
+            }
 
             $content = false;
             $dq = '"';
