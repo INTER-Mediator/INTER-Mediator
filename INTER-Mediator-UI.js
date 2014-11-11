@@ -289,7 +289,7 @@ var IMLibUI = {
     },
 
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
-        var currentContext, recordSet, index, key, removeNode, i, relationDef, targetRecord, portalField,
+        var currentContext, recordSet, index, key, conditions, i, relationDef, targetRecord, portalField,
             targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet, newRecordId,
             keyField, associatedContext, createdRecord, newRecord;
 
@@ -435,11 +435,13 @@ var IMLibUI = {
         if (associatedContext) {
             associatedContext.foreignValue = foreignValues;
             if (currentContext["portal"] == true && existRelated == false) {
-                INTERMediator.additionalCondition[targetName] = {
+                conditions = INTERMediator.additionalCondition;
+                conditions[targetName] = {
                     field: keyField,
                     operator: "=",
                     value: keyValue
                 };
+                INTERMediator.additionalCondition = conditions;
             }
             createdRecord = [{}];
             createdRecord[0][keyField] = newRecordId;

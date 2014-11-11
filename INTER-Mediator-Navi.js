@@ -227,7 +227,7 @@ IMLibPageNavigation = {
     },
 
     insertRecordFromNavi: function (targetName, keyField, isConfirm) {
-        var newId, restore, fieldObj, contextDef, responseCreateRecord;
+        var newId, conditions, fieldObj, contextDef, responseCreateRecord;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
@@ -268,7 +268,9 @@ IMLibPageNavigation = {
             restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
             if (contextDef.records <= 1) {
-                INTERMediator.additionalCondition[targetName] = {field: keyField, value: newId};
+                conditions = INTERMediator.additionalCondition;
+                conditions[targetName] = {field: keyField, value: newId};
+                INTERMediator.additionalCondition = conditions;
                 IMLibLocalContext.archive();
             }
             INTERMediator_DBAdapter.unregister();

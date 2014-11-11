@@ -214,7 +214,6 @@ class MediaAccess
                 $cookieNameUser .= '_' . $options['authentication']['realm'];
                 $cookieNameToken .= '_' . $options['authentication']['realm'];
             }
-
             if (!$dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken])) {
                 $this->exitAsError(401);
             }
@@ -252,6 +251,12 @@ class MediaAccess
             } else {
                 $authorizedUsers = $dbProxyInstance->dbClass->getAuthorizedUsers("load");
                 $authorizedGroups = $dbProxyInstance->dbClass->getAuthorizedGroups("load");
+                if (count($authorizedGroups) == 0 && count($authorizedUsers) == 0)   {
+                    return;
+                }
+                if (in_array($dbProxyInstance->dbClass->dbSettings->getCurrentUser(), $authorizedUsers))   {
+                    return;
+                }
                 $belongGroups = $dbProxyInstance->dbClass->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
                 if (!in_array($dbProxyInstance->dbClass->dbSettings->getCurrentUser(), $authorizedUsers)
                     && count(array_intersect($belongGroups, $authorizedGroups)) == 0
