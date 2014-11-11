@@ -18,9 +18,9 @@ IM_Entry(
             'key' => 'id',
             'query' => array(array('field' => 'name', 'value' => '%', 'operator' => 'LIKE')),
             'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
-            'post-repeater' => 'move',
+            'navi-control' => 'master-hide',
             'authentication'=> array(
-//                'media-handling' => true,
+                'media-handling' => true,
             ),
         ),
         array(
@@ -28,6 +28,7 @@ IM_Entry(
             'name' => 'productdetail',
             'view' => 'product',
             'key' => 'id',
+            'navi-control' => 'detail',
         ),
     ),
     array(
@@ -38,19 +39,11 @@ IM_Entry(
                 'parameter' => '0'
             ),
         ),
-        'authentication' => array( // table only, for all operations
-//            'user' => array('user1'), // Itemize permitted users
-//            'group' => array('group2'), // Itemize permitted groups
-//            'privilege' => array(), // Itemize permitted privileges
-//            'user-table' => 'authuser', // Default value
-//            'group-table' => 'authgroup',
-//            'corresponding-table' => 'authcor',
-//            'challenge-table' => 'issuedhash',
-//            'authexpired' => '300', // Set as seconds.
-            'storing' => 'cookie', // 'cookie'(default), 'cookie-domainwide', 'none'
-            'realm' => 'Sample_products_auth',
-        ),
-        'media-root-dir'=>'/Library/WebServer/Documents/im/Sample_products/images',
+//        'authentication' => array(
+//            'storing' => 'cookie',
+//            'realm' => 'Sample_products_auth',
+//        ),
+        'media-root-dir'=>'/Library/WebServer/Documents/Samples/Sample_products/images',
     ),
     array('db-class' => 'PDO'),
     false

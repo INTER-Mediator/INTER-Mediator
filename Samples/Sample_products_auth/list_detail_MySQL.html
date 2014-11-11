@@ -14,28 +14,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Authorized Media Handling/MySQL</title>
     <link type="text/css" rel="stylesheet" href="../sample.css">
-    <link type="text/css" rel="stylesheet" href="list_detail.css">
     <script type="text/javascript" src="contexts_MySQL.php"></script>
-    <script type="text/javascript" src="list_detail.js"></script>
 </head>
-<body>
+<body onload="INTERMediator.construct()">
 <!-- Table for the list view -->
 <div id="listarea">
     <table border="1">
         <thead>
         <tr>
-            <th>id's</th><th>name</th><th>unitprice</th><th>photo</th>
+            <th></th><th>name</th><th>unitprice</th><th>photo</th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td>
-                <button id="showdetail" data-im="productlist@id@#id">Detail</button>
-            </td>
+            <td></td>
             <td data-im="productlist@name"></td>
             <td class="price" data-im="productlist@unitprice"></td>
             <td>
-                <img width="30" src="../Sample_products/images/" data-im="productlist@photofile@#src">
+                <img width="30" src="contexts_MySQL.php?media="
+                     data-im="productlist@photofile@#src">
                 <a data-im="productlist@ack_link@href|productlist@acknowledgement"></a>
             </td>
         </tr>
@@ -44,7 +41,6 @@
 </div>
 <!-- Table for the detail view -->
 <div id="detailarea" class="hidden">
-    <a id="showlist">Show List</a>
     <table border="1">
         <tbody>
         <tr>
@@ -78,5 +74,6 @@
         </tbody>
     </table>
 </div>
+<p>If you can't see images, you should set the valid path to image to the 'media-root-dir' value in context_MySQL.php file.</p>
 </body>
 </html>

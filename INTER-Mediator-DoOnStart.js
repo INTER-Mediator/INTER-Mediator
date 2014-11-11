@@ -73,3 +73,4 @@ INTERMediatorLib.addEvent(window, "unload", function (e) {
     INTERMediator_DBAdapter.unregister();
 });
 
+//IMLibEventResponder.setup();
