@@ -6,7 +6,7 @@
 # This project started at the end of 2009.
 # INTER-Mediator is supplied under MIT License.
 
-version="4.5.1"
+version="4.6"
 
 # The jar file of YUI can be donwloaded from below.
 # http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7
@@ -64,7 +64,7 @@ done
 
 #### Merge js files
 echo "PROCESSING: Merging JS files"
-cat "${originalPath}/INTER-Mediator.js"                       >> "${buildPath}/temp.js"
+sed -f "${sedrule}" "${originalPath}/INTER-Mediator.js"        > "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
@@ -79,7 +79,7 @@ cat "${originalPath}/lib/js_lib/sha256.js"                    >> "${buildPath}/t
 cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
-cat "${originalPath}/Adapter_DBServer.js"                      > "${buildPath}/temp.js"
+cat "${originalPath}/Adapter_DBServer.js"                     >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/temp.js"
 
