@@ -29,6 +29,7 @@ http://msyk.dyndns.org/im-sample.html
 - Akinori Mizoguchi
 - Hiromi Morita
 - Yukio Murakami
+- Osamu Noda
 - Tsutomu Yuasa
 
 ## Contributing

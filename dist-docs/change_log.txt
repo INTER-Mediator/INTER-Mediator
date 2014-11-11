@@ -59,7 +59,7 @@ Ver.4.4 (2014/5/22)
 - INTERMediatorOnPage.additionalExpandingEnclosureFinish and INTERMediatorOnPage.additionalExpandingRecordFinish
   are supported. These are programmable interfaces associated with 'post-enclosure' and 'post-repeater' in a context.
 - DataConverter_MySQLDateTime class supports 'YYYY.MM.DD' date format.
-- Use sessionStorage for the Local Context instead of Cookie by default.
+- Use sessionStorage for the Local Context instead of Cookie by default (Thanks to Osamu Noda).
 - Cookie is now destroyed when browser is closed when the value of 'authexpired' key in a definition file is 0.
 - Divide the pagination codes to INTER-Mediator-Navi.js.
 - Update OME.php to sending to the email address including '+' (especially for Gmail users).
