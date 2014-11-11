@@ -31,6 +31,8 @@ Ver.4.6 (in development)
   property).
 - [BUG FIX] When a context should be removed, but it wasn't. A context is surely removed when nodes go away.
 - [BUG FIX] FileMaker_FX didn't respond collectively in case of email as user name.
+- [BUG FIX] Revert MediaAccess.php partly to fix showing images of FileMaker's container fields. The affected version 
+  is 4.5 only (Thanks to Kentaro Suzuki).
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
