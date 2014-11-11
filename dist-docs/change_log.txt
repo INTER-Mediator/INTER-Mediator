@@ -9,7 +9,7 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.6 (in development)
-- In case of 'navi-control' is 'master-hide', the pagenation control is going to hide when the detail area appears.
+- In case of 'navi-control' is 'master-hide', the pagination control is going to hide when the detail area appears.
 - Use fmresultset XML grammer internally in getFromDB method of DB_FileMaker_FX class.
 - The Date/Time functions are available in the expression of 'calculation' value.
 - Support syncing with multiple clients with Pusher using FileMaker datasource (except for portal=>true context).
@@ -33,6 +33,7 @@ Ver.4.6 (in development)
 - [BUG FIX] FileMaker_FX didn't respond collectively in case of email as user name.
 - [BUG FIX] Revert MediaAccess.php partly to fix showing images of FileMaker's container fields. The affected version 
   is 4.5 only (Thanks to Kentaro Suzuki).
+- [BUG FIX] Update Sample_products_auth for the master-detail style UI.
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)

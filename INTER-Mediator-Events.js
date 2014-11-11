@@ -23,7 +23,7 @@ IMLibEventResponder = {
         IMLibMouseEventDispatch = new IMLibEventDispatch();
         body = document.getElementsByTagName('BODY')[0];
         INTERMediatorLib.addEvent(body, "change", function (e) {
-            console.log("Event Dispatcher: change");
+            //console.log("Event Dispatcher: change");
             var event = e ? e : window.event;
             if (!event) {
                 return;
@@ -46,7 +46,7 @@ IMLibEventResponder = {
             executable(idValue);
         });
         INTERMediatorLib.addEvent(body, "keydown", function (e) {
-            console.log("Event Dispatcher: keydown");
+            //console.log("Event Dispatcher: keydown");
             var event, charCode, target, idValue;
             event = e ? e : window.event;
             if (event.charCode) {
@@ -78,7 +78,7 @@ IMLibEventResponder = {
             executable(event);
         });
         INTERMediatorLib.addEvent(body, "click", function (e) {
-            console.log("Event Dispatcher: click");
+            //console.log("Event Dispatcher: click");
             var event, target, idValue, executable, targetDefs, i, nodeInfo, value;
             event = e ? e : window.event;
             if (!event) {

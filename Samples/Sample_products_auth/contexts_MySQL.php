@@ -21,6 +21,7 @@ IM_Entry(
             'navi-control' => 'master-hide',
             'authentication'=> array(
                 'media-handling' => true,
+                'load' => array(),
             ),
         ),
         array(
@@ -29,6 +30,10 @@ IM_Entry(
             'view' => 'product',
             'key' => 'id',
             'navi-control' => 'detail',
+            'authentication'=> array(
+                'media-handling' => true,
+                'load' => array(),
+            ),
         ),
     ),
     array(
@@ -39,11 +44,12 @@ IM_Entry(
                 'parameter' => '0'
             ),
         ),
-//        'authentication' => array(
-//            'storing' => 'cookie',
-//            'realm' => 'Sample_products_auth',
-//        ),
+        'authentication' => array(
+            'storing' => 'cookie',
+            'realm' => 'Sample_products_auth',
+        ),
         'media-root-dir'=>'/Library/WebServer/Documents/Samples/Sample_products/images',
+        'media-context'=>'productlist',
     ),
     array('db-class' => 'PDO'),
     false

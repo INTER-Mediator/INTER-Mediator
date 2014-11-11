@@ -1493,14 +1493,16 @@ var INTERMediator = {
                     fvalue[ff] = fv;
 
                     return function () {
-                        var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure;
+                        var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, conditions;
 
                         masterContext = IMLibContextPool.getMasterContext();
                         detailContext = IMLibContextPool.getDetailContext();
                         if (detailContext) {
                             contextDef = detailContext.getContextDef();
                             contextName = contextDef.name;
-                            INTERMediator.additionalCondition[contextName] = {field: f, operator: "=", value: v};
+                            conditions = INTERMediator.additionalCondition;
+                            conditions[contextName] = {field: f, operator: "=", value: v};
+                            INTERMediator.additionalCondition = conditions;
                             INTERMediator.constructMain(detailContext);
                             if (isMasterHide) {
                                 masterEnclosure = masterContext.enclosureNode;
