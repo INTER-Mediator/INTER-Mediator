@@ -2,7 +2,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2013 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
  *
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -729,6 +729,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 //                    . "resultCount='{$this->countQueryResult($this->dbSettings->getTargetName())}';";
                 $this->outputOfProcessing['dbresult'] = $result;
                 $this->outputOfProcessing['resultCount'] = $this->countQueryResult($this->dbSettings->getTargetName());
+                if (get_class($this->dbClass) == 'DB_FileMaker_FX') {
+                    $this->outputOfProcessing['totalCount'] = $this->dbClass->getTotalCount();
+                }
                 break;
             case 'update':
                 if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {

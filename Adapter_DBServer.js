@@ -79,7 +79,7 @@ INTERMediator_DBAdapter = {
         }
     },
     server_access: function (accessURL, debugMessageNumber, errorMessageNumber) {
-        var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
+        var newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
             mediatoken = null, appPath, authParams, jsonObject, i, notifySupport = false, useNull = false,
             registeredID = "";
@@ -95,6 +95,7 @@ INTERMediator_DBAdapter = {
             myRequest.send(accessURL + authParams);
             jsonObject = JSON.parse(myRequest.responseText);
             resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
+            totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
             dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
             requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
             challenge = jsonObject.challenge ? jsonObject.challenge : null;
@@ -141,6 +142,7 @@ INTERMediator_DBAdapter = {
         return {
             dbresult: dbresult,
             resultCount: resultCount,
+            totalCount: totalCount,
             newRecordKeyValue: newRecordKeyValue,
             newPasswordResult: changePasswordResult,
             registeredId: registeredID,
@@ -449,6 +451,9 @@ INTERMediator_DBAdapter = {
                     INTERMediator.pagedSize = Number(args['records']);
                 }
                 INTERMediator.pagedAllCount = Number(result.resultCount);
+                if (result.totalCount) {
+                    INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
+                }
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {

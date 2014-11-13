@@ -26,6 +26,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $fxAuth = null;
     private $fxAlt = null;
     private $mainTableCount = 0;
+    private $mainTableTotalCount = 0;
     private $fieldInfo = null;
 
     private $isRequiredUpdated = false;
@@ -410,6 +411,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         //    $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}", 2);
         $this->fieldInfo = null;
         $this->mainTableCount = 0;
+        $this->mainTableTotalCount = 0;
         $context = $this->dbSettings->getDataSourceTargetArray();
 
         $usePortal = false;
@@ -791,6 +793,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         
         if (!$usePortal) {
             $this->mainTableCount = intval($data['resultset']['@attributes']['count']);
+            $this->mainTableTotalCount = intval($data['datasource']['@attributes']['total-count']);
         }
 
         return $recordArray;
@@ -884,6 +887,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function countQueryResult($dataSourceName)
     {
         return $this->mainTableCount;
+    }
+
+    public function getTotalCount($dataSourceName)
+    {
+        return $this->mainTableTotalCount;
     }
 
     public function setToDB($dataSourceName)
