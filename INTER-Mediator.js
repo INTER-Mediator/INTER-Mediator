@@ -36,6 +36,7 @@ var INTERMediator = {
         additionalFieldValueOnDelete: {},
         waitSecondsAfterPostMessage: 4,
         pagedAllCount: 0,
+        totalRecordCount: null,  // for DB_FileMaker_FX
         currentEncNumber: 0,
         isIE: false,
         isTrident: false,
