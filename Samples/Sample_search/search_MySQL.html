@@ -15,18 +15,17 @@
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <link rel="stylesheet" type="text/css" href="../sample.css">
     <script type="text/javascript" src="include_MySQL.php"></script>
-    <script type="text/javascript" src="search.js"></script>
 </head>
-<body>
+<body onload="INTERMediator.construct()">
 <div>
     地名(Place Name):
-    <input type="text" data-im="_@placeCondition"/>
+    <input type="text" data-im="_@condition:postalcode:f9:*match*"/>
     検索は住所の「町域名」に一部分でも含まれる文字列を検索します。
 </div>
 <div>
     郵便番号(Zipcode):
-    <input type="text" data-im="_@zipCondition"/>
-    <button id="searchbutton">search</button>
+    <input type="text" data-im="_@condition:postalcode:f3:match*"/>
+    <button data-im="_@update:postalcode">search</button>
     郵便番号を前方一致で検索します。
 </div>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
@@ -34,14 +33,14 @@
     <thead>
     <tr>
         <th>郵便番号
-            <a id="ascendingsortbypostalcode" href="#">▲</a>
-            <a id="descendingsortbypostalcode" href="#">▼</a>
+            <span data-im="_@addorder:postalcode:f3:asc">▲</span>
+            <span data-im="_@addorder:postalcode:f3:desc">▼</span>
         </th>
         <th>都道府県</th>
         <th>市区町村</th>
         <th>町域名
-            <a id="ascendingsortbyname" href="#">▲</a>
-            <a id="descendingsortbyname" href="#">▼</a>
+            <span data-im="_@addorder:postalcode:f9:asc">▲</span>
+            <span data-im="_@addorder:postalcode:f9:desc">▼</span>
         </th>
     </tr>
     </thead>
