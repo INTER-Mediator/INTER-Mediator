@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ * 
+ *   This project started at the end of 2009.
+ *   INTER-Mediator is supplied under MIT License.
+ */ -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>INTER-Mediator - Sample - List-Detail Style Navigation/FileMaker Server</title>
+    <link type="text/css" rel="stylesheet" href="../../sample.css">
+    <script type="text/javascript" src="navi1.php"></script>
+</head>
+<body onload="INTERMediator.construct(true);">
+<!-- Table for the list view -->
+<div id="listarea" style="float:left; margin-right: 24px;">
+    <table border="1">
+        <thead>
+        <tr>
+            <th></th><th>name</th><th>unitprice</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td></td>
+            <td data-im="productlist@name"></td>
+            <td class="price" data-im="productlist@unitprice"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<!-- Table for the detail view -->
+<div id="detailarea">
+    <table border="1">
+        <tbody>
+        <tr>
+            <th>id</th>
+            <td data-im="productdetail@id"></td>
+        </tr>
+        <tr>
+            <th>name</th>
+            <td><input type="text" size="60" data-im="productdetail@name"></td>
+        </tr>
+        <tr>
+            <th>unitprice</th>
+            <td><input type="text" size="60" data-im="productdetail@unitprice"></td>
+        </tr>
+        <tr>
+            <th>photofile</th>
+            <td><input type="text" size="60" data-im="productdetail@photofile"></td>
+        </tr>
+        <tr>
+            <th>acknowledgement</th>
+            <td><input type="text" size="60" data-im="productdetail@acknowledgement"></td>
+        </tr>
+        <tr>
+            <th>ack_link</th>
+            <td><input type="text" size="60" data-im="productdetail@ack_link"></td>
+        </tr>
+        <tr>
+            <th>photofile</th>
+            <td><img src="../../Sample_products/images/" data-im="productdetail@photofile@#src"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div style="clear: both"/>
+</body>
+</html>
