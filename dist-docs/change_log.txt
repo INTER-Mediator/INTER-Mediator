@@ -9,12 +9,12 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
 Ver.4.6 (in development)
-- In case of 'navi-control' is 'master-hide', the pagination control is going to hide when the detail area appears.
-- Use fmresultset XML grammer internally in getFromDB method of DB_FileMaker_FX class.
-- The Date/Time functions are available in the expression of 'calculation' value.
-- Support syncing with multiple clients with Pusher using FileMaker datasource (except for portal=>true context).
 - Query conditions, sort fields, record number and updating context can be described in data-im attributes.
   This feature realizes non-programming search page.
+- In case of 'navi-control' is 'master-hide', the pagination control is going to hide when the detail area appears.
+- The Date/Time functions are available in the expression of 'calculation' value.
+- Use fmresultset XML grammer internally in getFromDB method of DB_FileMaker_FX class.
+- Support syncing with multiple clients with Pusher using FileMaker datasource (except for portal=>true context).
 - Add INTERMediator.totalRecordCount property and add getTotalCount() to DB_FileMaker_FX class to get the total 
   number of records in the main table.
 - Update Sample_products_auth (Authorized Media Handling Sample) for the master-detail style UI.
