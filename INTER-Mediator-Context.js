@@ -1005,6 +1005,7 @@ IMLibLocalContext = {
                         IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
                             var contextName = params[1];
                             return function () {
+                                INTERMediator.startFrom = 0;
                                 IMLibUI.eventUpdateHandler(contextName);
                             };
                         })());
