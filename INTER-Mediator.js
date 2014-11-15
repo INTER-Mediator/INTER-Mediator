@@ -1794,22 +1794,42 @@ INTERMediator = {
     },
 
     addCondition: function (contextName, condition) {
-        var conditions = INTERMediator.additionalCondition;
-        if (conditions[contextName]) {
-            conditions[contextName].push(condition);
+        var value = INTERMediator.additionalCondition;
+        if (value[contextName]) {
+            value[contextName].push(condition);
         } else {
-            conditions[contextName] = [condition];
+            value[contextName] = [condition];
         }
-        INTERMediator.additionalCondition = conditions;
+        INTERMediator.additionalCondition = value;
         IMLibLocalContext.archive();
     },
 
     clearCondition: function (contextName) {
-        var conditions = INTERMediator.additionalCondition;
-        if (conditions[contextName]) {
-            delete conditions[contextName];
-            INTERMediator.additionalCondition = conditions;
+        var value = INTERMediator.additionalCondition;
+        if (value[contextName]) {
+            delete value[contextName];
+            INTERMediator.additionalCondition = value;
+            IMLibLocalContext.archive();
         }
+    },
+
+    addSortKey: function (contextName, sortKey) {
+        var value = INTERMediator.additionalSortKey;
+        if (value[contextName]) {
+            value[contextName].push(sortKey);
+        } else {
+            value[contextName] = [sortKey];
+        }
+        INTERMediator.additionalSortKey = value;
         IMLibLocalContext.archive();
+    },
+
+    clearSortKey: function (contextName) {
+        var value = INTERMediator.additionalSortKey;
+        if (value[contextName]) {
+            delete value[contextName];
+            INTERMediator.additionalSortKey = value;
+            IMLibLocalContext.archive();
+        }
     }
 };
