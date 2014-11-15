@@ -17,6 +17,9 @@ Ver.4.6 (in development)
   This feature realizes non-programming search page.
 - Add INTERMediator.totalRecordCount property and add getTotalCount() to DB_FileMaker_FX class to get the total 
   number of records in the main table.
+- Update Sample_products_auth (Authorized Media Handling Sample) for the master-detail style UI.
+- Update the "Practices" (search) in the "Samples" directory for the non-programming searching.
+- Add the "Practices" (search) in the "Samples" directory for FileMaker Server.
 - [INFO] FileMaker Server 10 has been deprecated. INTER-Mediator will require FileMaker Server 11 or later if using 
   FileMaker Server.
 - [BUG FIX] DB_FileMaker_FX used the alternative data source not only the 'issuedhash' table also 'authuser' and some
@@ -35,7 +38,6 @@ Ver.4.6 (in development)
 - [BUG FIX] FileMaker_FX didn't respond collectively in case of email as user name.
 - [BUG FIX] Revert MediaAccess.php partly to fix showing images of FileMaker's container fields. The affected version 
   is 4.5 only (Thanks to Kentaro Suzuki).
-- [BUG FIX] Update Sample_products_auth for the master-detail style UI.
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
