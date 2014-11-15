@@ -1014,6 +1014,7 @@ IMLibLocalContext = {
                         IMLibChangeEventDispatch.setExecute(idValue, (function () {
                             var contextName = params[1];
                             return function () {
+                                INTERMediator.pagedSize = document.getElementById(idValue).value;
                                 IMLibUI.eventUpdateHandler(contextName);
                             };
                         })());
