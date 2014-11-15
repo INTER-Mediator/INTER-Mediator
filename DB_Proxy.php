@@ -730,7 +730,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->outputOfProcessing['dbresult'] = $result;
                 $this->outputOfProcessing['resultCount'] = $this->countQueryResult($this->dbSettings->getTargetName());
                 if (get_class($this->dbClass) == 'DB_FileMaker_FX') {
-                    $this->outputOfProcessing['totalCount'] = $this->dbClass->getTotalCount();
+                    $this->outputOfProcessing['totalCount'] = $this->dbClass->getTotalCount($this->dbSettings->getTargetName());
                 }
                 break;
             case 'update':
