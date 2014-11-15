@@ -39,6 +39,8 @@ Ver.4.6 (in development)
 - [BUG FIX] Revert MediaAccess.php partly to fix showing images of FileMaker's container fields. The affected version 
   is 4.5 only (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix applying the data converter to the fields of the 'view' table when using FileMaker Server.
+- [BUG FIX] Update INTER-Mediator-Navi.js to fix moving to the last page when clicking the button on the navigation 
+  bar when INTERMediator.pagedAllCount % INTERMediator.pagedSize == 0.
 
 Ver.4.5 (2014/9/15)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
