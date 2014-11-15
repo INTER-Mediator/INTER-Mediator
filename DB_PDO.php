@@ -1880,39 +1880,36 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function normalizedCondition($condition)
     {
-        /* for MySQL */
+        if ($condition['operator'] == 'match*') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'LIKE',
+                'value' => "{$condition['value']}%",
+            );
+        } else if ($condition['operator'] == '*match') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'LIKE',
+                'value' => "%{$condition['value']}",
+            );
+        } else if ($condition['operator'] == '*match*') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'LIKE',
+                'value' => "%{$condition['value']}%",
+            );
+        }
+
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
-            if ($condition['operator'] == 'match*') {
-                return array(
-                    'field' => $condition['field'],
-                    'operator' => 'LIKE',
-                    'value' => "{$condition['value']}%",
-                );
-            } else if ($condition['operator'] == '*match') {
-                return array(
-                    'field' => $condition['field'],
-                    'operator' => 'LIKE',
-                    'value' => "%{$condition['value']}",
-                );
-            } else if ($condition['operator'] == '*match*') {
-                return array(
-                    'field' => $condition['field'],
-                    'operator' => 'LIKE',
-                    'value' => "%{$condition['value']}%",
-                );
-            } else {
-                    return $condition;
-            }
-
-            /* for PostgreSQL */
+            /* for MySQL specific */
+            return $condition;
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
+            /* for PostgreSQL specific */
             return $condition;
-
-            /* for SQLite */
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            /* for SQLite specific */
             return $condition;
-
-        } else { // others don' define so far
+        } else { // others don't define so far
             return FALSE;
         }
     }
