@@ -413,6 +413,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->mainTableCount = 0;
         $this->mainTableTotalCount = 0;
         $context = $this->dbSettings->getDataSourceTargetArray();
+        $tableName = $this->dbSettings->getEntityForRetrieve();
 
         $usePortal = false;
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
@@ -712,7 +713,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $fieldValue = '';
                         if (isset($field['data']) && !is_null($field['data'])) {
                             $fieldValue = $this->formatter->formatterFromDB(
-                                "{$dataSourceName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                                "{$tableName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                            if ($dataSourceName != $tableName && $fieldValue == $field['data']) {
+                                // for the compatiblity of ver.4.5 or preivious (DB_FileMaker_FX class only)
+                                $fieldValue = $this->formatter->formatterFromDB(
+                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                            }
                             if ($fieldName == $keyField && $keyField != $this->getDefaultKey()) {
                                 $this->queriedPrimaryKeys[] = $field['data'];
                             }
