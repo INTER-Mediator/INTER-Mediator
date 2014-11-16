@@ -62,8 +62,8 @@ INTERMediator = {
     linkedElmCounter: 0,
     pusherObject: null,
     buttonIdNum: 0,
-    masterNodeOriginalDisplay: null,
-    detailNodeOriginalDisplay: null,
+    masterNodeOriginalDisplay: "block",
+    detailNodeOriginalDisplay: "none",
     pusherAvailable: false,
 
     dateTimeFunction: false,
@@ -728,7 +728,7 @@ INTERMediator = {
             }
 
             recordCounter = 0;
-            for (ix in targetRecordset) { // for each record
+            for (ix = 0; ix < targetRecordset.length; ix++) { // for each record
                 try {
                     recordCounter++;
                     repeatersOneRec = cloneEveryNodes(repeatersOriginal);
@@ -1833,3 +1833,42 @@ INTERMediator = {
         }
     }
 };
+
+/**
+ * Compatibility for IE8
+ */
+if (!Object.keys) {
+    Object.keys = function (obj) {
+        var results=[], prop;
+        if (obj !== Object(obj)) {
+            throw new TypeError('Object.keys called on a non-object');
+        }
+        for (prop in obj) {
+            if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+                results.push(prop);
+            }
+        }
+        return results;
+    }
+};
+
+if (!Array.indexOf) {
+    var isWebkit = 'WebkitAppearance' in document.documentElement.style;
+    if (!isWebkit) {
+        Array.prototype.indexOf = function (target) {
+            var i;
+            for (i = 0; i < this.length; i++) {
+                if (this[i] === target) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+    }
+}
+
+if (typeof String.prototype.trim !== 'function') {
+    String.prototype.trim = function() {
+        return this.replace(/^\s+|\s+$/g, ''); 
+    }
+}

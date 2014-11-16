@@ -915,7 +915,6 @@ IMLibLocalContext = {
     },
 
     archive: function () {
-        console.error("archiving");
         var jsonString;
         INTERMediatorOnPage.removeCookie('_im_localcontext');
         if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {

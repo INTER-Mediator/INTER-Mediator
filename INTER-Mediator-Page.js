@@ -9,21 +9,6 @@
 
 //"use strict"
 
-if (!Array.indexOf) {
-    var isWebkit = 'WebkitAppearance' in document.documentElement.style;
-    if (!isWebkit) {
-        Array.prototype.indexOf = function (target) {
-            var i;
-            for (i = 0; i < this.length; i++) {
-                if (this[i] === target) {
-                    return i;
-                }
-            }
-            return -1;
-        };
-    }
-}
-
 var INTERMediatorOnPage;
 
 INTERMediatorOnPage = {
