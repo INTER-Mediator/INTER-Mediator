@@ -100,8 +100,8 @@ IMLibPageNavigation = {
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[3] === null) ? '>>' : navLabel[3]));
                 node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                if (pageSize == 1) {
-                    endPageCount = allCount - pageSize;
+                if (allCount % pageSize == 0) {
+                    endPageCount = allCount - (allCount % pageSize) - pageSize;
                 } else {
                     endPageCount = allCount - (allCount % pageSize);
                 }

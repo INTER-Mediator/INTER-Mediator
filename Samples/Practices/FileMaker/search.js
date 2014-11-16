@@ -42,16 +42,16 @@ function doSearch() {
     IMLibLocalContext.update('condition');
     IMLibLocalContext.update("number");
     var limit = IMLibLocalContext.getValue("pagedSize");
-    if(parseInt(limit) > 0) {
+    if (parseInt(limit) > 0) {
         INTERMediator.pagedSize = limit;
     }
     var c1 = IMLibLocalContext.getValue("condition");
     INTERMediator.clearCondition("postalcode");
     if (c1 && c1.length > 0) {
-        INTERMediator.addCondition("postalcode", {field: 'f3', operator: 'LIKE', value: c1 + '%'});
-        INTERMediator.addCondition("postalcode", {field: 'f7', operator: 'LIKE', value: '%' + c1 + '%'});
-        INTERMediator.addCondition("postalcode", {field: 'f8', operator: 'LIKE', value: '%' + c1 + '%'});
-        INTERMediator.addCondition("postalcode", {field: 'f9', operator: 'LIKE', value: '%' + c1 + '%'});
+        INTERMediator.addCondition("postalcode", {field: 'f3', operator: 'bw', value: c1});
+        INTERMediator.addCondition("postalcode", {field: 'f7', operator: 'cn', value: c1});
+        INTERMediator.addCondition("postalcode", {field: 'f8', operator: 'cn', value: c1});
+        INTERMediator.addCondition("postalcode", {field: 'f9', operator: 'cn', value: c1});
         INTERMediator.addCondition("postalcode", {field: '__operation__', operator: 'ex'});
     }
     INTERMediator.startFrom = 0;

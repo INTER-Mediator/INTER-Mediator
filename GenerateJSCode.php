@@ -168,18 +168,20 @@ class GenerateJSCode
             "INTERMediatorOnPage.isEmailAsUsername", $isEmailAsUsernae ? "true" : "false");
 
         $messageClass = null;
-        $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-        foreach ($clientLangArray as $oneLanguage) {
-            $langCountry = explode(';', $oneLanguage);
-            if (strlen($langCountry[0]) > 0) {
-                $clientLang = explode('-', $langCountry[0]);
-                $messageClass = "MessageStrings_$clientLang[0]";
-                if (file_exists("$currentDir$messageClass.php")) {
-                    $messageClass = new $messageClass();
-                    break;
+        if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
+            $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+            foreach ($clientLangArray as $oneLanguage) {
+                $langCountry = explode(';', $oneLanguage);
+                if (strlen($langCountry[0]) > 0) {
+                    $clientLang = explode('-', $langCountry[0]);
+                    $messageClass = "MessageStrings_$clientLang[0]";
+                    if (file_exists("$currentDir$messageClass.php")) {
+                        $messageClass = new $messageClass();
+                        break;
+                    }
                 }
+                $messageClass = null;
             }
-            $messageClass = null;
         }
         if ($messageClass == null) {
             require_once('MessageStrings.php');

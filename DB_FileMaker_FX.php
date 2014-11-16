@@ -413,6 +413,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->mainTableCount = 0;
         $this->mainTableTotalCount = 0;
         $context = $this->dbSettings->getDataSourceTargetArray();
+        $tableName = $this->dbSettings->getEntityForRetrieve();
 
         $usePortal = false;
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
@@ -495,14 +496,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $childRecordIdValue = null;
         if ($this->dbSettings->getExtraCriteria()) {
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
-                if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
+                if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'or') {
+                    $this->fx->SetLogicalOR();
+                } else if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'ex') {
                     $this->fx->SetLogicalOR();
                 } else {
-                    $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
-                    if ($condition['field'] == "-recid" && $condition['operator'] == 'undefined') {
-                        $op = "eq";
-                    }
-                    if (!$this->isPossibleOperator($op)) {
+                    $condition = $this->normalizedCondition($condition);
+                    if (!$this->isPossibleOperator($condition['operator'])) {
                         throw new Exception("Invalid Operator.: {$condition['field']}/{$condition['operator']}");
                     }
 
@@ -512,7 +512,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $this->queriedPrimaryKeys = array($condition['value']);
                     }
 
-                    $this->fx->AddDBParam($condition['field'], $condition['value'], $op);
+                    $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
                     $hasFindParams = true;
                     if ($condition['field'] == $this->getDefaultKey()) {
                         $this->fx->FMSkipRecords(0);
@@ -713,7 +713,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $fieldValue = '';
                         if (isset($field['data']) && !is_null($field['data'])) {
                             $fieldValue = $this->formatter->formatterFromDB(
-                                "{$dataSourceName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                                "{$tableName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                            if ($dataSourceName != $tableName && $fieldValue == $field['data']) {
+                                // for the compatiblity of ver.4.5 or preivious (DB_FileMaker_FX class only)
+                                $fieldValue = $this->formatter->formatterFromDB(
+                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                            }
                             if ($fieldName == $keyField && $keyField != $this->getDefaultKey()) {
                                 $this->queriedPrimaryKeys[] = $field['data'];
                             }
@@ -1855,6 +1860,39 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function isPossibleOrderSpecifier($specifier)
     {
         return !(array_search(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')) === FALSE);
+    }
+
+    public function normalizedCondition($condition)
+    {
+        /* for FileMaker Server */
+        if (($condition['field'] == "-recid" && $condition['operator'] == 'undefined') 
+                 || ($condition['operator'] == '=')) {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'eq',
+                'value' => "{$condition['value']}",
+            );
+        } else if ($condition['operator'] == 'match*') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'bw',
+                'value' => "{$condition['value']}",
+            );
+        } else if ($condition['operator'] == '*match') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'ew',
+                'value' => "{$condition['value']}",
+            );
+        } else if ($condition['operator'] == '*match*') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'cn',
+                'value' => "{$condition['value']}",
+            );
+        } else {
+            return $condition;
+        }
     }
 
     protected function _adjustSortDirection($direction)
