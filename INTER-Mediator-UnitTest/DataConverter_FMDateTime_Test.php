@@ -20,6 +20,10 @@ class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
         $string = '';
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
 
+        $expected = '';
+        $string = array();
+        $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
+
         if (getenv('TRAVIS') === 'true') {
             $expected = '01/05/00 12:34:56';  // for Travis CI
         } else {
