@@ -1898,9 +1898,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     protected function _adjustSortDirection($direction)
     {
         if (strtoupper($direction) == 'ASC') {
-            $direction = 'ASCEND';
+            $direction = 'ascend';
         } else if (strtoupper($direction) == 'DESC') {
-            $direction = 'DESCEND';
+            $direction = 'descend';
         }
 
         return $direction;
