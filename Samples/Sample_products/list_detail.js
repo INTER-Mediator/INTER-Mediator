@@ -7,9 +7,7 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 window.onload = function () {
-    IMLibMouseEventDispatch.setExecute('showlist', function () {
-        showList();
-    });
+    INTERMediator.construct(true);
     showList();
 };
 
@@ -52,6 +50,9 @@ function showDetail(id) {
     }
     INTERMediator.construct(true);
     INTERMediatorOnPage.doAfterConstruct = function () {
+        IMLibMouseEventDispatch.setExecute('showlist', function () {
+            showList();
+        });
         document.getElementById("listarea").className = "hidden";
         document.getElementById("detailarea").className = "shown";
     };
