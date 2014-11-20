@@ -260,7 +260,7 @@ IMLibContextPool = {
     },
 
     updateOnAnotherClient: function (eventName, info) {
-        var i, entityName = info.entity, contextDef, contextView, keyField;
+        var i, j, k, entityName = info.entity, contextDef, contextView, keyField, recKey;
 
         if (eventName == 'update') {
             for (i = 0; i < this.poolingContexts.length; i++) {
@@ -268,7 +268,25 @@ IMLibContextPool = {
                 contextView = contextDef.view ? contextDef.view : contextDef.name;
                 if (contextView == entityName) {
                     keyField = contextDef.key;
-                    this.poolingContexts[i].setValue(keyField + "=" + info.pkvalue, info.field[0], info.value[0]);
+                    recKey = keyField + "=" + info.pkvalue;
+                    this.poolingContexts[i].setValue(recKey, info.field[0], info.value[0]);
+
+                    var bindingInfo = this.poolingContexts[i].binding[recKey][info.field[0]];
+                    for (j = 0; j < bindingInfo.length; j++) {
+                        var updateRequiredContext = IMLibContextPool.dependingObjects(bindingInfo[j].id);
+                        for (k = 0; k < updateRequiredContext.length; k++) {
+                            updateRequiredContext[k].foreignValue = {};
+                            updateRequiredContext[k].foreignValue[info.field[0]] = info.value[0];
+                            if (updateRequiredContext[k]) {
+                                INTERMediator.constructMain(updateRequiredContext[k]);
+                                //var associatedNode = updateRequiredContext[k].enclosureNode;
+                                //if (INTERMediatorLib.isPopupMenu(associatedNode)) {
+                                //    var currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
+                                //    IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
+                                //}
+                            }
+                        }
+                    }
                 }
             }
             IMLibCalc.recalculation();
@@ -283,7 +301,8 @@ IMLibContextPool = {
                 }
             }
             IMLibCalc.recalculation();
-        } else if (eventName == 'delete') {
+        }
+        else if (eventName == 'delete') {
             for (i = 0; i < this.poolingContexts.length; i++) {
                 contextDef = this.getContextDef(this.poolingContexts[i].contextName);
                 contextView = contextDef.view ? contextDef.view : contextDef.name;
@@ -345,6 +364,7 @@ IMLibContext = function (contextName) {
     this.parentContext = null;
     this.registeredId = null;
     this.sequencing = false;
+    this.dependingParentObjectInfo = null;
 
     this.getInsertOrder = function (record) {
         var cName, sortKeys = [], contextDef, i, sortFields = [], sortDirections = [];

@@ -315,7 +315,7 @@ INTERMediator = {
                         seekEnclosureNode(
                             updateRequiredContext.enclosureNode,
                             updateRequiredContext.foreignValue,
-                            null,
+                            updateRequiredContext.dependingParentObjectInfo,
                             updateRequiredContext);
                     }
                     else {
@@ -667,6 +667,7 @@ INTERMediator = {
                                 for (fieldName in parentObjectInfo) {
                                     if (fieldName == relationDef[index]['join-field']) {
                                         contextObj.addDependingObject(parentObjectInfo[fieldName]);
+                                        contextObj.dependingParentObjectInfo = parentObjectInfo;
                                     }
                                 }
                             }
