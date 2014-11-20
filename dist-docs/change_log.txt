@@ -5,10 +5,19 @@ msyk@msyk.net
 =================================
 
 http://inter-mediator.org/
-Change Log will be supplied by English only.
-Latest changes might exist on the GitHub repository. Please check https://github.com/msyk/INTER-Mediator.
 
-Ver.4.6 (in development)
+Change Log will be supplied by English only.
+Latest changes might exist on the GitHub repository. Please check: https://github.com/msyk/INTER-Mediator.
+Also the Migration Guide (Japanese) might be informative: http://inter-mediator.org/ja/docs-migration.html.
+
+Ver.5.0 =========================================================
+        [Major differences from Ver.4]
+=================================================================
+
+Ver.4.7 (in development)
+- This version could be minor fix only.
+
+Ver.4.6 (2014/11/21)
 - Query conditions, sort fields, record number and updating context can be described in data-im attributes.
   This feature realizes non-programming search page.
 - In case of 'navi-control' is 'master-hide', the pagination control is going to hide when the detail area appears.
@@ -25,7 +34,7 @@ Ver.4.6 (in development)
 - Add "templates" directory in the "Samples" directory.
 - [INFO] FileMaker Server 10 has been deprecated. In the near future, INTER-Mediator will require FileMaker Server 11 
   or later if using FileMaker Server.
-- [INFO] Internet Explorer Ver.8 is going to an ansupported browser. On this version, the fundamental functions are
+- [INFO] Internet Explorer Ver.8 is going to an unsupported browser. On this version, the fundamental functions are
   working but the new ones after INTER-Mediator ver.4.3 are not fully working.
 - [BUG FIX] DB_FileMaker_FX used the alternative data source not only the 'issuedhash' table also 'authuser' and some
   tables for authorization/authentication. Now, it uses just the 'issuedhash' table for the alternative data source.
