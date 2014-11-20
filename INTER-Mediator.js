@@ -289,9 +289,18 @@ INTERMediator = {
         try {
             if (Pusher.VERSION) {
                 INTERMediator.pusherAvailable = true;
+                if (! INTERMediatorOnPage.clientNotificationKey)    {
+                    INTERMediator.setErrorMessage(
+                        Error("Pusher Configuration Error"), INTERMediatorOnPage.getMessages()[1039]);
+                    INTERMediator.pusherAvailable = false;
+                }
             }
         } catch (ex) {
             INTERMediator.pusherAvailable = false;
+            if (INTERMediatorOnPage.clientNotificationKey)    {
+                INTERMediator.setErrorMessage(
+                    Error("Pusher Configuration Error"), INTERMediatorOnPage.getMessages()[1038]);
+            }
         }
 
         try {
