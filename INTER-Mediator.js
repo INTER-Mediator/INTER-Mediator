@@ -676,7 +676,8 @@ INTERMediator = {
                                 for (fieldName in parentObjectInfo) {
                                     if (fieldName == relationDef[index]['join-field']) {
                                         contextObj.addDependingObject(parentObjectInfo[fieldName]);
-                                        contextObj.dependingParentObjectInfo = parentObjectInfo;
+                                        contextObj.dependingParentObjectInfo
+                                            = JSON.parse(JSON.stringify(parentObjectInfo));
                                     }
                                 }
                             }
