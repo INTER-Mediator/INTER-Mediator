@@ -662,7 +662,11 @@ var IMLibUI = {
 
     eventAddOrderHandler: function (e) {    // e is mouse event
         var targetKey, targetSplit, key, itemSplit, extValue;
-        targetKey = e.target.getAttribute("data-im");
+        if (e.target) {
+            targetKey = e.target.getAttribute("data-im");
+        } else {
+            targetKey = e.srcElement.getAttribute("data-im");
+        }
         targetSplit = targetKey.split(":");
         if (targetSplit[0] != "_@addorder" || targetSplit.length < 3) {
             return;
