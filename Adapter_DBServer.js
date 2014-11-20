@@ -304,7 +304,7 @@ INTERMediator_DBAdapter = {
         }
 
         if (args['records'] == null) {
-            params = "access=select&name=" + encodeURIComponent(args['name']) ;
+            params = "access=select&name=" + encodeURIComponent(args['name']);
         } else {
             if (Number(args.records) === 0) {
                 params = "access=describe&name=" + encodeURIComponent(args['name']);
@@ -314,9 +314,9 @@ INTERMediator_DBAdapter = {
             if (args['uselimit'] === true
                 && Number(args.records) >= INTERMediator.pagedSize
                 && Number(INTERMediator.pagedSize) > 0) {
-                recordLimit =INTERMediator.pagedSize;
+                recordLimit = INTERMediator.pagedSize;
             } else {
-                recordLimit =args['records'];
+                recordLimit = args['records'];
             }
         }
 
@@ -401,7 +401,7 @@ INTERMediator_DBAdapter = {
             var value = new String(IMLibLocalContext.store[key]);
             var keyParams = key.split(":");
             if (keyParams && keyParams.length > 1 && keyParams[1].trim() == args['name'] && value.length > 0) {
-                if (keyParams[0].trim() == "condition" && keyParams.length >=4) {
+                if (keyParams[0].trim() == "condition" && keyParams.length >= 4) {
                     var fields = keyParams[2].split(",");
                     var operator = keyParams[3].trim();
                     if (fields.length > 1) {
@@ -415,9 +415,9 @@ INTERMediator_DBAdapter = {
                         params += "&condition" + extCount + "value=" + encodeURIComponent(value);
                         extCount++;
                     }
-                } else if (keyParams[0].trim() == "valueofaddorder" && keyParams.length >=4) {
+                } else if (keyParams[0].trim() == "valueofaddorder" && keyParams.length >= 4) {
                     orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()];
-                } else if (keyParams[0].trim() == "limitnumber" && keyParams.length >=4) {
+                } else if (keyParams[0].trim() == "limitnumber" && keyParams.length >= 4) {
                     recordLimit = parseInt(value);
                 }
             }

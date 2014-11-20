@@ -862,7 +862,18 @@ INTERMediator = {
                             if (isContext
                                 && !isInsidePostOnly
                                 && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
-                                IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
+                                //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
+                                var changeFunction =function (a) {
+                                    var id = a;
+                                    return function () {
+                                        IMLibUI.valueChange(id);
+                                    };
+                                };
+                                eventListenerPostAdding.push({
+                                    'id': nodeId,
+                                    'event': 'change',
+                                    'todo': changeFunction(nodeId)
+                                });
                                 if (nodeTag != 'SELECT') {
                                     eventListenerPostAdding.push({
                                         'id': nodeId,
@@ -1003,9 +1014,9 @@ INTERMediator = {
                             break;
                         }
                     }
-                    useLimit = true;
-                    if (currentContextDef["relation"] !== undefined) {
-                        useLimit = false;
+                    useLimit = false;
+                    if (currentContextDef["records"] && currentContextDef["paging"]) {
+                        useLimit = true;
                     }
                     if (currentContextDef['maxrecords'] && useLimit && Number(INTERMediator.pagedSize) > 0
                         && Number(currentContextDef['maxrecords']) >= Number(INTERMediator.pagedSize)) {

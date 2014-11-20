@@ -307,7 +307,7 @@ var IMLibElement = {
                     INTERMediatorOnPage.getMessages()[1003], [targetField]));
                 return false;
             }
-            if (currentVal.count > 1) {
+            if (currentVal.totalCount > 1) {
                 response = confirm(INTERMediatorOnPage.getMessages()[1024]);
                 if (!response) {
                     return false;
