@@ -72,3 +72,7 @@ INTERMediatorLib.addEvent(window, "beforeunload", function (e) {
 INTERMediatorLib.addEvent(window, "unload", function (e) {
     INTERMediator_DBAdapter.unregister();
 });
+
+// ****** This file should terminate on the new line. INTER-Mediator adds some codes before here. ****
+
+
