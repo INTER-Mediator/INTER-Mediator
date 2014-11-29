@@ -16,6 +16,7 @@ Ver.5.0 =========================================================
 
 Ver.4.7 (in development)
 - This version could be minor fix only.
+- Update Sample_realtime (invoice_FMS.html/invoice_MySQL.html) for compatibility with SSL/TLS.
 
 Ver.4.6 (2014/11/21)
 - Query conditions, sort fields, record number and updating context can be described in data-im attributes.
