@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!--
+/*
+* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+*
+*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
+*
+*   This project started at the end of 2009.
+*   INTER-Mediator is supplied under MIT License.
+*/
+-->
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <link rel="shortcut icon" href="../dist-docs/vm-for-trial/im-icon.png" type="image/png"/>
+    <link rel="stylesheet" type="text/css" href="defedit.css"/>
+    <link rel="stylesheet" href="CodeMirror-4.8.0/lib/codemirror.css">
+    <title>INTER-Mediator - Definition File Editor</title>
+    <script src="pageedit.php"></script>
+    <script src="codemirror_im.js"></script>
+    <script src="CodeMirror-4.8.0/lib/codemirror.js"></script>
+    <script src="CodeMirror-4.8.0/addon/runmode/runmode.js"></script>
+    <script src="CodeMirror-4.8.0/addon/runmode/colorize.js"></script>
+    <script src="CodeMirror-4.8.0/mode/javascript/javascript.js"></script>
+    <script src="CodeMirror-4.8.0/mode/xml/xml.js"></script>
+    <script src="CodeMirror-4.8.0/mode/css/css.js"></script>
+    <script src="CodeMirror-4.8.0/mode/htmlmixed/htmlmixed.js"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            var nodeUnsupport = document.getElementById('nonsupportmessage');
+            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
+                var params = INTERMediatorOnPage.getURLParametersAsArray();
+                INTERMediator.addCondition('pagefile',{field: 'target', value: params.target});
+                INTERMediator.additionalFieldValueOnNewRecord['pagefile']
+                        = {field: 'target', value: params.target};
+                INTERMediator.additionalFieldValueOnUpdate['pagefile']
+                        = {field: 'target', value: params.target};
+                INTERMediator.additionalFieldValueOnDelete['pagefile']
+                        = {field: 'target', value: params.target};
+
+                document.getElementById('deffile').appendChild(document.createTextNode(params.target));
+                INTERMediator.ignoreOptimisticLocking = true;
+                INTERMediator.construct(true);
+                document.getElementById('container').style.display = "block";
+            }
+        }
+//        INTERMediatorOnPage.doAfterConstruct = function () {
+//            var node = document.getElementById('container');
+//            node.style.display = "block";
+//            if (textArea) {
+//                var myTextarea = document.getElementById(textArea);
+//            }
+//        }
+//        var textArea;
+//        INTERMediatorOnPage.pageContentGenerated = function (target) {
+//             textArea = INTERMediatorOnPage.getNodeIdFromIMDefinition("pagefile@content", target, true);
+//        }
+    </script>
+    <style>
+        INPUT {
+            font-size: 14pt;
+        }
+
+        TH {
+            color: #666666;
+        }
+    </style>
+</head>
+<body>
+<div id="nonsupportmessage" style="background-color:#333333">
+    <div style="text-align:center;color:yellow">
+        The definition file editor doesn't work initially for security reasons.<br>
+        If you want to use it, remove the comment before the IM_Entry function call of the pageedit.php file.<br>
+        You shouldn't these files to be able to access from any client.<br>
+        The authentication is suitable way.
+        One typical setting is to set the .htaccess file in the INTER-Mediator-Support folder.
+    </div>
+    <div style="text-align:center;color:yellow">
+        ページファイルエディタは、セキュリティ上の理由から既定値では機能しないようになっています。<br>
+        機能させるためには、pageedit.phpファイルのIM_Entry関数の前にあるコメントを消してください。<br>
+        その場合は、何らかの方法で、認証をかけるようにすべきです。たとえば、INTER-Mediator-Supportフォルダ内に<br>
+        .htaccessファイルを配置して、Web認証を機能させるなどの手段が利用できます。<br>
+    </div>
+</div>
+<div id="container" style="display:none;">
+    <h1>Definition File Editor</h1>
+
+    <h2>Target Page File</h2>
+
+    <p id="deffile"></p>
+
+    <h2>Page File</h2>
+
+    <div class="_im_enclosure">
+        <div class="_im_repeater">
+            <p>キータイプする毎にほぼ自動的に保存します</p>
+            <div class="IM[pagefile@content]  IM_WIDGET[codemirror]"
+                 style="width: 600px; border: 1px solid gray"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
+
+
+

@@ -21,11 +21,10 @@
             if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
                 var params = INTERMediatorOnPage.getURLParametersAsArray();
                 var contextsArray = ['contexts', 'relation', 'query', 'sort', 'default-values', 'validation',
-                    'script', 'global', 'file-upload', 'options', 'aliases', 'browser-compatibility',
+                    'script', 'global', 'file-upload', 'options', 'aliases', 'browser-compatibility', 'calculation',
                     'formatter', 'dbsettings', 'external-db', 'debug'];
                 for (var i = 0; i < contextsArray.length; i++) {
-                    INTERMediator.additionalCondition[contextsArray[i]]
-                            = {field: 'target', value: params.target};
+                    INTERMediator.addCondition(contextsArray[i], {field: 'target', value: params.target});
                     INTERMediator.additionalFieldValueOnNewRecord[contextsArray[i]]
                             = {field: 'target', value: params.target};
                     INTERMediator.additionalFieldValueOnUpdate[contextsArray[i]]
@@ -38,11 +37,11 @@
                 INTERMediator.construct(true);
             }
         }
-        INTERMediatorOnPage.doAfterConstruct = function()   {
+        INTERMediatorOnPage.doAfterConstruct = function () {
             var node = document.getElementById('container');
             node.style.display = "block"
         }
-        function setDisplayLevel(level)  {
+        function setDisplayLevel(level) {
             var i, value, nodes, rootNode;
             value = "none";
             if (level == 1) {
@@ -50,15 +49,21 @@
             }
             rootNode = document.getElementsByTagName("BODY")[0];
             nodes = INTERMediatorLib.getElementsByClassName(rootNode, "advanced");
-            for (i = 0 ; i < nodes.length; i++) {
+            for (i = 0; i < nodes.length; i++) {
                 nodes[i].style.display = value;
             }
         }
     </script>
     <style>
-        INPUT{font-size: 10pt;}
-        TH{color: #666666;}
-        .advanced   {
+        INPUT {
+            font-size: 10pt;
+        }
+
+        TH {
+            color: #666666;
+        }
+
+        .advanced {
             display: none;
         }
     </style>
@@ -74,7 +79,7 @@
     </div>
     <div style="text-align:center;color:yellow">
         定義ファイルエディタは、セキュリティ上の理由から既定値では機能しないようになっています。<br>
-        機能させるためには、defedit.phpファイルのIM_Entry関数の前にコメントを消してください。<br>
+        機能させるためには、defedit.phpファイルのIM_Entry関数の前にあるコメントを消してください。<br>
         その場合は、何らかの方法で、認証をかけるようにすべきです。たとえば、INTER-Mediator-Supportフォルダ内に<br>
         .htaccessファイルを配置して、Web認証を機能させるなどの手段が利用できます。<br>
     </div>
@@ -85,6 +90,7 @@
     <button onclick="setDisplayLevel(2)">Reduce</button>
 </div>
 <h1>Definition File Editor</h1>
+
 <h2>Target Definition File</h2>
 
 <p id="deffile"></p>
@@ -96,41 +102,37 @@
 </thead>
 <tbody>
 <tr>
-    <th colspan="10" class="title">&nbsp;</th>
-</tr>
-<tr>
-    <th class="title">name</th>
-    <td><input type="text" data-im="contexts@name"/></td>
+    <th style="border-top: solid 2px black"class="title" class="title">name</th>
+    <td style="border-top: solid 2px black"colspan="2" class="title"><input type="text" data-im="contexts@name"/></td>
+    <th style="border-top: solid 2px black">table</th>
+    <td style="border-top: solid 2px black"><input type="text" data-im="contexts@table"/></td>
+    <th style="border-top: solid 2px black">view</th>
+    <td style="border-top: solid 2px black"><input type="text" data-im="contexts@view"/></td>
 </tr>
 <tr>
     <td></td>
-    <th>table</th>
-    <td><input type="text" data-im="contexts@table"/></td>
-    <th>view</th>
-    <td><input type="text" data-im="contexts@view"/></td>
     <th>key</th>
     <td><input type="text" data-im="contexts@key"/></td>
-    <td colspan="3"></td>
-</tr>
-<tr>
-    <td></td>
     <th>sequence</th>
     <td><input type="text" data-im="contexts@sequence"/></td>
     <th>paging</th>
     <td><input type="text" data-im="contexts@paging"/></td>
-    <th>repeat-control</th>
-    <td><input type="text" data-im="contexts@repeat-control"/></td>
-    <td colspan="3"></td>
 </tr>
 <tr>
     <td></td>
+    <th>repeat-control</th>
+    <td><input type="text" data-im="contexts@repeat-control"/></td>
+    <th>navi-control</th>
+    <td><input type="text" data-im="contexts@navi-control"/></td>
     <th>records</th>
     <td><input type="text" data-im="contexts@records"/></td>
+</tr>
+<tr>
+    <td></td>
     <th>maxrecords</th>
     <td><input type="text" data-im="contexts@maxrecords"/></td>
     <th>cache</th>
     <td><input type="text" data-im="contexts@cache"/></td>
-    <td colspan="6"></td>
 </tr>
 <tr class="advanced">
     <td></td>
@@ -249,6 +251,23 @@
                 <td><input type="text" data-im="validation@rule"/></td>
                 <th>message</th>
                 <td><input type="text" data-im="validation@message"/></td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr class="advanced">
+    <td></td>
+    <th colspan="9" class="title">Calculations</th>
+</tr>
+<tr class="advanced">
+    <td></td>
+    <td colspan="9">
+        <table>
+            <tr>
+                <th>field</th>
+                <td><input type="text" data-im="calculation@field"/></td>
+                <th>expression</th>
+                <td><input type="text" data-im="calculation@expression" size="100"/></td>
             </tr>
         </table>
     </td>

@@ -1,0 +1,3 @@
+codemirror is the JavaScript source code editor.
+
+http://codemirror.net/

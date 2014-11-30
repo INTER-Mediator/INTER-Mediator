@@ -1,2 +1,345 @@
 <html>
+<title>INTER-Mediator - Samples</title>
+<meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+<link href="/INTER-Mediator/Samples/sample.css" rel="stylesheet" type="text/css"/>
+<body>
+<h1>INTER-Mediator 4.6 - VM for Trial</h1>
+
+<h2>現在アクセスしているマシンについて</h2>
+
+<p>このVirtual
+    Machineは、INTER-Mediatorが動作するサーバを試用したり、あるいはINTER-MediatorによるWebアプリケーション開発を学習するために作成したものです。サンプルデータベースはスキーマを読み込ませており、すぐに動作を見ることができます。</p>
+
+<h3>注意点など</h3>
+<ul>
+    <li>利便性のために、パスワードなどの情報はこのページに記載しています。</li>
+    <li>原則として、稼働マシン以外からのアクセスができない状態で利用してください。</li>
+</ul>
+<h2>リンク</h2>
+
+<p><a href="/INTER-Mediator/Samples/" target="_blank">サンプルプログラム</a></p>
+<ul>
+    <li>
+        サンプルの中にある認証ユーザ用のデータベースには、user1〜user5の5つのユーザが定義されており、パスワードはユーザ名と同一です。概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザでのログインができるとは限りません。設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。
+    </li>
+    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker
+        Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、/var/www/html/params.phpファイルの、$dbServer変数の値を変更してください。
+    </li>
+</ul>
+
+<p><a href="/INTER-Mediator/Auth_Support/MySQL_accountmanager.html" target=_blank">ユーザ管理ページサンプル</a></p>
+<ul>
+    <li>ユーザ名、パスワード共に、user1でログインができますが、通常の利用は、利用者と別の管理者を作り、その管理者でのみログインできるようにします。</li>
+</ul>
+
+<p><a href="/INTER-Mediator/dist-docs/vm-for-trial/info.php" target="_blank">phpinfo()関数の実行</a></p>
+
+<p><a href="http://inter-mediator.org/" target="_blank">INTER-Mediator Site</a></p>
+
+
+<h2>トライアル用のページファイルと定義ファイル</h2>
+
+<p>
+    以下のリンクは、Webサーバのルートに配置したファイルで、ページファイルエディタと定義ファイルエディタで開いて内容を編集し、その結果を参照することができます。いずれのリンクも、別のウインドウないしはタブを開きます。ページ更新が必要なときには手作業で行ってください。初期状態では何も表示しないようになっています。もちろん、独自に変更を加えて、自由に使ってみてください。</p>
+
+<table>
+<tr>
+    <td><a href="page01.html" target="_blank">page01.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page01.html" target="_blank">
+            page01.htmlを編集する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def01.php" target="_blank">
+            def01.phpを編集する</a></td>
+</tr>
+<tr>
+    <td><a href="page02.html" target="_blank">page02.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page02.html" target="_blank">
+            page02.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def02.php" target="_blank">
+            def02.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page03.html" target="_blank">page03.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page03.html" target="_blank">
+            page03.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def03.php" target="_blank">
+            def03.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page04.html" target="_blank">page04.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page04.html" target="_blank">
+            page04.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def04.php" target="_blank">
+            def04.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page05.html" target="_blank">page05.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page05.html" target="_blank">
+            page05.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def05.php" target="_blank">
+            def05.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page06.html" target="_blank">page06.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page06.html" target="_blank">
+            page06.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def06.php" target="_blank">
+            def06.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page07.html" target="_blank">page07.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page07.html" target="_blank">
+            page07.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def07.php" target="_blank">
+            def01.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page08.html" target="_blank">page08.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page08.html" target="_blank">
+            page08.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def08.php" target="_blank">
+            def08.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page09.html" target="_blank">page09.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page09.html" target="_blank">
+            page09.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def09.php" target="_blank">
+            def09.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page10.html" target="_blank">page10.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page10.html" target="_blank">
+            page10.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def10.php" target="_blank">
+            def10.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page11.html" target="_blank">page11.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page11.html" target="_blank">
+            page11.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def11.php" target="_blank">
+            def11.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page12.html" target="_blank">page12.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page12.html" target="_blank">
+            page12.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def12.php" target="_blank">
+            def12.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page13.html" target="_blank">page13.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page13.html" target="_blank">
+            page13.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def13.php" target="_blank">
+            def13.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page14.html" target="_blank">
+        page14.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page14.html" target="_blank">
+            page14.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def14.php" target="_blank">
+            def14.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page15.html" target="_blank">page15.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page15.html" target="_blank">
+            page15.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def15.php" target="_blank">
+            def15.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page16.html" target="_blank">page16.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page16.html" target="_blank">
+            page16.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def16.php" target="_blank">
+            def16.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page17.html" target="_blank">page17.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page17.html" target="_blank">
+            page17.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def17.php" target="_blank">
+            def17.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page18.html" target="_blank">page18.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page18.html" target="_blank">
+            page18.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def18.php" target="_blank">
+            def18.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page19.html" target="_blank">page19.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page19.html" target="_blank">
+            page19.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def19.php" target="_blank">
+            def19.phpを編集する</a>
+    </td>
+</tr>
+<tr>
+    <td><a href="page20.html" target="_blank">page20.htmlを表示する</a></td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/pageedit.html?target=../../page20.html" target="_blank">
+            page20.htmlを編集する</a>
+    </td>
+    <td>
+        <a href="/INTER-Mediator/INTER-Mediator-Support/defedit.html?target=../../def20.php" target="_blank">
+            def20.phpを編集する</a>
+    </td>
+</tr>
+</table>
+
+<h2>サーバ構築情報</h2>
+
+<h3>このVMのアカウント</h3>
+
+<div class="table">
+    <table>
+        <tr>
+            <th>種類</th>
+            <th>ユーザ名</th>
+            <th>パスワード</th>
+            <th>備考</th>
+        </tr>
+        <tr>
+            <td>ログインアカウント</td>
+            <td>developer</td>
+            <td>im4135dev</td>
+            <td>sudoによりルート権限取得可能</td>
+        </tr>
+        <tr>
+            <td>MySQL</td>
+            <td>root@localhost</td>
+            <td>im4135dev</td>
+            <td>プロセスの稼働ユーザはmysql</td>
+        </tr>
+        <tr>
+            <td>PostgreSQL</td>
+            <td></td>
+            <td></td>
+            <td>プロセスの稼働ユーザはpostgres</td>
+        </tr>
+        <tr>
+            <td>PostgreSQL</td>
+            <td>postgres</td>
+            <td>im4135dev</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Apache2</td>
+            <td></td>
+            <td></td>
+            <td>プロセスの稼働ユーザはwww-data</td>
+        </tr>
+    </table>
+</div>
+
+<h3>VMに関する情報</h3>
+<ul>
+    <li>OS：Ubuntu Server 14.04.1</li>
+    <li>インストール言語：English/en_EN.UTF-8</li>
+    <li>キーボード：Japanese</li>
+    <li>タイムゾーン：Asia/Tokyo</li>
+    <li>ホスト名：inter-mediator-server</li>
+    <li>Webサーバルート：/var/www/html</li>
+    <li>初期設定：OpenSSH Server, LAMP Server, Mail Server, PostgreSQL database</li>
+    <li>アクセス方法：SSH、sftp、http</li>
+    <li>作成グループ：im-developer（developerおよびwww-dataが所属）</li>
+</ul>
+
+<h3>インストール後に実行したコマンド</h3>
+<ul>
+    <li>sudo aptitude update</li>
+    <li>sudo aptitude full-upgrade</li>
+    <li>sudo aptitude install sqlite</li>
+    <li>sudo aptitude install acl</li>
+    <li>sudo aptitude install libmysqlclient-dev</li>
+    <li>sudo aptitude install php-pgsql</li>
+    <li>sudo aptitude install php-sqlite</li>
+    <li>sudo aptitude install php-curl</li>
+    <li>sudo group add im-developer</li>
+    <li>sudo usermod -a -G im-developer developer</li>
+    <li>sudo usermod -a -G im-developer www-data</li>
+    <li>sudo passwd postgres (and input the password).</li>
+    <li>cd /var/www/html</li>
+    <li>sudo git clone https://github.com/msyk/INTER-Mediator.git</li>
+    <li>sudo ./INTER-Mediator/dist-docs/vm-for-trial/deploy.sh</li>
+</ul>
+
+</body>
 </html>

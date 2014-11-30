@@ -5,3 +5,4 @@ npm-debug.log
 .DS_Store
 node_modules
 tcpdf
+CodeMirror-4.8.0

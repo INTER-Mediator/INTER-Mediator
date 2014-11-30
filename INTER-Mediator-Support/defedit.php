@@ -9,137 +9,141 @@
 */
 require_once('../INTER-Mediator.php');
 
-IM_Entry(
+$defContexts = array(
     array(
-        array(
-            'name' => 'contexts',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-top-insert',
+        'name' => 'contexts',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-top-insert',
+    ),
+    array(
+        'name' => 'relation',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
-        array(
-            'name' => 'relation',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
+    ),
+    array(
+        'name' => 'query',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
-        array(
-            'name' => 'query',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
+    ),
+    array(
+        'name' => 'sort',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
-        array(
-            'name' => 'sort',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
+    ),
+    array(
+        'name' => 'default-values',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
-        array(
-            'name' => 'default-values',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
+    ),
+    array(
+        'name' => 'validation',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
-        array(
-            'name' => 'validation',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
+    ),
+    array(
+        'name' => 'script',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
-        array(
-            'name' => 'script',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
+    ),
+    array(
+        'name' => 'global',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
-        array(
-            'name' => 'global',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
+    ),
+    array(
+        'name' => 'calculation',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
-        array(
-            'name' => 'file-upload',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
+    ),
+    array(
+        'name' => 'file-upload',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
+    ),
 
-        array(
-            'name' => 'options',
-            'records' => 100000,
-            'key' => 'id',
-        ),
-        array(
-            'name' => 'aliases',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
-        ),
-        array(
-            'name' => 'formatter',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
-        ),
-        array(
-            'name' => 'browser-compatibility',
-            'records' => 100000,
-            'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
-            'relation' => array(
-                array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
-            ),
-        ),
-        array(
-            'name' => 'dbsettings',
-            'records' => 100000,
-            'key' => 'id',
-        ),
-        array(
-            'name' => 'debug',
-            'records' => 100000,
-            'key' => 'id',
+    array(
+        'name' => 'options',
+        'records' => 100000,
+        'key' => 'id',
+    ),
+    array(
+        'name' => 'aliases',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
     ),
     array(
-        'formatter' => array(),
+        'name' => 'formatter',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
+        ),
     ),
     array(
-        'db-class' => 'DefEditor',
+        'name' => 'browser-compatibility',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
+        ),
     ),
-    false
+    array(
+        'name' => 'dbsettings',
+        'records' => 100000,
+        'key' => 'id',
+    ),
+    array(
+        'name' => 'debug',
+        'records' => 100000,
+        'key' => 'id',
+    ),
 );
+/*
+ * Don't remove comment slashes below on any 'release.'
+ */
+IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), false);
 
 ?>
