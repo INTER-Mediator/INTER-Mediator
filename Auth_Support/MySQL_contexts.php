@@ -78,10 +78,10 @@ IM_Entry(
     ),
     array(
         'db-class' => 'PDO',
-        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
-        'option' => array(),
-        'user' => 'web',
-        'password' => 'password',
+//        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;',
+//        'option' => array(),
+//        'user' => 'web',
+//        'password' => 'password',
     ),
     0
 );

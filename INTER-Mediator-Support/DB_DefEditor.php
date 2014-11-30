@@ -42,11 +42,12 @@ function getValueFromArray($ar, $index1, $index2 = null, $index3 = null)
     return $value;
 }
 
-function changeIncludeIMPath($src, $validStatement)  {
+function changeIncludeIMPath($src, $validStatement)
+{
     $includeFunctions = array('require_once', 'include_once', 'require', 'include');
-    foreach($includeFunctions as $targetFunction)   {
+    foreach ($includeFunctions as $targetFunction) {
         $pattern = '/' . $targetFunction . '\\(.+INTER-Mediator.php.+\\);/';
-        if(preg_match($pattern, $src))  {
+        if (preg_match($pattern, $src)) {
             return preg_replace($pattern, $validStatement, $src);
         }
     }
@@ -56,14 +57,24 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 {
     var $recordCount;
 
+    var $spacialValue = array('IM_TODAY');
+
     function getFromDB($dataSourceName)
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
+        $result = array();
+
         $filePath = $this->dbSettings->getCriteriaValue('target');
+        if (substr_count($filePath, '../') > 2) {
+            $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
+            return null;
+        }
         $fileContent = file_get_contents($filePath);
         if ($fileContent === false) {
-            $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+            $this->logger->setErrorMessage(
+                "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+            $this->recordCount = 0;
             return null;
         }
         $convert = str_replace("<?php", "",
@@ -75,7 +86,6 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     ))));
         eval($convert);
 
-        $result = array();
         $seq = 0;
         switch ($dataSourceName) {
             case 'contexts':
@@ -108,6 +118,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'post-dismiss-message' => getValueFromArray($context, 'post-dismiss-message'),
                         'post-move-url' => getValueFromArray($context, 'post-move-url'),
                         'repeat-control' => getValueFromArray($context, 'repeat-control'),
+                        'navi-control' => getValueFromArray($context, 'navi-control'),
                         'post-repeater' => getValueFromArray($context, 'post-repeater'),
                         'post-enclosure' => getValueFromArray($context, 'post-enclosure'),
                         'authentication-media-handling' => getValueFromArray($context, 'authentication', 'media-handling'),
@@ -218,6 +229,19 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     }
                 }
                 break;
+            case 'calculation':
+                $contextID = $this->dbSettings->getForeignKeysValue('id');
+                if (isset($globalDataSource[$contextID]['calculation'])) {
+                    foreach ($globalDataSource[$contextID]['calculation'] as $rel) {
+                        $result[] = array(
+                            'id' => $seq + $contextID * 10000,
+                            'field' => getValueFromArray($rel, 'field'),
+                            'expression' => getValueFromArray($rel, 'expression'),
+                        );
+                        $seq++;
+                    }
+                }
+                break;
             case 'global':
                 $contextID = $this->dbSettings->getForeignKeysValue('id');
                 if (isset($globalDataSource[$contextID]['global'])) {
@@ -252,13 +276,20 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'transaction' => getValueFromArray($globalOptions, 'transaction'),
                     'media-root-dir' => getValueFromArray($globalOptions, 'media-root-dir'),
                     'media-context' => getValueFromArray($globalOptions, 'media-context'),
-                    'authentication-user-table' => getValueFromArray($globalOptions, 'authentication', 'user-table'),
-                    'authentication-group-table' => getValueFromArray($globalOptions, 'authentication', 'group-table'),
-                    'authentication-corresponding-table' => getValueFromArray($globalOptions, 'authentication', 'corresponding-table'),
-                    'authentication-challenge-table' => getValueFromArray($globalOptions, 'authentication', 'challenge-table'),
-                    'authentication-authexpired' => getValueFromArray($globalOptions, 'authentication', 'authexpired'),
-                    'authentication-realm' => getValueFromArray($globalOptions, 'authentication', 'realm'),
-                    'authentication-email-as-username' => getValueFromArray($globalOptions, 'authentication', 'email-as-username'),
+                    'authentication-user-table' => getValueFromArray(
+                        $globalOptions, 'authentication', 'user-table'),
+                    'authentication-group-table' => getValueFromArray(
+                        $globalOptions, 'authentication', 'group-table'),
+                    'authentication-corresponding-table' => getValueFromArray(
+                        $globalOptions, 'authentication', 'corresponding-table'),
+                    'authentication-challenge-table' => getValueFromArray(
+                        $globalOptions, 'authentication', 'challenge-table'),
+                    'authentication-authexpired' => getValueFromArray(
+                        $globalOptions, 'authentication', 'authexpired'),
+                    'authentication-realm' => getValueFromArray(
+                        $globalOptions, 'authentication', 'realm'),
+                    'authentication-email-as-username' => getValueFromArray(
+                        $globalOptions, 'authentication', 'email-as-username'),
                 );
                 $seq++;
                 break;
@@ -350,7 +381,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
         $fileContent = file_get_contents($filePath);
         if ($fileContent === false) {
-            $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+            $this->logger->setErrorMessage(
+                "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
             return null;
         }
         $funcStartPos = strpos($fileContent, "IM_Entry");
@@ -371,6 +403,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'validation' => array('field', 'rule', 'message'),
             'script' => array('db-operation', 'situation', 'definition'),
             'global' => array('db-operation', 'field', 'value'),
+            'calculation' => array('field', 'expression'),
             'file-upload' => array('field', 'context'),
         );
         $allKeysOptions = array(
@@ -427,6 +460,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'validation':
             case 'global':
             case 'script':
+            case 'calculation':
             case 'file-upload':
                 $recordID = $contextID % 10000;
                 $contextID = floor($contextID / 10000);
@@ -510,6 +544,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         $newFileContent .= var_export($globalDebug, true);
         $newFileContent .= ");\n?>";
 
+        $sq = "'";
+        foreach ($this->spacialValue as $term) {
+            $newFileContent = str_replace($sq.$term.$sq, $term, $newFileContent);
+        }
+
         $fileWriteResult = file_put_contents($filePath, $newFileContent);
         if ($fileWriteResult === false) {
             $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
@@ -527,7 +566,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
         $fileContent = file_get_contents($filePath);
         if ($fileContent === false) {
-            $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+            $this->logger->setErrorMessage(
+                "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
             return null;
         }
         $funcStartPos = strpos($fileContent, "IM_Entry");
@@ -612,6 +652,15 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'value' => '= new value =',
                 );
                 break;
+            case 'calculation':
+                if (!isset($globalDataSource[$contextID]['calculation'])) {
+                    $globalDataSource[$contextID]['calculation'] = array();
+                }
+                $globalDataSource[$contextID]['calculation'][] = array(
+                    'field' => '= new value =',
+                    'expression' => '= new value =',
+                );
+                break;
             case 'file-upload':
                 if (!isset($globalDataSource[$contextID]['file-upload'])) {
                     $globalDataSource[$contextID]['file-upload'] = array();
@@ -691,7 +740,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
         $fileContent = file_get_contents($filePath);
         if ($fileContent === false) {
-            $this->logger->setErrorMessage("The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+            $this->logger->setErrorMessage(
+                "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
             return null;
         }
         $funcStartPos = strpos($fileContent, "IM_Entry");
@@ -715,6 +765,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'validation':
             case 'global':
             case 'script':
+            case 'calculation':
             case 'file-upload':
                 $recordID = $contextID % 10000;
                 $contextID = floor($contextID / 10000);

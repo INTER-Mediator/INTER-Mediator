@@ -2,7 +2,7 @@ th  {
     text-align: right;
 }
 
-th.title  {
+.title  {
     text-align: left;
     background-color: #DDDDDD;
 }
@@ -10,3 +10,170 @@ th.title  {
 h2  {
     background-color: #FFFFBB;
 }
+
+.tableformat   {
+    border-collapse: collapse;
+    font-size: 12pt;
+}
+.tableformat th  {
+    text-align: right;
+    border: 1px solid #BBBBBB;
+    padding: 0 8px 0 0;
+    font-size: 12pt;
+    color: #444444;
+}
+.tableformat td  {
+    text-align: left;
+    border: 1px solid #BBBBBB;
+    padding: 0 8px 0 8px;
+    font-size: 12pt;
+    color: #444444;
+}
+
+.box    {
+    margin: 10px 10px 10px 10px;
+    padding: 0;
+    border: 1px solid #BBBBBB;
+    border-radius: 10px;
+
+}
+
+.insidebox  {
+    margin: 10px 20px 10px 20px;
+}
+
+.container  {
+    margin: 0;
+    padding: 0;
+}
+
+.insidebox H3 {
+    font-size: 14pt;
+    color: #065284;
+    margin: 10px 0 4px 0;
+    padding: 0;
+}
+
+.insidebox img {
+    max-width: 800px;
+    width: 95%;
+}
+
+.insidebox .code {
+    background-color: #DDDDDD;
+    padding: 8px;
+}
+
+.insidebox table   {
+    border-collapse: collapse;
+    font-size: 12pt;
+    margin: 3px;
+}
+.insidebox table th  {
+    text-align: center;
+    border: 1px solid #BBBBBB;
+    background-color: #DDDDDD;
+    padding: 0 8px 0 8px;
+    font-size: 12pt;
+    color: #444444;
+}
+.insidebox table td  {
+    text-align: left;
+    border: 1px solid #BBBBBB;
+    padding: 0 8px 0 8px;
+    font-size: 12pt;
+    color: #444444;
+}
+
+strong  {
+    font-weight: bold;
+    color: #b00000;
+}
+
+body  {
+    margin: 0;
+    padding: 0;
+}
+
+h1  {
+    background-color: #b3bba3;
+    padding: 4px 4px 4px 4px;
+    margin: 0;
+    min-height: 60px;
+    font-size: 28pt;
+    color: #444444;
+    cursor:pointer;
+}
+
+.logoInH1   {
+    margin: 0 20px 0 26px;
+    width: 60px;
+    float: left;
+}
+.logo2InH1   {
+    margin: 0 20px 0 26px;
+    width: 60px;
+    float: right;
+}
+
+h2  {
+    padding: 0 20px 0 20px;
+    margin: 0;
+    border-bottom: 1px solid #BBBBBB;
+    color: #666666;
+}
+
+.IM_POSTMESSAGE {
+    color: #b67f46;
+}
+
+/* Room 2 */
+.flag   {
+    font-weight: bold;
+    color: darkred;
+}
+
+.flagfixed  {
+    font-weight: bold;
+    color: #9b9b9b;
+}
+
+.flagdetermined  {
+    font-weight: bold;
+    color: #ffe0c2;
+}
+
+.smallfont  {
+    font-size: 70%;
+}
+
+.IM_NAV_panel {
+    background-color: #CCCCCC;
+    padding: 4px;
+    margin: 4px 0 4px 0;
+}
+
+.IM_NAV_JUMP   {
+    width: 50px;
+    text-align: right;
+}
+
+span.IM_NAV_info {
+    font-size: 9pt;
+    color: #333333;
+}
+
+span.IM_NAV_button {
+    padding: 2px 4px 2px 4px;
+    margin: 2px 6px 2px 6px;
+    border-radius: 3px;
+    background-color: #000000;
+    color: yellow;
+    cursor: pointer;
+}
+
+span.IM_NAV_disabled {
+    background-color: #666666;
+    color: #333333;
+}
+

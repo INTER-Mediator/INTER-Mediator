@@ -15,8 +15,11 @@ Ver.5.0 =========================================================
 =================================================================
 
 Ver.4.7 (in development)
-- This version could be minor fix only.
 - Update Sample_realtime (invoice_FMS.html/invoice_MySQL.html) for compatibility with SSL/TLS.
+- The Page File Editor appears in the INTER-Mediator-Support directory.
+- The seeding files for the vm to trial are take place in the dist-docs/vm-for-trial directory.
+- The Definition File Editor supports the 'navi-control' and 'calculation' keys.
+- [BUG FIX] The Definition File editor worked. It should not do at the initial situation. We should make it sure.
 
 Ver.4.6 (2014/11/21)
 - Query conditions, sort fields, record number and updating context can be described in data-im attributes.
