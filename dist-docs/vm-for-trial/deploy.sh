@@ -10,10 +10,18 @@ IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 
 mv "${WEBROOT}/index.html" "${WEBROOT}/index_original.html"
 
+cd "${IMSUPPORT}"
+curl -O http://codemirror.net/codemirror.zip
+unzip codemirror.zip
+mv codemirror-4.8 CodeMirror-4.8.0
+
 cd "${WEBROOT}"
 ln -s "${IMVMROOT}/index.html" index.html
 
-find . -type d -exec setfacl -d -m g:im-developer:rw {} \;
+find "${WEBROOT}" -type d -exec setfacl -d -m g:im-developer:rwx {} \;
+find "${WEBROOT}" -type f -exec setfacl -m g:im-developer:rw {} \;
+chown -R developer:im-developer "${WEBROOT}"
+chmod -R g+w "${WEBROOT}"
 
 echo 'AddType "text/html; charset=UTF-8" .html' > "${WEBROOT}/.htaccess"
 
@@ -66,3 +74,6 @@ echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql
 mkdir -p /var/db/im
 sqlite3 /var/db/im/sample.sq3 < "${IMDISTDOC}/sample_schema_sqlite.txt"
 chown -R www-data /var/db/im
+
+echo "==========================="
+echo "! Check the CodeMirror path"
