@@ -11,6 +11,12 @@ IMSAMPLE="${IMROOT}/Samples"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 
+groupadd im-developer
+usermod -a -G im-developer developer
+usermod -a -G im-developer www-data
+echo "Type the password for postgres user as 'im4135dev'.
+passwd postgres #and input the password
+
 aptitude update
 aptitude full-upgrade --assume-yes
 aptitude install sqlite --assume-yes
@@ -21,10 +27,6 @@ aptitude install php5-sqlite --assume-yes
 aptitude install php5-curl --assume-yes
 aptitude install git --assume-yes
 aptitude clean
-groupadd im-developer
-usermod -a -G im-developer developer
-usermod -a -G im-developer www-data
-passwd postgres #and input the password
 
 cd "${WEBROOT}"
 git clone https://github.com/msyk/INTER-Mediator.git
@@ -36,10 +38,6 @@ git clone https://github.com/codemirror/CodeMirror.git
 
 cd "${WEBROOT}"
 ln -s "${IMVMROOT}/index.html" index.html
-
-setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
-chown -R developer:im-developer "${WEBROOT}"
-chmod -R g+w "${WEBROOT}"
 
 echo 'AddType "text/html; charset=UTF-8" .html' > "${WEBROOT}/.htaccess"
 
@@ -56,7 +54,6 @@ echo '$dbPort = "80";' >> "${WEBROOT}/params.php"
 echo '$dbDataType = "FMPro12";' >> "${WEBROOT}/params.php"
 echo '$dbDatabase = "TestDB";' >> "${WEBROOT}/params.php"
 echo '$dbProtocol = "HTTP";' >> "${WEBROOT}/params.php"
-
 
 # Activate DefEdit/PageEdit
 
@@ -75,7 +72,7 @@ do
     PadZero="00${Num}"
     DefFile="def${PadZero: -2}.php"
     PageFile="page${PadZero: -2}.html"
-    sed -E -e "s|require_once('INTER-Mediator.php');|require_once('INTER-Mediator/INTER-Mediator.php');|" \
+    sed -E -e "s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|" \
         "${IMSAMPLE}/templates/definition_file_simple.php" > "${WEBROOT}/${DefFile}"
     sed -E -e "s/definitin_file_simple.php/${DefFile}/" \
         "${IMSAMPLE}/templates/page_file_simple.html" > "${WEBROOT}/${PageFile}"
@@ -93,3 +90,8 @@ echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql
 mkdir -p /var/db/im
 sqlite3 /var/db/im/sample.sq3 < "${IMDISTDOC}/sample_schema_sqlite.txt"
 chown -R www-data /var/db/im
+
+setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
+chown -R developer:im-developer "${WEBROOT}"
+chmod -R g+w "${WEBROOT}"
+
