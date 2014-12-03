@@ -14,7 +14,7 @@ IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 groupadd im-developer
 usermod -a -G im-developer developer
 usermod -a -G im-developer www-data
-echo "Type the password for postgres user as 'im4135dev'.
+echo "Type the password for postgres user as 'im4135dev'."
 passwd postgres #and input the password
 
 aptitude update
@@ -94,4 +94,3 @@ chown -R www-data /var/db/im
 setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
 chmod -R g+w "${WEBROOT}"
-
