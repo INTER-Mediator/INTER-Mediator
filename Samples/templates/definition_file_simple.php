@@ -8,8 +8,8 @@ IM_Entry(
             'name' => 'postalcode',
             'table' => 'postalcode',
             'view' => 'postalcode',
-            'records' => '10',
-            'maxrecords' => '100',
+            'records' => 10,
+            'maxrecords' => 100,
             'paging' => true,
             'key' => 'id',
             'query' => array(
