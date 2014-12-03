@@ -8,12 +8,28 @@ IMSAMPLE="${IMROOT}/Samples"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 
+aptitude update
+aptitude full-upgrade
+aptitude install sqlite --assume-yes
+aptitude install acl --assume-yes
+aptitude install libmysqlclient-dev --assume-yes
+aptitude install php5-pgsql --assume-yes
+aptitude install php5-sqlite --assume-yes
+aptitude install php5-curl --assume-yes
+aptitude install git --assume-yes
+aptitude clean
+group add im-developer
+usermod -a -G im-developer developer
+usermod -a -G im-developer www-data
+passwd postgres #and input the password
+
+cd "${WEBROOT}"
+git clone https://github.com/msyk/INTER-Mediator.git
+
 mv "${WEBROOT}/index.html" "${WEBROOT}/index_original.html"
 
 cd "${IMSUPPORT}"
-curl -O http://codemirror.net/codemirror.zip
-unzip codemirror.zip
-mv codemirror-4.8 CodeMirror-4.8.0
+git clone https://github.com/codemirror/CodeMirror.git
 
 cd "${WEBROOT}"
 ln -s "${IMVMROOT}/index.html" index.html
@@ -52,12 +68,13 @@ mv "${IMSUPPORT}/temp" "${IMSUPPORT}/pageedit.php"
 
 # Copy Templates
 
-for Num in $(seq 20)
+for Num in $(seq 40)
 do
     PadZero="00${Num}"
     DefFile="def${PadZero: -2}.php"
     PageFile="page${PadZero: -2}.html"
-    cp "${IMSAMPLE}/templates/definition_file_simple.php" "${WEBROOT}/${DefFile}"
+    sed -E -e "s|require_once('INTER-Mediator.php');|require_once('INTER-Mediator/INTER-Mediator.php');|" \
+        "${IMSAMPLE}/templates/definition_file_simple.php" > "${WEBROOT}/${DefFile}"
     sed -E -e "s/definitin_file_simple.php/${DefFile}/" \
         "${IMSAMPLE}/templates/page_file_simple.html" > "${WEBROOT}/${PageFile}"
 done
@@ -74,6 +91,3 @@ echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql
 mkdir -p /var/db/im
 sqlite3 /var/db/im/sample.sq3 < "${IMDISTDOC}/sample_schema_sqlite.txt"
 chown -R www-data /var/db/im
-
-echo "==========================="
-echo "! Check the CodeMirror path"
