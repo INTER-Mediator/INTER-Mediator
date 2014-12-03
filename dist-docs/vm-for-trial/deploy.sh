@@ -1,4 +1,7 @@
 #!/bin/bash
+#
+# This file can get from the URL below.
+# https://raw.githubusercontent.com/msyk/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
 
 WEBROOT="/var/www/html"
 
@@ -9,7 +12,7 @@ IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 
 aptitude update
-aptitude full-upgrade
+aptitude full-upgrade --assume-yes
 aptitude install sqlite --assume-yes
 aptitude install acl --assume-yes
 aptitude install libmysqlclient-dev --assume-yes
@@ -18,7 +21,7 @@ aptitude install php5-sqlite --assume-yes
 aptitude install php5-curl --assume-yes
 aptitude install git --assume-yes
 aptitude clean
-group add im-developer
+groupadd im-developer
 usermod -a -G im-developer developer
 usermod -a -G im-developer www-data
 passwd postgres #and input the password
@@ -34,8 +37,7 @@ git clone https://github.com/codemirror/CodeMirror.git
 cd "${WEBROOT}"
 ln -s "${IMVMROOT}/index.html" index.html
 
-find "${WEBROOT}" -type d -exec setfacl -d -m g:im-developer:rwx {} \;
-find "${WEBROOT}" -type f -exec setfacl -m g:im-developer:rw {} \;
+setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
 chmod -R g+w "${WEBROOT}"
 
