@@ -103,6 +103,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             if ($this->dbClass !== null) {
                 $this->logger->setDebugMessage("The method 'getFromDB' of the class '{$className}' is calling.", 2);
+                $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+                if (isset($tableInfo['soft-delete'])) {
+                    $delFlagField = 'delete';
+                    if ($tableInfo['soft-delete'] !== true) {
+                        $delFlagField = $tableInfo['soft-delete'];
+                    }
+                    $this->dbSettings->addValueWithField($delFlagField, 1);
+                }
                 $result = $this->dbClass->getFromDB($dataSourceName);
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterGetFromDB")) {
@@ -273,7 +281,17 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeDeleteFromDB($dataSourceName);
             }
             if ($this->dbClass !== null) {
-                $result = $this->dbClass->deleteFromDB($dataSourceName);
+                $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+                if (isset($tableInfo['soft-delete'])) {
+                    $delFlagField = 'delete';
+                    if ($tableInfo['soft-delete'] !== true) {
+                        $delFlagField = $tableInfo['soft-delete'];
+                    }
+                    $this->dbSettings->addValueWithField($delFlagField, 1);
+                    $result = $this->dbClass->setToDB($dataSourceName);
+                } else {
+                    $result = $this->dbClass->deleteFromDB($dataSourceName);
+                }
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
                 $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);

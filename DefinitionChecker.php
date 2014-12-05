@@ -307,6 +307,7 @@ class DefinitionChecker
             'post-reconstruct' => 'boolean',
             'post-dismiss-message' => 'string',
             'post-move-url' => 'string',
+            'soft-delete' => 'boolean|string',
             'file-upload' => array(
                 '*' => array(
                     'field' => 'string',
