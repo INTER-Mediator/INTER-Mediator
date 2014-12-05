@@ -12,7 +12,7 @@ $ mysql -u root -p < sample_schema_mysql.txt
 Enter password: 
 
 */
-SET NAMES 'utf8';
+SET NAMES 'utf8mb4';
 
 GRANT USAGE ON *.* TO 'web'@'localhost';
 DROP USER 'web'@'localhost';
@@ -20,8 +20,8 @@ CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
 
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db
-	CHARACTER SET utf8
-	COLLATE utf8_unicode_ci;
+	CHARACTER SET utf8mb4
+	COLLATE utf8mb4_unicode_ci;
 USE test_db;
 
 #  The schema for the "Sample_form" and "Sample_Auth" sample set.
@@ -37,8 +37,8 @@ CREATE TABLE person	(
 	checking		INT,
 	location		INT,
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX person_id ON person (id);
 
@@ -56,8 +56,8 @@ CREATE TABLE contact	(
 	way 			INT     default 4,
 	kind			INT,
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX contact_id ON contact (id);
 CREATE INDEX contact_person_id ON contact (person_id);
@@ -74,8 +74,8 @@ CREATE TABLE contact_way	(
 	id		INT  AUTO_INCREMENT,
 	name	VARCHAR(50),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX contact_way_id ON contact_way (id);
 
@@ -87,8 +87,8 @@ CREATE TABLE contact_kind	(
 	id		INT  AUTO_INCREMENT,
 	name	VARCHAR(50),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX contact_kind_id ON contact_kind (id);
 
@@ -108,8 +108,8 @@ CREATE TABLE cor_way_kind	(
 	way_id	INT,
 	kind_id	INT,
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE INDEX cor_way_id ON cor_way_kind (way_id);
 CREATE INDEX cor_kind_id ON cor_way_kind (way_id);
@@ -138,8 +138,8 @@ CREATE TABLE history	(
 	enddate		DATE,
 	username    VARCHAR(20),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX history_id ON history (id);
 CREATE INDEX history_person_id ON history (person_id);
@@ -159,8 +159,8 @@ CREATE TABLE postalcode	(
 	f9	VARCHAR(40),
 	memo	VARCHAR(200),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX postalcode_id ON postalcode (id);
 CREATE INDEX postalcode_f3 ON postalcode (f3);
@@ -179,8 +179,8 @@ CREATE TABLE invoice (
 	authgroup VARCHAR(30),
 	authpriv  VARCHAR(30),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
 CREATE TABLE item (
@@ -194,8 +194,8 @@ CREATE TABLE item (
                                	group_id INT,
                                	priv_id INT,
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
 CREATE TABLE product (
@@ -208,8 +208,8 @@ CREATE TABLE product (
 	ack_link			VARCHAR(100),
 	memo				VARCHAR(120),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;	
 
 CREATE VIEW item_display AS
@@ -233,8 +233,8 @@ CREATE TABLE asset	(
     discard     DATE,
     memo	    TEXT,
 	PRIMARY     KEY(asset_id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX asset_id ON asset (asset_id);
 CREATE INDEX asset_purchase ON asset (purchase);
@@ -249,8 +249,8 @@ CREATE TABLE rent	(
     backdate    DATE,
     memo	    TEXT,
 	PRIMARY     KEY(rent_id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX rent_id ON rent (rent_id);
 CREATE INDEX rent_rentdate  ON rent (rentdate);
@@ -265,8 +265,8 @@ CREATE TABLE staff	(
     section     VARCHAR(20),
     memo	    TEXT,
 	PRIMARY     KEY(staff_id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX staff_id ON staff (staff_id);
 
@@ -275,8 +275,8 @@ CREATE TABLE category	(
 	category_id	INT  AUTO_INCREMENT,
 	name		VARCHAR(20),
 	PRIMARY     KEY(category_id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 CREATE UNIQUE INDEX category_id ON category (category_id);
 
@@ -349,8 +349,8 @@ CREATE TABLE chat (
 	postdt      DATETIME,
 	message     VARCHAR(800),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
 
@@ -359,8 +359,8 @@ CREATE TABLE fileupload (
 	f_id    INT,
 	path        VARCHAR(1000),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
 #
@@ -375,8 +375,8 @@ CREATE TABLE survey (
 	Q4       TEXT,
 	Q5       TEXT,
 	PRIMARY KEY(id)
-)       CHARACTER SET utf8,
-        COLLATE utf8_unicode_ci
+)       CHARACTER SET utf8mb4,
+        COLLATE utf8mb4_unicode_ci
         ENGINE=InnoDB;
 
 #
@@ -389,8 +389,8 @@ CREATE TABLE registeredcontext (
 	conditions     TEXT,
 	registereddt   DATETIME,
 	PRIMARY KEY(id)
-)       CHARACTER SET utf8,
-        COLLATE utf8_unicode_ci
+)       CHARACTER SET utf8mb4,
+        COLLATE utf8mb4_unicode_ci
         ENGINE=InnoDB;
 
 
@@ -399,8 +399,8 @@ CREATE TABLE registeredpks (
 	pk         INT,
 	PRIMARY KEY(context_id, pk),
 	FOREIGN KEY(context_id) REFERENCES registeredcontext(id) ON DELETE CASCADE
-)       CHARACTER SET utf8,
-        COLLATE utf8_unicode_ci
+)       CHARACTER SET utf8mb4,
+        COLLATE utf8mb4_unicode_ci
         ENGINE=InnoDB;
 
 #
@@ -413,8 +413,8 @@ CREATE TABLE authuser (
 	hashedpasswd		VARCHAR(48),
 	email               VARCHAR(100),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
 INSERT authuser SET id=1,username='user1',hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354';
@@ -438,8 +438,8 @@ CREATE TABLE authgroup (
 	id					INT  AUTO_INCREMENT,
 	groupname			VARCHAR(48),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
 INSERT authgroup SET id=1,groupname='group1';
@@ -453,8 +453,8 @@ CREATE TABLE authcor (
 	dest_group_id             INT,
 	privname			VARCHAR(48),
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
 INSERT authcor SET user_id=1,dest_group_id=1;
@@ -473,8 +473,8 @@ CREATE TABLE issuedhash (
 	hash            VARCHAR(48),
 	expired			DateTime,
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8,
-		COLLATE utf8_unicode_ci
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
 CREATE TABLE testtable (
@@ -491,7 +491,7 @@ CREATE TABLE testtable (
 	text1 TEXT,
 	text2 TEXT,
 	PRIMARY KEY(id)
-)		CHARACTER SET utf8, COLLATE utf8_unicode_ci ENGINE=InnoDB;
+)		CHARACTER SET utf8mb4, COLLATE utf8mb4_unicode_ci ENGINE=InnoDB;
 
 
 # Grant to All operations for all objects with web account
@@ -4206,23 +4206,23 @@ CREATE TABLE saleslog	(
 	customer_id	INT,
 	unitprice	INT,
 	total	INT
-)	CHARACTER SET utf8,
-    COLLATE utf8_unicode_ci
+)	CHARACTER SET utf8mb4,
+    COLLATE utf8mb4_unicode_ci
     ENGINE=InnoDB;
 
 CREATE TABLE item_master	(
 	id			INT   PRIMARY KEY,
 	name	VARCHAR(20),
 	unitprice	INT
-)	CHARACTER SET utf8,
-    COLLATE utf8_unicode_ci
+)	CHARACTER SET utf8mb4,
+    COLLATE utf8mb4_unicode_ci
     ENGINE=InnoDB;
 
 CREATE TABLE customer	(
 	id			INT   PRIMARY KEY,
 	name	VARCHAR(70)
-)	CHARACTER SET utf8,
-    COLLATE utf8_unicode_ci
+)	CHARACTER SET utf8mb4,
+    COLLATE utf8mb4_unicode_ci
     ENGINE=InnoDB;
 
 INSERT item_master SET id=1,name='Artichokes ',unitprice=957;
