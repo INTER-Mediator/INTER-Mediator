@@ -17,6 +17,10 @@ usermod -a -G im-developer www-data
 echo "Type the password for postgres user as 'im4135dev'."
 passwd postgres #and input the password
 
+echo "[mysqld]" > /etc/my.cnf
+echo "character-set-server=utf8mb4" >> /etc/my.cnf
+echo "skip-character-set-client-handshake" >> /etc/my.cnf
+
 aptitude update
 aptitude full-upgrade --assume-yes
 aptitude install sqlite --assume-yes
