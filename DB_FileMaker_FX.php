@@ -34,6 +34,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $queriedEntity = null;
     private $queriedCondition = null;
     private $queriedPrimaryKeys = null;
+    private $softDeleteField = null;
+    private $softDeleteValue = null;
 
     public function queriedEntity()
     {
@@ -81,6 +83,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function updatedRecord()
     {
         return $this->updatedRecord;
+    }
+
+    public function softDeleteActivate($field, $value)
+    {
+        $this->softDeleteField = $field;
+        $this->softDeleteValue = $value;
     }
 
     public function isExistRequiredTable()

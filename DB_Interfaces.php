@@ -32,6 +32,7 @@ interface DB_Interface
     public function updatedRecord();
     public function isContainingFieldName($fname, $fieldnames);
     public function isNullAcceptable();
+    public function softDeleteActivate($field, $value);
 }
 
 interface DB_Interface_Registering

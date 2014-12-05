@@ -32,6 +32,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     private $queriedEntity = null;
     private $queriedCondition = null;
     private $queriedPrimaryKeys = null;
+    private $softDeleteField = null;
+    private $softDeleteValue = null;
 
     public function queriedEntity()
     {
@@ -56,6 +58,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     public function updatedRecord()
     {
         return $this->updatedRecord;
+    }
+
+    public function softDeleteActivate($field, $value)
+    {
+        $this->softDeleteField = $field;
+        $this->softDeleteValue = $value;
     }
 
     public function isExistRequiredTable()
@@ -528,6 +536,15 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         $queryClause = 'FALSE';
                     }
                 }
+            }
+        }
+        if (! is_null($this->softDeleteField) && ! is_null($this->softDeleteValue)) {
+            $dfEsc = $this->quotedFieldName($this->softDeleteField);
+            $dvEsc = $this->link->quote($this->softDeleteValue);
+            if (strlen($queryClause) > 0)   {
+                $queryClause = "($queryClause) and ($dfEsc <> $dvEsc or $dfEsc is null)";
+            } else {
+                $queryClause = "($dfEsc <> $dvEsc or $dfEsc is null)";
             }
         }
         return $queryClause;
