@@ -24,7 +24,8 @@ $dbProtocol = 'HTTP';
 
 /* DB_PDO awares below:
  */
-$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;';
+$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8';
+//$dbDSN = 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 
 /* Browser Compatibility Check:

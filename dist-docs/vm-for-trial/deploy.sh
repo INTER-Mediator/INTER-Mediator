@@ -17,15 +17,15 @@ usermod -a -G im-developer www-data
 echo "Type the password for postgres user as 'im4135dev'."
 passwd postgres #and input the password
 
-echo "[mysqld]" > /etc/my.cnf
-echo "character-set-server=utf8mb4" >> /etc/my.cnf
-echo "skip-character-set-client-handshake" >> /etc/my.cnf
-echo "[client]" >> /etc/my.cnf
-echo "default-character-set=utf8mb4" >> /etc/my.cnf
-echo "[mysqldump]" >> /etc/my.cnf
-echo "default-character-set=utf8mb4" >> /etc/my.cnf
-echo "[mysqp]" >> /etc/my.cnf
-echo "default-character-set=utf8mb4" >> /etc/my.cnf
+echo "[mysqld]" > /etc/mysql/conf.d/im.cnf
+echo "character-set-server=utf8mb4" >> /etc/mysql/conf.d/im.cnf
+echo "skip-character-set-client-handshake" >> /etc/mysql/conf.d/im.cnf
+echo "[client]" >> /etc/mysql/conf.d/im.cnf
+echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
+echo "[mysqldump]" >> /etc/mysql/conf.d/im.cnf
+echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
+echo "[mysql]" >> /etc/mysql/conf.d/im.cnf
+echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
 
 aptitude update
 aptitude full-upgrade --assume-yes
