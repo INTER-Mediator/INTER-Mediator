@@ -3,7 +3,7 @@
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/msyk/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
 #
-# How to test using Serverspec 2:
+# How to test using Serverspec 2 after running this file on the guest of VM:
 #
 # - Install Ruby on the host of VM (You don't need installing Ruby on OS X usually)
 # - Install Serverspec 2 on the host of VM (ex. "sudo gem install serverspec" on OS X)
