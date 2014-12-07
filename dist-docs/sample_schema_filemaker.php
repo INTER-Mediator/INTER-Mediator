@@ -8,8 +8,17 @@
  * 
  * This schema file is for the sample of INTER-Mediator using FileMaker ODBC, encoded by UTF-8.
  * 
+ * [Required software]
+ * FileMaker xDBC client drivers for FileMaker 13
+ * http://help.filemaker.com/app/answers/detail/a_id/12921
+ *
+ * Actual ODBC Pack (for Mac OS X)
+ * http://www.actualtech.com/download.php
+ *
+ * ODBC Manager for OS X is installed with the Actual ODBC drivers.
+ *
  * Example:
- * $ php sample_schema_filemaker.php
+ * $ /Library/FileMaker\ Server/Web\ Publishing/publishing-engine/php/mountain\ lion/bin/php sample_schema_filemaker.php
  * Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]: 
  *
  */
