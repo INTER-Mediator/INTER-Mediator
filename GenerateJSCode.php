@@ -22,6 +22,7 @@ class GenerateJSCode
         header('Content-Type: text/javascript;charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
         header('Expires: 0');
+        header('X-XSS-Protection: 1; mode=block');
         header('X-Frame-Options: SAMEORIGIN');
     }
 

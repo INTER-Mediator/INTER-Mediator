@@ -33,7 +33,7 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+                'dsn' => 'mysql:dbname=test_db;host=127.0.0.1;charset=utf8',
                 'user' => 'web',
                 'password' => 'password',
             ),
@@ -53,6 +53,7 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
             header_remove();
             ob_clean();
             
+            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
             $this->assertContains('X-Content-Type-Options: nosniff', $headers);
             $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
         }
