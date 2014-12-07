@@ -542,9 +542,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $dfEsc = $this->quotedFieldName($this->softDeleteField);
             $dvEsc = $this->link->quote($this->softDeleteValue);
             if (strlen($queryClause) > 0)   {
-                $queryClause = "($queryClause) and ($dfEsc <> $dvEsc or $dfEsc is null)";
+                $queryClause = "($queryClause) AND ($dfEsc <> $dvEsc OR $dfEsc IS NULL)";
             } else {
-                $queryClause = "($dfEsc <> $dvEsc or $dfEsc is null)";
+                $queryClause = "($dfEsc <> $dvEsc OR $dfEsc IS NULL)";
             }
         }
         return $queryClause;

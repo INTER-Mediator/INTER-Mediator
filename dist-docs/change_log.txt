@@ -12,9 +12,18 @@ Also the Migration Guide (Japanese) might be informative: http://inter-mediator.
 
 Ver.5.0 =========================================================
         [Major differences from Ver.4]
+- The realtime multi-client updating with the Pusher (WebRTC).
+- The Local Context and Context for DB Entities as the context model.
+- Master/Detail style page can be built without JS program.
+- Search and listing style page can be built without JS program.
+- As for the FileMaker Server, the fmresultset schema is supported.
+- [INFO] We prepared the INTER-Mediator-Server virtual machine  for trial and learning purpose.
+- [INFO] InternetExplorer Ver.8 is dropped out from the supporting browsers.
 =================================================================
 
 Ver.4.7 (in development)
+- The "Soft-Delete" or "Logical-Delete" is implemented. The 'soft-delete' key can be set up on a context
+  of definition file. The sample is the "logical-delete" of the "Debugging" group.
 - Update Sample_realtime (invoice_FMS.html/invoice_MySQL.html) for compatibility with SSL/TLS.
 - The Page File Editor appears in the INTER-Mediator-Support directory.
 - The seeding files for the vm to trial are take place in the dist-docs/vm-for-trial directory.
