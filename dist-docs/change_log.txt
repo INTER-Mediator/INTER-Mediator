@@ -20,6 +20,7 @@ Ver.4.7 (in development)
 - The seeding files for the vm to trial are take place in the dist-docs/vm-for-trial directory.
 - The Definition File Editor supports the 'navi-control' and 'calculation' keys.
 - Output X-XSS-Protection response header to enable XSS filter.
+- Add Sample_forDebugging for FileMaker Server in the "Samples" directory.
 - [INFO] The dist-docs/sample_schema_mysql.txt describes the encode as utf8mb4.
          It means the schema support MySQL 5.5.3 or above.
 - [BUG FIX] The Definition File editor worked. It should not do at the initial situation. We should make it sure.
