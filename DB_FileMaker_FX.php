@@ -709,6 +709,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $this->queriedPrimaryKeys[] = $record['@attributes']['record-id'];
                     }
                     foreach ($record['field'] as $field) {
+                        if (!isset($field['@attributes'])) {
+                            $field = $record['field'];
+                        }
                         $fieldName = $field['@attributes']['name'];
                         $fieldValue = '';
                         if (isset($field['data']) && !is_null($field['data'])) {
