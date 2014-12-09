@@ -765,7 +765,8 @@ INTERMediator = {
                     usePortal = false;
                     if (currentContextDef["relation"]) {
                         for (i = 0; i < Object.keys(currentContextDef["relation"]).length; i++) {
-                            if (Number(currentContextDef["relation"][i]["portal"]) === 1) {
+                            if (currentContextDef["relation"][i]["portal"] 
+                                    && Number(currentContextDef["relation"][i]["portal"]) === 1) {
                                 usePortal = true;
                             }
                         }
