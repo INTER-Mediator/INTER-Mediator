@@ -693,6 +693,7 @@ INTERMediator = {
 
                 if (currentContextDef["portal"] === true) {
                     currentContextDef["currentrecord"] = currentRecord;
+                    keyValue = currentRecord["-recid"];
                 }
                 targetRecords = retrieveDataForEnclosure(currentContextDef, fieldList, contextObj.foreignValue);
                 contextObj.registeredId = targetRecords.registeredId;
@@ -742,6 +743,7 @@ INTERMediator = {
             }
 
             recordCounter = 0;
+            usePortal = false;
             for (ix = 0; ix < targetRecordset.length; ix++) { // for each record
                 try {
                     recordCounter++;
@@ -761,8 +763,7 @@ INTERMediator = {
                     } else {
                         keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
                     }
-                    
-                    usePortal = false;
+
                     if (currentContextDef["relation"]) {
                         for (i = 0; i < Object.keys(currentContextDef["relation"]).length; i++) {
                             if (currentContextDef["relation"][i]["portal"] 
@@ -922,7 +923,7 @@ INTERMediator = {
                     }
                 }
 
-                if (currentContextDef['portal'] == true) {
+                if (usePortal == true) {
                     keyField = "-recid";
                     foreignField = currentContextDef['name'] + "::-recid";
                     foreignValue = targetRecordset[ix][foreignField];

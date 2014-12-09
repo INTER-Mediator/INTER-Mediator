@@ -240,7 +240,18 @@ var IMLibUI = {
         INTERMediatorOnPage.showProgress();
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            if (foreignField != "") {
+
+            currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
+            relationDef = currentContext["relation"];
+            if (relationDef) {
+                for (index in relationDef) {
+                    if (relationDef[index]["portal"] == true) {
+                        currentContext["portal"] = true;
+                    }
+                }
+            }
+
+            if (foreignField != "" && currentContext["portal"] == true) {
                 INTERMediator_DBAdapter.db_update({
                     name: targetName,
                     conditions: [
@@ -345,7 +356,7 @@ var IMLibUI = {
                         }
                     );
                     for (portalField in targetRecord["recordset"][0][0]) {
-                        if (portalField.indexOf(targetName + "::") > -1) {
+                        if (portalField.indexOf(targetName + "::") > -1 && portalField !== targetName + "::-recid") {
                             existRelated = true;
                             targetPortalField = portalField;
                             if (portalField == targetName + "::" + recordSet[0]['field']) {
@@ -373,7 +384,7 @@ var IMLibUI = {
                             }
                         );
                         for (portalField in targetRecord["recordset"]) {
-                            if (portalField.indexOf(targetName + "::") > -1) {
+                            if (portalField.indexOf(targetName + "::") > -1 && portalField !== targetName + "::-recid") {
                                 targetPortalField = portalField;
                                 if (portalField == targetName + "::" + recordSet[0]['field']) {
                                     targetPortalValue = recordSet[0]['value'];
@@ -400,6 +411,8 @@ var IMLibUI = {
                     ],
                     dataset: relatedRecordSet
                 });
+                newRecord = {};
+                newRecord.recordset = relatedRecordSet;  // TODO: need to be modified
             } else {
                 newRecord = INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
                 newRecordId = newRecord.newKeyValue;
