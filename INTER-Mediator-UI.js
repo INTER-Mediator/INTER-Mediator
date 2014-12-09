@@ -302,7 +302,7 @@ var IMLibUI = {
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
         var currentContext, recordSet, index, key, conditions, i, relationDef, targetRecord, portalField,
             targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet, newRecordId,
-            keyField, associatedContext, createdRecord, newRecord;
+            keyField, associatedContext, createdRecord, newRecord, portalRowNum, recId, maxRecId;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
@@ -411,8 +411,34 @@ var IMLibUI = {
                     ],
                     dataset: relatedRecordSet
                 });
+                
+                targetRecord = INTERMediator_DBAdapter.db_query(
+                    {
+                        name: targetName,
+                        records: 1,
+                        conditions: [
+                            {
+                                field: currentContext["key"] ? currentContext["key"] : "-recid",
+                                operator: "=",
+                                value: keyValue
+                            }
+                        ]
+                    }
+                );
+                
                 newRecord = {};
-                newRecord.recordset = relatedRecordSet;  // TODO: need to be modified
+                maxRecId = -1;
+                for (portalRowNum in targetRecord["recordset"][0]) {
+                    if (portalRowNum == Number(portalRowNum)
+                            && targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"]) {
+                        recId = parseInt(targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"], 10);
+                        if (recId > maxRecId) {
+                            maxRecId = recId;
+                            newRecord.recordset = [];
+                            newRecord.recordset.push(targetRecord["recordset"][0][portalRowNum]);
+                        }
+                    }
+                }
             } else {
                 newRecord = INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
                 newRecordId = newRecord.newKeyValue;
