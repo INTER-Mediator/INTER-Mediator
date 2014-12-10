@@ -697,6 +697,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $data = json_decode(json_encode($parsedData), true);
             $i = 0;
             $dataArray = array();
+            $multiFields = true;
             if (isset($data['resultset']['record']) && isset($data['resultset']['@attributes'])) {
                 foreach($data['resultset']['record'] as $record) {
                     if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
@@ -711,6 +712,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     foreach ($record['field'] as $field) {
                         if (!isset($field['@attributes'])) {
                             $field = $record['field'];
+                            $multiFields = false;
                         }
                         $fieldName = $field['@attributes']['name'];
                         $fieldValue = '';
@@ -730,6 +732,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             $dataArray = $dataArray + array(
                                 $fieldName => $fieldValue
                             );
+                        }
+                        if ($multiFields === false) {
+                            break;
                         }
                     }
                     
