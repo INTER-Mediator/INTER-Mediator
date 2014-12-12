@@ -21,7 +21,7 @@ IM_Entry(
                 array('field' => 'id', 'direction' => 'asc'),
             ),
             'repeat-control' => 'insert delete',
-            'soft-delete' => 'checking',
+            'soft-delete' => 'check',
         ),
         array(
             'name' => 'personrowlist',

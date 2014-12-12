@@ -15,7 +15,7 @@
 <body>
 <ol>
     <li>The context of the left table uses the "Soft-Delete" feature, and the right side does not.</li>
-    <li>The "checking" field is the flag of deleting.</li>
+    <li>The "checking" field (the name in db is 'check') is the flag of deleting.</li>
     <li>You can delete any records in the left table, and it is going to disappear in the table. It's good to remember the "id" field's value that you delete.</li>
     <li>After deleting you should update this page. The checking field in the corresponding record of the right table is going to be set to "1".</li>
 </ol>
@@ -39,7 +39,7 @@
         <td data-im="personlist@mail"></td>
         <td data-im="personlist@category"></td>
         <td data-im="personlist@location"></td>
-        <td data-im="personlist@checking"></td>
+        <td data-im="personlist@check"></td>
         <td></td>
     </tr>
     </tbody>
@@ -64,7 +64,7 @@
         <td data-im="personrowlist@mail"></td>
         <td data-im="personrowlist@category"></td>
         <td data-im="personrowlist@location"></td>
-        <td data-im="personrowlist@checking"></td>
+        <td data-im="personrowlist@check"></td>
     </tr>
     </tbody>
 </table>
