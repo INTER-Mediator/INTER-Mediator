@@ -28,9 +28,14 @@ Ver.4.7 (in development)
 - The Page File Editor appears in the INTER-Mediator-Support directory.
 - The seeding files for the vm to trial are take place in the dist-docs/vm-for-trial directory.
 - The Definition File Editor supports the 'navi-control' and 'calculation' keys.
+- Output X-XSS-Protection response header to enable XSS filter.
+- Add Sample_forDebugging for FileMaker Server in the "Samples" directory.
 - [INFO] The dist-docs/sample_schema_mysql.txt describes the encode as utf8mb4.
          It means the schema support MySQL 5.5.3 or above.
 - [BUG FIX] The Definition File editor worked. It should not do at the initial situation. We should make it sure.
+- [BUG FIX] Fix retrieving field data when using FileMaker Server and only one field is placed on the layout.
+  The affected version is 4.6 only (Thanks to Kentaro Suzuki).
+- [BUG FIX] Fix processing FileMaker's portal=>true context (Thanks to Kentaro Suzuki).
 
 Ver.4.6 (2014/11/21)
 - Query conditions, sort fields, record number and updating context can be described in data-im attributes.

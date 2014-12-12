@@ -668,8 +668,8 @@ INTERMediator = {
                         contextObj.setOriginal(repeatersOriginal);
                         if (relationDef) {
                             for (index in relationDef) {
-                                if (relationDef[index]['portal'] == true) {
-                                    currentContextDef['portal'] = true;
+                                if (relationDef[index]["portal"] == true) {
+                                    currentContextDef["portal"] = true;
                                 }
                                 joinField = relationDef[index]['join-field'];
                                 contextObj.addForeignValue(joinField, currentRecord[joinField]);
@@ -691,6 +691,10 @@ INTERMediator = {
                     }
                 }
 
+                if (currentContextDef["portal"] === true) {
+                    currentContextDef["currentrecord"] = currentRecord;
+                    keyValue = currentRecord["-recid"];
+                }
                 targetRecords = retrieveDataForEnclosure(currentContextDef, fieldList, contextObj.foreignValue);
                 contextObj.registeredId = targetRecords.registeredId;
                 contextObj.nullAcceptable = targetRecords.nullAcceptable;
@@ -715,7 +719,7 @@ INTERMediator = {
                 keyValue, keyingValue, k, nodeId, replacedNode, children, wInfo, nameTable, nodeTag, typeAttr,
                 linkInfoArray, nameTableKey, nameNumber, nameAttr, nInfo, curVal, j, curTarget, newlyAddedNodes,
                 encNodeTag, repNodeTag, ix, repeatersOriginal, targetRecordset, targetTotalCount, i,
-                currentContextDef, idValuesForFieldName, indexContext, insertNode;
+                currentContextDef, idValuesForFieldName, indexContext, insertNode, usePortal;
 
             encNodeTag = node.tagName;
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -739,6 +743,7 @@ INTERMediator = {
             }
 
             recordCounter = 0;
+            usePortal = false;
             for (ix = 0; ix < targetRecordset.length; ix++) { // for each record
                 try {
                     recordCounter++;
@@ -758,7 +763,16 @@ INTERMediator = {
                     } else {
                         keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
                     }
-                    if (currentContextDef['portal'] == true) {
+
+                    if (currentContextDef["relation"]) {
+                        for (i = 0; i < Object.keys(currentContextDef["relation"]).length; i++) {
+                            if (currentContextDef["relation"][i]["portal"] 
+                                    && Number(currentContextDef["relation"][i]["portal"]) === 1) {
+                                usePortal = true;
+                            }
+                        }
+                    }
+                    if (usePortal === true) {
                         keyField = "-recid";
                         foreignField = currentContextDef['name'] + "::-recid";
                         foreignValue = targetRecordset[ix][foreignField];
@@ -909,7 +923,7 @@ INTERMediator = {
                     }
                 }
 
-                if (currentContextDef['portal'] == true) {
+                if (usePortal == true) {
                     keyField = "-recid";
                     foreignField = currentContextDef['name'] + "::-recid";
                     foreignValue = targetRecordset[ix][foreignField];
@@ -962,7 +976,7 @@ INTERMediator = {
          */
         function retrieveDataForEnclosure(currentContextDef, fieldList, relationValue) {
             var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition,
-                recordNumber, useLimit, optionalCondition = [], pagingValue, recordsValue;
+                recordNumber, useLimit, optionalCondition = [], pagingValue, recordsValue, i, recordset = [];
 
             if (currentContextDef['cache'] == true) {
                 try {
@@ -1035,16 +1049,27 @@ INTERMediator = {
                     } else {
                         recordNumber = Number(currentContextDef['records']);
                     }
-                    targetRecords = INTERMediator_DBAdapter.db_query({
-                        "name": currentContextDef['name'],
-                        "records": isNaN(recordNumber) ? 100000000 : recordNumber,
-                        "paging": currentContextDef['paging'],
-                        "fields": fieldList,
-                        "parentkeyvalue": relationValue,
-                        "conditions": optionalCondition,
-                        "useoffset": true,
-                        "uselimit": useLimit
-                    });
+                    
+                    targetRecords = {};
+                    if (currentContextDef["portal"] === true) {
+                        for (i = 0; i < Object.keys(currentContextDef["currentrecord"]).length; i++) {
+                            if (currentContextDef["currentrecord"][i]) {
+                                recordset.push(currentContextDef["currentrecord"][i]);
+                            }
+                        }
+                        targetRecords.recordset = recordset;
+                    } else {
+                        targetRecords = INTERMediator_DBAdapter.db_query({
+                            "name": currentContextDef['name'],
+                            "records": isNaN(recordNumber) ? 100000000 : recordNumber,
+                            "paging": currentContextDef['paging'],
+                            "fields": fieldList,
+                            "parentkeyvalue": relationValue,
+                            "conditions": optionalCondition,
+                            "useoffset": true,
+                            "uselimit": useLimit
+                        });
+                    }
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
                         throw ex;

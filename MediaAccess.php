@@ -71,6 +71,7 @@ class MediaAccess
                 header("Content-Type: " . $this->getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
+                header('X-XSS-Protection: 1; mode=block');
                 header('X-Frame-Options: SAMEORIGIN');
                 echo $content;
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
@@ -95,6 +96,7 @@ class MediaAccess
                 header("Content-Type: " . $this->getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . str_replace("+", "%20", urlencode($fileName)) . $dq);
+                header('X-XSS-Protection: 1; mode=block');
                 header('X-Frame-Options: SAMEORIGIN');
 //                echo $target;
                 echo $content;
