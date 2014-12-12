@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <link rel="stylesheet" type="text/css" href="../sample.css"/>
-    <title>INTER-Mediator - Sample - Form Style/MySQL</title>
+    <title>INTER-Mediator - Sample - Soft Delete/MySQL</title>
     <script src="deltest_MySQL.php"></script>
     <script type="text/javascript">
         window.onload = function () {
@@ -13,8 +13,14 @@
     </script>
 </head>
 <body>
+<ol>
+    <li>The context of the left table uses the "Soft-Delete" feature, and the right side does not.</li>
+    <li>The "checking" field is the flag of deleting.</li>
+    <li>You can delete any records in the left table, and it is going to disappear in the table. It's good to remember the "id" field's value that you delete.</li>
+    <li>After deleting you should update this page. The checking field in the corresponding record of the right table is going to be set to "1".</li>
+</ol>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
-<table border="1">
+<table border="1" style="float:left;">
     <thead>
     <tr>
         <th>id</th>
@@ -28,9 +34,7 @@
     </thead>
     <tbody>
     <tr>
-        <td>
-            <button data-im="personlist@id@data-x">詳細</button>
-        </td>
+        <td data-im="personlist@id"></td>
         <td data-im="personlist@name"></td>
         <td data-im="personlist@mail"></td>
         <td data-im="personlist@category"></td>
@@ -40,5 +44,30 @@
     </tr>
     </tbody>
 </table>
+
+<table border="1" style="float:left;margin-left:10px">
+    <thead>
+    <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>mail</th>
+        <th>category</th>
+        <th>location</th>
+        <th>checking</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td data-im="personrowlist@id"></td>
+        <td data-im="personrowlist@name"></td>
+        <td data-im="personrowlist@mail"></td>
+        <td data-im="personrowlist@category"></td>
+        <td data-im="personrowlist@location"></td>
+        <td data-im="personrowlist@checking"></td>
+    </tr>
+    </tbody>
+</table>
+<br clear="all"/>
 </body>
 </html>

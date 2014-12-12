@@ -34,6 +34,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private $queriedEntity = null;
     private $queriedCondition = null;
     private $queriedPrimaryKeys = null;
+    private $softDeleteField = null;
+    private $softDeleteValue = null;
 
     public function queriedEntity()
     {
@@ -81,6 +83,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function updatedRecord()
     {
         return $this->updatedRecord;
+    }
+
+    public function softDeleteActivate($field, $value)
+    {
+        $this->softDeleteField = $field;
+        $this->softDeleteValue = $value;
     }
 
     public function isExistRequiredTable()
@@ -408,7 +416,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     public function getFromDB($dataSourceName)
     {
-        //    $this->logger->setDebugMessage("##getEntityForRetrieve={$this->dbSettings->getEntityForRetrieve()}", 2);
+        $useOrOperation = false;
         $this->fieldInfo = null;
         $this->mainTableCount = 0;
         $this->mainTableTotalCount = 0;
@@ -422,7 +430,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $usePortal = true;
                     $context['records'] = 1;
                     $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType(str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
+                    $this->dbSettings->setDbSpecDataType(
+                        str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
                 }
             }
         }
@@ -457,6 +466,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             foreach ($context['query'] as $condition) {
                 if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
                     $this->fx->SetLogicalOR();
+                    $useOrOperation = true;
                 } else {
                     if (isset($condition['operator'])) {
                         if (!$this->isPossibleOperator($condition['operator'])) {
@@ -476,6 +486,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 foreach ($parentTable['query'] as $condition) {
                     if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
                         $this->fx->SetLogicalOR();
+                        $useOrOperation = true;
                     } else {
                         if (isset($condition['operator'])) {
                             if (!$this->isPossibleOperator($condition['operator'])) {
@@ -498,8 +509,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'or') {
                     $this->fx->SetLogicalOR();
+                    $useOrOperation = true;
                 } else if ($condition['field'] == '__operation__' && strtolower($condition['operator']) == 'ex') {
                     $this->fx->SetLogicalOR();
+                    $useOrOperation = true;
                 } else {
                     $condition = $this->normalizedCondition($condition);
                     if (!$this->isPossibleOperator($condition['operator'])) {
@@ -540,6 +553,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             if (!$this->isPossibleOperator($foreignOperator)) {
                                 throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
+                            if ($useOrOperation)    {
+                                throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                            }
                             $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
                             $hasFindParams = true;
                         }
@@ -558,6 +574,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
+                    if ($useOrOperation)    {
+                        throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                    }
                     $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                     $this->fx->AddDBParam($authInfoField, $signedUser, "eq");
                     $hasFindParams = true;
@@ -567,6 +586,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (strlen($this->dbSettings->getCurrentUser()) == 0 || count($belongGroups) == 0) {
                     $authFailure = true;
                 } else {
+                    if ($useOrOperation)    {
+                        throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                    }
                     $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
                     $hasFindParams = true;
                 }
@@ -589,6 +611,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
+        if (! is_null($this->softDeleteField) && ! is_null($this->softDeleteValue)) {
+            if ($useOrOperation)    {
+                throw new Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+            }
+            $this->fx->AddDBParam($this->softDeleteField, $this->softDeleteValue, "neq");
+            $hasFindParams = true;
+        }
+
         if (isset($context['sort'])) {
             foreach ($context['sort'] as $condition) {
                 if (isset($condition['direction'])) {
@@ -609,7 +639,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
                             throw new Exception("Invalid Sort Specifier.");
                         }
-                        $this->fx->AddSortParam($condition['field'], $this->_adjustSortDirection($condition['direction']));
+                        $this->fx->AddSortParam(
+                            $condition['field'], $this->_adjustSortDirection($condition['direction']));
                     } else {
                         $this->fx->AddSortParam($condition['field']);
                     }

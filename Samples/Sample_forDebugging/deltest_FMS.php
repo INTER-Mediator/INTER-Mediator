@@ -11,8 +11,8 @@ IM_Entry(
     array(
         array(
             'name' => 'personlist',
-            'view' => 'person',
-            'table' => 'person',
+            'view' => 'person_layout',
+            'table' => 'person_layout',
             'key' => 'id',
             'records' => 10,
             'paging' => true,
@@ -21,10 +21,21 @@ IM_Entry(
                 array('field' => 'id', 'direction' => 'asc'),
             ),
             'repeat-control' => 'insert delete',
-            'soft-delete' => 'delete',
+            'soft-delete' => 'check',
+        ),
+        array(
+            'name' => 'personrowlist',
+            'view' => 'person_layout',
+            'table' => 'person_layout',
+            'key' => 'id',
+            'records' => 100000,
+            'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
+            'sort' => array(
+                array('field' => 'id', 'direction' => 'asc'),
+            ),
         ),
     ),
     array(),
     array('db-class' => 'FileMaker_FX'),
-    2
+    false
 );

@@ -7,6 +7,33 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 
+var IMLibTarget = {
+
+    aliases: {},
+
+    routing: function() {
+
+    },
+
+    setStyle: function(element, target, value) {
+
+    },
+
+    setAttribute: function(element, target, value, format) {
+
+    },
+
+    appendAttribute: function(element, target, value, format) {
+
+    },
+
+    replaceAttribute: function(element, target, value, format) {
+
+    }
+
+
+}
+
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,

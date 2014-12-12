@@ -16,6 +16,7 @@ buster.testCase("Parser.evaluate Test", {
         assert.equals(Parser.evaluate("x + y", {x: 5.1, y: 3.1}), 8.2);
     }
 });
+
 buster.testCase("Operators Test", {
     "should be equal to": function () {
         assert.equals(Parser.evaluate("a = b ", {a: 100, b: 100}), true);
