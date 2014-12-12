@@ -11,14 +11,20 @@ Latest changes might exist on the GitHub repository. Please check: https://githu
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.org/ja/docs-migration.html.
 
 Ver.5.0 =========================================================
-        [Major differences from Ver.4]
-- The realtime multi-client updating with the Pusher (WebRTC).
+[Major differences from Ver.4]
+- The realtime multi-client updating with the Pusher (WebSocket).
 - The Local Context and Context for DB Entities as the context model.
 - Master/Detail style page can be built without JS program.
 - Search and listing style page can be built without JS program.
+- Calculation expression is supported.
+- The "Soft-Delete" or "Logical-Delete" is implemented.
+- IMLibChangeEventDispatch, IMLibMouseEventDispatch, IMLibKeyEventDispatch for dispatching events.
+- HTML5's user defined attributes are supported.
 - As for the FileMaker Server, the fmresultset schema is supported.
 - [INFO] We prepared the INTER-Mediator-Server virtual machine  for trial and learning purpose.
 - [INFO] InternetExplorer Ver.8 is dropped out from the supporting browsers.
+- [INFO] FileMaker Server 10 has been deprecated. In the near future, INTER-Mediator will require 
+  FileMaker Server 11 or later if using FileMaker Server.
 =================================================================
 
 Ver.4.7 (in development)
@@ -29,6 +35,7 @@ Ver.4.7 (in development)
 - The seeding files for the vm to trial are take place in the dist-docs/vm-for-trial directory.
 - The Definition File Editor supports the 'navi-control' and 'calculation' keys.
 - Output X-XSS-Protection response header to enable XSS filter.
+- Improve performance of portal access mode for FileMaker Server.
 - Add Sample_forDebugging for FileMaker Server in the "Samples" directory.
 - [INFO] The dist-docs/sample_schema_mysql.txt describes the encode as utf8mb4.
          It means the schema support MySQL 5.5.3 or above.
