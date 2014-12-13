@@ -36,7 +36,7 @@ Ver.4.7 (in development)
 - Output X-XSS-Protection response header to enable XSS filter.
 - Improve performance of portal access mode for FileMaker Server.
 - Update Sample_realtime (invoice_FMS.html/invoice_MySQL.html) for compatibility with SSL/TLS.
-- Add Sample_forDebugging for FileMaker Server in the "Samples" directory.
+- Add Sample_easyToUnderstand and Sample_forDebugging for FileMaker Server in the "Samples" directory.
 - Modify "context-test" of Sample_forDebugging.
 - [INFO] The dist-docs/sample_schema_mysql.txt describes the encode as utf8mb4.
          It means the schema support MySQL 5.5.3 or above.
