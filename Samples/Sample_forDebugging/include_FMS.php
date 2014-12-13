@@ -24,5 +24,5 @@ IM_Entry(
         'transaction' => 'none',
     ),
     array('db-class' => 'FileMaker_FX'),
-    1
+    false
 );

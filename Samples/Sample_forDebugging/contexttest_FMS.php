@@ -35,6 +35,6 @@ IM_Entry(
         ),
     ),
     array(),
-    array('db-class' => 'PDO'),
+    array('db-class' => 'FileMaker_FX'),
     false
 );
