@@ -10,7 +10,7 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check: https://github.com/msyk/INTER-Mediator.
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.org/ja/docs-migration.html.
 
-Ver.5.0 =========================================================
+Ver.5.0 (in development) ========================================
 [Major differences from Ver.4]
 - The realtime multi-client updating with the Pusher (WebSocket).
 - The Local Context and Context for DB Entities as the context model.
@@ -30,13 +30,14 @@ Ver.5.0 =========================================================
 Ver.4.7 (in development)
 - The "Soft-Delete" or "Logical-Delete" is implemented. The 'soft-delete' key can be set up on a context
   of definition file. The sample is the "logical-delete" of the "Debugging" group.
-- Update Sample_realtime (invoice_FMS.html/invoice_MySQL.html) for compatibility with SSL/TLS.
 - The Page File Editor appears in the INTER-Mediator-Support directory.
 - The seeding files for the vm to trial are take place in the dist-docs/vm-for-trial directory.
 - The Definition File Editor supports the 'navi-control' and 'calculation' keys.
 - Output X-XSS-Protection response header to enable XSS filter.
 - Improve performance of portal access mode for FileMaker Server.
+- Update Sample_realtime (invoice_FMS.html/invoice_MySQL.html) for compatibility with SSL/TLS.
 - Add Sample_forDebugging for FileMaker Server in the "Samples" directory.
+- Modify "context-test" of Sample_forDebugging.
 - [INFO] The dist-docs/sample_schema_mysql.txt describes the encode as utf8mb4.
          It means the schema support MySQL 5.5.3 or above.
 - [BUG FIX] The Definition File editor worked. It should not do at the initial situation. We should make it sure.
