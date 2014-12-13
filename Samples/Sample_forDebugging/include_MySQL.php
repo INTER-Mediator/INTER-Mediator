@@ -25,5 +25,5 @@ IM_Entry(
         'transaction' => 'none',
     ),
     array('db-class' => 'PDO'),
-    1
+    false
 );
