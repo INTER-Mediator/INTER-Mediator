@@ -21,6 +21,7 @@ Ver.5.0 (in development) ========================================
 - IMLibChangeEventDispatch, IMLibMouseEventDispatch, IMLibKeyEventDispatch for dispatching events.
 - HTML5's user defined attributes are supported.
 - As for the FileMaker Server, the fmresultset schema is supported.
+- Improve performance of portal access mode for FileMaker Server.
 - [INFO] We prepared the INTER-Mediator-Server virtual machine  for trial and learning purpose.
 - [INFO] InternetExplorer Ver.8 is dropped out from the supporting browsers.
 - [INFO] FileMaker Server 10 has been deprecated. In the near future, INTER-Mediator will require 
@@ -38,6 +39,9 @@ Ver.4.7 (in development)
 - Update Sample_realtime (invoice_FMS.html/invoice_MySQL.html) for compatibility with SSL/TLS.
 - Add Sample_easyToUnderstand and Sample_forDebugging for FileMaker Server in the "Samples" directory.
 - Modify "context-test" of Sample_forDebugging.
+- Rebuild TestDB.fmp12 and Update sample_schema_filemaker.php to add tables ("item_master", "customer" and 
+  "saleslog").
+- Add TestDB_clone.fmp12 and TestDBSchemeForFMS.xlsx.
 - [INFO] The dist-docs/sample_schema_mysql.txt describes the encode as utf8mb4.
          It means the schema support MySQL 5.5.3 or above.
 - [BUG FIX] The Definition File editor worked. It should not do at the initial situation. We should make it sure.
