@@ -728,7 +728,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $data = json_decode(json_encode($parsedData), true);
             $i = 0;
             $dataArray = array();
-            $multiFields = true;
             if (isset($data['resultset']['record']) && isset($data['resultset']['@attributes'])) {
                 foreach($data['resultset']['record'] as $record) {
                     if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
@@ -740,6 +739,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if ($keyField == $this->getDefaultKey()) {
                         $this->queriedPrimaryKeys[] = $record['@attributes']['record-id'];
                     }
+                    $multiFields = true;
                     foreach ($record['field'] as $field) {
                         if (!isset($field['@attributes'])) {
                             $field = $record['field'];
@@ -782,7 +782,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                     $relatedArray += array(
                                         $relatedset['@attributes']['table'] . '::-recid' => $relatedrecord['@attributes']['record-id']
                                     );
+                                    $multiFields = true;
                                     foreach ($relatedrecord['field'] as $relatedfield) {
+                                        if (!isset($relatedfield['@attributes'])) {
+                                            $relatedfield = $relatedrecord['field'];
+                                            $multiFields = false;
+                                        }
                                         $relatedFieldName = $relatedfield['@attributes']['name'];
                                         $relatedFieldValue = '';
                                         if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
@@ -794,6 +799,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                         $relatedArray += array(
                                             $relatedFieldName => $relatedFieldValue
                                         );
+                                        if ($multiFields === false) {
+                                            break;
+                                        }
                                     }
                                     if (isset($relatedsetArray[$j]) && !is_null($relatedsetArray[$j])) {
                                         $relatedsetArray[$j] += $relatedArray;
