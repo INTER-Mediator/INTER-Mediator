@@ -8,6 +8,18 @@ describe package('apache2'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
+describe package('openssh-server'), :if => os[:family] == 'ubuntu' do
+ it { should be_installed }
+end
+
+describe package('mysql-server'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
+describe package('postgresql'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
 describe service('httpd'), :if => os[:family] == 'redhat' do
   it { should be_enabled }
   it { should be_running }
@@ -25,6 +37,27 @@ end
 
 describe port(80) do
   it { should be_listening }
+end
+
+describe service('ssh'), :if => os[:family] == 'ubuntu' do
+  it { should be_enabled }
+end
+
+describe service('sshd'), :if => os[:family] == 'ubuntu' do
+  it { should be_running }
+end
+
+describe service('mysql'), :if => os[:family] == 'ubuntu' do
+  it { should be_enabled }
+end
+
+describe service('mysqld'), :if => os[:family] == 'ubuntu' do
+  it { should be_running }
+end
+
+describe service('postgres'), :if => os[:family] == 'ubuntu' do
+  it { should be_enabled }
+  it { should be_running }
 end
 
 describe group('im-developer') do
