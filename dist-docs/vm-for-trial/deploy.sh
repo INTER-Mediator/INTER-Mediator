@@ -45,6 +45,9 @@ aptitude install php5-pgsql --assume-yes
 aptitude install php5-sqlite --assume-yes
 aptitude install php5-curl --assume-yes
 aptitude install git --assume-yes
+aptitude install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
+aptitude install npm --assume-yes
+aptitude install phpunit --assume-yes
 aptitude clean
 
 cd "${WEBROOT}"

@@ -116,6 +116,22 @@ describe package('git'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
+describe package('nodejs'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
+describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' do
+  it { should be_file }
+end
+
+describe package('npm'), :if => os[:family] == 'ubuntu' do
+it { should be_installed }
+end
+
+describe package('phpunit'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
 describe file('/var/www/html/INTER-Mediator') do
   it { should be_directory }
 end
