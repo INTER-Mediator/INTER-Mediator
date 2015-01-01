@@ -17,6 +17,7 @@ WEBROOT="/var/www/html"
 IMROOT="${WEBROOT}/INTER-Mediator"
 IMSUPPORT="${IMROOT}/INTER-Mediator-Support"
 IMSAMPLE="${IMROOT}/Samples"
+IMUNITTEST="${IMROOT}/INTER-Mediator-UnitTest"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 
@@ -88,6 +89,10 @@ sed -E -e 's|//IM_Entry|IM_Entry|' "${IMSUPPORT}/pageedit.php" > "${IMSUPPORT}/t
 rm "${IMSUPPORT}/pageedit.php"
 mv "${IMSUPPORT}/temp" "${IMSUPPORT}/pageedit.php"
 
+sed -E -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' "${IMUNITTEST}/DB_PDO-SQLite_Test.php" > "${IMUNITTEST}/temp"
+rm "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
+mv "${IMUNITTEST}/temp" "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
+
 # Copy Templates
 
 for Num in $(seq 40)
@@ -113,6 +118,7 @@ echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql
 mkdir -p /var/db/im
 sqlite3 /var/db/im/sample.sq3 < "${IMDISTDOC}/sample_schema_sqlite.txt"
 chown -R www-data /var/db/im
+chown www-data:im-developer /var/db/im/sample.sq3
 
 setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"

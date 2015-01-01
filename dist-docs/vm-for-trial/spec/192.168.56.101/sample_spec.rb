@@ -144,6 +144,15 @@ describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support') do
   it { should be_directory }
 end
 
+describe file('/var/www/html/INTER-Mediator/INTER-Mediator-UnitTest') do
+  it { should be_directory }
+end
+
+describe file('/var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.php') do
+  it { should be_file }
+  its(:content) { should match /sqlite:\/var\/db\/im\/sample.sq3/ }
+end
+
 describe file('/var/www/html/index.html') do
   it { should be_symlink }
 end
@@ -206,6 +215,8 @@ end
 
 describe file('/var/db/im/sample.sq3') do
   it { should be_file }
+  it { should be_owned_by 'www-data' }
+  it { should be_grouped_into 'im-developer' }
 end
 
 describe command('sqlite3 /var/db/im/sample.sq3 --batch \'.tables\'') do
