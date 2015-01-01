@@ -79,6 +79,20 @@ echo '$dbDataType = "FMPro12";' >> "${WEBROOT}/params.php"
 echo '$dbDatabase = "TestDB";' >> "${WEBROOT}/params.php"
 echo '$dbProtocol = "HTTP";' >> "${WEBROOT}/params.php"
 
+sed -E -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' "${IMUNITTEST}/DB_PDO-SQLite_Test.php" > "${IMUNITTEST}/temp"
+rm "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
+mv "${IMUNITTEST}/temp" "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
+
+# Install npm packages
+
+sed -E -e 's|"name" : "INTER-Mediator",|"name" : "INTER-Mediator","preferGlobal" : true,|' "${IMROOT}/package.json" > "${IMROOT}/temp"
+rm "${IMROOT}/package.json"
+mv "${IMROOT}/temp" "${IMROOT}/package.json"
+
+cd "${IMROOT}"
+npm install -g buster
+npm install -g phantomjs
+
 # Activate DefEdit/PageEdit
 
 sed -E -e 's|//IM_Entry|IM_Entry|' "${IMSUPPORT}/defedit.php" > "${IMSUPPORT}/temp"
@@ -88,10 +102,6 @@ mv "${IMSUPPORT}/temp" "${IMSUPPORT}/defedit.php"
 sed -E -e 's|//IM_Entry|IM_Entry|' "${IMSUPPORT}/pageedit.php" > "${IMSUPPORT}/temp"
 rm "${IMSUPPORT}/pageedit.php"
 mv "${IMSUPPORT}/temp" "${IMSUPPORT}/pageedit.php"
-
-sed -E -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' "${IMUNITTEST}/DB_PDO-SQLite_Test.php" > "${IMUNITTEST}/temp"
-rm "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
-mv "${IMUNITTEST}/temp" "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
 
 # Copy Templates
 

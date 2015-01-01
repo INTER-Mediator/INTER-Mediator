@@ -125,7 +125,15 @@ describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' do
 end
 
 describe package('npm'), :if => os[:family] == 'ubuntu' do
-it { should be_installed }
+  it { should be_installed }
+end
+
+describe package('buster'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed.by('npm').with_version('0.7.18') }
+end
+
+describe package('phantomjs'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed.by('npm').with_version('1.9.13') }
 end
 
 describe package('phpunit'), :if => os[:family] == 'ubuntu' do

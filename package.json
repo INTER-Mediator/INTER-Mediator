@@ -7,6 +7,10 @@
         {"name" : "Kiyonori Ito"},
         {"name" : "Kentaro Suzuki"}
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/msyk/INTER-Mediator.git"
+    },
     "scripts" : {
         "test" : "node_modules/.bin/buster-test -r specification",
         "test-local" : "/usr/local/bin/buster-test -r specification"
