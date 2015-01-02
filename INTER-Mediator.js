@@ -1,8 +1,8 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -249,11 +249,11 @@ INTERMediator = {
         INTERMediatorOnPage.showProgress();
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
             timerTask = function () {
-                INTERMediator.constructMain(true)
+                INTERMediator.constructMain(true);
             };
         } else {
             timerTask = function () {
-                INTERMediator.constructMain(indexOfKeyFieldObject)
+                INTERMediator.constructMain(indexOfKeyFieldObject);
             };
         }
         setTimeout(timerTask, 0);
@@ -543,7 +543,7 @@ INTERMediator = {
                         var targetNode = postNodes[i];
                         return function () {
                             IMLibUI.clickPostOnlyButton(targetNode);
-                        }
+                        };
                     })());
             }
             nodes = node.childNodes;
@@ -838,7 +838,7 @@ INTERMediator = {
                                 nameTableKey = linkInfoArray.join('|');
                                 if (!nameTable[nameTableKey]) {
                                     nameTable[nameTableKey] = nameAttrCounter;
-                                    nameAttrCounter++
+                                    nameAttrCounter++;
                                 }
                                 nameNumber = nameTable[nameTableKey];
                                 nameAttr = currentLinkedNodes[k].getAttribute('name');

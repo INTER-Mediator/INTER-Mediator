@@ -1,7 +1,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -57,7 +57,7 @@ INTERMediatorOnPage = {
             eqPos = params[i].indexOf("=");
             if (eqPos > 0) {
                 key = params[i].substring(0, eqPos);
-                value = params[i].substring(eqPos + 1)
+                value = params[i].substring(eqPos + 1);
                 result[key] = decodeURIComponent(value);
             }
         }
@@ -397,7 +397,7 @@ INTERMediatorOnPage = {
                             result.newPasswordResult === true ? 2009 : 2010)));
 
                 INTERMediator.flushMessage();
-            }
+            };
         }
 
         window.scroll(0, 0);
@@ -715,7 +715,7 @@ INTERMediatorOnPage = {
             frontPanel.style.position = "absolute";
             frontPanel.style.padding = "6px";
             frontPanel.style.borderRadius = "0 0 10px 0";
-            frontPanel.style.borderRight = frontPanel.style.borderBottom = "solid 4px #779933"
+            frontPanel.style.borderRight = frontPanel.style.borderBottom = "solid 4px #779933";
             frontPanel.style.zIndex = "999999";
             if (bodyNode.firstChild) {
                 bodyNode.insertBefore(frontPanel, bodyNode.firstChild);

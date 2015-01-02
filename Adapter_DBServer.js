@@ -1,7 +1,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -120,7 +120,7 @@ INTERMediator_DBAdapter = {
                 INTERMediatorOnPage.clientId = clientid;
             }
             if (mediatoken !== null) {
-                INTERMediatorOnPage.mediaToken = mediatoken
+                INTERMediatorOnPage.mediaToken = mediatoken;
             }
         } catch (e) {
 
@@ -132,7 +132,7 @@ INTERMediator_DBAdapter = {
         if (requireAuth) {
             INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
             INTERMediatorOnPage.authHashedPassword = null;
-            throw "_im_requath_request_"
+            throw "_im_requath_request_";
         }
         if (!accessURL.match(/access=challenge/)) {
             INTERMediatorOnPage.authCount = 0;
@@ -253,19 +253,19 @@ INTERMediator_DBAdapter = {
                             INTERMediatorOnPage.clientId = clientid;
                         }
                         if (mediatoken !== null) {
-                            INTERMediatorOnPage.mediaToken = mediatoken
+                            INTERMediatorOnPage.mediaToken = mediatoken;
                         }
                         if (requireAuth) {
                             INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
                             INTERMediatorOnPage.authHashedPassword = null;
-                            throw "_im_requath_request_"
+                            throw "_im_requath_request_";
                         }
                         INTERMediatorOnPage.authCount = 0;
                         INTERMediatorOnPage.storeCredencialsToCookie();
                         doItOnFinish(dbresult);
                         break;
                 }
-            }
+            };
             myRequest.send(fd);
         } catch (e) {
             INTERMediator.setErrorMessage(e,
