@@ -1,8 +1,8 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -218,7 +218,7 @@ IMParts_Catalog["fileupload"] = {
                                                 break;
                                             }
                                         }
-                                        fvalue = IMLibContextPool.getKeyFieldValueFromId(tagetId, "")
+                                        fvalue = IMLibContextPool.getKeyFieldValueFromId(tagetId, "");
                                         contextObjects = IMLibContextPool.getContextsFromNameAndForeignValue(
                                             relatedContextName, fvalue, context.key);
                                     } else {
@@ -234,7 +234,7 @@ IMParts_Catalog["fileupload"] = {
                                     }
                                     INTERMediator.flushMessage();
                                 });
-                        }
+                        };
                     })());
                 }
             }
@@ -326,7 +326,7 @@ IMParts_Catalog["fileupload"] = {
                                     iframeNode.setAttribute('src', infoURL);
                                 });
                                 return true;
-                            }
+                            };
                         })());
                     }
                 }

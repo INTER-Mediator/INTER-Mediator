@@ -1,7 +1,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -199,7 +199,7 @@ var INTERMediatorLib = {
         var classInfo, matched, attr;
 
         if (node != null) {
-            attr = node.getAttribute("data-im")
+            attr = node.getAttribute("data-im");
             if (attr) {
                 return true;
             }
@@ -231,7 +231,7 @@ var INTERMediatorLib = {
             return false;
         }
         if (INTERMediatorLib.getLinkedElementInfo(node)) {
-            attr = node.getAttribute("data-im-widget")
+            attr = node.getAttribute("data-im-widget");
             if (attr) {
                 return true;
             }
@@ -245,7 +245,7 @@ var INTERMediatorLib = {
         } else {
             parentNode = node.parentNode;
             if (!parentNode && INTERMediatorLib.getLinkedElementInfo(parentNode)) {
-                attr = parentNode.getAttribute("data-im-widget")
+                attr = parentNode.getAttribute("data-im-widget");
                 if (attr) {
                     return true;
                 }
@@ -637,7 +637,7 @@ var INTERMediatorLib = {
                 for (key in obj) {
                     str += "'" + key + "':" + INTERMediatorLib.objectToString(obj[key]) + ", ";
                 }
-                return "{" + str + "}"
+                return "{" + str + "}";
             }
         } else {
             return "'" + obj + "'";

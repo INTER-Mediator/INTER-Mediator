@@ -1,7 +1,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -341,7 +341,7 @@ IMLibContextPool = {
         }
         return null;
     }
-}
+};
 
 IMLibContext = function (contextName) {
     this.contextName = contextName;
@@ -383,7 +383,7 @@ IMLibContext = function (contextName) {
                 sortDirections.push(sortKeys[i].direction);
             }
         }
-    }
+    };
 
     this.clearAll = function () {
         this.store = {};
@@ -737,7 +737,7 @@ IMLibContext = function (contextName) {
     this.removeEntry = function (pkvalue) {
         var keyField, keying, bindingInfo, contextDef, targetNode, repeaterNodes, i, parentNode,
             removingNodeIds = [];
-        contextDef = this.getContextDef()
+        contextDef = this.getContextDef();
         keyField = contextDef.key;
         keying = keyField + "=" + pkvalue;
         bindingInfo = this.binding[keying];
