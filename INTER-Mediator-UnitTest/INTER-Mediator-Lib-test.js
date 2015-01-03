@@ -16,7 +16,7 @@
  * - Execute command "buster-test"   <-- Repeat it!
  */
 
-var assert = buster.assertions.assert;
+var assert = buster.referee.assert;
 
 buster.testCase("repeaterTagFromEncTag() Test", {
     "should return 'TR' if parameter is 'TBODY'": function () {

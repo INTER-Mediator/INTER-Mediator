@@ -1,4 +1,4 @@
-var assert = buster.assertions.assert;
+var assert = buster.referee.assert;
 
 buster.testCase("INTER-Mediator Element Test", {
     "IMLibElement.setValueToIMNode() should return false without TypeError (curVal.replace is not a function)": function () {

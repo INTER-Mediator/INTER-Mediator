@@ -1,4 +1,4 @@
-var assert = buster.assertions.assert;
+var assert = buster.referee.assert;
 
 buster.testCase("INTERMediatorOnPage.getMessages() Test", {
     "should return null": function () {

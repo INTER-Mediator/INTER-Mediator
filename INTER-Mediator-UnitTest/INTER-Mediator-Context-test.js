@@ -1,4 +1,4 @@
-var assert = buster.assertions.assert;
+var assert = buster.referee.assert;
 
 buster.testCase("Local Context Test", {
     "Local-Context-Test1": function () {
