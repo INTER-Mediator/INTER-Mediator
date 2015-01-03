@@ -48,6 +48,7 @@ aptitude install php5-curl --assume-yes
 aptitude install git --assume-yes
 aptitude install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
 aptitude install npm --assume-yes
+aptitude install libfontconfig1 --assume-yes
 aptitude install phpunit --assume-yes
 aptitude clean
 
@@ -84,10 +85,6 @@ rm "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
 mv "${IMUNITTEST}/temp" "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
 
 # Install npm packages
-
-sed -E -e 's|"name" : "INTER-Mediator",|"name" : "INTER-Mediator","preferGlobal" : true,|' "${IMROOT}/package.json" > "${IMROOT}/temp"
-rm "${IMROOT}/package.json"
-mv "${IMROOT}/temp" "${IMROOT}/package.json"
 
 cd "${IMROOT}"
 npm install -g buster
@@ -127,8 +124,9 @@ echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql
 
 mkdir -p /var/db/im
 sqlite3 /var/db/im/sample.sq3 < "${IMDISTDOC}/sample_schema_sqlite.txt"
-chown -R www-data /var/db/im
-chown www-data:im-developer /var/db/im/sample.sq3
+chown -R www-data:im-developer /var/db/im
+chmod 775 /var/db/im
+chmod 664 /var/db/im/sample.sq3
 
 setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"

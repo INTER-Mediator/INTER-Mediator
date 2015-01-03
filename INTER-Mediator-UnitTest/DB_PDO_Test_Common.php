@@ -217,7 +217,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-        echo $hashedvalue;
+//        echo $hashedvalue;
 
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
@@ -232,7 +232,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $testName = "Resolve containing group";
         $groupArray = $this->db_proxy->dbClass->authSupportGetGroupsOfUser('user1');
-        echo var_export($groupArray);
+//        echo var_export($groupArray);
         $this->assertTrue(count($groupArray) > 0, $testName);
     }
 
@@ -244,7 +244,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $cliendId = "12345";
 
         $challenge = $this->db_proxy->generateChallenge();
-        echo "\ngenerated=", $challenge;
+//        echo "\ngenerated=", $challenge;
         $this->db_proxy->dbClass->authSupportStoreChallenge(0, $challenge, $cliendId);
 
         $this->assertTrue(

@@ -219,12 +219,15 @@ end
 describe file('/var/db/im') do
   it { should be_directory }
   it { should be_owned_by 'www-data' }
+  it { should be_grouped_into 'im-developer' }
+  it { should be_mode 775 }
 end
 
 describe file('/var/db/im/sample.sq3') do
   it { should be_file }
   it { should be_owned_by 'www-data' }
   it { should be_grouped_into 'im-developer' }
+  it { should be_mode 664 }
 end
 
 describe command('sqlite3 /var/db/im/sample.sq3 --batch \'.tables\'') do
