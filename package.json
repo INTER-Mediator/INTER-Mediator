@@ -12,7 +12,7 @@
         "test-local" : "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies" : {
-        "buster" : "~0.6",
+        "buster" : "~0.7",
         "phantomjs" : ">=1.0.0"
     },
     "engines" : {
