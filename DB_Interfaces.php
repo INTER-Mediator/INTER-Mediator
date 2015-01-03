@@ -112,7 +112,7 @@ interface Extending_Interface_BeforeGet
 }
 interface Extending_Interface_AfterGet
 {
-    function doAfterGetFromDB($dataSourceName, $result);
+    function doBeforeGetFromDB($dataSourceName, $result);
 }
 interface Extending_Interface_AfterGet_WithNavigation
 {
