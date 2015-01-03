@@ -24,8 +24,7 @@ IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 groupadd im-developer
 usermod -a -G im-developer developer
 usermod -a -G im-developer www-data
-echo "Type the password for postgres user as 'im4135dev'."
-passwd postgres #and input the password
+yes im4135dev | passwd postgres
 
 echo "[mysqld]" > /etc/mysql/conf.d/im.cnf
 echo "character-set-server=utf8mb4" >> /etc/mysql/conf.d/im.cnf
