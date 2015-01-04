@@ -17,14 +17,14 @@ WEBROOT="/var/www/html"
 IMROOT="${WEBROOT}/INTER-Mediator"
 IMSUPPORT="${IMROOT}/INTER-Mediator-Support"
 IMSAMPLE="${IMROOT}/Samples"
+IMUNITTEST="${IMROOT}/INTER-Mediator-UnitTest"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 
 groupadd im-developer
 usermod -a -G im-developer developer
 usermod -a -G im-developer www-data
-echo "Type the password for postgres user as 'im4135dev'."
-passwd postgres #and input the password
+yes im4135dev | passwd postgres
 
 echo "[mysqld]" > /etc/mysql/conf.d/im.cnf
 echo "character-set-server=utf8mb4" >> /etc/mysql/conf.d/im.cnf
@@ -47,6 +47,7 @@ aptitude install php5-curl --assume-yes
 aptitude install git --assume-yes
 aptitude install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
 aptitude install npm --assume-yes
+aptitude install libfontconfig1 --assume-yes
 aptitude install phpunit --assume-yes
 aptitude clean
 
@@ -77,6 +78,16 @@ echo '$dbPort = "80";' >> "${WEBROOT}/params.php"
 echo '$dbDataType = "FMPro12";' >> "${WEBROOT}/params.php"
 echo '$dbDatabase = "TestDB";' >> "${WEBROOT}/params.php"
 echo '$dbProtocol = "HTTP";' >> "${WEBROOT}/params.php"
+
+sed -E -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' "${IMUNITTEST}/DB_PDO-SQLite_Test.php" > "${IMUNITTEST}/temp"
+rm "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
+mv "${IMUNITTEST}/temp" "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
+
+# Install npm packages
+
+cd "${IMROOT}"
+npm install -g buster
+npm install -g phantomjs
 
 # Activate DefEdit/PageEdit
 
@@ -112,8 +123,11 @@ echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql
 
 mkdir -p /var/db/im
 sqlite3 /var/db/im/sample.sq3 < "${IMDISTDOC}/sample_schema_sqlite.txt"
-chown -R www-data /var/db/im
+chown -R www-data:im-developer /var/db/im
+chmod 775 /var/db/im
+chmod 664 /var/db/im/sample.sq3
 
 setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
 chmod -R g+w "${WEBROOT}"
+/sbin/shutdown -h now

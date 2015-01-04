@@ -125,7 +125,15 @@ describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' do
 end
 
 describe package('npm'), :if => os[:family] == 'ubuntu' do
-it { should be_installed }
+  it { should be_installed }
+end
+
+describe package('buster'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed.by('npm').with_version('0.7.18') }
+end
+
+describe package('phantomjs'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed.by('npm').with_version('1.9.13') }
 end
 
 describe package('phpunit'), :if => os[:family] == 'ubuntu' do
@@ -142,6 +150,15 @@ end
 
 describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support') do
   it { should be_directory }
+end
+
+describe file('/var/www/html/INTER-Mediator/INTER-Mediator-UnitTest') do
+  it { should be_directory }
+end
+
+describe file('/var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.php') do
+  it { should be_file }
+  its(:content) { should match /sqlite:\/var\/db\/im\/sample.sq3/ }
 end
 
 describe file('/var/www/html/index.html') do
@@ -202,10 +219,15 @@ end
 describe file('/var/db/im') do
   it { should be_directory }
   it { should be_owned_by 'www-data' }
+  it { should be_grouped_into 'im-developer' }
+  it { should be_mode 775 }
 end
 
 describe file('/var/db/im/sample.sq3') do
   it { should be_file }
+  it { should be_owned_by 'www-data' }
+  it { should be_grouped_into 'im-developer' }
+  it { should be_mode 664 }
 end
 
 describe command('sqlite3 /var/db/im/sample.sq3 --batch \'.tables\'') do
