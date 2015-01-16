@@ -66,6 +66,7 @@ IM_Entry(
                     'value' => 'scalar'
                 )
             ),
+            'soft-delete' => true,
             'authentication' => array(
                 'media-handling' => 'boolean',
                 'all' => array(
