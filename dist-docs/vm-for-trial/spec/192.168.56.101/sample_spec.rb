@@ -1,35 +1,35 @@
 require 'spec_helper'
 
+describe package('apache2'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
 describe package('httpd'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('apache2'), :if => os[:family] == 'ubuntu' do
+describe package('openssh-server'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('openssh-server'), :if => os[:family] == 'ubuntu' do
- it { should be_installed }
-end
-
-describe package('mysql-server'), :if => os[:family] == 'ubuntu' do
+describe package('mysql-server'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
 describe package('postgresql'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
-
-describe service('httpd'), :if => os[:family] == 'redhat' do
-  it { should be_enabled }
-  it { should be_running }
+describe package('postgresql-server'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
 end
 
 describe service('apache2'), :if => os[:family] == 'ubuntu' do
   it { should be_enabled }
   it { should be_running }
 end
-
+describe service('httpd'), :if => os[:family] == 'redhat' do
+  it { should be_enabled }
+  it { should be_running }
+end
 describe service('org.apache.httpd'), :if => os[:family] == 'darwin' do
   it { should be_enabled }
   it { should be_running }
@@ -42,21 +42,33 @@ end
 describe service('ssh'), :if => os[:family] == 'ubuntu' do
   it { should be_enabled }
 end
+describe service('sshd'), :if => os[:family] == 'redhat' do
+it { should be_enabled }
+end
 
-describe service('sshd'), :if => os[:family] == 'ubuntu' do
+describe service('sshd'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_running }
 end
 
 describe service('mysql'), :if => os[:family] == 'ubuntu' do
   it { should be_enabled }
 end
+describe service('mysqld'), :if => os[:family] == 'redhat' do
+  it { should be_enabled }
+end
 
-describe service('mysqld'), :if => os[:family] == 'ubuntu' do
+describe service('mysqld'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_running }
 end
 
 describe service('postgres'), :if => os[:family] == 'ubuntu' do
   it { should be_enabled }
+end
+describe service('postgresql'), :if => os[:family] == 'redhat' do
+  it { should be_enabled }
+end
+
+describe service('postgres'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_running }
 end
 
@@ -69,7 +81,11 @@ describe user('developer') do
   it { should belong_to_group 'im-developer' }
 end
 
-describe user('www-data') do
+describe user('www-data'), :if => os[:family] == 'ubuntu' do
+  it { should exist }
+  it { should belong_to_group 'im-developer' }
+end
+describe user('apache'), :if => os[:family] == 'redhat' do
   it { should exist }
   it { should belong_to_group 'im-developer' }
 end
@@ -78,7 +94,7 @@ describe user('postgres') do
   it { should exist }
 end
 
-describe file('/etc/mysql/conf.d/im.cnf') do
+describe file('/etc/mysql/conf.d/im.cnf'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   its(:content) { should match /[mysqld]/ }
   its(:content) { should match /character-set-server=utf8mb4/ }
@@ -87,64 +103,96 @@ describe file('/etc/mysql/conf.d/im.cnf') do
   its(:content) { should match /[mysqldump]/ }
   its(:content) { should match /[mysql]/ }
 end
+describe file('/etc/my.cnf'), :if => os[:family] == 'redhat' do
+  it { should be_file }
+  its(:content) { should match /[mysqld]/ }
+  its(:content) { should match /character-set-server=utf8/ }
+  its(:content) { should match /skip-character-set-client-handshake/ }
+  its(:content) { should match /[client]/ }
+  its(:content) { should match /[mysqldump]/ }
+  its(:content) { should match /[mysql]/ }
+end
 
-describe package('sqlite'), :if => os[:family] == 'ubuntu' do
+describe package('sqlite'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('acl'), :if => os[:family] == 'ubuntu' do
+describe package('acl'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
 describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
+describe package('mysql-devel'), :if => os[:family] == 'redhat' do
+it { should be_installed }
+end
 
 describe package('php5-pgsql'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+describe package('php-pgsql'), :if => os[:family] == 'readhat' do
   it { should be_installed }
 end
 
 describe package('php5-sqlite'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
+describe package('php-pdo'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
+
+describe package('php-common'), :if => os[:family] == 'redhat' do
+it { should be_installed }
+end
 
 describe package('php5-curl'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
-describe package('git'), :if => os[:family] == 'ubuntu' do
+describe package('git'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('nodejs'), :if => os[:family] == 'ubuntu' do
+describe package('nodejs'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' do
+describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_file }
 end
 
-describe package('npm'), :if => os[:family] == 'ubuntu' do
+describe package('npm'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('buster'), :if => os[:family] == 'ubuntu' do
+describe package('buster'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed.by('npm').with_version('0.7.18') }
 end
 
-describe package('phantomjs'), :if => os[:family] == 'ubuntu' do
+describe package('phantomjs'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed.by('npm').with_version('1.9.13') }
+end
+
+describe package('libfontconfig1'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+describe package('fontconfig-devel'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
 end
 
 describe package('phpunit'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
+end
+describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' do
+it { should be_installed }
 end
 
 describe file('/var/www/html/INTER-Mediator') do
   it { should be_directory }
 end
 
-describe file('/var/www/html/index_original.html') do
+describe file('/var/www/html/index_original.html'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
 end
 
@@ -177,9 +225,14 @@ end
 describe file('/var/www/html/params.php') do
   it { should be_file }
   its(:content) { should match /\$dbUser = "web";/ }
-  its(:content) { should match /\$dbDSN = "mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4";/ }
   its(:content) { should match /\$dbOption = array\(\);/ }
   its(:content) { should match /\$dbServer = "192.168.56.1";/ }
+end
+describe file('/var/www/html/params.php'), :if => os[:family] == 'ubuntu' do
+  its(:content) { should match /\$dbDSN = "mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4";/ }
+end
+describe file('/var/www/html/params.php'), :if => os[:family] == 'redhat' do
+  its(:content) { should match /\$dbDSN = "mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8";/ }
 end
 
 describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/defedit.php') do
@@ -218,19 +271,29 @@ end
 
 describe file('/var/db/im') do
   it { should be_directory }
-  it { should be_owned_by 'www-data' }
   it { should be_grouped_into 'im-developer' }
   it { should be_mode 775 }
+end
+describe file('/var/db/im'), :if => os[:family] == 'ubuntu' do
+  it { should be_owned_by 'www-data' }
+end
+describe file('/var/db/im'), :if => os[:family] == 'redhat' do
+  it { should be_owned_by 'apache' }
 end
 
 describe file('/var/db/im/sample.sq3') do
   it { should be_file }
-  it { should be_owned_by 'www-data' }
   it { should be_grouped_into 'im-developer' }
   it { should be_mode 664 }
 end
+describe file('/var/db/im/sample.sq3'), :if => os[:family] == 'ubuntu' do
+  it { should be_owned_by 'www-data' }
+end
+describe file('/var/db/im/sample.sq3'), :if => os[:family] == 'redhat' do
+  it { should be_owned_by 'apache' }
+end
 
-describe command('sqlite3 /var/db/im/sample.sq3 --batch \'.tables\'') do
+describe command('sqlite3 /var/db/im/sample.sq3 ".tables"') do
   its(:stdout) { should match /cor_way_kind/ }
 end
 
@@ -243,4 +306,8 @@ describe file('/var/www/html') do
   it { should be_mode 775 }
   it { should be_owned_by 'developer' }
   it { should be_grouped_into 'im-developer' }
+end
+
+describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' do
+  its(:content) { should match /-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT/ }
 end
