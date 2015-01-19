@@ -1,4 +1,4 @@
-# INTER-Mediator [![Build Status](https://travis-ci.org/msyk/INTER-Mediator.png?branch=master)](https://travis-ci.org/msyk/INTER-Mediator)
+# INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.png?branch=master)](https://travis-ci.org/INTER-Mediator/INTER-Mediator)
 
 by Masayuki Nii
 msyk@msyk.net
