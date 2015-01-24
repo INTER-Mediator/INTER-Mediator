@@ -305,8 +305,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      */
     private function errorMessageStore($str)
     {
-        $errorInfo = var_export($this->link->errorInfo(), true);
-        $this->logger->setErrorMessage("Query Error: [{$str}] Code={$this->link->errorCode()} Info ={$errorInfo}");
+        if ($this->link) {
+            $errorInfo = var_export($this->link->errorInfo(), true);
+            $this->logger->setErrorMessage("Query Error: [{$str}] Code={$this->link->errorCode()} Info ={$errorInfo}");
+        } else {
+            $this->logger->setErrorMessage("Query Error: [{$str}]");
+        }
     }
 
     /**
