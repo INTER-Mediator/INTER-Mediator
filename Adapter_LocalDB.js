@@ -1,18 +1,12 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2011 Masayuki Nii, All rights reserved.
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
  *
- *   This project started at the end of 2009.
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
  */
-/**
- * Created by JetBrains PhpStorm.
- * User: nii
- * Date: 11/06/09
- * Time: 17:40
- * To change this template use File | Settings | File Templates.
- */
+
 //=================================
 // Database Access
 //=================================

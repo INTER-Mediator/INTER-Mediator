@@ -28,7 +28,7 @@ Ver.5.0 (in development) ========================================
   FileMaker Server 11 or later if using FileMaker Server.
 =================================================================
 
-Ver.4.7 (in development)
+Ver.4.7 (2015/1/25)
 - The "Soft-Delete" or "Logical-Delete" is implemented. The 'soft-delete' key can be set up on a context
   of definition file. The sample is the "logical-delete" of the "Debugging" group.
 - The Page File Editor appears in the INTER-Mediator-Support directory.

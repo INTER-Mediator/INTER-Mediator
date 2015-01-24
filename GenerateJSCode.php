@@ -1,20 +1,13 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2013 Masayuki Nii, All rights reserved.
- *
- *   This project started at the end of 2009.
- *   INTER-Mediator is supplied under MIT License.
- */
+* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+*
+*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+*
+*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+*   INTER-Mediator is supplied under MIT License.
+*/
 
-/**
- * Created by JetBrains PhpStorm.
- * User: msyk
- * Date: 2012/10/10
- * Time: 20:07
- * To change this template use File | Settings | File Templates.
- */
 class GenerateJSCode
 {
     public function __construct()
