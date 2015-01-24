@@ -2,7 +2,7 @@
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
  * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
@@ -34,7 +34,7 @@ class FileUploader
                 $dbProxyInstance->logger->setErrorMessage("'media-root-dir' isn't specified");
                 $dbProxyInstance->processingRequest($options, "noop");
                 $dbProxyInstance->finishCommunication();
-                $dbProxyInstance->exportOutputDataAsJason();
+                $dbProxyInstance->exportOutputDataAsJSON();
             }
             return;
         }
@@ -51,7 +51,7 @@ class FileUploader
                 $dbProxyInstance->logger->setErrorMessage("No file wasn't uploaded.");
                 $dbProxyInstance->processingRequest($options, "noop");
                 $dbProxyInstance->finishCommunication();
-                $dbProxyInstance->exportOutputDataAsJason();
+                $dbProxyInstance->exportOutputDataAsJSON();
             }
             return;
         }
@@ -62,24 +62,33 @@ class FileUploader
         if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
             $fileRoot .= '/';
         }
-        $filePathInfo = pathinfo($fileInfo["name"]);
-        $dirPath = $_POST["_im_contextname"] . '/'
-            . $_POST["_im_keyfield"] . "=" . $_POST["_im_keyvalue"] . '/' . $_POST["_im_field"];
+        $filePathInfo = pathinfo(str_replace('\0', '', basename($fileInfo['name'])));
+        $dirPath = str_replace('.', '_', urlencode($_POST["_im_contextname"])) . '/' 
+            . str_replace('.', '_', urlencode($_POST["_im_keyfield"])) . "=" 
+            . str_replace('.', '_', urlencode($_POST["_im_keyvalue"])) . '/' 
+            . str_replace('.', '_', urlencode($_POST["_im_field"]));
         $rand4Digits = rand(1000, 9999);
         $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
             . $rand4Digits . '.' . $filePathInfo['extension'];
         $filePath = $fileRoot . $filePartialPath;
+        if (strpos($filePath, $fileRoot) !== 0) {
+            $dbProxyInstance->logger->setErrorMessage("Invalid Path Error.");
+            $dbProxyInstance->processingRequest($options, "noop");
+            $dbProxyInstance->finishCommunication();
+            $dbProxyInstance->exportOutputDataAsJSON();
+            return;
+        }
         if (!file_exists($fileRoot . $dirPath)) {
             $result = mkdir($fileRoot . $dirPath, 0744, true);
             if (!$result) {
                 $dbProxyInstance->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
                 $dbProxyInstance->processingRequest($options, "noop");
                 $dbProxyInstance->finishCommunication();
-                $dbProxyInstance->exportOutputDataAsJason();
+                $dbProxyInstance->exportOutputDataAsJSON();
                 return;
             }
         }
-        $result = move_uploaded_file($fileInfo["tmp_name"], $filePath);
+        $result = move_uploaded_file($fileInfo['tmp_name'], $filePath);
         if (!$result) {
             if (isset($_POST["_im_redirect"])) {
                 header("Location: {$_POST["_im_redirect"]}");
@@ -87,7 +96,7 @@ class FileUploader
                 $dbProxyInstance->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
                 $dbProxyInstance->processingRequest($options, "noop");
                 $dbProxyInstance->finishCommunication();
-                $dbProxyInstance->exportOutputDataAsJason();
+                $dbProxyInstance->exportOutputDataAsJSON();
             }
             return;
         }
@@ -162,7 +171,7 @@ class FileUploader
                     $relatedContext->dbSettings->setValue($values);
                     $relatedContext->processingRequest($options, "new", true);
                 //    $relatedContext->finishCommunication(true);
-                //    $relatedContext->exportOutputDataAsJason();
+                //    $relatedContext->exportOutputDataAsJSON();
                 }
             }
         }
@@ -170,7 +179,7 @@ class FileUploader
 //        echo "dbresult='{$filePath}';";
         $dbProxyInstance->addOutputData('dbresult', $filePath);
         $dbProxyInstance->finishCommunication();
-        $dbProxyInstance->exportOutputDataAsJason();
+        $dbProxyInstance->exportOutputDataAsJSON();
         if (isset($_POST["_im_redirect"])) {
             header("Location: {$_POST["_im_redirect"]}");
         }
@@ -179,9 +188,7 @@ class FileUploader
     //
     public function processInfo()
     {
-        $myself = $_SERVER['REQUEST_URI'];
-        $intervalScript = "location.href='{$myself}'";
-        $onloadScript = "window.onload=function(){setInterval(\"{$intervalScript}\",500);};";
+        $onloadScript = "window.onload=function(){setInterval(\"location.reload()\",500);};";
         echo "<html><head><script>{$onloadScript}</script></head><body style='margin:0;padding:0'>";
         echo "<div style='width:160px;border:1px solid #555555;padding:1px;background-color:white;'>";
         $status = apc_fetch('upload_' . $_GET['uploadprocess']);

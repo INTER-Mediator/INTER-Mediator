@@ -1,9 +1,9 @@
 <?php
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -69,9 +69,23 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return $this->outputOfProcessing[$key] = $value;
     }
 
+    public function exportOutputDataAsJSON()
+    {
+        if (((float)phpversion()) >= 5.3) {
+            echo json_encode($this->outputOfProcessing, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        } else {
+            $this->outputOfProcessing = str_replace(
+                array('\"', '&', '\'', '<', '>'),
+                array('\u0022', '\u0026', '\u0027', '\u003C', '\u003E'),
+                json_encode($this->outputOfProcessing)
+            );
+            echo $this->outputOfProcessing;
+        }
+    }
+
     public function exportOutputDataAsJason()
     {
-        echo json_encode($this->outputOfProcessing);
+        $this->exportOutputDataAsJSON();
     }
 
     /**
@@ -80,7 +94,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function __construct($testmode = false)
     {
         if (!$testmode) {
-            header('Content-Type: text/javascript;charset="UTF-8"');
+            header('Content-Type: application/json; charset="UTF-8"');
             header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
             header('Expires: 0');
             header('X-XSS-Protection: 1; mode=block');

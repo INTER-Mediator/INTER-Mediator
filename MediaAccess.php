@@ -1,9 +1,9 @@
 <?php
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2013 Masayuki Nii, All rights reserved.
- *
+ * 
+ *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
+ * 
  *   This project started at the end of 2009.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -47,6 +47,10 @@ class MediaAccess
              * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
              * style URL. In case of an image, $file is just the path info as like above.
              */
+            $file = str_replace('\0', '', $file);
+            if (strpos($file, '../') !== false) {
+                return;
+            }
             $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
             if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
@@ -173,10 +177,12 @@ class MediaAccess
 
                 $cookieNameUser = '_im_username';
                 $cookieNamePassword = '_im_credential';
-                $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
-                    . urlencode($_COOKIE[$cookieNameUser]) . ":"
-                    . urlencode($keyDecrypt->biDecryptedString($_COOKIE[$cookieNamePassword])) . "@"
-                    . $dbProxyInstance->dbSettings->getDbSpecServer() . ":"
+                $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
+                if (isset($_COOKIE[$cookieNamePassword])) {
+                    $credential .= ':' . urlencode($keyDecrypt->biDecryptedString($_COOKIE[$cookieNamePassword]));
+                }
+                $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . '://' . $credential . '@'
+                    . $dbProxyInstance->dbSettings->getDbSpecServer() . ':'
                     . $dbProxyInstance->dbSettings->getDbSpecPort();
             } else {
                 $urlHost = $dbProxyInstance->dbSettings->getDbSpecProtocol() . "://"
@@ -188,7 +194,7 @@ class MediaAccess
             $file = $urlHost . str_replace(" ", "%20", $file);
             foreach ($_GET as $key => $value) {
                 if ($key !== 'media' && $key !== 'attach') {
-                    $file .= "&" . $key . "=" . urlencode($value);
+                    $file .= "&" . urlencode($key) . "=" . urlencode($value);
                 }
             }
             $isURL = true;

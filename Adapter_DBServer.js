@@ -92,6 +92,7 @@ INTERMediator_DBAdapter = {
             myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
             myRequest.setRequestHeader("charset", "utf-8");
             myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             myRequest.send(accessURL + authParams);
             jsonObject = JSON.parse(myRequest.responseText);
             resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
