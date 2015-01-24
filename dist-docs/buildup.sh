@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # INTER-Mediator Deployment File Set Builder
-# by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
+# by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
 
 # This project started at the end of 2009.
 # INTER-Mediator is supplied under MIT License.
 
-version="4.7-dev"
+version="4.7"
 
 # The jar file of YUI can be donwloaded from below.
 # http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7
