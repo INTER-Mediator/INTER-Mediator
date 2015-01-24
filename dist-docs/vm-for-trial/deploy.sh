@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # This file can get from the URL below.
-# https://raw.githubusercontent.com/msyk/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
+# https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
 #
 # How to test using Serverspec 2 after running this file on the guest of VM:
 #
@@ -52,7 +52,7 @@ aptitude install phpunit --assume-yes
 aptitude clean
 
 cd "${WEBROOT}"
-git clone https://github.com/msyk/INTER-Mediator.git
+git clone https://github.com/INTER-Mediator/INTER-Mediator.git
 
 mv "${WEBROOT}/index.html" "${WEBROOT}/index_original.html"
 
