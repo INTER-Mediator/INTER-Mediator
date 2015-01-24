@@ -7,7 +7,7 @@ msyk@msyk.net
 http://inter-mediator.org/
 
 Change Log will be supplied by English only.
-Latest changes might exist on the GitHub repository. Please check: https://github.com/msyk/INTER-Mediator.
+Latest changes might exist on the GitHub repository. Please check: https://github.com/INTER-Mediator/INTER-Mediator.
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.org/ja/docs-migration.html.
 
 Ver.5.0 (in development) ========================================
@@ -23,7 +23,7 @@ Ver.5.0 (in development) ========================================
 - As for the FileMaker Server, the fmresultset schema is supported.
 - Improve performance of portal access mode for FileMaker Server.
 - [INFO] We prepared the INTER-Mediator-Server virtual machine  for trial and learning purpose.
-- [INFO] InternetExplorer Ver.8 is dropped out from the supporting browsers.
+- [INFO] Internet Explorer Ver.8 is dropped out from the supporting browsers.
 - [INFO] FileMaker Server 10 has been deprecated. In the near future, INTER-Mediator will require 
   FileMaker Server 11 or later if using FileMaker Server.
 =================================================================
@@ -36,6 +36,7 @@ Ver.4.7 (in development)
 - The Definition File Editor supports the 'navi-control' and 'calculation' keys.
 - Output X-XSS-Protection response header to enable XSS filter.
 - Improve performance of portal access mode for FileMaker Server.
+- Add null database class (DB_Null.php).
 - Update Sample_realtime (invoice_FMS.html/invoice_MySQL.html) for compatibility with SSL/TLS.
 - Add Sample_easyToUnderstand and Sample_forDebugging for FileMaker Server in the "Samples" directory.
 - Modify "context-test" of Sample_forDebugging.
@@ -43,8 +44,12 @@ Ver.4.7 (in development)
   "saleslog").
 - Add TestDB_clone.fmp12 and TestDBSchemeForFMS.xlsx.
   (Thanks to TableClipper! <http://www.key-planning.co.jp/software/tableclipper/tableclipper-en/>).
+- Remove unnecessary IMLibTarget object from INTER-Mediator-Element.js.
 - [INFO] The dist-docs/sample_schema_mysql.txt describes the encode as utf8mb4.
          It means the schema support MySQL 5.5.3 or above.
+- [SECURITY FIX] Fix Reflected XSS issue when using the file upload component.
+- [SECURITY FIX] Fix Path Traversal issue when using the file upload component or accessing a media(image) file 
+  with 'media-root-dir' key.
 - [BUG FIX] The Definition File editor worked. It should not do at the initial situation. We should make it sure.
 - [BUG FIX] Fix retrieving field data when using FileMaker Server and only one field is placed on the layout.
   The affected version is 4.6 only (Thanks to Kentaro Suzuki).
