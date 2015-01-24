@@ -1,18 +1,13 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- *
- *   This project started at the end of 2014.
- *   INTER-Mediator is supplied under MIT License.
- */
-/**
- * Created by PhpStorm.
- * User: msyk
- * Date: 2014/02/14
- * Time: 12:19
- */
+* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+*
+*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+*
+*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+*   INTER-Mediator is supplied under MIT License.
+*/
+
 
 require_once('lib/mailsend/OME.php');
 require_once('lib/mailsend/qdsmtp/qdsmtp.php');

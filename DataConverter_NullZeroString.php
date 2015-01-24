@@ -1,12 +1,12 @@
 <?php
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- *
- *   This project started at the end of 2009.
- *   INTER-Mediator is supplied under MIT License.
- */
+* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+*
+*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+*
+*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+*   INTER-Mediator is supplied under MIT License.
+*/
 
 class DataConverter_NullZeroString
 {
