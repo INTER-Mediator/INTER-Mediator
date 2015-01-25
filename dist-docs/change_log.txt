@@ -1,10 +1,8 @@
 =================================
 INTER-Mediator Change Log
-by Masayuki Nii
-msyk@msyk.net
-=================================
-
+by INTER-Mediator Directive Committee
 http://inter-mediator.org/
+=================================
 
 Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check: https://github.com/INTER-Mediator/INTER-Mediator.
