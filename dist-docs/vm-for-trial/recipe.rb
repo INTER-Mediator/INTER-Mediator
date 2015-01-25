@@ -57,7 +57,19 @@ end
 
 if os[:family] == 'ubuntu'
   file '/etc/mysql/conf.d/im.cnf' do
-    content 'character-set-server=utf8mb4\nskip-character-set-client-handshake\n[client]\ndefault-character-set=utf8mb4\n[mysqldump]\ndefault-character-set=utf8mb4\n[mysql]\ndefault-character-set=utf8mb4'
+    content <<-EOF
+character-set-server=utf8mb4
+skip-character-set-client-handshake
+
+[client]
+default-character-set=utf8mb4
+
+[mysqldump]
+default-character-set=utf8mb4
+
+[mysql]
+default-character-set=utf8mb4'
+EOF
   end
 elsif os[:family] == 'redhat'
   if os[:release].to_f < 7
@@ -68,7 +80,29 @@ elsif os[:family] == 'redhat'
       action [ :enable, :start ]
     end
     file '/etc/my.cnf' do
-      content '[mysqld]\ndatadir=/var/lib/mysql\nsocket=/var/lib/mysql/mysql.sock\nuser=mysql\n# Disabling symbolic-links is recommended to prevent assorted security risks\nsymbolic-links=0\ncharacter-set-server=utf8\nskip-character-set-client-handshake\n\n[mysqld_safe]\nlog-error=/var/log/mysqld.log\npid-file=/var/run/mysqld/mysqld.pid\n\n[client]\ndefault-character-set=utf8\n\n[mysqldump]\ndefault-character-set=utf8\n\n[mysql]\ndefault-character-set=utf8'
+      content <<-EOF
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+character-set-server=utf8
+skip-character-set-client-handshake
+
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+[client]
+default-character-set=utf8
+
+[mysqldump]
+default-character-set=utf8
+
+[mysql]
+default-character-set=utf8
+EOF
     end
   else
     package 'mariadb-server' do
@@ -78,7 +112,29 @@ elsif os[:family] == 'redhat'
       action [ :enable, :start ]
     end
     file '/etc/my.cnf.d/im.cnf' do
-      content '[mysqld]\ndatadir=/var/lib/mysql\nsocket=/var/lib/mysql/mysql.sock\nuser=mysql\n# Disabling symbolic-links is recommended to prevent assorted security risks\nsymbolic-links=0\ncharacter-set-server=utf8mb4\nskip-character-set-client-handshake\n\n[mysqld_safe]\nlog-error=/var/log/mysqld.log\npid-file=/var/run/mysqld/mysqld.pid\n\n[client]\ndefault-character-set=utf8\n\n[mysqldump]\ndefault-character-set=utf8\n\n[mysql]\ndefault-character-set=utf8'
+      content <<-EOF
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+character-set-server=utf8mb4
+skip-character-set-client-handshake
+
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+[client]
+default-character-set=utf8mb4
+
+[mysqldump]
+default-character-set=utf8mb4
+
+[mysql]
+default-character-set=utf8mb4
+EOF
     end
   end
   execute 'mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'*********\';" -u root' do
@@ -113,12 +169,21 @@ if os[:family] == 'ubuntu'
     action :install
   end
 elsif os[:family] == 'redhat'
+  package 'php' do
+    action :install
+  end
   if os[:release].to_f < 7
+    package 'php-mysql' do
+      action :install
+    end
     package 'mysql-devel' do
       action :install
     end
   else
     package 'mariadb-devel' do
+      action :install
+    end
+    package 'php-mysqlnd' do
       action :install
     end
   end
@@ -221,11 +286,72 @@ end
 
 if os[:family] == 'ubuntu'
   file "#{WEBROOT}/params.php" do
-    content '<?php\n$dbUser = "web";\n$dbPassword = "password";\n$dbDSN = "mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4";\n$dbOption = array();\n$browserCompatibility = array(\n    "Chrome" => "1+","FireFox" => "2+","msie" => "9+","Opera" => "1+",\n    "Safari" => "4+","Trident" => "5+",\n);\n$dbServer = "192.168.56.1";\n$dbPort = "80";\n$dbDataType = "FMPro12";\n$dbDatabase = "TestDB";\n$dbProtocol = "HTTP";\n'
+    content <<-EOF
+<?php
+$dbUser = 'web';
+$dbPassword = 'password';
+$dbDSN = 'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';
+$dbOption = array();
+$browserCompatibility = array(
+    'Chrome' => '1+',
+    'FireFox' => '2+',
+    'msie' => '9+',
+    'Opera' => '1+',
+    'Safari' => '4+',
+    'Trident' => '5+',
+);
+$dbServer = '192.168.56.1';
+$dbPort = '80';
+$dbDataType = 'FMPro12';
+$dbDatabase = 'TestDB';
+$dbProtocol = 'HTTP';
+EOF
   end
-elsif os[:family] == 'redhat'
+elsif os[:family] == 'redhat' && os[:release].to_f < 7
   file "#{WEBROOT}/params.php" do
-    content '<?php\n$dbUser = "web";\n$dbPassword = "password";\n$dbDSN = "mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8";\n$dbOption = array();\n$browserCompatibility = array(\n    "Chrome" => "1+","FireFox" => "2+","msie" => "9+","Opera" => "1+",\n    "Safari" => "4+","Trident" => "5+",\n);\n$dbServer = "192.168.56.1";\n$dbPort = "80";\n$dbDataType = "FMPro12";\n$dbDatabase = "TestDB";\n$dbProtocol = "HTTP";\n'
+    content <<-EOF
+<?php
+$dbUser = 'web';
+$dbPassword = 'password';
+$dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8';
+$dbOption = array();
+$browserCompatibility = array(
+    'Chrome' => '1+',
+    'FireFox' => '2+',
+    'msie' => '9+',
+    'Opera' => '1+',
+    'Safari' => '4+',
+    'Trident' => '5+',
+);
+$dbServer = '192.168.56.1';
+$dbPort = '80';
+$dbDataType = 'FMPro12';
+$dbDatabase = 'TestDB';
+$dbProtocol = 'HTTP';
+EOF
+  end
+elsif os[:family] == 'redhat' && os[:release].to_f >= 7
+  file "#{WEBROOT}/params.php" do
+    content <<-EOF
+<?php
+$dbUser = 'web';
+$dbPassword = 'password';
+$dbDSN = 'mysql:unix_socket=/var/lib/mysql/mysql.sock;dbname=test_db;charset=utf8mb4';
+$dbOption = array();
+$browserCompatibility = array(
+    'Chrome' => '1+',
+    'FireFox' => '2+',
+    'msie' => '9+',
+    'Opera' => '1+',
+    'Safari' => '4+',
+    'Trident' => '5+',
+);
+$dbServer = '192.168.56.1';
+$dbPort = '80';
+$dbDataType = 'FMPro12';
+$dbDatabase = 'TestDB';
+$dbProtocol = 'HTTP';
+EOF
   end
 end
 
@@ -237,6 +363,12 @@ execute "rm \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\"" do
 end
 execute "mv \"#{IMUNITTEST}/temp\" \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\"" do
   command "mv \"#{IMUNITTEST}/temp\" \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\""
+end
+
+if os[:family] == 'redhat'
+  execute 'service httpd restart' do
+    command 'service httpd restart'
+  end
 end
 
 
@@ -375,6 +507,9 @@ execute "chmod -R g+w \"#{WEBROOT}\"" do
 end
 
 if os[:family] == 'redhat'
+  execute 'setenforce 0' do
+    command 'setenforce 0'
+  end
   if os[:release].to_f < 7
     file '/etc/sysconfig/iptables' do
       content <<-EOF
@@ -394,14 +529,8 @@ if os[:family] == 'redhat'
 COMMIT
 EOF
     end
-    execute "setenforce 0" do
-      command "setenforce 0"
-    end
     execute 'service iptables restart' do
       command 'service iptables restart'
-    end
-    execute "setenforce 1" do
-      command "setenforce 1"
     end
   else
     execute 'firewall-cmd --zone=public --add-service=http --permanent' do
@@ -411,4 +540,7 @@ EOF
       command 'firewall-cmd --reload'
     end
   end
+  #execute 'setenforce 1' do
+  #  command 'setenforce 1'
+  #end
 end
