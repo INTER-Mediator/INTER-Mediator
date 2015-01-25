@@ -11,8 +11,11 @@ describe package('openssh-server'), :if => os[:family] == 'ubuntu' || os[:family
   it { should be_installed }
 end
 
-describe package('mysql-server'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('mysql-server'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_installed }
+end
+describe package('mariadb-server'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+it { should be_installed }
 end
 
 describe package('postgresql'), :if => os[:family] == 'ubuntu' do
@@ -53,12 +56,18 @@ end
 describe service('mysql'), :if => os[:family] == 'ubuntu' do
   it { should be_enabled }
 end
-describe service('mysqld'), :if => os[:family] == 'redhat' do
+describe service('mysqld'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   it { should be_enabled }
 end
+describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+it { should be_enabled }
+end
 
-describe service('mysqld'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe service('mysqld'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_running }
+end
+describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+it { should be_running }
 end
 
 describe service('postgres'), :if => os[:family] == 'ubuntu' do
@@ -68,8 +77,11 @@ describe service('postgresql'), :if => os[:family] == 'redhat' do
   it { should be_enabled }
 end
 
-describe service('postgres'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe service('postgres'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_running }
+end
+describe service('postgresql'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+it { should be_running }
 end
 
 describe group('im-developer') do
@@ -103,7 +115,7 @@ describe file('/etc/mysql/conf.d/im.cnf'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /[mysqldump]/ }
   its(:content) { should match /[mysql]/ }
 end
-describe file('/etc/my.cnf'), :if => os[:family] == 'redhat' do
+describe file('/etc/my.cnf'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   it { should be_file }
   its(:content) { should match /[mysqld]/ }
   its(:content) { should match /character-set-server=utf8/ }
@@ -111,6 +123,15 @@ describe file('/etc/my.cnf'), :if => os[:family] == 'redhat' do
   its(:content) { should match /[client]/ }
   its(:content) { should match /[mysqldump]/ }
   its(:content) { should match /[mysql]/ }
+end
+describe file('/etc/my.cnf.d/im.cnf'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+it { should be_file }
+its(:content) { should match /[mysqld]/ }
+its(:content) { should match /character-set-server=utf8mb4/ }
+its(:content) { should match /skip-character-set-client-handshake/ }
+its(:content) { should match /[client]/ }
+its(:content) { should match /[mysqldump]/ }
+its(:content) { should match /[mysql]/ }
 end
 
 describe package('sqlite'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
@@ -124,7 +145,10 @@ end
 describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
-describe package('mysql-devel'), :if => os[:family] == 'redhat' do
+describe package('mysql-devel'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
+it { should be_installed }
+end
+describe package('mariadb-devel'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
 it { should be_installed }
 end
 
@@ -168,6 +192,10 @@ end
 
 describe package('buster'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed.by('npm').with_version('0.7.18') }
+end
+
+describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+it { should be_installed }
 end
 
 describe package('phantomjs'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
@@ -308,6 +336,9 @@ describe file('/var/www/html') do
   it { should be_grouped_into 'im-developer' }
 end
 
-describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' do
+describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   its(:content) { should match /-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT/ }
+end
+describe file('/etc/firewalld/zones/public.xml'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+  its(:content) { should match /<service name="http"\/>/ }
 end
