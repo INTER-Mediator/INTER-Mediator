@@ -59,7 +59,7 @@ end
 describe service('mysqld'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   it { should be_enabled }
 end
-describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
+describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
 it { should be_enabled }
 end
 

@@ -394,8 +394,14 @@ if os[:family] == 'redhat'
 COMMIT
 EOF
     end
+    execute "setenforce 0" do
+      command "setenforce 0"
+    end
     execute 'service iptables restart' do
       command 'service iptables restart'
+    end
+    execute "setenforce 1" do
+      command "setenforce 1"
     end
   else
     execute 'firewall-cmd --zone=public --add-service=http --permanent' do
