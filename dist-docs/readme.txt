@@ -1,10 +1,11 @@
 INTER-Mediator
-by Masayuki Nii
-msyk@msyk.net
+
+Driven by INTER-Mediator Directive Committee (http://inter-mediator.org/)
 
 Thanks for your interest of this software.
-All information will be shown at:
-http://inter-mediator.org
+
+Product information: http://inter-mediator.com
+Online manual: http://inter-mediator.info
 
 Sample pages with this archived file are published at below.
 You don't have to deploy the samples if you just want to just a glance.
@@ -39,4 +40,4 @@ The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" have the administra
  username: admin
  password: 1234
 
-If you need to open them with FileMaker Pro/Advanced, please use it.
+If you need to open them with FileMaker Pro/Advanced, you should know above.
