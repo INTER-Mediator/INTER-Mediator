@@ -15,7 +15,7 @@ describe package('mysql-server'), :if => os[:family] == 'ubuntu' || (os[:family]
   it { should be_installed }
 end
 describe package('mariadb-server'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-it { should be_installed }
+  it { should be_installed }
 end
 
 describe package('postgresql'), :if => os[:family] == 'ubuntu' do
@@ -46,7 +46,7 @@ describe service('ssh'), :if => os[:family] == 'ubuntu' do
   it { should be_enabled }
 end
 describe service('sshd'), :if => os[:family] == 'redhat' do
-it { should be_enabled }
+  it { should be_enabled }
 end
 
 describe service('sshd'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
@@ -60,14 +60,14 @@ describe service('mysqld'), :if => os[:family] == 'redhat' && os[:release].to_f 
   it { should be_enabled }
 end
 describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-it { should be_enabled }
+  it { should be_enabled }
 end
 
 describe service('mysqld'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_running }
 end
 describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-it { should be_running }
+  it { should be_running }
 end
 
 describe service('postgres'), :if => os[:family] == 'ubuntu' do
@@ -81,7 +81,7 @@ describe service('postgres'), :if => os[:family] == 'ubuntu' || (os[:family] == 
   it { should be_running }
 end
 describe service('postgresql'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-it { should be_running }
+  it { should be_running }
 end
 
 describe group('im-developer') do
@@ -118,6 +118,7 @@ end
 describe file('/etc/my.cnf'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   it { should be_file }
   its(:content) { should match /[mysqld]/ }
+  its(:content) { should match /socket=\/var\/lib\/mysql\/mysql.sock/ }
   its(:content) { should match /character-set-server=utf8/ }
   its(:content) { should match /skip-character-set-client-handshake/ }
   its(:content) { should match /[client]/ }
@@ -125,13 +126,14 @@ describe file('/etc/my.cnf'), :if => os[:family] == 'redhat' && os[:release].to_
   its(:content) { should match /[mysql]/ }
 end
 describe file('/etc/my.cnf.d/im.cnf'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-it { should be_file }
-its(:content) { should match /[mysqld]/ }
-its(:content) { should match /character-set-server=utf8mb4/ }
-its(:content) { should match /skip-character-set-client-handshake/ }
-its(:content) { should match /[client]/ }
-its(:content) { should match /[mysqldump]/ }
-its(:content) { should match /[mysql]/ }
+  it { should be_file }
+  its(:content) { should match /[mysqld]/ }
+  its(:content) { should match /socket=\/var\/lib\/mysql\/mysql.sock/ }
+  its(:content) { should match /character-set-server=utf8mb4/ }
+  its(:content) { should match /skip-character-set-client-handshake/ }
+  its(:content) { should match /[client]/ }
+  its(:content) { should match /[mysqldump]/ }
+  its(:content) { should match /[mysql]/ }
 end
 
 describe package('sqlite'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
@@ -145,11 +147,23 @@ end
 describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
-describe package('mysql-devel'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
+describe package('php'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
+describe package('php-mbstring'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
+describe package('php-mysql'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
 it { should be_installed }
 end
+describe package('mysql-devel'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
+  it { should be_installed }
+end
 describe package('mariadb-devel'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-it { should be_installed }
+  it { should be_installed }
+end
+describe package('php-mysqlnd'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+  it { should be_installed }
 end
 
 describe package('php5-pgsql'), :if => os[:family] == 'ubuntu' do
@@ -167,7 +181,7 @@ describe package('php-pdo'), :if => os[:family] == 'redhat' do
 end
 
 describe package('php-common'), :if => os[:family] == 'redhat' do
-it { should be_installed }
+  it { should be_installed }
 end
 
 describe package('php5-curl'), :if => os[:family] == 'ubuntu' do
@@ -195,7 +209,7 @@ describe package('buster'), :if => os[:family] == 'ubuntu' || os[:family] == 're
 end
 
 describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
-it { should be_installed }
+  it { should be_installed }
 end
 
 describe package('phantomjs'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
@@ -213,7 +227,7 @@ describe package('phpunit'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' do
-it { should be_installed }
+  it { should be_installed }
 end
 
 describe file('/var/www/html/INTER-Mediator') do
@@ -252,15 +266,18 @@ end
 
 describe file('/var/www/html/params.php') do
   it { should be_file }
-  its(:content) { should match /\$dbUser = "web";/ }
+  its(:content) { should match /\$dbUser = 'web';/ }
   its(:content) { should match /\$dbOption = array\(\);/ }
-  its(:content) { should match /\$dbServer = "192.168.56.1";/ }
+  its(:content) { should match /\$dbServer = '192.168.56.1';/ }
 end
 describe file('/var/www/html/params.php'), :if => os[:family] == 'ubuntu' do
-  its(:content) { should match /\$dbDSN = "mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4";/ }
+  its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
 end
-describe file('/var/www/html/params.php'), :if => os[:family] == 'redhat' do
-  its(:content) { should match /\$dbDSN = "mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8";/ }
+describe file('/var/www/html/params.php'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
+  its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/lib\/mysql\/mysql.sock;dbname=test_db;charset=utf8';/ }
+end
+describe file('/var/www/html/params.php'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+  its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/lib\/mysql\/mysql.sock;dbname=test_db;charset=utf8mb4';/ }
 end
 
 describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/defedit.php') do
