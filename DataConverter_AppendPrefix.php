@@ -31,5 +31,3 @@ class DataConverter_AppendPrefix
         return $str;
     }
 }
-
-?>
