@@ -20,11 +20,14 @@ Ver.5.0 (in development) ========================================
 - HTML5's user defined attributes are supported.
 - As for the FileMaker Server, the fmresultset schema is supported.
 - Improve performance of portal access mode for FileMaker Server.
-- [INFO] We prepared the INTER-Mediator-Server virtual machine  for trial and learning purpose.
+- [INFO] We prepared the INTER-Mediator-Server virtual machine for trial and learning purpose.
 - [INFO] Internet Explorer Ver.8 is dropped out from the supporting browsers.
 - [INFO] FileMaker Server 10 has been deprecated. In the near future, INTER-Mediator will require 
   FileMaker Server 11 or later if using FileMaker Server.
 =================================================================
+
+Ver.5.0 (in development)
+- [BUG FIX] Fix Vagrantfile, deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine.
 
 Ver.4.7 (2015/1/25)
 - The "Soft-Delete" or "Logical-Delete" is implemented. The 'soft-delete' key can be set up on a context
@@ -43,6 +46,7 @@ Ver.4.7 (2015/1/25)
 - Add TestDB_clone.fmp12 and TestDBSchemeForFMS.xlsx.
   (Thanks to TableClipper! <http://www.key-planning.co.jp/software/tableclipper/tableclipper-en/>).
 - Remove unnecessary IMLibTarget object from INTER-Mediator-Element.js.
+- [INFO] We prepared the INTER-Mediator-Server virtual machine for trial and learning purpose.
 - [INFO] The dist-docs/sample_schema_mysql.txt describes the encode as utf8mb4.
          It means the schema support MySQL 5.5.3 or above.
 - [SECURITY FIX] Fix Reflected XSS issue when using the file upload component.
