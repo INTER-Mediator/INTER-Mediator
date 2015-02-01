@@ -213,7 +213,7 @@ describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >
 end
 
 describe package('phantomjs'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
-  it { should be_installed.by('npm').with_version('1.9.13') }
+  it { should be_installed.by('npm').with_version('1.9.15') }
 end
 
 describe package('libfontconfig1'), :if => os[:family] == 'ubuntu' do
@@ -312,6 +312,13 @@ end
 
 describe command('echo "im4135dev" | sudo -u postgres -S psql -c \'\\l\'') do
   its(:stdout) { should match /test_db/ }
+end
+
+describe file('/var/lib/pgsql/data/pg_hba.conf') do
+  it { should be_owned_by 'postgres' }
+  it { should be_grouped_into 'postgres' }
+  it { should be_mode 600 }
+  its(:content) { should match /host    all         all         ::1\/128               trust/ }
 end
 
 describe file('/var/db/im') do
