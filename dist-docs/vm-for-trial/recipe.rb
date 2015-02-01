@@ -438,6 +438,64 @@ end
 # Import schema
 
 if os[:family] == 'redhat'
+  execute 'setenforce 0' do
+    command 'setenforce 0'
+  end
+  file '/etc/selinux/config' do
+    owner 'root'
+    group 'root'
+    mode '644'
+    content <<-EOF
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+#     enforcing - SELinux security policy is enforced.
+#     permissive - SELinux prints warnings instead of enforcing.
+#     disabled - No SELinux policy is loaded.
+SELINUX=disabled
+# SELINUXTYPE= can take one of these two values:
+#     targeted - Targeted processes are protected,
+#     mls - Multi Level Security protection.
+SELINUXTYPE=targeted 
+
+
+EOF
+  end
+  if os[:release].to_f < 7
+    file '/etc/sysconfig/iptables' do
+      content <<-EOF
+# Firewall configuration written by system-config-firewall
+# Manual customization of this file is not recommended.
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+-A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+-A INPUT -p icmp -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
+-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
+-A INPUT -j REJECT --reject-with icmp-host-prohibited
+-A FORWARD -j REJECT --reject-with icmp-host-prohibited
+COMMIT
+EOF
+    end
+    execute 'service iptables restart' do
+      command 'service iptables restart'
+    end
+  else
+    execute 'firewall-cmd --zone=public --add-service=http --permanent' do
+      command 'firewall-cmd --zone=public --add-service=http --permanent'
+    end
+    execute 'firewall-cmd --reload' do
+      command 'firewall-cmd --reload'
+    end
+  end
+  #execute 'setenforce 1' do
+  #  command 'setenforce 1'
+  #end
+end
+
+if os[:family] == 'redhat'
   execute "sed -E -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\"" do
     command "sed -E -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\""
   end
@@ -459,6 +517,93 @@ end
 
 execute "echo 'im4135dev' | sudo -u postgres -S psql -f \"#{IMDISTDOC}/sample_schema_pgsql.txt\" test_db" do
   command "echo 'im4135dev' | sudo -u postgres -S psql -f \"#{IMDISTDOC}/sample_schema_pgsql.txt\" test_db"
+end
+
+if os[:family] == 'redhat'
+  file '/var/lib/pgsql/data/pg_hba.conf' do
+    owner 'postgres'
+    group 'postgres'
+    mode '600'
+    content <<-EOF
+# PostgreSQL Client Authentication Configuration File
+# ===================================================
+#
+# Refer to the "Client Authentication" section in the
+# PostgreSQL documentation for a complete description
+# of this file.  A short synopsis follows.
+#
+# This file controls: which hosts are allowed to connect, how clients
+# are authenticated, which PostgreSQL user names they can use, which
+# databases they can access.  Records take one of these forms:
+#
+# local      DATABASE  USER  METHOD  [OPTIONS]
+# host       DATABASE  USER  CIDR-ADDRESS  METHOD  [OPTIONS]
+# hostssl    DATABASE  USER  CIDR-ADDRESS  METHOD  [OPTIONS]
+# hostnossl  DATABASE  USER  CIDR-ADDRESS  METHOD  [OPTIONS]
+#
+# (The uppercase items must be replaced by actual values.)
+#
+# The first field is the connection type: "local" is a Unix-domain socket,
+# "host" is either a plain or SSL-encrypted TCP/IP socket, "hostssl" is an
+# SSL-encrypted TCP/IP socket, and "hostnossl" is a plain TCP/IP socket.
+#
+# DATABASE can be "all", "sameuser", "samerole", a database name, or
+# a comma-separated list thereof.
+#
+# USER can be "all", a user name, a group name prefixed with "+", or
+# a comma-separated list thereof.  In both the DATABASE and USER fields
+# you can also write a file name prefixed with "@" to include names from
+# a separate file.
+#
+# CIDR-ADDRESS specifies the set of hosts the record matches.
+# It is made up of an IP address and a CIDR mask that is an integer
+# (between 0 and 32 (IPv4) or 128 (IPv6) inclusive) that specifies
+# the number of significant bits in the mask.  Alternatively, you can write
+# an IP address and netmask in separate columns to specify the set of hosts.
+#
+# METHOD can be "trust", "reject", "md5", "password", "gss", "sspi", "krb5",
+# "ident", "pam", "ldap" or "cert".  Note that "password" sends passwords
+# in clear text; "md5" is preferred since it sends encrypted passwords.
+#
+# OPTIONS are a set of options for the authentication in the format
+# NAME=VALUE. The available options depend on the different authentication
+# methods - refer to the "Client Authentication" section in the documentation
+# for a list of which options are available for which authentication methods.
+#
+# Database and user names containing spaces, commas, quotes and other special
+# characters must be quoted. Quoting one of the keywords "all", "sameuser" or
+# "samerole" makes the name lose its special character, and just match a
+# database or username with that name.
+#
+# This file is read on server startup and when the postmaster receives
+# a SIGHUP signal.  If you edit the file on a running system, you have
+# to SIGHUP the postmaster for the changes to take effect.  You can use
+# "pg_ctl reload" to do that.
+
+# Put your actual configuration here
+# ----------------------------------
+#
+# If you want to allow non-local connections, you need to add more
+# "host" records. In that case you will also need to make PostgreSQL listen
+# on a non-local interface via the listen_addresses configuration parameter,
+# or via the -i or -h command line switches.
+#
+
+
+
+# TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
+
+# "local" is for Unix domain socket connections only
+local   all         all                               ident
+# IPv4 local connections:
+host    all         all         127.0.0.1/32          ident
+# IPv6 local connections:
+host    all         all         ::1/128               trust
+EOF
+  end
+  service 'postgresql' do
+    action [ :restart ]
+  end
 end
 
 directory '/var/db/im' do
@@ -504,43 +649,4 @@ end
 
 execute "chmod -R g+w \"#{WEBROOT}\"" do
   command "chmod -R g+w \"#{WEBROOT}\""
-end
-
-if os[:family] == 'redhat'
-  execute 'setenforce 0' do
-    command 'setenforce 0'
-  end
-  if os[:release].to_f < 7
-    file '/etc/sysconfig/iptables' do
-      content <<-EOF
-# Firewall configuration written by system-config-firewall
-# Manual customization of this file is not recommended.
-*filter
-:INPUT ACCEPT [0:0]
-:FORWARD ACCEPT [0:0]
-:OUTPUT ACCEPT [0:0]
--A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
--A INPUT -p icmp -j ACCEPT
--A INPUT -i lo -j ACCEPT
--A INPUT -m state --state NEW -m tcp -p tcp --dport 22 -j ACCEPT
--A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT
--A INPUT -j REJECT --reject-with icmp-host-prohibited
--A FORWARD -j REJECT --reject-with icmp-host-prohibited
-COMMIT
-EOF
-    end
-    execute 'service iptables restart' do
-      command 'service iptables restart'
-    end
-  else
-    execute 'firewall-cmd --zone=public --add-service=http --permanent' do
-      command 'firewall-cmd --zone=public --add-service=http --permanent'
-    end
-    execute 'firewall-cmd --reload' do
-      command 'firewall-cmd --reload'
-    end
-  end
-  #execute 'setenforce 1' do
-  #  command 'setenforce 1'
-  #end
 end
