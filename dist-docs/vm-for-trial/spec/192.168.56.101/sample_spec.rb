@@ -314,7 +314,7 @@ describe command('echo "im4135dev" | sudo -u postgres -S psql -c \'\\l\'') do
   its(:stdout) { should match /test_db/ }
 end
 
-describe file('/var/lib/pgsql/data/pg_hba.conf') do
+describe file('/var/lib/pgsql/data/pg_hba.conf'), :if => os[:family] == 'redhat' do
   it { should be_owned_by 'postgres' }
   it { should be_grouped_into 'postgres' }
   it { should be_mode 600 }
