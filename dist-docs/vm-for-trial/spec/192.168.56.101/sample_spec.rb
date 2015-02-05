@@ -366,3 +366,13 @@ end
 describe file('/etc/firewalld/zones/public.xml'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   its(:content) { should match /<service name="http"\/>/ }
 end
+
+describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' do
+  it { should be_file }
+  its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
+  its(:content) { should match /\/usr\/local\/bin\/phantomjs \/usr\/local\/lib\/node_modules\/buster\/script\/phantom.js http:\/\/localhost:1111\/capture > \/dev\/null &/ }
+end
+
+#describe service('buster-server'), :if => os[:family] == 'ubuntu' do
+#  it { should be_running }
+#end
