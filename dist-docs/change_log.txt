@@ -6,7 +6,7 @@ http://inter-mediator.org/
 
 Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check: https://github.com/INTER-Mediator/INTER-Mediator.
-Also the Migration Guide (Japanese) might be informative: http://inter-mediator.org/ja/docs-migration.html.
+Also the Migration Guide (Japanese) might be informative: http://inter-mediator.com/ja/docs-migration.html.
 
 Ver.5.0 (in development) ========================================
 [Major differences from Ver.4]
@@ -27,6 +27,7 @@ Ver.5.0 (in development) ========================================
 =================================================================
 
 Ver.5.0 (in development)
+- Modify "Asset Management Sample" for the INTER-Mediator-Server virtual machine.
 - [BUG FIX] Fix Vagrantfile, deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine.
 
 Ver.4.7 (2015/1/25)

@@ -105,10 +105,10 @@ IM_Entry(
     ),
     array(
         'db-class' => 'PDO',
-        'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8',
-        'option' => array(),
-        'user' => 'web',
-        'password' => 'password',
+        // 'dsn' => 'mysql:unix_socket=/tmp/mysql.sock;dbname=test_db;charset=utf8mb4',
+        // 'option' => array(),
+        // 'user' => 'web',
+        // 'password' => 'password',
     ),
-    2
+    false
 );
