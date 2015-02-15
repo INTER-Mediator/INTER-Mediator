@@ -96,5 +96,3 @@ class MessageStrings
         3102 => 'Dragged File: ',
     );
 }
-
-?>

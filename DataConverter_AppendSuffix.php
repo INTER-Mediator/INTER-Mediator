@@ -31,5 +31,3 @@ class DataConverter_AppendSuffix
         return $str;
     }
 }
-
-?>

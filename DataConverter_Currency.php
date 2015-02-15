@@ -47,5 +47,3 @@ class DataConverter_Currency extends DataConverter_NumberBase
     }
 
 }
-
-?>

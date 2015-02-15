@@ -1,6 +1,6 @@
 /*
  * INTER-Mediator Sample for our software paper
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
+ * Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
 
 This schema file is for the sample of INTER-Mediator using MySQL, encoded by UTF-8.
 

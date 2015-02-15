@@ -96,5 +96,3 @@ class MessageStrings_ja
         3102 => 'ドラッグしたファイル: ',
     );
 }
-
-?>

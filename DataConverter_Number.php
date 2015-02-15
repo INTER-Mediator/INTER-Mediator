@@ -31,5 +31,3 @@ class DataConverter_Number extends DataConverter_NumberBase
         return number_format((double)$str, $this->d, $this->decimalMark, $this->thSepMark);
     }
 }
-
-?>
