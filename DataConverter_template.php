@@ -46,5 +46,3 @@ class DataConverter_template
     {
     }
 }
-
-?>
