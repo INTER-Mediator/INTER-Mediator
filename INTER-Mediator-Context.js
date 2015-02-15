@@ -279,11 +279,6 @@ IMLibContextPool = {
                             updateRequiredContext[k].foreignValue[info.field[0]] = info.value[0];
                             if (updateRequiredContext[k]) {
                                 INTERMediator.constructMain(updateRequiredContext[k]);
-                                //var associatedNode = updateRequiredContext[k].enclosureNode;
-                                //if (INTERMediatorLib.isPopupMenu(associatedNode)) {
-                                //    var currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
-                                //    IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
-                                //}
                             }
                         }
                     }

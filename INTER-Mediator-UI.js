@@ -459,16 +459,6 @@ var IMLibUI = {
                 INTERMediator.setErrorMessage(ex, "EXCEPTION-4");
             }
         }
-
-//        for (key in removeNodes) {
-//            removeNode = document.getElementById(removeNodes[key]);
-//            try {
-//                removeNode.parentNode.removeChild(removeNode);
-//            } catch (ex) {
-//                // Avoid an error for Safari
-//            }
-//        }
-
         keyField = currentContext["key"] ? currentContext["key"] : "-recid";
         associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodes);
         if (associatedContext) {

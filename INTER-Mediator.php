@@ -271,30 +271,6 @@ function getRelativePath()
 }
 
 /**
- * Generate the instance of the message class associated with browser's language.
- * @return object Generated instance of the message class.
- */
-//function getErrorMessageClass()
-//{
-//    $currentDir = dirname(__FILE__);
-//    $lang = getLocaleFromBrowser($_SERVER['HTTP_ACCEPT_LANGUAGE']);
-//    $candClassName = 'MessageStrings_' . $lang;
-//    if (!file_exists($currentDir . DIRECTORY_SEPARATOR . $candClassName . '.php')) {
-//        if (strpos($lang, '_') !== false) {
-//            $lang = substr($lang, 0, strpos($lang, '_'));
-//            $candClassName = 'MessageStrings_' . $lang;
-//            if (!file_exists($currentDir . DIRECTORY_SEPARATOR . $candClassName . '.php')) {
-//                $candClassName = 'MessageStrings';
-//            }
-//        }
-//    }
-//    $c = null;
-//    require_once($candClassName . '.php');
-//    eval("\$c = new {$candClassName}();");
-//    return $c->getMessages();
-//}
-
-/**
  * Set the locale with parameter, for UNIX and Windows OS.
  * @param string locType locale identifier string.
  * @return boolean If true, strings with locale are possibly multi-byte string.
