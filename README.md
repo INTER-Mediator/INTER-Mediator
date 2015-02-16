@@ -31,7 +31,7 @@ http://msyk.dyndns.org/im-sample.html
 - Hiromi Morita
 - Yukio Murakami
 - Osamu Noda
-- Kazuaki Oosawa
+- Kazuaki Osawa
 - Tsutomu Yuasa
 
 ### Driven by INTER-Mediator Directive Committee
