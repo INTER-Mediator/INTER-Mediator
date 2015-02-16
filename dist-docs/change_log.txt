@@ -29,6 +29,8 @@ Ver.5.0 (in development) ========================================
 Ver.5.0 (in development)
 - Change the URL of INTER-Mediator in INTER-Mediator.js.
 - Modify "Asset Management Sample" for the INTER-Mediator-Server virtual machine.
+- Thanks to Mr. Kazuaki Oosawa for cooperating to clarify the platform issue about the vm build script.
+- Thanks to Ms. Naomi Hamaji for sponsored the upcomming Study Meeting.
 - [BUG FIX] Fix Vagrantfile, deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine.
 
 Ver.4.7 (2015/1/25)

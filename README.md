@@ -1,6 +1,6 @@
 # INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.png?branch=master)](https://travis-ci.org/INTER-Mediator/INTER-Mediator)
 
-by INTER-Mediator Directive Committee (inter-mediator.org)
+by INTER-Mediator Directive Committee (http://inter-mediator.org)
 
 This is the root of INTER-Mediator source repository.
 
@@ -24,12 +24,14 @@ http://msyk.dyndns.org/im-sample.html
 - Kentaro Suzuki
 
 ### Special Thanks to:
+- Naomi Hamaji
 - Miyuki Imaizumi
 - Yukihiko Kobayashi
 - Akinori Mizoguchi
 - Hiromi Morita
 - Yukio Murakami
 - Osamu Noda
+- Kazuaki Oosawa
 - Tsutomu Yuasa
 
 ### Driven by INTER-Mediator Directive Committee
@@ -49,3 +51,4 @@ http://inter-mediator.org/
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create new Pull Request
 
+The GitHub application might be comfortable for command-line unfamiliar people.
