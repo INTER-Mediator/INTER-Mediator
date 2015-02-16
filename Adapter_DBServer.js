@@ -512,10 +512,6 @@ INTERMediator_DBAdapter = {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
             noError = false;
         }
-//        if (args['conditions'] == null) {
-//            INTERMediator.errorMessages.push(INTERMediatorLib.getInsertedStringFromErrorNumber(1008));
-//            noError = false;
-//        }
         if (args['dataset'] === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1011));
             noError = false;

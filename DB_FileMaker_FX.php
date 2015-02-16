@@ -1582,12 +1582,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-//    function authSupportGetSalt($username)
-//    {
-//        $hashedpw = $this->authSupportRetrieveHashedPassword($username);
-//        return substr($hashedpw, -8);
-//    }
-//
     public function authSupportCreateUser($username, $hashedpassword)
     {
         if ($this->authSupportRetrieveHashedPassword($username) !== false) {
@@ -2000,7 +1994,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         $recordSet = array();
         foreach ($result['data'] as $key => $row) {
-        //foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $oneRecord = array();
             foreach ($row as $field => $value) {
                 $oneRecord[$field] = $value[0];

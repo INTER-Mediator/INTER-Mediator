@@ -68,11 +68,9 @@ INTERMediator = {
 
     dateTimeFunction: false,
 
-    /* These following properties moved to the setter/getter architecture, and defined out side of this object.*/
-    //startFrom: 0,
-    //pagedSize: 0,
-    //additionalCondition: {},
-    //additionalSortKey: {},
+    /* These following properties moved to the setter/getter architecture, and defined out side of this object.
+        startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
+     */
 
     //=================================
     // Message for Programmers
@@ -607,21 +605,6 @@ INTERMediator = {
             linkDefs = collectLinkDefinitions(linkedNodes);
             voteResult = tableVoting(linkDefs);
             currentContextDef = voteResult.targettable;
-
-            //masterContext = IMLibContextPool.getMasterContext();
-            //if (masterContext) {
-            //    masterNaviControlValue = masterContext.getContextDef()['navi-control'];
-            //    currentNaviControlValue = currentContextDef['navi-control'];
-            //    if (masterNaviControlValue
-            //        && currentNaviControlValue
-            //        && masterNaviControlValue.match(/hide/i)
-            //        && currentNaviControlValue.match(/detail/i))
-            //    {
-            //        currentLevel--;
-            //        return;
-            //    }
-            //}
-            //
             INTERMediator.currentEncNumber++;
 
             if (!node.getAttribute('id')) {
@@ -1675,11 +1658,6 @@ INTERMediator = {
                     }
                     if (targetNode === null) {
                         targetNode = document.createElement(targetNodeTag);
-                        //if (targetNodeTag == "THEAD") {
-                        //    enclosedNode.insertBefore(targetNode, enclosedNode.firstChild);
-                        //} else {
-                        //    enclosedNode.appendChild(targetNode);
-                        //}
                         appendingNodesAtLast.push({
                             targetNode: targetNode,
                             parentNode: enclosedNode,

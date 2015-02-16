@@ -47,10 +47,6 @@ class MediaAccess
             $target = $isURL ? $file : "{$options['media-root-dir']}/{$file}";
             if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
-//                var_export($file);
-//                var_export($target);
-//                var_export($this->contextRecord);
-//                return;
             }
 
             $content = false;
@@ -92,10 +88,10 @@ class MediaAccess
                 }
                 header("Content-Type: " . $this->getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
-                header("Content-Disposition: {$this->disposition}; filename={$dq}" . str_replace("+", "%20", urlencode($fileName)) . $dq);
+                header("Content-Disposition: {$this->disposition}; filename={$dq}"
+                    . str_replace("+", "%20", urlencode($fileName)) . $dq);
                 header('X-XSS-Protection: 1; mode=block');
                 header('X-Frame-Options: SAMEORIGIN');
-//                echo $target;
                 echo $content;
             } else { // class
                 $noscheme = substr($target, 8);
@@ -114,11 +110,6 @@ class MediaAccess
      */
     private function exitAsError($code)
     {
-//        echo "Error: {$code}";
-//        $code = 0;
-//        $trace = debug_backtrace();
-//        var_dump($trace);
-
         switch ($code) {
             case 204:
                 header("HTTP/1.1 204 No Content");

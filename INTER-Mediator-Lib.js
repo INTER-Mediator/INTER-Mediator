@@ -128,9 +128,6 @@ var INTERMediatorLib = {
             } else {
                 children = node.childNodes;
                 for (k = 0; k < children.length; k++) {
-//                    if (INTERMediatorLib.isEnclosure(children[k], true)) {
-//
-//                    } else
                     if (INTERMediatorLib.isRepeater(children[k], true)) {
                         return true;
                     }
