@@ -214,10 +214,6 @@ var IMLibElement = {
             }
         } else if (nodeTag == "SELECT") {
             newValue = element.value;
-//            if (element.firstChild.value == "") {
-//                // for compatibility with Firefox when the value of select tag is empty.
-//                element.removeChild(element.firstChild);
-//            }
         } else if (nodeTag == "TEXTAREA") {
             newValue = element.value;
         } else {
