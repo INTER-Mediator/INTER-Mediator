@@ -6,7 +6,7 @@ http://inter-mediator.org/
 
 Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check: https://github.com/INTER-Mediator/INTER-Mediator.
-Also the Migration Guide (Japanese) might be informative: http://inter-mediator.com/ja/docs-migration.html.
+Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/migration.html.
 
 Ver.5.0 (in development) ========================================
 [Major differences from Ver.4]
@@ -27,17 +27,19 @@ Ver.5.0 (in development) ========================================
 =================================================================
 
 Ver.5.0 (in development)
+- The official INTER-Mediator website is http://inter-mediator.com/ with a new design.
+- Change the URL of the page footer to inter-mediator.com.
 - The virtual machine for trial can be made with using script.
 - Modify "Asset Management Sample" for the INTER-Mediator-Server virtual machine.
 - Thanks to Mr. Kazuaki Osawa for cooperating to clarify the platform issue about the vm build script.
 - Thanks to Ms. Naomi Hamaji for sponsored the upcomming Study Meeting.
-- [BUG FIX] Fix compatibility with the private browse mode of Safari when handling the Local Context.
-- Change the URL of INTER-Mediator in INTER-Mediator.js.
 - Add INTER-Mediator-Queuing.js for the future.
 - Eliminate unused codes.
 - Omit the closing PHP tag at the end of file to reduce bug risk.
 - Use the identical (===) operator instead of "==" partly in DB_FileMaker_FX.php and DB_PDO.php to reduce 
   bug risk.
+- [INFO] Internet Explorer Ver.8 is dropped out from the supporting browsers.
+- [BUG FIX] Fix compatibility with the private browse mode of Safari when handling the Local Context.
 - [BUG FIX] Fix Vagrantfile, deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine.
 
 Ver.4.7 (2015/1/25)
