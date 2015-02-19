@@ -10,7 +10,6 @@ Also the Migration Guide (Japanese) might be informative: http://inter-mediator.
 
 Ver.5.0 (in development) ========================================
 [Major differences from Ver.4]
-- The virtual machine for trial can be made with using script.
 - The realtime multi-client updating with the Pusher (WebSocket).
 - The Local Context and Context for DB Entities as the context model.
 - Master/Detail style page can be built without JS program.
@@ -28,11 +27,17 @@ Ver.5.0 (in development) ========================================
 =================================================================
 
 Ver.5.0 (in development)
-- Change the URL of INTER-Mediator in INTER-Mediator.js.
+- The virtual machine for trial can be made with using script.
 - Modify "Asset Management Sample" for the INTER-Mediator-Server virtual machine.
 - Thanks to Mr. Kazuaki Osawa for cooperating to clarify the platform issue about the vm build script.
 - Thanks to Ms. Naomi Hamaji for sponsored the upcomming Study Meeting.
 - [BUG FIX] Fix compatibility with the private browse mode of Safari when handling the Local Context.
+- Change the URL of INTER-Mediator in INTER-Mediator.js.
+- Add INTER-Mediator-Queuing.js for the future.
+- Eliminate unused codes.
+- Omit the closing PHP tag at the end of file to reduce bug risk.
+- Use the identical (===) operator instead of "==" partly in DB_FileMaker_FX.php and DB_PDO.php to reduce 
+  bug risk.
 - [BUG FIX] Fix Vagrantfile, deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine.
 
 Ver.4.7 (2015/1/25)
