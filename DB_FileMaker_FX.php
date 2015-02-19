@@ -876,7 +876,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
                                 "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                         }
-                        if ($existsRelated == false) {
+                        if ($existsRelated === false) {
                             $oneRecordArray = array();
                             $oneRecordArray[0][$this->getDefaultKey()] = $recId; // parent record id
                         }
@@ -904,7 +904,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $returnArray[] = $portalArray;
                     }
                 }
-                if ($existsRelated == false) {
+                if ($existsRelated === false) {
                     $this->mainTableCount = 0;
                 } else {
                     $this->mainTableCount = count($returnArray);

@@ -652,7 +652,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
 
         $skipParam = 0;
-        if (isset($tableInfo['paging']) and $tableInfo['paging'] == true) {
+        if (isset($tableInfo['paging']) and $tableInfo['paging'] === true) {
             $skipParam = $this->dbSettings->getStart();
         }
         $fields = '*';
