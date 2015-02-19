@@ -120,8 +120,14 @@ INTERMediatorOnPage = {
         this.removeCookie("_im_username");
         this.removeCookie("_im_credential");
         this.removeCookie("_im_mediatoken");
-        if (INTERMediator.useSessionStorage === true && typeof sessionStorage !== 'undefined' && sessionStorage !== null) {
-            sessionStorage.removeItem("_im_localcontext");
+        if (INTERMediator.useSessionStorage === true && 
+            typeof sessionStorage !== 'undefined' && 
+            sessionStorage !== null) {
+            try {
+                sessionStorage.removeItem("_im_localcontext");
+            } catch (ex) {
+                this.removeCookie("_im_localcontext");
+            }
         } else {
             this.removeCookie("_im_localcontext");
         }

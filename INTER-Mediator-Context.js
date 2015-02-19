@@ -947,10 +947,14 @@ IMLibLocalContext = {
         } else {
             jsonString = JSON.stringify(this.store);
         }
-        if (INTERMediator.useSessionStorage === true
-            && typeof sessionStorage !== 'undefined'
-            && sessionStorage !== null) {
-            sessionStorage.setItem("_im_localcontext" + document.URL, jsonString);
+        if (INTERMediator.useSessionStorage === true && 
+            typeof sessionStorage !== 'undefined' && 
+            sessionStorage !== null) {
+            try {
+                sessionStorage.setItem("_im_localcontext" + document.URL, jsonString);
+            } catch (ex) {
+                INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
+            }
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
         }
@@ -958,10 +962,14 @@ IMLibLocalContext = {
 
     unarchive: function () {
         var localContext = "";
-        if (INTERMediator.useSessionStorage === true
-            && typeof sessionStorage !== 'undefined'
-            && sessionStorage !== null) {
-            localContext = sessionStorage.getItem("_im_localcontext" + document.URL);
+        if (INTERMediator.useSessionStorage === true && 
+            typeof sessionStorage !== 'undefined' && 
+            sessionStorage !== null) {
+            try {
+                localContext = sessionStorage.getItem("_im_localcontext" + document.URL);
+            } catch (ex) {
+                localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
+            }
         } else {
             localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
         }
