@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * Pure-PHP implementation of Blowfish.
@@ -15,7 +14,7 @@
  * Here's a short example of how to use this library:
  * <code>
  * <?php
- *    include('Crypt/Blowfish.php');
+ *    include 'Crypt/Blowfish.php';
  *
  *    $blowfish = new Crypt_Blowfish();
  *
@@ -45,14 +44,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @category   Crypt
- * @package    Crypt_Blowfish
- * @author     Jim Wigginton <terrafrost@php.net>
- * @author     Hans-Juergen Petrich <petrich@tronic-media.com>
- * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @version    1.0
- * @link       http://phpseclib.sourceforge.net
+ * @category  Crypt
+ * @package   Crypt_Blowfish
+ * @author    Jim Wigginton <terrafrost@php.net>
+ * @author    Hans-Juergen Petrich <petrich@tronic-media.com>
+ * @copyright 2007 Jim Wigginton
+ * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @link      http://phpseclib.sourceforge.net
  */
 
 /**
@@ -61,7 +59,7 @@
  * Base cipher class
  */
 if (!class_exists('Crypt_Base')) {
-    require_once('Base.php');
+    include_once 'Base.php';
 }
 
 /**#@+
@@ -105,7 +103,7 @@ define('CRYPT_BLOWFISH_MODE_OFB', CRYPT_MODE_OFB);
 
 /**#@+
  * @access private
- * @see Crypt_Blowfish::Crypt_Blowfish()
+ * @see Crypt_Base::Crypt_Base()
  */
 /**
  * Toggles the internal implementation
@@ -120,13 +118,13 @@ define('CRYPT_BLOWFISH_MODE_MCRYPT', CRYPT_MODE_MCRYPT);
 /**
  * Pure-PHP implementation of Blowfish.
  *
+ * @package Crypt_Blowfish
  * @author  Jim Wigginton <terrafrost@php.net>
  * @author  Hans-Juergen Petrich <petrich@tronic-media.com>
- * @version 1.0
  * @access  public
- * @package Crypt_Blowfish
  */
-class Crypt_Blowfish extends Crypt_Base {
+class Crypt_Blowfish extends Crypt_Base
+{
     /**
      * Block Length of the cipher
      *
@@ -370,34 +368,6 @@ class Crypt_Blowfish extends Crypt_Base {
     var $kl;
 
     /**
-     * Default Constructor.
-     *
-     * Determines whether or not the mcrypt extension should be used.
-     *
-     * $mode could be:
-     *
-     * - CRYPT_BLOWFISH_MODE_ECB
-     *
-     * - CRYPT_BLOWFISH_MODE_CBC
-     *
-     * - CRYPT_BLOWFISH_MODE_CTR
-     *
-     * - CRYPT_BLOWFISH_MODE_CFB
-     *
-     * - CRYPT_BLOWFISH_MODE_OFB
-     *
-     * If not explictly set, CRYPT_BLOWFISH_MODE_CBC will be used.
-     *
-     * @see Crypt_Base::Crypt_Base()
-     * @param optional Integer $mode
-     * @access public
-     */
-    function Crypt_Blowfish($mode = CRYPT_BLOWFISH_MODE_CBC)
-    {
-        parent::Crypt_Base($mode);
-    }
-
-    /**
      * Sets the key.
      *
      * Keys can be of any length.  Blowfish, itself, requires the use of a key between 32 and max. 448-bits long.
@@ -418,8 +388,7 @@ class Crypt_Blowfish extends Crypt_Base {
 
         if (!$keylength) {
             $key = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
-        }
-        elseif ($keylength > 56) {
+        } elseif ($keylength > 56) {
             $key = substr($key, 0, 56);
         }
 
@@ -673,6 +642,3 @@ class Crypt_Blowfish extends Crypt_Base {
         $this->inline_crypt = $lambda_functions[$code_hash];
     }
 }
-
-// vim: ts=4:sw=4:et:
-// vim6: fdl=1:

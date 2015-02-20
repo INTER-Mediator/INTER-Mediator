@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * Pure-PHP implementation of RC4.
@@ -19,7 +18,7 @@
  * Here's a short example of how to use this library:
  * <code>
  * <?php
- *    include('Crypt/RC4.php');
+ *    include 'Crypt/RC4.php';
  *
  *    $rc4 = new Crypt_RC4();
  *
@@ -53,12 +52,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @category   Crypt
- * @package    Crypt_RC4
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @link       http://phpseclib.sourceforge.net
+ * @category  Crypt
+ * @package   Crypt_RC4
+ * @author    Jim Wigginton <terrafrost@php.net>
+ * @copyright 2007 Jim Wigginton
+ * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @link      http://phpseclib.sourceforge.net
  */
 
 /**
@@ -67,7 +66,7 @@
  * Base cipher class
  */
 if (!class_exists('Crypt_Base')) {
-    require_once('Base.php');
+    include_once 'Base.php';
 }
 
 /**#@+
@@ -95,20 +94,20 @@ define('CRYPT_RC4_DECRYPT', 1);
 /**
  * Pure-PHP implementation of RC4.
  *
- * @author  Jim Wigginton <terrafrost@php.net>
- * @version 0.1.0
- * @access  public
  * @package Crypt_RC4
+ * @author  Jim Wigginton <terrafrost@php.net>
+ * @access  public
  */
-class Crypt_RC4 extends Crypt_Base {
+class Crypt_RC4 extends Crypt_Base
+{
     /**
      * Block Length of the cipher
      *
-     * RC4 is a stream cipher 
+     * RC4 is a stream cipher
      * so we the block_size to 0
      *
      * @see Crypt_Base::block_size
-     * @var Integer 
+     * @var Integer
      * @access private
      */
     var $block_size = 0;
@@ -131,7 +130,6 @@ class Crypt_RC4 extends Crypt_Base {
      * @access private
      */
     var $const_namespace = 'RC4';
-
 
     /**
      * The mcrypt specific name of the cipher
@@ -242,7 +240,7 @@ class Crypt_RC4 extends Crypt_Base {
      * Decrypts a message.
      *
      * $this->decrypt($this->encrypt($plaintext)) == $this->encrypt($this->encrypt($plaintext)).
-     * Atleast if the continuous buffer is disabled.
+     * At least if the continuous buffer is disabled.
      *
      * @see Crypt_Base::encrypt()
      * @see Crypt_RC4::_crypt()
@@ -269,10 +267,7 @@ class Crypt_RC4 extends Crypt_Base {
     {
         $key = $this->key;
         $keyLength = strlen($key);
-        $keyStream = array();
-        for ($i = 0; $i < 256; $i++) {
-            $keyStream[$i] = $i;
-        }
+        $keyStream = range(0, 255);
         $j = 0;
         for ($i = 0; $i < 256; $i++) {
             $j = ($j + $keyStream[$i] + ord($key[$i % $keyLength])) & 255;
@@ -326,12 +321,9 @@ class Crypt_RC4 extends Crypt_Base {
 
             $keyStream[$i] = $ksj;
             $keyStream[$j] = $ksi;
-            $text[$k] = chr(ord($text[$k]) ^ $keyStream[($ksj + $ksi) & 255]);
+            $text[$k] = $text[$k] ^ chr($keyStream[($ksj + $ksi) & 255]);
         }
 
         return $text;
     }
 }
-
-// vim: ts=4:sw=4:et:
-// vim6: fdl=1:

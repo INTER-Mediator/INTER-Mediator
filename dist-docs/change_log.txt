@@ -8,6 +8,9 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check: https://github.com/INTER-Mediator/INTER-Mediator.
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/migration.html.
 
+Ver.5.1 (in development)
+- Update phpseclib to version 0.3.10.
+
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
 - The realtime multi-client updating with the Pusher (WebSocket).

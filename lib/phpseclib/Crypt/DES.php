@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * Pure-PHP implementation of DES.
@@ -17,7 +16,7 @@
  * Here's a short example of how to use this library:
  * <code>
  * <?php
- *    include('Crypt/DES.php');
+ *    include 'Crypt/DES.php';
  *
  *    $des = new Crypt_DES();
  *
@@ -51,12 +50,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @category   Crypt
- * @package    Crypt_DES
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @link       http://phpseclib.sourceforge.net
+ * @category  Crypt
+ * @package   Crypt_DES
+ * @author    Jim Wigginton <terrafrost@php.net>
+ * @copyright 2007 Jim Wigginton
+ * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @link      http://phpseclib.sourceforge.net
  */
 
 /**
@@ -65,7 +64,7 @@
  * Base cipher class
  */
 if (!class_exists('Crypt_Base')) {
-    require_once('Base.php');
+    include_once 'Base.php';
 }
 
 /**#@+
@@ -124,7 +123,7 @@ define('CRYPT_DES_MODE_OFB', CRYPT_MODE_OFB);
 
 /**#@+
  * @access private
- * @see Crypt_DES::Crypt_DES()
+ * @see Crypt_Base::Crypt_Base()
  */
 /**
  * Toggles the internal implementation
@@ -139,12 +138,12 @@ define('CRYPT_DES_MODE_MCRYPT', CRYPT_MODE_MCRYPT);
 /**
  * Pure-PHP implementation of DES.
  *
- * @author  Jim Wigginton <terrafrost@php.net>
- * @version 0.1.0
- * @access  public
  * @package Crypt_DES
+ * @author  Jim Wigginton <terrafrost@php.net>
+ * @access  public
  */
-class Crypt_DES extends Crypt_Base {
+class Crypt_DES extends Crypt_Base
+{
     /**
      * Block Length of the cipher
      *
@@ -661,34 +660,6 @@ class Crypt_DES extends Crypt_Base {
         0x08020820, 0x00020800, 0x00020800, 0x00000820,
         0x00000820, 0x00020020, 0x08000000, 0x08020800
     );
-
-    /**
-     * Default Constructor.
-     *
-     * Determines whether or not the mcrypt extension should be used.
-     *
-     * $mode could be:
-     *
-     * - CRYPT_DES_MODE_ECB
-     *
-     * - CRYPT_DES_MODE_CBC
-     *
-     * - CRYPT_DES_MODE_CTR
-     *
-     * - CRYPT_DES_MODE_CFB
-     *
-     * - CRYPT_DES_MODE_OFB
-     *
-     * If not explictly set, CRYPT_DES_MODE_CBC will be used.
-     *
-     * @see Crypt_Base::Crypt_Base()
-     * @param optional Integer $mode
-     * @access public
-     */
-    function Crypt_DES($mode = CRYPT_DES_MODE_CBC)
-    {
-        parent::Crypt_Base($mode);
-    }
 
     /**
      * Sets the key.
@@ -1336,12 +1307,14 @@ class Crypt_DES extends Crypt_Base {
                       $pc2mapd3[($d >>  8) & 0xFF] | $pc2mapd4[ $d        & 0xFF];
 
                 // Reorder: odd bytes/even bytes. Push the result in key schedule.
-                $keys[$des_round][CRYPT_DES_ENCRYPT][       ] =
-                $keys[$des_round][CRYPT_DES_DECRYPT][$ki - 1] = ( $cp        & 0xFF000000) | (($cp <<  8) & 0x00FF0000) |
-                                                                (($dp >> 16) & 0x0000FF00) | (($dp >>  8) & 0x000000FF);
-                $keys[$des_round][CRYPT_DES_ENCRYPT][       ] =
-                $keys[$des_round][CRYPT_DES_DECRYPT][$ki    ] = (($cp <<  8) & 0xFF000000) | (($cp << 16) & 0x00FF0000) |
-                                                                (($dp >>  8) & 0x0000FF00) | ( $dp        & 0x000000FF);
+                $val1 = ( $cp        & 0xFF000000) | (($cp <<  8) & 0x00FF0000) |
+                        (($dp >> 16) & 0x0000FF00) | (($dp >>  8) & 0x000000FF);
+                $val2 = (($cp <<  8) & 0xFF000000) | (($cp << 16) & 0x00FF0000) |
+                        (($dp >>  8) & 0x0000FF00) | ( $dp        & 0x000000FF);
+                $keys[$des_round][CRYPT_DES_ENCRYPT][       ] = $val1;
+                $keys[$des_round][CRYPT_DES_DECRYPT][$ki - 1] = $val1;
+                $keys[$des_round][CRYPT_DES_ENCRYPT][       ] = $val2;
+                $keys[$des_round][CRYPT_DES_DECRYPT][$ki    ] = $val2;
             }
         }
 
@@ -1531,6 +1504,3 @@ class Crypt_DES extends Crypt_Base {
         $this->inline_crypt = $lambda_functions[$code_hash];
     }
 }
-
-// vim: ts=4:sw=4:et:
-// vim6: fdl=1:
