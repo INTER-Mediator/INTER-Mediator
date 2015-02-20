@@ -8,7 +8,7 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check: https://github.com/INTER-Mediator/INTER-Mediator.
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/migration.html.
 
-Ver.5.0 (2015/2/20) =============================================
+Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
 - The realtime multi-client updating with the Pusher (WebSocket).
 - The Local Context and Context for DB Entities as the context model.
@@ -25,7 +25,7 @@ Ver.5.0 (2015/2/20) =============================================
   FileMaker Server 11 or later if using FileMaker Server.
 =================================================================
 
-Ver.5.0 (2015/2/20)
+Ver.5.0 (February 20, 2015)
 - The official INTER-Mediator website is http://inter-mediator.com/ with a new design.
 - Change the URL of the page footer to inter-mediator.com.
 - The virtual machine for trial can be made with using script.
@@ -38,10 +38,10 @@ Ver.5.0 (2015/2/20)
 - Use the identical (===) operator instead of "==" partly in DB_FileMaker_FX.php and DB_PDO.php to reduce 
   bug risk.
 - [INFO] Internet Explorer Ver.8 is dropped out from the supporting browsers.
-- [BUG FIX] Fix compatibility with the private browse mode of Safari when handling the Local Context.
+- [BUG FIX] Fix compatibility with the private browsing mode of Safari when handling the Local Context.
 - [BUG FIX] Fix Vagrantfile, deploy.sh and recipe.rb etc. for the INTER-Mediator-Server virtual machine.
 
-Ver.4.7 (2015/1/25)
+Ver.4.7 (January 25, 2015)
 - The "Soft-Delete" or "Logical-Delete" is implemented. The 'soft-delete' key can be set up on a context
   of definition file. The sample is the "logical-delete" of the "Debugging" group.
 - The Page File Editor appears in the INTER-Mediator-Support directory.
@@ -69,7 +69,7 @@ Ver.4.7 (2015/1/25)
   The affected version is 4.6 only (Thanks to Kentaro Suzuki).
 - [BUG FIX] Fix processing FileMaker's portal=>true context (Thanks to Kentaro Suzuki).
 
-Ver.4.6 (2014/11/21)
+Ver.4.6 (November 21, 2014)
 - Query conditions, sort fields, record number and updating context can be described in data-im attributes.
   This feature realizes non-programming search page.
 - In case of 'navi-control' is 'master-hide', the pagination control is going to hide when the detail area appears.
@@ -110,7 +110,7 @@ Ver.4.6 (2014/11/21)
 - [BUG FIX] Fix sorting issues when using FileMaker Server 11 or before.
 - [BUG FIX] and the other bugs!
 
-Ver.4.5 (2014/9/15)
+Ver.4.5 (September 15, 2014)
 - Sync with multiple clients in update/insert/delete with Pusher. (except for FileMaker's portal=>true context)
 - The 'navi-control' key can be specified in a context. The value for it are 'master', 'detail' and 'master-hide'. See the Practice/navi.html.
 - Update FX.php (July 29, 2014) for DB_FileMaker_FX class.
@@ -122,7 +122,7 @@ Ver.4.5 (2014/9/15)
 - [BUG FIX] DataConverter_FMDateTime class's dateArrayFromFMDate method can convert the Japanese Nengo style date
   expression, but the start date of Showa wasn't right date, it was backward to one year.
 
-Ver.4.4 (2014/5/22)
+Ver.4.4 (May 22, 2014)
 - Multiple elements bound to the same field of the same table can synchronize in a page.
 - Update samples to improve compatibility with CSP (Content Security Policy).
   (except Asset Management, Account Manager and JS Components Sample)
@@ -162,7 +162,7 @@ Ver.4.4 (2014/5/22)
 - [BUG FIX] The calculated property's 'field' detection was wrong.
 - [WARNING] The JavaScript code editor "codemirror" isn't temporally supported for the updated version doesn't work fine.
 
-Ver.4.3 (2014/4/7)
+Ver.4.3 (April 7, 2014)
 - The Local Context is supported. You can bind the context named "_" at any place in a page file.
   The method IMLibLocalContext.getValue/setValue can be used for getting/setting the value.
 - Validation doesn't call the eval function, but it changes to evaluate the expression to validate.
@@ -180,7 +180,7 @@ Ver.4.3 (2014/4/7)
 - [BUG FIX] JSON supported communication branch wasn't merged.
 - [BUG FIX] Debug messages weren't shown in the browser's window.
 
-Ver.4.2 (2014/3/13)
+Ver.4.2 (March 13, 2014)
 - Calculation Field started to work. See the 'Sample_invoice'.
 - Send emails after the load/edit/new database operations.
 - Installation procedure is changed. We recommend to clone the repository and use the 'buildup.sh' script.
@@ -198,7 +198,7 @@ Ver.4.2 (2014/3/13)
 - [BUG FIX] DIV or SPAN tags data-im-control didn't recognized correctly.
 - [BUG FIX] Enable handling the data including U+2028/U+2029.
 
-Ver.4.1 (2014/2/7)
+Ver.4.1 (February 7, 2014)
 - HTML5's user defined attributes are supported. Refer the alternative former style. CLASS-IM[] style is still supported.
         class="IM[...]" -> data-im="...",
         class="_im_repeater" -> data-im-control="repeater"
@@ -227,13 +227,13 @@ Ver.4.1 (2014/2/7)
 - [BUG FIX] Eliminated "Object.keys()" for IE8.
 - [BUG FIX] Fix compatibility with 'STRICT_TRANS_TABLES' sql-mode setting of MySQL configuration. (Issue #43)
 
-Ver.4.0 (2013/12/4)
+Ver.4.0 (December 4, 2013)
 - File hierarchy changed for easily involving the pulled sources into developing web apps
 - Modify FX.php to fix compatibility with FileMaker Server 13.
 - Also updates below from Ver.3.0
 
 
-Ver.4 (2013/12/4)=========================================================
+Ver.4 (December 4, 2013)===================================================
 
 [Major differences from Ver.3]
 - [INFO] INTER-Mediator requires FileMaker Server 10 or later, OS X v10.6 or later if using FileMaker Server.
@@ -267,7 +267,7 @@ Internet Explorer 6 or under are NOT supported!
 FireFox/Safari/Chrome/Opera will work fine as for HTML5 supported version.
 It's hard to check all versions above browsers as you know. I hope you understand.
 
-Ver.3.11 (2013/11/30)
+Ver.3.11 (November 30, 2013)
 - The code editor "codemirror" is supported. See Sample_webpage folder.
 - INTERMediator.pagedSize can be changeable when specifying 'records' key and 'maxrecords' key in a definition file
   (for example: array('records' => 10, 'maxrecords' => 10) ).
@@ -285,7 +285,7 @@ Ver.3.11 (2013/11/30)
 - [BUG FIX] Fix converterFromUserToDB method of DataConverter_Currency class to consider the currency mark and digit group separator (',').
 - [BUG FIX] Handle 'for' attribute of the 'label' element to enable editing a correct record using checkbox when displaying multiple records.
   
-Ver.3.10 (2013/11/2)
+Ver.3.10 (November 2, 2013)
 - Support FileMaker's portal objects (by specifying 'relation' => array('portal' => true) ).
 - New sample (Master-Detail Style Page for FileMaker's portal access version) is added.
 - Modify FX.php for FileMaker Server to enable the "fmalt" and retrieve the record id on portal objects.
@@ -305,7 +305,7 @@ Ver.3.10 (2013/11/2)
 - [BUG FIX] The sample Client-Side Calculation Page had inappropriate JavaScript codes.
 - Thanks to Mr. Tsutomu Yuasa for reporting bugs on a lot of circumstances.
 
-Ver.3.9 (2013/9/28)
+Ver.3.9 (September 28, 2013)
 - The definition file editor works reading/writing. You can call it at the start of logs on debug mode.
 - Customize the login panel by CSS definitions.
 - The title of the login panel can be set to property as like "INTERMediatorOnPage.authPanelTitle = "title";".
@@ -320,7 +320,7 @@ Ver.3.9 (2013/9/28)
 - [BUG FIX] File uploader didn't respond on the message and progress.
 - [BUG FIX] The field for radio buttons reports "Anyone changed this field" message.
 
-Ver.3.8 (2013/8/22)
+Ver.3.8 (August 22, 2013)
 - The official INTER-Mediator site is http://inter-mediator.org/.
 - $scriptPathPrefix and $scriptPathSufix in params.php are obsoleted. Use $callURL to specify the url directly.
 - Instance variables in PHP classes are defined with private/protected/public instead of var.
@@ -347,7 +347,7 @@ Ver.3.8 (2013/8/22)
 - [BUG FIX] Fix missing selected attribute of option tag to modify compatibility with Firefox.
 - [BUG FIX] Fix the case the navigation displays uncorrect records information on last page.
 
-Ver.3.7 (2013/7/28)
+Ver.3.7 (July 28, 2013)
 - Check required PHP extensions (mbstring and OpenSSL), especially on Windows.
 - MediaAccess class can work for a non-authentication settings.
 - FileMaker's container fields supported.
@@ -367,7 +367,7 @@ Ver.3.7 (2013/7/28)
 - [BUG FIX] After inserting the detail line, then select contextual popup, the "insert" button shows double/triple ...
   on the form sample.
 
-Ver.3.6 (2013/7/5)
+Ver.3.6 (July 5, 2013)
 - Support the FileMaker's checkbox set feature. (Thanks to Atushi Matsuo)
 - Get started CI ! with TravisCI.
 - Debug messages are written to the browser's JS console too.
@@ -375,7 +375,7 @@ Ver.3.6 (2013/7/5)
   'INTERMediator.supressErrorMessageOnPage = true;' can suppress the error message on a page.
   If you wanna check messages just on the console of the browser, this is sutabile. Both of defaults are false.
 
-Ver.3.5 (2013/6/25)
+Ver.3.5 (June 25, 2013)
 - File Upload component supports its progress bar.
 - Prevent to show the password in an URL for the FileMaker_FX data class.
 - On the authentication, an email can be used as a user name with the second parameter of IM_Entry function.
@@ -384,7 +384,7 @@ Ver.3.5 (2013/6/25)
 - DB_PDO_Test class was rewritten for the current architecture.
 - [BUG FIX] INTERMediatorOnPage.getNodeIdsFromIMDefinition method didn't work correctly.
 
-Ver.3.4 (2013/6/9)
+Ver.3.4 (June 9, 2013)
 - Login Panel customizing. You could use the isShowChangePassword, defaultBackgroundImage,
   defaultBackgroundColor and loginPanelHTML properties of the INTERMediatorOnPage.
 - INTERMediatorOnPage.doAfterConstruct = function(){}; will call after constructing the page.
@@ -397,16 +397,16 @@ Ver.3.4 (2013/6/9)
 - [BUG FIX] FileMaker's media authentication method wasn't wrote anymore.
 - [BUG FIX] File uploader supports Firefox.
 
-Ver.3.3 (2013/4/6)
+Ver.3.3 (April 6, 2013)
 - FileMaker's checkbox set feature on the post only page.
 - File upload component and accept on a server.
 - Compatibility for IE is improved.
 - [BUG FIX] Update INTER-Mediator.js to fix compatibility with Firefox when the value of popup menu (select tag) is empty.
 
-Ver.3.2 (2013/3/7)
+Ver.3.2 (March 7, 2013)
 - Post only page could be made without any programmings!　Refer the "Sample_easyToUnderstand" folder.
 
-Ver.3.1 (2013/2/10)
+Ver.3.1 (February 10, 2013)
 - Bridge for JavaScript Components is added. So far tinyMCE can be the link node of the page file.
   If you want to use any kind of JS Components, you should make the wrap object as in INTER-Mediator-Parts.js.
   The sample of the page file is in the Sample_webpage folder.
@@ -414,7 +414,7 @@ Ver.3.1 (2013/2/10)
 - [BUG FIX] All messages weren't localised, ex. button names.
 - [BUG FIX] On the Ver.2.6, I've made bugs and some fields didn't work to update. I'm so sorry.
 
-Ver.3 (2012/12/10)=========================================================
+Ver.3 (December 10, 2012)=================================================
 
 [Major differences from Ver.2]
 - Validation is supported.
@@ -427,14 +427,14 @@ Ver.3 (2012/12/10)=========================================================
 - Progress indicator is supported.
 ==========================================================================
 
-Ver.3.0 (2012/12/10)
+Ver.3.0 (December 10, 2012)
 - Read cache is supported but not well debugged. Moreover don't use cache for updating contexts.
   This feature will complete on the way to Ver.4.0.
 - [BUG FIX] Authentication for media didn't work for the 'realm' was specified.
 - [BUG FIX] Sample_products/list_detail_FMS.html corrected.
 - [BUG FIX] Sample_products/list_detail_MySQL.html corrected.
 
-Ver.2.11 (2012/12/3)
+Ver.2.11 (December 3, 2012)
 - [BUG FIX] DataConverter_FMDateTime's time issue.
 - [BUG FIX] Fixed the issue not to connect the FileMaker Server.
 - [BUG FIX] Using DataConverter class from external programs.
@@ -449,13 +449,13 @@ Ver.2.11 (2012/12/3)
 - The cookie name of the credential is combined with the "realm" string.
 - [BUG FIX] The functions for cookies were inappropriate.
 
-Ver.2.10 (2012/10/10)
+Ver.2.10 (October 10, 2012)
 - The keys of protect-writing and protect-reading in a definition file are supported.
 - Definition file keywords are checked and show the error message on debug mode if something not valid.
 - [Bug fix] for the FileMaker database class and so on. (Thanks to Atsushi Matsuo)
 - [Bug fix] for the "Sample_products" (Thanks to Miyuki Imaizumi)
 
-Ver.2.9 (2012/7/29)
+Ver.2.9 (July 29, 2012)
 - Progress indicator is supported. (It's shown when INTERMediator.construct method is called.)
 - When fields of existing records are updated, the query condition will be just for the primary key.
   If the variable $prohibitIgnoreCondition in the params.php file is set to true, all conditions are applied.
@@ -463,7 +463,7 @@ Ver.2.9 (2012/7/29)
 - [BUG FIX] In case of the browser's language is English, no page was generated. Oh my...
 - [BUG FIX] Database updating has any minor bugs.
 
-Ver.2.8 (2012/7/11)
+Ver.2.8 (July 11, 2012)
 - Accessing media data with authentication is supported. The sample is in Sample_products_auth folder.
 - The location of the "demo-script" folder was moved in the "develop-im" folder.
 - The variables $scriptPathPrefix and $scriptPathSufix in the params.php file can modify the script path.
@@ -471,13 +471,13 @@ Ver.2.8 (2012/7/11)
   You can add strings both before and after current path.
 - Some Ver.5.3 only functions are replaced. INTER-Mediator supports PHP 5.2 surely.
 
-Ver.2.7 (2012/6/20)
+Ver.2.7 (June 20, 2012)
 - SQLite and PostgreSQL sample schema are included. The "Form" sample is supporting SQLite and PostgreSQL.
 - The 'sequence' setting in a context for specifying PostgreSQL's sequence object.
 - Users and Groups Management sample. You can manage accounts on the web page. See Auth_Support folder.
 - [BUG FIX] If any link nodes were existing with the SELECT tag element, they weren't detected.
 
-Ver.2.6 (2012/6/11)
+Ver.2.6 (June 11, 2012)
 - In a link definition, the target "script" insert the text node has the type "text/javascript".
   Ex. <span class="IM[table@field@script]">
       ->  <span><script type="text/javascript">[Script of the field "field]</script></span>
@@ -485,16 +485,16 @@ Ver.2.6 (2012/6/11)
 - [BUG FIX] A repeater having just one popup menu can work.
 - [BUG FIX] Insert/Delete buttons works better.
 
-Ver.2.5 (2012/6/4)
+Ver.2.5 (June 4, 2012)
 - In a link definition, "$" shows replace with the data from database.
   Ex. <span class="IM[table@field@$onclick]" onclick="doClick($)">,
       The onclick's value is going to be "doClick(value of the field)" after the page generation.
 - Some samples modified for INTER-Mediator Advanced Client Programming course.
 
-Ver.2.4 (2012/5/30)
+Ver.2.4 (May 30, 2012)
 - Define the post repeater/enclosure method for each context. The key is 'post-repeater' and 'post-enclosure'.
 
-Ver.2.3 (2012/5/25)
+Ver.2.3 (May 25, 2012)
 - The new server-side extension. You can specify the class name has the program you want do after/before db processing.
   You could specify the 'extending-class' for your contexts.
   [[ This is my final work of the Education Program for Top Software Engineers (TopSE Project)
@@ -504,16 +504,16 @@ Ver.2.3 (2012/5/25)
 - New sample "Sample_Extendable" is added.
 - Bug Fix: The issue for "relation" settings is resolved.
 
-Ver.2.2 (2012/5/5)
+Ver.2.2 (May 5, 2012)
 - The variable name "INTERMediaotr_DBAdapter" was typo. It was changed to "INTERMediator_DBAdapter."
 - Bug Fix: The enclosure/repeater nodes by SELECT/OPTION in a non-enclosure/repeater node didn't generate nodes with database.
 - WARNING: You could see the "Change Password" button but it doesn't work. It just add as an user-interface.
 
-Ver.2.1 (2012/4/29)
+Ver.2.1 (April 29, 2012)
 - Validation is supported.
 - The parameters for 3rd parameter of IM_Entry function can be specified in any context (1st parameter of IM_Entry).
 
-Ver.2 (2012/4/28)=========================================================
+Ver.2 (April 28, 2012)====================================================
 - The version numbering policy is changed.
 - The default-values key in a context is used automatically.
 - Chat page is added as a sample. It is used to debug the authorization.
@@ -527,7 +527,7 @@ Ver.2 (2012/4/28)=========================================================
 - Ignoring enclosure/repeater for table or list. It could do by adding the class "_im_ignore_enc_rep".
 ==========================================================================
 
-Ver.1.0.10 (2012/4/6)
+Ver.1.0.10 (April 6, 2012)
 - Supported to authenticate with the account of the database engine.
   But it has some serious issue, the row string of the password should be stored in a cookie.
   This must be modify.
@@ -535,25 +535,25 @@ Ver.1.0.10 (2012/4/6)
 - Sample Database for FileMaker 12 is added.
 - [Bug on 10.0.9 or before] Radio buttons can't show and update data, fixed it.
 
-Ver.1.0.9 (2012/3/23)
+Ver.1.0.9 (March 23, 2012)
 - [BUG on 1.0.7] Fixed the authorization setting was wrongly recognized.
 - [BUG on 1.0.7] Fixed a cosmetic issue for the customized navigation.
 - Replaced encodeURI function with encodeURIComponent function for POST method.
 - WebSite Sample can edit the contents.
 
-Ver.1.0.8 (2012/3/21)
+Ver.1.0.8 (March 21, 2012)
 - [INFO] Authentication part requires PHP 5.3.0 or above.
 - FileMaker Server: Authentication/Authorization Support (Maybe!? version).
 - Supports FileMaker Server 12.
 - [BUG on 1.0.7] Fixed PDO database class didn't involve the 'query' parameters in a context.
 - [BUG on 1.0.7] Fixed error of the sample_schema.txt. (Thanks for Mr.Murakami.)
 
-Ver.1.0.7 (2012/3/6)
+Ver.1.0.7 (March 6, 2012)
 - The communication between client and server is based on POST method.
 - BUG FIX: Ver.1.0.6 couldn't access FileMaker Server DB.
 - BUG FIX: Navigation doesn't show when it isn't customizing.
 
-Ver.1.0.6 (2012/3/3)
+Ver.1.0.6 (March 3, 2012)
 - Authentication/Authorization is available for PDO database so far. FileMaker Server will be supported soon.
 - Authorization was implemented but it's not well debugged.
 - Authentication screen was redesigned with transparent backgrounds.
@@ -571,25 +571,25 @@ Ver.1.0.6 (2012/3/3)
 - Now debug mode has multi states.
 - [BUG] Radio buttons shows the message of another was updated in case of changing value twice. This was fixed.
 
-Ver.1.0.5 (2012/2/5)
+Ver.1.0.5 (February 5, 2012)
 - Authentication support first appearance!
   * Before checking this, you should re-import MySQL's schema file 'sample_shchema.txt'.
   * Open develop-im/index.html and click to the relevant link of 'Sample Portal Page'.
   * Try username 'user1' and password 'user1', and try other arbitarily terms.
 - Divide JavaScript source INTER-Mediator.js into INTER-Mediator-Lib.js, INTER-Mediator-Page.js and itself.
 
-Ver.1.0.4 (2012/1/28)
+Ver.1.0.4 (January 28, 2012)
 - So many renaming for refactoring.
 - INTERMediatorCheckBrowse() function was moved to INTERMediatorOnPage.INTERMediatorCheckBrowser().
 - Bug fix for INTERMediatorLib.numberFormat().
 
-Ver.1.0.3 (2012/1/25)
+Ver.1.0.3 (January 25, 2012)
 - DB_FileMaker_FX.php's warning is fixed.
 - INTERMEdiatorLib.numberFormat(str,digit) support the "digit" parameter to specify how many digits after period.
 - The message in case of someone modify the field after loading is updated clearer.
 - Confirming before insert/delete records. 'repeat-control' => 'confirm-delete comfirm-insert' are supported.
 
-Ver.1.0.2 (2011/12/4)
+Ver.1.0.2 (December 4, 2011)
 - PDO data access class can specify OR condition from JS program.
 - Bug fix for conditions.
 - 'transaction' =>'none' is supported. If it's specified, "Save" button will be appear in the navigation.
@@ -599,7 +599,7 @@ Ver.1.0.2 (2011/12/4)
   The repeater node having the "_im_for_noresult" class is used for that.
 - Ignoring enclosure/repeater for table or list. It could do by adding the class "_im_ignore_enc_rep".
 
-Ver.1.0.1 (2011/11/19)
+Ver.1.0.1 (November 19, 2011)
 - Fix the issue to erase "Return" in text on FileMaker Server.
 - Sample pages css is changed and they looks better.
 - Support INTERMediator.additionalSortKey property to add sort keys with JS program.
@@ -607,19 +607,19 @@ Ver.1.0.1 (2011/11/19)
 - Change the URL of the page footer to inter-mediator.info.
 
 Ver.1.0 ====================================================================
-Ver.0.7.7 -> 1.0.0 (2011/10/19)
+Ver.0.7.7 -> 1.0.0 (October 19, 2011)
 - Some issues in sample_schema.txt are corrected.
 - JavaScript source in the distribution are compressed with YUI Compressor(Yahoo).
   If you want to check the source with more readability, check them in GitHub repository.
 - The file name of the distribution has version number with replacing dot to underline.
 - Web Site sample is updated. All news and updates are shown in the separated page.
 
-Ver.0.7.6 (2011/9/18)
+Ver.0.7.6 (September 18, 2011)
 - Set the browser-compatibility info in the second parameter of IM_Entry function.
 - SPAN tag element can use for enclosures and repeaters.
 - The "WebSite" sample is update and it can show the update date of each page.
 
-Ver.0.7.5 (2011/9/18)
+Ver.0.7.5 (September 18, 2011)
 - Modified FX.php is bundled (Thanks to Chris Hansen)
 - Samples for FileMaker Server are modified.
 - key and Foreign-key can have multiple fields with operators.
@@ -627,13 +627,13 @@ Ver.0.7.5 (2011/9/18)
   'relation'=>array(array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')),
 - Typo...
 
-Ver.0.7.4 (2011/9/5)
+Ver.0.7.4 (September 5, 2011)
 - Re-engineering the API used on application (Adapter_DBServer.jp's functions).
 - IE and TEXTAREA issue is solved (I hope so). But innerText mode is not good for IE.
   It's suitable to use textNode mode.
 - Browser check and showing suitable message when it's not compatible.
 
-Ver.0.7.3 (2011/9/1)
+Ver.0.7.3 (September 1, 2011)
 - All interface from HTML page exists in the INTERMediatorOnPage object.
 - INTERMediator.additionalConditions can have an array value for multiple criteria on on table.
 - The fourth parameter of IM_Entry function is passed to INTER-Mediator JavaScript layer,
@@ -645,7 +645,7 @@ Ver.0.7.3 (2011/9/1)
   The table and view keys are omitted, the name key's value will be used for db accessing.
 - Multi-Language Messages.
 
-Ver.0.7.2 (2011/7/14)
+Ver.0.7.2 (July 14, 2011)
 - Supported to calculate with generated fields in a page file (refer to sample named 'invoice').
 - Supported to specify values on record created.
 - Divided the JS source main program and database adapter
@@ -659,21 +659,21 @@ Ver.0.7.2 (2011/7/14)
 
 Ver.0.7.1 is missing. When I released ver.0.7.2, I just jumped this version. Sorry....
 
-Ver.0.7.0 (2011/6/5)
+Ver.0.7.0 (June 5, 2011)
 - Update the component with related field without reloading the page.
 - Insert and Delete buttons are supported.
 
-Ver.0.6.5 (2011/5/31)
+Ver.0.6.5 (May 31, 2011)
 - Fixed the issue with Internet Explorer 7/8. Version detection was wrong.
   Although I've fixed, IE7 can't handle the checkbox/radio button correctly.
 
-Ver.0.6.4 (2011/5/30)
+Ver.0.6.4 (May 30, 2011)
 - Bug fix for expandable for the linked node within the linked node.
 - Bug fix for editing after second records.
 - Bug fix for textNode style insertion.
 - IM[table@field@style.STYLENAME] supported.
 
-Ver.0.6.3 (2011/5/29)
+Ver.0.6.3 (May 29, 2011)
 - Bug fix for class names for div elements
 - Web Site Sample, it's using for REAL INTER-Mediator site!
 - TABLE@FIELD@TARGET is general format of the insertion specification.
@@ -682,13 +682,13 @@ Ver.0.6.3 (2011/5/29)
 - INTERMediator.defalutTargetInnerHTML property is introduced. When you don't specify TARGET,
   uses innerHTML if the property is false, otherwise creates a text node.
 
-Ver.0.6.2 (2011/4/4)
+Ver.0.6.2 (April 4, 2011)
 - Remove old (Ver.0.5) sources.
 - Listing and Navigation is working. See the sample "sample_search_MySQL.html".
 - Temporary criteria is supported.
 - Credit is added at the end of the page.
 
-Ver.0.6.1 (2011/1/30)
+Ver.0.6.1 (January 30, 2011)
 - Support update db from web browser with optimistic locking.
 When you update the data of any field, IM automatically update it.
 If the value of the field is modified by anyone, the alert will be shown.
@@ -698,7 +698,7 @@ develop-im/sample_form_MySQL.html
 develop-im/sample_form_MySQL_include.php
 - PDO Support (MySQL DB class isn't maintained.)
 
-Ver.0.6 (2010/7/6)
+Ver.0.6 (July 6, 2010)
 - This is not a practical version, this is EXPERIMENTAL version. Ver.0.6.x will be made for showing the progression.
 - You can check the following files:
 
@@ -707,7 +707,7 @@ develop-im/sample_form_FMS.html
 develop-im/sample_form_FMS_include.php
 INTER-Mediator/*
 
-Ver.0.5 (2010/2/4)  
+Ver.0.5 (February 4, 2010)  
 - Release with version number. I think current one is more than 0.1 but less than 1.0. So the number is going to start from 0.5.
 - Open the GitHub repository.
 - Add the license notice to all sources.
@@ -728,7 +728,7 @@ Ver.0.5 (2010/2/4)
 - Setting any values to global fields in FileMaker Server. [NOT fully debugged!]
 - Navigation bar recognizes at the top and end of pages.
 
-2010/1/16
+January 16, 2010
 - MySQL Support.
 - XSS Security problem was fixed (Thanks to Mr.Atsushi Matsuo).
 - Bug fix of Data Converter Class processing.
@@ -739,13 +739,13 @@ Ver.0.5 (2010/2/4)
 - Rearranged sample files. To access samples just open the file 'index.html'.
 - IE8 will work fine, I strongly hope so. I started to check IE8 too.
 
-2010/1/12
+January 12, 2010
 - When you clicked "Save", you saw the dialog box showing the posing data. This is just a signature of my debugging and it's not a feature. This is maintenance release to avoid the futile dialog box.
 - Just started to support MySQL, however it is just working with 'select' sql statement. Please wait for full supporting.
 - Sample file name is changed to "sample_form_FMS.php". Of course, FMS means FileMaker Server.
 - The new sample file "sample_form_MySQL.php" is for MySQL database.
 
-2010/1/11
+January 11, 2010
 - Changed the specification of the InitializePage function's parameter.
 - Support out-of master/detail relations table, that is it can show independent tables on the page.
 - DataConverter_FMDateTime.php will work for the acceptable language from the web request.
@@ -755,7 +755,7 @@ Ver.0.5 (2010/2/4)
 - Check with web authentication. Basic and Digest is working on INTER-Mediator. Checked by Mac OS X Server Leopard. Of course, it works fine!
 - Japanese documents are getting better, English documents is still limited.
 
-2010/1/9
+January 9, 2010
 - Changed the parameter to specify the database, table, field and so on.
 - Supported the paging navigation on a web browser to show the part of a lot of data.
 - Prepared the listing page sample, it shows Japanese postal code list with the paging navigation.
@@ -764,10 +764,10 @@ Ver.0.5 (2010/2/4)
 - Reorganized some filenames and their contents for making their function clearly.
 - Web site was started to write on.
 
-2010/1/5
+January 5, 2010
 - Checked multiple browsers, IE7, Firefox3, Safari4
 
-2010/1/3
+January 3, 2010
 - The name was changed to 'INTER-Mediator'.
 - Can store any data on a web browser to database.
 - Can insert and delete any lines in a table.
@@ -776,7 +776,7 @@ Ver.0.5 (2010/2/4)
 - Can specify criteria and sort orders.
 - Appears the credit at the bottom of the generated page.
 
-2009/12/30 First limited release
+December 30, 2009 First limited release
 - Show the data from database to a web browser.
 - Just available for a single Form with some repeated table.
 - Initially this framework was called 'EasyPage'.
