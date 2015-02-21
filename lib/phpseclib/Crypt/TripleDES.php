@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * Pure-PHP implementation of Triple DES.
@@ -11,7 +10,7 @@
  * Here's a short example of how to use this library:
  * <code>
  * <?php
- *    include('Crypt/TripleDES.php');
+ *    include 'Crypt/TripleDES.php';
  *
  *    $des = new Crypt_TripleDES();
  *
@@ -45,19 +44,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @category   Crypt
- * @package    Crypt_TripleDES
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @link       http://phpseclib.sourceforge.net
+ * @category  Crypt
+ * @package   Crypt_TripleDES
+ * @author    Jim Wigginton <terrafrost@php.net>
+ * @copyright 2007 Jim Wigginton
+ * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @link      http://phpseclib.sourceforge.net
  */
 
 /**
  * Include Crypt_DES
  */
 if (!class_exists('Crypt_DES')) {
-    require_once('DES.php');
+    include_once 'DES.php';
 }
 
 /**
@@ -77,12 +76,12 @@ define('CRYPT_DES_MODE_CBC3', CRYPT_DES_MODE_CBC);
 /**
  * Pure-PHP implementation of Triple DES.
  *
- * @author  Jim Wigginton <terrafrost@php.net>
- * @version 0.1.0
- * @access  public
  * @package Crypt_TripleDES
+ * @author  Jim Wigginton <terrafrost@php.net>
+ * @access  public
  */
-class Crypt_TripleDES extends Crypt_DES {
+class Crypt_TripleDES extends Crypt_DES
+{
     /**
      * The default password key_size used by setPassword()
      *
@@ -180,7 +179,7 @@ class Crypt_TripleDES extends Crypt_DES {
      *
      * - CRYPT_DES_MODE_3CBC
      *
-     * If not explictly set, CRYPT_DES_MODE_CBC will be used.
+     * If not explicitly set, CRYPT_DES_MODE_CBC will be used.
      *
      * @see Crypt_DES::Crypt_DES()
      * @see Crypt_Base::Crypt_Base()
@@ -193,7 +192,7 @@ class Crypt_TripleDES extends Crypt_DES {
             // In case of CRYPT_DES_MODE_3CBC, we init as CRYPT_DES_MODE_CBC
             // and additional flag us internally as 3CBC
             case CRYPT_DES_MODE_3CBC:
-                parent::Crypt_DES(CRYPT_DES_MODE_CBC);
+                parent::Crypt_Base(CRYPT_DES_MODE_CBC);
                 $this->mode_3cbc = true;
 
                 // This three $des'es will do the 3CBC work (if $key > 64bits)
@@ -210,14 +209,14 @@ class Crypt_TripleDES extends Crypt_DES {
                 break;
             // If not 3CBC, we init as usual
             default:
-                parent::Crypt_DES($mode);
+                parent::Crypt_Base($mode);
         }
     }
 
     /**
      * Sets the initialization vector. (optional)
      *
-     * SetIV is not required when CRYPT_DES_MODE_ECB is being used.  If not explictly set, it'll be assumed
+     * SetIV is not required when CRYPT_DES_MODE_ECB is being used.  If not explicitly set, it'll be assumed
      * to be all zero's.
      *
      * @see Crypt_Base::setIV()
@@ -289,8 +288,12 @@ class Crypt_TripleDES extends Crypt_DES {
         // if the key is smaller then 8, do what we'd normally do
         if ($this->mode_3cbc && strlen($this->key) > 8) {
             return $this->des[2]->encrypt(
-                   $this->des[1]->decrypt(
-                   $this->des[0]->encrypt($this->_pad($plaintext))));
+                $this->des[1]->decrypt(
+                    $this->des[0]->encrypt(
+                        $this->_pad($plaintext)
+                    )
+                )
+            );
         }
 
         return parent::encrypt($plaintext);
@@ -307,9 +310,15 @@ class Crypt_TripleDES extends Crypt_DES {
     function decrypt($ciphertext)
     {
         if ($this->mode_3cbc && strlen($this->key) > 8) {
-            return $this->_unpad($this->des[0]->decrypt(
-                                 $this->des[1]->encrypt(
-                                 $this->des[2]->decrypt(str_pad($ciphertext, (strlen($ciphertext) + 7) & 0xFFFFFFF8, "\0")))));
+            return $this->_unpad(
+                $this->des[0]->decrypt(
+                    $this->des[1]->encrypt(
+                        $this->des[2]->decrypt(
+                            str_pad($ciphertext, (strlen($ciphertext) + 7) & 0xFFFFFFF8, "\0")
+                        )
+                    )
+                )
+            );
         }
 
         return parent::decrypt($ciphertext);
@@ -417,6 +426,3 @@ class Crypt_TripleDES extends Crypt_DES {
         parent::_setupKey();
     }
 }
-
-// vim: ts=4:sw=4:et:
-// vim6: fdl=1:

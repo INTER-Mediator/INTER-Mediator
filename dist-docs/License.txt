@@ -93,7 +93,7 @@ phpseclib - PHP Secure Communications Library
 
 MIT-licensed pure-PHP implementations of an arbitrary-precision integer arithmetic library, fully PKCS#1 (v2.1) compliant RSA, DES, 3DES, RC4, Rijndael, AES, Blowfish, Twofish, SSH-1, SSH-2, SFTP, and X.509
 
-Copyright 2007-2012 TerraFrost and other contributors
+Copyright 2007-2013 TerraFrost and other contributors
 http://phpseclib.sourceforge.net/
 
 Permission is hereby granted, free of charge, to any person obtaining

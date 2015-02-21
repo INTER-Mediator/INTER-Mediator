@@ -1,5 +1,4 @@
 <?php
-/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
 /**
  * Pure-PHP implementation of AES.
@@ -20,7 +19,7 @@
  * Here's a short example of how to use this library:
  * <code>
  * <?php
- *    include('Crypt/AES.php');
+ *    include 'Crypt/AES.php';
  *
  *    $aes = new Crypt_AES();
  *
@@ -54,19 +53,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @category   Crypt
- * @package    Crypt_AES
- * @author     Jim Wigginton <terrafrost@php.net>
- * @copyright  MMVIII Jim Wigginton
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @link       http://phpseclib.sourceforge.net
+ * @category  Crypt
+ * @package   Crypt_AES
+ * @author    Jim Wigginton <terrafrost@php.net>
+ * @copyright 2008 Jim Wigginton
+ * @license   http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @link      http://phpseclib.sourceforge.net
  */
 
 /**
  * Include Crypt_Rijndael
  */
 if (!class_exists('Crypt_Rijndael')) {
-    require_once('Rijndael.php');
+    include_once 'Rijndael.php';
 }
 
 /**#@+
@@ -110,7 +109,7 @@ define('CRYPT_AES_MODE_OFB', CRYPT_MODE_OFB);
 
 /**#@+
  * @access private
- * @see Crypt_AES::Crypt_AES()
+ * @see Crypt_Base::Crypt_Base()
  */
 /**
  * Toggles the internal implementation
@@ -125,12 +124,12 @@ define('CRYPT_AES_MODE_MCRYPT', CRYPT_MODE_MCRYPT);
 /**
  * Pure-PHP implementation of AES.
  *
- * @author  Jim Wigginton <terrafrost@php.net>
- * @version 0.1.0
- * @access  public
  * @package Crypt_AES
+ * @author  Jim Wigginton <terrafrost@php.net>
+ * @access  public
  */
-class Crypt_AES extends Crypt_Rijndael {
+class Crypt_AES extends Crypt_Rijndael
+{
     /**
      * The namespace used by the cipher for its constants.
      *
@@ -139,35 +138,6 @@ class Crypt_AES extends Crypt_Rijndael {
      * @access private
      */
     var $const_namespace = 'AES';
-
-    /**
-     * Default Constructor.
-     *
-     * Determines whether or not the mcrypt extension should be used.
-     *
-     * $mode could be:
-     *
-     * - CRYPT_AES_MODE_ECB
-     *
-     * - CRYPT_AES_MODE_CBC
-     *
-     * - CRYPT_AES_MODE_CTR
-     *
-     * - CRYPT_AES_MODE_CFB
-     *
-     * - CRYPT_AES_MODE_OFB
-     *
-     * If not explictly set, CRYPT_AES_MODE_CBC will be used.
-     *
-     * @see Crypt_Rijndael::Crypt_Rijndael()
-     * @see Crypt_Base::Crypt_Base()
-     * @param optional Integer $mode
-     * @access public
-     */
-    function Crypt_AES($mode = CRYPT_AES_MODE_CBC)
-    {
-        parent::Crypt_Rijndael($mode);
-    }
 
     /**
      * Dummy function
@@ -182,7 +152,56 @@ class Crypt_AES extends Crypt_Rijndael {
     {
         return;
     }
-}
 
-// vim: ts=4:sw=4:et:
-// vim6: fdl=1:
+    /**
+     * Sets the key length
+     *
+     * Valid key lengths are 128, 192, and 256.  If the length is less than 128, it will be rounded up to
+     * 128.  If the length is greater than 128 and invalid, it will be rounded down to the closest valid amount.
+     *
+     * @see Crypt_Rijndael:setKeyLength()
+     * @access public
+     * @param Integer $length
+     */
+    function setKeyLength($length)
+    {
+        switch ($length) {
+            case 160:
+                $length = 192;
+                break;
+            case 224:
+                $length = 256;
+        }
+        parent::setKeyLength($length);
+    }
+
+    /**
+     * Sets the key.
+     *
+     * Rijndael supports five different key lengths, AES only supports three.
+     *
+     * @see Crypt_Rijndael:setKey()
+     * @see setKeyLength()
+     * @access public
+     * @param String $key
+     */
+    function setKey($key)
+    {
+        parent::setKey($key);
+
+        if (!$this->explicit_key_length) {
+            $length = strlen($key);
+            switch (true) {
+                case $length <= 16:
+                    $this->key_size = 16;
+                    break;
+                case $length <= 24:
+                    $this->key_size = 24;
+                    break;
+                default:
+                    $this->key_size = 32;
+            }
+            $this->_setupEngine();
+        }
+    }
+}
