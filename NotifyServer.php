@@ -1,12 +1,15 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ *
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ *   INTER-Mediator is supplied under MIT License.
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 class NotifyServer
 {
@@ -15,7 +18,7 @@ class NotifyServer
     private $dbSettings;
     private $clientId;
 
-    function initialize($dbClass, $dbSettings, $clientId)
+    public function initialize($dbClass, $dbSettings, $clientId)
     {
         $this->dbClass = $dbClass;
         $this->dbSettings = $dbSettings;
@@ -32,23 +35,21 @@ class NotifyServer
         return true;
     }
 
-    function register($entity, $condition, $pkArray)
+    public function register($entity, $condition, $pkArray)
     {
         return $this->dbClass->register($this->clientId, $entity, $condition, $pkArray);
     }
 
-    function unregister($client, $tableKeys)
+    public function unregister($client, $tableKeys)
     {
         return $this->dbClass->unregister($client, $tableKeys);
     }
 
-    function updated($clientId, $entity, $pkArray, $field, $value)
+    public function updated($clientId, $entity, $pkArray, $field, $value)
     {
         $channels = $this->dbClass->matchInRegisterd($clientId, $entity, $pkArray);
 
-        if (!@include_once('Pusher.php')) {
-            throw new Exception('_im_no_pusher_exception');
-        }
+        $this->loadPusher();
         $pusher = new Pusher(
             $this->dbSettings->pusherKey,
             $this->dbSettings->pusherSecret,
@@ -58,13 +59,11 @@ class NotifyServer
         $response = $pusher->trigger($channels, 'update', $data);
     }
 
-    function created($clientId, $entity, $pkArray, $record)
+    public function created($clientId, $entity, $pkArray, $record)
     {
         $channels = $this->dbClass->appendIntoRegisterd($clientId, $entity, $pkArray);
 
-        if (!@include_once('Pusher.php')) {
-            throw new Exception('_im_no_pusher_exception');
-        }
+        $this->loadPusher();
         $pusher = new Pusher(
             $this->dbSettings->pusherKey,
             $this->dbSettings->pusherSecret,
@@ -79,13 +78,11 @@ class NotifyServer
         $response = $pusher->trigger($channels, 'create', $data);
     }
 
-    function deleted($clientId, $entity, $pkArray)
+    public function deleted($clientId, $entity, $pkArray)
     {
         $channels = $this->dbClass->removeFromRegisterd($clientId, $entity, $pkArray);
 
-        if (!@include_once('Pusher.php')) {
-            throw new Exception('_im_no_pusher_exception');
-        }
+        $this->loadPusher();
         $pusher = new Pusher(
             $this->dbSettings->pusherKey,
             $this->dbSettings->pusherSecret,
@@ -95,9 +92,26 @@ class NotifyServer
         $response = $pusher->trigger($channels, 'delete', $data);
     }
 
-    function notify($client, $entity, $keying)
+    public function notify($client, $entity, $keying)
     {
 
     }
 
-} 
+    protected function loadPusher() {
+        $paths = explode(PATH_SEPARATOR, get_include_path());
+        foreach ($paths as $dirPath) {
+            if (file_exists($dirPath)) {
+                $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
+                foreach ($iterator as $element) {
+                    $path = realpath($element . DIRECTORY_SEPARATOR . 'Pusher.php');
+                    if (is_file($path) && is_readable($path)) {
+                        include_once($path);
+                        return;
+                    }
+                }
+            }
+        }
+        throw new Exception('_im_no_pusher_exception');
+    }
+
+}

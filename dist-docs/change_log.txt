@@ -12,6 +12,7 @@ Ver.5.1 (in development)
 - Update phpseclib to version 0.3.10.
 - Change SHA-1 JavaScript library.
   (tiny-sha1 <https://code.google.com/p/tiny-sha1/> is contained in the INTER-Mediator.)
+- Avoid using the @-operator for error suppression in NotifyServer.php to reduce bug risk.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
