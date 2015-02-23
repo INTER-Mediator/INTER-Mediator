@@ -3,6 +3,7 @@
  * MessageStrings_ja_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../MessageStrings.php');
 require_once(dirname(__FILE__) . '/../MessageStrings_ja.php');
 
 class MessageStrings_ja_Test extends PHPUnit_Framework_TestCase
