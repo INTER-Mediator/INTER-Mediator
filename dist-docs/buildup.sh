@@ -74,7 +74,7 @@ cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/t
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-UI.js"                    >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/js_lib/sha1.js"                      >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/js_lib/tinySHA1.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/js_lib/sha256.js"                    >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
