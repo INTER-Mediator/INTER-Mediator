@@ -58,7 +58,7 @@ class GenerateJSCode
          * Read the JS programs regarding by the developing or deployed.
          */
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
-            echo $this->outputJS($currentDir);
+            echo $this->combineScripts($currentDir);
         } else {
             readfile($currentDir . 'INTER-Mediator.js');
         }
@@ -252,7 +252,7 @@ class GenerateJSCode
         }
     }
     
-    private function outputJS($currentDir)
+    private function combineScripts($currentDir)
     {
         $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
         $bi2phpDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'bi2php' . DIRECTORY_SEPARATOR;

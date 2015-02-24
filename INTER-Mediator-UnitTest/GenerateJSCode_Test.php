@@ -34,11 +34,11 @@ class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    public function test_outputJS()
+    public function test_combineScripts()
     {
         if (((float)phpversion()) >= 5.3) {
             if (function_exists('xdebug_get_headers')) {
-                $this->reflectionMethod = new ReflectionMethod('GenerateJSCode', 'outputJS');
+                $this->reflectionMethod = new ReflectionMethod('GenerateJSCode', 'combineScripts');
                 $this->reflectionMethod->setAccessible(true);
                 $currentDir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
                 ob_start();
