@@ -1,11 +1,14 @@
 <?php
-/*
+/**
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- * 
- *   This project started at the end of 2009.
+ *
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ *
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
 class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
@@ -30,6 +33,7 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DataConverter_MySQLDateTime_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Number_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NumberBase_Test.php');
+        $suite->addTestFile($folder . 'GenerateJSCode_Test.php');
         $suite->addTestFile($folder . 'INTERMediator_Test.php');
         $suite->addTestFile($folder . 'MediaAccess_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_Test.php');

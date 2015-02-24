@@ -1,12 +1,15 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ *
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ *   INTER-Mediator is supplied under MIT License.
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 class GenerateJSCode
 {
@@ -55,28 +58,9 @@ class GenerateJSCode
          * Read the JS programs regarding by the developing or deployed.
          */
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
-            $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
-            $bi2phpDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'bi2php' . DIRECTORY_SEPARATOR;
-            echo file_get_contents($currentDir . 'INTER-Mediator.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Element.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Context.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Page.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-UI.js');
-            echo file_get_contents($jsLibDir . 'sha1.js');
-            echo file_get_contents($jsLibDir . 'sha256.js');
-            echo file_get_contents($bi2phpDir . 'biBigInt.js');
-            echo file_get_contents($bi2phpDir . 'biMontgomery.js');
-            echo file_get_contents($bi2phpDir . 'biRSA.js');
-            echo file_get_contents($currentDir . 'Adapter_DBServer.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-Events.js');
-            echo file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
-            echo file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
+            echo $this->combineScripts($currentDir);
         } else {
-            echo file_get_contents($currentDir . 'INTER-Mediator.js');
+            readfile($currentDir . 'INTER-Mediator.js');
         }
 
         /*
@@ -266,5 +250,32 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
+    }
+    
+    private function combineScripts($currentDir)
+    {
+        $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
+        $bi2phpDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'bi2php' . DIRECTORY_SEPARATOR;
+        $content = '';
+        $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-UI.js');
+        $content .= ';' . file_get_contents($jsLibDir . 'tinySHA1.js');
+        $content .= file_get_contents($jsLibDir . 'sha256.js');
+        $content .= file_get_contents($bi2phpDir . 'biBigInt.js');
+        $content .= file_get_contents($bi2phpDir . 'biMontgomery.js');
+        $content .= file_get_contents($bi2phpDir . 'biRSA.js');
+        $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
+        $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
+        
+        return $content;
     }
 }
