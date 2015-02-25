@@ -56,12 +56,14 @@ class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
      */
     public function test_combineScripts()
     {
-        $this->reflectionMethod = new ReflectionMethod('GenerateJSCode', 'combineScripts');
-        $this->reflectionMethod->setAccessible(true);
-        $currentDir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
-        $content = $this->reflectionMethod->invokeArgs($this->generater, array($currentDir));
-        $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
-        $this->assertContains(';' . file_get_contents($jsLibDir . 'tinySHA1.js'), $content);
+        if (((float)phpversion()) >= 5.3) {
+            $this->reflectionMethod = new ReflectionMethod('GenerateJSCode', 'combineScripts');
+            $this->reflectionMethod->setAccessible(true);
+            $currentDir = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR;
+            $content = $this->reflectionMethod->invokeArgs($this->generater, array($currentDir));
+            $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
+            $this->assertContains(';' . file_get_contents($jsLibDir . 'tinySHA1.js'), $content);
+        }
     }
 
 }
