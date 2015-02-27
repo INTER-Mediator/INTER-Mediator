@@ -114,10 +114,12 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     } else {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        $dbInstance->processingRequest($options);
-        $dbInstance->finishCommunication(false);
-        if ($_SERVER['HTTP_X_REQUESTED_WITH'] !== 'XMLHttpRequest') {
-            die(json_encode(array('stat' => "Invalid Request Error.")));
+        if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+            $dbInstance->processingRequest($options);
+            $dbInstance->finishCommunication(false);
+        } else {
+            $dbInstance->addOutputData('debugMessages', 'Invalid Request Error.');
+            $dbInstance->addOutputData('errorMessages', array('Invalid Request Error.'));
         }
         $dbInstance->exportOutputDataAsJSON();
     }
