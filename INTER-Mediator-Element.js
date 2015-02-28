@@ -10,7 +10,7 @@
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i;
+            needPostValueSet = false, nodeTag, curValues, i, formattedValue, formatSpec, param1, mark;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -43,6 +43,23 @@ var IMLibElement = {
                     }
                     break;
             }
+        }
+
+        if (formatSpec = element.getAttribute("data-im-format")) {
+            if (param1 = formatSpec.match(/^number\(([0-9]+)\)/)) {
+                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1]);
+            } else if (param1 = formatSpec.match(/^currency\(([0-9]+)\)/)) {
+                mark = INTERMediatorOnPage.localeInfo.currency;
+                if (INTERMediatorOnPage.localeInfo.currencyposition.match(/^pre/)) {
+                    formattedValue = mark + INTERMediatorLib.numberFormat(curVal, param1[1]);
+                } else {
+                    formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1]) + mark;
+                }
+            } else {
+                formattedValue = curVal;
+                INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
+            }
+            curVal = formattedValue;
         }
 
         if (curTarget != null && curTarget.length > 0) { //target is specified
@@ -304,7 +321,7 @@ var IMLibElement = {
                     }
                 }
             }
-            if (! isCheckResult) {
+            if (!isCheckResult) {
                 alert(INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1003], [targetField]));
                 return false;
@@ -355,7 +372,7 @@ var IMLibElement = {
             // The value of database and the field is different. Others must be changed this field.
             newValue = IMLibElement.getValueFromIMNode(element);
             if (!confirm(INTERMediatorLib.getInsertedString(
-                INTERMediatorOnPage.getMessages()[1001], [initialvalue, newValue, currentFieldVal]))) {
+                    INTERMediatorOnPage.getMessages()[1001], [initialvalue, newValue, currentFieldVal]))) {
                 window.setTimeout(function () {
                     element.focus();
                 }, 0);
@@ -367,7 +384,7 @@ var IMLibElement = {
         return true;
     },
 
-    deleteNodes: function(removeNodes) {
+    deleteNodes: function (removeNodes) {
         var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;
 
         for (key in removeNodes) {
