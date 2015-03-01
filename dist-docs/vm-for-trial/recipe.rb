@@ -15,6 +15,13 @@ IMUNITTEST = "#{IMROOT}/INTER-Mediator-UnitTest"
 IMDISTDOC = "#{IMROOT}/dist-docs"
 IMVMROOT = "#{IMROOT}/dist-docs/vm-for-trial"
 
+
+if os[:family] == 'redhat' && os[:release].to_f < 6
+  #file '/etc/resolv.conf' do
+  #  content 'nameserver 192.168.1.1'
+  #end
+end
+
 execute 'groupadd im-developer' do
   command 'groupadd im-developer'
 end
@@ -43,8 +50,14 @@ if os[:family] == 'redhat'
   package 'postgresql-server' do
     action :install
   end
-  execute 'service postgresql initdb' do
-    command 'service postgresql initdb'
+  if os[:release].to_f < 6
+    execute 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"' do
+      command 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"'
+    end
+  else
+    execute 'service postgresql initdb' do
+      command 'service postgresql initdb'
+    end
   end
   service 'postgresql' do
     action [ :enable, :start ]
@@ -172,6 +185,23 @@ elsif os[:family] == 'redhat'
   package 'php' do
     action :install
   end
+  if os[:release].to_f < 6
+    package 'php-mbstring' do
+      action :install
+    end
+    package 'php-pear' do
+      action :install
+    end
+    package 'gcc' do
+      action :install
+    end
+    execute 'pecl install json' do
+      command 'pecl install json'
+    end
+    file '/etc/php.d/json.ini' do
+      content 'extension=json.so'
+    end
+  end
   if os[:release].to_f < 7
     package 'php-mysql' do
       action :install
@@ -215,25 +245,25 @@ if os[:family] == 'ubuntu'
   end
 end
 
-package 'git' do
-  action :install
-end
-
 if os[:family] == 'redhat'
   package 'epel-release' do
     action :install
   end
 end
-package 'nodejs' do
-  action :install
+if os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6)
+  package 'nodejs' do
+    action :install
+  end
 end
 
 execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
   command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
 end
 
-package 'npm' do
-  action :install
+if os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6)
+  package 'npm' do
+    action :install
+  end
 end
 
 if os[:family] == 'ubuntu'
@@ -250,10 +280,14 @@ if os[:family] == 'ubuntu'
   package 'phpunit' do
     action :install
   end
-elsif os[:family] == 'redhat'
+elsif os[:family] == 'redhat' && os[:release].to_f >= 6
   package 'php-phpunit-PHPUnit' do
     action :install
   end
+end
+
+package 'git' do
+  action :install
 end
 
 if os[:family] == 'ubuntu'
@@ -355,8 +389,8 @@ EOF
   end
 end
 
-execute "sed -E -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\" > \"#{IMUNITTEST}/temp\"" do
-  command "sed -E -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\" > \"#{IMUNITTEST}/temp\""
+execute "sed -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\" > \"#{IMUNITTEST}/temp\"" do
+  command "sed -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\" > \"#{IMUNITTEST}/temp\""
 end
 execute "rm \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\"" do
   command "rm \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\""
@@ -374,25 +408,27 @@ end
 
 # Install npm packages
 
-execute 'npm install -g buster' do
-  command 'npm install -g buster'
-end
-
-if os[:family] == 'redhat' && os[:release].to_f >= 7
-  package 'bzip2' do
-    action :install  # for phantomjs
+if os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6)
+  execute 'npm install -g buster' do
+    command 'npm install -g buster'
   end
-end
 
-execute 'npm install -g phantomjs' do
-  command 'npm install -g phantomjs'
+  if os[:family] == 'redhat' && os[:release].to_f >= 7
+    package 'bzip2' do
+      action :install  # for phantomjs
+    end
+  end
+
+  execute 'npm install -g phantomjs' do
+    command 'npm install -g phantomjs'
+  end
 end
 
 
 # Activate DefEdit/PageEdit
 
-execute "sed -E -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/defedit.php\" > \"#{IMSUPPORT}/temp\"" do
-  command "sed -E -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/defedit.php\" > \"#{IMSUPPORT}/temp\""
+execute "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/defedit.php\" > \"#{IMSUPPORT}/temp\"" do
+  command "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/defedit.php\" > \"#{IMSUPPORT}/temp\""
 end
 execute "rm \"#{IMSUPPORT}/defedit.php\"" do
   command "rm \"#{IMSUPPORT}/defedit.php\""
@@ -401,8 +437,8 @@ execute "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/defedit.php\"" do
   command "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/defedit.php\""
 end
 
-execute "sed -E -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/pageedit.php\" > \"#{IMSUPPORT}/temp\"" do
-  command "sed -E -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/pageedit.php\" > \"#{IMSUPPORT}/temp\""
+execute "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/pageedit.php\" > \"#{IMSUPPORT}/temp\"" do
+  command "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/pageedit.php\" > \"#{IMSUPPORT}/temp\""
 end
 execute "rm \"#{IMSUPPORT}/pageedit.php\"" do
   command "rm \"#{IMSUPPORT}/pageedit.php\""
@@ -416,14 +452,14 @@ end
 
 for num in 1..40 do
   num = "%02d" % num
-    execute "sed -E -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\"" do
-      command "sed -E -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\""
+    execute "sed -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\"" do
+      command "sed -e \"s|\('INTER-Mediator.php'\)|\('INTER-Mediator/INTER-Mediator.php'\)|\" \"#{IMSAMPLE}/templates/definition_file_simple.php\" > \"#{WEBROOT}/def#{num}.php\""
   end
   file "#{WEBROOT}/def#{num}.php" do
     mode '664'
   end
-  execute "sed -E -e 's/definitin_file_simple.php/def#{num}.php/' \"#{IMSAMPLE}/templates/page_file_simple.html\" > \"#{WEBROOT}/page#{num}.html\"" do
-    command "sed -E -e 's/definitin_file_simple.php/def#{num}.php/' \"#{IMSAMPLE}/templates/page_file_simple.html\" > \"#{WEBROOT}/page#{num}.html\""
+  execute "sed -e 's/definitin_file_simple.php/def#{num}.php/' \"#{IMSAMPLE}/templates/page_file_simple.html\" > \"#{WEBROOT}/page#{num}.html\"" do
+    command "sed -e 's/definitin_file_simple.php/def#{num}.php/' \"#{IMSAMPLE}/templates/page_file_simple.html\" > \"#{WEBROOT}/page#{num}.html\""
   end
   file "#{WEBROOT}/page#{num}.html" do
     mode '664'
@@ -438,14 +474,15 @@ end
 # Import schema
 
 if os[:family] == 'redhat'
-  execute 'setenforce 0' do
-    command 'setenforce 0'
-  end
-  file '/etc/selinux/config' do
-    owner 'root'
-    group 'root'
-    mode '644'
-    content <<-EOF
+  if os[:release].to_f >= 6
+    execute 'setenforce 0' do
+      command 'setenforce 0'
+    end
+    file '/etc/selinux/config' do
+      owner 'root'
+      group 'root'
+      mode '644'
+      content <<-EOF
 # This file controls the state of SELinux on the system.
 # SELINUX= can take one of these three values:
 #     enforcing - SELinux security policy is enforced.
@@ -459,10 +496,10 @@ SELINUXTYPE=targeted
 
 
 EOF
-  end
-  if os[:release].to_f < 7
-    file '/etc/sysconfig/iptables' do
-      content <<-EOF
+    end
+    if os[:release].to_f >= 6 && os[:release].to_f < 7
+      file '/etc/sysconfig/iptables' do
+        content <<-EOF
 # Firewall configuration written by system-config-firewall
 # Manual customization of this file is not recommended.
 *filter
@@ -478,16 +515,17 @@ EOF
 -A FORWARD -j REJECT --reject-with icmp-host-prohibited
 COMMIT
 EOF
-    end
-    execute 'service iptables restart' do
-      command 'service iptables restart'
-    end
-  else
-    execute 'firewall-cmd --zone=public --add-service=http --permanent' do
-      command 'firewall-cmd --zone=public --add-service=http --permanent'
-    end
-    execute 'firewall-cmd --reload' do
-      command 'firewall-cmd --reload'
+      end
+      execute 'service iptables restart' do
+        command 'service iptables restart'
+      end
+    else
+      execute 'firewall-cmd --zone=public --add-service=http --permanent' do
+        command 'firewall-cmd --zone=public --add-service=http --permanent'
+      end
+      execute 'firewall-cmd --reload' do
+        command 'firewall-cmd --reload'
+      end
     end
   end
   #execute 'setenforce 1' do
@@ -496,8 +534,8 @@ EOF
 end
 
 if os[:family] == 'redhat'
-  execute "sed -E -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\"" do
-    command "sed -E -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\""
+  execute "sed -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\"" do
+    command "sed -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\""
   end
   execute "rm \"#{IMDISTDOC}/sample_schema_mysql.txt\"" do
     command "rm \"#{IMDISTDOC}/sample_schema_mysql.txt\""
