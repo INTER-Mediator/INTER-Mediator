@@ -125,3 +125,6 @@ $pusherParameters = array(
 // $ldapContainer = "cn=users";
 // $ldapAccountKey = "uid";
 //$ldapExpiringSeconds = 1800;
+
+// This locale is going to be used to detect the decimal mark etc. formatting infos.
+//$appLocale = "ja_JP";

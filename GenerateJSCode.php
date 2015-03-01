@@ -278,11 +278,9 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.localeInfo", $po,
-            $q . "currency" . $q . ":" . $q . "¥" . $q . "," .
-            $q . "currencyposition" . $q . ":" . $q . "pre" . $q,
-            $pc);
+        $localeSign = isset($appLocale)? $appLocale : ini_get("intl.default_locale");
+        setlocale(LC_ALL, $localeSign);
+        $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS(localeconv(),""));
     }
 
     private function combineScripts($currentDir)

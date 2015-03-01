@@ -130,6 +130,8 @@ Ver.5.1 (May 22, 2015)
   the page editor and the definition file editor etc.
 - [BUG FIX] Definition File Editor supports sending email settings.
 - [BUG FIX] The validation didn't work on the blank text field.
+- The locale for number and currency format follows the server-side setting of "intl.default_locale" key in php.ini.
+  It can be overridden by params.php file's $appLocale valuable.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
