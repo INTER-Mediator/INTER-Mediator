@@ -117,3 +117,6 @@ $pusherParameters = array(
     'secret' => '',
 );
 */
+
+// This locale is going to be used to detect the decimal mark etc. formatting infos.
+//$appLocale = "ja_JP";

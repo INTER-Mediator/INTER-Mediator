@@ -48,13 +48,12 @@ var IMLibElement = {
         if (formatSpec = element.getAttribute("data-im-format")) {
             if (param1 = formatSpec.match(/^number\(([0-9]+)\)/)) {
                 formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1]);
+            } else if (param1 = formatSpec.match(/^number/)) {
+                formattedValue = INTERMediatorLib.numberFormat(curVal);
             } else if (param1 = formatSpec.match(/^currency\(([0-9]+)\)/)) {
-                mark = INTERMediatorOnPage.localeInfo.currency;
-                if (INTERMediatorOnPage.localeInfo.currencyposition.match(/^pre/)) {
-                    formattedValue = mark + INTERMediatorLib.numberFormat(curVal, param1[1]);
-                } else {
-                    formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1]) + mark;
-                }
+                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1]);
+            } else if (param1 = formatSpec.match(/^currency/)) {
+                formattedValue = INTERMediatorLib.currencyFormat(curVal);
             } else {
                 formattedValue = curVal;
                 INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);

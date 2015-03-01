@@ -14,6 +14,8 @@ Ver.5.1 (in development)
   (tiny-sha1 <https://code.google.com/p/tiny-sha1/> is contained in the INTER-Mediator.)
 - Avoid using the @-operator for error suppression in NotifyServer.php to reduce bug risk.
 - Remove duplication in MessageStrings_ja.php and modify MessageStrings.php.
+- The locale for number and currency format follows the server-side setting of "intl.default_locale" key in php.ini.
+  It can be overridden by params.php file's $appLocale valuable.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
