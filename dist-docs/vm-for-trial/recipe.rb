@@ -201,6 +201,30 @@ elsif os[:family] == 'redhat'
     file '/etc/php.d/json.ini' do
       content 'extension=json.so'
     end
+    package 'pcre-devel' do
+      action :install
+    end
+    directory '/usr/include/php/ext/pcre' do
+      action :create
+    end
+    execute 'curl -L https://raw.githubusercontent.com/php/php-src/PHP-5.2/ext/pcre/php_pcre.h > /tmp/php_pcre.h' do
+      command 'curl -L https://raw.githubusercontent.com/php/php-src/PHP-5.2/ext/pcre/php_pcre.h > /tmp/php_pcre.h'
+    end
+    execute 'mv /tmp/php_pcre.h /usr/include/php/ext/pcre/' do
+      command 'mv /tmp/php_pcre.h /usr/include/php/ext/pcre/'
+    end
+    execute 'pecl install channel://pecl.php.net/filter-0.11.0' do
+      command 'pecl install channel://pecl.php.net/filter-0.11.0'
+    end
+    file '/etc/php.d/filter.ini' do
+      content 'extension=filter.so'
+    end
+    #execute 'pecl install timezonedb' do
+    #  command 'pecl install timezonedb'
+    #end
+    #file '/etc/php.d/timezonedb.ini' do
+    #  content 'extension=timezonedb.so'
+    #end
   end
   if os[:release].to_f < 7
     package 'php-mysql' do
@@ -632,9 +656,9 @@ if os[:family] == 'redhat'
 # TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
 
 # "local" is for Unix domain socket connections only
-local   all         all                               ident
+local   all         all                               trust
 # IPv4 local connections:
-host    all         all         127.0.0.1/32          ident
+host    all         all         127.0.0.1/32          trust
 # IPv6 local connections:
 host    all         all         ::1/128               trust
 EOF
