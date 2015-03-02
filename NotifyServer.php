@@ -100,10 +100,13 @@ class NotifyServer
     protected function loadPusher() {
         $paths = explode(PATH_SEPARATOR, get_include_path());
         foreach ($paths as $dirPath) {
+            if ($dirPath === '.') {
+                $dirPath = dirname(__FILE__);
+            }
             if (file_exists($dirPath)) {
                 $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dirPath));
                 foreach ($iterator as $element) {
-                    $path = realpath($element . DIRECTORY_SEPARATOR . 'Pusher.php');
+                    $path = dirname($element) . DIRECTORY_SEPARATOR . 'Pusher.php';
                     if (is_file($path) && is_readable($path)) {
                         include_once($path);
                         return;
