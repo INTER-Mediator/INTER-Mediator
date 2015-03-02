@@ -153,8 +153,17 @@ end
 describe package('php-mbstring'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
+describe package('php-pear'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
+  it { should be_installed }
+end
+describe package('gcc'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
+  it { should be_installed }
+end
+describe package('pcre-devel'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
+  it { should be_installed }
+end
 describe package('php-mysql'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
-it { should be_installed }
+  it { should be_installed }
 end
 describe package('mysql-devel'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   it { should be_installed }
@@ -192,19 +201,19 @@ describe package('git'), :if => os[:family] == 'ubuntu' || os[:family] == 'redha
   it { should be_installed }
 end
 
-describe package('nodejs'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('nodejs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
 end
 
-describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_file }
 end
 
-describe package('npm'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
 end
 
-describe package('buster'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('buster'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed.by('npm').with_version('0.7.18') }
 end
 
@@ -212,7 +221,7 @@ describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >
   it { should be_installed }
 end
 
-describe package('phantomjs'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed.by('npm').with_version('1.9.15') }
 end
 
@@ -226,7 +235,7 @@ end
 describe package('phpunit'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
-describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' do
+describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 do
   it { should be_installed }
 end
 
@@ -360,7 +369,7 @@ describe file('/var/www/html') do
   it { should be_grouped_into 'im-developer' }
 end
 
-describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
+describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 && os[:release].to_f < 7 do
   its(:content) { should match /-A INPUT -m state --state NEW -m tcp -p tcp --dport 80 -j ACCEPT/ }
 end
 describe file('/etc/firewalld/zones/public.xml'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
