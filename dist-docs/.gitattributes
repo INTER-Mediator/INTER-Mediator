@@ -1,2 +1,3 @@
 buildup.sh -text
+change_log.txt merge=union
 usergenerator.sh -text
