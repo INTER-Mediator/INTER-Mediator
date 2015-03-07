@@ -664,6 +664,18 @@ var INTERMediatorLib = {
             INTERMediatorOnPage.localeInfo.currency_symbol);
     },
 
+    booleanFormat: function (str, str1, str2) {
+        if (str === "" || str === null) {
+            return "";
+        } else {
+            if (parseInt(str, 10) !== 0) {
+                return str1;
+            } else {
+                return str2;
+            }
+        }
+    },
+
     objectToString: function (obj) {
         var str, i, key;
 
