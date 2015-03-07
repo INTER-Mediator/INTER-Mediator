@@ -616,7 +616,7 @@ var INTERMediatorLib = {
                 s.push(n);
             }
         }
-        formatted = s.reverse().join(thousandsPoint) + (underNumStr == '' ? '' : decimalPoint + underNumStr);
+        formatted = sign + s.reverse().join(thousandsPoint) + (underNumStr == '' ? '' : decimalPoint + underNumStr);
         if (curSymbol) {
             if (!isMinusValue) {
                 if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {
