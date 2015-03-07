@@ -10,7 +10,8 @@
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i, formattedValue, formatSpec, param1, mark;
+            needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue, 
+            formatSpec, param1, mark;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -45,16 +46,43 @@ var IMLibElement = {
             }
         }
 
-        if (formatSpec = element.getAttribute("data-im-format")) {
-            if (param1 = formatSpec.match(/^number\(([0-9]+)\)/)) {
-                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1]);
-            } else if (param1 = formatSpec.match(/^number/)) {
-                formattedValue = INTERMediatorLib.numberFormat(curVal);
-            } else if (param1 = formatSpec.match(/^currency\(([0-9]+)\)/)) {
-                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1]);
-            } else if (param1 = formatSpec.match(/^currency/)) {
-                formattedValue = INTERMediatorLib.currencyFormat(curVal);
-            } else {
+        formatSpec = element.getAttribute("data-im-format");
+        if (formatSpec) {
+            patterns = [
+                /^number\(([0-9]+)\)/,
+                /^number/,
+                /^currency\(([0-9]+)\)/,
+                /^currency/,
+                /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/
+            ];
+            for (i = 0; i < patterns.length; i++) {
+                param1 = formatSpec.match(patterns[i]);
+                if (param1) {
+                    switch (param1.length) {
+                        case 3:
+                            if (param1[0].indexOf("boolean") > -1) {
+                                formattedValue = INTERMediatorLib.booleanFormat(curVal, param1[1], param1[2]);
+                            }
+                            break;
+                        case 2:
+                            if (param1[0].indexOf("number") > -1) {
+                                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1]);
+                            } else if (param1[0].indexOf("currency") > -1) {
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1]);
+                            }
+                            break;
+                        default:
+                            if (param1[0].indexOf("number") > -1) {
+                                formattedValue = INTERMediatorLib.numberFormat(curVal);
+                            } else if (param1[0].indexOf("currency") > -1) {
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal);
+                            }
+                            break;
+                    }
+                    break;
+                }
+            }
+            if (!formattedValue) {
                 formattedValue = curVal;
                 INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
             }
