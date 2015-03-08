@@ -154,6 +154,22 @@ buster.testCase("INTERMediatorLib.Round() Test", {
     }
 });
 
+buster.testCase("INTERMediatorLib.booleanFormat() Test", {
+    "should return \"\" if the first parameter is \"\"": function () {
+        assert.equals(INTERMediatorLib.booleanFormat("", "non-zeros", "zeros"), "");
+    },
+    "should return \"\" if the first parameter is null": function () {
+        assert.equals(INTERMediatorLib.booleanFormat(null, "non-zeros", "zeros"), "");
+    },
+    "should return \"non-zeros\" if the first parameter is 1": function () {
+        assert.equals(INTERMediatorLib.booleanFormat(1, "non-zeros", "zeros"), "non-zeros");
+    },
+    "should return \"zeros\" if the first parameter is 0": function () {
+        assert.equals(INTERMediatorLib.booleanFormat(0, "non-zeros", "zeros"), "zeros");
+    }
+
+});
+
 buster.testCase("IMLibElement.getValueFromIMNode() Test", {
     "should return '' if parameter is null.": function () {
         assert.equals(IMLibElement.getValueFromIMNode(null), "");
