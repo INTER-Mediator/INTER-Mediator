@@ -167,7 +167,39 @@ buster.testCase("INTERMediatorLib.booleanFormat() Test", {
     "should return \"zeros\" if the first parameter is 0": function () {
         assert.equals(INTERMediatorLib.booleanFormat(0, "non-zeros", "zeros"), "zeros");
     }
+});
 
+buster.testCase("INTERMediatorLib.percnetFormat() Test", {
+    "should return \"\" if the parameter is \"\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat(""), "");
+    },
+    "should return \"\" if the parameter is null": function () {
+        assert.equals(INTERMediatorLib.percentFormat(null), "");
+    },
+    "should return \"\" if the parameter is \"1\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("1"), "100%");
+    },
+    "should return \"\" if the parameter is \"-2\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("-2"), "-200%");
+    },
+    "should return \"\" if the parameter is \"10\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("10"), "1000%");
+    },
+    "should return \"\" if the parameter is \"test\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("test"), "");
+    },
+    "should return \"\" if the parameter is \"3A\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("3A"), "300%");
+    },
+    "should return \"\" if the parameter is \"4-0\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("4-0"), "4000%");
+    },
+    "should return \"\" if the parameter is \"-50-0\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("-50-0"), "-50000%");
+    },
+    "should return \"\" if the parameter is \"６７-0\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("６７-0"), "67000%");
+    }
 });
 
 buster.testCase("IMLibElement.getValueFromIMNode() Test", {
