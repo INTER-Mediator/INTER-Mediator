@@ -563,7 +563,10 @@ var INTERMediatorLib = {
 
     toNumber: function (str) {
         var s = '', i, c;
-        str = (new String(str)).toString();
+        str = String(str);
+        for (i = 0; i < 10; i++) {
+            str = str.split(String.fromCharCode(65296 + i)).join(String(i));
+        }
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
             if ((c >= '0' && c <= '9') || c == '.' || c == '-' || c == this.cachedDigitSeparator[0]) {
@@ -672,6 +675,28 @@ var INTERMediatorLib = {
                 return str1;
             } else {
                 return str2;
+            }
+        }
+    },
+
+    percentFormat: function (str) {
+        var prefix = "";
+        if (str === "" || str === null) {
+            return "";
+        } else {
+            str = String(str);
+            if (str.substring(0, 1) === "-") {
+                prefix = "-";
+            }
+            if (str.match(/[-]/)) {
+                str = str.split("-").join("");
+            }
+            str = String(this.toNumber(str));
+            if (str.match(/[\d]+/)) {
+                str = str.match(/\d/g).join("");
+                return prefix + String(parseInt(str, 10) * 100) + "%";
+            } else {
+                return "";
             }
         }
     },

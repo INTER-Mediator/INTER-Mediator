@@ -10,7 +10,7 @@
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue, 
+            needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue = null, 
             formatSpec, param1, mark;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
@@ -50,10 +50,11 @@ var IMLibElement = {
         if (formatSpec) {
             patterns = [
                 /^number\(([0-9]+)\)/,
-                /^number/,
+                /^number\(\)/,
                 /^currency\(([0-9]+)\)/,
-                /^currency/,
-                /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/
+                /^currency\(\)/,
+                /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/,
+                /^percent\(\)/
             ];
             for (i = 0; i < patterns.length; i++) {
                 param1 = formatSpec.match(patterns[i]);
@@ -76,20 +77,22 @@ var IMLibElement = {
                                 formattedValue = INTERMediatorLib.numberFormat(curVal);
                             } else if (param1[0].indexOf("currency") > -1) {
                                 formattedValue = INTERMediatorLib.currencyFormat(curVal);
+                            } else if (param1[0].indexOf("percent") > -1) {
+                                formattedValue = INTERMediatorLib.percentFormat(curVal);
                             }
                             break;
                     }
                     break;
                 }
             }
-            if (!formattedValue) {
+            if (formattedValue === null) {
                 formattedValue = curVal;
                 INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
             }
             curVal = formattedValue;
         }
 
-        if (curTarget != null && curTarget.length > 0) { //target is specified
+        if (curTarget !== null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
