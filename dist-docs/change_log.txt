@@ -12,7 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 format-client-side branch (in development)
 - The locale for number and currency format follows the server-side setting of "intl.default_locale" key in php.ini.
-  It can be overridden by params.php file's $appLocale valuable.
+  It can be overridden by params.php file's $appLocale variable.
 
 Ver.5.3 (in development)
 - Update phpseclib to version 1.0.0.
