@@ -11,7 +11,8 @@ var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
             needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue = null, 
-            formatSpec, formatOption, flags = {}, param1, mark;
+            formatSpec, flags = {}, formatOption, negativeColor, negativeStyle, param1, mark, 
+            negativeSign, negativeTailSign;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -51,7 +52,8 @@ var IMLibElement = {
         if (formatSpec) {
             flags = {
                 useSeparator: false,
-                blankIfZero: false
+                blankIfZero: false,
+                negativeStyle: 0,
             };
             formatOption = element.getAttribute("data-im-format-options");
             if (formatOption) {
@@ -62,6 +64,26 @@ var IMLibElement = {
                     flags.blankIfZero = true;
                 }
             }
+            negativeColor = element.getAttribute("data-im-format-negative-color");
+            negativeStyle = element.getAttribute("data-im-format-negative-style");
+            if (negativeStyle) {
+                if (negativeStyle.toLowerCase() === "leadingminus" || 
+                    negativeStyle.toLowerCase() === "leading-minus") {
+                    flags.negativeStyle = 0;
+                } else if (negativeStyle.toLowerCase() === "trailingminus" ||
+                    negativeStyle.toLowerCase() === "trailing-minus") {
+                    flags.negativeStyle = 1;
+                } else if (negativeStyle.toLowerCase() === "parenthesis") {
+                    flags.negativeStyle = 2;
+                } else if (negativeStyle.toLowerCase() === "angle") {
+                    flags.negativeStyle = 3;
+                } else if (negativeStyle.toLowerCase() === "credit") {
+                    flags.negativeStyle = 4;
+                } else if (negativeStyle.toLowerCase() === "triangle") {
+                    flags.negativeStyle = 5;
+                }
+            }
+            
             patterns = [
                 /^number\(([0-9]+)\)/,
                 /^number[\(\)]*/,
@@ -123,9 +145,12 @@ var IMLibElement = {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     element.appendChild(textNode);
-                } else if (curTarget.indexOf('style.') === 0) {
+                } else if (curTarget.indexOf("style.") === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
-                    element.style[styleName] = curVal;
+                    if (curTarget !== "style.color" || 
+                        (curTarget === "style.color" && !negativeColor)) {
+                        element.style[styleName] = curVal;
+                    }
                 } else {
                     currentValue = element.getAttribute(curTarget);
                     element.setAttribute(curTarget, currentValue + curVal);
@@ -143,9 +168,12 @@ var IMLibElement = {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     element.innerHTML = element.innerHTML.replace("$", curVal);
-                } else if (curTarget.indexOf('style.') === 0) {
+                } else if (curTarget.indexOf("style.") === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
-                    element.style[styleName] = curVal;
+                    if (curTarget !== "style.color" || 
+                        (curTarget === "style.color" && !negativeColor)) {
+                        element.style[styleName] = curVal;
+                    }
                 } else {
                     currentValue = element.getAttribute(curTarget);
                     element.setAttribute(curTarget, currentValue.replace("$", curVal));
@@ -174,9 +202,12 @@ var IMLibElement = {
                         scriptNode.appendChild(textNode);
                         element.appendChild(scriptNode);
                     }
-                } else if (curTarget.indexOf('style.') === 0) {
+                } else if (curTarget.indexOf("style.") === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
-                    element.style[styleName] = curVal;
+                    if (curTarget !== "style.color" || 
+                        (curTarget === "style.color" && !negativeColor)) {
+                        element.style[styleName] = curVal;
+                    }
                 } else {
                     element.setAttribute(curTarget, curVal);
                 }
@@ -236,6 +267,43 @@ var IMLibElement = {
                 }
             }
         }
+        
+        if (formatSpec && negativeColor) {
+            negativeSign = INTERMediatorOnPage.localeInfo.negative_sign;
+            negativeTailSign = "";
+            if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {
+                negativeSign = "-";
+            } else if (flags.negativeStyle === 2) {
+                negativeSign = "(";
+                negativeTailSign = ")";
+            } else if (flags.negativeStyle === 3) {
+                negativeSign = "<";
+                negativeTailSign = ">";
+            } else if (flags.negativeStyle === 4) {
+                negativeSign = " CR";
+            } else if (flags.negativeStyle === 5) {
+                negativeSign = "▲";
+            }
+            
+            if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
+                if (curVal.indexOf(negativeSign) === 0) {
+                    element.style.color = negativeColor;
+                }
+            } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {
+                if (curVal.indexOf(negativeSign) > -1 && 
+                    curVal.indexOf(negativeSign) === curVal.length - negativeSign.length) {
+                    element.style.color = negativeColor;
+                }
+            } else if (flags.negativeStyle === 2 || flags.negativeStyle === 3) {
+                if (curVal.indexOf(negativeSign) === 0) {
+                    if (curVal.indexOf(negativeTailSign) > -1 && 
+                        curVal.indexOf(negativeTailSign) === curVal.length - 1) {
+                        element.style.color = negativeColor;
+                    }
+                }
+            }
+        }
+
         return needPostValueSet;
     },
 
