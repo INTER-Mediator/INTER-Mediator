@@ -11,7 +11,7 @@ var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
             needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue = null, 
-            formatSpec, param1, mark;
+            formatSpec, formatOption, flags = {}, param1, mark;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -26,7 +26,7 @@ var IMLibElement = {
 
         nodeTag = element.tagName;
 
-        if (clearField === true && curTarget == "") {
+        if (clearField === true && curTarget === "") {
             switch (nodeTag) {
                 case "INPUT":
                     switch (element.getAttribute("type")) {
@@ -36,6 +36,7 @@ var IMLibElement = {
                         default:
                             break;
                     }
+                    break;
                 case "SELECT":
                     break;
                 default:
@@ -48,12 +49,26 @@ var IMLibElement = {
 
         formatSpec = element.getAttribute("data-im-format");
         if (formatSpec) {
+            flags = {
+                useSeparator: false,
+                blankIfZero: false
+            };
+            formatOption = element.getAttribute("data-im-format-options");
+            if (formatOption) {
+                if (formatOption.toLowerCase().split(" ").indexOf("useseparator") > -1) {
+                    flags.useSeparator = true;
+                }
+                if (formatOption.toLowerCase().split(" ").indexOf("blankifzero") > -1) {
+                    flags.blankIfZero = true;
+                }
+            }
             patterns = [
                 /^number\(([0-9]+)\)/,
                 /^number\(\)/,
                 /^currency\(([0-9]+)\)/,
                 /^currency\(\)/,
                 /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/,
+                /^percent\(([0-9]+)\)/,
                 /^percent\(\)/
             ];
             for (i = 0; i < patterns.length; i++) {
@@ -67,18 +82,20 @@ var IMLibElement = {
                             break;
                         case 2:
                             if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1]);
+                                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1], flags);
                             } else if (param1[0].indexOf("currency") > -1) {
-                                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1]);
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1], flags);
+                            } else if (param1[0].indexOf("percent") > -1) {
+                                formattedValue = INTERMediatorLib.percentFormat(curVal, param1[1], flags);
                             }
                             break;
                         default:
                             if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.numberFormat(curVal);
+                                formattedValue = INTERMediatorLib.numberFormat(curVal, flags);
                             } else if (param1[0].indexOf("currency") > -1) {
-                                formattedValue = INTERMediatorLib.currencyFormat(curVal);
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal, flags);
                             } else if (param1[0].indexOf("percent") > -1) {
-                                formattedValue = INTERMediatorLib.percentFormat(curVal);
+                                formattedValue = INTERMediatorLib.percentFormat(curVal, 0, flags);
                             }
                             break;
                     }
