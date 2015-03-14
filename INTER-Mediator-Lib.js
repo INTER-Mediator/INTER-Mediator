@@ -585,11 +585,26 @@ var INTERMediatorLib = {
     /*
      digit should be a positive value. negative value doesn't support so far.
      */
-    numberFormat_Impl: function (str, digit, decimalPoint, thousandsPoint, curSymbol) {
-        var s, n, sign, power, underDot, underNumStr, pstr, roundedNum, underDecimalNum,
-            integerNum, formatted, isMinusValue;
-
+    numberFormat_Impl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
+        var s, n, prefix = "", i, sign, power, underDot, underNumStr, pstr, roundedNum, 
+            underDecimalNum, integerNum, formatted, isMinusValue;
+        
+        if (str === "" || str === null || str === undefined) {
+            return "";
+        }
+        if (String(str).substring(0, 1) === "-") {
+            prefix = "-";
+        }
+        if (String(str).match(/[-]/)) {
+            str = prefix + String(str).split("-").join("");
+        }
+        for (i = 0; i < 10; i++) {
+            str = String(str).split(String.fromCharCode(65296 + i)).join(String(i));
+        }
         n = this.toNumber(str);
+        if (isNaN(n)) {
+            return "";
+        }
         sign = INTERMediatorOnPage.localeInfo.positive_sign;
         isMinusValue = false;
         if (n < 0) {
@@ -597,71 +612,132 @@ var INTERMediatorLib = {
             n = -n;
             isMinusValue = true;
         }
+        
+        if (flags && flags.blankIfZero === true && n === 0) {
+            return "";
+        }
+
+        if (flags && flags.usePercentNotation) {
+            n = n * 100;
+        }
+
         underDot = (digit === undefined) ? INTERMediatorOnPage.localeInfo.frac_digits : this.toNumber(digit);
         power = Math.pow(10, underDot);
         roundedNum = Math.round(n * power);
         underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
         integerNum = (roundedNum - underDecimalNum) / power;
-        underNumStr = (underDot > 0) ? new String(underDecimalNum) : '';
+        underNumStr = (underDot > 0) ? String(underDecimalNum) : '';
         while (underNumStr.length < underDot) {
             underNumStr = "0" + underNumStr;
         }
-        n = integerNum;
-        s = [];
-        for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
-            if (n >= 1000) {
-                pstr = '000' + (n % 1000).toString();
-                s.push(pstr.substr(pstr.length - 3));
+        
+        if (flags && flags.useSeparator === true) {
+            if (n === 0) {
+                formatted = "0";
             } else {
-                s.push(n);
+                n = integerNum;
+                s = [];
+                for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
+                    if (n >= 1000) {
+                        pstr = '000' + (n % 1000).toString();
+                        s.push(pstr.substr(pstr.length - 3));
+                    } else {
+                        s.push(n);
+                    }
+                }
+                formatted = sign + s.reverse().join(thousandsSep) + (underNumStr === "" ? "" : decimalPoint + underNumStr);
             }
+        } else {
+            formatted = sign + integerNum + (underNumStr === "" ? "" : decimalPoint + underNumStr);
         }
-        formatted = sign + s.reverse().join(thousandsPoint) + (underNumStr == '' ? '' : decimalPoint + underNumStr);
-        if (curSymbol) {
+        
+        if (currencySymbol) {
             if (!isMinusValue) {
                 if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {
                     if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) {
-                        formatted = curSymbol + " " + formatted;
+                        formatted = currencySymbol + " " + formatted;
                     } else {
-                        formatted = curSymbol + formatted;
+                        formatted = currencySymbol + formatted;
                     }
                 } else {
                     if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) {
-                        formatted = formatted + " " + curSymbol;
+                        formatted = formatted + " " + currencySymbol;
                     } else {
-                        formatted = formatted + curSymbol;
+                        formatted = formatted + currencySymbol;
                     }
                 }
             } else {
                 if (INTERMediatorOnPage.localeInfo.n_cs_precedes == 1) {
                     if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) {
-                        formatted = curSymbol + " " + formatted;
+                        formatted = currencySymbol + " " + formatted;
                     } else {
-                        formatted = curSymbol + formatted;
+                        formatted = currencySymbol + formatted;
                     }
                 } else {
                     if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) {
-                        formatted = formatted + " " + curSymbol;
+                        formatted = formatted + " " + currencySymbol;
                     } else {
-                        formatted = formatted + curSymbol;
+                        formatted = formatted + currencySymbol;
                     }
                 }
             }
         }
+        
+        if (flags && flags.usePercentNotation === true && formatted !== "") {
+            formatted = formatted + "%";
+        }
+        
         return formatted;
     },
 
-    numberFormat: function (str, digit) {
+    numberFormat: function (str, digit, flags) {
+        if (flags === undefined) {
+            flags = {};
+        }
+        flags.useSeparator = true;
         return INTERMediatorLib.numberFormat_Impl(str, digit,
             INTERMediatorOnPage.localeInfo.decimal_point,
-            INTERMediatorOnPage.localeInfo.thousands_sep);
+            INTERMediatorOnPage.localeInfo.thousands_sep,
+            false,
+            flags
+        );
     },
 
-    currencyFormat: function (str, digit) {
+    currencyFormat: function (str, digit, flags) {
         return INTERMediatorLib.numberFormat_Impl(str, digit,
             INTERMediatorOnPage.localeInfo.mon_decimal_point,
             INTERMediatorOnPage.localeInfo.mon_thousands_sep,
-            INTERMediatorOnPage.localeInfo.currency_symbol);
+            INTERMediatorOnPage.localeInfo.currency_symbol,
+            flags
+        );
+    },
+
+    booleanFormat: function (str, trueString, falseString) {
+        if (str === "" || str === null) {
+            return "";
+        } else {
+            if (parseInt(str, 10) !== 0) {
+                return trueString;
+            } else {
+                return falseString;
+            }
+        }
+    },
+
+    percentFormat: function (str, digit, flags) {
+        if (flags === undefined) {
+            flags = {};
+        }
+        flags.usePercentNotation = true;
+        if (digit === undefined) {
+            digit = 0;
+        }
+        return INTERMediatorLib.numberFormat_Impl(str, digit,
+            INTERMediatorOnPage.localeInfo.decimal_point,
+            INTERMediatorOnPage.localeInfo.thousands_sep,
+            false,
+            flags
+        );
     },
 
     objectToString: function (obj) {

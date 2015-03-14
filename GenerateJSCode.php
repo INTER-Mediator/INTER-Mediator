@@ -252,9 +252,13 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
-        $localeSign = isset($appLocale)? $appLocale : ini_get("intl.default_locale");
+        $localeSign = isset($appLocale) ? $appLocale : ini_get("intl.default_locale");
         setlocale(LC_ALL, $localeSign);
-        $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS(localeconv(),""));
+        $localInfo = localeconv();
+        if ($localInfo['thousands_sep'] === '') {
+            $localInfo['thousands_sep'] = ',';
+        }
+        $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS($localInfo,""));
     }
     
     private function combineScripts($currentDir)

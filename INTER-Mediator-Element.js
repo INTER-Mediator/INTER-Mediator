@@ -10,7 +10,8 @@
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i, formattedValue, formatSpec, param1, mark;
+            needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue = null, 
+            formatSpec, formatOption, flags = {}, param1, mark;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -25,7 +26,7 @@ var IMLibElement = {
 
         nodeTag = element.tagName;
 
-        if (clearField === true && curTarget == "") {
+        if (clearField === true && curTarget === "") {
             switch (nodeTag) {
                 case "INPUT":
                     switch (element.getAttribute("type")) {
@@ -35,6 +36,7 @@ var IMLibElement = {
                         default:
                             break;
                     }
+                    break;
                 case "SELECT":
                     break;
                 default:
@@ -45,23 +47,69 @@ var IMLibElement = {
             }
         }
 
-        if (formatSpec = element.getAttribute("data-im-format")) {
-            if (param1 = formatSpec.match(/^number\(([0-9]+)\)/)) {
-                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1]);
-            } else if (param1 = formatSpec.match(/^number/)) {
-                formattedValue = INTERMediatorLib.numberFormat(curVal);
-            } else if (param1 = formatSpec.match(/^currency\(([0-9]+)\)/)) {
-                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1]);
-            } else if (param1 = formatSpec.match(/^currency/)) {
-                formattedValue = INTERMediatorLib.currencyFormat(curVal);
-            } else {
+        formatSpec = element.getAttribute("data-im-format");
+        if (formatSpec) {
+            flags = {
+                useSeparator: false,
+                blankIfZero: false
+            };
+            formatOption = element.getAttribute("data-im-format-options");
+            if (formatOption) {
+                if (formatOption.toLowerCase().split(" ").indexOf("useseparator") > -1) {
+                    flags.useSeparator = true;
+                }
+                if (formatOption.toLowerCase().split(" ").indexOf("blankifzero") > -1) {
+                    flags.blankIfZero = true;
+                }
+            }
+            patterns = [
+                /^number\(([0-9]+)\)/,
+                /^number[\(\)]*/,
+                /^currency\(([0-9]+)\)/,
+                /^currency[\(\)]*/,
+                /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/,
+                /^percent\(([0-9]+)\)/,
+                /^percent[\(\)]*/
+            ];
+            for (i = 0; i < patterns.length; i++) {
+                param1 = formatSpec.match(patterns[i]);
+                if (param1) {
+                    switch (param1.length) {
+                        case 3:
+                            if (param1[0].indexOf("boolean") > -1) {
+                                formattedValue = INTERMediatorLib.booleanFormat(curVal, param1[1], param1[2]);
+                            }
+                            break;
+                        case 2:
+                            if (param1[0].indexOf("number") > -1) {
+                                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1], flags);
+                            } else if (param1[0].indexOf("currency") > -1) {
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1], flags);
+                            } else if (param1[0].indexOf("percent") > -1) {
+                                formattedValue = INTERMediatorLib.percentFormat(curVal, param1[1], flags);
+                            }
+                            break;
+                        default:
+                            if (param1[0].indexOf("number") > -1) {
+                                formattedValue = INTERMediatorLib.numberFormat(curVal, 0, flags);
+                            } else if (param1[0].indexOf("currency") > -1) {
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal, 0, flags);
+                            } else if (param1[0].indexOf("percent") > -1) {
+                                formattedValue = INTERMediatorLib.percentFormat(curVal, 0, flags);
+                            }
+                            break;
+                    }
+                    break;
+                }
+            }
+            if (formattedValue === null) {
                 formattedValue = curVal;
                 INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
             }
             curVal = formattedValue;
         }
 
-        if (curTarget != null && curTarget.length > 0) { //target is specified
+        if (curTarget !== null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
@@ -75,7 +123,7 @@ var IMLibElement = {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     element.appendChild(textNode);
-                } else if (curTarget.indexOf('style.') == 0) {
+                } else if (curTarget.indexOf('style.') === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
                     element.style[styleName] = curVal;
                 } else {
@@ -95,7 +143,7 @@ var IMLibElement = {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     element.innerHTML = element.innerHTML.replace("$", curVal);
-                } else if (curTarget.indexOf('style.') == 0) {
+                } else if (curTarget.indexOf('style.') === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
                     element.style[styleName] = curVal;
                 } else {
@@ -126,7 +174,7 @@ var IMLibElement = {
                         scriptNode.appendChild(textNode);
                         element.appendChild(scriptNode);
                     }
-                } else if (curTarget.indexOf('style.') == 0) {
+                } else if (curTarget.indexOf('style.') === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
                     element.style[styleName] = curVal;
                 } else {
@@ -200,13 +248,13 @@ var IMLibElement = {
         } else {
             return "";
         }
-        if (INTERMediatorLib.isWidgetElement(element)
-            || (INTERMediatorLib.isWidgetElement(element.parentNode))) {
+        if (INTERMediatorLib.isWidgetElement(element) || 
+            (INTERMediatorLib.isWidgetElement(element.parentNode))) {
             newValue = element._im_getValue();
         } else if (nodeTag == "INPUT") {
             if (typeAttr == 'checkbox') {
                 dbspec = INTERMediatorOnPage.getDBSpecification();
-                if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
+                if (dbspec["db-class"] !== null && dbspec["db-class"] == "FileMaker_FX") {
                     mergedValues = [];
                     targetNodes = element.parentNode.getElementsByTagName('INPUT');
                     for (k = 0; k < targetNodes.length; k++) {
@@ -256,14 +304,14 @@ var IMLibElement = {
         if (INTERMediator.ignoreOptimisticLocking) {
             return true;
         }
-        targetContext = contextInfo['context'];
-        targetField = contextInfo['field'];
-        keyingComp = contextInfo['record'].split('=');
+        targetContext = contextInfo.context;
+        targetField = contextInfo.field;
+        keyingComp = contextInfo.record.split('=');
         keyingField = keyingComp[0];
         keyingComp.shift();
         keyingValue = keyingComp.join('=');
         checkQueryParameter = {
-            name: contextInfo['context'].contextName,
+            name: contextInfo.context.contextName,
             records: 1,
             paging: false,
             fields: [targetField],
@@ -298,9 +346,9 @@ var IMLibElement = {
             if (currentVal.recordset && currentVal.recordset[0]) {
                 for (portalIndex in currentVal.recordset[0]) {
                     var portalRecord = currentVal.recordset[0][portalIndex];
-                    if (portalRecord[portalKey]
-                        && portalRecord[targetField] !== undefined
-                        && portalRecord[portalKey] == contextInfo.portal) {
+                    if (portalRecord[portalKey] && 
+                        portalRecord[targetField] !== undefined && 
+                        portalRecord[portalKey] == contextInfo.portal) {
                         currentFieldVal = portalRecord[targetField];
                         isCheckResult = true;
                     }
@@ -312,9 +360,9 @@ var IMLibElement = {
                 return false;
             }
         } else {
-            if (currentVal.recordset === null
-                || currentVal.recordset[0] === null
-                || currentVal.recordset[0][targetField] === undefined) {
+            if (currentVal.recordset === null || 
+                currentVal.recordset[0] === null || 
+                currentVal.recordset[0][targetField] === undefined) {
                 alert(INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1003], [targetField]));
                 return false;
@@ -327,7 +375,7 @@ var IMLibElement = {
             }
             currentFieldVal = currentVal.recordset[0][targetField];
         }
-        initialvalue = targetContext.getValue(contextInfo['record'], targetField, contextInfo.portal);
+        initialvalue = targetContext.getValue(contextInfo.record, targetField, contextInfo.portal);
 
         switch (element.tagName) {
             case "INPUT":
@@ -389,7 +437,8 @@ var IMLibElement = {
                         referes = {};
                         values = {};
                         for (j in calcObject.referes) {
-                            referes[j] = [], values[j] = [];
+                            referes[j] = [];
+                            values[j] = [];
                             for (k = 0; k < calcObject.referes[j].length; k++) {
                                 if (removeNodeId != calcObject.referes[j][k]) {
                                     referes[j].push(calcObject.referes[j][k]);
