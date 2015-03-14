@@ -586,8 +586,8 @@ var INTERMediatorLib = {
      digit should be a positive value. negative value doesn't support so far.
      */
     numberFormat_Impl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
-        var s, n, prefix = "", i, sign, power, underDot, underNumStr, pstr, roundedNum, 
-            underDecimalNum, integerNum, formatted, isMinusValue;
+        var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr, 
+            roundedNum, underDecimalNum, integerNum, formatted, isMinusValue;
         
         if (str === "" || str === null || str === undefined) {
             return "";
@@ -609,6 +609,21 @@ var INTERMediatorLib = {
         isMinusValue = false;
         if (n < 0) {
             sign = INTERMediatorOnPage.localeInfo.negative_sign;
+            if (flags) {
+                if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {
+                    sign = "-";
+                } else if (flags.negativeStyle === 2) {
+                    sign = "(";
+                    tailSign = ")";
+                } else if (flags.negativeStyle === 3) {
+                    sign = "<";
+                    tailSign = ">";
+                } else if (flags.negativeStyle === 4) {
+                    sign = " CR";
+                } else if (flags.negativeStyle === 5) {
+                    sign = "▲";
+                }
+            }
             n = -n;
             isMinusValue = true;
         }
@@ -616,7 +631,7 @@ var INTERMediatorLib = {
         if (flags && flags.blankIfZero === true && n === 0) {
             return "";
         }
-
+        
         if (flags && flags.usePercentNotation) {
             n = n * 100;
         }
@@ -645,10 +660,28 @@ var INTERMediatorLib = {
                         s.push(n);
                     }
                 }
-                formatted = sign + s.reverse().join(thousandsSep) + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                formatted = s.reverse().join(thousandsSep) + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                if (flags && (flags.negativeStyle === 0 || flags.negativeStyle === 5)) {
+                    formatted = sign + formatted;
+                } else if (flags && (flags.negativeStyle === 1 || flags.negativeStyle === 4)) {
+                    formatted = formatted + sign;
+                } else if (flags && (flags.negativeStyle === 2 || flags.negativeStyle === 3)) {
+                    formatted = sign + formatted + tailSign;
+                } else {
+                    formatted = sign + formatted;
+                }
             }
         } else {
-            formatted = sign + integerNum + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+            formatted = integerNum + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+            if (flags && (flags.negativeStyle === 0 || flags.negativeStyle === 5)) {
+                formatted = sign + formatted;
+            } else if (flags && (flags.negativeStyle === 1 || flags.negativeStyle === 4)) {
+                formatted = formatted + sign;
+            } else if (flags && (flags.negativeStyle === 2 || flags.negativeStyle === 3)) {
+                formatted = sign + formatted + tailSign;
+            } else {
+                formatted = sign + formatted;
+            }
         }
         
         if (currencySymbol) {
