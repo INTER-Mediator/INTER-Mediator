@@ -8,6 +8,7 @@
  */
 
 var IMLibCalc = {
+        calculateOnServer: "im_server",
         calculateRequiredObject: null,
         /*
          key => {    // Key is the id attribute of the node which is defined as "calcuration"
@@ -127,7 +128,13 @@ var IMLibCalc = {
                             }
                             calcObject.values[field] = valueSeries;
                         }
-                        IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
+                        if (exp != IMLibCalc.calculateOnServer) {
+                            IMLibElement.setValueToIMNode(
+                                targetNode,
+                                calcFieldInfo.target.length > 0 ? calcFieldInfo.target : calcObject.nodeInfo.target,
+                                Parser.evaluate(exp, valuesArray),
+                                true);
+                        }
                     } else {
 
                     }
@@ -143,7 +150,7 @@ var IMLibCalc = {
          On updating, the updatedNodeId should be set to the updating node id.
          On deleting, parameter doesn't required.
          */
-        recalculation: function (updatedNodeId) {
+        recalculation: function (updatedNodeId, updateOnServer) {
             var nodeId, newValueAdded, leafNodes, calcObject, ix, calcFieldInfo, updatedValue, isRecalcAll = false;
             var targetNode, newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, exp, nInfo, valuesArray;
             var refersArray, valueSeries, targetElement, contextInfo, record, idValue;
@@ -162,13 +169,19 @@ var IMLibCalc = {
             IMLibNodeGraph.clear();
             for (nodeId in IMLibCalc.calculateRequiredObject) {
                 calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
-                    nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
-                calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(idValue);
-                targetNode = document.getElementById(calcFieldInfo.field);
-                for (field in calcObject.referes) {
-                    for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                        IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
+                if (IMLibCalc.calculateOnServer == calcObject.expression) {
+                    if (updateOnServer === true) {
+                        INTERMediator.constructMain(IMLibContextPool.getContextInfoFromId(nodeId, "").context);
+                    }
+                } else {
+                    idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                        nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(idValue);
+                    targetNode = document.getElementById(calcFieldInfo.field);
+                    for (field in calcObject.referes) {
+                        for (ix = 0; ix < calcObject.referes[field].length; ix++) {
+                            IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
+                        }
                     }
                 }
             }

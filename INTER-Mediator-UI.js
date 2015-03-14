@@ -124,7 +124,7 @@ var IMLibUI = {
                     }
                 }
             }
-            IMLibCalc.recalculation();//IMLibCalc.recalculation(idValue); // Optimization Required
+            IMLibCalc.recalculation();//IMLibCalc.recalculation(idValue, true); // Optimization Required
             INTERMediator.flushMessage();
             return true;
         }
@@ -440,7 +440,7 @@ var IMLibUI = {
             IMLibContextPool.removeRecordFromPool(removeNodes[i]);
         }
         IMLibElement.deleteNodes(removeNodes);
-        IMLibCalc.recalculation();
+        IMLibCalc.recalculation(undefined, true);
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
     },

@@ -294,7 +294,7 @@ IMLibContextPool = {
                     }
                 }
             }
-            IMLibCalc.recalculation();
+            IMLibCalc.recalculation(undefined, true);
         } else if (eventName == 'create') {
             for (i = 0; i < this.poolingContexts.length; i++) {
                 contextDef = this.getContextDef(this.poolingContexts[i].contextName);
@@ -315,7 +315,7 @@ IMLibContextPool = {
                     this.poolingContexts[i].removeEntry(info.pkvalue);
                 }
             }
-            IMLibCalc.recalculation();
+            IMLibCalc.recalculation(undefined, true);
         }
     },
 
@@ -628,7 +628,7 @@ IMLibContext = function (contextName) {
                 conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
                 dataset: [{field: key, value: value}]
             });
-            IMLibCalc.recalculation();
+            IMLibCalc.recalculation(undefined, true);
             INTERMediator.flushMessage();
         }
     };
