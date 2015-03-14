@@ -252,13 +252,9 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
-        $localeSign = isset($appLocale) ? $appLocale : ini_get("intl.default_locale");
+        $localeSign = isset($appLocale)? $appLocale : ini_get("intl.default_locale");
         setlocale(LC_ALL, $localeSign);
-        $localInfo = localeconv();
-        if ($localInfo['thousands_sep'] === '') {
-            $localInfo['thousands_sep'] = ',';
-        }
-        $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS($localInfo,""));
+        $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS(localeconv(),""));
     }
     
     private function combineScripts($currentDir)
@@ -282,6 +278,7 @@ class GenerateJSCode
         $content .= file_get_contents($bi2phpDir . 'biRSA.js');
         $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
+        $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
         
         return $content;

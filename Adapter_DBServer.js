@@ -79,77 +79,95 @@ INTERMediator_DBAdapter = {
             );
         }
     },
-    server_access: function (accessURL, debugMessageNumber, errorMessageNumber) {
-        var newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null,
-            clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-            mediatoken = null, appPath, authParams, jsonObject, i, notifySupport = false, useNull = false,
-            registeredID = "";
+    server_access: function (accessURL, doItAfter, debugMessageNumber, errorMessageNumber) {
+        var myRequest = null, appPath, authParams;
         appPath = INTERMediatorOnPage.getEntryPath();
         authParams = INTERMediator_DBAdapter.generate_authParams();
         INTERMediator_DBAdapter.logging_comAction(debugMessageNumber, appPath, accessURL, authParams);
-        INTERMediatorOnPage.notifySupport = notifySupport;
         try {
             myRequest = new XMLHttpRequest();
-            myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
+            myRequest.onreadystatechange = function () {
+                var newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null,
+                    clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
+                    mediatoken = null, appPath, authParams, jsonObject, i, notifySupport = false, useNull = false,
+                    registeredID = "";
+                switch (myRequest.readyState) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        if (myRequest.status == 200) {
+                            jsonObject = JSON.parse(myRequest.responseText);
+                            resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
+                            totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
+                            dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
+                            requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
+                            challenge = jsonObject.challenge ? jsonObject.challenge : null;
+                            clientid = jsonObject.clientid ? jsonObject.clientid : null;
+                            newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
+                            changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
+                            mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
+                            notifySupport = jsonObject.notifySupport;
+                            for (i = 0; i < jsonObject.errorMessages.length; i++) {
+                                INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
+                            }
+                            for (i = 0; i < jsonObject.debugMessages.length; i++) {
+                                INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
+                            }
+                            useNull = jsonObject.usenull;
+                            registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : "";
+
+                            INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
+                                challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
+                            INTERMediator_DBAdapter.store_challenge(challenge);
+                            if (clientid !== null) {
+                                INTERMediatorOnPage.clientId = clientid;
+                            }
+                            if (mediatoken !== null) {
+                                INTERMediatorOnPage.mediaToken = mediatoken;
+                            }
+                            /////////////////////////////////
+                            if (requireAuth) {
+                                INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
+                                INTERMediatorOnPage.authHashedPassword = null;
+                                throw "_im_requath_request_";
+                            }
+                            if (!accessURL.match(/access=challenge/)) {
+                                INTERMediatorOnPage.authCount = 0;
+                            }
+                            INTERMediatorOnPage.storeCredencialsToCookie();
+                            INTERMediatorOnPage.notifySupport = notifySupport;
+                            doItAfter({
+                                dbresult: dbresult,
+                                resultCount: resultCount,
+                                totalCount: totalCount,
+                                newRecordKeyValue: newRecordKeyValue,
+                                newPasswordResult: changePasswordResult,
+                                registeredId: registeredID,
+                                nullAcceptable: useNull
+                            });
+                        } else {
+
+                        }
+                        break;
+                }
+            }
+            myRequest.open('POST', appPath, true, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
             myRequest.setRequestHeader("charset", "utf-8");
             myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
             myRequest.send(accessURL + authParams);
-            jsonObject = JSON.parse(myRequest.responseText);
-            resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
-            totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
-            dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
-            requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
-            challenge = jsonObject.challenge ? jsonObject.challenge : null;
-            clientid = jsonObject.clientid ? jsonObject.clientid : null;
-            newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
-            changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
-            mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
-            notifySupport = jsonObject.notifySupport;
-            for (i = 0; i < jsonObject.errorMessages.length; i++) {
-                INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
-            }
-            for (i = 0; i < jsonObject.debugMessages.length; i++) {
-                INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
-            }
-            useNull = jsonObject.usenull;
-            registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : "";
-
-            INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
-                challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
-            INTERMediator_DBAdapter.store_challenge(challenge);
-            if (clientid !== null) {
-                INTERMediatorOnPage.clientId = clientid;
-            }
-            if (mediatoken !== null) {
-                INTERMediatorOnPage.mediaToken = mediatoken;
-            }
         } catch (e) {
-
             INTERMediator.setErrorMessage(e,
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
 
         }
-        if (requireAuth) {
-            INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
-            INTERMediatorOnPage.authHashedPassword = null;
-            throw "_im_requath_request_";
-        }
-        if (!accessURL.match(/access=challenge/)) {
-            INTERMediatorOnPage.authCount = 0;
-        }
-        INTERMediatorOnPage.storeCredencialsToCookie();
-        INTERMediatorOnPage.notifySupport = notifySupport;
-        return {
-            dbresult: dbresult,
-            resultCount: resultCount,
-            totalCount: totalCount,
-            newRecordKeyValue: newRecordKeyValue,
-            newPasswordResult: changePasswordResult,
-            registeredId: registeredID,
-            nullAcceptable: useNull
-        };
     },
 
     changePassowrd: function (username, oldpassword, newpassword) {
@@ -294,182 +312,186 @@ INTERMediator_DBAdapter = {
      This function returns recordset of retrieved.
      */
     db_query: function (args) {
-        var noError = true, i, index, params, counter, extCount, criteriaObject, sortkeyObject,
-            returnValue, result, ix, extCountSort, recordLimit = 10000000;
-
         if (args.name === null || args.name === "") {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
-            noError = false;
-        }
-        if (!noError) {
             return;
         }
 
-        if (args['records'] == null) {
-            params = "access=select&name=" + encodeURIComponent(args['name']);
-        } else {
-            if (Number(args.records) === 0) {
-                params = "access=describe&name=" + encodeURIComponent(args['name']);
-            } else {
+        INTERMediatorQueue.setTask(function (finishProc) {
+            var params, counter, extCount, criteriaObject, sortkeyObject,
+                returnValue, result, ix, extCountSort, recordLimit = 10000000;
+
+            if (args['records'] == null) {
                 params = "access=select&name=" + encodeURIComponent(args['name']);
-            }
-            if (args['uselimit'] === true
-                && Number(args.records) >= INTERMediator.pagedSize
-                && Number(INTERMediator.pagedSize) > 0) {
-                recordLimit = INTERMediator.pagedSize;
             } else {
-                recordLimit = args['records'];
-            }
-        }
-
-        if (args['primaryKeyOnly']) {
-            params += "&pkeyonly=true";
-        }
-
-        if (args['fields']) {
-            for (i = 0; i < args['fields'].length; i++) {
-                params += "&field_" + i + "=" + encodeURIComponent(args['fields'][i]);
-            }
-        }
-        counter = 0;
-        if (args['parentkeyvalue']) {
-            //noinspection JSDuplicatedDeclaration
-            for (index in args['parentkeyvalue']) {
-                if (args['parentkeyvalue'].hasOwnProperty(index)) {
-                    params += "&foreign" + counter
-                    + "field=" + encodeURIComponent(index);
-                    params += "&foreign" + counter
-                    + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
-                    counter++;
+                if (Number(args.records) === 0) {
+                    params = "access=describe&name=" + encodeURIComponent(args['name']);
+                } else {
+                    params = "access=select&name=" + encodeURIComponent(args['name']);
+                }
+                if (args['uselimit'] === true
+                    && Number(args.records) >= INTERMediator.pagedSize
+                    && Number(INTERMediator.pagedSize) > 0) {
+                    recordLimit = INTERMediator.pagedSize;
+                } else {
+                    recordLimit = args['records'];
                 }
             }
-        }
-        if (args['useoffset'] && INTERMediator.startFrom != null) {
-            params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
-        }
-        extCount = 0;
-        while (args['conditions'] && args['conditions'][extCount]) {
-            params += "&condition" + extCount;
-            params += "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
-            params += "&condition" + extCount;
-            params += "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
-            params += "&condition" + extCount;
-            params += "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
-            extCount++;
-        }
-        criteriaObject = INTERMediator.additionalCondition[args['name']];
-        if (criteriaObject) {
-            if (criteriaObject["field"]) {
-                criteriaObject = [criteriaObject];
+
+            if (args['primaryKeyOnly']) {
+                params += "&pkeyonly=true";
             }
-            for (index = 0; index < criteriaObject.length; index++) {
-                if (criteriaObject[index] && criteriaObject[index]["field"]) {
-                    if (criteriaObject[index]["value"] || criteriaObject[index]["field"] == "__operation__") {
-                        params += "&condition" + extCount;
-                        params += "field=" + encodeURIComponent(criteriaObject[index]["field"]);
-                        if (criteriaObject[index]["operator"] !== undefined) {
-                            params += "&condition" + extCount;
-                            params += "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
-                        }
-                        if (criteriaObject[index]["value"] !== undefined) {
-                            params += "&condition" + extCount;
-                            params += "value=" + encodeURIComponent(criteriaObject[index]["value"]);
-                        }
-                        extCount++;
+
+            if (args['fields']) {
+                for (i = 0; i < args['fields'].length; i++) {
+                    params += "&field_" + i + "=" + encodeURIComponent(args['fields'][i]);
+                }
+            }
+            counter = 0;
+            if (args['parentkeyvalue']) {
+                //noinspection JSDuplicatedDeclaration
+                for (index in args['parentkeyvalue']) {
+                    if (args['parentkeyvalue'].hasOwnProperty(index)) {
+                        params += "&foreign" + counter
+                        + "field=" + encodeURIComponent(index);
+                        params += "&foreign" + counter
+                        + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
+                        counter++;
                     }
                 }
+            }
+            if (args['useoffset'] && INTERMediator.startFrom != null) {
+                params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
+            }
+            extCount = 0;
+            while (args['conditions'] && args['conditions'][extCount]) {
+                params += "&condition" + extCount;
+                params += "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
+                params += "&condition" + extCount;
+                params += "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
+                params += "&condition" + extCount;
+                params += "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
+                extCount++;
+            }
+            criteriaObject = INTERMediator.additionalCondition[args['name']];
+            if (criteriaObject) {
+                if (criteriaObject["field"]) {
+                    criteriaObject = [criteriaObject];
+                }
+                for (index = 0; index < criteriaObject.length; index++) {
+                    if (criteriaObject[index] && criteriaObject[index]["field"]) {
+                        if (criteriaObject[index]["value"] || criteriaObject[index]["field"] == "__operation__") {
+                            params += "&condition" + extCount;
+                            params += "field=" + encodeURIComponent(criteriaObject[index]["field"]);
+                            if (criteriaObject[index]["operator"] !== undefined) {
+                                params += "&condition" + extCount;
+                                params += "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
+                            }
+                            if (criteriaObject[index]["value"] !== undefined) {
+                                params += "&condition" + extCount;
+                                params += "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                            }
+                            extCount++;
+                        }
+                    }
+
+                }
+            }
+
+            extCountSort = 0;
+            sortkeyObject = INTERMediator.additionalSortKey[args['name']];
+            if (sortkeyObject) {
+                if (sortkeyObject["field"]) {
+                    sortkeyObject = [sortkeyObject];
+                }
+                for (index = 0; index < sortkeyObject.length; index++) {
+                    params += "&sortkey" + extCountSort;
+                    params += "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
+                    params += "&sortkey" + extCountSort;
+                    params += "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
+                    extCountSort++;
+                }
 
             }
-        }
 
-        extCountSort = 0;
-        sortkeyObject = INTERMediator.additionalSortKey[args['name']];
-        if (sortkeyObject) {
-            if (sortkeyObject["field"]) {
-                sortkeyObject = [sortkeyObject];
+            var orderFields = {};
+            for (var key in IMLibLocalContext.store) {
+                var value = new String(IMLibLocalContext.store[key]);
+                var keyParams = key.split(":");
+                if (keyParams && keyParams.length > 1 && keyParams[1].trim() == args['name'] && value.length > 0) {
+                    if (keyParams[0].trim() == "condition" && keyParams.length >= 4) {
+                        var fields = keyParams[2].split(",");
+                        var operator = keyParams[3].trim();
+                        if (fields.length > 1) {
+                            params += "&condition" + extCount + "field=__operation__";
+                            params += "&condition" + extCount + "operator=ex";
+                            extCount++;
+                        }
+                        for (var index = 0; index < fields.length; index++) {
+                            params += "&condition" + extCount + "field=" + encodeURIComponent(fields[index].trim());
+                            params += "&condition" + extCount + "operator=" + encodeURIComponent(operator);
+                            params += "&condition" + extCount + "value=" + encodeURIComponent(value);
+                            extCount++;
+                        }
+                    } else if (keyParams[0].trim() == "valueofaddorder" && keyParams.length >= 4) {
+                        orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()];
+                    } else if (keyParams[0].trim() == "limitnumber" && keyParams.length >= 4) {
+                        recordLimit = parseInt(value);
+                    }
+                }
             }
-            for (index = 0; index < sortkeyObject.length; index++) {
-                params += "&sortkey" + extCountSort;
-                params += "field=" + encodeURIComponent(sortkeyObject[index]["field"]);
-                params += "&sortkey" + extCountSort;
-                params += "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
+            params += "&records=" + encodeURIComponent(recordLimit);
+            var orderedKeys = Object.keys(orderFields);
+            for (var i = 0; i < orderedKeys.length; i++) {
+                params += "&sortkey" + extCountSort + "field=" + encodeURIComponent(orderFields[orderedKeys[i]][0]);
+                params += "&sortkey" + extCountSort + "direction=" + encodeURIComponent(orderFields[orderedKeys[i]][1]);
                 extCountSort++;
             }
-
-        }
-
-        var orderFields = {};
-        for (var key in IMLibLocalContext.store) {
-            var value = new String(IMLibLocalContext.store[key]);
-            var keyParams = key.split(":");
-            if (keyParams && keyParams.length > 1 && keyParams[1].trim() == args['name'] && value.length > 0) {
-                if (keyParams[0].trim() == "condition" && keyParams.length >= 4) {
-                    var fields = keyParams[2].split(",");
-                    var operator = keyParams[3].trim();
-                    if (fields.length > 1) {
-                        params += "&condition" + extCount + "field=__operation__";
-                        params += "&condition" + extCount + "operator=ex";
-                        extCount++;
-                    }
-                    for (var index = 0; index < fields.length; index++) {
-                        params += "&condition" + extCount + "field=" + encodeURIComponent(fields[index].trim());
-                        params += "&condition" + extCount + "operator=" + encodeURIComponent(operator);
-                        params += "&condition" + extCount + "value=" + encodeURIComponent(value);
-                        extCount++;
-                    }
-                } else if (keyParams[0].trim() == "valueofaddorder" && keyParams.length >= 4) {
-                    orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()];
-                } else if (keyParams[0].trim() == "limitnumber" && keyParams.length >= 4) {
-                    recordLimit = parseInt(value);
-                }
-            }
-        }
-        params += "&records=" + encodeURIComponent(recordLimit);
-        var orderedKeys = Object.keys(orderFields);
-        for (var i = 0; i < orderedKeys.length; i++) {
-            params += "&sortkey" + extCountSort + "field=" + encodeURIComponent(orderFields[orderedKeys[i]][0]);
-            params += "&sortkey" + extCountSort + "direction=" + encodeURIComponent(orderFields[orderedKeys[i]][1]);
-            extCountSort++;
-        }
 // params += "&randkey" + Math.random();    // For ie...
 // IE uses caches as the result in spite of several headers. So URL should be randomly.
 //
 // This is not requred because the Notification feature adds the client Identifier for each communication.
 // msyk June 1, 2014
-        returnValue = {};
-        try {
-            result = this.server_access(params, 1012, 1004);
-            returnValue.recordset = result.dbresult;
-            returnValue.totalCount = result.resultCount;
-            returnValue.count = 0;
-            returnValue.registeredId = result.registeredId;
-            returnValue.nullAcceptable = result.nullAcceptable;
-            for (ix in result.dbresult) {
-                returnValue.count++;
-            }
-            if (( args['paging'] != null) && ( args['paging'] == true )) {
-                if (!(Number(args['records']) >= Number(INTERMediator.pagedSize)
-                    && Number(INTERMediator.pagedSize) > 0)) {
-                    INTERMediator.pagedSize = Number(args['records']);
+            returnValue = {};
+            try {
+                this.server_access(params, function (result) {
+                    returnValue.recordset = result.dbresult;
+                    returnValue.totalCount = result.resultCount;
+                    returnValue.count = 0;
+                    returnValue.registeredId = result.registeredId;
+                    returnValue.nullAcceptable = result.nullAcceptable;
+                    for (ix in result.dbresult) {
+                        returnValue.count++;
+                    }
+                    if (( args['paging'] != null) && ( args['paging'] == true )) {
+                        if (!(Number(args['records']) >= Number(INTERMediator.pagedSize)
+                            && Number(INTERMediator.pagedSize) > 0)) {
+                            INTERMediator.pagedSize = Number(args['records']);
+                        }
+                        INTERMediator.pagedAllCount = Number(result.resultCount);
+                        if (result.totalCount) {
+                            INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
+                        }
+                    }
+                    INTERMediatorQueue.setData("access_result", 100);
+                    finishProc();
+                }, 1012, 1004);
+
+            } catch (ex) {
+                if (ex == "_im_requath_request_") {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex, "EXCEPTION-17");
                 }
-                INTERMediator.pagedAllCount = Number(result.resultCount);
-                if (result.totalCount) {
-                    INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
-                }
+                returnValue.recordset = null;
+                returnValue.totalCount = 0;
+                returnValue.count = 0;
+                returnValue.registeredid = null;
+                returnValue.nullAcceptable = null;
             }
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                throw ex;
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-17");
-            }
-            returnValue.recordset = null;
-            returnValue.totalCount = 0;
-            returnValue.count = 0;
-            returnValue.registeredid = null;
-            returnValue.nullAcceptable = null;
-        }
-        return returnValue;
+            INTERMediatorQueue.setData("access_result", 100);
+            finishProc();
+        });
     },
 
     db_queryWithAuth: function (args, completion) {
