@@ -252,7 +252,7 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
-        $localeSign = isset($appLocale) ? $appLocale : ini_get("intl.default_locale");
+        $localeSign = isset($appLocale)? $appLocale : ini_get("intl.default_locale");
         setlocale(LC_ALL, $localeSign);
         $localInfo = localeconv();
         if (!isset($localInfo['negative_sign']) || $localInfo['negative_sign'] === '') {
