@@ -64,12 +64,12 @@ var IMLibElement = {
             }
             patterns = [
                 /^number\(([0-9]+)\)/,
-                /^number\(\)/,
+                /^number[\(\)]*/,
                 /^currency\(([0-9]+)\)/,
-                /^currency\(\)/,
+                /^currency[\(\)]*/,
                 /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/,
                 /^percent\(([0-9]+)\)/,
-                /^percent\(\)/
+                /^percent[\(\)]*/
             ];
             for (i = 0; i < patterns.length; i++) {
                 param1 = formatSpec.match(patterns[i]);
@@ -91,9 +91,9 @@ var IMLibElement = {
                             break;
                         default:
                             if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.numberFormat(curVal, flags);
+                                formattedValue = INTERMediatorLib.numberFormat(curVal, 0, flags);
                             } else if (param1[0].indexOf("currency") > -1) {
-                                formattedValue = INTERMediatorLib.currencyFormat(curVal, flags);
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal, 0, flags);
                             } else if (param1[0].indexOf("percent") > -1) {
                                 formattedValue = INTERMediatorLib.percentFormat(curVal, 0, flags);
                             }
