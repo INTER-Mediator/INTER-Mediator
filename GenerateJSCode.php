@@ -255,7 +255,10 @@ class GenerateJSCode
         $localeSign = isset($appLocale) ? $appLocale : ini_get("intl.default_locale");
         setlocale(LC_ALL, $localeSign);
         $localInfo = localeconv();
-        if ($localInfo['thousands_sep'] === '') {
+        if (!isset($localInfo['negative_sign']) || $localInfo['negative_sign'] === '') {
+            $localInfo['negative_sign'] = '-';
+        }
+        if (!isset($localInfo['thousands_sep']) || $localInfo['thousands_sep'] === '') {
             $localInfo['thousands_sep'] = ',';
         }
         $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS($localInfo,""));
