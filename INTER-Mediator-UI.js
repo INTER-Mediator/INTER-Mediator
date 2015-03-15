@@ -124,6 +124,7 @@ var IMLibUI = {
                     }
                 }
             }
+            IMLibCalc.removeInvalidNodeInfo();
             IMLibCalc.recalculation();//IMLibCalc.recalculation(idValue, true); // Optimization Required
             INTERMediator.flushMessage();
             return true;

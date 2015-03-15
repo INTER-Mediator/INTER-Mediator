@@ -503,8 +503,8 @@ var INTERMediatorLib = {
             fieldName = comps[1];
             targetName = comps[2];
         } else if (comps.length == 2) {
-            fieldName = comps[0];
-            targetName = comps[1];
+            tableName = comps[0];
+            fieldName = comps[1];
         } else {
             fieldName = nodeInfo;
         }
@@ -586,9 +586,9 @@ var INTERMediatorLib = {
      digit should be a positive value. negative value doesn't support so far.
      */
     numberFormat_Impl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
-        var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr, 
+        var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr,
             roundedNum, underDecimalNum, integerNum, formatted, isMinusValue;
-        
+
         if (str === "" || str === null || str === undefined) {
             return "";
         }
@@ -627,11 +627,11 @@ var INTERMediatorLib = {
             n = -n;
             isMinusValue = true;
         }
-        
+
         if (flags && flags.blankIfZero === true && n === 0) {
             return "";
         }
-        
+
         if (flags && flags.usePercentNotation) {
             n = n * 100;
         }
@@ -645,7 +645,7 @@ var INTERMediatorLib = {
         while (underNumStr.length < underDot) {
             underNumStr = "0" + underNumStr;
         }
-        
+
         if (flags && flags.useSeparator === true) {
             if (n === 0) {
                 formatted = "0";
@@ -683,7 +683,7 @@ var INTERMediatorLib = {
                 formatted = sign + formatted;
             }
         }
-        
+
         if (currencySymbol) {
             if (!isMinusValue) {
                 if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {
@@ -715,11 +715,6 @@ var INTERMediatorLib = {
                 }
             }
         }
-        
-        if (flags && flags.usePercentNotation === true && formatted !== "") {
-            formatted = formatted + "%";
-        }
-        
         return formatted;
     },
 
@@ -771,6 +766,19 @@ var INTERMediatorLib = {
             false,
             flags
         );
+    },
+
+    numberFormat: function (str, digit) {
+        return INTERMediatorLib.numberFormat_Impl(str, digit,
+            INTERMediatorOnPage.localeInfo.decimal_point,
+            INTERMediatorOnPage.localeInfo.thousands_sep);
+    },
+
+    currencyFormat: function (str, digit) {
+        return INTERMediatorLib.numberFormat_Impl(str, digit,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+            INTERMediatorOnPage.localeInfo.currency_symbol);
     },
 
     objectToString: function (obj) {
@@ -1220,6 +1228,16 @@ var IMLibNodeGraph = {
             this.nodes.splice(this.nodes.indexOf(dests[i]), 1);
         }
         return dests;
+    },
+    removeNode: function(node)  {
+        var i, newEdges = [];
+        for (i = 0; i < this.edges.length; i++) {
+            if (this.edges[i].to != node) {
+                newEdges.push(this.edges[i]);
+            }
+        }
+        this.edges = newEdges;
+        this.nodes.splice(this.nodes.indexOf(node), 1);
     },
     applyToAllNodes: function (f) {
         var i;
