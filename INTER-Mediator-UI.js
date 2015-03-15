@@ -101,6 +101,7 @@ var IMLibUI = {
                     }
                 }
             }
+            IMLibCalc.removeInvalidNodeInfo();
             IMLibCalc.recalculation(idValue, true);
             INTERMediator.flushMessage();
         }
