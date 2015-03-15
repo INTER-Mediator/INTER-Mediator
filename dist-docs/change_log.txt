@@ -16,6 +16,7 @@ Ver.5.1 (in development)
 - Avoid using the @-operator for error suppression in NotifyServer.php to reduce bug risk.
 - Eliminate die() in INTER-Mediator.php to reduce bug risk.
 - Remove duplication in MessageStrings_ja.php and modify MessageStrings.php.
+- Fix loading DB_Null.php in some cases.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
