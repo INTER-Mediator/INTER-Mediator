@@ -130,8 +130,97 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         assert.equals(INTERMediatorLib.numberFormat(999999, -3), "1,000,000");
         // A negative second parameter doesn't support so far.
     },
-    "format string detection": function()   {
+    "INTERMediatorLib.numberFormat(0) should return \"\" if blankifzero is enabled.": function () {
+        var flags = { blankIfZero: true };
+        assert.equals(INTERMediatorLib.numberFormat("0", 0, flags), "");
+        assert.equals(INTERMediatorLib.numberFormat("０", 0, flags), "");
+        assert.equals(INTERMediatorLib.numberFormat("0.", 0, flags), "");
+    },
+    "INTERMediatorLib.numberFormat(1) should return \"1\" if blankifzero is enabled.": function () {
+        var flags = { blankIfZero: true };
+        assert.equals(INTERMediatorLib.numberFormat("1", 0, flags), "1");
+    },
+    "format string detection": function() {
         assert.equals(INTERMediatorLib.digitSeparator(), [".", ",", 3]);
+    }
+});
+
+buster.testCase("INTERMediatorLib.booleanFormat() Test", {
+    "should return \"\" if the first parameter is \"\"": function () {
+        assert.equals(INTERMediatorLib.booleanFormat("", "non-zeros", "zeros"), "");
+    },
+    "should return \"\" if the first parameter is null": function () {
+        assert.equals(INTERMediatorLib.booleanFormat(null, "non-zeros", "zeros"), "");
+    },
+    "should return \"non-zeros\" if the first parameter is 1": function () {
+        assert.equals(INTERMediatorLib.booleanFormat(1, "non-zeros", "zeros"), "non-zeros");
+    },
+    "should return \"zeros\" if the first parameter is 0": function () {
+        assert.equals(INTERMediatorLib.booleanFormat(0, "non-zeros", "zeros"), "zeros");
+    }
+});
+
+buster.testCase("INTERMediatorLib.percentFormat() Test", {
+    setUp: function () {
+        INTERMediatorOnPage.localeInfo = {
+            'decimal_point': '.',
+            'thousands_sep': ',',
+            'int_curr_symbol': 'JPY ',
+            'currency_symbol': '¥',
+            'mon_decimal_point': '.',
+            'mon_thousands_sep': ',',
+            'positive_sign': '',
+            'negative_sign': '-',
+            'int_frac_digits': '0',
+            'frac_digits': '0',
+            'p_cs_precedes': '1',
+            'p_sep_by_space': '0',
+            'n_cs_precedes': '1',
+            'n_sep_by_space': '0',
+            'p_sign_posn': '1',
+            'n_sign_posn': '4',
+            'grouping': {
+                '0': '3',
+                '1': '3'
+            },
+            'mon_grouping': {
+                '0': '3',
+                '1': '3'
+            }
+        };
+    },
+    "should return \"\" if the parameter is \"\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat(""), "");
+    },
+    "should return \"\" if the parameter is null": function () {
+        assert.equals(INTERMediatorLib.percentFormat(null), "");
+    },
+    "should return \"\" if the parameter is \"1\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("1"), "100%");
+    },
+    "should return \"\" if the parameter is \"-2\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("-2"), "-200%");
+    },
+    "should return \"\" if the parameter is \"10\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("10"), "1000%");
+    },
+    "should return \"\" if the parameter is \"test\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("test"), "");
+    },
+    "should return \"\" if the parameter is \"3A\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("3A"), "300%");
+    },
+    "should return \"\" if the parameter is \"4-0\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("4-0"), "4000%");
+    },
+    "should return \"\" if the parameter is \"-50-0\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("-50-0"), "-50000%");
+    },
+    "should return \"\" if the parameter is \"６７-0\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("６７-0"), "67000%");
+    },
+    "should return \"\" if the parameter is \"0.1\"": function () {
+        assert.equals(INTERMediatorLib.percentFormat("0.1"), "10%");
     }
 });
 

@@ -27,7 +27,7 @@ var IMLibElement = {
 
         nodeTag = element.tagName;
 
-        if (clearField === true && curTarget == "") {
+        if (clearField === true && curTarget === "") {
             switch (nodeTag) {
                 case "INPUT":
                     switch (element.getAttribute("type")) {
@@ -37,6 +37,7 @@ var IMLibElement = {
                         default:
                             break;
                     }
+                    break;
                 case "SELECT":
                     break;
                 default:
@@ -130,7 +131,7 @@ var IMLibElement = {
             curVal = formattedValue;
         }
 
-        if (curTarget != null && curTarget.length > 0) { //target is specified
+        if (curTarget !== null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
@@ -315,13 +316,13 @@ var IMLibElement = {
         } else {
             return "";
         }
-        if (INTERMediatorLib.isWidgetElement(element)
-            || (INTERMediatorLib.isWidgetElement(element.parentNode))) {
+        if (INTERMediatorLib.isWidgetElement(element) || 
+            (INTERMediatorLib.isWidgetElement(element.parentNode))) {
             newValue = element._im_getValue();
         } else if (nodeTag == "INPUT") {
             if (typeAttr == 'checkbox') {
                 dbspec = INTERMediatorOnPage.getDBSpecification();
-                if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
+                if (dbspec["db-class"] !== null && dbspec["db-class"] == "FileMaker_FX") {
                     mergedValues = [];
                     targetNodes = element.parentNode.getElementsByTagName('INPUT');
                     for (k = 0; k < targetNodes.length; k++) {
@@ -371,14 +372,14 @@ var IMLibElement = {
         if (INTERMediator.ignoreOptimisticLocking) {
             return true;
         }
-        targetContext = contextInfo['context'];
-        targetField = contextInfo['field'];
-        keyingComp = contextInfo['record'].split('=');
+        targetContext = contextInfo.context;
+        targetField = contextInfo.field;
+        keyingComp = contextInfo.record.split('=');
         keyingField = keyingComp[0];
         keyingComp.shift();
         keyingValue = keyingComp.join('=');
         checkQueryParameter = {
-            name: contextInfo['context'].contextName,
+            name: contextInfo.context.contextName,
             records: 1,
             paging: false,
             fields: [targetField],
@@ -413,9 +414,9 @@ var IMLibElement = {
             if (currentVal.recordset && currentVal.recordset[0]) {
                 for (portalIndex in currentVal.recordset[0]) {
                     var portalRecord = currentVal.recordset[0][portalIndex];
-                    if (portalRecord[portalKey]
-                        && portalRecord[targetField] !== undefined
-                        && portalRecord[portalKey] == contextInfo.portal) {
+                    if (portalRecord[portalKey] && 
+                        portalRecord[targetField] !== undefined && 
+                        portalRecord[portalKey] == contextInfo.portal) {
                         currentFieldVal = portalRecord[targetField];
                         isCheckResult = true;
                     }
@@ -427,9 +428,9 @@ var IMLibElement = {
                 return false;
             }
         } else {
-            if (currentVal.recordset === null
-                || currentVal.recordset[0] === null
-                || currentVal.recordset[0][targetField] === undefined) {
+            if (currentVal.recordset === null || 
+                currentVal.recordset[0] === null || 
+                currentVal.recordset[0][targetField] === undefined) {
                 alert(INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1003], [targetField]));
                 return false;
@@ -442,7 +443,7 @@ var IMLibElement = {
             }
             currentFieldVal = currentVal.recordset[0][targetField];
         }
-        initialvalue = targetContext.getValue(contextInfo['record'], targetField, contextInfo.portal);
+        initialvalue = targetContext.getValue(contextInfo.record, targetField, contextInfo.portal);
 
         switch (element.tagName) {
             case "INPUT":
@@ -504,7 +505,8 @@ var IMLibElement = {
                         referes = {};
                         values = {};
                         for (j in calcObject.referes) {
-                            referes[j] = [], values[j] = [];
+                            referes[j] = [];
+                            values[j] = [];
                             for (k = 0; k < calcObject.referes[j].length; k++) {
                                 if (removeNodeId != calcObject.referes[j][k]) {
                                     referes[j].push(calcObject.referes[j][k]);
