@@ -586,9 +586,9 @@ var INTERMediatorLib = {
      digit should be a positive value. negative value doesn't support so far.
      */
     numberFormat_Impl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
-        var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr, 
+        var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr,
             roundedNum, underDecimalNum, integerNum, formatted, isMinusValue;
-        
+
         if (str === "" || str === null || str === undefined) {
             return "";
         }
@@ -602,9 +602,6 @@ var INTERMediatorLib = {
             str = String(str).split(String.fromCharCode(65296 + i)).join(String(i));
         }
         n = this.toNumber(str);
-        if (isNaN(n)) {
-            return "";
-        }
         sign = INTERMediatorOnPage.localeInfo.positive_sign;
         isMinusValue = false;
         if (n < 0) {
@@ -627,11 +624,11 @@ var INTERMediatorLib = {
             n = -n;
             isMinusValue = true;
         }
-        
+
         if (flags && flags.blankIfZero === true && n === 0) {
             return "";
         }
-        
+
         if (flags && flags.usePercentNotation) {
             n = n * 100;
         }
@@ -641,11 +638,11 @@ var INTERMediatorLib = {
         roundedNum = Math.round(n * power);
         underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
         integerNum = (roundedNum - underDecimalNum) / power;
-        underNumStr = (underDot > 0) ? String(underDecimalNum) : '';
+        underNumStr = (underDot > 0) ? new String(underDecimalNum) : '';
         while (underNumStr.length < underDot) {
             underNumStr = "0" + underNumStr;
         }
-        
+
         if (flags && flags.useSeparator === true) {
             if (n === 0) {
                 formatted = "0";
@@ -683,94 +680,52 @@ var INTERMediatorLib = {
                 formatted = sign + formatted;
             }
         }
-        
+
         if (currencySymbol) {
             if (!isMinusValue) {
                 if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {
                     if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) {
-                        formatted = currencySymbol + " " + formatted;
+                        formatted = curSymbol + " " + formatted;
                     } else {
-                        formatted = currencySymbol + formatted;
+                        formatted = curSymbol + formatted;
                     }
                 } else {
                     if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) {
-                        formatted = formatted + " " + currencySymbol;
+                        formatted = formatted + " " + curSymbol;
                     } else {
-                        formatted = formatted + currencySymbol;
+                        formatted = formatted + curSymbol;
                     }
                 }
             } else {
                 if (INTERMediatorOnPage.localeInfo.n_cs_precedes == 1) {
                     if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) {
-                        formatted = currencySymbol + " " + formatted;
+                        formatted = curSymbol + " " + formatted;
                     } else {
-                        formatted = currencySymbol + formatted;
+                        formatted = curSymbol + formatted;
                     }
                 } else {
                     if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) {
-                        formatted = formatted + " " + currencySymbol;
+                        formatted = formatted + " " + curSymbol;
                     } else {
-                        formatted = formatted + currencySymbol;
+                        formatted = formatted + curSymbol;
                     }
                 }
             }
         }
-        
-        if (flags && flags.usePercentNotation === true && formatted !== "") {
-            formatted = formatted + "%";
-        }
-        
         return formatted;
     },
 
-    numberFormat: function (str, digit, flags) {
-        if (flags === undefined) {
-            flags = {};
-        }
-        flags.useSeparator = true;
+    numberFormat: function (str, digit) {
         return INTERMediatorLib.numberFormat_Impl(str, digit,
             INTERMediatorOnPage.localeInfo.decimal_point,
-            INTERMediatorOnPage.localeInfo.thousands_sep,
-            false,
-            flags
-        );
+            INTERMediatorOnPage.localeInfo.thousands_sep);
     },
 
-    currencyFormat: function (str, digit, flags) {
+    currencyFormat: function (str, digit) {
         return INTERMediatorLib.numberFormat_Impl(str, digit,
             INTERMediatorOnPage.localeInfo.mon_decimal_point,
             INTERMediatorOnPage.localeInfo.mon_thousands_sep,
-            INTERMediatorOnPage.localeInfo.currency_symbol,
-            flags
-        );
-    },
-
-    booleanFormat: function (str, trueString, falseString) {
-        if (str === "" || str === null) {
-            return "";
-        } else {
-            if (parseInt(str, 10) !== 0) {
-                return trueString;
-            } else {
-                return falseString;
-            }
-        }
-    },
-
-    percentFormat: function (str, digit, flags) {
-        if (flags === undefined) {
-            flags = {};
-        }
-        flags.usePercentNotation = true;
-        if (digit === undefined) {
-            digit = 0;
-        }
-        return INTERMediatorLib.numberFormat_Impl(str, digit,
-            INTERMediatorOnPage.localeInfo.decimal_point,
-            INTERMediatorOnPage.localeInfo.thousands_sep,
-            false,
-            flags
-        );
+            INTERMediatorOnPage.localeInfo.currency_symbol);
     },
 
     objectToString: function (obj) {
@@ -873,10 +828,10 @@ var INTERMediatorLib = {
 
     is_array: function (target) {
         return target
-        && typeof target === 'object'
-        && typeof target.length === 'number'
-        && typeof target.splice === 'function'
-        && !(target.propertyIsEnumerable('length'));
+            && typeof target === 'object'
+            && typeof target.length === 'number'
+            && typeof target.splice === 'function'
+            && !(target.propertyIsEnumerable('length'));
     },
 
     getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
@@ -1149,6 +1104,16 @@ var IMLibNodeGraph = {
             this.nodes.splice(this.nodes.indexOf(dests[i]), 1);
         }
         return dests;
+    },
+    removeNode: function(node)  {
+        var i, newEdges = [];
+        for (i = 0; i < this.edges.length; i++) {
+            if (this.edges[i].to != node) {
+                newEdges.push(this.edges[i]);
+            }
+        }
+        this.edges = newEdges;
+        this.nodes.splice(this.nodes.indexOf(node), 1);
     },
     applyToAllNodes: function (f) {
         var i;

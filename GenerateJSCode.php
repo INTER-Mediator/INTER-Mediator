@@ -252,7 +252,7 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
-        $localeSign = isset($appLocale) ? $appLocale : ini_get("intl.default_locale");
+        $localeSign = isset($appLocale)? $appLocale : ini_get("intl.default_locale");
         setlocale(LC_ALL, $localeSign);
         $localInfo = localeconv();
         if (!isset($localInfo['negative_sign']) || $localInfo['negative_sign'] === '') {
@@ -285,7 +285,6 @@ class GenerateJSCode
         $content .= file_get_contents($bi2phpDir . 'biRSA.js');
         $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
-        $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
         
         return $content;

@@ -101,7 +101,8 @@ var IMLibUI = {
                     }
                 }
             }
-            IMLibCalc.recalculation(idValue);
+            IMLibCalc.removeInvalidNodeInfo();
+            IMLibCalc.recalculation(idValue, true);
             INTERMediator.flushMessage();
         }
 
@@ -294,7 +295,7 @@ var IMLibUI = {
             IMLibContextPool.removeRecordFromPool(removeNodes[i]);
         }
         IMLibElement.deleteNodes(removeNodes);
-        IMLibCalc.recalculation();
+        IMLibCalc.recalculation(undefined, true);
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
     },
