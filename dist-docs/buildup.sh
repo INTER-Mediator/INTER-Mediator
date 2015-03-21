@@ -69,6 +69,7 @@ cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/t
 cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Lib.js"                   >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Calc.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
