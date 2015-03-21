@@ -232,12 +232,12 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
     },
     "Wrong expression.1": function () {
         assert.exception(function () {
-            Parser.evaluate("(a + b", {'a': [20], 'b': [2]})
+            Parser.evaluate("(a + b", {'a': [20], 'b': [2]});
         });
     },
     "Wrong expression.2": function () {
         assert.exception(function () {
-            Parser.evaluate("a + b + malfunction(a)", {'a': [20], 'b': [2]})
+            Parser.evaluate("a + b + malfunction(a)", {'a': [20], 'b': [2]});
         });
     },
 
