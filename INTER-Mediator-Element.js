@@ -104,7 +104,7 @@ var IMLibElement = {
                             break;
                         case 2:
                             if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1], flags);
+                                formattedValue = INTERMediatorLib.decimalFormat(curVal, param1[1], flags);
                             } else if (param1[0].indexOf("currency") > -1) {
                                 formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1], flags);
                             } else if (param1[0].indexOf("percent") > -1) {
@@ -113,7 +113,7 @@ var IMLibElement = {
                             break;
                         default:
                             if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.numberFormat(curVal, 0, flags);
+                                formattedValue = INTERMediatorLib.decimalFormat(curVal, 0, flags);
                             } else if (param1[0].indexOf("currency") > -1) {
                                 formattedValue = INTERMediatorLib.currencyFormat(curVal, 0, flags);
                             } else if (param1[0].indexOf("percent") > -1) {
