@@ -605,34 +605,37 @@ var INTERMediatorLib = {
         if (isNaN(n)) {
             return "";
         }
+        
+        if (flags === undefined) {
+            flags = {};
+        }
+
         sign = INTERMediatorOnPage.localeInfo.positive_sign;
         isMinusValue = false;
         if (n < 0) {
             sign = INTERMediatorOnPage.localeInfo.negative_sign;
-            if (flags) {
-                if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {
-                    sign = "-";
-                } else if (flags.negativeStyle === 2) {
-                    sign = "(";
-                    tailSign = ")";
-                } else if (flags.negativeStyle === 3) {
-                    sign = "<";
-                    tailSign = ">";
-                } else if (flags.negativeStyle === 4) {
-                    sign = " CR";
-                } else if (flags.negativeStyle === 5) {
-                    sign = "▲";
-                }
+            if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {
+                sign = "-";
+            } else if (flags.negativeStyle === 2) {
+                sign = "(";
+                tailSign = ")";
+            } else if (flags.negativeStyle === 3) {
+                sign = "<";
+                tailSign = ">";
+            } else if (flags.negativeStyle === 4) {
+                sign = " CR";
+            } else if (flags.negativeStyle === 5) {
+                sign = "▲";
             }
             n = -n;
             isMinusValue = true;
         }
 
-        if (flags && flags.blankIfZero === true && n === 0) {
+        if (flags.blankIfZero === true && n === 0) {
             return "";
         }
 
-        if (flags && flags.usePercentNotation) {
+        if (flags.usePercentNotation) {
             n = n * 100;
         }
 
@@ -646,7 +649,7 @@ var INTERMediatorLib = {
             underNumStr = "0" + underNumStr;
         }
 
-        if (flags && flags.useSeparator === true) {
+        if (flags.useSeparator === true) {
             if (n === 0) {
                 formatted = "0";
             } else {
@@ -661,11 +664,11 @@ var INTERMediatorLib = {
                     }
                 }
                 formatted = s.reverse().join(thousandsSep) + (underNumStr === "" ? "" : decimalPoint + underNumStr);
-                if (flags && (flags.negativeStyle === 0 || flags.negativeStyle === 5)) {
+                if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
                     formatted = sign + formatted;
-                } else if (flags && (flags.negativeStyle === 1 || flags.negativeStyle === 4)) {
+                } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {
                     formatted = formatted + sign;
-                } else if (flags && (flags.negativeStyle === 2 || flags.negativeStyle === 3)) {
+                } else if (flags.negativeStyle === 2 || flags.negativeStyle === 3) {
                     formatted = sign + formatted + tailSign;
                 } else {
                     formatted = sign + formatted;
@@ -673,11 +676,11 @@ var INTERMediatorLib = {
             }
         } else {
             formatted = integerNum + (underNumStr === "" ? "" : decimalPoint + underNumStr);
-            if (flags && (flags.negativeStyle === 0 || flags.negativeStyle === 5)) {
+            if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
                 formatted = sign + formatted;
-            } else if (flags && (flags.negativeStyle === 1 || flags.negativeStyle === 4)) {
+            } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {
                 formatted = formatted + sign;
-            } else if (flags && (flags.negativeStyle === 2 || flags.negativeStyle === 3)) {
+            } else if (flags.negativeStyle === 2 || flags.negativeStyle === 3) {
                 formatted = sign + formatted + tailSign;
             } else {
                 formatted = sign + formatted;
@@ -716,7 +719,7 @@ var INTERMediatorLib = {
             }
         }
         
-        if (flags && flags.usePercentNotation === true && formatted !== "") {
+        if (flags.usePercentNotation === true && formatted !== "") {
             formatted = formatted + "%";
         }
         
@@ -727,7 +730,11 @@ var INTERMediatorLib = {
         if (flags === undefined) {
             flags = {};
         }
-        flags.useSeparator = true;
+        flags.useSeparator = true;    // for compatibility
+        return this.decimalFormat(str, digit, flags);
+    },
+    
+    decimalFormat: function (str, digit, flags) {
         return INTERMediatorLib.numberFormat_Impl(str, digit,
             INTERMediatorOnPage.localeInfo.decimal_point,
             INTERMediatorOnPage.localeInfo.thousands_sep,

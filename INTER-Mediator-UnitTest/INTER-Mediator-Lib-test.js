@@ -79,33 +79,6 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         };
     },
     "small integer should not be converted.": function () {
-        INTERMediatorOnPage.localeInfo = {
-            'decimal_point': '.',
-            'thousands_sep': ',',
-            'int_curr_symbol': 'JPY ',
-            'currency_symbol': '¥',
-            'mon_decimal_point': '.',
-            'mon_thousands_sep': ',',
-            'positive_sign': '',
-            'negative_sign': '-',
-            'int_frac_digits': '0',
-            'frac_digits': '0',
-            'p_cs_precedes': '1',
-            'p_sep_by_space': '0',
-            'n_cs_precedes': '1',
-            'n_sep_by_space': '0',
-            'p_sign_posn': '1',
-            'n_sign_posn': '4',
-            'grouping': {
-                '0': '3',
-                '1': '3'
-            },
-            'mon_grouping': {
-                '0': '3',
-                '1': '3'
-            }
-        };
-
         assert.equals(INTERMediatorLib.numberFormat(45, 0), "45");
         assert.equals(INTERMediatorLib.numberFormat(45.678, 1), "45.7");
         assert.equals(INTERMediatorLib.numberFormat(45.678, 2), "45.68");
@@ -115,33 +88,6 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         assert.equals(INTERMediatorLib.numberFormat(45.123, 3), "45.123");
     },
     "each 3-digits should be devided.": function () {
-        INTERMediatorOnPage.localeInfo = {
-            'decimal_point': '.',
-            'thousands_sep': ',',
-            'int_curr_symbol': 'JPY ',
-            'currency_symbol': '¥',
-            'mon_decimal_point': '.',
-            'mon_thousands_sep': ',',
-            'positive_sign': '',
-            'negative_sign': '-',
-            'int_frac_digits': '0',
-            'frac_digits': '0',
-            'p_cs_precedes': '1',
-            'p_sep_by_space': '0',
-            'n_cs_precedes': '1',
-            'n_sep_by_space': '0',
-            'p_sign_posn': '1',
-            'n_sign_posn': '4',
-            'grouping': {
-                '0': '3',
-                '1': '3'
-            },
-            'mon_grouping': {
-                '0': '3',
-                '1': '3'
-            }
-        };
-
         assert.equals(INTERMediatorLib.numberFormat(999, 0), "999");
         assert.equals(INTERMediatorLib.numberFormat(1000, 0), "1,000");
         assert.equals(INTERMediatorLib.numberFormat(999999, 0), "999,999");
@@ -158,18 +104,91 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         assert.equals(INTERMediatorLib.numberFormat(999999, -3), "1,000,000");
         // A negative second parameter doesn't support so far.
     },
-    "INTERMediatorLib.numberFormat(0) should return \"\" if blankifzero is enabled.": function () {
-        var flags = { blankIfZero: true };
-        assert.equals(INTERMediatorLib.numberFormat("0", 0, flags), "");
-        assert.equals(INTERMediatorLib.numberFormat("０", 0, flags), "");
-        assert.equals(INTERMediatorLib.numberFormat("0.", 0, flags), "");
-    },
-    "INTERMediatorLib.numberFormat(1) should return \"1\" if blankifzero is enabled.": function () {
-        var flags = { blankIfZero: true };
-        assert.equals(INTERMediatorLib.numberFormat("1", 0, flags), "1");
-    },
     "format string detection": function() {
         assert.equals(INTERMediatorLib.digitSeparator(), [".", ",", 3]);
+    }
+});
+
+buster.testCase("INTERMediatorLib.decimalFormat() Test", {
+    setUp: function () {
+        INTERMediatorOnPage.localeInfo = {
+            'decimal_point': '.',
+            'thousands_sep': ',',
+            'int_curr_symbol': 'JPY ',
+            'currency_symbol': '¥',
+            'mon_decimal_point': '.',
+            'mon_thousands_sep': ',',
+            'positive_sign': '',
+            'negative_sign': '-',
+            'int_frac_digits': '0',
+            'frac_digits': '0',
+            'p_cs_precedes': '1',
+            'p_sep_by_space': '0',
+            'n_cs_precedes': '1',
+            'n_sep_by_space': '0',
+            'p_sign_posn': '1',
+            'n_sign_posn': '4',
+            'grouping': {
+                '0': '3',
+                '1': '3'
+            },
+            'mon_grouping': {
+                '0': '3',
+                '1': '3'
+            }
+        };
+    },
+    "small integer should not be converted.": function () {
+        assert.equals(INTERMediatorLib.decimalFormat(45, 0), "45");
+        assert.equals(INTERMediatorLib.decimalFormat(45.678, 1), "45.7");
+        assert.equals(INTERMediatorLib.decimalFormat(45.678, 2), "45.68");
+        assert.equals(INTERMediatorLib.decimalFormat(45.678, 3), "45.678");
+        assert.equals(INTERMediatorLib.decimalFormat(45.123, 1), "45.1");
+        assert.equals(INTERMediatorLib.decimalFormat(45.123, 2), "45.12");
+        assert.equals(INTERMediatorLib.decimalFormat(45.123, 3), "45.123");
+    },
+    "each 3-digits should not be devided.": function () {
+        assert.equals(INTERMediatorLib.decimalFormat(999, 0), "999");
+        assert.equals(INTERMediatorLib.decimalFormat(1000, 0), "1000");
+        assert.equals(INTERMediatorLib.decimalFormat(999999, 0), "999999");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000, 0), "1000000");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 1), "1000000.7");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 2), "1000000.68");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 3), "1000000.678");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 4), "1000000.6780");
+        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 1), "-1000000.7");
+        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 2), "-1000000.68");
+        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 3), "-1000000.678");
+        assert.equals(INTERMediatorLib.decimalFormat(999999, -1), "1000000");
+        assert.equals(INTERMediatorLib.decimalFormat(999999, -2), "1000000");
+        assert.equals(INTERMediatorLib.decimalFormat(999999, -3), "1000000");
+    },
+    "each 3-digits should be devided \"\" if useseperator is enabled.": function () {
+        var flags = { useSeparator: true };
+        assert.equals(INTERMediatorLib.decimalFormat(999, 0, flags), "999");
+        assert.equals(INTERMediatorLib.decimalFormat(1000, 0, flags), "1,000");
+        assert.equals(INTERMediatorLib.decimalFormat(999999, 0, flags), "999,999");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000, 0, flags), "1,000,000");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 1, flags), "1,000,000.7");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 2, flags), "1,000,000.68");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 3, flags), "1,000,000.678");
+        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 4, flags), "1,000,000.6780");
+        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 1, flags), "-1,000,000.7");
+        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 2, flags), "-1,000,000.68");
+        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 3, flags), "-1,000,000.678");
+        assert.equals(INTERMediatorLib.decimalFormat(999999, -1, flags), "1,000,000");
+        assert.equals(INTERMediatorLib.decimalFormat(999999, -2, flags), "1,000,000");
+        assert.equals(INTERMediatorLib.decimalFormat(999999, -3, flags), "1,000,000");
+    },
+    "INTERMediatorLib.decimalFormat(0) should return \"\" if blankifzero is enabled.": function () {
+        var flags = { blankIfZero: true };
+        assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "");
+        assert.equals(INTERMediatorLib.decimalFormat("０", 0, flags), "");
+        assert.equals(INTERMediatorLib.decimalFormat("0.", 0, flags), "");
+    },
+    "INTERMediatorLib.decimalFormat(1) should return \"1\" if blankifzero is enabled.": function () {
+        var flags = { blankIfZero: true };
+        assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "1");
     }
 });
 
