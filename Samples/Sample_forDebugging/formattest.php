@@ -42,6 +42,7 @@ IM_Entry(
             'default-values' => array(
                 array('field' => 'product_id', 'value' => 1),
             ),
+            /*
             'validation' => array(
                 array(
                     'field' => 'qty',
@@ -56,6 +57,7 @@ IM_Entry(
                     'notify' => 'end-of-sibling'
                 ),
             ),
+            */
             'calculation' => array(
                 array(
                     'field' => 'amount_calc',
