@@ -11,8 +11,8 @@ var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
             needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue = null,
-            formatSpec, flags = {}, formatOption, negativeColor, negativeStyle, param1, mark, 
-            negativeSign, negativeTailSign;
+            formatSpec, flags = {}, formatOption, negativeColor, negativeStyle, charStyle,
+            param1, mark, negativeSign, negativeTailSign;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -53,7 +53,8 @@ var IMLibElement = {
             flags = {
                 useSeparator: false,
                 blankIfZero: false,
-                negativeStyle: 0
+                negativeStyle: 0,
+                charStyle: 0
             };
             formatOption = element.getAttribute("data-im-format-options");
             if (formatOption) {
@@ -81,6 +82,20 @@ var IMLibElement = {
                     flags.negativeStyle = 4;
                 } else if (negativeStyle.toLowerCase() === "triangle") {
                     flags.negativeStyle = 5;
+                }
+            }
+            charStyle = element.getAttribute("data-im-format-character-style");
+            if (charStyle) {
+                if (charStyle.toLowerCase() === "single-byte") {
+                    flags.charStyle = 0;
+                } else if (charStyle.toLowerCase() === "double-byte") {
+                    flags.charStyle = 1;
+                } else if (charStyle.toLowerCase() === "simplified-kanji-digits") {
+                    flags.charStyle = 2;
+                } else if (charStyle.toLowerCase() === "traditional-kanji-digits") {
+                    flags.charStyle = 3;
+                } else if (charStyle.toLowerCase() === "simplified-kanji-digits-with-separator") {
+                    flags.charStyle = 4;
                 }
             }
             
