@@ -190,6 +190,58 @@ buster.testCase("INTERMediatorLib.decimalFormat() Test", {
     "INTERMediatorLib.decimalFormat(1) should return \"1\" if blankifzero is enabled.": function () {
         var flags = { blankIfZero: true };
         assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "1");
+    },
+    "INTERMediatorLib.decimalFormat(\"１\", 0, flags) should return \"1\" if charStyle is 0.": function () {
+        var flags = { charStyle: 0 };
+        assert.equals(INTERMediatorLib.decimalFormat("１", 0, flags), "1");
+        assert.equals(INTERMediatorLib.decimalFormat("２", 0, flags), "2");
+        assert.equals(INTERMediatorLib.decimalFormat("３", 0, flags), "3");
+        assert.equals(INTERMediatorLib.decimalFormat("４", 0, flags), "4");
+        assert.equals(INTERMediatorLib.decimalFormat("５", 0, flags), "5");
+        assert.equals(INTERMediatorLib.decimalFormat("６", 0, flags), "6");
+        assert.equals(INTERMediatorLib.decimalFormat("７", 0, flags), "7");
+        assert.equals(INTERMediatorLib.decimalFormat("８", 0, flags), "8");
+        assert.equals(INTERMediatorLib.decimalFormat("９", 0, flags), "9");
+        assert.equals(INTERMediatorLib.decimalFormat("０", 0, flags), "0");
+    },
+    "INTERMediatorLib.decimalFormat(1, 0, flags) should return \"１\" if charStyle is 1.": function () {
+        var flags = { charStyle: 1 };
+        assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "１");
+        assert.equals(INTERMediatorLib.decimalFormat("2", 0, flags), "２");
+        assert.equals(INTERMediatorLib.decimalFormat("3", 0, flags), "３");
+        assert.equals(INTERMediatorLib.decimalFormat("4", 0, flags), "４");
+        assert.equals(INTERMediatorLib.decimalFormat("5", 0, flags), "５");
+        assert.equals(INTERMediatorLib.decimalFormat("6", 0, flags), "６");
+        assert.equals(INTERMediatorLib.decimalFormat("7", 0, flags), "７");
+        assert.equals(INTERMediatorLib.decimalFormat("8", 0, flags), "８");
+        assert.equals(INTERMediatorLib.decimalFormat("9", 0, flags), "９");
+        assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "０");
+    },
+    "INTERMediatorLib.decimalFormat(1, 0, flags) should return \"一\" if charStyle is 2.": function () {
+        var flags = { charStyle: 2 };
+        assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "一");
+        assert.equals(INTERMediatorLib.decimalFormat("2", 0, flags), "二");
+        assert.equals(INTERMediatorLib.decimalFormat("3", 0, flags), "三");
+        assert.equals(INTERMediatorLib.decimalFormat("4", 0, flags), "四");
+        assert.equals(INTERMediatorLib.decimalFormat("5", 0, flags), "五");
+        assert.equals(INTERMediatorLib.decimalFormat("6", 0, flags), "六");
+        assert.equals(INTERMediatorLib.decimalFormat("7", 0, flags), "七");
+        assert.equals(INTERMediatorLib.decimalFormat("8", 0, flags), "八");
+        assert.equals(INTERMediatorLib.decimalFormat("9", 0, flags), "九");
+        assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "〇");
+    },
+    "INTERMediatorLib.decimalFormat(1, 0, flags) should return \"壱\" if charStyle is 3.": function () {
+        var flags = { charStyle: 3 };
+        assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "壱");
+        assert.equals(INTERMediatorLib.decimalFormat("2", 0, flags), "弐");
+        assert.equals(INTERMediatorLib.decimalFormat("3", 0, flags), "参");
+        assert.equals(INTERMediatorLib.decimalFormat("4", 0, flags), "四");
+        assert.equals(INTERMediatorLib.decimalFormat("5", 0, flags), "伍");
+        assert.equals(INTERMediatorLib.decimalFormat("6", 0, flags), "六");
+        assert.equals(INTERMediatorLib.decimalFormat("7", 0, flags), "七");
+        assert.equals(INTERMediatorLib.decimalFormat("8", 0, flags), "八");
+        assert.equals(INTERMediatorLib.decimalFormat("9", 0, flags), "九");
+        assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "〇");
     }
 });
 
