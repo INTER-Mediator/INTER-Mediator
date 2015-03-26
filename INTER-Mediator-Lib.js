@@ -587,7 +587,7 @@ var INTERMediatorLib = {
      */
     numberFormat_Impl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
         var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr,
-            roundedNum, underDecimalNum, integerNum, formatted, isMinusValue;
+            roundedNum, underDecimalNum, integerNum, formatted, isMinusValue, numbers;
 
         if (str === "" || str === null || str === undefined) {
             return "";
@@ -719,6 +719,26 @@ var INTERMediatorLib = {
             }
         }
         
+        if (flags.charStyle) {
+            if (flags.charStyle === 1) {
+                for (i = 0; i < 10; i++) {
+                    formatted = String(formatted).split(String(i)).join(String.fromCharCode(65296 + i));
+                }
+            } else if (flags.charStyle === 2) {
+                numbers = { 0: "〇", 1: "一", 2: "二", 3: "三", 4: "四", 
+                    5: "五", 6: "六", 7: "七", 8: "八", 9: "九"};
+                for (i = 0; i < 10; i++) {
+                    formatted = String(formatted).split(String(i)).join(String(numbers[i]));
+                }
+            } else if (flags.charStyle === 3) {
+                numbers = { 0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四", 
+                    5: "伍", 6: "六", 7: "七", 8: "八", 9: "九"};
+                for (i = 0; i < 10; i++) {
+                    formatted = String(formatted).split(String(i)).join(String(numbers[i]));
+                }
+            }
+        }
+
         if (flags.usePercentNotation === true && formatted !== "") {
             formatted = formatted + "%";
         }
