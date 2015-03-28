@@ -585,7 +585,8 @@ var INTERMediatorLib = {
     /*
      digit should be a positive value. negative value doesn't support so far.
      */
-    numberFormat_Impl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
+    numberFormatImpl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
+        "use strict";
         var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr,
             roundedNum, underDecimalNum, integerNum, formatted, isMinusValue, numbers;
 
@@ -605,7 +606,7 @@ var INTERMediatorLib = {
         if (isNaN(n)) {
             return "";
         }
-        
+
         if (flags === undefined) {
             flags = {};
         }
@@ -644,7 +645,7 @@ var INTERMediatorLib = {
         roundedNum = Math.round(n * power);
         underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
         integerNum = (roundedNum - underDecimalNum) / power;
-        underNumStr = (underDot > 0) ? String(underDecimalNum) : '';
+        underNumStr = (underDot > 0) ? String(underDecimalNum) : "";
         while (underNumStr.length < underDot) {
             underNumStr = "0" + underNumStr;
         }
@@ -657,7 +658,7 @@ var INTERMediatorLib = {
                 s = [];
                 for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
                     if (n >= 1000) {
-                        pstr = '000' + (n % 1000).toString();
+                        pstr = "000" + (n % 1000).toString();
                         s.push(pstr.substr(pstr.length - 3));
                     } else {
                         s.push(n);
@@ -689,28 +690,28 @@ var INTERMediatorLib = {
 
         if (currencySymbol) {
             if (!isMinusValue) {
-                if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {
-                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) {
+                if (INTERMediatorOnPage.localeInfo.p_cs_precedes === 1) {
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space === 1) {
                         formatted = currencySymbol + " " + formatted;
                     } else {
                         formatted = currencySymbol + formatted;
                     }
                 } else {
-                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) {
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space === 1) {
                         formatted = formatted + " " + currencySymbol;
                     } else {
                         formatted = formatted + currencySymbol;
                     }
                 }
             } else {
-                if (INTERMediatorOnPage.localeInfo.n_cs_precedes == 1) {
-                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) {
+                if (INTERMediatorOnPage.localeInfo.n_cs_precedes === 1) {
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space === 1) {
                         formatted = currencySymbol + " " + formatted;
                     } else {
                         formatted = currencySymbol + formatted;
                     }
                 } else {
-                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) {
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space === 1) {
                         formatted = formatted + " " + currencySymbol;
                     } else {
                         formatted = formatted + currencySymbol;
@@ -718,20 +719,20 @@ var INTERMediatorLib = {
                 }
             }
         }
-        
+
         if (flags.charStyle) {
             if (flags.charStyle === 1) {
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String.fromCharCode(65296 + i));
                 }
             } else if (flags.charStyle === 2) {
-                numbers = { 0: "〇", 1: "一", 2: "二", 3: "三", 4: "四", 
+                numbers = { 0: "〇", 1: "一", 2: "二", 3: "三", 4: "四",
                     5: "五", 6: "六", 7: "七", 8: "八", 9: "九"};
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
                 }
             } else if (flags.charStyle === 3) {
-                numbers = { 0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四", 
+                numbers = { 0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四",
                     5: "伍", 6: "六", 7: "七", 8: "八", 9: "九"};
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
@@ -742,20 +743,22 @@ var INTERMediatorLib = {
         if (flags.usePercentNotation === true && formatted !== "") {
             formatted = formatted + "%";
         }
-        
+
         return formatted;
     },
 
     numberFormat: function (str, digit, flags) {
+        "use strict";
         if (flags === undefined) {
             flags = {};
         }
         flags.useSeparator = true;    // for compatibility
         return this.decimalFormat(str, digit, flags);
     },
-    
+
     decimalFormat: function (str, digit, flags) {
-        return INTERMediatorLib.numberFormat_Impl(str, digit,
+        "use strict";
+        return INTERMediatorLib.numberFormatImpl(str, digit,
             INTERMediatorOnPage.localeInfo.decimal_point,
             INTERMediatorOnPage.localeInfo.thousands_sep,
             false,
@@ -764,7 +767,8 @@ var INTERMediatorLib = {
     },
 
     currencyFormat: function (str, digit, flags) {
-        return INTERMediatorLib.numberFormat_Impl(str, digit,
+        "use strict";
+        return INTERMediatorLib.numberFormatImpl(str, digit,
             INTERMediatorOnPage.localeInfo.mon_decimal_point,
             INTERMediatorOnPage.localeInfo.mon_thousands_sep,
             INTERMediatorOnPage.localeInfo.currency_symbol,
@@ -773,6 +777,7 @@ var INTERMediatorLib = {
     },
 
     booleanFormat: function (str, trueString, falseString) {
+        "use strict";
         if (str === "" || str === null) {
             return "";
         } else {
@@ -785,6 +790,7 @@ var INTERMediatorLib = {
     },
 
     percentFormat: function (str, digit, flags) {
+        "use strict";
         if (flags === undefined) {
             flags = {};
         }
@@ -792,7 +798,7 @@ var INTERMediatorLib = {
         if (digit === undefined) {
             digit = 0;
         }
-        return INTERMediatorLib.numberFormat_Impl(str, digit,
+        return INTERMediatorLib.numberFormatImpl(str, digit,
             INTERMediatorOnPage.localeInfo.decimal_point,
             INTERMediatorOnPage.localeInfo.thousands_sep,
             false,
