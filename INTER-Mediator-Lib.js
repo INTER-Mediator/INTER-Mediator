@@ -589,8 +589,8 @@ var INTERMediatorLib = {
     numberFormatImpl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
         "use strict";
         var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr,
-            roundedNum, underDecimalNum, integerNum, formatted, isMinusValue, numerals,
-            numbers;
+            roundedNum, underDecimalNum, integerNum, formatted, numStr, j, isMinusValue,
+            numerals, numbers;
 
         if (str === "" || str === null || str === undefined) {
             return "";
@@ -642,7 +642,8 @@ var INTERMediatorLib = {
             n = n * 100;
         }
 
-        underDot = (digit === undefined) ? INTERMediatorOnPage.localeInfo.frac_digits : this.toNumber(digit);
+        underDot = (digit === undefined) ?
+            INTERMediatorOnPage.localeInfo.frac_digits : this.toNumber(digit);
         power = Math.pow(10, underDot);
         roundedNum = Math.round(n * power);
         underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
@@ -658,7 +659,7 @@ var INTERMediatorLib = {
             } else {
                 n = integerNum;
                 s = [];
-                if (flags.kanjiSeparator > 0) {
+                if (flags.kanjiSeparator === 1 || flags.kanjiSeparator === 2) {
                     numerals = ["万", "億", "兆", "京", "垓", "𥝱", "穣", "溝",
                         "澗", "正", "載", "極", "恒河沙", "阿僧祇", "那由他",
                         "不可思議", "無量大数"];
@@ -667,13 +668,69 @@ var INTERMediatorLib = {
                     for (n = Math.floor(n); n > 0; n = Math.floor(n / 10000)) {
                         if (n >= 10000) {
                             pstr = "0000" + (n % 10000).toString();
-                            formatted = numerals[i] + pstr.substr(pstr.length - 4) + formatted;
                         } else {
-                            formatted = n + formatted;
+                            pstr = (n % 10000).toString();
+                        }
+                        if (flags.kanjiSeparator === 1) {
+                            if (n >= 10000) {
+                                if (pstr.substr(pstr.length - 4) !== "0000") {
+                                    formatted = numerals[i] +
+                                        Number(pstr.substr(pstr.length - 4)) +
+                                        formatted;
+                                } else {
+                                    if (numerals[i - 1] !== formatted.charAt(0)) {
+                                        formatted = numerals[i] + formatted;
+                                    } else {
+                                        formatted = numerals[i] + formatted.slice(1);
+                                    }
+                                }
+                            } else {
+                                formatted = n + formatted;
+                            }
+                        } else if (flags.kanjiSeparator === 2) {
+                            numStr = pstr.substr(pstr.length - 4);
+                            pstr = "";
+                            if (numStr === "0001") {
+                                pstr = "1";
+                            } else if (numStr !== "0000") {
+                                for (j = 0; j < numStr.length; j++) {
+                                    if (numStr.charAt(j) > 1) {
+                                        pstr = pstr + numStr.charAt(j);
+                                    }
+                                    if (numStr.charAt(j) > 0) {
+                                        if (numStr.length - j === 4) {
+                                            pstr = pstr + "千";
+                                        } else if (numStr.length - j === 3) {
+                                            pstr = pstr + "百";
+                                        } else if (numStr.length - j === 2) {
+                                            pstr = pstr + "十";
+                                        }
+                                    }
+                                }
+                            }
+                            if (n >= 10000) {
+                                if (pstr.length > 0) {
+                                    formatted = numerals[i] + pstr + formatted;
+                                } else {
+                                    if (numerals[i - 1] !== formatted.charAt(0)) {
+                                        formatted = numerals[i] + formatted;
+                                    } else {
+                                        formatted = numerals[i] + formatted.slice(1);
+                                    }
+                                }
+                            } else {
+                                if (numStr.length === 1) {
+                                    formatted = n + formatted;
+                                } else {
+                                    formatted = pstr + formatted;
+                                }
+
+                            }
                         }
                         i++;
                     }
-                    formatted = formatted + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                    formatted = formatted +
+                        (underNumStr === "" ? "" : decimalPoint + underNumStr);
                 } else {
                     for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
                         if (n >= 1000) {
@@ -683,7 +740,8 @@ var INTERMediatorLib = {
                             s.push(n);
                         }
                     }
-                    formatted = s.reverse().join(thousandsSep) + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                    formatted = s.reverse().join(thousandsSep) +
+                        (underNumStr === "" ? "" : decimalPoint + underNumStr);
                 }
                 if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
                     formatted = sign + formatted;
