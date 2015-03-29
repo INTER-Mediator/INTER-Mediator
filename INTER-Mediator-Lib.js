@@ -562,11 +562,12 @@ var INTERMediatorLib = {
     },
 
     toNumber: function (str) {
-        var s = '', i, c;
-        str = (new String(str)).toString();
+        "use strict";
+        var s = "", i, c;
+        str = str.toString();
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
-            if ((c >= '0' && c <= '9') || c == '.' || c == '-' || c == this.cachedDigitSeparator[0]) {
+            if ((c >= "0" && c <= "9") || c === "." || c === "-" || c === this.cachedDigitSeparator[0]) {
                 s += c;
             }
         }
@@ -588,7 +589,8 @@ var INTERMediatorLib = {
     numberFormatImpl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
         "use strict";
         var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr,
-            roundedNum, underDecimalNum, integerNum, formatted, isMinusValue, numbers;
+            roundedNum, underDecimalNum, integerNum, formatted, isMinusValue, numerals,
+            numbers;
 
         if (str === "" || str === null || str === undefined) {
             return "";
@@ -656,15 +658,33 @@ var INTERMediatorLib = {
             } else {
                 n = integerNum;
                 s = [];
-                for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
-                    if (n >= 1000) {
-                        pstr = "000" + (n % 1000).toString();
-                        s.push(pstr.substr(pstr.length - 3));
-                    } else {
-                        s.push(n);
+                if (flags.kanjiSeparator > 0) {
+                    numerals = ["万", "億", "兆", "京", "垓", "𥝱", "穣", "溝",
+                        "澗", "正", "載", "極", "恒河沙", "阿僧祇", "那由他",
+                        "不可思議", "無量大数"];
+                    i = 0;
+                    formatted = "";
+                    for (n = Math.floor(n); n > 0; n = Math.floor(n / 10000)) {
+                        if (n >= 10000) {
+                            pstr = "0000" + (n % 10000).toString();
+                            formatted = numerals[i] + pstr.substr(pstr.length - 4) + formatted;
+                        } else {
+                            formatted = n + formatted;
+                        }
+                        i++;
                     }
+                    formatted = formatted + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                } else {
+                    for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
+                        if (n >= 1000) {
+                            pstr = "000" + (n % 1000).toString();
+                            s.push(pstr.substr(pstr.length - 3));
+                        } else {
+                            s.push(n);
+                        }
+                    }
+                    formatted = s.reverse().join(thousandsSep) + (underNumStr === "" ? "" : decimalPoint + underNumStr);
                 }
-                formatted = s.reverse().join(thousandsSep) + (underNumStr === "" ? "" : decimalPoint + underNumStr);
                 if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
                     formatted = sign + formatted;
                 } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {

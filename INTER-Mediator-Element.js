@@ -13,7 +13,7 @@ var IMLibElement = {
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
             needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue = null,
             formatSpec, flags = {}, formatOption, negativeColor, negativeStyle, charStyle,
-            param1, negativeSign, negativeTailSign;
+            kanjiSeparator, param1, negativeSign, negativeTailSign;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -55,7 +55,8 @@ var IMLibElement = {
                 useSeparator: false,
                 blankIfZero: false,
                 negativeStyle: 0,
-                charStyle: 0
+                charStyle: 0,
+                kanjiSeparator: 0
             };
             formatOption = element.getAttribute("data-im-format-options");
             if (formatOption) {
@@ -85,7 +86,7 @@ var IMLibElement = {
                     flags.negativeStyle = 5;
                 }
             }
-            charStyle = element.getAttribute("data-im-format-character-style");
+            charStyle = element.getAttribute("data-im-format-numeral-type");
             if (charStyle) {
                 if (charStyle.toLowerCase() === "half-width") {
                     flags.charStyle = 0;
@@ -95,6 +96,17 @@ var IMLibElement = {
                     flags.charStyle = 2;
                 } else if (charStyle.toLowerCase() === "kanji-numeral") {
                     flags.charStyle = 3;
+                }
+            }
+            kanjiSeparator = element.getAttribute("data-im-format-kanji-separator");
+            if (kanjiSeparator) {
+                if (kanjiSeparator.toLowerCase() === "every-4th-place") {
+                    flags.kanjiSeparator = 1;
+                } else if (kanjiSeparator.toLowerCase() === "full-notation") {
+                    flags.kanjiSeparator = 2;
+                }
+                if (flags.kanjiSeparator > 0) {
+                    flags.useSeparator = true;
                 }
             }
 
