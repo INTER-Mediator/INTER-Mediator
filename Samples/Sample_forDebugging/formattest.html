@@ -137,19 +137,27 @@
     </tr>
     <tr>
         <td>Total（数字書式：小数、数字の形式：半角）:</td>
-        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-character-style="single-byte"></td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="half-width"></td>
     </tr>
     <tr>
         <td>Total（数字書式：小数、数字の形式：全角）:</td>
-        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-character-style="double-byte"></td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="full-width"></td>
     </tr>
     <tr>
         <td>Total（数字書式：小数、数字の形式：漢数字1）:</td>
-        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-character-style="simplified-kanji-digits"></td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="kanji-numeral-modern"></td>
     </tr>
     <tr>
         <td>Total（数字書式：小数、数字の形式：漢数字2）:</td>
-        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-character-style="traditional-kanji-digits"></td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="kanji-numeral"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、数字の形式：半角、漢字の区切り：4桁区切り）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="half-width" data-im-format-kanji-separator="every-4th-place"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、数字の形式：半角、漢字の区切り：十百千万）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="half-width" data-im-format-kanji-separator="full-notation"></td>
     </tr>
     </tbody>
 </table>

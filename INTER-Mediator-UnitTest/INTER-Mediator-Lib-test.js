@@ -241,6 +241,20 @@ buster.testCase("INTERMediatorLib.decimalFormat() Test", {
         assert.equals(INTERMediatorLib.decimalFormat("8", 0, flags), "八");
         assert.equals(INTERMediatorLib.decimalFormat("9", 0, flags), "九");
         assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "〇");
+    },
+    "INTERMediatorLib.decimalFormat(12345, 0, flags) should return \"1万2345\" if kanjiSeparator is 1.": function () {
+        var flags = { useSeparator: true, kanjiSeparator: 1 };
+        assert.equals(INTERMediatorLib.decimalFormat("12345", 0, flags), "1万2345");
+        assert.equals(INTERMediatorLib.decimalFormat("1234567800000000", 0, flags), "1234兆5678億");
+        assert.equals(INTERMediatorLib.decimalFormat("1234567800000009", 0, flags), "1234兆5678億9");
+        assert.equals(INTERMediatorLib.decimalFormat("1234567800010009", 0, flags), "1234兆5678億1万9");
+    },
+    "INTERMediatorLib.decimalFormat(12345, 0, flags) should return \"1万2千3百4十5\" if kanjiSeparator is 2.": function () {
+        var flags = { useSeparator: true, kanjiSeparator: 2 };
+        assert.equals(INTERMediatorLib.decimalFormat("12345", 0, flags), "1万2千3百4十5");
+        assert.equals(INTERMediatorLib.decimalFormat("1234567800000000", 0, flags), "千2百3十4兆5千6百7十8億");
+        assert.equals(INTERMediatorLib.decimalFormat("1234567800000009", 0, flags), "千2百3十4兆5千6百7十8億9");
+        assert.equals(INTERMediatorLib.decimalFormat("1234567800010009", 0, flags), "千2百3十4兆5千6百7十8億1万9");
     }
 });
 
