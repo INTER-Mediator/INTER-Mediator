@@ -949,4 +949,9 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     {
         // TODO: Implement isNullAcceptable() method.
     }
+
+    public function softDeleteActivate($field, $value)
+    {
+        // TODO: Implement softDeleteActivate() method.
+    }
 }
