@@ -466,6 +466,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 $contextID = floor($contextID / 10000);
                 foreach ($allKeys[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
+                    if (array_search($key, $keysShouldInteger) !== false) {
+                        $fieldValue = (int)$fieldValue;
+                    } else if (array_search($key, $keysShouldBoolean) !== false) {
+                        $fieldValue = (boolean)$fieldValue;
+                    }
                     if (!is_null($fieldValue)) {
                         $globalDataSource[$contextID][$dataSourceName][$recordID][$key] = $fieldValue;
                         break;
