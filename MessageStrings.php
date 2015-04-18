@@ -83,6 +83,7 @@ class MessageStrings
         1037 => "A cyclic referencing is detected.",
         1038 => "Preparing the Pusher, although the settings in the server side is available, the client library isn't included.",
         1039 => "Preparing the Pusher, although the client library is included, the settings in the server side is not available.",
+        1040 => "The field '@2@' in the context '@1@' does not exist in the table.",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

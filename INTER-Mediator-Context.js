@@ -710,6 +710,20 @@ IMLibContext = function (contextName) {
         }
     };
 
+    this.isValueUndefined = function (recKey, key, portal) {
+        var value;
+        try {
+            if (portal) {
+                value = this.store[recKey][key][portal];
+            } else {
+                value = this.store[recKey][key];
+            }
+            return value === undefined ? true : false;
+        } catch (ex) {
+            return null;
+        }
+    };
+
     this.getContextInfo = function (nodeId, target) {
         try {
             var info = this.contextInfo[nodeId][target == "" ? "_im_no_target" : target];

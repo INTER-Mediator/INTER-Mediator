@@ -72,29 +72,35 @@ var IMLibUI = {
             contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
             if (contextInfo) {
                 newValue = IMLibElement.getValueFromIMNode(changedObj);
-                if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
-                    // Just supporting NON-target info.
-//                contextInfo.context.setValue(
-//                    contextInfo.record, contextInfo.field, newValue);
-                    contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
+                if (contextInfo.context.isValueUndefined(contextInfo.record, contextInfo.field, contextInfo.portal)) {
+                    INTERMediator.setErrorMessage("Error in updating.",
+                        INTERMediatorLib.getInsertedString(
+                            INTERMediatorOnPage.getMessages()[1040], [contextInfo.context.contextName, contextInfo.field]));
                 } else {
-                    INTERMediatorOnPage.showProgress();
-                    if (!IMLibElement.checkOptimisticLock(changedObj, nodeInfo.target)) {
-                        INTERMediatorOnPage.hideProgress();
+                    if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
+                        // Just supporting NON-target info.
+                        // contextInfo.context.setValue(
+                        // contextInfo.record, contextInfo.field, newValue);
+                        contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
                     } else {
-                        IMLibContextPool.updateContext(idValue, nodeInfo.target);
-                        updateDB(changedObj, idValue, nodeInfo.target);
+                        INTERMediatorOnPage.showProgress();
+                        if (!IMLibElement.checkOptimisticLock(changedObj, nodeInfo.target)) {
+                            INTERMediatorOnPage.hideProgress();
+                        } else {
+                            IMLibContextPool.updateContext(idValue, nodeInfo.target);
+                            updateDB(changedObj, idValue, nodeInfo.target);
 
-                        updateRequiredContext = IMLibContextPool.dependingObjects(idValue);
-                        for (i = 0; i < updateRequiredContext.length; i++) {
-                            updateRequiredContext[i].foreignValue = {};
-                            updateRequiredContext[i].foreignValue[contextInfo.field] = newValue;
-                            if (updateRequiredContext[i]) {
-                                INTERMediator.constructMain(updateRequiredContext[i]);
-                                associatedNode = updateRequiredContext[i].enclosureNode;
-                                if (INTERMediatorLib.isPopupMenu(associatedNode)) {
-                                    currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
-                                    IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
+                            updateRequiredContext = IMLibContextPool.dependingObjects(idValue);
+                            for (i = 0; i < updateRequiredContext.length; i++) {
+                                updateRequiredContext[i].foreignValue = {};
+                                updateRequiredContext[i].foreignValue[contextInfo.field] = newValue;
+                                if (updateRequiredContext[i]) {
+                                    INTERMediator.constructMain(updateRequiredContext[i]);
+                                    associatedNode = updateRequiredContext[i].enclosureNode;
+                                    if (INTERMediatorLib.isPopupMenu(associatedNode)) {
+                                        currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
+                                        IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
+                                    }
                                 }
                             }
                         }

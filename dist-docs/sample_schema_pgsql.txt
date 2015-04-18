@@ -51,7 +51,8 @@ CREATE TABLE person	(
 	mail			VARCHAR(40),
 	category		INTEGER,
 	checking		INTEGER,
-	location		INTEGER
+	location		INTEGER,
+	memo		TEXT
 );
 
 /* Don't assing values to the SERIAL type field. It can cause duplicated values. */
