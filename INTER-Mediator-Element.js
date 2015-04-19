@@ -313,8 +313,8 @@ var IMLibElement = {
                 return false;
             }
         } else {
-            if (currentVal.recordset === null
-                || currentVal.recordset[0] === null
+            if (! currentVal.recordset
+                || ! currentVal.recordset[0]    // This value could be null or undefined
                 || currentVal.recordset[0][targetField] === undefined) {
                 alert(INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1003], [targetField]));

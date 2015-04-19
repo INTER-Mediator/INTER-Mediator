@@ -17,6 +17,9 @@ Ver.5.1 (in development)
 - Eliminate die() in INTER-Mediator.php to reduce bug risk.
 - Remove duplication in MessageStrings_ja.php and modify MessageStrings.php.
 - Fix loading DB_Null.php in some cases.
+- Add the 'memo' field in sample databases.
+- [BUG FIX] The page editor title was "Definition File Editor" and correct it.
+- [BUG FIX] The 'navi-control' behavior was sometimes wrong.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]

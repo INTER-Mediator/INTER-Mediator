@@ -17,6 +17,13 @@ var INTERMediator_DBAdapter;
 
 INTERMediator_DBAdapter = {
 
+    eliminateDuplicatedConditions: false,
+    /*
+    If this property is set to true, the dupilicate conditions in query is going to eliminate before
+    submitting to the server. This behavior is required in some case of FileMaker Server, but it can resolve
+    by using the id=>-recid in a context. 2015-4-19 Masayuki Nii.
+     */
+
     generate_authParams: function () {
         var authParams = '', shaObj, hmacValue;
         if (INTERMediatorOnPage.authUser.length > 0) {
@@ -295,7 +302,7 @@ INTERMediator_DBAdapter = {
      */
     db_query: function (args) {
         var noError = true, i, index, params, counter, extCount, criteriaObject, sortkeyObject,
-            returnValue, result, ix, extCountSort, recordLimit = 10000000;
+            returnValue, result, ix, extCountSort, recordLimit = 10000000, conditions, conditionSign;
 
         if (args.name === null || args.name === "") {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
@@ -348,13 +355,20 @@ INTERMediator_DBAdapter = {
             params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
         }
         extCount = 0;
+        conditions = [];
         while (args['conditions'] && args['conditions'][extCount]) {
-            params += "&condition" + extCount;
-            params += "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
-            params += "&condition" + extCount;
-            params += "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
-            params += "&condition" + extCount;
-            params += "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
+            conditionSign = args['conditions'][extCount]['field'] + "#" +
+            args['conditions'][extCount]['operator'] + "#" +
+            args['conditions'][extCount]['value'];
+            if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
+                params += "&condition" + extCount;
+                params += "field=" + encodeURIComponent(args['conditions'][extCount]['field']);
+                params += "&condition" + extCount;
+                params += "operator=" + encodeURIComponent(args['conditions'][extCount]['operator']);
+                params += "&condition" + extCount;
+                params += "value=" + encodeURIComponent(args['conditions'][extCount]['value']);
+                conditions.push(conditionSign);
+            }
             extCount++;
         }
         criteriaObject = INTERMediator.additionalCondition[args['name']];
@@ -365,15 +379,26 @@ INTERMediator_DBAdapter = {
             for (index = 0; index < criteriaObject.length; index++) {
                 if (criteriaObject[index] && criteriaObject[index]["field"]) {
                     if (criteriaObject[index]["value"] || criteriaObject[index]["field"] == "__operation__") {
-                        params += "&condition" + extCount;
-                        params += "field=" + encodeURIComponent(criteriaObject[index]["field"]);
-                        if (criteriaObject[index]["operator"] !== undefined) {
+                        conditionSign =
+                            criteriaObject[index]["field"] + "#" +
+                            ((criteriaObject[index]["operator"] !== undefined) ? criteriaObject[index]["operator"] : '') + "#" +
+                            ((criteriaObject[index]["value"] !== undefined) ? criteriaObject[index]["value"] : '' );
+                        if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
                             params += "&condition" + extCount;
-                            params += "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
-                        }
-                        if (criteriaObject[index]["value"] !== undefined) {
-                            params += "&condition" + extCount;
-                            params += "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                            params += "field=" + encodeURIComponent(criteriaObject[index]["field"]);
+                            if (criteriaObject[index]["operator"] !== undefined) {
+                                params += "&condition" + extCount;
+                                params += "operator=" + encodeURIComponent(criteriaObject[index]["operator"]);
+                            }
+                            if (criteriaObject[index]["value"] !== undefined) {
+                                params += "&condition" + extCount;
+                                params += "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                            }
+                            if (criteriaObject[index]["field"] != "__operation__") {
+                                conditions.push(conditionSign);
+                            } else {
+                                //conditions = [];
+                            }
                         }
                         extCount++;
                     }
@@ -410,11 +435,16 @@ INTERMediator_DBAdapter = {
                         params += "&condition" + extCount + "field=__operation__";
                         params += "&condition" + extCount + "operator=ex";
                         extCount++;
+                        //conditions = [];
                     }
                     for (var index = 0; index < fields.length; index++) {
-                        params += "&condition" + extCount + "field=" + encodeURIComponent(fields[index].trim());
-                        params += "&condition" + extCount + "operator=" + encodeURIComponent(operator);
-                        params += "&condition" + extCount + "value=" + encodeURIComponent(value);
+                        conditionSign = fields[index].trim() + "#" + operator + "#" + value;
+                        if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
+                            params += "&condition" + extCount + "field=" + encodeURIComponent(fields[index].trim());
+                            params += "&condition" + extCount + "operator=" + encodeURIComponent(operator);
+                            params += "&condition" + extCount + "value=" + encodeURIComponent(value);
+                            conditions.push(conditionSign);
+                        }
                         extCount++;
                     }
                 } else if (keyParams[0].trim() == "valueofaddorder" && keyParams.length >= 4) {
