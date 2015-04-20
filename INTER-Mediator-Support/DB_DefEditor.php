@@ -442,7 +442,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
-                        $setValue = (int)$setValue;
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
                     } else if (array_search($theKey, $keysShouldBoolean) !== false) {
                         $setValue = (boolean)$setValue;
                     }
@@ -467,7 +467,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 foreach ($allKeys[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
                     if (array_search($key, $keysShouldInteger) !== false) {
-                        $fieldValue = (int)$fieldValue;
+                        $fieldValue = ($fieldValue === '') ? '' : (int)$fieldValue;
                     } else if (array_search($key, $keysShouldBoolean) !== false) {
                         $fieldValue = (boolean)$fieldValue;
                     }
@@ -489,7 +489,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
-                        $setValue = (int)$setValue;
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
                     } else if (array_search($theKey, $keysShouldBoolean) !== false) {
                         $setValue = (boolean)$setValue;
                     }
@@ -533,6 +533,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'debug':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 $globalDebug = $this->dbSettings->getValueOfField($theKey);
+                $globalDebug = ($globalDebug == 'false') ? false : $globalDebug;
                 break;
             default:
                 break;

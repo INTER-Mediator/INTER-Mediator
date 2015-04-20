@@ -36,7 +36,8 @@ CREATE TABLE person	(
 	mail		TEXT,
 	category	INTEGER,
 	checking	INTEGER,
-	location	INTEGER
+	location	INTEGER,
+	memo		TEXT
 );
 CREATE UNIQUE INDEX person_id ON person (id);
 
