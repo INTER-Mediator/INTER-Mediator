@@ -39,8 +39,6 @@ class GenerateJSCode
     public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
     {
         $q = '"';
-        $po = '{';
-        $pc = '}';
         $generatedPrivateKey = null;
         $passPhrase = null;
 
@@ -252,11 +250,6 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.localeInfo", $po,
-            $q . "currency" . $q . ":" . $q . "¥" . $q . "," .
-            $q . "currencyposition" . $q . ":" . $q . "pre" . $q,
-            $pc);
     }
     
     private function combineScripts($currentDir)
