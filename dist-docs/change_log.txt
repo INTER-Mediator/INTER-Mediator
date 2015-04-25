@@ -22,6 +22,8 @@ Ver.5.1 (in development)
 - [BUG FIX] The 'navi-control' behavior was sometimes wrong.
 - [BUG FIX] Update TestDB.fmp12 to fix add a related record using portal access mode in 
   the sample application.
+- [BUG FIX] Update files for the INTER-Mediator-Server virtual machine to fix issues of
+  the page editor and the definition file editor etc.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
