@@ -16,7 +16,7 @@ IMDISTDOC = "#{IMROOT}/dist-docs"
 IMVMROOT = "#{IMROOT}/dist-docs/vm-for-trial"
 
 
-if os[:family] == 'redhat' && os[:release].to_f < 6
+if node[:platform] == 'redhat' && node[:platform_version].to_f < 6
   #file '/etc/resolv.conf' do
   #  content 'nameserver 192.168.1.1'
   #end
@@ -30,11 +30,11 @@ execute 'usermod -a -G im-developer developer' do
   command 'usermod -a -G im-developer developer'
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   execute 'usermod -a -G im-developer www-data' do
     command 'usermod -a -G im-developer www-data'
   end
-elsif os[:family] == 'redhat'
+elsif node[:platform] == 'redhat'
   package 'httpd' do
     action :install
   end
@@ -46,11 +46,11 @@ elsif os[:family] == 'redhat'
   end
 end
 
-if os[:family] == 'redhat'
+if node[:platform] == 'redhat'
   package 'postgresql-server' do
     action :install
   end
-  if os[:release].to_f < 6
+  if node[:platform_version].to_f < 6
     execute 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"' do
       command 'sudo su - postgres -c "initdb --encoding=UTF8 --no-locale"'
     end
@@ -68,7 +68,7 @@ user 'postgres' do
   password '$6$inter-mediator$kEUWd5ZQNPEfNF7CPzRMDoHhmz67rgJTmDbUsJ3AL35vV3c5sGk9ml2kLRj.2z5BkygH7SS2E549qTB2FYs6S/'
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   file '/etc/mysql/conf.d/im.cnf' do
     content <<-EOF
 character-set-server=utf8mb4
@@ -84,8 +84,8 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4'
 EOF
   end
-elsif os[:family] == 'redhat'
-  if os[:release].to_f < 7
+elsif node[:platform] == 'redhat'
+  if node[:platform_version].to_f < 7
     package 'mysql-server' do
       action :install
     end
@@ -155,7 +155,7 @@ EOF
   end
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   execute 'aptitude update' do
     command 'aptitude update'
   end
@@ -163,7 +163,7 @@ if os[:family] == 'ubuntu'
   execute 'aptitude full-upgrade' do
     command 'aptitude full-upgrade --assume-yes'
   end
-elsif os[:family] == 'redhat'
+elsif node[:platform] == 'redhat'
   execute 'yum -y update' do
     command 'yum -y update'
   end
@@ -177,15 +177,15 @@ package 'acl' do
   action :install
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
     action :install
   end
-elsif os[:family] == 'redhat'
+elsif node[:platform] == 'redhat'
   package 'php' do
     action :install
   end
-  if os[:release].to_f < 6
+  if node[:platform_version].to_f < 6
     package 'php-mbstring' do
       action :install
     end
@@ -226,7 +226,7 @@ elsif os[:family] == 'redhat'
     #  content 'extension=timezonedb.so'
     #end
   end
-  if os[:release].to_f < 7
+  if node[:platform_version].to_f < 7
     package 'php-mysql' do
       action :install
     end
@@ -243,38 +243,47 @@ elsif os[:family] == 'redhat'
   end
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   package 'php5-pgsql' do
     action :install
   end
-elsif os[:family] == 'redhat'
+elsif node[:platform] == 'redhat'
   package 'php-pgsql' do
     action :install
   end
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   package 'php5-sqlite' do
     action :install
   end
-elsif os[:family] == 'redhat'
+elsif node[:platform] == 'redhat'
   package 'php-pdo' do
     action :install
   end
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   package 'php5-curl' do
+    action :install
+  end
+  package 'php5-gd' do
+    action :install
+  end
+  package 'php5-xmlrpc' do
+    action :install
+  end
+  package 'php5-intl' do
     action :install
   end
 end
 
-if os[:family] == 'redhat'
+if node[:platform] == 'redhat'
   package 'epel-release' do
     action :install
   end
 end
-if os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6)
+if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'nodejs' do
     action :install
   end
@@ -284,27 +293,27 @@ execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
   command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
 end
 
-if os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6)
+if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'npm' do
     action :install
   end
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   package 'libfontconfig1' do
     action :install
   end
-elsif os[:family] == 'redhat'
+elsif node[:platform] == 'redhat'
   package 'fontconfig-devel' do
     action :install
   end
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   package 'phpunit' do
     action :install
   end
-elsif os[:family] == 'redhat' && os[:release].to_f >= 6
+elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 6
   package 'php-phpunit-PHPUnit' do
     action :install
   end
@@ -314,7 +323,7 @@ package 'git' do
   action :install
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   execute 'aptitude clean' do
     command 'aptitude clean'
   end
@@ -324,7 +333,7 @@ execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-
   command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git"
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   execute "mv \"#{WEBROOT}/index.html\" \"#{WEBROOT}/index_original.html\"" do
     command "mv \"#{WEBROOT}/index.html\" \"#{WEBROOT}/index_original.html\""
   end
@@ -342,7 +351,7 @@ file "#{WEBROOT}/.htaccess" do
   content 'AddType "text/html; charset=UTF-8" .html'
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   file "#{WEBROOT}/params.php" do
     content <<-EOF
 <?php
@@ -365,7 +374,7 @@ $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 EOF
   end
-elsif os[:family] == 'redhat' && os[:release].to_f < 7
+elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7
   file "#{WEBROOT}/params.php" do
     content <<-EOF
 <?php
@@ -388,7 +397,7 @@ $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
 EOF
   end
-elsif os[:family] == 'redhat' && os[:release].to_f >= 7
+elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
   file "#{WEBROOT}/params.php" do
     content <<-EOF
 <?php
@@ -423,7 +432,7 @@ execute "mv \"#{IMUNITTEST}/temp\" \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\"" do
   command "mv \"#{IMUNITTEST}/temp\" \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\""
 end
 
-if os[:family] == 'redhat'
+if node[:platform] == 'redhat'
   execute 'service httpd restart' do
     command 'service httpd restart'
   end
@@ -432,12 +441,12 @@ end
 
 # Install npm packages
 
-if os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6)
+if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   execute 'npm install -g buster' do
     command 'npm install -g buster'
   end
 
-  if os[:family] == 'redhat' && os[:release].to_f >= 7
+  if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
     package 'bzip2' do
       action :install  # for phantomjs
     end
@@ -497,8 +506,8 @@ end
 
 # Import schema
 
-if os[:family] == 'redhat'
-  if os[:release].to_f >= 6
+if node[:platform] == 'redhat'
+  if node[:platform_version].to_f >= 6
     execute 'setenforce 0' do
       command 'setenforce 0'
     end
@@ -516,12 +525,12 @@ SELINUX=disabled
 # SELINUXTYPE= can take one of these two values:
 #     targeted - Targeted processes are protected,
 #     mls - Multi Level Security protection.
-SELINUXTYPE=targeted 
+SELINUXTYPE=targeted
 
 
 EOF
     end
-    if os[:release].to_f >= 6 && os[:release].to_f < 7
+    if node[:platform_version].to_f >= 6 && node[:platform_version].to_f < 7
       file '/etc/sysconfig/iptables' do
         content <<-EOF
 # Firewall configuration written by system-config-firewall
@@ -557,7 +566,7 @@ EOF
   #end
 end
 
-if os[:family] == 'redhat'
+if node[:platform] == 'redhat'
   execute "sed -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\"" do
     command "sed -e 's|utf8mb4|utf8|g' \"#{IMDISTDOC}/sample_schema_mysql.txt\" > \"#{IMDISTDOC}/temp\""
   end
@@ -581,7 +590,7 @@ execute "echo 'im4135dev' | sudo -u postgres -S psql -f \"#{IMDISTDOC}/sample_sc
   command "echo 'im4135dev' | sudo -u postgres -S psql -f \"#{IMDISTDOC}/sample_schema_pgsql.txt\" test_db"
 end
 
-if os[:family] == 'redhat'
+if node[:platform] == 'redhat'
   file '/var/lib/pgsql/data/pg_hba.conf' do
     owner 'postgres'
     group 'postgres'
@@ -673,23 +682,23 @@ directory '/var/db/im' do
   group 'im-developer'
   mode '775'
 end
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   directory '/var/db/im' do
     owner 'www-data'
   end
-elsif os[:family] == 'redhat'
+elsif node[:platform] == 'redhat'
   directory '/var/db/im' do
     owner 'apache'
   end
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   file '/var/db/im/sample.sq3' do
     owner 'www-data'
     group 'im-developer'
     mode '664'
   end
-elsif os[:family] == 'redhat'
+elsif node[:platform] == 'redhat'
   file '/var/db/im/sample.sq3' do
     owner 'apache'
     group 'im-developer'
@@ -709,11 +718,15 @@ execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
   command "chown -R developer:im-developer \"#{WEBROOT}\""
 end
 
+execute 'chown -R developer:developer /home/developer' do
+  command 'chown -R developer:developer /home/developer'
+end
+
 execute "chmod -R g+w \"#{WEBROOT}\"" do
   command "chmod -R g+w \"#{WEBROOT}\""
 end
 
-if os[:family] == 'ubuntu'
+if node[:platform] == 'ubuntu'
   file '/etc/rc.local' do
     owner 'root'
     group 'root'
