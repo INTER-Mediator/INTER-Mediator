@@ -20,6 +20,8 @@ Ver.5.1 (in development)
 - Add the 'memo' field in sample databases.
 - [BUG FIX] The page editor title was "Definition File Editor" and correct it.
 - [BUG FIX] The 'navi-control' behavior was sometimes wrong.
+- [BUG FIX] Update TestDB.fmp12 to fix add a related record using portal access mode in 
+  the sample application.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
