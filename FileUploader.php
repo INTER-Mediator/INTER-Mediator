@@ -166,7 +166,7 @@ class FileUploader
         if ($useContainer === FALSE) {
             $dbProxyInstance->dbSettings->setValue(array($filePath));
         } else {
-            $dbProxyInstance->dbSettings->setValue(array('test.png' . "\n" . base64_encode(file_get_contents($filePath))));
+            $dbProxyInstance->dbSettings->setValue(array($fileName . "\n" . base64_encode(file_get_contents($filePath))));
         }
 
         $dbProxyInstance->processingRequest($options, "update");
