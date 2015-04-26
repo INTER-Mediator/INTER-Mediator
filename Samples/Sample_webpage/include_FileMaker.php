@@ -34,6 +34,10 @@ IM_Entry(
         'formatter' => array(
             array('field' => 'testtable@dt1', 'converter-class' => 'FMDateTime'),
         ),
+        //'authentication' => array(
+        //    'user' => array('database_native'),
+        //    'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+        //),
     ),
     array('db-class' => 'FileMaker_FX'),
     false

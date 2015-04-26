@@ -290,6 +290,7 @@ describe file('/var/www/html/params.php') do
   its(:content) { should match /\$dbUser = 'web';/ }
   its(:content) { should match /\$dbOption = array\(\);/ }
   its(:content) { should match /\$dbServer = '192.168.56.1';/ }
+  its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
 end
 describe file('/var/www/html/params.php'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }

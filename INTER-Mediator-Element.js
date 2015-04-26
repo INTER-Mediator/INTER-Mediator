@@ -64,6 +64,9 @@ var IMLibElement = {
                     element.style[styleName] = curVal;
                 } else {
                     currentValue = element.getAttribute(curTarget);
+                    if (curVal.indexOf("/fmi/xml/cnt/") === 0) {
+                        curVal = INTERMediatorOnPage.getEntryPath() + "?media=" + curVal;
+                    }
                     element.setAttribute(curTarget, currentValue + curVal);
                 }
             }
@@ -84,6 +87,9 @@ var IMLibElement = {
                     element.style[styleName] = curVal;
                 } else {
                     currentValue = element.getAttribute(curTarget);
+                    if (curVal.indexOf("/fmi/xml/cnt/") === 0) {
+                        curVal = INTERMediatorOnPage.getEntryPath() + "?media=" + curVal;
+                    }
                     element.setAttribute(curTarget, currentValue.replace("$", curVal));
                 }
             } else { // Setting
