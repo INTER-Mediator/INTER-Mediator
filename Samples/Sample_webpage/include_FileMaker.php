@@ -7,7 +7,7 @@
  *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
  */
- require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 IM_Entry(
     array(
@@ -22,7 +22,7 @@ IM_Entry(
                 array('field'=>'dt1', 'value'=>date('Y-m-d H:i:s')),
             ),
             'file-upload' => array(
-                array('field'=>'vc1', 'context'=>'fileupload', 'container' => true)
+                array('field'=>'vc1', 'container' => true)
             ),
         ),
         array(
