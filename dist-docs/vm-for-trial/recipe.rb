@@ -372,6 +372,18 @@ $dbPort = '80';
 $dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
+$passPhrase = '';
+$generatedPrivateKey = <<<EOL
+-----BEGIN RSA PRIVATE KEY-----
+MIIBOwIBAAJBAKihibtt92M6A/z49CqNcWugBd3sPrW3HF8TtKANZd1EWQ/agZ65
+H2/NdL8H6zCgmKpYFTqFGwlYrnWrsbD1UxcCAwEAAQJAWX5pl1Q0D7Axf6csBg1M
+3V5u3qlLWqsUXo0ZtjuGDRgk5FsJOA9bkxfpJspbr2CFkodpBuBCBYpOTQhLUc2H
+MQIhAN1stwI2BIiSBNbDx2YiW5IVTEh/gTEXxOCazRDNWPQJAiEAwvZvqIQLexer
+TnKj7q+Zcv4G2XgbkhtaLH/ELiA/Fh8CIQDGIC3M86qwzP85cCrub5XCK/567GQc
+GmmWk80j2KpciQIhAI/ybFa7x85Gl5EAS9F7jYy9ykjeyVyDHX0liK+V1355AiAG
+jU6zr1wG9awuXj8j5x37eFXnfD/p92GpteyHuIDpog==
+-----END RSA PRIVATE KEY-----
+EOL;
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7

@@ -9,6 +9,7 @@ Latest changes might exist on the GitHub repository. Please check: https://githu
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/migration.html.
 
 Ver.5.1 (in development)
+- Support uploading a file to FileMaker's container field when using FileMaker Server 13.
 - Update phpseclib to version 0.3.10.
 - Change SHA-1 JavaScript library.
   (tiny-sha1 <https://code.google.com/p/tiny-sha1/> is contained in the INTER-Mediator.)
