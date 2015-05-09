@@ -155,14 +155,17 @@ chown developer:developer .*
 
 # Share the Web Root Directory with SMB.
 
+sed ':loop; N; $!b loop; ;s/#### Networking ####\n/#### Networking ####\n   hosts allow = 192.168.56. 127./g' "${SMBCONF}" > "${SMBCONF}".tmp
+mv "${SMBCONF}".tmp "${SMBCONF}"
 echo "" >> "${SMBCONF}"
 echo "[webroot]" >> "${SMBCONF}"
-echo "comment = Apache Root Directory" >> "${SMBCONF}"
-echo "path = /var/www/html" >> "${SMBCONF}"
-echo "guest ok = yes" >> "${SMBCONF}"
-echo "browseable = yes" >> "${SMBCONF}"
-echo "read only = no" >> "${SMBCONF}"
-echo "create mask = 0770" >> "${SMBCONF}"
+echo "   comment = Apache Root Directory" >> "${SMBCONF}"
+echo "   path = /var/www/html" >> "${SMBCONF}"
+echo "   guest ok = no" >> "${SMBCONF}"
+echo "   browseable = yes" >> "${SMBCONF}"
+echo "   read only = no" >> "${SMBCONF}"
+echo "   create mask = 0770" >> "${SMBCONF}"
+( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer
 
 # Launch buster-server for unit testing
 
