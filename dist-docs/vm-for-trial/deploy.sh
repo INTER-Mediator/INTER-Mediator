@@ -148,8 +148,6 @@ setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
 chmod -R g+w "${WEBROOT}"
 
-echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &\nexit 0' > /etc/rc.local
-
 # Home directory permissions modifying
 
 cd ~developer
@@ -158,7 +156,6 @@ chown developer:developer .*
 # Share the Web Root Directory with SMB.
 
 echo "" >> "${SMBCONF}"
-echo "" >> "${SMBCONF}"
 echo "[webroot]" >> "${SMBCONF}"
 echo "comment = Apache Root Directory" >> "${SMBCONF}"
 echo "path = /var/www/html" >> "${SMBCONF}"
@@ -166,6 +163,10 @@ echo "guest ok = yes" >> "${SMBCONF}"
 echo "browseable = yes" >> "${SMBCONF}"
 echo "read only = no" >> "${SMBCONF}"
 echo "create mask = 0770" >> "${SMBCONF}"
+
+# Launch buster-server for unit testing
+
+echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &\nexit 0' > /etc/rc.local
 
 # The end of task.
 
