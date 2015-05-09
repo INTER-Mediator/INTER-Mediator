@@ -251,6 +251,10 @@ describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' && os[:r
   it { should be_installed }
 end
 
+describe package('samba') do
+  it { should be_installed }
+end
+
 describe file('/var/www/html/INTER-Mediator') do
   it { should be_directory }
 end
@@ -317,14 +321,13 @@ range.each{|num|
   describe file('/var/www/html/def' + "%02d" % num + '.php') do
     it { should be_file }
     it { should be_mode 664 }
+    its(:content) { should match /require_once\('INTER-Mediator\/INTER-Mediator.php'\);/ }
   end
-}
 
-range = 1..40
-range.each{|num|
   describe file('/var/www/html/page' + "%02d" % num + '.html') do
     it { should be_file }
     it { should be_mode 664 }
+    its(:content) { should match /<!DOCTYPE html>/ }
   end
 }
 
@@ -386,6 +389,15 @@ describe file('/home/developer') do
   it { should be_directory }
   it { should be_owned_by 'developer' }
   it { should be_grouped_into 'developer' }
+end
+
+describe file('/etc/samba/smb.conf') do
+  it { should be_file }
+  its(:content) { should match /path = \/var\/www\/html/ }
+  its(:content) { should match /guest ok = yes/ }
+  its(:content) { should match /browseable = yes/ }
+  its(:content) { should match /read only = no/ }
+  its(:content) { should match /create mask = 0770/ }
 end
 
 describe file('/home/developer/.bashrc') do
