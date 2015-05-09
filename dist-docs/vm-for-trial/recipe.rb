@@ -795,7 +795,7 @@ file "#{SMBCONF}" do
    dns proxy = no
 
 #### Networking ####
-
+   hosts allow = 192.168.56. 127.
 # The specific set of interfaces / networks to bind to
 # This can be either the interface name or an IP address/netmask;
 # interface names are normally preferred
@@ -1011,13 +1011,17 @@ file "#{SMBCONF}" do
 ;   write list = root, @lpadmin
 
 [webroot]
-comment = Apache Root Directory
-path = /var/www/html
-guest ok = yes
-browseable = yes
-read only = no
-create mask = 0770
+   comment = Apache Root Directory
+   path = /var/www/html
+   guest ok = no
+   browseable = yes
+   read only = no
+   create mask = 0770
 EOF
+end
+
+execute '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer' do
+  command '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer'
 end
 
 if node[:platform] == 'ubuntu'

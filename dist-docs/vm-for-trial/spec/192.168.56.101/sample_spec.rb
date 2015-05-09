@@ -393,8 +393,9 @@ end
 
 describe file('/etc/samba/smb.conf') do
   it { should be_file }
+  its(:content) { should match /hosts allow = 192.168.56. 127./ }
   its(:content) { should match /path = \/var\/www\/html/ }
-  its(:content) { should match /guest ok = yes/ }
+  its(:content) { should match /guest ok = no/ }
   its(:content) { should match /browseable = yes/ }
   its(:content) { should match /read only = no/ }
   its(:content) { should match /create mask = 0770/ }
