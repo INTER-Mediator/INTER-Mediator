@@ -10,6 +10,8 @@ Also the Migration Guide (Japanese) might be informative: http://inter-mediator.
 
 Ver.5.1 (in development)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13.
+- Add the sample application of uploading a file to FileMaker's container field in the 
+  "Sample_webpage" directory and update the sample database (TestDB.fmp12).
 - Update phpseclib to version 0.3.10.
 - Change SHA-1 JavaScript library.
   (tiny-sha1 <https://code.google.com/p/tiny-sha1/> is contained in the INTER-Mediator.)
@@ -17,11 +19,11 @@ Ver.5.1 (in development)
 - Avoid using the @-operator for error suppression in NotifyServer.php to reduce bug risk.
 - Eliminate die() in INTER-Mediator.php to reduce bug risk.
 - Remove duplication in MessageStrings_ja.php and modify MessageStrings.php.
-- Fix loading DB_Null.php in some cases.
 - Add the 'memo' field in sample databases.
 - The script to build the VM contains installation of samba and sharing the web root.
 - Update Vagrantfile for the INTER-Mediator-Server virtual machine to use a box file 
   which be installed VirtualBox Guest Additions.
+- [BUG FIX] Fix loading DB_Null.php in some cases.
 - [BUG FIX] The page editor title was "Definition File Editor" and correct it.
 - [BUG FIX] The 'navi-control' behavior was sometimes wrong.
 - [BUG FIX] Update TestDB.fmp12 to fix add a related record using portal access mode in 
