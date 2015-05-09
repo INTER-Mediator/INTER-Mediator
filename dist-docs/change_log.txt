@@ -19,6 +19,7 @@ Ver.5.1 (in development)
 - Remove duplication in MessageStrings_ja.php and modify MessageStrings.php.
 - Fix loading DB_Null.php in some cases.
 - Add the 'memo' field in sample databases.
+- The script to build the VM contains installation of samba and sharing the web root.
 - [BUG FIX] The page editor title was "Definition File Editor" and correct it.
 - [BUG FIX] The 'navi-control' behavior was sometimes wrong.
 - [BUG FIX] Update TestDB.fmp12 to fix add a related record using portal access mode in 

@@ -20,6 +20,7 @@ IMSAMPLE="${IMROOT}/Samples"
 IMUNITTEST="${IMROOT}/INTER-Mediator-UnitTest"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
+SMBCONF="/etc/samba/smb.conf"
 
 groupadd im-developer
 usermod -a -G im-developer developer
@@ -52,6 +53,7 @@ aptitude install nodejs --assume-yes && update-alternatives --install /usr/bin/n
 aptitude install npm --assume-yes
 aptitude install libfontconfig1 --assume-yes
 aptitude install phpunit --assume-yes
+aptitude install samba --assume-yes
 aptitude clean
 
 cd "${WEBROOT}"
@@ -152,6 +154,18 @@ echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of
 
 cd ~developer
 chown developer:developer .*
+
+# Share the Web Root Directory with SMB.
+
+echo "" >> "${SMBCONF}"
+echo "" >> "${SMBCONF}"
+echo "[webroot]" >> "${SMBCONF}"
+echo "comment = Apache Root Directory" >> "${SMBCONF}"
+echo "path = /var/www/html" >> "${SMBCONF}"
+echo "guest ok = yes" >> "${SMBCONF}"
+echo "browseable = yes" >> "${SMBCONF}"
+echo "read only = no" >> "${SMBCONF}"
+echo "create mask = 0770" >> "${SMBCONF}"
 
 # The end of task.
 
