@@ -30,6 +30,7 @@ Ver.5.1 (in development)
   the sample application.
 - [BUG FIX] Update files for the INTER-Mediator-Server virtual machine to fix issues of
   the page editor and the definition file editor etc.
+- [BUG FIX] Definition File Editor supports sending email settings.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
