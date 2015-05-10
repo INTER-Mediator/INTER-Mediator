@@ -121,6 +121,7 @@ IM_Entry(
                 array(
                     'field' => 'string',
                     'context' => 'string',
+                    'container' => 'boolean',
                 )
             ),
             'calculation' => array(

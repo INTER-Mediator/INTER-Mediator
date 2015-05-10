@@ -264,6 +264,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             'id' => $seq + $contextID * 10000,
                             'field' => getValueFromArray($rel, 'field'),
                             'context' => getValueFromArray($rel, 'context'),
+                            'container' => getValueFromArray($rel, 'container'),
                         );
                         $seq++;
                     }
@@ -404,7 +405,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'script' => array('db-operation', 'situation', 'definition'),
             'global' => array('db-operation', 'field', 'value'),
             'calculation' => array('field', 'expression'),
-            'file-upload' => array('field', 'context'),
+            'file-upload' => array('field', 'context', 'container'),
         );
         $allKeysOptions = array(
             'aliases' => array('alias', 'original'),
@@ -417,7 +418,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         );
 
         $keysShouldBoolean = array(
-            'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct',
+            'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct', 'container'
         );
 
         switch ($dataSourceName) {
@@ -674,6 +675,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 $globalDataSource[$contextID]['file-upload'][] = array(
                     'field' => '= new value =',
                     'context' => '= new value =',
+                    'container' => true,
                 );
                 break;
             case 'options':
