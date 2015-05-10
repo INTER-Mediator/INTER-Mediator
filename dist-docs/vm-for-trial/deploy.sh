@@ -83,6 +83,18 @@ echo "\$dbPort = '80';" >> "${WEBROOT}/params.php"
 echo "\$dbDataType = 'FMPro12';" >> "${WEBROOT}/params.php"
 echo "\$dbDatabase = 'TestDB';" >> "${WEBROOT}/params.php"
 echo "\$dbProtocol = 'HTTP';" >> "${WEBROOT}/params.php"
+echo "\$passPhrase = '';" >> "${WEBROOT}/params.php"
+echo "\$generatedPrivateKey = <<<EOL" >> "${WEBROOT}/params.php"
+echo "-----BEGIN RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
+echo "MIIBOwIBAAJBAKihibtt92M6A/z49CqNcWugBd3sPrW3HF8TtKANZd1EWQ/agZ65" >> "${WEBROOT}/params.php"
+echo "H2/NdL8H6zCgmKpYFTqFGwlYrnWrsbD1UxcCAwEAAQJAWX5pl1Q0D7Axf6csBg1M" >> "${WEBROOT}/params.php"
+echo "3V5u3qlLWqsUXo0ZtjuGDRgk5FsJOA9bkxfpJspbr2CFkodpBuBCBYpOTQhLUc2H" >> "${WEBROOT}/params.php"
+echo "MQIhAN1stwI2BIiSBNbDx2YiW5IVTEh/gTEXxOCazRDNWPQJAiEAwvZvqIQLexer" >> "${WEBROOT}/params.php"
+echo "TnKj7q+Zcv4G2XgbkhtaLH/ELiA/Fh8CIQDGIC3M86qwzP85cCrub5XCK/567GQc" >> "${WEBROOT}/params.php"
+echo "GmmWk80j2KpciQIhAI/ybFa7x85Gl5EAS9F7jYy9ykjeyVyDHX0liK+V1355AiAG" >> "${WEBROOT}/params.php"
+echo "jU6zr1wG9awuXj8j5x37eFXnfD/p92GpteyHuIDpog==" >> "${WEBROOT}/params.php"
+echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
+echo "EOL;" >> "${WEBROOT}/params.php"
 
 sed -E -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' "${IMUNITTEST}/DB_PDO-SQLite_Test.php" > "${IMUNITTEST}/temp"
 rm "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
@@ -136,8 +148,6 @@ setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
 chmod -R g+w "${WEBROOT}"
 
-echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &\nexit 0' > /etc/rc.local
-
 # Home directory permissions modifying
 
 cd ~developer
@@ -145,15 +155,21 @@ chown developer:developer .*
 
 # Share the Web Root Directory with SMB.
 
-echo "" >> "${SMBCONF}"
+sed ':loop; N; $!b loop; ;s/#### Networking ####\n/#### Networking ####\n   hosts allow = 192.168.56. 127./g' "${SMBCONF}" > "${SMBCONF}".tmp
+mv "${SMBCONF}".tmp "${SMBCONF}"
 echo "" >> "${SMBCONF}"
 echo "[webroot]" >> "${SMBCONF}"
-echo "comment = Apache Root Directory" >> "${SMBCONF}"
-echo "path = /var/www/html" >> "${SMBCONF}"
-echo "guest ok = yes" >> "${SMBCONF}"
-echo "browseable = yes" >> "${SMBCONF}"
-echo "read only = no" >> "${SMBCONF}"
-echo "create mask = 0770" >> "${SMBCONF}"
+echo "   comment = Apache Root Directory" >> "${SMBCONF}"
+echo "   path = /var/www/html" >> "${SMBCONF}"
+echo "   guest ok = no" >> "${SMBCONF}"
+echo "   browseable = yes" >> "${SMBCONF}"
+echo "   read only = no" >> "${SMBCONF}"
+echo "   create mask = 0770" >> "${SMBCONF}"
+( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer
+
+# Launch buster-server for unit testing
+
+echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &\nexit 0' > /etc/rc.local
 
 # The end of task.
 

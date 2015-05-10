@@ -197,6 +197,18 @@ describe package('php5-curl'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
+describe package('php5-gd'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
+describe package('php5-xmlrpc'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
+describe package('php5-intl'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
 describe package('git'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
@@ -222,7 +234,7 @@ describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >
 end
 
 describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('1.9.15') }
+  it { should be_installed.by('npm').with_version('1.9.16') }
 end
 
 describe package('libfontconfig1'), :if => os[:family] == 'ubuntu' do
@@ -236,6 +248,10 @@ describe package('phpunit'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 describe package('php-phpunit-PHPUnit'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 do
+  it { should be_installed }
+end
+
+describe package('samba') do
   it { should be_installed }
 end
 
@@ -278,6 +294,7 @@ describe file('/var/www/html/params.php') do
   its(:content) { should match /\$dbUser = 'web';/ }
   its(:content) { should match /\$dbOption = array\(\);/ }
   its(:content) { should match /\$dbServer = '192.168.56.1';/ }
+  its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
 end
 describe file('/var/www/html/params.php'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
@@ -304,14 +321,13 @@ range.each{|num|
   describe file('/var/www/html/def' + "%02d" % num + '.php') do
     it { should be_file }
     it { should be_mode 664 }
+    its(:content) { should match /require_once\('INTER-Mediator\/INTER-Mediator.php'\);/ }
   end
-}
 
-range = 1..40
-range.each{|num|
   describe file('/var/www/html/page' + "%02d" % num + '.html') do
     it { should be_file }
     it { should be_mode 664 }
+    its(:content) { should match /<!DOCTYPE html>/ }
   end
 }
 
@@ -367,6 +383,34 @@ describe file('/var/www/html') do
   it { should be_mode 775 }
   it { should be_owned_by 'developer' }
   it { should be_grouped_into 'im-developer' }
+end
+
+describe file('/home/developer') do
+  it { should be_directory }
+  it { should be_owned_by 'developer' }
+  it { should be_grouped_into 'developer' }
+end
+
+describe file('/etc/samba/smb.conf') do
+  it { should be_file }
+  its(:content) { should match /hosts allow = 192.168.56. 127./ }
+  its(:content) { should match /path = \/var\/www\/html/ }
+  its(:content) { should match /guest ok = no/ }
+  its(:content) { should match /browseable = yes/ }
+  its(:content) { should match /read only = no/ }
+  its(:content) { should match /create mask = 0770/ }
+end
+
+describe file('/home/developer/.bashrc') do
+  it { should be_file }
+  it { should be_owned_by 'developer' }
+  it { should be_grouped_into 'developer' }
+end
+
+describe file('/home/developer/.viminfo') do
+  it { should be_file }
+  it { should be_owned_by 'developer' }
+  it { should be_grouped_into 'developer' }
 end
 
 describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 && os[:release].to_f < 7 do
