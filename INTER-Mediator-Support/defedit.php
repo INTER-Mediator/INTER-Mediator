@@ -153,6 +153,6 @@ $defContexts = array(
 /*
  * Don't remove comment slashes below on any 'release.'
  */
-IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), 2);
+//IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), 2);
 
 ?>
