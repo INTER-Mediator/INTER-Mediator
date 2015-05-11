@@ -270,6 +270,34 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     }
                 }
                 break;
+            case 'sending-email':
+                $contextID = $this->dbSettings->getForeignKeysValue('id');
+                if (isset($globalDataSource[$contextID]['sending-email'])) {
+                    foreach ($globalDataSource[$contextID]['sending-email'] as $rel) {
+                        $result[] = array(
+                            'id' => $seq + $contextID * 10000,
+                            'db-operation' => getValueFromArray($rel, 'db-operation'),
+                            'from' => getValueFromArray($rel, 'from'),
+                            'to' => getValueFromArray($rel, 'to'),
+                            'cc' => getValueFromArray($rel, 'cc'),
+                            'bcc' => getValueFromArray($rel, 'bcc'),
+                            'subject' => getValueFromArray($rel, 'subject'),
+                            'body' => getValueFromArray($rel, 'body'),
+                            'from-constant' => getValueFromArray($rel, 'from-constant'),
+                            'to-constant' => getValueFromArray($rel, 'to-constant'),
+                            'cc-constant' => getValueFromArray($rel, 'cc-constant'),
+                            'bcc-constant' => getValueFromArray($rel, 'bcc-constant'),
+                            'subject-constant' => getValueFromArray($rel, 'subject-constant'),
+                            'body-constant' => getValueFromArray($rel, 'body-constant'),
+                            'body-template' => getValueFromArray($rel, 'body-template'),
+                            'body-fields' => getValueFromArray($rel, 'body-fields'),
+                            'f-option' => getValueFromArray($rel, 'f-option'),
+                            'body-wrap' => getValueFromArray($rel, 'body-wrap'),
+                        );
+                        $seq++;
+                    }
+                }
+                break;
             case 'options':
                 $result[] = array(
                     'id' => $seq,
@@ -291,6 +319,10 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         $globalOptions, 'authentication', 'realm'),
                     'authentication-email-as-username' => getValueFromArray(
                         $globalOptions, 'authentication', 'email-as-username'),
+                    'smtp-server' => getValueFromArray($globalOptions, 'smtp', 'server'),
+                    'smtp-port' => getValueFromArray($globalOptions, 'smtp', 'port'),
+                    'smtp-username' => getValueFromArray($globalOptions, 'smtp', 'username'),
+                    'smtp-password' => getValueFromArray($globalOptions, 'smtp', 'password'),
                 );
                 $seq++;
                 break;
@@ -406,6 +438,9 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'global' => array('db-operation', 'field', 'value'),
             'calculation' => array('field', 'expression'),
             'file-upload' => array('field', 'context', 'container'),
+            'sending-email' => array('db-operation', 'from', 'to', 'cc', 'bcc', 'subject', 'body',
+                'from-constant', 'to-constant', 'cc-constant', 'bcc-constant', 'subject-constant',
+                'body-constant', 'body-template', 'body-fields', 'f-option', 'body-wrap'),
         );
         $allKeysOptions = array(
             'aliases' => array('alias', 'original'),
@@ -414,7 +449,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         );
 
         $keysShouldInteger = array(
-            'records', 'maxrecords',
+            'records', 'maxrecords', 'smtp-port',
         );
 
         $keysShouldBoolean = array(
@@ -463,6 +498,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'script':
             case 'calculation':
             case 'file-upload':
+            case 'sending-email':
                 $recordID = $contextID % 10000;
                 $contextID = floor($contextID / 10000);
                 foreach ($allKeys[$dataSourceName] as $key) {
@@ -487,6 +523,16 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     }
                     $globalOptions["authentication"][$authKey]
                         = $this->dbSettings->getValueOfField($theKey);
+                } else if (strpos($theKey, "smtp-") === 0) {
+                    $authKey = substr($theKey, 5);
+                    if (!isset($globalOptions["smtp"][$authKey])) {
+                        $globalOptions["smtp"][$authKey] = array();
+                    }
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
+                    }
+                    $globalOptions["smtp"][$authKey] = $setValue;
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
@@ -553,7 +599,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
         $sq = "'";
         foreach ($this->spacialValue as $term) {
-            $newFileContent = str_replace($sq.$term.$sq, $term, $newFileContent);
+            $newFileContent = str_replace($sq . $term . $sq, $term, $newFileContent);
         }
 
         $fileWriteResult = file_put_contents($filePath, $newFileContent);
@@ -678,6 +724,30 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'container' => true,
                 );
                 break;
+            case 'sending-email':
+                if (!isset($globalDataSource[$contextID]['sending-email'])) {
+                    $globalDataSource[$contextID]['sending-email'] = array();
+                }
+                $globalDataSource[$contextID]['sending-email'][] = array(
+                    'db-operation' => '= new value =',
+                    'from' => '= new value =',
+                    'to' => '= new value =',
+                    'cc' => '= new value =',
+                    'bcc' => '= new value =',
+                    'subject' => '= new value =',
+                    'body' => '= new value =',
+                    'from-constant' => '= new value =',
+                    'to-constant' => '= new value =',
+                    'cc-constant' => '= new value =',
+                    'bcc-constant' => '= new value =',
+                    'subject-constant' => '= new value =',
+                    'body-constant' => '= new value =',
+                    'body-template' => '= new value =',
+                    'body-fields' => '= new value =',
+                    'f-option' => '= new value =',
+                    'body-wrap' => 68,
+                );
+                break;
             case 'options':
                 break;
             case 'aliases':
@@ -775,6 +845,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'script':
             case 'calculation':
             case 'file-upload':
+            case 'sending-email':
                 $recordID = $contextID % 10000;
                 $contextID = floor($contextID / 10000);
                 if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {

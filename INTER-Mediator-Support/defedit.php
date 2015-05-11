@@ -97,6 +97,15 @@ $defContexts = array(
             array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
         ),
     ),
+    array(
+        'name' => 'sending-email',
+        'records' => 100000,
+        'key' => 'id',
+        'repeat-control' => 'confirm-delete confirm-insert',
+        'relation' => array(
+            array('foreign-key' => 'context_id', 'join-field' => 'id', 'operator' => '='),
+        ),
+    ),
 
     array(
         'name' => 'options',
@@ -144,6 +153,6 @@ $defContexts = array(
 /*
  * Don't remove comment slashes below on any 'release.'
  */
-//IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), false);
+//IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), 2);
 
 ?>
