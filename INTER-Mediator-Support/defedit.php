@@ -1,13 +1,16 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
-*
-*   This project started at the end of 2009.
-*   INTER-Mediator is supplied under MIT License.
-*/
-require_once('../INTER-Mediator.php');
+/**
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ *
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ *   INTER-Mediator is supplied under MIT License.
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
+require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 
 $defContexts = array(
     array(
@@ -150,9 +153,7 @@ $defContexts = array(
         'key' => 'id',
     ),
 );
-/*
+/**
  * Don't remove comment slashes below on any 'release.'
  */
-//IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), 2);
-
-?>
+//IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), false);

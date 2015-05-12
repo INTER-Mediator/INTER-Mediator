@@ -44,6 +44,8 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
          * The test case OME_Test.php should run on the my/your own environment.
          */
         $suite->addTestFile($folder . 'RSA_Test.php');
+        $suite->addTestFile($folder . 'defedit_Test.php');
+        $suite->addTestFile($folder . 'pageedit_Test.php');
         return $suite;
     }
 }
