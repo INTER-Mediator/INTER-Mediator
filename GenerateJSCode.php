@@ -92,7 +92,11 @@ class GenerateJSCode
         $dbClassName = 'DB_' .
             (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
                 (isset ($dbClass) ? $dbClass : ''));
-        require_once("{$dbClassName}.php");
+        if ($dbClassName !== 'DB_DefEditor' && $dbClassName !== 'DB_PageEditor') {
+            require_once("{$dbClassName}.php");
+        } else {
+            require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
+        }
         if (((float)phpversion()) < 5.3) {
             $dbInstance = new $dbClassName();
             if ($dbInstance != null) {
@@ -251,7 +255,7 @@ class GenerateJSCode
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
     }
-    
+
     private function combineScripts($currentDir)
     {
         $jsLibDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'js_lib' . DIRECTORY_SEPARATOR;
@@ -275,7 +279,7 @@ class GenerateJSCode
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
         $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
-        
+
         return $content;
     }
 }
