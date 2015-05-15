@@ -33,6 +33,7 @@ Ver.5.1 (in development)
 - [BUG FIX] Update files for the INTER-Mediator-Server virtual machine to fix issues of
   the page editor and the definition file editor etc.
 - [BUG FIX] Definition File Editor supports sending email settings.
+- [BUG FIX] The validation didn't work on the blank text field.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]
