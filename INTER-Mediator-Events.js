@@ -10,10 +10,10 @@
 IMLibEventResponder = {
     isSetup: false,
 
-    setup: function()   {
+    setup: function () {
         var body;
 
-        if (IMLibEventResponder.isSetup)    {
+        if (IMLibEventResponder.isSetup) {
             return;
         }
 
@@ -22,6 +22,7 @@ IMLibEventResponder = {
         IMLibKeyEventDispatch = new IMLibEventDispatch();
         IMLibMouseEventDispatch = new IMLibEventDispatch();
         body = document.getElementsByTagName('BODY')[0];
+
         INTERMediatorLib.addEvent(body, "change", function (e) {
             //console.log("Event Dispatcher: change");
             var event = e ? e : window.event;
@@ -125,27 +126,27 @@ var IMLibKeyEventDispatch;
 var IMLibMouseEventDispatch;
 
 function IMLibEventDispatch() {
-    this.dispatchTable={};
-    this.dispatchTableTarget= {};
+    this.dispatchTable = {};
+    this.dispatchTableTarget = {};
 
-    this.clearAll= function () {
+    this.clearAll = function () {
         this.dispatchTable = {};
         this.dispatchTableTarget = {};
     };
 
-    this.setExecute= function (idValue, exec) {
+    this.setExecute = function (idValue, exec) {
         if (idValue && exec) {
             this.dispatchTable[idValue] = exec;
         }
     };
 
-    this.setTargetExecute= function (targetValue, exec) {
+    this.setTargetExecute = function (targetValue, exec) {
         if (targetValue && exec) {
             this.dispatchTableTarget[targetValue] = exec;
         }
     };
 
-    this.setExecuteByCode= function (idValue, charCode, exec) {
+    this.setExecuteByCode = function (idValue, charCode, exec) {
         if (idValue && charCode) {
             if (!this.dispatchTable[idValue]) {
                 this.dispatchTable[idValue] = {};

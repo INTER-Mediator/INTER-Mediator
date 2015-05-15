@@ -178,6 +178,14 @@ var IMLibElement = {
                 }
             }
         }
+        if (nodeTag == "INPUT" || nodeTag == "SELECT" || nodeTag == "TEXTAREA")   {
+            INTERMediatorLib.addEvent(element, "blur", function (e) {
+                //console.log("Event Dispatcher: blur");
+                var idValue = element.id;
+                IMLibUI.valueChange(idValue, true);
+            });
+
+        }
         return needPostValueSet;
     },
 
