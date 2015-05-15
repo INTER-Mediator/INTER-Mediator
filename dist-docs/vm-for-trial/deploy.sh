@@ -37,6 +37,7 @@ echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
 echo "[mysql]" >> /etc/mysql/conf.d/im.cnf
 echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
 
+echo "set grub-pc/install_devices /dev/sda" | debconf-communicate
 aptitude update
 aptitude full-upgrade --assume-yes
 aptitude install sqlite --assume-yes
