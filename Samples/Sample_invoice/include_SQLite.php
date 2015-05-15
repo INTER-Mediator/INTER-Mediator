@@ -62,7 +62,7 @@ IM_Entry(
                     'expression' => "format(qty * if ( unitprice = '', product@unitprice, unitprice ))",
                 ),
                 array(
-                    'field' => 'qty@style.color',
+                    'field' => 'qty_color',
                     'expression' => "if (qty >= 10, 'red', 'black')",
                 ),
             ),

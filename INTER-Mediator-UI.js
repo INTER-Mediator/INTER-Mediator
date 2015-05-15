@@ -107,7 +107,7 @@ var IMLibUI = {
                     }
                 }
             }
-            IMLibCalc.recalculation(idValue);
+            IMLibCalc.recalculation();//IMLibCalc.recalculation(idValue); // Optimization Required
             INTERMediator.flushMessage();
         }
 

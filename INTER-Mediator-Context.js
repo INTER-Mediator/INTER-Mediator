@@ -62,8 +62,9 @@ IMLibContextPool = {
                     targetNodes = this.poolingContexts[i].binding[recKey][key];
                     for (j = 0; j < targetNodes.length; j++) {
                         refNode = document.getElementById(targetNodes[j].id);
-                        if (refNode) {
+                        if (refNode && ! targetNodes[j].id in IMLibCalc.calculateRequiredObject) {
                             IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
+                            console.log(refNode, targetNodes[j].target, value);
                         }
                     }
                 }
@@ -79,6 +80,10 @@ IMLibContextPool = {
         }
 
         element = document.getElementById(idValue);
+        if (!element) {
+            return result;
+        }
+
         linkInfo = INTERMediatorLib.getLinkedElementInfo(element);
         if (!linkInfo && INTERMediatorLib.isWidgetElement(element.parentNode)) {
             linkInfo = INTERMediatorLib.getLinkedElementInfo(element.parentNode);
@@ -92,9 +97,10 @@ IMLibContextPool = {
                 targetContext.contextInfo[idValue][targetName] &&
                 targetContext.contextInfo[idValue][targetName].context.contextName == nodeInfo.table) {
                 result = targetContext.contextInfo[idValue][targetName];
+                return result;
             }
         }
-        return result;
+        return null;
     },
 
     getKeyFieldValueFromId: function (idValue, target) {
@@ -738,6 +744,22 @@ IMLibContext = function (contextName) {
             var info = this.contextInfo[nodeId][target == "" ? "_im_no_target" : target];
             var value = info.context.getValue(info.record, info.field);
             return value === undefined ? null : value;
+        } catch (ex) {
+            return null;
+        }
+    };
+
+    this.getContextRecord = function (nodeId) {
+        var infos, keys, i;
+        try {
+            infos = this.contextInfo[nodeId];
+            keys = Object.keys(infos);
+            for(i = 0 ; i < keys.length ; i++ ) {
+                if (infos[keys[i]]) {
+                    return this.store[infos[keys[i]].record];
+                }
+            }
+            return null;
         } catch (ex) {
             return null;
         }
