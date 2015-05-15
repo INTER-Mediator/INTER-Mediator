@@ -790,30 +790,32 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                         $relatedset['@attributes']['table'] . '::-recid' => $relatedrecord['@attributes']['record-id']
                                     );
                                     $multiFields = true;
-                                    foreach ($relatedrecord['field'] as $relatedfield) {
-                                        if (!isset($relatedfield['@attributes'])) {
-                                            $relatedfield = $relatedrecord['field'];
-                                            $multiFields = false;
-                                        }
-                                        $relatedFieldName = $relatedfield['@attributes']['name'];
-                                        $relatedFieldValue = '';
-                                        if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
-                                            $relatedFieldValue = $this->formatter->formatterFromDB(
-                                                "{$dataSourceName}{$this->dbSettings->getSeparator()}{$relatedFieldName}", 
-                                                $relatedfield['data']
+                                    if ($relatedrecord['field']) {
+                                        foreach ($relatedrecord['field'] as $relatedfield) {
+                                            if (!isset($relatedfield['@attributes'])) {
+                                                $relatedfield = $relatedrecord['field'];
+                                                $multiFields = false;
+                                            }
+                                            $relatedFieldName = $relatedfield['@attributes']['name'];
+                                            $relatedFieldValue = '';
+                                            if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
+                                                $relatedFieldValue = $this->formatter->formatterFromDB(
+                                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
+                                                    $relatedfield['data']
+                                                );
+                                            }
+                                            $relatedArray += array(
+                                                $relatedFieldName => $relatedFieldValue
                                             );
+                                            if ($multiFields === false) {
+                                                break;
+                                            }
                                         }
-                                        $relatedArray += array(
-                                            $relatedFieldName => $relatedFieldValue
-                                        );
-                                        if ($multiFields === false) {
-                                            break;
+                                        if (isset($relatedsetArray[$j]) && !is_null($relatedsetArray[$j])) {
+                                            $relatedsetArray[$j] += $relatedArray;
+                                        } else {
+                                            $relatedsetArray[$j] = $relatedArray;
                                         }
-                                    }
-                                    if (isset($relatedsetArray[$j]) && !is_null($relatedsetArray[$j])) {
-                                        $relatedsetArray[$j] += $relatedArray;
-                                    } else {
-                                        $relatedsetArray[$j] = $relatedArray;
                                     }
                                     $j++;
                                 }

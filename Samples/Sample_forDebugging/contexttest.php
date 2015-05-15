@@ -32,6 +32,9 @@ IM_Entry(
             'records' => 1,
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
+            'validation' => array(
+                array("field" => "name", "rule" => " value != '' ", "message"=>"error!"),
+            )
         ),
     ),
     array(),

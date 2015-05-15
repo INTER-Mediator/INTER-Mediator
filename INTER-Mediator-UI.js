@@ -35,7 +35,7 @@ var IMLibUI = {
      valueChange
      Parameters:
      */
-    valueChange: function (idValue) {
+    valueChange: function (idValue, validationOnly) {
         var changedObj, objType, contextInfo, i, updateRequiredContext, associatedNode, currentValue, newValue,
             linkInfo, nodeInfo;
 
@@ -57,6 +57,10 @@ var IMLibUI = {
             if (!validation(changedObj)) {   // Validation error.
                 return;
             }
+            if (validationOnly === true)    {
+                return;
+            }
+
             objType = changedObj.getAttribute('type');
             if (objType == 'radio' && !changedObj.checked) {
                 INTERMediatorOnPage.hideProgress();
