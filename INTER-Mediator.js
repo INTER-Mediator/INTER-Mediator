@@ -838,7 +838,7 @@ INTERMediator = {
                                 curVal = targetRecordset[ix][nInfo['field']];
                                 if (!INTERMediator.isDBDataPreferable || curVal != null) {
                                     IMLibCalc.updateCalculationInfo(
-                                        currentContextDef, nodeId, nInfo, targetRecordset[ix]);
+                                        contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
                                 }
                                 if (nInfo['table'] == currentContextDef['name']) {
                                     isContext = true;

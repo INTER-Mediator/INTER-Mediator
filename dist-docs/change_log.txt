@@ -12,6 +12,8 @@ Ver.5.1 (in development)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13.
 - Add the sample application of uploading a file to FileMaker's container field in the 
   "Sample_webpage" directory and update the sample database (TestDB.fmp12).
+- Calculated property can use the unbound fields as items in the expression. You don't need to set the target
+  (like qty@style.color) in the "field" of "calculation", just set the field name.
 - Update phpseclib to version 0.3.10.
 - Change SHA-1 JavaScript library.
   (tiny-sha1 <https://code.google.com/p/tiny-sha1/> is contained in the INTER-Mediator.)
