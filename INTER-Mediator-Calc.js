@@ -8,6 +8,14 @@
  */
 
 var IMLibCalc = {
+        get regexpForSeparator() {
+            if (INTERMediator) {
+                return new RegExp(INTERMediator.separator);
+            }
+            return new RegExp("@");
+        },
+        // The INTERMediator object has to setup prior to this object.
+
         calculateRequiredObject: null,
         /*
          key => {    // Key is the id attribute of the node which is defined as "calcuration"
@@ -28,7 +36,7 @@ var IMLibCalc = {
             field = null;
             exp = null;
             for (index in calcDef) {
-                atPos = calcDef[index]["field"].indexOf("@");
+                atPos = calcDef[index]["field"].indexOf(INTERMediator.separator);
                 fieldLength = calcDef[index]["field"].length;
                 calcDefField = calcDef[index]["field"].substring(0, atPos >= 0 ? atPos : fieldLength);
                 if (calcDefField == nInfo["field"]) {
@@ -77,7 +85,8 @@ var IMLibCalc = {
             IMLibNodeGraph.clear();
             for (nodeId in IMLibCalc.calculateRequiredObject) {
                 calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                idValue = nodeId.match(/\@/) ? nodeId.split(/\@/)[0] : nodeId;
+                idValue = nodeId.match(IMLibCalc.regexpForSeparator)
+                    ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
                 if (calcObject) {
                     calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(idValue);
                     targetNode = document.getElementById(calcFieldInfo.field);
@@ -100,7 +109,8 @@ var IMLibCalc = {
                     calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
                     calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
                     if (calcObject) {
-                        idValue = leafNodes[i].match(/\@/) ? leafNodes[i].split(/\@/)[0] : leafNodes[i];
+                        idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator)
+                            ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
                         targetNode = document.getElementById(calcFieldInfo.field);
                         exp = calcObject.expression;
                         nInfo = calcObject.nodeInfo;
@@ -160,7 +170,8 @@ var IMLibCalc = {
             IMLibNodeGraph.clear();
             for (nodeId in IMLibCalc.calculateRequiredObject) {
                 calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                idValue = nodeId.match(/\@/) ? nodeId.split(/\@/)[0] : nodeId;
+                idValue = nodeId.match(IMLibCalc.regexpForSeparator)
+                    ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
                 calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(idValue);
                 targetNode = document.getElementById(calcFieldInfo.field);
                 for (field in calcObject.referes) {
@@ -175,7 +186,8 @@ var IMLibCalc = {
                     calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
                     calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
                     if (calcObject) {
-                        idValue = leafNodes[i].match(/\@/) ? leafNodes[i].split(/\@/)[0] : leafNodes[i];
+                        idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator)
+                            ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
                         targetNode = document.getElementById(calcFieldInfo.field);
                         exp = calcObject.expression;
                         nInfo = calcObject.nodeInfo;
@@ -244,7 +256,8 @@ var IMLibCalc = {
             do {
                 isRemoved = false;
                 for (nodeId in IMLibCalc.calculateRequiredObject) {
-                	idValue = nodeId.match(/\@/) ? nodeId.split(/\@/)[0] : nodeId;
+                    idValue = nodeId.match(IMLibCalc.regexpForSeparator)
+                        ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
                     if (!document.getElementById(idValue)) {
                         delete IMLibCalc.calculateRequiredObject[nodeId];
                         isRemoved = true;

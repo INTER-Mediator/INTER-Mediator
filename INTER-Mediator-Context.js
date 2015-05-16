@@ -25,7 +25,7 @@ IMLibContextPool = {
     excludingNode: null,
 
     synchronize: function (context, recKey, key, value, target, portal) {
-        var i, j, viewName, refNode, targetNodes, result = false;
+        var i, j, viewName, refNode, targetNodes, result = false, calcKey;
         viewName = context.viewName;
         if (this.poolingContexts == null) {
             return null;
@@ -62,7 +62,11 @@ IMLibContextPool = {
                     targetNodes = this.poolingContexts[i].binding[recKey][key];
                     for (j = 0; j < targetNodes.length; j++) {
                         refNode = document.getElementById(targetNodes[j].id);
-                        if (refNode && ! targetNodes[j].id in IMLibCalc.calculateRequiredObject) {
+                        calcKey = targetNodes[j].id;
+                        if (targetNodes[j].target && targetNodes[j].target.length > 0) {
+                            calcKey += INTERMediator.separator + targetNodes[j].target;
+                        }
+                        if (refNode && !(calcKey in IMLibCalc.calculateRequiredObject)) {
                             IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
                             console.log(refNode, targetNodes[j].target, value);
                         }
@@ -754,7 +758,7 @@ IMLibContext = function (contextName) {
         try {
             infos = this.contextInfo[nodeId];
             keys = Object.keys(infos);
-            for(i = 0 ; i < keys.length ; i++ ) {
+            for (i = 0; i < keys.length; i++) {
                 if (infos[keys[i]]) {
                     return this.store[infos[keys[i]].record];
                 }
@@ -983,8 +987,8 @@ IMLibLocalContext = {
         } else {
             jsonString = JSON.stringify(this.store);
         }
-        if (INTERMediator.useSessionStorage === true && 
-            typeof sessionStorage !== 'undefined' && 
+        if (INTERMediator.useSessionStorage === true &&
+            typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
                 sessionStorage.setItem("_im_localcontext" + document.URL, jsonString);
@@ -998,8 +1002,8 @@ IMLibLocalContext = {
 
     unarchive: function () {
         var localContext = "";
-        if (INTERMediator.useSessionStorage === true && 
-            typeof sessionStorage !== 'undefined' && 
+        if (INTERMediator.useSessionStorage === true &&
+            typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
                 localContext = sessionStorage.getItem("_im_localcontext" + document.URL);
