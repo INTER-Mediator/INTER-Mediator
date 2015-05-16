@@ -8,7 +8,12 @@
  */
 
 var IMLibCalc = {
-        regexpForSeparator: new RegExp(INTERMediator.separator),
+        get regexpForSeparator() {
+            if (INTERMediator) {
+                return new RegExp(INTERMediator.separator);
+            }
+            return new RegExp("@");
+        },
         // The INTERMediator object has to setup prior to this object.
 
         calculateRequiredObject: null,
@@ -251,7 +256,7 @@ var IMLibCalc = {
             do {
                 isRemoved = false;
                 for (nodeId in IMLibCalc.calculateRequiredObject) {
-                	idValue = nodeId.match(IMLibCalc.regexpForSeparator)
+                    idValue = nodeId.match(IMLibCalc.regexpForSeparator)
                         ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
                     if (!document.getElementById(idValue)) {
                         delete IMLibCalc.calculateRequiredObject[nodeId];
