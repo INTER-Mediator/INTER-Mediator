@@ -62,9 +62,11 @@ IMLibContextPool = {
                     targetNodes = this.poolingContexts[i].binding[recKey][key];
                     for (j = 0; j < targetNodes.length; j++) {
                         refNode = document.getElementById(targetNodes[j].id);
-                        calcKey = targetNodes[j].id + (targetNodes[j].target.length > 0
-                            ? (INTERMediator.separator + targetNodes[j].target) : '');
-                        if (refNode && ! (calcKey in IMLibCalc.calculateRequiredObject)) {
+                        calcKey = targetNodes[j].id;
+                        if (targetNodes[j].target && targetNodes[j].target.length > 0) {
+                            calcKey += INTERMediator.separator + targetNodes[j].target;
+                        }
+                        if (refNode && !(calcKey in IMLibCalc.calculateRequiredObject)) {
                             IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
                             console.log(refNode, targetNodes[j].target, value);
                         }
