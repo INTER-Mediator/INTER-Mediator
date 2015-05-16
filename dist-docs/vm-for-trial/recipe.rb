@@ -1016,7 +1016,7 @@ file "#{SMBCONF}" do
    guest ok = no
    browseable = yes
    read only = no
-   create mask = 0770
+   create mask = 0775
 EOF
 end
 
