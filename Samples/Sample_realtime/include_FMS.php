@@ -1,9 +1,9 @@
 <?php
 /*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- * 
+ *
  *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- * 
+ *
  *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
  */
@@ -58,7 +58,7 @@ IM_Entry(
                     'expression' => "format(qty * if ( unitprice = '', product@unitprice, unitprice ))",
                 ),
                 array(
-                    'field' => 'qty@style.color',
+                    'field' => 'qty_color',
                     'expression' => "if(qty > 10, 'red', 'black')",
                 ),
             ),
@@ -101,8 +101,8 @@ IM_Entry(
          * The definitions for Pusher are required. But it should be set to the params.php file
          * because some value is associated with each user.
         'pusher' => array(
-            'app_id' => 'string',
-            'key' => 'integer',
+            'app_id' => 'integer',
+            'key' => 'string',
             'secret' => 'string',
         ),
         */
