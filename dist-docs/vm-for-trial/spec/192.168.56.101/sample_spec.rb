@@ -398,7 +398,7 @@ describe file('/etc/samba/smb.conf') do
   its(:content) { should match /guest ok = no/ }
   its(:content) { should match /browseable = yes/ }
   its(:content) { should match /read only = no/ }
-  its(:content) { should match /create mask = 0770/ }
+  its(:content) { should match /create mask = 0775/ }
 end
 
 describe file('/home/developer/.bashrc') do
