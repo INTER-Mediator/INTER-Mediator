@@ -210,6 +210,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             'field' => getValueFromArray($rel, 'field'),
                             'rule' => getValueFromArray($rel, 'rule'),
                             'message' => getValueFromArray($rel, 'message'),
+                            'notify' => getValueFromArray($rel, 'notify'),
                         );
                         $seq++;
                     }
@@ -433,7 +434,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'query' => array('field', 'value', 'operator'),
             'sort' => array('field', 'direction'),
             'default-values' => array('field', 'value'),
-            'validation' => array('field', 'rule', 'message'),
+            'validation' => array('field', 'rule', 'message','notify'),
             'script' => array('db-operation', 'situation', 'definition'),
             'global' => array('db-operation', 'field', 'value'),
             'calculation' => array('field', 'expression'),
