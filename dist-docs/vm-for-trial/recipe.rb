@@ -157,6 +157,10 @@ EOF
 end
 
 if node[:platform] == 'ubuntu'
+  execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
+    command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
+  end
+
   execute 'aptitude update' do
     command 'aptitude update'
   end
@@ -1016,7 +1020,7 @@ file "#{SMBCONF}" do
    guest ok = no
    browseable = yes
    read only = no
-   create mask = 0770
+   create mask = 0775
 EOF
 end
 

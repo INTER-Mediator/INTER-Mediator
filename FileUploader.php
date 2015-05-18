@@ -109,8 +109,17 @@ class FileUploader
             }
         }
         if ($useContainer === TRUE) {
+            // for uploading to FileMaker's container field
             $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
-            $filePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $fileName;
+            $tmpDir = ini_get('upload_tmp_dir');
+            if ($tmpDir === '') {
+                $tmpDir = sys_get_temp_dir();
+            }
+            if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
+                $filePath = $tmpDir . $fileName;
+            } else {
+                $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
+            }
         }
         $result = move_uploaded_file($fileInfo['tmp_name'], $filePath);
         if (!$result) {
@@ -229,19 +238,20 @@ class FileUploader
     //
     public function processInfo()
     {
-        $onloadScript = "window.onload=function(){setInterval(\"location.reload()\",500);};";
-        echo "<html><head><script>{$onloadScript}</script></head><body style='margin:0;padding:0'>";
-        echo "<div style='width:160px;border:1px solid #555555;padding:1px;background-color:white;'>";
-        $status = apc_fetch('upload_' . $_GET['uploadprocess']);
-        if ($status === false) {
-            $progress = 0;
-        } else {
-            $progress = round($status['current'] / $status['total'], 2)*100;
+        if (function_exists('apc_fetch')) {
+            $onloadScript = "window.onload=function(){setInterval(\"location.reload()\",500);};";
+            echo "<html><head><script>{$onloadScript}</script></head><body style='margin:0;padding:0'>";
+            echo "<div style='width:160px;border:1px solid #555555;padding:1px;background-color:white;'>";
+            $status = apc_fetch('upload_' . $_GET['uploadprocess']);
+            if ($status === false) {
+                $progress = 0;
+            } else {
+                $progress = round($status['current'] / $status['total'], 2)*100;
+            }
+            echo "<div style='width:{$progress}%;height:20px;background-color: #ffb52d;'>";
+            echo "<div style='position:absolute;left:0;top:0;padding-left:8px;'>";
+            echo $progress  . " %";
+            echo "</div></div></div></body></html>";
         }
-        echo "<div style='width:{$progress}%;height:20px;background-color: #ffb52d;'>";
-        echo "<div style='position:absolute;left:0;top:0;padding-left:8px;'>";
-        echo $progress  . " %";
-        echo "</div></div></div></body></html>";
-
     }
 }

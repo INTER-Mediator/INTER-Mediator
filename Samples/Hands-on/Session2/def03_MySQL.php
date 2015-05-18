@@ -34,5 +34,5 @@ IM_Entry(
         'user' => 'web',
         'password' => 'password',
     ),
-    'false'
+    false
 );

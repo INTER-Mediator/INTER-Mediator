@@ -165,7 +165,7 @@ echo "   path = /var/www/html" >> "${SMBCONF}"
 echo "   guest ok = no" >> "${SMBCONF}"
 echo "   browseable = yes" >> "${SMBCONF}"
 echo "   read only = no" >> "${SMBCONF}"
-echo "   create mask = 0770" >> "${SMBCONF}"
+echo "   create mask = 0775" >> "${SMBCONF}"
 ( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer
 
 # Launch buster-server for unit testing

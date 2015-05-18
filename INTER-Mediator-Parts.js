@@ -27,7 +27,7 @@ IMParts_Catalog["fileupload"] = {
     forceOldStyleForm: false,
     uploadId: "sign" + Math.random(),
     instanciate: function (parentNode) {
-        var inputNode, formNode, buttonNode;
+        var inputNode, formNode, buttonNode, hasTapEvent;
         var newId = parentNode.getAttribute('id') + '-e';
         var newNode = document.createElement('DIV');
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
@@ -43,6 +43,10 @@ IMParts_Catalog["fileupload"] = {
             } catch (ex) {
                 this.html5DDSuported = false;
             }
+        }
+        hasTapEvent = ("ontouchstart" in window);
+        if (hasTapEvent) {
+            this.html5DDSuported = false;
         }
         if (this.html5DDSuported) {
             newNode.dropzone = "copy";
