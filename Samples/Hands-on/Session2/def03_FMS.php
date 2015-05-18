@@ -38,5 +38,5 @@ IM_Entry(
         'protocol' => 'http',
         'datatype' => 'FMPro12',
     ),
-    2
+    false
 );
