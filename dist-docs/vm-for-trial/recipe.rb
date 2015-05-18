@@ -157,6 +157,10 @@ EOF
 end
 
 if node[:platform] == 'ubuntu'
+  execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
+    command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
+  end
+
   execute 'aptitude update' do
     command 'aptitude update'
   end
