@@ -9,7 +9,8 @@ Latest changes might exist on the GitHub repository. Please check: https://githu
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/migration.html.
 
 Ver.5.1 (in development)
-- Support uploading a file to FileMaker's container field when using FileMaker Server 13.
+- Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.
+- Improve the compatibility with file upload component and Mobile Safari.
 - Add the sample application of uploading a file to FileMaker's container field in the 
   "Sample_webpage" directory and update the sample database (TestDB.fmp12).
 - Calculated property can use the unbound fields as items in the expression. You don't need to set the target
