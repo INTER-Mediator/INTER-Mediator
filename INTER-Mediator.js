@@ -67,6 +67,7 @@ INTERMediator = {
     pusherAvailable: false,
 
     dateTimeFunction: false,
+    postOnlyNodes: null,
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.
         startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
@@ -531,19 +532,37 @@ INTERMediator = {
          Post only mode.
          */
         function setupPostOnlyEnclosure(node) {
-            var nodes, k, currentWidgetNodes, plugin, setupWidget = false;
-            var postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post');
-            for (var i = 1; i < postNodes.length; i++) {
-                INTERMediatorLib.addEvent(
-                    postNodes[i],
-                    'click',
-                    (function () {
-                        var targetNode = postNodes[i];
-                        return function () {
-                            IMLibUI.clickPostOnlyButton(targetNode);
-                        };
-                    })());
+            var nodes, k, currentWidgetNodes, plugin, postNodes, setupWidget = false;
+            postOnlyNodes = [];
+            postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post');
+            for (var i = 0; i < postNodes.length; i++) {
+                if (postNodes[i].tagName == "BUTTON") {
+                    INTERMediatorLib.addEvent(
+                        postNodes[i],
+                        'click',
+                        (function () {
+                            var targetNode = postNodes[i];
+                            return function () {
+                                IMLibUI.clickPostOnlyButton(targetNode);
+                            };
+                        })());
+                }
             }
+            postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, 'post');
+            for (var i = 0; i < postNodes.length; i++) {
+                if (postNodes[i].tagName == "BUTTON") {
+                    INTERMediatorLib.addEvent(
+                        postNodes[i],
+                        'click',
+                        (function () {
+                            var targetNode = postNodes[i];
+                            return function () {
+                                IMLibUI.clickPostOnlyButton(targetNode);
+                            };
+                        })());
+                }
+            }
+
             nodes = node.childNodes;
 
             isInsidePostOnly = true;
@@ -553,9 +572,21 @@ INTERMediator = {
             isInsidePostOnly = false;
             // -------------------------------------------
             function seekEnclosureInPostOnly(node) {
-                var children, i, wInfo;
+                var children, i, wInfo, number = 1;
                 if (node.nodeType === 1) { // Work for an element
                     try {
+                        if (node.getAttribute("data-im")) { // Linked element
+                            if (! node.id)  {
+                                node.id = "IMPOST-" + number;
+                                number++;
+                            }
+                            INTERMediatorLib.addEvent(node, "blur", function (e) {
+                                var idValue = node.id;
+                                IMLibUI.valueChange(idValue, true);
+                            });
+                            postOnlyNodes.push(node);
+                        }
+
                         if (INTERMediatorLib.isWidgetElement(node)) {
                             wInfo = INTERMediatorLib.getWidgetInfo(node);
                             if (wInfo[0]) {
@@ -568,7 +599,7 @@ INTERMediator = {
                             }
                         } else if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
                             expandEnclosure(node, null, null, null);
-                        } else {
+                        }   else {
                             children = node.childNodes; // Check all child nodes.
                             for (i = 0; i < children.length; i++) {
                                 seekEnclosureInPostOnly(children[i]);
