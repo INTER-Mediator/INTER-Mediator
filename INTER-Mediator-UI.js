@@ -37,7 +37,7 @@ var IMLibUI = {
      */
     valueChange: function (idValue, validationOnly) {
         var changedObj, objType, contextInfo, i, updateRequiredContext, associatedNode, currentValue, newValue,
-            linkInfo, nodeInfo;
+            linkInfo, nodeInfo, messageNodes = [];
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
             INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
@@ -93,7 +93,6 @@ var IMLibUI = {
                         } else {
                             IMLibContextPool.updateContext(idValue, nodeInfo.target);
                             updateDB(changedObj, idValue, nodeInfo.target);
-
                             updateRequiredContext = IMLibContextPool.dependingObjects(idValue);
                             for (i = 0; i < updateRequiredContext.length; i++) {
                                 updateRequiredContext[i].foreignValue = {};
@@ -116,7 +115,16 @@ var IMLibUI = {
         }
 
         function validation(changedObj) {
-            var linkInfo, matched, context, i, index, didValidate, contextInfo, result, messageNode, errorMsgs;
+            var linkInfo, matched, context, i, index, didValidate, contextInfo, result, messageNode;
+            if (messageNodes)    {
+                while (messageNodes.length > 0) {
+                    messageNodes[0].parentNode.removeChild(messageNodes[0]);
+                    delete messageNodes[0];
+                }
+            }
+            if (! messageNodes) {
+                messageNodes = [];
+            }
             try {
                 linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
                 didValidate = false;
@@ -124,7 +132,8 @@ var IMLibUI = {
                 if (linkInfo.length > 0) {
                     matched = linkInfo[0].match(/([^@]+)/);
                     if (matched[1] != IMLibLocalContext.contextName) {
-                        context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
+                        context = INTERMediatorLib.getNamedObject(
+                            INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
                         if (context["validation"] != null) {
                             for (i = 0; i < linkInfo.length; i++) {
                                 matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
@@ -142,6 +151,7 @@ var IMLibUI = {
                                                         "SPAN", context["validation"][index].message);
                                                     changedObj.parentNode.insertBefore(
                                                         messageNode, changedObj.nextSibling);
+                                                    messageNodes.push(messageNode);
                                                     break;
                                                 case "end-of-sibling":
                                                     INTERMediatorLib.clearErrorMessage(changedObj);
@@ -149,6 +159,7 @@ var IMLibUI = {
                                                         "DIV", context["validation"][index].message);
                                                     changedObj.parentNode.appendChild(messageNode);
                                                     break;
+                                                    messageNodes.push(messageNode);
                                                 default:
                                                     alert(context["validation"][index]["message"]);
                                             }
