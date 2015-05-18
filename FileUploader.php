@@ -109,8 +109,17 @@ class FileUploader
             }
         }
         if ($useContainer === TRUE) {
+            // for uploading to FileMaker's container field
             $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
-            $filePath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $fileName;
+            $tmpDir = ini_get('upload_tmp_dir');
+            if ($tmpDir === '') {
+                $tmpDir = sys_get_temp_dir();
+            }
+            if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
+                $filePath = $tmpDir . $fileName;
+            } else {
+                $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
+            }
         }
         $result = move_uploaded_file($fileInfo['tmp_name'], $filePath);
         if (!$result) {
