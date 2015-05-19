@@ -116,13 +116,13 @@ var IMLibUI = {
 
         function validation(changedObj) {
             var linkInfo, matched, context, i, index, didValidate, contextInfo, result, messageNode;
-            if (messageNodes)    {
+            if (messageNodes) {
                 while (messageNodes.length > 0) {
                     messageNodes[0].parentNode.removeChild(messageNodes[0]);
                     delete messageNodes[0];
                 }
             }
-            if (! messageNodes) {
+            if (!messageNodes) {
                 messageNodes = [];
             }
             try {
@@ -133,7 +133,7 @@ var IMLibUI = {
                     matched = linkInfo[0].match(/([^@]+)/);
                     if (matched[1] != IMLibLocalContext.contextName) {
                         context = INTERMediatorLib.getNamedObject(
-                            INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
+                            INTERMediatorOnPage.getDataSources(), "name", matched[1]);
                         if (context["validation"] != null) {
                             for (i = 0; i < linkInfo.length; i++) {
                                 matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
@@ -158,8 +158,8 @@ var IMLibUI = {
                                                     messageNode = INTERMediatorLib.createErrorMessageNode(
                                                         "DIV", context["validation"][index].message);
                                                     changedObj.parentNode.appendChild(messageNode);
-                                                    break;
                                                     messageNodes.push(messageNode);
+                                                    break;
                                                 default:
                                                     alert(context["validation"][index]["message"]);
                                             }
@@ -432,7 +432,7 @@ var IMLibUI = {
                     ],
                     dataset: relatedRecordSet
                 });
-                
+
                 targetRecord = INTERMediator_DBAdapter.db_query(
                     {
                         name: targetName,
@@ -446,7 +446,7 @@ var IMLibUI = {
                         ]
                     }
                 );
-                
+
                 newRecord = {};
                 maxRecId = -1;
                 for (portalRowNum in targetRecord["recordset"][0]) {

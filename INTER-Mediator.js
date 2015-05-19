@@ -532,14 +532,13 @@ INTERMediator = {
          Post only mode.
          */
         function setupPostOnlyEnclosure(node) {
-            var nodes, k, currentWidgetNodes, plugin, postNodes, setupWidget = false;
-            postOnlyNodes = [];
-            postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post');
-            for (var i = 0; i < postNodes.length; i++) {
-                if (postNodes[i].tagName == "BUTTON") {
+            var nodes, postNodes, postOnlyNodes = [];
+            postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, "_im_post");
+            for (i = 0; i < postNodes.length; i++) {
+                if (postNodes[i].tagName === "BUTTON") {
                     INTERMediatorLib.addEvent(
                         postNodes[i],
-                        'click',
+                        "click",
                         (function () {
                             var targetNode = postNodes[i];
                             return function () {
@@ -548,12 +547,12 @@ INTERMediator = {
                         })());
                 }
             }
-            postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, 'post');
-            for (var i = 0; i < postNodes.length; i++) {
-                if (postNodes[i].tagName == "BUTTON") {
+            postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, "post");
+            for (i = 0; i < postNodes.length; i++) {
+                if (postNodes[i].tagName === "BUTTON") {
                     INTERMediatorLib.addEvent(
                         postNodes[i],
-                        'click',
+                        "click",
                         (function () {
                             var targetNode = postNodes[i];
                             return function () {
@@ -572,11 +571,11 @@ INTERMediator = {
             isInsidePostOnly = false;
             // -------------------------------------------
             function seekEnclosureInPostOnly(node) {
-                var children, i, wInfo, number = 1;
+                var children, wInfo, number = 1;
                 if (node.nodeType === 1) { // Work for an element
                     try {
                         if (node.getAttribute("data-im")) { // Linked element
-                            if (! node.id)  {
+                            if (!node.id) {
                                 node.id = "IMPOST-" + number;
                                 number++;
                             }
@@ -599,7 +598,7 @@ INTERMediator = {
                             }
                         } else if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
                             expandEnclosure(node, null, null, null);
-                        }   else {
+                        } else {
                             children = node.childNodes; // Check all child nodes.
                             for (i = 0; i < children.length; i++) {
                                 seekEnclosureInPostOnly(children[i]);
@@ -780,7 +779,7 @@ INTERMediator = {
 
                     if (currentContextDef["relation"]) {
                         for (i = 0; i < Object.keys(currentContextDef["relation"]).length; i++) {
-                            if (currentContextDef["relation"][i]["portal"] 
+                            if (currentContextDef["relation"][i]["portal"]
                                     && Number(currentContextDef["relation"][i]["portal"]) === 1) {
                                 usePortal = true;
                             }
@@ -1063,7 +1062,7 @@ INTERMediator = {
                     } else {
                         recordNumber = Number(currentContextDef['records']);
                     }
-                    
+
                     targetRecords = {};
                     if (currentContextDef["portal"] === true) {
                         for (i = 0; i < Object.keys(currentContextDef["currentrecord"]).length; i++) {
@@ -1925,6 +1924,6 @@ if (!Array.indexOf) {
 
 if (typeof String.prototype.trim !== 'function') {
     String.prototype.trim = function() {
-        return this.replace(/^\s+|\s+$/g, ''); 
+        return this.replace(/^\s+|\s+$/g, '');
     }
 }
