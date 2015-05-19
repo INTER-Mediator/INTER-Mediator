@@ -68,7 +68,7 @@ IMLibContextPool = {
                         }
                         if (refNode && !(calcKey in IMLibCalc.calculateRequiredObject)) {
                             IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
-                            console.log(refNode, targetNodes[j].target, value);
+                            //console.log(refNode, targetNodes[j].target, value);
                         }
                     }
                 }
