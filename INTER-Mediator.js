@@ -532,13 +532,11 @@ INTERMediator = {
          Post only mode.
          */
         function setupPostOnlyEnclosure(node) {
-            var nodes, postNodes, postOnlyNodes = [];
+            var nodes, postNodes, number = 1;
             postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, "_im_post");
             for (i = 0; i < postNodes.length; i++) {
                 if (postNodes[i].tagName === "BUTTON") {
-                    INTERMediatorLib.addEvent(
-                        postNodes[i],
-                        "click",
+                    INTERMediatorLib.addEvent(postNodes[i], "click",
                         (function () {
                             var targetNode = postNodes[i];
                             return function () {
@@ -547,21 +545,6 @@ INTERMediator = {
                         })());
                 }
             }
-            postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, "post");
-            for (i = 0; i < postNodes.length; i++) {
-                if (postNodes[i].tagName === "BUTTON") {
-                    INTERMediatorLib.addEvent(
-                        postNodes[i],
-                        "click",
-                        (function () {
-                            var targetNode = postNodes[i];
-                            return function () {
-                                IMLibUI.clickPostOnlyButton(targetNode);
-                            };
-                        })());
-                }
-            }
-
             nodes = node.childNodes;
 
             isInsidePostOnly = true;
@@ -571,7 +554,7 @@ INTERMediator = {
             isInsidePostOnly = false;
             // -------------------------------------------
             function seekEnclosureInPostOnly(node) {
-                var children, wInfo, number = 1;
+                var children, wInfo, i;
                 if (node.nodeType === 1) { // Work for an element
                     try {
                         if (node.getAttribute("data-im")) { // Linked element
@@ -583,7 +566,6 @@ INTERMediator = {
                                 var idValue = node.id;
                                 IMLibUI.valueChange(idValue, true);
                             });
-                            postOnlyNodes.push(node);
                         }
 
                         if (INTERMediatorLib.isWidgetElement(node)) {
