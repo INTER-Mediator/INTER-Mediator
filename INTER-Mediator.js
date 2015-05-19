@@ -604,8 +604,7 @@ INTERMediator = {
         function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
             var linkedNodes, encNodeTag, repeatersOriginal, repeaters, linkDefs, voteResult, currentContextDef,
                 fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
-                keyValue, selectedNode, calcDef, calcFields, contextObj, masterContext, masterNaviControlValue,
-                currentNaviControlValue;
+                keyValue, selectedNode, calcDef, calcFields, contextObj;
 
             currentLevel++;
 
