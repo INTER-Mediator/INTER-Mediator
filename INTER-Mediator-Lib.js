@@ -614,7 +614,7 @@ var INTERMediatorLib = {
             }
         }
         return sign + s.reverse().join(this.cachedDigitSeparator[1])
-        + (underNumStr == '' ? '' : this.cachedDigitSeparator[0] + underNumStr);
+            + (underNumStr == '' ? '' : this.cachedDigitSeparator[0] + underNumStr);
     },
 
     objectToString: function (obj) {
@@ -717,10 +717,10 @@ var INTERMediatorLib = {
 
     is_array: function (target) {
         return target
-        && typeof target === 'object'
-        && typeof target.length === 'number'
-        && typeof target.splice === 'function'
-        && !(target.propertyIsEnumerable('length'));
+            && typeof target === 'object'
+            && typeof target.length === 'number'
+            && typeof target.splice === 'function'
+            && !(target.propertyIsEnumerable('length'));
     },
 
     getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
@@ -770,23 +770,47 @@ var INTERMediatorLib = {
      If the cNode parameter is like '_im_post', this function will search data-im-control="post" elements.
      */
     getElementsByClassNameOrDataAttr: function (node, cName) {
-        var nodes = [];
-        var attrValue = (cName.length > 5) ? cName.substr(4) : null;
-        var reg = new RegExp(cName);
-        checkNode(node);
+        var nodes = [], attrValue;
+
+        attrValue = (cName.match(/^_im_/)) ? cName.substr(4) : cName;
+        if (attrValue) {
+            checkNode(node);
+        }
         return nodes;
 
         function checkNode(target) {
-            var className, attr;
+            var value, i, items;
             if (target.nodeType != 1) {
                 return;
             }
-            className = INTERMediatorLib.getClassAttributeFromNode(target);
-            attr = target.getAttribute("data-im-control");
-            if ((className && className.match(reg)) || (attr && attrValue && attr == attrValue)) {
-                nodes.push(target);
+            value = INTERMediatorLib.getClassAttributeFromNode(target);
+            if (value) {
+                items = value.split("|");
+                for (i = 0; i < items.length; i++) {
+                    if (items[i] == attrValue) {
+                        nodes.push(target);
+                    }
+                }
             }
-            for (var i = 0; i < target.children.length; i++) {
+            value = target.getAttribute("data-im-control");
+            if (value) {
+                items = value.split(/[| ]/);
+                for (i = 0; i < items.length; i++) {
+                    if (items[i] == attrValue) {
+                        nodes.push(target);
+                    }
+                }
+            }
+            value = target.getAttribute("data-im");
+            if (value) {
+                items = value.split(/[| ]/);
+                for (i = 0; i < items.length; i++) {
+                    if (items[i] == attrValue) {
+                        nodes.push(target);
+                    }
+                }
+            }
+            for (i = 0; i < target.children.length; i++) {
                 checkNode(target.children[i]);
             }
         }
