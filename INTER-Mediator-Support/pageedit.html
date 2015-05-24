@@ -25,6 +25,7 @@
     <script src="CodeMirror/mode/xml/xml.js"></script>
     <script src="CodeMirror/mode/css/css.js"></script>
     <script src="CodeMirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="CodeMirror/addon/display/fullscreen.js"></script>
     <script type="text/javascript">
         window.onload = function () {
             var nodeUnsupport = document.getElementById('nonsupportmessage');
@@ -64,6 +65,11 @@
         TH {
             color: #666666;
         }
+
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: auto;
+        }
     </style>
 </head>
 <body>
@@ -94,8 +100,8 @@
     <div class="_im_enclosure">
         <div class="_im_repeater">
             <p>キータイプする毎にほぼ自動的に保存します</p>
-            <div class="IM[pagefile@content]  IM_WIDGET[codemirror]"
-                 style="width: 600px; border: 1px solid gray"></div>
+            <div data-im="pagefile@content" data-im-widget="codemirror"
+                 style="width: 99%; border: 1px solid gray; margin:0 2px 0 2px"></div>
         </div>
     </div>
 </div>
