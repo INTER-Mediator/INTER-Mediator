@@ -114,6 +114,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'protocol' => getValueFromArray($context, 'protocol'),
                         'datatype' => getValueFromArray($context, 'datatype'),
                         'cache' => getValueFromArray($context, 'cache'),
+                        'soft-delete' => getValueFromArray($context, 'soft-delete'),
                         'post-reconstruct' => getValueFromArray($context, 'post-reconstruct'),
                         'post-dismiss-message' => getValueFromArray($context, 'post-dismiss-message'),
                         'post-move-url' => getValueFromArray($context, 'post-move-url'),
@@ -454,7 +455,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         );
 
         $keysShouldBoolean = array(
-            'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct', 'container'
+            'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct',
+            'container', 'soft-delete',
         );
 
         switch ($dataSourceName) {
