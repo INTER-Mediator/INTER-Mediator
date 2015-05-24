@@ -483,9 +483,13 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (array_search($theKey, $keysShouldInteger) !== false) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
                     } else if (array_search($theKey, $keysShouldBoolean) !== false) {
-                        $setValue = (boolean)$setValue;
+                        if (preg_match("/(false)/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/(true)/i", $setValue)) {
+                            $setValue = true;
+                        }
                     }
-                    if (strlen($setValue) > 0) {
+                    if (strlen($setValue) > 0 || $setValue === false) {
                         $globalDataSource[$contextID][$theKey] = $setValue;
                     } else if (isset($globalDataSource[$contextID][$theKey])) {
                         unset($globalDataSource[$contextID][$theKey]);
@@ -509,7 +513,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (array_search($key, $keysShouldInteger) !== false) {
                         $fieldValue = ($fieldValue === '') ? '' : (int)$fieldValue;
                     } else if (array_search($key, $keysShouldBoolean) !== false) {
-                        $fieldValue = (boolean)$fieldValue;
+                        if (preg_match("/(false)/i", $fieldValue)) {
+                            $fieldValue = false;
+                        } else if (preg_match("/(true)/i", $fieldValue)) {
+                            $fieldValue = true;
+                        }
                     }
                     if (!is_null($fieldValue)) {
                         $globalDataSource[$contextID][$dataSourceName][$recordID][$key] = $fieldValue;
@@ -541,9 +549,13 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (array_search($theKey, $keysShouldInteger) !== false) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
                     } else if (array_search($theKey, $keysShouldBoolean) !== false) {
-                        $setValue = (boolean)$setValue;
+                        if (preg_match("/(false)/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/(true)/i", $setValue)) {
+                            $setValue = true;
+                        }
                     }
-                    if (strlen($setValue) > 0) {
+                    if (strlen($setValue) > 0 || $setValue === false) {
                         $globalOptions[$theKey] = $setValue;
                     } else if (isset($globalOptions[$theKey])) {
                         unset($globalOptions[$theKey]);
