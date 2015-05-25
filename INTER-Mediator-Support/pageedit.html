@@ -15,7 +15,7 @@
     <link rel="shortcut icon" href="../dist-docs/vm-for-trial/im-icon.png" type="image/png"/>
     <link rel="stylesheet" type="text/css" href="defedit.css"/>
     <link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
-    <title>INTER-Mediator - Definition File Editor</title>
+    <title>INTER-Mediator - Page File Editor</title>
     <script src="pageedit.php"></script>
     <script src="codemirror_im.js"></script>
     <script src="CodeMirror/lib/codemirror.js"></script>
@@ -64,6 +64,11 @@
         TH {
             color: #666666;
         }
+
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: auto;
+        }
     </style>
 </head>
 <body>
@@ -94,8 +99,8 @@
     <div class="_im_enclosure">
         <div class="_im_repeater">
             <p>キータイプする毎にほぼ自動的に保存します</p>
-            <div class="IM[pagefile@content]  IM_WIDGET[codemirror]"
-                 style="width: 600px; border: 1px solid gray"></div>
+            <div data-im="pagefile@content" data-im-widget="codemirror"
+                 style="width: 99%; border: 1px solid gray; margin:0 2px 0 2px"></div>
         </div>
     </div>
 </div>

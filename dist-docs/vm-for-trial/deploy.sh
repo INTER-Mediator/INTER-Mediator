@@ -145,7 +145,7 @@ chown -R www-data:im-developer /var/db/im
 chmod 775 /var/db/im
 chmod 664 /var/db/im/sample.sq3
 
-setfacl --recursive --modify g:im-developer:rw "${WEBROOT}"
+setfacl --recursive --modify g:im-developer:rw,d:g:im-developer:rw "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
 chmod -R g+w "${WEBROOT}"
 
