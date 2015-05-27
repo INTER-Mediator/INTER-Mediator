@@ -1020,7 +1020,9 @@ file "#{SMBCONF}" do
    guest ok = no
    browseable = yes
    read only = no
-   create mask = 0775
+   create mask = 0664
+   directory mask = 0775
+   force group = im-developer
 EOF
 end
 
