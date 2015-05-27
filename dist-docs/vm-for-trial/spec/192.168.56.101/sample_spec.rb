@@ -70,10 +70,7 @@ describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f
   it { should be_running }
 end
 
-describe service('postgres'), :if => os[:family] == 'ubuntu' do
-  it { should be_enabled }
-end
-describe service('postgresql'), :if => os[:family] == 'redhat' do
+describe service('postgresql') do
   it { should be_enabled }
 end
 
@@ -234,7 +231,7 @@ describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >
 end
 
 describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('1.9.16') }
+  it { should be_installed.by('npm').with_version('1.9.17') }
 end
 
 describe package('libfontconfig1'), :if => os[:family] == 'ubuntu' do
@@ -375,7 +372,8 @@ describe command('sqlite3 /var/db/im/sample.sq3 ".tables"') do
 end
 
 describe command('getfacl /var/www/html'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
-  its(:stdout) { should match /group:im-developer:rw-/ }
+  its(:stdout) { should match /^group:im-developer:rw-$/ }
+  its(:stdout) { should match /^default:group:im-developer:rw-$/ }
 end
 
 describe file('/var/www/html') do
