@@ -37,7 +37,22 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('neq'));
         $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('and'));
         $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('or'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('AND'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('OR'));
         $this->assertFalse($this->db_proxy->dbClass->isPossibleOperator('='));
+    }
+
+    public function testIsPossibleOrderSpecifier()
+    {
+        $this->dbProxySetupForAccess("person_layout", 1);
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ascend'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('descend'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('asc'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('desc'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ASCEND'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('DESCEND'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ASC'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('DESC'));
     }
 
     public function testQuery1_singleRecord()
