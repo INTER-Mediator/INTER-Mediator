@@ -55,6 +55,55 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('DESC'));
     }
 
+    public function testNormalizedCondition()
+    {
+        $this->dbProxySetupForAccess("person_layout", 1);
+
+        $condition = array(
+            'field' => 'f1',
+            'operator' => '=',
+            'value' => 'test',
+        );
+        $expected = array(
+            'field' => 'f1',
+            'operator' => 'eq',
+            'value' => 'test',
+        );
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition['operator'] = '!=';
+        $expected['operator'] = 'neq';
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition['operator'] = '<';
+        $expected['operator'] = 'lt';
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition['operator'] = '<=';
+        $expected['operator'] = 'lte';
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition['operator'] = '>';
+        $expected['operator'] = 'gt';
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition['operator'] = '>=';
+        $expected['operator'] = 'gte';
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition['operator'] = 'match*';
+        $expected['operator'] = 'bw';
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition['operator'] = '*match';
+        $expected['operator'] = 'ew';
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition['operator'] = '*match*';
+        $expected['operator'] = 'cn';
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+    }
+
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
