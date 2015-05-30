@@ -469,29 +469,6 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
 end
 
 
-# Activate DefEdit/PageEdit
-
-execute "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/defedit.php\" > \"#{IMSUPPORT}/temp\"" do
-  command "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/defedit.php\" > \"#{IMSUPPORT}/temp\""
-end
-execute "rm \"#{IMSUPPORT}/defedit.php\"" do
-  command "rm \"#{IMSUPPORT}/defedit.php\""
-end
-execute "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/defedit.php\"" do
-  command "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/defedit.php\""
-end
-
-execute "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/pageedit.php\" > \"#{IMSUPPORT}/temp\"" do
-  command "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/pageedit.php\" > \"#{IMSUPPORT}/temp\""
-end
-execute "rm \"#{IMSUPPORT}/pageedit.php\"" do
-  command "rm \"#{IMSUPPORT}/pageedit.php\""
-end
-execute "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/pageedit.php\"" do
-  command "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/pageedit.php\""
-end
-
-
 # Copy Templates
 
 for num in 1..40 do

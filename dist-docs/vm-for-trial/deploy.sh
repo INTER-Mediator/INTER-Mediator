@@ -103,16 +103,6 @@ cd "${IMROOT}"
 npm install -g buster
 npm install -g phantomjs
 
-# Activate DefEdit/PageEdit
-
-sed -E -e 's|//IM_Entry|IM_Entry|' "${IMSUPPORT}/defedit.php" > "${IMSUPPORT}/temp"
-rm "${IMSUPPORT}/defedit.php"
-mv "${IMSUPPORT}/temp" "${IMSUPPORT}/defedit.php"
-
-sed -E -e 's|//IM_Entry|IM_Entry|' "${IMSUPPORT}/pageedit.php" > "${IMSUPPORT}/temp"
-rm "${IMSUPPORT}/pageedit.php"
-mv "${IMSUPPORT}/temp" "${IMSUPPORT}/pageedit.php"
-
 # Copy Templates
 
 for Num in $(seq 40)
