@@ -8,9 +8,13 @@ Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository. Please check: https://github.com/INTER-Mediator/INTER-Mediator.
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/migration.html.
 
-Ver.5.1 (in development)
+Ver.5.2 (in development)
+- Handle some operators of conditions ('!=', '>', '>=', '<', '<=') as valid when using FileMaker 
+  Server.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   cant contain ether boolean or string value appropriately.
+- [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 
+  file using FileMaker Server.
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.
