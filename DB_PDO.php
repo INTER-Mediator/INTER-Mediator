@@ -333,7 +333,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $this->link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
             }
         } catch (PDOException $ex) {
-            $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage());
+            $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() .
+                ", DSN=" . $this->dbSettings->getDbSpecDSN() .
+                ", User=" . $this->dbSettings->getDbSpecUser() .
+                ", Password=" . $this->dbSettings->getDbSpecPassword());
             return false;
         }
         $this->isAlreadySetup = true;
@@ -348,7 +351,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         try {
             $this->link = new PDO($dsnString);
         } catch (PDOException $ex) {
-            $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage());
+            $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() . ", DSN=" . $dsnString);
             return false;
         }
         $this->isAlreadySetup = true;
@@ -543,10 +546,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 }
             }
         }
-        if (! is_null($this->softDeleteField) && ! is_null($this->softDeleteValue)) {
+        if (!is_null($this->softDeleteField) && !is_null($this->softDeleteValue)) {
             $dfEsc = $this->quotedFieldName($this->softDeleteField);
             $dvEsc = $this->link->quote($this->softDeleteValue);
-            if (strlen($queryClause) > 0)   {
+            if (strlen($queryClause) > 0) {
                 $queryClause = "($queryClause) AND ($dfEsc <> $dvEsc OR $dfEsc IS NULL)";
             } else {
                 $queryClause = "($dfEsc <> $dvEsc OR $dfEsc IS NULL)";
