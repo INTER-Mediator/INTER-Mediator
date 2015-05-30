@@ -555,6 +555,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if (isset($relDef['join-field']) && $relDef['join-field'] == $foreignDef['field']) {
                         $foreignField = $relDef['foreign-key'];
                         $foreignValue = $foreignDef['value'];
+                        $relDef = $this->normalizedCondition($relDef);
                         $foreignOperator = isset($relDef['operator']) ? $relDef['operator'] : 'eq';
                         $formattedValue = $this->formatter->formatterToDB(
                             "{$dataSourceName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
@@ -986,27 +987,27 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         if (isset($tableInfo['query'])) {
             foreach ($tableInfo['query'] as $condition) {
                 if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    $op = $condition['operator'] == '=' ? 'eq' : $condition['operator'];
-                    if (!$this->isPossibleOperator($op)) {
+                    $condition = $this->normalizedCondition($condition);
+                    if (!$this->isPossibleOperator($condition['operator'])) {
                         throw new Exception("Invalid Operator.");
                     }
                     $convertedValue = $this->formatter->formatterToDB(
                         "{$dataSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}",
                         $condition['value']);
-                    $this->fx->AddDBParam($condition['field'], $convertedValue, $op);
+                    $this->fx->AddDBParam($condition['field'], $convertedValue, $condition['operator']);
                 }
             }
         }
 
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
             if (!$this->dbSettings->getPrimaryKeyOnly() || $value['field'] == $primaryKey) {
-                $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-                if (!$this->isPossibleOperator($op)) {
+                $value = $this->normalizedCondition($value);
+                if (!$this->isPossibleOperator($value['operator'])) {
                     throw new Exception("Invalid Operator.: {$condition['operator']}");
                 }
                 $convertedValue = $this->formatter->formatterToDB(
                     "{$dataSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
-                $this->fx->AddDBParam($value['field'], $convertedValue, $op);
+                $this->fx->AddDBParam($value['field'], $convertedValue, $value['operator']);
             }
         }
         if (isset($tableInfo['authentication'])
@@ -1301,11 +1302,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
 
         foreach ($this->dbSettings->getExtraCriteria() as $value) {
-            $op = $value['operator'] == '=' ? 'eq' : $value['operator'];
-            if (!$this->isPossibleOperator($op)) {
+            $value = $this->normalizedCondition($value);
+            if (!$this->isPossibleOperator($value['operator'])) {
                 throw new Exception("Invalid Operator.");
             }
-            $this->fx->AddDBParam($value['field'], $value['value'], $op);
+            $this->fx->AddDBParam($value['field'], $value['value'], $value['operator']);
         }
         if (isset($context['authentication'])
             && (isset($context['authentication']['all']) || isset($context['authentication']['delete']))
@@ -1917,26 +1918,56 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function normalizedCondition($condition)
     {
         /* for FileMaker Server */
-        if (($condition['field'] == '-recid' && $condition['operator'] == 'undefined')
-                 || ($condition['operator'] == '=')) {
+        if (($condition['field'] === '-recid' && $condition['operator'] === 'undefined')
+                 || ($condition['operator'] === '=')) {
             return array(
                 'field' => $condition['field'],
                 'operator' => 'eq',
                 'value' => "{$condition['value']}",
             );
-        } else if ($condition['operator'] == 'match*') {
+        } else if ($condition['operator'] === '!=') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'neq',
+                'value' => "{$condition['value']}",
+            );
+        } else if ($condition['operator'] === '<') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'lt',
+                'value' => "{$condition['value']}",
+            );
+        } else if ($condition['operator'] === '<=') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'lte',
+                'value' => "{$condition['value']}",
+            );
+        } else if ($condition['operator'] === '>') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'gt',
+                'value' => "{$condition['value']}",
+            );
+        } else if ($condition['operator'] === '>=') {
+            return array(
+                'field' => $condition['field'],
+                'operator' => 'gte',
+                'value' => "{$condition['value']}",
+            );
+        } else if ($condition['operator'] === 'match*') {
             return array(
                 'field' => $condition['field'],
                 'operator' => 'bw',
                 'value' => "{$condition['value']}",
             );
-        } else if ($condition['operator'] == '*match') {
+        } else if ($condition['operator'] === '*match') {
             return array(
                 'field' => $condition['field'],
                 'operator' => 'ew',
                 'value' => "{$condition['value']}",
             );
-        } else if ($condition['operator'] == '*match*') {
+        } else if ($condition['operator'] === '*match*') {
             return array(
                 'field' => $condition['field'],
                 'operator' => 'cn',
