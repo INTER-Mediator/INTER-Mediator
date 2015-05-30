@@ -90,7 +90,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->errorMessageStore("The table doesn't specified.");
             return false;
         }
-        
+
         $this->setupFXforDB($regTable, 1);
         $this->fxResult = $this->fx->DoFxAction('show_all', TRUE, TRUE, 'full');
         if ($this->fxResult['errorCode'] != 0 && $this->fxResult['errorCode'] != 401) {
@@ -114,7 +114,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at insert action: " . 
+                $this->stringWithoutCredential("FX reports error at insert action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return false;
         }
@@ -134,10 +134,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
                 if (!is_array($result)) {
                     $this->logger->setDebugMessage(
-                        $this->stringWithoutCredential("FX reports error at insert action: " . 
+                        $this->stringWithoutCredential("FX reports error at insert action: " .
                             "code={$result['errorCode']}, url={$result['URL']}"));
                     $this->errorMessageStore(
-                        $this->stringWithoutCredential("FX reports error at insert action: " . 
+                        $this->stringWithoutCredential("FX reports error at insert action: " .
                             "code={$result['errorCode']}, url={$result['URL']}"));
                     return false;
                 }
@@ -163,7 +163,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " . 
+                $this->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return false;
         } else {
@@ -194,7 +194,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $targetClients = array();
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " . 
+                $this->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
         } else {
             if ($result['foundCount'] > 0) {
@@ -219,7 +219,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $result = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
             if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
                 $this->errorMessageStore(
-                    $this->stringWithoutCredential("FX reports error at find action: " . 
+                    $this->stringWithoutCredential("FX reports error at find action: " .
                         "code={$result['errorCode']}, url={$result['URL']}"));
             } else {
                 if ($result['foundCount'] > 0) {
@@ -242,7 +242,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $targetClients = array();
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " . 
+                $this->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return false;
         } else {
@@ -262,7 +262,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $result = $this->fx->DoFxAction('new', TRUE, TRUE, 'full');
                     if (!is_array($result)) {
                         $this->errorMessageStore(
-                            $this->stringWithoutCredential("FX reports error at insert action: " . 
+                            $this->stringWithoutCredential("FX reports error at insert action: " .
                                 "code={$result['errorCode']}, url={$result['URL']}"));
                         return false;
                     }
@@ -284,7 +284,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $targetClients = array();
         if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
             $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " . 
+                $this->stringWithoutCredential("FX reports error at find action: " .
                     "code={$result['errorCode']}, url={$result['URL']}"));
             return false;
         } else {
@@ -350,7 +350,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 require_once($path);
             } else {
                 // If FX.php isn't installed in valid directories, it shows error message and finishes.
-                throw new Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires ' . 
+                throw new Exception('Data Access Class "FileMaker_FX" of INTER-Mediator requires ' .
                     basename($fxFile) . ' on any right directory.');
             }
         }
@@ -476,6 +476,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $useOrOperation = true;
                 } else {
                     if (isset($condition['operator'])) {
+                        $condition = $this->normalizedCondition($condition);
                         if (!$this->isPossibleOperator($condition['operator'])) {
                             throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
@@ -496,6 +497,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $useOrOperation = true;
                     } else {
                         if (isset($condition['operator'])) {
+                            $condition = $this->normalizedCondition($condition);
                             if (!$this->isPossibleOperator($condition['operator'])) {
                                 throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
@@ -701,7 +703,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         } else {
             $queryString .= $currentSort . $currentSearch . '&-findall';
         }
-        
+
         $this->queriedEntity = $this->fx->layout;
         $this->queriedCondition = $queryString;
 
@@ -710,7 +712,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $keyField = isset($context['key']) ? $context['key'] : $this->getDefaultKey();
         try {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 
+            curl_setopt($ch, CURLOPT_URL,
                 $this->fx->urlScheme . '://' . $this->fx->dataServer . $this->fx->dataPortSuffix . '/fmi/xml/fmresultset.xml');
             curl_setopt($ch, CURLOPT_USERPWD, $this->dbSettings->getAccessUser() . ':' . $this->dbSettings->getAccessPassword());
             curl_setopt($ch, CURLOPT_POST, true);
@@ -775,7 +777,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             break;
                         }
                     }
-                    
+
                     $relatedsetArray = array();
                     if (isset($record['relatedset'])) {
                         if (isset($record['relatedset']['record'])) {
@@ -822,7 +824,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             }
                         }
                     }
-                    
+
                     foreach ($relatedsetArray as $j => $relatedset) {
                         $dataArray = $dataArray + array($j => $relatedset);
                     }
@@ -846,12 +848,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
         $errorCode = intval($data['error']['@attributes']['code']);
         if ($errorCode != 0 && $errorCode != 401) {
-            $this->logger->setErrorMessage('INTER-Mediator reports error at find action: ' . 
+            $this->logger->setErrorMessage('INTER-Mediator reports error at find action: ' .
                 'errorcode=' . $errorCode . ', querystring=' . $queryString);
             return null;
         }
         $this->logger->setDebugMessage($queryString);
-        
+
         if (!$usePortal) {
             $this->mainTableCount = intval($data['resultset']['@attributes']['count']);
             $this->mainTableTotalCount = intval($data['datasource']['@attributes']['total-count']);
@@ -1915,7 +1917,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     public function normalizedCondition($condition)
     {
         /* for FileMaker Server */
-        if (($condition['field'] == "-recid" && $condition['operator'] == 'undefined') 
+        if (($condition['field'] == '-recid' && $condition['operator'] == 'undefined')
                  || ($condition['operator'] == '=')) {
             return array(
                 'field' => $condition['field'],
@@ -2011,7 +2013,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         return $recordSet;
     }
-    
+
     function authSupportGetSalt($username)
     {
         // TODO: Implement authSupportGetSalt() method.
