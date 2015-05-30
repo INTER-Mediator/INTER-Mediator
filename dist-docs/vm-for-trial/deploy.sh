@@ -97,25 +97,11 @@ echo "jU6zr1wG9awuXj8j5x37eFXnfD/p92GpteyHuIDpog==" >> "${WEBROOT}/params.php"
 echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
 
-sed -E -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' "${IMUNITTEST}/DB_PDO-SQLite_Test.php" > "${IMUNITTEST}/temp"
-rm "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
-mv "${IMUNITTEST}/temp" "${IMUNITTEST}/DB_PDO-SQLite_Test.php"
-
 # Install npm packages
 
 cd "${IMROOT}"
 npm install -g buster
 npm install -g phantomjs
-
-# Activate DefEdit/PageEdit
-
-sed -E -e 's|//IM_Entry|IM_Entry|' "${IMSUPPORT}/defedit.php" > "${IMSUPPORT}/temp"
-rm "${IMSUPPORT}/defedit.php"
-mv "${IMSUPPORT}/temp" "${IMSUPPORT}/defedit.php"
-
-sed -E -e 's|//IM_Entry|IM_Entry|' "${IMSUPPORT}/pageedit.php" > "${IMSUPPORT}/temp"
-rm "${IMSUPPORT}/pageedit.php"
-mv "${IMSUPPORT}/temp" "${IMSUPPORT}/pageedit.php"
 
 # Copy Templates
 

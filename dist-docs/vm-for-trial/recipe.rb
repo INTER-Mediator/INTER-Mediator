@@ -443,16 +443,6 @@ EOF
   end
 end
 
-execute "sed -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\" > \"#{IMUNITTEST}/temp\"" do
-  command "sed -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\" > \"#{IMUNITTEST}/temp\""
-end
-execute "rm \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\"" do
-  command "rm \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\""
-end
-execute "mv \"#{IMUNITTEST}/temp\" \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\"" do
-  command "mv \"#{IMUNITTEST}/temp\" \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\""
-end
-
 if node[:platform] == 'redhat'
   execute 'service httpd restart' do
     command 'service httpd restart'
@@ -476,29 +466,6 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   execute 'npm install -g phantomjs' do
     command 'npm install -g phantomjs'
   end
-end
-
-
-# Activate DefEdit/PageEdit
-
-execute "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/defedit.php\" > \"#{IMSUPPORT}/temp\"" do
-  command "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/defedit.php\" > \"#{IMSUPPORT}/temp\""
-end
-execute "rm \"#{IMSUPPORT}/defedit.php\"" do
-  command "rm \"#{IMSUPPORT}/defedit.php\""
-end
-execute "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/defedit.php\"" do
-  command "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/defedit.php\""
-end
-
-execute "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/pageedit.php\" > \"#{IMSUPPORT}/temp\"" do
-  command "sed -e 's|//IM_Entry|IM_Entry|' \"#{IMSUPPORT}/pageedit.php\" > \"#{IMSUPPORT}/temp\""
-end
-execute "rm \"#{IMSUPPORT}/pageedit.php\"" do
-  command "rm \"#{IMSUPPORT}/pageedit.php\""
-end
-execute "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/pageedit.php\"" do
-  command "mv \"#{IMSUPPORT}/temp\" \"#{IMSUPPORT}/pageedit.php\""
 end
 
 

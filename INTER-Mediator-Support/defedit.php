@@ -153,6 +153,12 @@ $defContexts = array(
         'key' => 'id',
     ),
 );
+
+if (php_uname('n') === 'inter-mediator-server' && $_SERVER['SERVER_ADDR'] === '192.168.56.101') {
+    // for the INTER-Mediator-Server virtual machine
+    IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), false);
+}
+
 /**
  * Don't remove comment slashes below on any 'release.'
  */
