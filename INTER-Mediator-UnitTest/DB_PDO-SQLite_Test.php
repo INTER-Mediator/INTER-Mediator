@@ -31,7 +31,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => 'sqlite:/tmp/sample.sq3',
+            'dsn' => 'sqlite:/var/db/im/sample.sq3',
         );
         $this->db_proxy = new DB_Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
