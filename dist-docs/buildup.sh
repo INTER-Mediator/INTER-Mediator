@@ -6,7 +6,7 @@
 # This project started at the end of 2009.
 # INTER-Mediator is supplied under MIT License.
 
-version="5.1"
+version="5.2-dev"
 
 # The jar file of YUI can be donwloaded from below.
 # http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7
@@ -88,7 +88,7 @@ sed -f "${sedrule}" "${buildPath}/temp.js" > "${buildPath}/INTER-Mediator.js"
 #### Compress INTER-Mediator.js
 if [ -f "${topOfDir}/${YUICOMP}" ]; then
     sed '1s/*/*!/' "${buildPath}/temp.js" > "${buildPath}/temp2.js"
-    
+
     osName=$(uname -s)
     echo "Detected OS: ${osName}"
     if [[ "${osName}" == CYGWIN* ]];  then
@@ -96,7 +96,7 @@ if [ -f "${topOfDir}/${YUICOMP}" ]; then
     	temp2Path=$(cygpath -w "${buildPath}/temp2.js")
     	temp3Path=$(cygpath -w "${buildPath}/temp3.js")
     	yuiLogPath=$(cygpath -w "${buildDir}/${YUICOMPLOG}")
-    else 
+    else
     	jarPath="${topOfDir}/${YUICOMP}"
     	temp2Path="${buildPath}/temp2.js"
     	temp3Path="${buildPath}/temp3.js"
