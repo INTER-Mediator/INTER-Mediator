@@ -314,6 +314,12 @@ class DefinitionChecker
                     'expression' => 'string',
                 )
             ),
+            'button-names' => array(
+                'insert' => 'string',
+                'delete' => 'string',
+                'navi-detail' => 'string',
+                'navi-back' => 'string',
+            ),
             'send-mail' => array(
                 'load' => array(
                     'from' => 'string',
