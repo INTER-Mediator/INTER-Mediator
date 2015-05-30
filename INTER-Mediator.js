@@ -70,7 +70,7 @@ INTERMediator = {
     postOnlyNodes: null,
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.
-        startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
+     startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
      */
 
     //=================================
@@ -288,7 +288,7 @@ INTERMediator = {
         try {
             if (Pusher.VERSION) {
                 INTERMediator.pusherAvailable = true;
-                if (! INTERMediatorOnPage.clientNotificationKey)    {
+                if (!INTERMediatorOnPage.clientNotificationKey) {
                     INTERMediator.setErrorMessage(
                         Error("Pusher Configuration Error"), INTERMediatorOnPage.getMessages()[1039]);
                     INTERMediator.pusherAvailable = false;
@@ -296,7 +296,7 @@ INTERMediator = {
             }
         } catch (ex) {
             INTERMediator.pusherAvailable = false;
-            if (INTERMediatorOnPage.clientNotificationKey)    {
+            if (INTERMediatorOnPage.clientNotificationKey) {
                 INTERMediator.setErrorMessage(
                     Error("Pusher Configuration Error"), INTERMediatorOnPage.getMessages()[1038]);
             }
@@ -761,7 +761,7 @@ INTERMediator = {
                     if (currentContextDef["relation"]) {
                         for (i = 0; i < Object.keys(currentContextDef["relation"]).length; i++) {
                             if (currentContextDef["relation"][i]["portal"]
-                                    && Number(currentContextDef["relation"][i]["portal"]) === 1) {
+                                && Number(currentContextDef["relation"][i]["portal"]) === 1) {
                                 usePortal = true;
                             }
                         }
@@ -882,7 +882,7 @@ INTERMediator = {
                                 && !isInsidePostOnly
                                 && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                                 //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
-                                var changeFunction =function (a) {
+                                var changeFunction = function (a) {
                                     var id = a;
                                     return function () {
                                         IMLibUI.valueChange(id);
@@ -1321,7 +1321,7 @@ INTERMediator = {
          */
         function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
             // Handling Delete buttons
-            var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode;
+            var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName;
 
             if (!currentContextDef['repeat-control']
                 || !currentContextDef['repeat-control'].match(/delete/i)) {
@@ -1333,7 +1333,11 @@ INTERMediator = {
 
                 buttonNode = document.createElement('BUTTON');
                 INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Delete");
-                buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[6]));
+                buttonName = INTERMediatorOnPage.getMessages()[6];
+                if (currentContextDef['button-names'] && currentContextDef['button-names']['delete'])   {
+                    buttonName = currentContextDef['button-names']['delete'];
+                }
+                buttonNode.appendChild(document.createTextNode(buttonName));
                 thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
                 buttonNode.setAttribute('id', thisId);
                 INTERMediator.buttonIdNum++;
@@ -1390,7 +1394,8 @@ INTERMediator = {
          */
         function setupInsertButton(currentContextDef, keyValue, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
-                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec, thisId, encNodeTag, repNodeTag;
+                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec, thisId, encNodeTag, repNodeTag,
+                buttonName, setTop;
 
             encNodeTag = node.tagName;
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -1399,16 +1404,22 @@ INTERMediator = {
                 if (relationValue.length > 0 || !currentContextDef['paging'] || currentContextDef['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
                     INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Insert");
-                    buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[5]));
+                    buttonName = INTERMediatorOnPage.getMessages()[5];
+                    if (currentContextDef['button-names'] && currentContextDef['button-names']['insert'])   {
+                        buttonName = currentContextDef['button-names']['insert'];
+                    }
+                    buttonNode.appendChild(document.createTextNode(buttonName));
                     thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
                     buttonNode.setAttribute('id', thisId);
                     INTERMediator.buttonIdNum++;
                     shouldRemove = [];
                     switch (encNodeTag) {
                         case 'TBODY':
+                            setTop = false;
                             targetNodeTag = "TFOOT";
                             if (currentContextDef['repeat-control'].match(/top/i)) {
                                 targetNodeTag = "THEAD";
+                                setTop = true;
                             }
                             enclosedNode = node.parentNode;
                             firstLevelNodes = enclosedNode.childNodes;
@@ -1426,9 +1437,15 @@ INTERMediator = {
                             existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert');
                             if (existingButtons.length == 0) {
                                 trNode = document.createElement('TR');
+                                INTERMediatorLib.setClassAttributeToNode(trNode, "IM_Insert_TR");
                                 tdNode = document.createElement('TD');
+                                INTERMediatorLib.setClassAttributeToNode(tdNode, "IM_Insert_TD");
                                 setIdValue(trNode);
-                                footNode.appendChild(trNode);
+                                if (setTop && footNode.childNodes) {
+                                    footNode.insertBefore(trNode, footNode.childNodes[0]);
+                                } else {
+                                    footNode.appendChild(trNode);
+                                }
                                 trNode.appendChild(tdNode);
                                 tdNode.appendChild(buttonNode);
                                 shouldRemove = [trNode.getAttribute('id')];
@@ -1504,7 +1521,7 @@ INTERMediator = {
         function setupNavigationButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
             // Handling Detail buttons
             var buttonNode, thisId, navigateJSFunction, tdNodes, tdNode, firstInNode, contextDef, isHide,
-                detailContext, showingNode, isHidePageNavi;
+                detailContext, showingNode, isHidePageNavi, buttonName;
 
             if (!currentContextDef['navi-control']
                 || !currentContextDef['navi-control'].match(/master/i)) {
@@ -1527,7 +1544,11 @@ INTERMediator = {
 
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Master");
-            buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[12]));
+            buttonName = INTERMediatorOnPage.getMessages()[12];
+            if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail'])   {
+                buttonName = currentContextDef['button-names']['navi-detail'];
+            }
+            buttonNode.appendChild(document.createTextNode(buttonName));
             thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
             buttonNode.setAttribute('id', thisId);
             INTERMediator.buttonIdNum++;
@@ -1615,7 +1636,8 @@ INTERMediator = {
         function setupBackNaviButton(currentContext, node) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode,
                 insertJSFunction, i, firstLevelNodes, targetNodeTag, existingButtons, masterContext,
-                naviControlValue, thisId, repNodeTag, currentContextDef, showingNode, targetNode, isHidePageNavi;
+                naviControlValue, thisId, repNodeTag, currentContextDef, showingNode, targetNode,
+                isHidePageNavi, buttonName, isUpdateMaster;
 
             currentContextDef = currentContext.getContextDef();
 
@@ -1631,6 +1653,7 @@ INTERMediator = {
                 return;
             }
             isHidePageNavi = masterContext.getContextDef()['paging'] == true;
+            isUpdateMaster = currentContextDef['navi-control'].match(/update/i);
 
             showingNode = currentContext.enclosureNode;
             if (showingNode.tagName == "TBODY") {
@@ -1643,7 +1666,11 @@ INTERMediator = {
 
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_BackNavi");
-            buttonNode.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[13]));
+            buttonName = INTERMediatorOnPage.getMessages()[13];
+            if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back'])   {
+                buttonName = currentContextDef['button-names']['navi-back'];
+            }
+            buttonNode.appendChild(document.createTextNode(buttonName));
             thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
             buttonNode.setAttribute('id', thisId);
             INTERMediator.buttonIdNum++;
@@ -1678,7 +1705,9 @@ INTERMediator = {
                     existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi');
                     if (existingButtons.length == 0) {
                         trNode = document.createElement('TR');
+                        INTERMediatorLib.setClassAttributeToNode(trNode, "IM_NaviBack_TR");
                         tdNode = document.createElement('TD');
+                        INTERMediatorLib.setClassAttributeToNode(tdNode, "IM_NaviBack_TD");
                         setIdValue(trNode);
                         targetNode.appendChild(trNode);
                         trNode.appendChild(tdNode);
@@ -1692,7 +1721,7 @@ INTERMediator = {
                     existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_BackNavi');
                     if (existingButtons.length == 0) {
                         liNode.appendChild(buttonNode);
-                        if (currentContextDef['repeat-control'].match(/bottom/i)) {
+                        if (currentContextDef['navi-control'].match(/bottom/i)) {
                             node.appendChild(liNode);
                         } else {
                             node.insertBefore(liNode, node.firstChild);
@@ -1707,7 +1736,7 @@ INTERMediator = {
                         existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi');
                         if (existingButtons.length == 0) {
                             divNode.appendChild(buttonNode);
-                            if (currentContextDef['repeat-control'].match(/bottom/i)) {
+                            if (currentContextDef['navi-control'].match(/bottom/i)) {
                                 node.appendChild(divNode);
                             } else {
                                 node.insertBefore(divNode, node.firstChild);
@@ -1716,8 +1745,8 @@ INTERMediator = {
                     }
                     break;
             }
-            insertJSFunction = function (a, b, c) {
-                var masterContextCL = a, detailContextCL = b, pageNaviShow = c;
+            insertJSFunction = function (a, b, c, d) {
+                var masterContextCL = a, detailContextCL = b, pageNaviShow = c, masterUpdate = d;
                 return function () {
                     var showingNode;
                     showingNode = detailContextCL.enclosureNode;
@@ -1730,10 +1759,13 @@ INTERMediator = {
                     if (showingNode.tagName == "TBODY") {
                         showingNode = showingNode.parentNode;
                     }
-                    showingNode.style.display = INTERMediator.masterNodeOriginalDisplay
+                    showingNode.style.display = INTERMediator.masterNodeOriginalDisplay;
 
                     if (pageNaviShow) {
                         document.getElementById("IM_NAVIGATOR").style.display = "block";
+                    }
+                    if (masterUpdate)   {
+                        INTERMediator.constructMain(masterContextCL);
                     }
                 }
             };
@@ -1741,7 +1773,7 @@ INTERMediator = {
             INTERMediatorLib.addEvent(
                 buttonNode,
                 'click',
-                insertJSFunction(masterContext, currentContext, isHidePageNavi)
+                insertJSFunction(masterContext, currentContext, isHidePageNavi, isUpdateMaster)
             );
 
         }
@@ -1875,7 +1907,7 @@ INTERMediator = {
  */
 if (!Object.keys) {
     Object.keys = function (obj) {
-        var results=[], prop;
+        var results = [], prop;
         if (obj !== Object(obj)) {
             throw new TypeError('Object.keys called on a non-object');
         }
@@ -1886,7 +1918,8 @@ if (!Object.keys) {
         }
         return results;
     }
-};
+}
+;
 
 if (!Array.indexOf) {
     var isWebkit = 'WebkitAppearance' in document.documentElement.style;
@@ -1904,7 +1937,7 @@ if (!Array.indexOf) {
 }
 
 if (typeof String.prototype.trim !== 'function') {
-    String.prototype.trim = function() {
+    String.prototype.trim = function () {
         return this.replace(/^\s+|\s+$/g, '');
     }
 }
