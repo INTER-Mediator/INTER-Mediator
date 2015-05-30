@@ -443,16 +443,6 @@ EOF
   end
 end
 
-execute "sed -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\" > \"#{IMUNITTEST}/temp\"" do
-  command "sed -e 's|sqlite:/tmp/sample.sq3|sqlite:/var/db/im/sample.sq3|' \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\" > \"#{IMUNITTEST}/temp\""
-end
-execute "rm \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\"" do
-  command "rm \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\""
-end
-execute "mv \"#{IMUNITTEST}/temp\" \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\"" do
-  command "mv \"#{IMUNITTEST}/temp\" \"#{IMUNITTEST}/DB_PDO-SQLite_Test.php\""
-end
-
 if node[:platform] == 'redhat'
   execute 'service httpd restart' do
     command 'service httpd restart'
