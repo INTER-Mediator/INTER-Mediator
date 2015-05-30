@@ -22,6 +22,39 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
+    public function testIsPossibleOperator()
+    {
+        $this->dbProxySetupForAccess("person_layout", 1);
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('eq'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('cn'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('bw'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('ew'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('gt'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('gte'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('gte'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('lt'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('lte'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('neq'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('and'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('or'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('AND'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOperator('OR'));
+        $this->assertFalse($this->db_proxy->dbClass->isPossibleOperator('='));
+    }
+
+    public function testIsPossibleOrderSpecifier()
+    {
+        $this->dbProxySetupForAccess("person_layout", 1);
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ascend'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('descend'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('asc'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('desc'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ASCEND'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('DESCEND'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('ASC'));
+        $this->assertTrue($this->db_proxy->dbClass->isPossibleOrderSpecifier('DESC'));
+    }
+
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -43,7 +76,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
         $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
-        
+
         //        var_export($this->db_proxy->logger->getAllErrorMessages());
         //        var_export($this->db_proxy->logger->getDebugMessage());
     }
@@ -57,7 +90,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
-        
+
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->newToDB("person_layout", true);
@@ -65,7 +98,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
-        
+
         $nameValue = "unknown, oh mygod!";
         $addressValue = "anyplace, who knows!";
         $this->dbProxySetupForAccess("person_layout", 1000000);
@@ -81,7 +114,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
         $this->assertTrue($createdRecord[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($createdRecord[0]["address"] === $addressValue, "Field value is not same as the definition.");
-        
+
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
         $result = $this->db_proxy->getFromDB("person_layout");
@@ -89,10 +122,10 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
-        
+
         //        var_export($this->db_proxy->logger->getAllErrorMessages());
         //        var_export($this->db_proxy->logger->getDebugMessage());
-        
+
     }
 
     /**
