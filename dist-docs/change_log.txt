@@ -11,10 +11,12 @@ Also the Migration Guide (Japanese) might be informative: http://inter-mediator.
 Ver.5.2 (in development)
 - Handle some operators of conditions ('!=', '>', '>=', '<', '<=') as valid when using FileMaker 
   Server.
+- The "button-names" key in a context of definition file supports to customize the button names.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   cant contain ether boolean or string value appropriately.
 - [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 
   file using FileMaker Server.
+- [BUG FIX] Calculation bug fixed. In case of multiple uses of a calculated property.
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.
