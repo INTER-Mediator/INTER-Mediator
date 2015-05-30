@@ -1,13 +1,7 @@
 <?php
-/*
- * Created by JetBrains PhpStorm.
- * User: msyk
- * Date: 11/12/14
- * Time: 14:21
- * Unit Test by PHPUnit (http://phpunit.de)
- *
+/**
+ * DB_PDO-SQLite_Test file
  */
-
 require_once('DB_PDO_Test_Common.php');
 
 class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
@@ -72,9 +66,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'sqlite:/tmp/sample.sq3',
+                'dsn' => 'sqlite:/var/db/im/sample.sq3',
             ),
-            2);
+            false);
     }
 
     public function testNativeUser()
