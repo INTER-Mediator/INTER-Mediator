@@ -335,8 +335,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() .
                 ", DSN=" . $this->dbSettings->getDbSpecDSN() .
-                ", User=" . $this->dbSettings->getDbSpecUser() .
-                ", Password=" . $this->dbSettings->getDbSpecPassword());
+                ", User=" . $this->dbSettings->getDbSpecUser());
             return false;
         }
         $this->isAlreadySetup = true;
