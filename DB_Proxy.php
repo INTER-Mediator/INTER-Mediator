@@ -336,6 +336,47 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      * @param $dataSourceName
      * @return mixed
      */
+    function copyInDB($dataSourceName)
+    {
+        try {
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeCopyInDB")) {
+                $this->userExpanded->doBeforeDeleteFromDB($dataSourceName);
+            }
+            if ($this->dbClass !== null) {
+                $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+                $result = $this->dbClass->copyInDB($dataSourceName);
+            }
+            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCopyInDB")) {
+                $result = $this->userExpanded->doAfterDeleteFromDB($dataSourceName, $result);
+            }
+            if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
+                try {
+                    $this->dbSettings->notifyServer->created(
+                        $_POST['notifyid'],
+                        $this->dbClass->queriedEntity(),
+                        $this->dbClass->queriedPrimaryKeys(),
+                        $this->dbClass->updatedRecord()
+                    );
+                } catch (Exception $ex) {
+                    if ($ex->getMessage() == '_im_no_pusher_exception') {
+                        $this->logger->setErrorMessage("The 'Pusher.php' isn't installed on any valid directory.");
+                    } else {
+                        throw $ex;
+                    }
+                }
+            }
+        } catch (Exception $e) {
+            $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
+            return false;
+        }
+        return $result;
+
+    }
+
+    /**
+     * @param $dataSourceName
+     * @return mixed
+     */
     function getFieldInfo($dataSourceName)
     {
         if ($this->dbClass !== null) {
@@ -557,7 +598,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         } else if (isset($emailAsAliasOfUserName) && $emailAsAliasOfUserName) {
             $this->dbSettings->setEmailAsAccount($emailAsAliasOfUserName);
         }
-
+        if(isset($_POST["assoc"])) {
+            $this->dbSettings->setAssociated($_POST["assoc"], $_POST["asfield"], $_POST["asvalue"]);
+        }
     }
 
     /*
@@ -773,6 +816,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             case 'delete':
                 $this->deleteFromDB($this->dbSettings->getTargetName());
+                break;
+            case 'copy':
+                $result = $this->copyInDB($this->dbSettings->getTargetName());
+                $this->outputOfProcessing['newRecordKeyValue'] = $result;
+                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'challenge':
                 break;

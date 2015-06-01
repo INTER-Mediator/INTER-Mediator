@@ -124,6 +124,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'post-enclosure' => getValueFromArray($context, 'post-enclosure'),
                         'buttonnames-insert' => getValueFromArray($context, 'button-names', 'insert'),
                         'buttonnames-delete' => getValueFromArray($context, 'button-names', 'delete'),
+                        'buttonnames-copy' => getValueFromArray($context, 'button-names', 'copy'),
                         'buttonnames-navi-detail' => getValueFromArray($context, 'button-names', 'navi-detail'),
                         'buttonnames-navi-back' => getValueFromArray($context, 'button-names', 'navi-back'),
                         'authentication-media-handling' => getValueFromArray($context, 'authentication', 'media-handling'),

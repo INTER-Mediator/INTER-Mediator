@@ -984,7 +984,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $tableName = $this->dbSettings->getEntityForUpdate();
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
-
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -1030,6 +1029,125 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
         }
         return true;
+    }
+
+    function copyInDB($dataSourceName)
+    {
+        $this->fieldInfo = null;
+        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+        $tableName = $this->dbSettings->getEntityForUpdate();
+        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+
+        if (isset($tableInfo['script'])) {
+            foreach ($tableInfo['script'] as $condition) {
+                if ($condition['db-operation'] == 'copy' && $condition['situation'] == 'pre') {
+                    $sql = $condition['definition'];
+                    $this->logger->setDebugMessage($sql);
+                    $result = $this->link->query($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('Pre-script:' . $sql);
+                        return false;
+                    }
+                }
+            }
+        }
+        //======
+        $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
+        if ($queryClause == '') {
+            $this->errorMessageStore('Don\'t copy with no ciriteria.');
+            return false;
+        }
+        $lastKeyValue = $this->copyRecords($tableInfo, $queryClause, null, null);
+        $this->queriedPrimaryKeys = array($lastKeyValue);
+        $this->queriedEntity = $tableName;
+        //======
+        $assocInfo = $this->dbSettings->getAssociated();
+        if ($assocInfo) {
+            $assocContextDef = $this->dbSettings->getDataSource($assocInfo['name']);
+            $queryClause = $assocInfo["field"] . "=" . $assocInfo["value"];
+            $this->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue);
+        }
+        //======
+        if ($this->isRequiredUpdated) {
+            $sql = "SELECT * FROM " . $tableName
+                . " WHERE " . $tableInfo['key'] . "=" . $this->link->quote($lastKeyValue);
+            $result = $this->link->query($sql);
+            $this->logger->setDebugMessage($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+            } else {
+                $sqlResult = array();
+                $isFirstRow = true;
+                foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    $rowArray = array();
+                    foreach ($row as $field => $val) {
+                        if ($isFirstRow) {
+                            $this->fieldInfo[] = $field;
+                        }
+                        $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                        $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
+                    }
+                    $sqlResult[] = $rowArray;
+                    $isFirstRow = false;
+                }
+                $this->updatedRecord = $sqlResult;
+            }
+        }
+        if (isset($tableInfo['script'])) {
+            foreach ($tableInfo['script'] as $condition) {
+                if ($condition['db-operation'] == 'copy' && $condition['situation'] == 'post') {
+                    $sql = $condition['definition'];
+                    $this->logger->setDebugMessage($sql);
+                    $result = $this->link->query($sql);
+                    if (!$result) {
+                        $this->errorMessageStore('Post-script:' . $sql);
+                        return false;
+                    }
+                }
+            }
+        }
+        return $lastKeyValue;
+    }
+
+    private function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
+    {
+        $tableName = $tableInfo["table"] ? $tableInfo["table"] : $tableInfo["name"];
+        $sql = "show columns from {$tableName}";
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if (!$result) {
+            $this->errorMessageStore('Show Columns Error:' . $sql);
+            return false;
+        }
+        $fieldArray = array();
+        $listArray = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            if ($tableInfo['key'] === $row['Field']) {
+
+            } else if ($assocField === $row['Field']) {
+                $fieldArray[] = $row['Field'];
+                $listArray[] = $assocValue;
+            } else {
+                $fieldArray[] = $row['Field'];
+                $listArray[] = $row['Field'];
+            }
+        }
+        $fieldList = implode(',', $fieldArray);
+        $listList = implode(',', $listArray);
+        //======
+        $sql = "INSERT INTO {$tableName} ({$fieldList}) SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if (!$result) {
+            $this->errorMessageStore('INSERT Error:' . $sql);
+            return false;
+        }
+        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
+        return $this->link->lastInsertId($seqObject);
     }
 
     /**

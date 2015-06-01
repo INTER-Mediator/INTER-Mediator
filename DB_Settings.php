@@ -1,4 +1,5 @@
 <?php
+
 /*
 * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
 *
@@ -44,6 +45,7 @@ class DB_Settings
     private $requireAuthentication = false;
 
     private $smtpConfiguration = null;
+    private $associated = null;
     /**
      * @var
      */
@@ -56,12 +58,20 @@ class DB_Settings
     public $pusherKey = null;
     public $pusherSecret = null;
     public $pusherChannel = "_im_pusher_default_channel";
+
+
+    public function setAssociated($name, $field, $value) {
+        $this->associated = array("name" => $name, "field" => $field, "value" => $value);
+    }
+
+    public function getAssociated()
+    {
+        return $this->associated;
+    }
+
     /**
      * @param string $dataSourceName
      */
-
-
-
     public function setSmtpConfiguration($config)
     {
         $this->smtpConfiguration = $config;
@@ -216,7 +226,7 @@ class DB_Settings
     }
 
 
-     /**
+    /**
      * @param boolean $primaryKeyOnly
      */
     public function setPrimaryKeyOnly($primaryKeyOnly)
@@ -393,12 +403,22 @@ class DB_Settings
         if (isset($this->authentication[$key])) {
             return $this->authentication[$key];
         }
-        switch($key)    {
-            case 'user-table':          return 'authuser';      break;
-            case 'group-table':         return 'authgroup';     break;
-            case 'corresponding-table': return 'authcor';       break;
-            case 'challenge-table':     return 'issuedhash';    break;
-            case 'authexpired':         return 3600 * 8;        break;
+        switch ($key) {
+            case 'user-table':
+                return 'authuser';
+                break;
+            case 'group-table':
+                return 'authgroup';
+                break;
+            case 'corresponding-table':
+                return 'authcor';
+                break;
+            case 'challenge-table':
+                return 'issuedhash';
+                break;
+            case 'authexpired':
+                return 3600 * 8;
+                break;
         }
         return null;
     }
@@ -619,7 +639,7 @@ class DB_Settings
     /* get the information for the 'name'. */
     function getDataSourceTargetArray($isAssociative = false)
     {
-        if ($this->dataSource == null)  {
+        if ($this->dataSource == null) {
             return null;
         }
         if ($this->targetDataSource == null) {

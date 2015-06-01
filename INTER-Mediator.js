@@ -932,6 +932,8 @@ INTERMediator = {
                     currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
                 setupNavigationButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                     currentContextDef, keyField, keyValue, foreignField, foreignValue);
+                setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
+                    currentContextDef, targetRecordset[ix]);
 
                 if (currentContextDef['portal'] != true
                     || (currentContextDef['portal'] == true && targetTotalCount > 0)) {
@@ -1316,6 +1318,71 @@ INTERMediator = {
             return clonedNodes;
         }
 
+        /* --------------------------------------------------------------------
+
+         */
+        function setupCopyButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, currentRecord) {
+            // Handling Copy buttons
+            var buttonNode, thisId, copyJSFunction, tdNodes, tdNode, buttonName;
+
+            if (!currentContextDef['repeat-control']
+                || !currentContextDef['repeat-control'].match(/copy/i)) {
+                return;
+            }
+            if (currentContextDef['relation']
+                || currentContextDef['records'] === undefined
+                || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
+
+                buttonNode = document.createElement('BUTTON');
+                INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Copy");
+                buttonName = INTERMediatorOnPage.getMessages()[14];
+                if (currentContextDef['button-names'] && currentContextDef['button-names']['copy'])   {
+                    buttonName = currentContextDef['button-names']['copy'];
+                }
+                buttonNode.appendChild(document.createTextNode(buttonName));
+                thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
+                buttonNode.setAttribute('id', thisId);
+                INTERMediator.buttonIdNum++;
+                copyJSFunction = function (a, b) {
+                    var currentContextDef = a, currentRecord = b;
+
+                    return function () {
+                        IMLibUI.copyButton(
+                            currentContextDef, currentRecord);
+                    };
+                };
+                eventListenerPostAdding.push({
+                    'id': thisId,
+                    'event': 'click',
+                    'todo': copyJSFunction(currentContextDef, currentRecord[currentContextDef['key']])
+                });
+
+                // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
+                switch (encNodeTag) {
+                    case 'TBODY':
+                        tdNodes = endOfRepeaters.getElementsByTagName('TD');
+                        tdNode = tdNodes[tdNodes.length - 1];
+                        tdNode.appendChild(buttonNode);
+                        break;
+                    case 'UL':
+                    case 'OL':
+                        endOfRepeaters.appendChild(buttonNode);
+                        break;
+                    case 'DIV':
+                    case 'SPAN':
+                        if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
+                            endOfRepeaters.appendChild(buttonNode);
+                        }
+                        break;
+                }
+            } else {
+                IMLibPageNavigation.deleteInsertOnNavi.push({
+                    kind: 'COPY',
+                    contextDef: currentContextDef,
+                    keyValue: currentRecord[currentContextDef['key']]
+                });
+            }
+        }
         /* --------------------------------------------------------------------
 
          */
