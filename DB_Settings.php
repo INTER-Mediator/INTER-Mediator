@@ -60,8 +60,11 @@ class DB_Settings
     public $pusherChannel = "_im_pusher_default_channel";
 
 
-    public function setAssociated($name, $field, $value) {
-        $this->associated = array("name" => $name, "field" => $field, "value" => $value);
+    public function addAssociated($name, $field, $value) {
+        if (! $this->associated)    {
+            $this->associated = array();
+        }
+        $this->associated[] = array("name" => $name, "field" => $field, "value" => $value);
     }
 
     public function getAssociated()

@@ -784,7 +784,7 @@ INTERMediator_DBAdapter = {
          field: Field name, operator: "=", value: Field Value : of the source record
          }],
      associated: Associated Record info.
-     {name: assocDef['name'], field: fKey, value: fValue}
+     [{name: assocDef['name'], field: fKey, value: fValue}]
      }
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
@@ -811,10 +811,11 @@ INTERMediator_DBAdapter = {
             params += "&condition" + i + "value=" + encodeURIComponent(args['conditions'][i]['value']);
         }
         if(args["associated"])    {
-            params += "&assoc=" + encodeURIComponent(args['associated']['name']);
-            params += "&asfield=" + encodeURIComponent(args['associated']['field']);
-            params += "&asvalue=" + encodeURIComponent(args['associated']['value']);
-
+            for (i = 0; i < args['associated'].length; i++) {
+                params += "&assoc" + i + "=" + encodeURIComponent(args['associated'][i]['name']);
+                params += "&asfield" + i + "=" + encodeURIComponent(args['associated'][i]['field']);
+                params += "&asvalue" + i + "=" + encodeURIComponent(args['associated'][i]['value']);
+            }
         }
         result = this.server_access(params, 1017, 1015);
         INTERMediator.flushMessage();

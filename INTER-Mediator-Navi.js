@@ -346,65 +346,10 @@ IMLibPageNavigation = {
     },
 
     copyRecordFromNavi: function(contextDef, keyValue)  {
-        var associatedContext = null, assocDef, restore, fKey = null, fValue = null, responseCreateRecord, newId;
+        var newId;
 
-        if (contextDef['repeat-control'].match(/confirm-copy/)) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
-                return;
-            }
-        }
         INTERMediatorOnPage.showProgress();
-        try {
-            INTERMediatorOnPage.retrieveAuthInfo();
-
-            if (contextDef["relation"]) {
-                for (index in contextDef["relation"]) {
-                    if (contextDef["relation"][index]["portal"] == true) {
-                        contextDef["portal"] = true;
-                    }
-                }
-            }
-
-            if (contextDef['repeat-control'].match(/copy-/)) {
-                associatedContext = contextDef['repeat-control'].substr(
-                    contextDef['repeat-control'].indexOf('copy-') + 5
-                );
-                assocDef = IMLibContextPool.getContextDef(associatedContext);
-                if(assocDef['relation'][0])  {
-                    fKey = assocDef['relation'][0]['foreign-key'];
-                    fValue = keyValue;
-                }
-            }
-            if (contextDef["portal"] == true) {  // For FileMaker Server
-                responseCreateRecord = INTERMediator_DBAdapter.db_copy({
-                    name: contextDef["name"],
-                    conditions: [ {field: contextDef["key"], operator: "=", value: keyValue}],
-                    associated: fKey ? {name: assocDef['name'], field: fKey, value: fValue} : null
-                });
-            } else {
-                responseCreateRecord = INTERMediator_DBAdapter.db_copy({
-                    name: contextDef["name"],
-                    conditions: [ {field: contextDef["key"], operator: "=", value: keyValue}],
-                    associated: fKey ? {name: assocDef['name'], field: fKey, value: fValue} : null
-                });
-            }
-            newId = responseCreateRecord.newKeyValue;
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                    INTERMediatorOnPage.authChallenge = null;
-                    INTERMediatorOnPage.authHashedPassword = null;
-                    INTERMediatorOnPage.authenticating(
-                        function () {
-                            IMLibUI.copyButton(contextDef, currentRecord);
-                        }
-                    );
-                    return;
-                }
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-43");
-            }
-        }
+        newId = IMLibUI.copyRecordImpl(contextDef, keyValue)
         if (newId > -1) {
             restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
@@ -425,7 +370,7 @@ IMLibPageNavigation = {
 
     saveRecordFromNavi: function (dontUpdate) {
         var keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i, initialValue,
-            currentVal, fieldArray, valueArray, diffrence, needUpdate = true, context, updateData;
+            currentVal, fieldArray, valueArray, difference, needUpdate = true, context, updateData;
 
         INTERMediatorOnPage.showProgress();
         INTERMediatorOnPage.retrieveAuthInfo();
@@ -489,11 +434,11 @@ IMLibPageNavigation = {
                         }
                     }
 
-                    diffrence = false;
+                    difference = false;
                     for (field in updateData[keying]) {
                         initialValue = context.getValue(keying, field);
                         if (initialValue != currentVal.recordset[0][field]) {
-                            diffrence += INTERMediatorLib.getInsertedString(
+                            difference += INTERMediatorLib.getInsertedString(
                                 INTERMediatorOnPage.getMessages()[1035], [
                                     field,
                                     currentVal.recordset[0][field],
@@ -501,9 +446,9 @@ IMLibPageNavigation = {
                                 ]);
                         }
                     }
-                    if (diffrence !== false) {
+                    if (difference !== false) {
                         if (!confirm(INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1034], [diffrence]))) {
+                            INTERMediatorOnPage.getMessages()[1034], [difference]))) {
                             return;
                         }
                         INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?

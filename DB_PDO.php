@@ -1065,11 +1065,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $this->queriedPrimaryKeys = array($lastKeyValue);
         $this->queriedEntity = $tableName;
         //======
-        $assocInfo = $this->dbSettings->getAssociated();
-        if ($assocInfo) {
-            $assocContextDef = $this->dbSettings->getDataSource($assocInfo['name']);
-            $queryClause = $assocInfo["field"] . "=" . $assocInfo["value"];
-            $this->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue);
+        $assocArray = $this->dbSettings->getAssociated();
+        if ($assocArray) {
+            foreach ($assocArray as $assocInfo) {
+                $assocContextDef = $this->dbSettings->getDataSource($assocInfo['name']);
+                $queryClause = $this->quotedFieldName($assocInfo["field"]) . "=" .
+                    $this->link->quote($assocInfo["value"]);
+                $this->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue);
+            }
         }
         //======
         if ($this->isRequiredUpdated) {
@@ -1126,14 +1129,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $fieldArray = array();
         $listArray = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if ($tableInfo['key'] === $row['Field']) {
+            if ($tableInfo['key'] === $row['Field'] || ! is_null($row['Default'])) {
 
             } else if ($assocField === $row['Field']) {
-                $fieldArray[] = $row['Field'];
-                $listArray[] = $assocValue;
+                $fieldArray[] = $this->quotedFieldName($row['Field']);
+                $listArray[] = $this->link->quote($assocValue);
             } else {
-                $fieldArray[] = $row['Field'];
-                $listArray[] = $row['Field'];
+                $fieldArray[] = $this->quotedFieldName($row['Field']);
+                $listArray[] = $this->quotedFieldName($row['Field']);
             }
         }
         $fieldList = implode(',', $fieldArray);

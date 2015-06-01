@@ -598,8 +598,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         } else if (isset($emailAsAliasOfUserName) && $emailAsAliasOfUserName) {
             $this->dbSettings->setEmailAsAccount($emailAsAliasOfUserName);
         }
-        if(isset($_POST["assoc"])) {
-            $this->dbSettings->setAssociated($_POST["assoc"], $_POST["asfield"], $_POST["asvalue"]);
+        for ($i = 0; $i < 1000; $i++) {
+            if (!isset($_POST["assoc{$i}"])) {
+                break;
+            }
+            $this->dbSettings->addAssociated($_POST["assoc{$i}"], $_POST["asfield{$i}"], $_POST["asvalue{$i}"]);
         }
     }
 

@@ -26,7 +26,7 @@ IM_Entry(array(
                             'direction' => 'asc',
                         ),
                 ),
-            'repeat-control' => 'insert delete copy-contact',
+            'repeat-control' => 'insert delete copy-contact,history',
         ),
     1 =>
         array(

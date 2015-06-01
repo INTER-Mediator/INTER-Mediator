@@ -251,65 +251,10 @@ var IMLibUI = {
     },
 
     copyButton: function (contextDef, keyValue) {
-        var associatedContext = null, assocDef, restore, fKey = null, fValue = null, responseCreateRecord, newId;
+        var newId, restore;
 
-        if (contextDef['repeat-control'].match(/confirm-copy/)) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
-                return;
-            }
-        }
         INTERMediatorOnPage.showProgress();
-        try {
-            INTERMediatorOnPage.retrieveAuthInfo();
-
-            if (contextDef["relation"]) {
-                for (index in contextDef["relation"]) {
-                    if (contextDef["relation"][index]["portal"] == true) {
-                        contextDef["portal"] = true;
-                    }
-                }
-            }
-
-            if (contextDef['repeat-control'].match(/copy-/)) {
-                associatedContext = contextDef['repeat-control'].substr(
-                    contextDef['repeat-control'].indexOf('copy-') + 5
-                );
-                assocDef = IMLibContextPool.getContextDef(associatedContext);
-                if(assocDef['relation'][0])  {
-                    fKey = assocDef['relation'][0]['foreign-key'];
-                    fValue = keyValue;
-                }
-            }
-            if (contextDef["portal"] == true) {  // For FileMaker Server
-                responseCreateRecord = INTERMediator_DBAdapter.db_copy({
-                    name: contextDef["name"],
-                    conditions: [ {field: contextDef["key"], operator: "=", value: keyValue}],
-                    associated: fKey ? {name: assocDef['name'], field: fKey, value: fValue} : null
-                });
-            } else {
-                responseCreateRecord = INTERMediator_DBAdapter.db_copy({
-                    name: contextDef["name"],
-                    conditions: [ {field: contextDef["key"], operator: "=", value: keyValue}],
-                    associated: fKey ? {name: assocDef['name'], field: fKey, value: fValue} : null
-                });
-            }
-            newId = responseCreateRecord.newKeyValue;
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                    INTERMediatorOnPage.authChallenge = null;
-                    INTERMediatorOnPage.authHashedPassword = null;
-                    INTERMediatorOnPage.authenticating(
-                        function () {
-                            IMLibUI.copyButton(contextDef, currentRecord);
-                        }
-                    );
-                    return;
-                }
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-43");
-            }
-        }
+        newId = IMLibUI.copyRecordImpl(contextDef, keyValue)
         if (newId > -1) {
             restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
@@ -326,6 +271,73 @@ var IMLibUI = {
         IMLibCalc.recalculation();
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
+    },
+
+    copyRecordImpl: function (contextDef, keyValue) {
+        var assocDef, responseCreateRecord, newId, i, def, assocContexts;
+
+        if (contextDef['repeat-control'].match(/confirm-copy/)) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
+                return;
+            }
+        }
+        try {
+            INTERMediatorOnPage.retrieveAuthInfo();
+
+            if (contextDef["relation"]) {
+                for (index in contextDef["relation"]) {
+                    if (contextDef["relation"][index]["portal"] == true) {
+                        contextDef["portal"] = true;
+                    }
+                }
+            }
+
+            assocDef = [];
+            if (contextDef['repeat-control'].match(/copy-/)) {
+                assocContexts = contextDef['repeat-control'].substr(
+                    contextDef['repeat-control'].indexOf('copy-') + 5).split(",");
+                for( i=0 ; i < assocContexts.length ; i++) {
+                    def = IMLibContextPool.getContextDef(assocContexts[i]);
+                    if (def['relation'][0]['foreign-key']) {
+                        assocDef.push({
+                            name: def['name'],
+                            field: def['relation'][0]['foreign-key'],
+                            value: keyValue
+                        });
+                    }
+                }
+            }
+            if (contextDef["portal"] == true) {  // For FileMaker Server
+                responseCreateRecord = INTERMediator_DBAdapter.db_copy({
+                    name: contextDef["name"],
+                    conditions: [ {field: contextDef["key"], operator: "=", value: keyValue}],
+                    associated: assocDef.length > 0 ? assocDef : null
+                });
+            } else {
+                responseCreateRecord = INTERMediator_DBAdapter.db_copy({
+                    name: contextDef["name"],
+                    conditions: [ {field: contextDef["key"], operator: "=", value: keyValue}],
+                    associated: assocDef.length > 0 ? assocDef : null
+                });
+            }
+            newId = responseCreateRecord.newKeyValue;
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                    INTERMediatorOnPage.authChallenge = null;
+                    INTERMediatorOnPage.authHashedPassword = null;
+                    INTERMediatorOnPage.authenticating(
+                        function () {
+                            IMLibUI.copyButton(contextDef, keyValue);
+                        }
+                    );
+                    return;
+                }
+            } else {
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-43");
+            }
+        }
+        return newId;
     },
 
     deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
