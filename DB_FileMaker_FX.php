@@ -1419,7 +1419,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    public function authSupportStoreChallenge($uid, $challenge, $clientId)
+    function copyInDB($dataSourceName)  {
+        $this->errorMessage[] = "Copy operation is not implemented so far.";
+    }
+
+     public function authSupportStoreChallenge($uid, $challenge, $clientId)
     {
         $hashTable = $this->dbSettings->getHashTable();
         if ($hashTable == null) {

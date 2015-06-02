@@ -775,6 +775,81 @@ INTERMediator_DBAdapter = {
         }
     },
 
+    /*
+     db_copy
+     Copy the record. The parameter of this function should be the object as below:
+     {
+     name: The name of context,
+     conditions: [ {
+         field: Field name, operator: "=", value: Field Value : of the source record
+         }],
+     associated: Associated Record info.
+     [{name: assocDef['name'], field: fKey, value: fValue}]
+     }
+     {   name:<Name of the Context>
+     conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
+     */
+    db_copy: function (args) {
+        var noError = true, params, i, result;
+
+        if (args['name'] === null) {
+            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
+            noError = false;
+        }
+        if (args['conditions'] === null) {
+            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
+            noError = false;
+        }
+        if (!noError) {
+            return;
+        }
+
+        params = "access=copy&name=" + encodeURIComponent(args['name']);
+        for (i = 0; i < args['conditions'].length; i++) {
+            params += "&condition" + i + "field=" + encodeURIComponent(args['conditions'][i]['field']);
+            params += "&condition" + i + "operator=" + encodeURIComponent(args['conditions'][i]['operator']);
+            params += "&condition" + i + "value=" + encodeURIComponent(args['conditions'][i]['value']);
+        }
+        if(args["associated"])    {
+            for (i = 0; i < args['associated'].length; i++) {
+                params += "&assoc" + i + "=" + encodeURIComponent(args['associated'][i]['name']);
+                params += "&asfield" + i + "=" + encodeURIComponent(args['associated'][i]['field']);
+                params += "&asvalue" + i + "=" + encodeURIComponent(args['associated'][i]['value']);
+            }
+        }
+        result = this.server_access(params, 1017, 1015);
+        INTERMediator.flushMessage();
+        return {
+            newKeyValue: result.newRecordKeyValue,
+            recordset: result.dbresult
+        };
+    },
+
+    db_copyWithAuth: function (args, completion) {
+        var returnValue = false;
+        INTERMediatorOnPage.retrieveAuthInfo();
+        try {
+            returnValue = INTERMediator_DBAdapter.db_delete(args);
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requireAuthentication) {
+                    if (!INTERMediatorOnPage.isComplementAuthData()) {
+                        INTERMediatorOnPage.authChallenge = null;
+                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authenticating(
+                            function () {
+                                returnValue = INTERMediator_DBAdapter.db_deleteWithAuth(arg, completion);
+                            });
+                        return;
+                    }
+                }
+            } else {
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-14");
+            }
+        }
+        completion(returnValue);
+    },
+
     unregister: function (entityPkInfo) {
         //console.log(entityPkInfo);
         var result = null, params;
