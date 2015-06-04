@@ -2012,6 +2012,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function normalizedCondition($condition)
     {
+        if (!isset($condition['field'])) {
+            $condition['field'] = '';
+        }
+        if (!isset($condition['value'])) {
+            $condition['value'] = '';
+        }
+
         if ($condition['operator'] == 'match*') {
             return array(
                 'field' => $condition['field'],
