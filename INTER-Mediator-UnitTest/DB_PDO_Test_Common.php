@@ -151,7 +151,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $result = $this->db_proxy->getFromDB("contact");
         $recordCountContactAfter = $this->db_proxy->countQueryResult("contact");
         $this->assertTrue($recordCountContact + $recordCountIncrease == $recordCountContactAfter,
-            "After copy a record, the count of associated records should increase one or more.");
+            "After copy a record, the count of associated records should increase one or more."
+            . "[$recordCountContact, $recordCountIncrease, $recordCountContactAfter]");
 
     }
 
