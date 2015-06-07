@@ -1156,8 +1156,16 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
  test_db       | im_sample    | person     | location    |
  test_db       | im_sample    | person     | memo        |
              */
-            $sql = "SELECT column_name, column_default FROM information_schema.columns "
-                . "WHERE table_name=" . $this->link->quote($tableName);
+            if (strpos($tableName, ".") !== false) {
+                $tableName = substr($tableName, strpos($tableName, ".") + 1);
+                $schemaName = substr($tableName, 0, strpos($tableName, "."));
+                $sql = "SELECT column_name, column_default FROM information_schema.columns "
+                    . "WHERE table_schema=" . $this->link->quote($schemaName)
+                    . " AND table_name=" . $this->link->quote($tableName);
+            } else {
+                $sql = "SELECT column_name, column_default FROM information_schema.columns "
+                    . "WHERE table_name=" . $this->link->quote($tableName);
+            }
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if (!$result) {
