@@ -780,7 +780,7 @@ var INTERMediatorLib = {
 
         function checkNode(target) {
             var value, i, items;
-            if (target.nodeType != 1) {
+            if (target === undefined || target.nodeType !== 1) {
                 return;
             }
             value = INTERMediatorLib.getClassAttributeFromNode(target);
@@ -824,7 +824,7 @@ var INTERMediatorLib = {
 
         function checkNode(target) {
             var className, i;
-            if (target.nodeType != 1) {
+            if (target === undefined || target.nodeType !== 1) {
                 return;
             }
             className = INTERMediatorLib.getClassAttributeFromNode(target);
@@ -845,7 +845,7 @@ var INTERMediatorLib = {
 
         function checkNode(target) {
             var nodeId, i;
-            if (target.nodeType != 1) {
+            if (target === undefined || target.nodeType !== 1) {
                 return;
             }
             nodeId = target.getAttribute("id");
