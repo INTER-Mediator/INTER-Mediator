@@ -20,7 +20,7 @@ IM_Entry(
             'key' => 'id',
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
-            'repeat-control' => 'insert delete',
+            'repeat-control' => 'insert delete copy-contact,history',
             'sequence' => 'im_sample.person_id_seq',
         ),
         array(
@@ -31,7 +31,7 @@ IM_Entry(
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
-            'repeat-control' => 'insert delete',
+            'repeat-control' => 'insert delete copy',
             'sequence' => 'im_sample.serial',
         ),
         array(
