@@ -1118,29 +1118,113 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     private function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
     {
-        $tableName = $tableInfo["table"] ? $tableInfo["table"] : $tableInfo["name"];
-        $sql = "show columns from {$tableName}";
-        $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
-        if (!$result) {
-            $this->errorMessageStore('Show Columns Error:' . $sql);
-            return false;
-        }
-        $fieldArray = array();
-        $listArray = array();
-        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if ($tableInfo['key'] === $row['Field'] || ! is_null($row['Default'])) {
-
-            } else if ($assocField === $row['Field']) {
-                $fieldArray[] = $this->quotedFieldName($row['Field']);
-                $listArray[] = $this->link->quote($assocValue);
-            } else {
-                $fieldArray[] = $this->quotedFieldName($row['Field']);
-                $listArray[] = $this->quotedFieldName($row['Field']);
+        $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
+            $sql = "show columns from {$tableName}";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if (!$result) {
+                $this->errorMessageStore('Show Columns Error:' . $sql);
+                return false;
             }
+            $fieldArray = array();
+            $listArray = array();
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                if ($tableInfo['key'] === $row['Field'] || !is_null($row['Default'])) {
+
+                } else if ($assocField === $row['Field']) {
+                    $fieldArray[] = $this->quotedFieldName($row['Field']);
+                    $listArray[] = $this->link->quote($assocValue);
+                } else {
+                    $fieldArray[] = $this->quotedFieldName($row['Field']);
+                    $listArray[] = $this->quotedFieldName($row['Field']);
+                }
+            }
+            $fieldList = implode(',', $fieldArray);
+            $listList = implode(',', $listArray);
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
+            /*
+# select table_catalog,table_schema,table_name,column_name,column_default from information_schema.columns where table_name='person';
+ table_catalog | table_schema | table_name | column_name |                column_default
+---------------+--------------+------------+-------------+----------------------------------------------
+ test_db       | im_sample    | person     | id          | nextval('im_sample.person_id_seq'::regclass)
+ test_db       | im_sample    | person     | name        |
+ test_db       | im_sample    | person     | address     |
+ test_db       | im_sample    | person     | mail        |
+ test_db       | im_sample    | person     | category    |
+ test_db       | im_sample    | person     | checking    |
+ test_db       | im_sample    | person     | location    |
+ test_db       | im_sample    | person     | memo        |
+             */
+            if (strpos($tableName, ".") !== false) {
+                $tName = substr($tableName, strpos($tableName, ".") + 1);
+                $schemaName = substr($tableName, 0, strpos($tableName, "."));
+                $sql = "SELECT column_name, column_default FROM information_schema.columns "
+                    . "WHERE table_schema=" . $this->link->quote($schemaName)
+                    . " AND table_name=" . $this->link->quote($tName);
+            } else {
+                $sql = "SELECT column_name, column_default FROM information_schema.columns "
+                    . "WHERE table_name=" . $this->link->quote($tableName);
+            }
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if (!$result) {
+                $this->errorMessageStore('Show Columns Error:' . $sql);
+                return false;
+            }
+            $fieldArray = array();
+            $listArray = array();
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                if ($tableInfo['key'] === $row['column_name'] || !is_null($row['column_default'])) {
+
+                } else if ($assocField === $row['column_name']) {
+                    $fieldArray[] = $this->quotedFieldName($row['column_name']);
+                    $listArray[] = $this->link->quote($assocValue);
+                } else {
+                    $fieldArray[] = $this->quotedFieldName($row['column_name']);
+                    $listArray[] = $this->quotedFieldName($row['column_name']);
+                }
+            }
+            $fieldList = implode(',', $fieldArray);
+            $listList = implode(',', $listArray);
+        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
+            /*
+            sqlite> PRAGMA table_info(person);
+            cid         name        type        notnull     dflt_value  pk
+            ----------  ----------  ----------  ----------  ----------  ----------
+            0           id          INTEGER     0                       1
+            1           name        TEXT        0                       0
+            2           address     TEXT        0                       0
+            3           mail        TEXT        0                       0
+            4           category    INTEGER     0                       0
+            5           checking    INTEGER     0                       0
+            6           location    INTEGER     0                       0
+            7           memo        TEXT        0                       0
+             */
+            $sql = "PRAGMA table_info({$tableName})";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if (!$result) {
+                $this->errorMessageStore('PRAGMA table_info Error:' . $sql);
+                return false;
+            }
+            $fieldArray = array();
+            $listArray = array();
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                if ($tableInfo['key'] === $row['name'] || !is_null($row['dflt_value'])) {
+
+                } else if ($assocField === $row['name']) {
+                    $fieldArray[] = $this->quotedFieldName($row['name']);
+                    $listArray[] = $this->link->quote($assocValue);
+                } else {
+                    $fieldArray[] = $this->quotedFieldName($row['name']);
+                    $listArray[] = $this->quotedFieldName($row['name']);
+                }
+            }
+            $fieldList = implode(',', $fieldArray);
+            $listList = implode(',', $listArray);
+
         }
-        $fieldList = implode(',', $fieldArray);
-        $listList = implode(',', $listArray);
         //======
         $sql = "INSERT INTO {$tableName} ({$fieldList}) SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
         $this->logger->setDebugMessage($sql);
