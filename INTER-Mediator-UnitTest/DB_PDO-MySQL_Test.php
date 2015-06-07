@@ -26,6 +26,8 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             array(
                 'records' => $maxRecord,
                 'name' => $contextName,
+                'view' => $contextName,
+                'table' => $contextName,
                 'key' => 'id',
                 'repeat-control' => is_null($subContextName) ? 'copy' : "copy-{$subContextName}",
                 'sort' => array(
@@ -37,6 +39,8 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             $contexts[] = array(
                 'records' => $maxRecord,
                 'name' => $subContextName,
+                'view' => $subContextName,
+                'table' => $subContextName,
                 'key' => 'id',
                 'relation' => array(
                     "foreign-key" => "{$contextName}_id",
