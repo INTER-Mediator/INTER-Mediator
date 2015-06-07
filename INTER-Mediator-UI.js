@@ -35,9 +35,9 @@ var IMLibUI = {
      valueChange
      Parameters:
      */
-    valueChange: function (idValue, validationOnly) {
+    valueChange: function (idValue) {
         var changedObj, objType, contextInfo, i, updateRequiredContext, associatedNode, currentValue, newValue,
-            linkInfo, nodeInfo, messageNodes = [];
+            linkInfo, nodeInfo;
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
             INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
@@ -54,12 +54,10 @@ var IMLibUI = {
             if (changedObj.readOnly) {  // for Internet Explorer
                 return;
             }
-            if (!validation(changedObj)) {   // Validation error.
+            if (!this.validation(changedObj)) {   // Validation error.
                 return;
             }
-            if (validationOnly === true)    {
-                return;
-            }
+
 
             objType = changedObj.getAttribute('type');
             if (objType == 'radio' && !changedObj.checked) {
@@ -114,96 +112,6 @@ var IMLibUI = {
             INTERMediator.flushMessage();
         }
 
-        function validation(changedObj) {
-            var linkInfo, matched, context, i, index, didValidate, contextInfo, result, messageNode;
-            if (messageNodes) {
-                while (messageNodes.length > 0) {
-                    messageNodes[0].parentNode.removeChild(messageNodes[0]);
-                    delete messageNodes[0];
-                }
-            }
-            if (!messageNodes) {
-                messageNodes = [];
-            }
-            try {
-                linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
-                didValidate = false;
-                result = true;
-                if (linkInfo.length > 0) {
-                    matched = linkInfo[0].match(/([^@]+)/);
-                    if (matched[1] != IMLibLocalContext.contextName) {
-                        context = INTERMediatorLib.getNamedObject(
-                            INTERMediatorOnPage.getDataSources(), "name", matched[1]);
-                        if (context["validation"] != null) {
-                            for (i = 0; i < linkInfo.length; i++) {
-                                matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
-                                for (index in context["validation"]) {
-                                    if (context["validation"][index]["field"] == matched[2]) {
-                                        didValidate = true;
-                                        result = Parser.evaluate(
-                                            context["validation"][index]["rule"],
-                                            {"value": changedObj.value, "target": changedObj});
-                                        if (!result) {
-                                            switch (context["validation"][index]["notify"]) {
-                                                case "inline":
-                                                    INTERMediatorLib.clearErrorMessage(changedObj);
-                                                    messageNode = INTERMediatorLib.createErrorMessageNode(
-                                                        "SPAN", context["validation"][index].message);
-                                                    changedObj.parentNode.insertBefore(
-                                                        messageNode, changedObj.nextSibling);
-                                                    messageNodes.push(messageNode);
-                                                    break;
-                                                case "end-of-sibling":
-                                                    INTERMediatorLib.clearErrorMessage(changedObj);
-                                                    messageNode = INTERMediatorLib.createErrorMessageNode(
-                                                        "DIV", context["validation"][index].message);
-                                                    changedObj.parentNode.appendChild(messageNode);
-                                                    messageNodes.push(messageNode);
-                                                    break;
-                                                default:
-                                                    alert(context["validation"][index]["message"]);
-                                            }
-                                            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, "");
-                                            // Just supporting NON-target info.
-                                            changedObj.value = contextInfo.context.getValue(
-                                                contextInfo.record, contextInfo.field);
-                                            window.setTimeout(function () {
-                                                changedObj.focus();
-                                            }, 0);
-                                            if (INTERMediatorOnPage.doAfterValidationFailure != null) {
-                                                INTERMediatorOnPage.doAfterValidationFailure(changedObj, linkInfo[i]);
-                                            }
-                                            return result;
-                                        } else {
-                                            switch (context["validation"][index]["notify"]) {
-                                                case "inline":
-                                                case "end-of-sibling":
-                                                    INTERMediatorLib.clearErrorMessage(changedObj);
-                                                    break;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if (didValidate) {
-                        if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
-                            INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
-                        }
-                    }
-                }
-                return result;
-            } catch (ex) {
-                if (ex == "_im_requath_request_") {
-                    throw ex;
-                } else {
-                    INTERMediator.setErrorMessage(ex, "EXCEPTION-32: on the validation process.");
-                }
-                return false;
-            }
-        }
-
         function updateDB(changedObj, idValue, target) {
             var newValue, contextInfo, criteria;
 
@@ -247,6 +155,98 @@ var IMLibUI = {
                 }
             }
             INTERMediatorOnPage.hideProgress();
+        }
+    },
+
+    validation: function (changedObj) {
+        var linkInfo, matched, context, i, index, didValidate, contextInfo,
+            result, messageNodes = [], messageNode;
+        if (messageNodes) {
+            while (messageNodes.length > 0) {
+                messageNodes[0].parentNode.removeChild(messageNodes[0]);
+                delete messageNodes[0];
+            }
+        }
+        if (!messageNodes) {
+            messageNodes = [];
+        }
+        try {
+            linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
+            didValidate = false;
+            result = true;
+            if (linkInfo.length > 0) {
+                matched = linkInfo[0].match(/([^@]+)/);
+                if (matched[1] !== IMLibLocalContext.contextName) {
+                    context = INTERMediatorLib.getNamedObject(
+                        INTERMediatorOnPage.getDataSources(), "name", matched[1]);
+                    if (context.validation != null) {
+                        for (i = 0; i < linkInfo.length; i++) {
+                            matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
+                            for (index in context.validation) {
+                                if (context.validation[index].field === matched[2]) {
+                                    didValidate = true;
+                                    result = Parser.evaluate(
+                                        context.validation[index].rule,
+                                        {"value": changedObj.value, "target": changedObj});
+                                    if (!result) {
+                                        switch (context.validation[index].notify) {
+                                            case "inline":
+                                                INTERMediatorLib.clearErrorMessage(changedObj);
+                                                messageNode = INTERMediatorLib.createErrorMessageNode(
+                                                    "SPAN", context.validation[index].message);
+                                                changedObj.parentNode.insertBefore(
+                                                    messageNode, changedObj.nextSibling);
+                                                messageNodes.push(messageNode);
+                                                break;
+                                            case "end-of-sibling":
+                                                INTERMediatorLib.clearErrorMessage(changedObj);
+                                                messageNode = INTERMediatorLib.createErrorMessageNode(
+                                                    "DIV", context.validation[index].message);
+                                                changedObj.parentNode.appendChild(messageNode);
+                                                messageNodes.push(messageNode);
+                                                break;
+                                            default:
+                                                alert(context.validation[index].message);
+                                        }
+                                        contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, "");
+                                            if (contextInfo) {                                        // Just supporting NON-target info.
+                                            changedObj.value = contextInfo.context.getValue(
+                                                contextInfo.record, contextInfo.field);
+                                            window.setTimeout(function () {
+                                                changedObj.focus();
+                                            }, 0);
+                                            if (INTERMediatorOnPage.doAfterValidationFailure !== null) {
+                                                INTERMediatorOnPage.doAfterValidationFailure(changedObj, linkInfo[i]);
+                                            }
+                                        }
+                                        return result;
+                                    } else {
+                                        switch (context.validation[index].notify) {
+                                            case "inline":
+                                            case "end-of-sibling":
+                                                INTERMediatorLib.clearErrorMessage(changedObj);
+                                                break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (didValidate) {
+                    if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
+                        INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
+                    }
+                }
+            }
+            return result;
+        } catch (ex) {
+            if (ex === "_im_requath_request_") {
+                throw ex;
+            } else {
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-32: on the validation process.");
+            }
+            return false;
         }
     },
 
