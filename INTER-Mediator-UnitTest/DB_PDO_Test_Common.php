@@ -42,8 +42,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testQuery2_multipleRecord()
@@ -55,9 +53,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
         $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
-
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testInsertAndUpdateRecord()
@@ -101,9 +96,59 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
         $this->assertTrue($result[0]["address"] === $addressValue, "Field value is not same as the definition.");
+    }
 
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
+    public function testCopySingleRecord()
+    {
+        $this->dbProxySetupForAccess("person", 1000000);
+        $result = $this->db_proxy->getFromDB("person");
+        $recordCount = $this->db_proxy->countQueryResult("person");
+        $parentId = $result[rand(0, $recordCount - 1)]["id"];
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
+        $this->db_proxy->copyInDB("person");
+
+        var_export($this->db_proxy->logger->getErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessages());
+
+        $this->dbProxySetupForAccess("person", 1000000, "contact");
+        $result = $this->db_proxy->getFromDB("person");
+        $recordCountAfter = $this->db_proxy->countQueryResult("person");
+        $this->assertTrue($recordCount + 1 == $recordCountAfter,
+            "After copy a record, the count of records should increase one.");
+    }
+
+    public function testCopyAssociatedRecords()
+    {
+        $this->dbProxySetupForAccess("person", 1000000);
+        $result = $this->db_proxy->getFromDB("person");
+        $recordCountPerson = $this->db_proxy->countQueryResult("person");
+
+        $parentId = $result[rand(0, $recordCountPerson - 1)]["id"];
+
+        $this->dbProxySetupForAccess("contact", 1000000);
+        $result = $this->db_proxy->getFromDB("contact");
+        $recordCountContact = $this->db_proxy->countQueryResult("contact");
+
+        $this->dbProxySetupForAccess("contact", 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria("person_id", "=", $parentId);
+        $result = $this->db_proxy->getFromDB("contact");
+        $recordCountIncrease = $this->db_proxy->countQueryResult("contact");
+
+        $this->dbProxySetupForAccess("person", 1000000, "contact");
+        $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
+        $this->db_proxy->copyInDB("person");
+
+        $this->dbProxySetupForAccess("person", 1000000);
+        $result = $this->db_proxy->getFromDB("person");
+        $recordCountPersonAfter = $this->db_proxy->countQueryResult("person");
+        $this->assertTrue($recordCountPerson + 1 == $recordCountPersonAfter,
+            "After copy a record, the count of records should increase one.");
+
+        $this->dbProxySetupForAccess("contact", 1000000);
+        $result = $this->db_proxy->getFromDB("contact");
+        $recordCountContactAfter = $this->db_proxy->countQueryResult("contact");
+        $this->assertTrue($recordCountContact + $recordCountIncrease == $recordCountContactAfter,
+            "After copy a record, the count of associated records should increase one or more.");
 
     }
 
@@ -112,8 +157,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $testName = "Check time calc feature of PHP";
         $expiredDT = new DateTime('2012-02-13 11:32:40');
         $currentDate = new DateTime('2012-02-14 11:32:51');
-        //    $expiredDT = new DateTime('2012-02-13 00:00:00');
-        //    $currentDate = new DateTime('2013-04-13 01:02:03');
         $calc = $currentDate->format('U') - $expiredDT->format('U');
         $this->assertTrue($calc === (11 + 3600 * 24), $testName);
     }
@@ -127,11 +170,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
         $retrievedPasswd = $this->db_proxy->dbClass->authSupportRetrieveHashedPassword($username);
-//        echo var_export($this->db_proxy->logger->getDebugMessage(), true);
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
-
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testAuthUser3()
@@ -142,9 +181,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $username = 'user1';
         $retrievedSalt = $this->db_proxy->authSupportGetSalt($username);
         $this->assertEquals('54455354', $retrievedSalt, $testName);
-
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testAuthUser4()
@@ -165,10 +201,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
         $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
-
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
-
     }
 
     public function testAuthUser5()
@@ -192,8 +224,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     public function testAuthUser6()
@@ -205,8 +235,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $password = "testuser1";
 
         $addUserResult = $this->db_proxy->addUser($username, $password);
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
         $this->assertTrue($addUserResult);
 
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
@@ -217,13 +245,10 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-//        echo $hashedvalue;
 
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
             $testName);
-//        var_export($this->db_proxy->logger->getAllErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
     function testUserGroup()
