@@ -36,7 +36,6 @@ IM_Entry(array (
         'expression' => 'format(sum(item@amount_calc) * (1 + _@taxRate ))',
       ),
     ),
-    'soft-delete' => 'cheking',
   ),
   1 => 
   array (
