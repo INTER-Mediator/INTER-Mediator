@@ -1118,7 +1118,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     private function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
     {
-        $tableName = $tableInfo["table"] ? $tableInfo["table"] : $tableInfo["name"];
+        $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
             $sql = "show columns from {$tableName}";
             $this->logger->setDebugMessage($sql);

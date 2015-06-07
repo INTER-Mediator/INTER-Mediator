@@ -139,8 +139,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->db_proxy->dbSettings->addAssociated("contact", "person_id", $parentId);
         $this->db_proxy->copyInDB("person");
 
-        var_export($this->db_proxy->logger->getErrorMessages());
-        var_export($this->db_proxy->logger->getDebugMessages());
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->dbProxySetupForAccess("person", 1000000);
         $result = $this->db_proxy->getFromDB("person");
