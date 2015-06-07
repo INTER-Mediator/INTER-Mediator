@@ -1,4 +1,4 @@
-sudo: false
+#sudo: false
 
 language:
   - php
@@ -6,7 +6,7 @@ language:
 
 os:
   - linux
-  - osx
+  #- osx
 
 php:
   - 7
@@ -17,7 +17,7 @@ php:
   - 5.2
 
 node_js:
-  - "0.10"
+  - "0.12"
 
 matrix:
   allow_failures:

@@ -1921,9 +1921,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     public function normalizedCondition($condition)
     {
-        /* for FileMaker Server */
-        if (($condition['field'] === '-recid' && $condition['operator'] === 'undefined')
-                 || ($condition['operator'] === '=')) {
+        if (!isset($condition['field'])) {
+            $condition['field'] = '';
+        }
+        if (!isset($condition['value'])) {
+            $condition['value'] = '';
+        }
+
+        if (($condition['field'] === '-recid' && $condition['operator'] === 'undefined') ||
+                ($condition['operator'] === '=')) {
             return array(
                 'field' => $condition['field'],
                 'operator' => 'eq',
