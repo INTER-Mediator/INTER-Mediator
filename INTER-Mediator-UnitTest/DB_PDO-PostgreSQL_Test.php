@@ -19,7 +19,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord)
+    function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
     {
         $this->schemaName = "im_sample.";
         $seqName = ($contextName == "person") ? "im_sample.person_id_seq" : "im_sample.serial";
@@ -30,12 +30,25 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                 'view' => "{$this->schemaName}{$contextName}",
                 'table' => "{$this->schemaName}{$contextName}",
                 'key' => 'id',
+                'repeat-control' => is_null($subContextName) ? 'copy' : "copy-{$subContextName}",
                 'sort' => array(
                     array('field' => 'id', 'direction' => 'asc'),
                 ),
                 'sequence' => $seqName,
             )
         );
+        if (!is_null($subContextName)) {
+            $contexts[] = array(
+                'records' => $maxRecord,
+                'name' => $subContextName,
+                'key' => 'id',
+                'relation' => array(
+                    "foreign-key" => "{$contextName}_id",
+                    "join-field" => "id",
+                    "operator" => "=",
+                ),
+            );
+        }
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',

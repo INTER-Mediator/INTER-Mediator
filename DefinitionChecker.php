@@ -110,14 +110,27 @@ class DefinitionChecker
                 $closeParen = strpos(')', $endPoint);
                 $possibleString = substr($endPoint, $openParen + 1, $closeParen - $openParen - 1);
                 $possibleValues = explode("|", $possibleString);
+                $possibleWilds = array();
+                foreach ($possibleString as $str)   {
+                    if (strpos($str, '*') !== false)    {
+                        $possibleWilds[] = $str;
+                    }
+                }
                 if (in_array($items, $possibleValues)) {
                     $judge = true;
                 } else {
+                    foreach ($possibleWilds as $str)   {
+                        if (preg_match ($str, $items))    {
+                            $judge = true;
+                            break;
+                        }
+                    }
+                }
+                if (! $judge) {
                     $this->message = "$currentPath should be define as string within [$possibleString]. ";
                 }
             }
             if ($judge) {
-
             }
         }
     }
@@ -225,8 +238,8 @@ class DefinitionChecker
                     'value' => 'scalar'
                 )
             ),
-            'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete)',
-            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom)',
+            'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete|copy|copy-*)',
+            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update)',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',
@@ -319,6 +332,7 @@ class DefinitionChecker
                 'delete' => 'string',
                 'navi-detail' => 'string',
                 'navi-back' => 'string',
+                'copy' => 'string',
             ),
             'send-mail' => array(
                 'load' => array(

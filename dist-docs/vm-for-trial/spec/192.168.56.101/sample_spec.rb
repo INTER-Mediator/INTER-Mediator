@@ -305,12 +305,10 @@ end
 
 describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/defedit.php') do
   it { should be_file }
-  its(:content) { should_not match /\/\/IM_Entry/ }
 end
 
 describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/pageedit.php') do
   it { should be_file }
-  its(:content) { should_not match /\/\/IM_Entry/ }
 end
 
 range = 1..40

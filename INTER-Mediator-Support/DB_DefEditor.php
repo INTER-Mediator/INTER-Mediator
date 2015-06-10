@@ -122,6 +122,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'navi-control' => getValueFromArray($context, 'navi-control'),
                         'post-repeater' => getValueFromArray($context, 'post-repeater'),
                         'post-enclosure' => getValueFromArray($context, 'post-enclosure'),
+                        'buttonnames-insert' => getValueFromArray($context, 'button-names', 'insert'),
+                        'buttonnames-delete' => getValueFromArray($context, 'button-names', 'delete'),
+                        'buttonnames-copy' => getValueFromArray($context, 'button-names', 'copy'),
+                        'buttonnames-navi-detail' => getValueFromArray($context, 'button-names', 'navi-detail'),
+                        'buttonnames-navi-back' => getValueFromArray($context, 'button-names', 'navi-back'),
                         'authentication-media-handling' => getValueFromArray($context, 'authentication', 'media-handling'),
                         'authentication-all-user' => getValueFromArray($context, 'authentication', 'all', 'user'),
                         'authentication-all-group' => getValueFromArray($context, 'authentication', 'all', 'group'),
@@ -477,6 +482,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]] = array();
                     }
                     $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]]
+                        = $this->dbSettings->getValueOfField($theKey);
+                } else if (strpos($theKey, "buttonnames-") === 0) {
+                    $firstKey = "button-names";
+                    $secondKey = substr($theKey, 12);
+                    if (!isset($globalDataSource[$contextID][$firstKey])) {
+                        $globalDataSource[$contextID][$firstKey] = array();
+                    }
+                    $globalDataSource[$contextID][$firstKey][$secondKey]
                         = $this->dbSettings->getValueOfField($theKey);
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);

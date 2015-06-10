@@ -1,13 +1,7 @@
 <?php
-/*
- * Created by JetBrains PhpStorm.
- * User: msyk
- * Date: 11/12/14
- * Time: 14:21
- * Unit Test by PHPUnit (http://phpunit.de)
- *
+/**
+ * DB_PDO-SQLite_Test file
  */
-
 require_once('DB_PDO_Test_Common.php');
 
 class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
@@ -19,7 +13,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord)
+    function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
     {
         $this->schemaName = "";
         $contexts = array(
@@ -29,15 +23,28 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
                 'view' => "{$this->schemaName}{$contextName}",
                 'table' => "{$this->schemaName}{$contextName}",
                 'key' => 'id',
+                'repeat-control' => is_null($subContextName) ? 'copy' : "copy-{$subContextName}",
                 'sort' => array(
                     array('field'=>'id','direction'=>'asc'),
                 ),
             )
         );
+        if (!is_null($subContextName)) {
+            $contexts[] = array(
+                'records' => $maxRecord,
+                'name' => $subContextName,
+                'key' => 'id',
+                'relation' => array(
+                    "foreign-key" => "{$contextName}_id",
+                    "join-field" => "id",
+                    "operator" => "=",
+                ),
+            );
+        }
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => 'sqlite:/tmp/sample.sq3',
+            'dsn' => 'sqlite:/var/db/im/sample.sq3',
         );
         $this->db_proxy = new DB_Proxy(true);
         $this->db_proxy->initialize($contexts, $options, $dbSettings, 2, $contextName);
@@ -72,9 +79,9 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'sqlite:/tmp/sample.sq3',
+                'dsn' => 'sqlite:/var/db/im/sample.sq3',
             ),
-            2);
+            false);
     }
 
     public function testNativeUser()

@@ -15,7 +15,7 @@ IMLibPageNavigation = {
 
     navigationSetup: function () {
         var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
-            prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction;
+            prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction, onNaviCopyFunction;
 
         navigation = document.getElementById('IM_NAVIGATOR');
         if (navigation != null) {
@@ -188,6 +188,27 @@ IMLibPageNavigation = {
                                     IMLibPageNavigation.deleteInsertOnNavi[i]['value'],
                                     IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false));
                             break;
+                        case 'COPY':
+                            node = document.createElement('SPAN');
+                            navigation.appendChild(node);
+                            node.appendChild(
+                                document.createTextNode(
+                                    INTERMediatorOnPage.getMessages()[15] + ': '
+                                    + IMLibPageNavigation.deleteInsertOnNavi[i]['contextDef']['name']));
+                            node.setAttribute('class', 'IM_NAV_button');
+                            onNaviCopyFunction = function (a, b) {
+                                var contextDef = a, record = b;
+                                return function () {
+                                    IMLibPageNavigation.copyRecordFromNavi(contextDef, record);
+                                };
+                            };
+                            INTERMediatorLib.addEvent(
+                                node,
+                                'click',
+                                onNaviCopyFunction(
+                                    IMLibPageNavigation.deleteInsertOnNavi[i]['contextDef'],
+                                    IMLibPageNavigation.deleteInsertOnNavi[i]['keyValue']));
+                            break;
                     }
                 }
             }
@@ -324,9 +345,32 @@ IMLibPageNavigation = {
         INTERMediator.flushMessage();
     },
 
+    copyRecordFromNavi: function(contextDef, keyValue)  {
+        var newId;
+
+        INTERMediatorOnPage.showProgress();
+        newId = IMLibUI.copyRecordImpl(contextDef, keyValue)
+        if (newId > -1) {
+            restore = INTERMediator.additionalCondition;
+            INTERMediator.startFrom = 0;
+            if (contextDef.records <= 1) {
+                conditions = INTERMediator.additionalCondition;
+                conditions[contextDef.name] = {field: contextDef.key, value: newId};
+                INTERMediator.additionalCondition = conditions;
+                IMLibLocalContext.archive();
+            }
+            INTERMediator_DBAdapter.unregister();
+            INTERMediator.constructMain(true);
+            INTERMediator.additionalCondition = restore;
+        }
+        IMLibCalc.recalculation();
+        INTERMediatorOnPage.hideProgress();
+        INTERMediator.flushMessage();
+    },
+
     saveRecordFromNavi: function (dontUpdate) {
-        var contextName, keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i, initialValue,
-            currentVal, fieldArray, valueArray, diffrence, needUpdate = true, context, updateData;
+        var keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i, initialValue,
+            currentVal, fieldArray, valueArray, difference, needUpdate = true, context, updateData;
 
         INTERMediatorOnPage.showProgress();
         INTERMediatorOnPage.retrieveAuthInfo();
@@ -390,11 +434,11 @@ IMLibPageNavigation = {
                         }
                     }
 
-                    diffrence = false;
+                    difference = false;
                     for (field in updateData[keying]) {
                         initialValue = context.getValue(keying, field);
                         if (initialValue != currentVal.recordset[0][field]) {
-                            diffrence += INTERMediatorLib.getInsertedString(
+                            difference += INTERMediatorLib.getInsertedString(
                                 INTERMediatorOnPage.getMessages()[1035], [
                                     field,
                                     currentVal.recordset[0][field],
@@ -402,9 +446,9 @@ IMLibPageNavigation = {
                                 ]);
                         }
                     }
-                    if (diffrence !== false) {
+                    if (difference !== false) {
                         if (!confirm(INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1034], [diffrence]))) {
+                            INTERMediatorOnPage.getMessages()[1034], [difference]))) {
                             return;
                         }
                         INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
