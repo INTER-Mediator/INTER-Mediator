@@ -1329,10 +1329,13 @@ INTERMediator = {
                 || !currentContextDef['repeat-control'].match(/copy/i)) {
                 return;
             }
-            if (currentContextDef['relation']
-                || currentContextDef['records'] === undefined
-                || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
-
+            if (currentContextDef['paging'] === true) {
+                IMLibPageNavigation.deleteInsertOnNavi.push({
+                    kind: 'COPY',
+                    contextDef: currentContextDef,
+                    keyValue: currentRecord[currentContextDef['key']]
+                });
+            } else {
                 buttonNode = document.createElement('BUTTON');
                 INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Copy");
                 buttonName = INTERMediatorOnPage.getMessages()[14];
@@ -1375,12 +1378,6 @@ INTERMediator = {
                         }
                         break;
                 }
-            } else {
-                IMLibPageNavigation.deleteInsertOnNavi.push({
-                    kind: 'COPY',
-                    contextDef: currentContextDef,
-                    keyValue: currentRecord[currentContextDef['key']]
-                });
             }
         }
         /* --------------------------------------------------------------------
