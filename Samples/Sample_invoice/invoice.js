@@ -8,4 +8,4 @@
  */
 window.onload = function () {
     INTERMediator.construct(true);
-}
+};

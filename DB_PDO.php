@@ -889,10 +889,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             foreach ($tableInfo['default-values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
-                $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
-                $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
-                $setColumnNames[] = $field;
+                if (! in_array($field, $setColumnNames)) {
+                    $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                    $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+                    $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
+                    $setColumnNames[] = $field;
+                }
             }
         }
         if (!$bypassAuth && isset($tableInfo['authentication'])) {

@@ -1,5 +1,4 @@
-# INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.png?branch=master)](https://travis-ci.org/INTER-Mediator/INTER-Mediator)
-
+# INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.svg?branch=master)](https://travis-ci.org/INTER-Mediator/INTER-Mediator)
 by INTER-Mediator Directive Committee (http://inter-mediator.org)
 
 This is the root of INTER-Mediator source repository.

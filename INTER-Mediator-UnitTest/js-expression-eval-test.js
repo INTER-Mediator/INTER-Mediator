@@ -96,6 +96,7 @@ buster.testCase("Functions Test", {
         assert.equals(Parser.evaluate("pow(2,3)"), 8);
         assert.equals(Parser.evaluate("min(3,1,2,1,5,1)"), 1);
         assert.equals(Parser.evaluate("max(3,1,2,1,5,1)"), 5);
+        assert.equals(Parser.evaluate("list(3,1,2,1,5,1)"), "3\n1\n2\n1\n5\n1\n");
         assert.equals(Parser.evaluate("fac(5)"), 120);
         assert.equals(Parser.evaluate("pyt(3,4)"), 5);
         assert.equals(Parser.evaluate("atan2(0.5, 0.5)/PI"), 0.25);
