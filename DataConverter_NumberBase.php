@@ -29,6 +29,9 @@ class DataConverter_NumberBase
         }
         // @codeCoverageIgnoreEnd
         $this->thSepMark = $locInfo['mon_thousands_sep'];
+        if (strlen($this->thSepMark) == 0) {
+            $this->thSepMark = ',';
+        }
         $this->currencyMark = $locInfo['currency_symbol'];
     }
 
