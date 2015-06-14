@@ -10,7 +10,7 @@ class DataConverter_NumberBase_Test extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
+        setlocale (LC_ALL, 'ja_JP', 'ja');
         $this->dataconverter = new DataConverter_NumberBase();
         
         $locInfo = localeconv();

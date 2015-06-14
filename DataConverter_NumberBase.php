@@ -13,8 +13,8 @@ require_once('INTER-Mediator.php');
 class DataConverter_NumberBase
 {
 
-    protected $decimalMark = '.';
-    protected $thSepMark = ',';
+    protected $decimalMark = null;
+    protected $thSepMark = null;
     protected $currencyMark = null;
     protected $useMbstring;
 
