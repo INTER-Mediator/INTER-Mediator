@@ -217,7 +217,10 @@ var IMLibUI = {
                                                 messageNodes.push(messageNode);
                                                 break;
                                             default:
-                                                alert(context.validation[index].message);
+                                                if (changedObj.getAttribute("data-im-validation-notification") !== "alert") {
+                                                    alert(context.validation[index].message);
+                                                }
+                                                changedObj.setAttribute("data-im-validation-notification", "alert");
                                         }
                                         contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, "");
                                             if (contextInfo) {                                        // Just supporting NON-target info.
@@ -245,6 +248,7 @@ var IMLibUI = {
                     }
                 }
                 if (didValidate) {
+                    changedObj.removeAttribute("data-im-validation-notification");
                     if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
                         INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
                     }
