@@ -13,21 +13,17 @@ class DataConverter_Currency_Test extends PHPUnit_Framework_TestCase
         setlocale(LC_ALL, 'ja_JP', 'ja');
 
         $this->dataconverter = new DataConverter_Currency();
-
-        $locInfo = localeconv();
-        $this->thSepMark = $locInfo['mon_thousands_sep'];
-        $this->currencyMark = $locInfo['currency_symbol'];
-        echo "#######";
-        var_dump($locInfo);
+//
+//        $locInfo = localeconv();
+//        $this->thSepMark = $locInfo['mon_thousands_sep'];
+//        $this->currencyMark = $locInfo['currency_symbol'];
     }
-
-    private $dataconverter;
-    private $thSepMark;
-    private $currencyMark;
 
     public function test_converterFromDBtoUser()
     {
-        $expected = $this->currencyMark . '1' . $this->thSepMark . '000';
+        $currencyMark = "¥";
+        $thSepMark = ",";
+        $expected = $currencyMark . '1' . $thSepMark . '000';
         $string = '1000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
     }
@@ -39,15 +35,15 @@ class DataConverter_Currency_Test extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
 
         $expected = '1000';
-        $string = '1' . $this->thSepMark . '000';
+        $string = '¥1,000';
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
 
         $expected = '10000';
-        $string = $this->currencyMark . '10' . $this->thSepMark . '000';
+        $string = '¥10,000';
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
 
         $expected = '10000.1';
-        $string = $this->currencyMark . '10' . $this->thSepMark . '000.1';
+        $string = '¥10,000.1';
         $this->assertEquals($expected, $this->dataconverter->converterFromUserToDB($string));
     }
 }

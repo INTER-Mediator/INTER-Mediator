@@ -33,6 +33,9 @@ class DataConverter_NumberBase
             $this->thSepMark = ',';
         }
         $this->currencyMark = $locInfo['currency_symbol'];
+        if (strlen($this->currencyMark) == 0) {
+            $this->currencyMark = '¥';
+        }
     }
 
     public function converterFromUserToDB($str)
