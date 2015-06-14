@@ -10,11 +10,11 @@ class DataConverter_Number_Test extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        
+        setlocale (LC_ALL, 'ja_JP', 'ja');
         $this->dataconverter = new DataConverter_Number();
-        
-        $locInfo = localeconv();
-        $this->thSepMark = $locInfo['mon_thousands_sep'];
+//
+//        $locInfo = localeconv();
+//        $this->thSepMark = $locInfo['mon_thousands_sep'];
     }
 
     public function test_converterFromDBtoUser()
@@ -23,23 +23,23 @@ class DataConverter_Number_Test extends PHPUnit_Framework_TestCase
         $string = '100';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
 
-        $expected = '1' . $this->thSepMark . '000';
+        $expected = '1,000';
         $string = '1000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
 
-        $expected = '10' . $this->thSepMark . '000';
+        $expected = '10,000';
         $string = '10000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
 
-        $expected = '100' . $this->thSepMark . '000';
+        $expected = '100,000';
         $string = '100000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
 
-        $expected = '1' . $this->thSepMark . '000' . $this->thSepMark . '000';
+        $expected = '1,000,000';
         $string = '1000000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
 
-        $expected = '1' . $this->thSepMark . '000' . $this->thSepMark . '000';
+        $expected = '1,000,000';
         $string = '1000000.0';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
     }

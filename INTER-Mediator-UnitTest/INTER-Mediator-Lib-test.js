@@ -4,7 +4,7 @@
  * [Preparation]
  * - Install Node.js locally.
  * - Set the current directory to the INTER-Mediator dirctory.
- * - Execute command "sudo npm link buster"
+ * - Execute command "sudo npm install buster"
  *     The "node_modules" folder is going to create on the current folder.
  *
  * [At the start of your development]
@@ -13,7 +13,7 @@
  *     Don't stop the process started by above command.
  * - Open any browser and connect to http://localhost:1111
  * - Click "Capture browser" button on the browser page
- * - Execute command "buster-test"   <-- Repeat it!
+ * - Execute command "buster-telinkst"   <-- Repeat it!
  */
 
 var assert = buster.referee.assert;
