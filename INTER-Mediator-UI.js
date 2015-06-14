@@ -235,7 +235,7 @@ var IMLibUI = {
                 }
                 if (didValidate) {
                     if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
-                        INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
+                        result = INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
                     }
                 }
             }

@@ -1015,6 +1015,7 @@ IMLibLocalContext = {
         }
         if (localContext && localContext.length > 0) {
             this.store = JSON.parse(localContext);
+            //console.log("##Unarchive:",this.store);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
                     INTERMediator.additionalCondition = this.store._im_additionalCondition;
@@ -1034,7 +1035,7 @@ IMLibLocalContext = {
     },
 
     binding: function (node) {
-        var linkInfos, nodeInfo, idValue, i, value, params;
+        var linkInfos, nodeInfo, idValue, i, j, value, params, idArray, unexistId;
         if (node.nodeType != 1) {
             return;
         }
@@ -1049,7 +1050,21 @@ IMLibLocalContext = {
                 if (!this.binding[nodeInfo.field]) {
                     this.binding[nodeInfo.field] = [];
                 }
-                this.binding[nodeInfo.field].push(idValue);
+                if (this.binding[nodeInfo.field].indexOf(idValue) < 0) {
+                    this.binding[nodeInfo.field].push(idValue);
+                    //this.store[nodeInfo.field] = document.getElementById(idValue).value;
+                }
+                unexistId = -1;
+                while(unexistId >= 0)   {
+                    for ( j = 0 ; j < this.binding[nodeInfo.field].length ; j++ )    {
+                        if (! document.getElementById(this.binding[nodeInfo.field][j]))  {
+                            unexistId = j;
+                        }
+                    }
+                    if (unexistId >= 0) {
+                        delete this.binding[nodeInfo.field][unexistId];
+                    }
+                }
 
                 params = nodeInfo.field.split(":");
                 switch (params[0]) {
@@ -1083,7 +1098,7 @@ IMLibLocalContext = {
                         })());
                         break;
                     default:
-                        IMLibChangeEventDispatch.setExecute(idValue, IMLibUI.valueChange);
+                        IMLibChangeEventDispatch.setExecute(idValue, IMLibLocalContext.update);
                         break;
                 }
 
@@ -1109,17 +1124,18 @@ IMLibLocalContext = {
         nodeValue = IMLibElement.getValueFromIMNode(node);
         linkInfos = INTERMediatorLib.getLinkedElementInfo(node);
         for (i = 0; i < linkInfos.length; i++) {
+            IMLibLocalContext.store[linkInfos[i]] = nodeValue;
             nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i]);
-            if (nodeInfo.table == this.contextName) {
-                this.setValue(nodeInfo.field, nodeValue);
+            if (nodeInfo.table == IMLibLocalContext.contextName) {
+                IMLibLocalContext.setValue(nodeInfo.field, nodeValue);
             }
         }
     },
 
     updateAll: function () {
         var index, key, nodeIds, idValue, targetNode;
-        for (key in this.binding) {
-            nodeIds = this.binding[key];
+        for (key in IMLibLocalContext.binding) {
+            nodeIds = IMLibLocalContext.binding[key];
             for (index = 0; index < nodeIds.length; index++) {
                 idValue = nodeIds[index];
                 targetNode = document.getElementById(idValue);

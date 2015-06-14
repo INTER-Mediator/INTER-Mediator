@@ -69,6 +69,9 @@ INTERMediator = {
     dateTimeFunction: false,
     postOnlyNodes: null,
 
+    errorMessageByAlert: false,
+    errorMessageOnAlert: null,
+
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.
      startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
      */
@@ -91,6 +94,12 @@ INTERMediator = {
 
     setErrorMessage: function (ex, moreMessage) {
         moreMessage = moreMessage === undefined ? "" : (" - " + moreMessage);
+
+        if (INTERMediator.errorMessageByAlert) {
+            alert(INTERMediator.errorMessageOnAlert === null
+                ? (ex + moreMessage) : INTERMediator.errorMessageOnAlert);
+        }
+
         if ((typeof ex == 'string' || ex instanceof String)) {
             INTERMediator.errorMessages.push(ex + moreMessage);
             if (typeof console != 'undefined') {
@@ -112,6 +121,9 @@ INTERMediator = {
     flushMessage: function () {
         var debugNode, title, body, i, j, lines, clearButton, tNode, target;
 
+        if (INTERMediator.errorMessageByAlert) {
+            INTERMediator.supressErrorMessageOnPage = true;
+        }
         if (!INTERMediator.supressErrorMessageOnPage
             && INTERMediator.errorMessages.length > 0) {
             debugNode = document.getElementById('_im_error_panel_4873643897897');
@@ -1627,6 +1639,9 @@ INTERMediator = {
                     masterContext = IMLibContextPool.getMasterContext();
                     detailContext = IMLibContextPool.getDetailContext();
                     if (detailContext) {
+                        if (INTERMediatorOnPage.naviBeforeMoveToDetail) {
+                            INTERMediatorOnPage.naviBeforeMoveToDetail(masterContext, detailContext);
+                        }
                         contextDef = detailContext.getContextDef();
                         contextName = contextDef.name;
                         conditions = INTERMediator.additionalCondition;
@@ -1649,6 +1664,11 @@ INTERMediator = {
                         }
                         if (isPageHide) {
                             document.getElementById("IM_NAVIGATOR").style.display = "none";
+                        }
+                        if (INTERMediatorOnPage.naviAfterMoveToDetail) {
+                            masterContext = IMLibContextPool.getMasterContext();
+                            detailContext = IMLibContextPool.getDetailContext();
+                            INTERMediatorOnPage.naviAfterMoveToDetail(masterContext, detailContext);
                         }
                     }
                 };
@@ -1813,6 +1833,9 @@ INTERMediator = {
                 var masterContextCL = a, detailContextCL = b, pageNaviShow = c, masterUpdate = d;
                 return function () {
                     var showingNode;
+                    if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
+                        INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
+                    }
                     showingNode = detailContextCL.enclosureNode;
                     if (showingNode.tagName == "TBODY") {
                         showingNode = showingNode.parentNode;
@@ -1830,6 +1853,11 @@ INTERMediator = {
                     }
                     if (masterUpdate)   {
                         INTERMediator.constructMain(masterContextCL);
+                    }
+                    if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
+                        masterContextCL = IMLibContextPool.getMasterContext();
+                        detailContextCL = IMLibContextPool.getDetailContext();
+                        INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
                     }
                 }
             };
