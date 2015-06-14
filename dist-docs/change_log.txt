@@ -14,6 +14,7 @@ Ver.5.2 (in development)
   Server.
 - The "button-names" key in a context of definition file supports to customize the button names.
 - The list aggregate function was introduced.
+- Add IMLIbUI.validation() as a public method.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   cant contain ether boolean or string value appropriately.
 - [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 
