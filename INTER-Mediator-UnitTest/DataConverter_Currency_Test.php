@@ -17,12 +17,14 @@ class DataConverter_Currency_Test extends PHPUnit_Framework_TestCase
         $locInfo = localeconv();
         $this->thSepMark = $locInfo['mon_thousands_sep'];
         $this->currencyMark = $locInfo['currency_symbol'];
+        echo "#######";
+        var_dump($locInfo);
     }
 
     private $dataconverter;
     private $thSepMark;
     private $currencyMark;
-    
+
     public function test_converterFromDBtoUser()
     {
         $expected = $this->currencyMark . '1' . $this->thSepMark . '000';
