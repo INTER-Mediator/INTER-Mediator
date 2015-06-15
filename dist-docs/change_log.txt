@@ -18,8 +18,8 @@ Ver.5.2 (in development)
 - INTER-Mediator-Server VM can update with just "git pull origin master" command.
 - DataConverter classes for currency and number was improved in case of missing locale information.
 - The following 4 methods can be defined and they are going to be called when the page moves to
-  the master/detail navigation. All function can have two parameters that are the master and detail
-  context.
+  the master/detail navigation. All function can have two parameters that are referring the master
+  and detail contexts.
       INTERMediatorOnPage.naviBeforeMoveToDetail
       INTERMediatorOnPage.naviAfterMoveToDetail
       INTERMediatorOnPage.naviBeforeMoveToMaster
