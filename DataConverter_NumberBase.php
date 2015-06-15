@@ -29,7 +29,13 @@ class DataConverter_NumberBase
         }
         // @codeCoverageIgnoreEnd
         $this->thSepMark = $locInfo['mon_thousands_sep'];
+        if (strlen($this->thSepMark) == 0) {
+            $this->thSepMark = ',';
+        }
         $this->currencyMark = $locInfo['currency_symbol'];
+        if (strlen($this->currencyMark) == 0) {
+            $this->currencyMark = '¥';
+        }
     }
 
     public function converterFromUserToDB($str)
@@ -37,8 +43,7 @@ class DataConverter_NumberBase
         $comp = explode($this->decimalMark, $str);
         $intPart = intval(str_replace($this->thSepMark, '', $comp[0]));
         if (isset($comp[1])) {
-            $decimalPart = intval(str_replace($this->thSepMark, '', $comp[1]));
-            return floatval(strval($intPart) . '.' . strval($decimalPart));
+            return floatval(strval($intPart) . '.' . strval($comp[1]));
         } else {
             return $intPart;
         }

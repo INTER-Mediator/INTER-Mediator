@@ -371,7 +371,7 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                 ),
-                'update' => array(
+                'edit' => array(
                     'from' => 'string',
                     'to' => 'string',
                     'cc' => 'string',

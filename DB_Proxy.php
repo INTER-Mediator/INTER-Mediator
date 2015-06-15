@@ -207,6 +207,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             if (isset($currentDataSource['send-mail']['edit'])) {
                 $this->logger->setDebugMessage("Try to send an email.", 2);
+//                $this->logger->setDebugMessage("processing:" .
+//                    var_export($this->dbClass->updatedRecord(),true), 2);
                 $mailSender = new SendMail();
                 $mailResult = $mailSender->processing(
                     $currentDataSource['send-mail']['edit'],
@@ -1094,6 +1096,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function resetPasswordSequenceReturnBack($username, $email, $randdata, $newpassword)
     {
+        if (is_null($username) && ! is_null($email))    {
+            $userid = $this->dbClass->authSupportGetUserIdFromEmail($email);
+            $username = $this->dbClass->authSupportGetUsernameFromUserId($userid);
+        }
+        var_dump($username, $email, $randdata, $newpassword);
         if ($email === false || $email == '' || $username === false || $username == '') {
             return false;
         }

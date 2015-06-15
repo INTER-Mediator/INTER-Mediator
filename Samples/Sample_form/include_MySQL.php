@@ -26,7 +26,7 @@ IM_Entry(array(
                             'direction' => 'asc',
                         ),
                 ),
-            'repeat-control' => 'insert delete copy-contact,history',
+            'repeat-control' => 'insert copy-contact,history delete',
         ),
     1 =>
         array(
@@ -114,5 +114,5 @@ IM_Entry(array(
     array(
         'db-class' => 'PDO',
     ),
-    2);
+    false);
 ?>

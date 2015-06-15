@@ -797,7 +797,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
 
         if ($this->isRequiredUpdated) {
-            $sql = "SELECT * FROM {$tableName} {$queryClause}";
+            $sql = "SELECT * FROM {$this->dbSettings->getEntityForRetrieve()} {$queryClause}";
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
             if ($result === false) {
@@ -1741,7 +1741,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id FROM {$userTable} WHERE id=" . $this->link->quote($userid);
+        $sql = "SELECT username FROM {$userTable} WHERE id=" . $this->link->quote($userid);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
