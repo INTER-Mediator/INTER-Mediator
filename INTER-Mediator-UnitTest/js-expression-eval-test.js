@@ -39,6 +39,8 @@ buster.testCase("Operators Test", {
 buster.testCase("Operators Test2", {
     "should be equal to": function () {
         assert.equals(Parser.evaluate("a + b ", {a: 'abc', b: 'def'}), 'abcdef');
+        assert.equals(Parser.evaluate("a ⊕ b ", {a: 123, b:456}), '123456');
+        assert.equals(Parser.evaluate("a ⊕ b ", {a: '123', b:'456'}), '123456');
         assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'def'}), 'abc');
         assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'xyz'}), 'abcdef');
         assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'dbfx'}), 'abcdef');
@@ -229,6 +231,9 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         assert.equals(Parser.evaluate("replace('abcdefgabc', 5, 8, 'yz')"), "abcdeyzbc");
         assert.equals(Parser.evaluate("substitute('abcdefgabc', 'bc', 'yz')"), "ayzdefgayz");
         assert.equals(Parser.evaluate("length('abcdefgabc')"), 10);
+        assert.equals(Parser.evaluate("left('abcdefgabc',3)"), 'abc');
+        assert.equals(Parser.evaluate("right('abcdefgabc',3)"), 'abc');
+        assert.equals(Parser.evaluate("mid('abcdefgabc', 3, 3)"), 'def');
     },
 
     "String Items.": function () {
