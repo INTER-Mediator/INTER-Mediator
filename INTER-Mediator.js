@@ -1341,7 +1341,7 @@ INTERMediator = {
                 || !currentContextDef['repeat-control'].match(/copy/i)) {
                 return;
             }
-            if (currentContextDef['paging'] === true) {
+            if (currentContextDef['paging'] == true) {
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'COPY',
                     contextDef: currentContextDef,

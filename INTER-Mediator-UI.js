@@ -209,7 +209,7 @@ var IMLibUI = {
                                                 alert(context.validation[index].message);
                                         }
                                         contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, "");
-                                            if (contextInfo) {                                        // Just supporting NON-target info.
+                                        if (contextInfo) {                                        // Just supporting NON-target info.
                                             changedObj.value = contextInfo.context.getValue(
                                                 contextInfo.record, contextInfo.field);
                                             window.setTimeout(function () {
@@ -274,7 +274,7 @@ var IMLibUI = {
     },
 
     copyRecordImpl: function (contextDef, keyValue) {
-        var assocDef, responseCreateRecord, newId, i, def, assocContexts;
+        var assocDef, responseCreateRecord, newId, i, def, assocContexts, pStart, copyTerm;
 
         if (contextDef['repeat-control'].match(/confirm-copy/)) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
@@ -294,9 +294,13 @@ var IMLibUI = {
 
             assocDef = [];
             if (contextDef['repeat-control'].match(/copy-/)) {
-                assocContexts = contextDef['repeat-control'].substr(
-                    contextDef['repeat-control'].indexOf('copy-') + 5).split(",");
-                for( i=0 ; i < assocContexts.length ; i++) {
+                pStart = contextDef['repeat-control'].indexOf('copy-');
+                copyTerm = contextDef['repeat-control'].substr(pStart + 5);
+                if ((pStart = copyTerm.search(/\s/)) > -1) {
+                    copyTerm = copyTerm.substr(0, pStart)
+                }
+                assocContexts = copyTerm.split(",");
+                for (i = 0; i < assocContexts.length; i++) {
                     def = IMLibContextPool.getContextDef(assocContexts[i]);
                     if (def['relation'][0]['foreign-key']) {
                         assocDef.push({
@@ -310,13 +314,13 @@ var IMLibUI = {
             if (contextDef["portal"] == true) {  // For FileMaker Server
                 responseCreateRecord = INTERMediator_DBAdapter.db_copy({
                     name: contextDef["name"],
-                    conditions: [ {field: contextDef["key"], operator: "=", value: keyValue}],
+                    conditions: [{field: contextDef["key"], operator: "=", value: keyValue}],
                     associated: assocDef.length > 0 ? assocDef : null
                 });
             } else {
                 responseCreateRecord = INTERMediator_DBAdapter.db_copy({
                     name: contextDef["name"],
-                    conditions: [ {field: contextDef["key"], operator: "=", value: keyValue}],
+                    conditions: [{field: contextDef["key"], operator: "=", value: keyValue}],
                     associated: assocDef.length > 0 ? assocDef : null
                 });
             }
@@ -541,7 +545,7 @@ var IMLibUI = {
                 maxRecId = -1;
                 for (portalRowNum in targetRecord["recordset"][0]) {
                     if (portalRowNum == Number(portalRowNum)
-                            && targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"]) {
+                        && targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"]) {
                         recId = parseInt(targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"], 10);
                         if (recId > maxRecId) {
                             maxRecId = recId;
