@@ -1,0 +1,28 @@
+machine:
+  timezone: Asia/Tokyo
+  php:
+    version: 5.4.37
+
+database:
+  override:
+    - sudo aptitude install php5-sqlite --assume-yes
+    - npm install
+    - node_modules/.bin/buster-server:
+        background: true
+    - sleep 5
+    - firefox http://localhost:1111/capture:
+        background: true
+    - sleep 5
+    - mysql -u root < ./dist-docs/sample_schema_mysql.txt
+    - sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
+    - chmod 666 /tmp/sample.sq3
+    - cat ./INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.php | sed -e 's/sqlite:\/var\/db\/im\/sample.sq3/sqlite:\/tmp\/sample.sq3/' > ./INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.tmp; mv ./INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.tmp ./INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.php
+    - psql -c 'create database test_db;' -U postgres
+    - psql -U postgres -f ./dist-docs/sample_schema_pgsql.txt test_db
+    - composer require 'phpunit/phpunit=3.7.x'
+    - composer install
+
+test:
+  override:
+    - vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
+    - npm test
