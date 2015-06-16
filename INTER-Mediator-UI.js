@@ -35,7 +35,7 @@ var IMLibUI = {
      valueChange
      Parameters:
      */
-    valueChange: function (idValue) {
+    valueChange: function (idValue, validationOnly) {
         var changedObj, objType, contextInfo, i, updateRequiredContext, associatedNode, currentValue, newValue,
             linkInfo, nodeInfo;
 
@@ -54,24 +54,36 @@ var IMLibUI = {
             if (changedObj.readOnly) {  // for Internet Explorer
                 return;
             }
-            if (!this.validation(changedObj)) {   // Validation error.
-                return;
-            }
 
-
-            objType = changedObj.getAttribute('type');
-            if (objType == 'radio' && !changedObj.checked) {
-                INTERMediatorOnPage.hideProgress();
-                return;
-            }
             linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
             // for js-widget support
             if (!linkInfo && INTERMediatorLib.isWidgetElement(changedObj.parentNode)) {
                 linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj.parentNode);
             }
-
             nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);  // Suppose to be the first definition.
             contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
+
+            if (!this.validation(changedObj)) {  // Validation error.
+                window.setTimeout(function () {
+                    if (contextInfo) {
+                        changedObj.value = contextInfo.context.getValue(
+                            contextInfo.record, contextInfo.field);
+                        changedObj.removeAttribute("data-im-validation-notification");
+                    }
+                    changedObj.focus();
+                }, 0);
+                return;
+            }
+            if (validationOnly === true) {
+                return;
+            }
+
+            objType = changedObj.getAttribute("type");
+            if (objType === "radio" && !changedObj.checked) {
+                INTERMediatorOnPage.hideProgress();
+                return;
+            }
+
             if (contextInfo) {
                 newValue = IMLibElement.getValueFromIMNode(changedObj);
                 if (contextInfo.context.isValueUndefined(contextInfo.record, contextInfo.field, contextInfo.portal)) {
@@ -206,7 +218,11 @@ var IMLibUI = {
                                                 messageNodes.push(messageNode);
                                                 break;
                                             default:
-                                                alert(context.validation[index].message);
+                                                if (changedObj.getAttribute("data-im-validation-notification") !== "alert") {
+                                                    alert(context.validation[index].message);
+                                                    changedObj.setAttribute("data-im-validation-notification", "alert");
+                                                }
+                                                break;
                                         }
                                         contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, "");
                                         if (contextInfo) {                                        // Just supporting NON-target info.

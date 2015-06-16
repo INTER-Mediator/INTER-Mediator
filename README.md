@@ -1,4 +1,4 @@
-# INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.svg?branch=master)](https://travis-ci.org/INTER-Mediator/INTER-Mediator)
+# INTER-Mediator [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/master.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator)
 by INTER-Mediator Directive Committee (http://inter-mediator.org)
 
 This is the root of INTER-Mediator source repository.
@@ -8,7 +8,7 @@ You could develop easily, and realize your ideals.
 You just describe table and field names in any HTML elements.
 If you want to implement more complex logic, you could write programs both client and server sides.
 
-All information will show at: 
+All information will show at:
 http://inter-mediator.com/
 http://inter-mediator.info/
 

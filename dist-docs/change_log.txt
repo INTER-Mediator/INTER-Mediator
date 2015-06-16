@@ -15,6 +15,7 @@ Ver.5.2 (in development)
   Server.
 - The "button-names" key in a context of definition file supports to customize the button names.
 - The list aggregate function was introduced.
+- Add IMLIbUI.validation() as a public method.
 - INTER-Mediator-Server VM can update with just "git pull origin master" command.
 - DataConverter classes for currency and number was improved in case of missing locale information.
 - The following 4 methods can be defined and they are going to be called when the page moves to
@@ -32,6 +33,7 @@ Ver.5.2 (in development)
       $httpAccounts = array('user'=>'testtest');
       $httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
 
+- Add circle.yml to test with CircleCI.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   cant contain ether boolean or string value appropriately.
 - [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 
