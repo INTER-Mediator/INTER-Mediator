@@ -68,6 +68,7 @@ var IMLibUI = {
                     if (contextInfo) {
                         changedObj.value = contextInfo.context.getValue(
                             contextInfo.record, contextInfo.field);
+                        changedObj.removeAttribute("data-im-validation-notification");
                     }
                     changedObj.focus();
                 }, 0);
@@ -219,8 +220,9 @@ var IMLibUI = {
                                             default:
                                                 if (changedObj.getAttribute("data-im-validation-notification") !== "alert") {
                                                     alert(context.validation[index].message);
+                                                    changedObj.setAttribute("data-im-validation-notification", "alert");
                                                 }
-                                                changedObj.setAttribute("data-im-validation-notification", "alert");
+                                                break;
                                         }
                                         contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, "");
                                         if (contextInfo) {                                        // Just supporting NON-target info.
@@ -248,7 +250,6 @@ var IMLibUI = {
                     }
                 }
                 if (didValidate) {
-                    changedObj.removeAttribute("data-im-validation-notification");
                     if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
                         result = INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
                     }
