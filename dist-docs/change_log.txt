@@ -24,6 +24,14 @@ Ver.5.2 (in development)
       INTERMediatorOnPage.naviAfterMoveToDetail
       INTERMediatorOnPage.naviBeforeMoveToMaster
       INTERMediatorOnPage.naviAfterMoveToMaster
+- The following variables in the params.php file weren't effective, so they are removed from the file.
+      $prohibitSetCondition = true;
+      $prohibitSetOrder = true;
+      $prohibitSetWriteCriticalFields = true;
+      $prohibitIgnoreCondition = true;
+      $httpAccounts = array('user'=>'testtest');
+      $httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
+
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   cant contain ether boolean or string value appropriately.
 - [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 

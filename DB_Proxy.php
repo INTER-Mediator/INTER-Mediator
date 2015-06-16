@@ -548,8 +548,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
         }
 
-        $this->dbSettings->setPrimaryKeyOnly(isset($_POST['pkeyonly']) &&
-            !(isset($prohibitIgnoreCondition) ? $prohibitIgnoreCondition : false));
+        $this->dbSettings->setPrimaryKeyOnly(isset($_POST['pkeyonly']));
 
         $this->dbSettings->setCurrentUser(isset($_POST['authuser']) ? $_POST['authuser'] : null);
         $this->dbSettings->setAuthentication(isset($options['authentication']) ? $options['authentication'] : null);

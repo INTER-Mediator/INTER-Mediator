@@ -54,10 +54,6 @@ $browserCompatibility = array(
 
 /* This statement set debug to false forcely. */
 $prohibitDebugMode = false;
-$prohibitSetCondition = true;
-$prohibitSetOrder = true;
-$prohibitSetWriteCriticalFields = true;
-//$prohibitIgnoreCondition = true;
 
 /*
 Command to generate the following RSA key:
