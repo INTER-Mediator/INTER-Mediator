@@ -631,17 +631,17 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->logger->setDebugMessage("[processingRequest]", 2);
 
         $this->outputOfProcessing = array();
-        $generatedPrivateKey = '';
-        $passPhrase = '';
-
+//        $generatedPrivateKey = '';
+//        $passPhrase = '';
+//
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
-        }
+//        $currentDirParam = $currentDir . 'params.php';
+//        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+//        if (file_exists($parentDirParam)) {
+//            include($parentDirParam);
+//        } else if (file_exists($currentDirParam)) {
+//            include($currentDirParam);
+//        }
 
         $messageClass = null;
         if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
@@ -701,21 +701,23 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             // User and Password are suppried but...
             if ($access != 'challenge') { // Not accessing getting a challenge.
                 if ($this->dbSettings->isDBNative()) {
-                    $rsa = new Crypt_RSA();
-                    $rsa->setPassword($passPhrase);
-                    $rsa->loadKey($generatedPrivateKey);
-                    $rsa->setPassword();
-                    $privatekey = $rsa->getPrivateKey();
-                    $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
-                    require_once('lib/bi2php/biRSA.php');
-                    $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
-                    $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
-                    if ($decrypted !== false) {
-                        $nlPos = strpos($decrypted, "\n");
-                        $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
-                        $password = $keyDecrypt->biDecryptedString(substr($decrypted, 0, $nlPos));
-                        $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
-                        $challenge = substr($decrypted, $nlPos + 1);
+                    list($password, $challenge) = $this->decrypting($paramResponse);
+//                    $rsa = new Crypt_RSA();
+//                    $rsa->setPassword($passPhrase);
+//                    $rsa->loadKey($generatedPrivateKey);
+//                    $rsa->setPassword();
+//                    $privatekey = $rsa->getPrivateKey();
+//                    $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+//                    require_once('lib/bi2php/biRSA.php');
+//                    $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
+//                    $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
+//                    if ($decrypted !== false) {
+//                        $nlPos = strpos($decrypted, "\n");
+//                        $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
+//                        $password = $keyDecrypt->biDecryptedString(substr($decrypted, 0, $nlPos));
+//                        $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
+//                        $challenge = substr($decrypted, $nlPos + 1);
+                    if ($password !== false) {
                         if (!$this->checkChallenge($challenge, $clientId)) {
                             $access = "do nothing";
                             $this->dbSettings->setRequireAuthentication(true);
@@ -759,7 +761,18 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $this->dbSettings->setRequireAuthentication(true);
                     }
                     $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
-                    if (!$this->checkAuthorization($signedUser, $paramResponse, $clientId)) {
+
+                    $ldap = new LDAPAuth();
+                    if ($ldap->isActive) {
+                        list($password, $challenge) = $this->decrypting($paramResponse);
+                        if (!$ldap->bindCheck($signedUser, $password)) {
+                            $this->logger->setDebugMessage(
+                                "Authentication doesn't meet valid.{$signedUser}/{$paramResponse}/{$clientId}");
+                            // Not Authenticated!
+                            $access = "do nothing";
+                            $this->dbSettings->setRequireAuthentication(true);
+                        }
+                    } else if (!$this->checkAuthorization($signedUser, $paramResponse, $clientId)) {
                         $this->logger->setDebugMessage(
                             "Authentication doesn't meet valid.{$signedUser}/{$paramResponse}/{$clientId}");
                         // Not Authenticated!
@@ -899,6 +912,41 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     }
 
     /* Authentication support */
+    function decrypting($paramResponse)
+    {
+        $generatedPrivateKey = '';
+        $passPhrase = '';
+
+        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+        $currentDirParam = $currentDir . 'params.php';
+        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+        if (file_exists($parentDirParam)) {
+            include($parentDirParam);
+        } else if (file_exists($currentDirParam)) {
+            include($currentDirParam);
+        }
+
+        $rsa = new Crypt_RSA();
+        $rsa->setPassword($passPhrase);
+        $rsa->loadKey($generatedPrivateKey);
+        $rsa->setPassword();
+        $privatekey = $rsa->getPrivateKey();
+        $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+        require_once('lib/bi2php/biRSA.php');
+        $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
+        $decrypted = $keyDecrypt->biDecryptedString($paramResponse);
+        if ($decrypted === false) {
+            return array(false, false);
+        }
+
+        $nlPos = strpos($decrypted, "\n");
+        $nlPos = ($nlPos === false) ? strlen($decrypted) : $nlPos;
+        $password = $keyDecrypt->biDecryptedString(substr($decrypted, 0, $nlPos));
+        $password = (strlen($password) == 0) ? "f32b309d4759446fc81de858322ed391a0c167a0" : $password;
+        $challenge = substr($decrypted, $nlPos + 1);
+        return array($password, $challenge);
+    }
+
     /**
      * @param $prefix
      * @return string
@@ -1095,7 +1143,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function resetPasswordSequenceReturnBack($username, $email, $randdata, $newpassword)
     {
-        if (is_null($username) && ! is_null($email))    {
+        if (is_null($username) && !is_null($email)) {
             $userid = $this->dbClass->authSupportGetUserIdFromEmail($email);
             $username = $this->dbClass->authSupportGetUsernameFromUserId($userid);
         }

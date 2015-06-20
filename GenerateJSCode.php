@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
@@ -10,7 +11,6 @@
  * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class GenerateJSCode
 {
     public function __construct()
@@ -230,12 +230,14 @@ class GenerateJSCode
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.isNativeAuth",
-            (isset($options['authentication']) && isset($options['authentication']['user'])
-                && ($options['authentication']['user'][0] === 'database_native')) ? "true" : "false");
+            ((isset($options['authentication'])
+                && isset($options['authentication']['user'])
+                && ($options['authentication']['user'][0] === 'database_native'))
+                || ((new LDAPAuth())->isActive)) ? "true" : "false");
         $this->generateAssignJS(
             "INTERMediatorOnPage.authStoring",
             $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
-                $options['authentication']['storing'] : 'cookie', $q);
+            $options['authentication']['storing'] : 'cookie', $q);
         $this->generateAssignJS(
             "INTERMediatorOnPage.authExpired",
             (isset($options['authentication']) && isset($options['authentication']['authexpired'])) ?

@@ -1854,10 +1854,10 @@ INTERMediator = {
                     if (masterUpdate)   {
                         INTERMediator.constructMain(masterContextCL);
                     }
-                    if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
+                    if (INTERMediatorOnPage.naviAfterMoveToMaster) {
                         masterContextCL = IMLibContextPool.getMasterContext();
                         detailContextCL = IMLibContextPool.getDetailContext();
-                        INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
+                        INTERMediatorOnPage.naviAfterMoveToMaster(masterContextCL, detailContextCL);
                     }
                 }
             };
