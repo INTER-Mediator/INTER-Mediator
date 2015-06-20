@@ -32,8 +32,8 @@ Ver.5.2 (in development)
       $prohibitIgnoreCondition = true;
       $httpAccounts = array('user'=>'testtest');
       $httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
-
 - Add circle.yml to test with CircleCI.
+- Update TestDB.fmp12 and TestDB.fp7 to add the last updated date on "person_layout" layout.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   cant contain ether boolean or string value appropriately.
 - [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 
