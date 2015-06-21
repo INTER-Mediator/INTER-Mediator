@@ -35,7 +35,8 @@ Thanks for nice works.
 ==========================================
 Account Information for FileMaker Database
 ------------------------------------------
-The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" have the administrator account as:
+The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" (Last updated: June 20, 2015) 
+have the administrator account as:
 
  username: admin
  password: 1234
