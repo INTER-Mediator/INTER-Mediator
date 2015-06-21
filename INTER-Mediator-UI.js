@@ -154,8 +154,7 @@ var IMLibUI = {
                     if (ex == "_im_requath_request_") {
                         if (INTERMediatorOnPage.requireAuthentication
                             && !INTERMediatorOnPage.isComplementAuthData()) {
-                            INTERMediatorOnPage.authChallenge = null;
-                            INTERMediatorOnPage.authHashedPassword = null;
+                            INTERMediatorOnPage.clearCredentials();
                             INTERMediatorOnPage.authenticating(function () {
                                 updateDB(changedObj, idValue);
                             });
@@ -344,8 +343,7 @@ var IMLibUI = {
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                    INTERMediatorOnPage.authChallenge = null;
-                    INTERMediatorOnPage.authHashedPassword = null;
+                    INTERMediatorOnPage.clearCredentials();
                     INTERMediatorOnPage.authenticating(
                         function () {
                             IMLibUI.copyButton(contextDef, keyValue);
@@ -407,8 +405,7 @@ var IMLibUI = {
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                    INTERMediatorOnPage.authChallenge = null;
-                    INTERMediatorOnPage.authHashedPassword = null;
+                    INTERMediatorOnPage.clearCredentials();
                     INTERMediatorOnPage.authenticating(
                         function () {
                             IMLibUI.deleteButton(
@@ -576,8 +573,7 @@ var IMLibUI = {
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
-                INTERMediatorOnPage.authChallenge = null;
-                INTERMediatorOnPage.authHashedPassword = null;
+                INTERMediatorOnPage.clearCredentials();
                 INTERMediatorOnPage.authenticating(
                     function () {
                         IMLibUI.insertButton(

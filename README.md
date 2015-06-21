@@ -23,6 +23,7 @@ http://msyk.dyndns.org/im-sample.html
 - Kentaro Suzuki
 
 ### Special Thanks to:
+- Katsunori Eda
 - Naomi Hamaji
 - Miyuki Imaizumi
 - Yukihiko Kobayashi

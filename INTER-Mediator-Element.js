@@ -275,8 +275,7 @@ var IMLibElement = {
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                    INTERMediatorOnPage.authChallenge = null;
-                    INTERMediatorOnPage.authHashedPassword = null;
+                    INTERMediatorOnPage.clearCredentials();
                     INTERMediatorOnPage.authenticating(
                         function () {
                             INTERMediator.db_query(checkQueryParameter);

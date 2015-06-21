@@ -363,8 +363,7 @@ INTERMediator = {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.clearCredentials();
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 INTERMediator.constructMain(updateRequiredContext);
@@ -1854,10 +1853,10 @@ INTERMediator = {
                     if (masterUpdate)   {
                         INTERMediator.constructMain(masterContextCL);
                     }
-                    if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
+                    if (INTERMediatorOnPage.naviAfterMoveToMaster) {
                         masterContextCL = IMLibContextPool.getMasterContext();
                         detailContextCL = IMLibContextPool.getDetailContext();
-                        INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
+                        INTERMediatorOnPage.naviAfterMoveToMaster(masterContextCL, detailContextCL);
                     }
                 }
             };

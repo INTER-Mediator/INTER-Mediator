@@ -29,11 +29,15 @@ INTERMediator_DBAdapter = {
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams = "&clientid=" + encodeURIComponent(INTERMediatorOnPage.clientId);
             authParams += "&authuser=" + encodeURIComponent(INTERMediatorOnPage.authUser);
-            if (INTERMediatorOnPage.isNativeAuth) {
-                authParams += "&response=" + encodeURIComponent(
-                    INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authHashedPassword
+           // if (INTERMediatorOnPage.isNativeAuth) {
+            if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
+                authParams += "&cresponse=" + encodeURIComponent(
+                    INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword
                     + "\n" + INTERMediatorOnPage.authChallenge));
             } else {
+                authParams += "&cresponse=dummy";
+            }
+          //  } else {
                 if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
                     shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
                     hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
@@ -41,7 +45,7 @@ INTERMediator_DBAdapter = {
                 } else {
                     authParams += "&response=dummy";
                 }
-            }
+          //  }
         }
 
         authParams += "&notifyid=";
@@ -140,7 +144,7 @@ INTERMediator_DBAdapter = {
         }
         if (requireAuth) {
             INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
-            INTERMediatorOnPage.authHashedPassword = null;
+            INTERMediatorOnPage.clearCredentials();
             throw "_im_requath_request_";
         }
         if (!accessURL.match(/access=challenge/)) {
@@ -183,13 +187,13 @@ INTERMediator_DBAdapter = {
         try {
             result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
             if (result.newPasswordResult && result.newPasswordResult === true) {
-                if (INTERMediatorOnPage.isNativeAuth) {
-                    INTERMediatorOnPage.authHashedPassword = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
-                } else {
+               // if (INTERMediatorOnPage.isNativeAuth) {
+                    INTERMediatorOnPage.authCryptedPassword = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
+               // } else {
                     INTERMediatorOnPage.authHashedPassword
                         = SHA1(newpassword + INTERMediatorOnPage.authUserSalt)
                     + INTERMediatorOnPage.authUserHexSalt;
-                }
+               // }
                 INTERMediatorOnPage.storeCredencialsToCookie();
             }
         } catch (e) {
@@ -266,7 +270,7 @@ INTERMediator_DBAdapter = {
                         }
                         if (requireAuth) {
                             INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
-                            INTERMediatorOnPage.authHashedPassword = null;
+                            INTERMediatorOnPage.clearCredentials();
                             throw "_im_requath_request_";
                         }
                         INTERMediatorOnPage.authCount = 0;
@@ -511,8 +515,7 @@ INTERMediator_DBAdapter = {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.clearCredentials();
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 returnValue = INTERMediator_DBAdapter.db_queryWithAuth(arg, completion);
@@ -600,8 +603,7 @@ INTERMediator_DBAdapter = {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.clearCredentials();
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 returnValue = INTERMediator_DBAdapter.db_updateWithAuth(arg, completion);
@@ -673,8 +675,7 @@ INTERMediator_DBAdapter = {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.clearCredentials();
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 returnValue = INTERMediator_DBAdapter.db_deleteWithAuth(arg, completion);
@@ -757,8 +758,7 @@ INTERMediator_DBAdapter = {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.clearCredentials();
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 returnValue = INTERMediator_DBAdapter.db_createRecordWithAuth(arg, completion);
@@ -836,6 +836,7 @@ INTERMediator_DBAdapter = {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.authChallenge = null;
                         INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.authCryptedPassword = null;
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 returnValue = INTERMediator_DBAdapter.db_deleteWithAuth(arg, completion);

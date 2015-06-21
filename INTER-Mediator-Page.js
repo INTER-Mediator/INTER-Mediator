@@ -16,6 +16,7 @@ INTERMediatorOnPage = {
     authCount: 0,
     authUser: '',
     authHashedPassword: '',
+    authCryptedPassword: '',
     authUserSalt: '',
     authUserHexSalt: '',
     authChallenge: '',
@@ -41,6 +42,11 @@ INTERMediatorOnPage = {
     additionalExpandingEnclosureFinish: {},
     additionalExpandingRecordFinish: {},
 
+    clearCredentials: function() {
+        INTERMediatorOnPage.authChallenge = null;
+        INTERMediatorOnPage.authHashedPassword = null;
+        INTERMediatorOnPage.authCryptedPassword = null;
+    },
     /*
      This method "getMessages" is going to be replaced valid one with the browser's language.
      Here is defined to prevent the warning of static check.
@@ -114,6 +120,7 @@ INTERMediatorOnPage = {
     logout: function () {
         this.authUser = "";
         this.authHashedPassword = "";
+        this.authCryptedPassword = "";
         this.authUserSalt = "";
         this.authChallenge = "";
         this.clientId = "";
@@ -347,13 +354,13 @@ INTERMediatorOnPage = {
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
-            if (INTERMediatorOnPage.isNativeAuth) {
-                INTERMediatorOnPage.authHashedPassword = INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
-            } else {
+            //if (INTERMediatorOnPage.isNativeAuth) {
+                INTERMediatorOnPage.authCryptedPassword = INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
+            //} else {
                 INTERMediatorOnPage.authHashedPassword
                     = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
                     + INTERMediatorOnPage.authUserHexSalt;
-            }
+            //}
 
             if (INTERMediatorOnPage.authUser.length > 0) {   // Authentication succeed, Store coockies.
                 INTERMediatorOnPage.storeCredencialsToCookie();

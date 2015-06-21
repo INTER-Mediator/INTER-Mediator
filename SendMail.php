@@ -49,19 +49,37 @@ class SendMail
         }
 
         if (isset($sendMailParam['to-constant'])) {
-            $ome->setToField($sendMailParam['to-constant']);
+            $items = explode(",", $sendMailParam['to-constant']);
+            foreach($items as $item) {
+                $ome->appendToField(trim($item));
+            }
         } else if (isset($result[0]) && isset($sendMailParam['to']) && isset($result[0][$sendMailParam['to']])) {
-            $ome->setToField($result[0][$sendMailParam['to']]);
+            $items = explode(",", $result[0][$sendMailParam['to']]);
+            foreach($items as $item) {
+                $ome->appendToField(trim($item));
+            }
         }
         if (isset($sendMailParam['cc-constant'])) {
-            $ome->setToField($sendMailParam['cc-constant']);
+            $items = explode(",", $sendMailParam['cc-constant']);
+            foreach($items as $item) {
+                $ome->appendCcField(trim($item));
+            }
         } else if (isset($result[0]) && isset($sendMailParam['cc']) && isset($result[0][$sendMailParam['cc']])) {
-            $ome->setCcField($result[0][$sendMailParam['cc']]);
+            $items = explode(",", $result[0][$sendMailParam['cc']]);
+            foreach($items as $item) {
+                $ome->appendCcField(trim($item));
+            }
         }
         if (isset($sendMailParam['bcc-constant'])) {
-            $ome->setToField($sendMailParam['bcc-constant']);
+            $items = explode(",", $sendMailParam['bcc-constant']);
+            foreach($items as $item) {
+                $ome->appendBccField(trim($item));
+            }
         } else if (isset($result[0]) && isset($sendMailParam['bcc']) && isset($result[0][$sendMailParam['bcc']])) {
-            $ome->setBccField($result[0][$sendMailParam['bcc']]);
+            $items = explode(",", $result[0][$sendMailParam['bcc']]);
+            foreach($items as $item) {
+                $ome->appendBccField(trim($item));
+            }
         }
         if (isset($sendMailParam['from-constant'])) {
             $ome->setFromField($sendMailParam['from-constant']);

@@ -271,8 +271,7 @@ IMLibPageNavigation = {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.clearCredentials();
                         INTERMediatorOnPage.authenticating(function () {
                             IMLibPageNavigation.insertRecordFromNavi(targetName, keyField, isConfirm);
                         });
@@ -320,8 +319,7 @@ IMLibPageNavigation = {
             });
         } catch (ex) {
             if (ex == "_im_requath_request_") {
-                INTERMediatorOnPage.authChallenge = null;
-                INTERMediatorOnPage.authHashedPassword = null;
+                INTERMediatorOnPage.clearCredentials();
                 INTERMediatorOnPage.authenticating(
                     function () {
                         IMLibPageNavigation.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);
@@ -407,8 +405,7 @@ IMLibPageNavigation = {
                         if (ex == "_im_requath_request_") {
                             if (INTERMediatorOnPage.requireAuthentication
                                 && !INTERMediatorOnPage.isComplementAuthData()) {
-                                INTERMediatorOnPage.authChallenge = null;
-                                INTERMediatorOnPage.authHashedPassword = null;
+                                INTERMediatorOnPage.clearCredentials();
                                 INTERMediatorOnPage.authenticating(
                                     function () {
                                         INTERMediator.db_query(checkQueryParameter);
@@ -468,8 +465,7 @@ IMLibPageNavigation = {
                     if (ex == "_im_requath_request_") {
                         if (INTERMediatorOnPage.requireAuthentication
                             && !INTERMediatorOnPage.isComplementAuthData()) {
-                            INTERMediatorOnPage.authChallenge = null;
-                            INTERMediatorOnPage.authHashedPassword = null;
+                            INTERMediatorOnPage.clearCredentials();
                             INTERMediatorOnPage.authenticating(
                                 function () {
                                     IMLibPageNavigation.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);
