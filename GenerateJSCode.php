@@ -228,6 +228,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.authRequiredContext", arrayToJS($requireAuthenticationContext, ''));
 
+        require_once(dirname(__FILE__) . '/LDAPAuth.php');
         $this->generateAssignJS(
             "INTERMediatorOnPage.isNativeAuth",
             ((isset($options['authentication'])

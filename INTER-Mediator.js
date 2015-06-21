@@ -363,8 +363,7 @@ INTERMediator = {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.clearCredentials();
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 INTERMediator.constructMain(updateRequiredContext);
