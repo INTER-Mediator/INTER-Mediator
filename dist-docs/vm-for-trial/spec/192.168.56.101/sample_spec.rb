@@ -311,6 +311,11 @@ describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/pageedit.php'
   it { should be_file }
 end
 
+describe file('/var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh') do
+  it { should be_file }
+  it { should be_mode 664 }
+end
+
 range = 1..40
 range.each{|num|
   describe file('/var/www/html/def' + "%02d" % num + '.php') do
