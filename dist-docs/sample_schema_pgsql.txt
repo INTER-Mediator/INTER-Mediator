@@ -25,13 +25,14 @@ Password for user postgres:
 /***************************** ATTENTION *****************************
  * If you execute this schema twice or more, remove /* */ of the following lines.
  *********************************************************************/
-
+/*
 DROP USER 'web'@'localhost';
+*/
 CREATE USER web PASSWORD 'password';
-
+/*
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db ENCODING 'UTF8';
-
+*/
 VACUUM;
 
 DROP SCHEMA IF EXISTS im_sample CASCADE;
