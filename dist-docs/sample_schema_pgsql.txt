@@ -55,7 +55,7 @@ CREATE TABLE person	(
 	memo		TEXT
 );
 
-/* Don't assing values to the SERIAL type field. It can cause duplicated values. */
+/* Don't assign values to the SERIAL type field. It can cause duplicated values. */
 INSERT INTO person(name,address,mail) VALUES ('Masayuki Nii','Saitama, Japan','msyk@msyk.net');
 INSERT INTO person(name,address,mail) VALUES ('Someone','Tokyo, Japan','msyk@msyk.net');
 INSERT INTO person(name,address,mail) VALUES ('Anyone','Osaka, Japan','msyk@msyk.net');
