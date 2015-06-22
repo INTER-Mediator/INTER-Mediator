@@ -11,6 +11,7 @@ Also the Migration Guide (Japanese) might be informative: http://inter-mediator.
 
 Ver.5.2 (in development)
 - Record Copying is supported for single record, and also with associated records for PDO.
+- Authentication with an LDAP user.
 - Handle some operators of conditions ('!=', '>', '>=', '<', '<=') as valid when using FileMaker 
   Server.
 - The "button-names" key in a context of definition file supports to customize the button names.
@@ -34,6 +35,10 @@ Ver.5.2 (in development)
       $httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
 - Add circle.yml to test with CircleCI.
 - Update TestDB.fmp12 and TestDB.fp7 to add the last updated date on "person_layout" layout.
+- The sample with jQuery's DatePicker UI component on
+  Samples/Sample_webpage/jquery_datepicker_MySQL.html.
+- The VM DB update script on dist-docs/vm-for-trial/dbupdate.sh. I'd like to ask you to use
+  the "source" commmand to execute it.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   cant contain ether boolean or string value appropriately.
 - [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 
