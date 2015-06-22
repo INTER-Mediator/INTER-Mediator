@@ -20,7 +20,7 @@ SQLITEDB="${SQLITEDIR}/sample.sq3"
 if [ -f "${SQLITEDB}" ]; then
     echo "im4135dev" | sudo -S rm "${SQLITEDB}"
 fi
-sqlite3 "${SQLITEDB}" < "${IMDISTDOC}/sample_schema_sqlite.txt"
+echo "im4135dev" | sudo -S sqlite3 "${SQLITEDB}" < "${IMDISTDOC}/sample_schema_sqlite.txt"
 echo "im4135dev" | sudo -S chown -R www-data:im-developer "${SQLITEDIR}"
 echo "im4135dev" | sudo -S chmod 775 "${SQLITEDIR}"
 echo "im4135dev" | sudo -S chmod 664 "${SQLITEDB}"
