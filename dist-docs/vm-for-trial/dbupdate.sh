@@ -18,9 +18,9 @@ echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql
 SQLITEDIR="/var/db/im"
 SQLITEDB="${SQLITEDIR}/sample.sq3"
 if [ -f "${SQLITEDB}" ]; then
-    rm "${SQLITEDB}"
+    echo "im4135dev" | sudo -S rm "${SQLITEDB}"
 fi
 sqlite3 "${SQLITEDB}" < "${IMDISTDOC}/sample_schema_sqlite.txt"
-chown -R www-data:im-developer "${SQLITEDIR}"
-chmod 775 "${SQLITEDIR}"
-chmod 664 "${SQLITEDB}"
+echo "im4135dev" | sudo -S chown -R www-data:im-developer "${SQLITEDIR}"
+echo "im4135dev" | sudo -S chmod 775 "${SQLITEDIR}"
+echo "im4135dev" | sudo -S chmod 664 "${SQLITEDB}"
