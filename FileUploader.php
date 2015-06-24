@@ -74,7 +74,9 @@ class FileUploader
         foreach ($_FILES as $fn => $fileInfo) {
         }
 
-        $filePathInfo = pathinfo(str_replace('\0', '', basename($fileInfo['name'])));
+        $util = new IMUtil();
+        $filePathInfo = pathinfo($util->removeNull(basename($fileInfo['name'])));
+
         if ($useContainer === FALSE) {
             $fileRoot = $options['media-root-dir'];
             if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
