@@ -19,7 +19,7 @@ $dbPassword = 'password';
 
 /* DB_FileMaker_FX aware below:
  */
-$dbServer = '10.0.1.21';
+$dbServer = '127.0.0.1';
 $dbPort = '80';
 $dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
@@ -118,8 +118,8 @@ $pusherParameters = array(
 */
 
 /* LDAP Support */
-$ldapServer = "ldap://homeserver.msyk.net";
-$ldapPort = 389;
-$ldapBase = "dc=homeserver,dc=msyk,dc=net";
-$ldapContainer = "cn=users";
-$ldapAccountKey = "uid";
+// $ldapServer = "ldap://homeserver.msyk.net";
+// $ldapPort = 389;
+// $ldapBase = "dc=homeserver,dc=msyk,dc=net";
+// $ldapContainer = "cn=users";
+// $ldapAccountKey = "uid";
