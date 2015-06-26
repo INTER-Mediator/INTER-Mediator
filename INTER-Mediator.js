@@ -293,7 +293,6 @@ INTERMediator = {
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
-        IMLibPageNavigation.deleteInsertOnNavi = [];
         appendingNodesAtLast = [];
         IMLibEventResponder.setup();
         INTERMediatorOnPage.retrieveAuthInfo();
@@ -316,11 +315,13 @@ INTERMediator = {
 
         try {
             if (updateRequiredContext === true || updateRequiredContext === undefined) {
+                IMLibPageNavigation.deleteInsertOnNavi = [];
                 this.partialConstructing = false;
                 INTERMediator.buttonIdNum = 1;
                 IMLibContextPool.clearAll();
                 pageConstruct();
             } else {
+                IMLibPageNavigation.deleteInsertOnNavi = [];
                 this.partialConstructing = true;
                 isInsidePostOnly = false;
                 postSetFields = [];
@@ -357,7 +358,11 @@ INTERMediator = {
                     document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
                 }
                 IMLibCalc.updateCalculationFields();
-                IMLibPageNavigation.navigationSetup();
+                //IMLibPageNavigation.navigationSetup();
+                /*
+                If the pagination control should be setup, the property IMLibPageNavigation.deleteInsertOnNavi
+                to maintain to be a valid data.
+                 */
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
