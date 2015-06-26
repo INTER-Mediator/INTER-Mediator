@@ -1,15 +1,18 @@
 <?php
 /**
  * INTER-Mediator
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- * 
- * This project started at the end of 2009.
- * 
+ * Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ *
+ * This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ * INTER-Mediator is supplied under MIT License.
+ *
  * 
  * This schema file is for the sample of INTER-Mediator using FileMaker ODBC, encoded by UTF-8.
- * 
+ *
  * [Required software]
- * FileMaker xDBC client drivers for FileMaker 13
+ * FileMaker Server 13 (Note: This script doesn't work with FileMaker Server 14)
+ *
+ * xDBC Client Drivers for FileMaker 13
  * http://help.filemaker.com/app/answers/detail/a_id/12921
  *
  * Actual ODBC Pack (for Mac OS X)
@@ -19,7 +22,7 @@
  *
  * Example:
  * $ /Library/FileMaker\ Server/Web\ Publishing/publishing-engine/php/mountain\ lion/bin/php sample_schema_filemaker.php
- * Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]: 
+ * Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]:
  *
  */
 set_time_limit(0);
@@ -5164,7 +5167,7 @@ if ('y' == trim(fgets($stdin, 64))) {
     } catch (Exception $e) {
         echo 'Table "saleslog" is missing.' . "\n";
     }
-    
+
     odbc_close($conn);
 } else {
     echo 'exit' . PHP_EOL;
