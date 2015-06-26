@@ -464,6 +464,8 @@ INTERMediator_DBAdapter = {
             params += "&sortkey" + extCountSort + "direction=" + encodeURIComponent(orderFields[orderedKeys[i]][1]);
             extCountSort++;
         }
+
+        INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
 // params += "&randkey" + Math.random();    // For ie...
 // IE uses caches as the result in spite of several headers. So URL should be randomly.
 //
