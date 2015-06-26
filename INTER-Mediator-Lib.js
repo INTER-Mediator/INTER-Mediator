@@ -909,6 +909,12 @@ var INTERMediatorLib = {
         return messageNode;
     },
 
+    removeChildNodes: function (node) {
+        while (node.childNodes.length > 0)  {
+            node.removeChild(node.childNodes[0]);
+        }
+    },
+
     clearErrorMessage: function (node) {
         var errorMsgs, j;
         errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');

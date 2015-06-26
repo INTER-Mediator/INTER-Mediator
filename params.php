@@ -118,8 +118,8 @@ $pusherParameters = array(
 */
 
 /* LDAP Support */
-//$ldapServer = "ldap://homeserver.msyk.net";
-//$ldapPort = 389;
-//$ldapBase = "dc=homeserver,dc=msyk,dc=net";
-//$ldapContainer = "cn=users";
-//$ldapAccountKey = "uid";
+$ldapServer = "ldap://homeserver.msyk.net";
+$ldapPort = 389;
+$ldapBase = "dc=homeserver,dc=msyk,dc=net";
+$ldapContainer = "cn=users";
+$ldapAccountKey = "uid";
