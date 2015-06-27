@@ -230,11 +230,12 @@ class GenerateJSCode
 
         $ldap = new LDAPAuth(); // for PHP 5.2, 5.3
         $this->generateAssignJS(
+            "INTERMediatorOnPage.isLDAP", $ldap->isActive ? "true" : "false");
+        $this->generateAssignJS(
             "INTERMediatorOnPage.isNativeAuth",
-            ((isset($options['authentication'])
-                && isset($options['authentication']['user'])
-                && ($options['authentication']['user'][0] === 'database_native'))
-                || $ldap->isActive) ? "true" : "false");
+            (isset($options['authentication'])
+                    && isset($options['authentication']['user'])
+                    && ($options['authentication']['user'][0] === 'database_native')) ? "true" : "false");
         $this->generateAssignJS(
             "INTERMediatorOnPage.authStoring",
             $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?

@@ -39,6 +39,8 @@ Ver.5.2 (in development)
   Samples/Sample_webpage/jquery_datepicker_MySQL.html.
 - The VM DB update script on dist-docs/vm-for-trial/dbupdate.sh. I'd like to ask you to use
   the "source" commmand to execute it.
+- Customized login panel can include the error messages with the im_login_message and
+  the im_newpass_message class's DIV node.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   cant contain ether boolean or string value appropriately.
 - [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 

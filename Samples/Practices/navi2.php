@@ -18,6 +18,8 @@ IM_Entry(
             'key' => 'id',
             'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
             'navi-control' => 'master',
+//            'repeat-control' => 'insert delete',
+//            'paging' => true,
         ),
         array(
             'records' => 1,

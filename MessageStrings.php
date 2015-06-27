@@ -98,6 +98,8 @@ class MessageStrings
         2009 => 'Succeed to change your password. Login with the new password.',
         2010 => 'Failure to change your password. Maybe the old password is not correct.',
         2011 => 'User(Mail Assress):',
+        2012 => 'Retry to login. You should clarify the user and the password.',
+        2013 => 'You should input user and/or password.',
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
     );

@@ -19,9 +19,9 @@ INTERMediator_DBAdapter = {
 
     eliminateDuplicatedConditions: false,
     /*
-    If this property is set to true, the dupilicate conditions in query is going to eliminate before
-    submitting to the server. This behavior is required in some case of FileMaker Server, but it can resolve
-    by using the id=>-recid in a context. 2015-4-19 Masayuki Nii.
+     If this property is set to true, the dupilicate conditions in query is going to eliminate before
+     submitting to the server. This behavior is required in some case of FileMaker Server, but it can resolve
+     by using the id=>-recid in a context. 2015-4-19 Masayuki Nii.
      */
 
     generate_authParams: function () {
@@ -29,24 +29,23 @@ INTERMediator_DBAdapter = {
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams = "&clientid=" + encodeURIComponent(INTERMediatorOnPage.clientId);
             authParams += "&authuser=" + encodeURIComponent(INTERMediatorOnPage.authUser);
-           // if (INTERMediatorOnPage.isNativeAuth) {
-            if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
-                authParams += "&cresponse=" + encodeURIComponent(
-                    INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword
-                    + "\n" + INTERMediatorOnPage.authChallenge));
-            } else {
-                authParams += "&cresponse=dummy";
-            }
-          //  } else {
-                if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
-                    shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
-                    hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
-                    authParams += "&response=" + encodeURIComponent(hmacValue);
+            if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
+                if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
+                    authParams += "&cresponse=" + encodeURIComponent(
+                        INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword
+                        + "\n" + INTERMediatorOnPage.authChallenge));
                 } else {
-                    authParams += "&response=dummy";
+                    authParams += "&cresponse=dummy";
                 }
-          //  }
-        }
+            }
+            if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
+                shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
+                hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
+                authParams += "&response=" + encodeURIComponent(hmacValue);
+            } else {
+                authParams += "&response=dummy";
+            }
+         }
 
         authParams += "&notifyid=";
         authParams += encodeURIComponent(INTERMediatorOnPage.clientNotificationIdentifier());
@@ -187,13 +186,13 @@ INTERMediator_DBAdapter = {
         try {
             result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
             if (result.newPasswordResult && result.newPasswordResult === true) {
-               // if (INTERMediatorOnPage.isNativeAuth) {
-                    INTERMediatorOnPage.authCryptedPassword = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
-               // } else {
-                    INTERMediatorOnPage.authHashedPassword
-                        = SHA1(newpassword + INTERMediatorOnPage.authUserSalt)
-                    + INTERMediatorOnPage.authUserHexSalt;
-               // }
+                // if (INTERMediatorOnPage.isNativeAuth) {
+                INTERMediatorOnPage.authCryptedPassword = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
+                // } else {
+                INTERMediatorOnPage.authHashedPassword
+                    = SHA1(newpassword + INTERMediatorOnPage.authUserSalt)
+                + INTERMediatorOnPage.authUserHexSalt;
+                // }
                 INTERMediatorOnPage.storeCredencialsToCookie();
             }
         } catch (e) {
@@ -465,6 +464,8 @@ INTERMediator_DBAdapter = {
             params += "&sortkey" + extCountSort + "direction=" + encodeURIComponent(orderFields[orderedKeys[i]][1]);
             extCountSort++;
         }
+
+        INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
 // params += "&randkey" + Math.random();    // For ie...
 // IE uses caches as the result in spite of several headers. So URL should be randomly.
 //
@@ -781,8 +782,8 @@ INTERMediator_DBAdapter = {
      {
      name: The name of context,
      conditions: [ {
-         field: Field name, operator: "=", value: Field Value : of the source record
-         }],
+     field: Field name, operator: "=", value: Field Value : of the source record
+     }],
      associated: Associated Record info.
      [{name: assocDef['name'], field: fKey, value: fValue}]
      }
@@ -810,7 +811,7 @@ INTERMediator_DBAdapter = {
             params += "&condition" + i + "operator=" + encodeURIComponent(args['conditions'][i]['operator']);
             params += "&condition" + i + "value=" + encodeURIComponent(args['conditions'][i]['value']);
         }
-        if(args["associated"])    {
+        if (args["associated"]) {
             for (i = 0; i < args['associated'].length; i++) {
                 params += "&assoc" + i + "=" + encodeURIComponent(args['associated'][i]['name']);
                 params += "&asfield" + i + "=" + encodeURIComponent(args['associated'][i]['field']);

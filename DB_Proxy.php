@@ -1140,7 +1140,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $userid = $this->dbClass->authSupportGetUserIdFromEmail($email);
             $username = $this->dbClass->authSupportGetUsernameFromUserId($userid);
         }
-        var_dump($username, $email, $randdata, $newpassword);
         if ($email === false || $email == '' || $username === false || $username == '') {
             return false;
         }

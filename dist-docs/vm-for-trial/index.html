@@ -32,16 +32,16 @@
 <p><a href="/INTER-Mediator/Samples/" target="_blank">サンプルプログラム</a>（サンプルデータベースの更新日：2015年4月19日）</p>
 <ul>
     <li>
-        サンプルの中にある認証ユーザ用のデータベースには、user1〜user5の5つのユーザが定義されており、パスワードはユーザ名と同一です。概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザでのログインができるとは限りません。設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。
+        サンプルの中にある認証ユーザー用のデータベースには、user1〜user5の5つのユーザーが定義されており、パスワードはユーザー名と同一です。概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。
     </li>
     <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker
         Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、/var/www/html/params.phpファイルの、$dbServer変数の値を変更してください。
     </li>
 </ul>
 
-<p><a href="/INTER-Mediator/Auth_Support/MySQL_accountmanager.html" target="_blank">ユーザ管理ページサンプル</a></p>
+<p><a href="/INTER-Mediator/Auth_Support/MySQL_accountmanager.html" target="_blank">ユーザー管理ページサンプル</a></p>
 <ul>
-    <li>ユーザ名、パスワード共に、user1でログインができますが、通常の利用は、利用者と別の管理者を作り、その管理者でのみログインできるようにします。</li>
+    <li>ユーザー名、パスワード共に、user1でログインができますが、通常の利用は、利用者と別の管理者を作り、その管理者でのみログインできるようにします。</li>
 </ul>
 
 <p><a href="/INTER-Mediator/dist-docs/vm-for-trial/info.php" target="_blank">phpinfo()関数の実行</a></p>
@@ -512,7 +512,7 @@
     <table>
         <tr>
             <th>種類</th>
-            <th>ユーザ名</th>
+            <th>ユーザー名</th>
             <th>パスワード</th>
             <th>備考</th>
         </tr>
@@ -526,19 +526,19 @@
             <td>MySQL</td>
             <td>root@localhost</td>
             <td>im4135dev</td>
-            <td>プロセスの稼働ユーザはmysql</td>
+            <td>プロセスの稼働ユーザーはmysql</td>
         </tr>
         <tr>
             <td>PostgreSQL</td>
             <td>postgres</td>
             <td>im4135dev</td>
-            <td>プロセスの稼働ユーザはpostgres</td>
+            <td>プロセスの稼働ユーザーはpostgres</td>
         </tr>
         <tr>
             <td>Apache2</td>
             <td></td>
             <td></td>
-            <td>プロセスの稼働ユーザはwww-data</td>
+            <td>プロセスの稼働ユーザーはwww-data</td>
         </tr>
     </table>
 </div>

@@ -271,6 +271,7 @@ var IMLibElement = {
             primaryKeyOnly: true
         };
         try {
+            INTERMediator_DBAdapter.eliminateDuplicatedConditions = true;
             currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
         } catch (ex) {
             if (ex == "_im_requath_request_") {
