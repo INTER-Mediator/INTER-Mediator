@@ -10,9 +10,9 @@ IMDISTDOC="${IMROOT}/dist-docs"
 
 VMPASSWORD="im4135dev"
 
-read -sp "Do you initialize the test databases? [y/n]: " INPUT
-echo ""
-if [ $INPUT = "y" -o $INPUT = "Y" ]; then
+read -p "Do you initialize the test databases? [y/n]: " INPUT
+
+if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
     mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
