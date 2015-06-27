@@ -952,7 +952,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement authSupportRetrieveHashedPassword() method.
     }
 
-    function authSupportCreateUser($username, $hashedpassword)
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
         // TODO: Implement authSupportCreateUser() method.
     }

@@ -249,7 +249,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement authSupportRetrieveHashedPassword() method.
     }
 
-    function authSupportCreateUser($username, $hashedpassword)
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
         // TODO: Implement authSupportCreateUser() method.
     }
@@ -361,5 +361,10 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
     public function newToDB($dataSourceName, $bypassAuth)
     {
         // TODO: Implement newToDB() method.
+    }
+
+    public function softDeleteActivate($field, $value)
+    {
+        // TODO: Implement softDeleteActivate() method.
     }
 }

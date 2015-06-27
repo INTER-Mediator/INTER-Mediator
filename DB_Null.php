@@ -116,7 +116,7 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
         return null;
     }
 
-    function authSupportCreateUser($username, $hashedpassword)
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
         return null;
     }
