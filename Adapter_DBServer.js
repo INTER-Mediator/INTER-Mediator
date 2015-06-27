@@ -23,7 +23,7 @@ INTERMediator_DBAdapter = {
      submitting to the server. This behavior is required in some case of FileMaker Server, but it can resolve
      by using the id=>-recid in a context. 2015-4-19 Masayuki Nii.
      */
-    degubMessage: false,
+    degubMessage: true,
 
     generate_authParams: function () {
         var authParams = '', shaObj, hmacValue;
@@ -143,6 +143,7 @@ INTERMediator_DBAdapter = {
             useNull = jsonObject.usenull;
             registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : "";
 
+
             INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
             INTERMediator_DBAdapter.store_challenge(challenge);
@@ -151,6 +152,12 @@ INTERMediator_DBAdapter = {
             }
             if (mediatoken !== null) {
                 INTERMediatorOnPage.mediaToken = mediatoken;
+            }
+            // This is forced fail-over for the password was changed in LDAP auth.
+            if (INTERMediatorOnPage.authUserHexSalt != INTERMediatorOnPage.authHashedPassword.substr(-8,8)){
+                if (accessURL != "access=challenge") {
+                    requireAuth = true;
+                }
             }
         } catch (e) {
 

@@ -264,7 +264,6 @@ function getRelativePath()
 {
     $caller = explode(DIRECTORY_SEPARATOR, dirname($_SERVER['SCRIPT_FILENAME']));
     $imDirectory = explode(DIRECTORY_SEPARATOR, dirname(__FILE__));
-    $commonPath = '';
     $shorterLength = min(count($caller), count($imDirectory));
     for ($i = 0; $i < $shorterLength; $i++) {
         if ($caller[$i] != $imDirectory[$i]) {

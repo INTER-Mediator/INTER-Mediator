@@ -318,8 +318,8 @@ CREATE TABLE authuser (
 	id					INTEGER PRIMARY KEY AUTOINCREMENT,
 	username			TEXT,
 	hashedpasswd		TEXT,
-	email               TEXT
-    limitdt             DateTime,
+	email               TEXT,
+    limitdt             DateTime
 );
 
 INSERT INTO authuser(id,username,hashedpasswd) VALUES(1,'user1','d83eefa0a9bd7190c94e7911688503737a99db0154455354');

@@ -631,17 +631,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->logger->setDebugMessage("[processingRequest]", 2);
 
         $this->outputOfProcessing = array();
-//        $generatedPrivateKey = '';
-//        $passPhrase = '';
-//
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-//        $currentDirParam = $currentDir . 'params.php';
-//        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-//        if (file_exists($parentDirParam)) {
-//            include($parentDirParam);
-//        } else if (file_exists($currentDirParam)) {
-//            include($currentDirParam);
-//        }
 
         $messageClass = null;
         if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
