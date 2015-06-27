@@ -23,6 +23,7 @@ INTERMediator_DBAdapter = {
      submitting to the server. This behavior is required in some case of FileMaker Server, but it can resolve
      by using the id=>-recid in a context. 2015-4-19 Masayuki Nii.
      */
+    degubMessage: false,
 
     generate_authParams: function () {
         var authParams = '', shaObj, hmacValue;
@@ -34,6 +35,12 @@ INTERMediator_DBAdapter = {
                     authParams += "&cresponse=" + encodeURIComponent(
                         INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword
                         + "\n" + INTERMediatorOnPage.authChallenge));
+                    if (INTERMediator_DBAdapter.degubMessage) {
+                        INTERMediator.setDebugMessage("generate_authParams/authCryptedPassword="
+                        + INTERMediatorOnPage.authCryptedPassword);
+                        INTERMediator.setDebugMessage("generate_authParams/authChallenge="
+                        + INTERMediatorOnPage.authChallenge);
+                    }
                 } else {
                     authParams += "&cresponse=dummy";
                 }
@@ -42,10 +49,16 @@ INTERMediator_DBAdapter = {
                 shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
                 hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
                 authParams += "&response=" + encodeURIComponent(hmacValue);
+                if (INTERMediator_DBAdapter.degubMessage) {
+                    INTERMediator.setDebugMessage("generate_authParams/authHashedPassword="
+                    + INTERMediatorOnPage.authHashedPassword);
+                    INTERMediator.setDebugMessage("generate_authParams/authChallenge="
+                    + INTERMediatorOnPage.authChallenge);
+                }
             } else {
                 authParams += "&response=dummy";
             }
-         }
+        }
 
         authParams += "&notifyid=";
         authParams += encodeURIComponent(INTERMediatorOnPage.clientNotificationIdentifier());
@@ -62,6 +75,11 @@ INTERMediator_DBAdapter = {
                 parseInt(challenge.substr(26, 2), 16),
                 parseInt(challenge.substr(28, 2), 16),
                 parseInt(challenge.substr(30, 2), 16));
+            if (INTERMediator_DBAdapter.degubMessage) {
+                INTERMediator.setDebugMessage("store_challenge/authChallenge=" + INTERMediatorOnPage.authChallenge);
+                INTERMediator.setDebugMessage("store_challenge/authUserHexSalt=" + INTERMediatorOnPage.authUserHexSalt);
+                INTERMediator.setDebugMessage("store_challenge/authUserSalt=" + INTERMediatorOnPage.authUserSalt);
+            }
         }
     },
 
@@ -125,6 +143,7 @@ INTERMediator_DBAdapter = {
             useNull = jsonObject.usenull;
             registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : "";
 
+
             INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
                 challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
             INTERMediator_DBAdapter.store_challenge(challenge);
@@ -133,6 +152,12 @@ INTERMediator_DBAdapter = {
             }
             if (mediatoken !== null) {
                 INTERMediatorOnPage.mediaToken = mediatoken;
+            }
+            // This is forced fail-over for the password was changed in LDAP auth.
+            if (INTERMediatorOnPage.authUserHexSalt != INTERMediatorOnPage.authHashedPassword.substr(-8,8)){
+                if (accessURL != "access=challenge") {
+                    requireAuth = true;
+                }
             }
         } catch (e) {
 
@@ -186,13 +211,10 @@ INTERMediator_DBAdapter = {
         try {
             result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
             if (result.newPasswordResult && result.newPasswordResult === true) {
-                // if (INTERMediatorOnPage.isNativeAuth) {
-                INTERMediatorOnPage.authCryptedPassword = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
-                // } else {
+                INTERMediatorOnPage.authCryptedPassword
+                    = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
                 INTERMediatorOnPage.authHashedPassword
-                    = SHA1(newpassword + INTERMediatorOnPage.authUserSalt)
-                + INTERMediatorOnPage.authUserHexSalt;
-                // }
+                    = SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
                 INTERMediatorOnPage.storeCredencialsToCookie();
             }
         } catch (e) {

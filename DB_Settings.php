@@ -59,9 +59,45 @@ class DB_Settings
     public $pusherSecret = null;
     public $pusherChannel = "_im_pusher_default_channel";
 
+    private $params_ldapServer;
+    private $params_ldapPort;
+    private $params_ldapBase;
+    private $params_ldapContainer;
+    private $params_ldapAccountKey;
+    private $params_ldapExpiringSeconds;
 
-    public function addAssociated($name, $field, $value) {
-        if (! $this->associated)    {
+    function __construct()
+    {
+        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+        $currentDirParam = $currentDir . 'params.php';
+        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+        if (file_exists($parentDirParam)) {
+            include($parentDirParam);
+        } else if (file_exists($currentDirParam)) {
+            include($currentDirParam);
+        }
+        $this->params_ldapServer = isset($ldapServer) ? $ldapServer : null;
+        $this->params_ldapPort = isset($ldapPort) ? $ldapPort : null;
+        $this->params_ldapBase = isset($ldapBase) ? $ldapBase : null;
+        $this->params_ldapContainer = isset($ldapContainer) ? $ldapContainer : null;
+        $this->params_ldapAccountKey = isset($ldapAccountKey) ? $ldapAccountKey : null;
+        $this->params_ldapExpiringSeconds = isset($ldapExpiringSeconds) ? $ldapExpiringSeconds : 600;
+    }
+
+    public function getLDAPSettings()
+    {
+        return array(
+            $this->params_ldapServer,
+            $this->params_ldapPort,
+            $this->params_ldapBase,
+            $this->params_ldapContainer,
+            $this->params_ldapAccountKey,
+        );
+    }
+
+    public function addAssociated($name, $field, $value)
+    {
+        if (!$this->associated) {
             $this->associated = array();
         }
         $this->associated[] = array("name" => $name, "field" => $field, "value" => $value);
@@ -449,6 +485,11 @@ class DB_Settings
     function getExpiringSeconds()
     {
         return $this->getAuthenticationItem('authexpired');
+    }
+
+    function getLDAPExpiringSeconds()
+    {
+        return $this->params_ldapExpiringSeconds;
     }
 
     function setCurrentUser($str)

@@ -92,22 +92,24 @@ INTERMediatorOnPage = {
     },
 
     retrieveAuthInfo: function () {
-        if (this.requireAuthentication) {
-            if (this.isOnceAtStarting) {
-                switch (this.authStoring) {
+        if (INTERMediatorOnPage.requireAuthentication) {
+            if (INTERMediatorOnPage.isOnceAtStarting) {
+                switch (INTERMediatorOnPage.authStoring) {
                     case 'cookie':
                     case 'cookie-domainwide':
-                        this.authUser = this.getCookie('_im_username');
-                        this.authHashedPassword = this.getCookie('_im_credential');
-                        this.mediaToken = this.getCookie('_im_mediatoken');
+                        INTERMediatorOnPage.authUser = this.getCookie('_im_username');
+                        INTERMediatorOnPage.authHashedPassword = this.getCookie('_im_credential');
+                        INTERMediatorOnPage.mediaToken = this.getCookie('_im_mediatoken');
+                        INTERMediatorOnPage.authCryptedPassword = this.getCookie('_im_crypted');
                         break;
                     default:
-                        this.removeCookie('_im_username');
-                        this.removeCookie('_im_credential');
-                        this.removeCookie('_im_mediatoken');
+                        INTERMediatorOnPage.removeCookie('_im_username');
+                        INTERMediatorOnPage.removeCookie('_im_credential');
+                        INTERMediatorOnPage.removeCookie('_im_mediatoken');
+                        INTERMediatorOnPage.removeCookie('_im_crypted');
                         break;
                 }
-                this.isOnceAtStarting = false;
+                INTERMediatorOnPage.isOnceAtStarting = false;
             }
             if (this.authUser.length > 0) {
                 if (!INTERMediator_DBAdapter.getChallenge()) {
@@ -118,25 +120,26 @@ INTERMediatorOnPage = {
     },
 
     logout: function () {
-        this.authUser = "";
-        this.authHashedPassword = "";
-        this.authCryptedPassword = "";
-        this.authUserSalt = "";
-        this.authChallenge = "";
-        this.clientId = "";
-        this.removeCookie("_im_username");
-        this.removeCookie("_im_credential");
-        this.removeCookie("_im_mediatoken");
+        INTERMediatorOnPage.authUser = "";
+        INTERMediatorOnPage.authHashedPassword = "";
+        INTERMediatorOnPage.authCryptedPassword = "";
+        INTERMediatorOnPage.authUserSalt = "";
+        INTERMediatorOnPage.authChallenge = "";
+        INTERMediatorOnPage.clientId = "";
+        INTERMediatorOnPage.removeCookie("_im_username");
+        INTERMediatorOnPage.removeCookie("_im_credential");
+        INTERMediatorOnPage.removeCookie("_im_mediatoken");
+        INTERMediatorOnPage.removeCookie("_im_crypted");
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
                 sessionStorage.removeItem("_im_localcontext");
             } catch (ex) {
-                this.removeCookie("_im_localcontext");
+                INTERMediatorOnPage.removeCookie("_im_localcontext");
             }
         } else {
-            this.removeCookie("_im_localcontext");
+            INTERMediatorOnPage.removeCookie("_im_localcontext");
         }
     },
 
@@ -152,6 +155,9 @@ INTERMediatorOnPage = {
                 if (INTERMediatorOnPage.mediaToken) {
                     INTERMediatorOnPage.setCookie("_im_mediatoken", INTERMediatorOnPage.mediaToken);
                 }
+                if (INTERMediatorOnPage.authCryptedPassword) {
+                    INTERMediatorOnPage.setCookie("_im_crypted", INTERMediatorOnPage.authCryptedPassword);
+                }
                 break;
             case 'cookie-domainwide':
                 if (INTERMediatorOnPage.authUser) {
@@ -162,6 +168,9 @@ INTERMediatorOnPage = {
                 }
                 if (INTERMediatorOnPage.mediaToken) {
                     INTERMediatorOnPage.setCookieDomainWide("_im_mediatoken", INTERMediatorOnPage.mediaToken);
+                }
+                if (INTERMediatorOnPage.authCryptedPassword)   {
+                    INTERMediatorOnPage.setCookieDomainWide("_im_crypted", INTERMediatorOnPage.authCryptedPassword);
                 }
                 break;
         }
@@ -372,13 +381,11 @@ INTERMediatorOnPage = {
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
-            //if (INTERMediatorOnPage.isNativeAuth) {
-            INTERMediatorOnPage.authCryptedPassword = INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
-            //} else {
+            INTERMediatorOnPage.authCryptedPassword
+                = INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
             INTERMediatorOnPage.authHashedPassword
                 = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
             + INTERMediatorOnPage.authUserHexSalt;
-            //}
 
             if (INTERMediatorOnPage.authUser.length > 0) {   // Authentication succeed, Store coockies.
                 INTERMediatorOnPage.storeCredencialsToCookie();

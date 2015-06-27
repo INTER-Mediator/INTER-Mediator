@@ -123,3 +123,4 @@ $pusherParameters = array(
 // $ldapBase = "dc=homeserver,dc=msyk,dc=net";
 // $ldapContainer = "cn=users";
 // $ldapAccountKey = "uid";
+//$ldapExpiringSeconds = 1800;

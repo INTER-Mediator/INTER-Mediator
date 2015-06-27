@@ -49,7 +49,7 @@ interface Auth_Interface_DB					// with using table for authentication/authoriza
     function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true);	// issuedhash
     function authSupportCheckMediaToken($uid);								// issuedhash
     function authSupportRetrieveHashedPassword($username);					// authuser
-    function authSupportCreateUser($username, $hashedpassword);				// authuser
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null);	// authuser
     function authSupportChangePassword($username, $hashednewpassword);		// authuser
     function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue);	// (any table)
     function authSupportGetUserIdFromEmail($email);							// authuser
