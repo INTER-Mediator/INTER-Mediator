@@ -1598,7 +1598,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    public function authSupportCreateUser($username, $hashedpassword)
+    public function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
         if ($this->authSupportRetrieveHashedPassword($username) !== false) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
