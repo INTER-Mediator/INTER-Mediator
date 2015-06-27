@@ -23,7 +23,7 @@ INTERMediator_DBAdapter = {
      submitting to the server. This behavior is required in some case of FileMaker Server, but it can resolve
      by using the id=>-recid in a context. 2015-4-19 Masayuki Nii.
      */
-    degubMessage: true,
+    degubMessage: false,
 
     generate_authParams: function () {
         var authParams = '', shaObj, hmacValue;
