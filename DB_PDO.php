@@ -99,8 +99,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDT = new DateTime();
-        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
+        $currentDTFormat = $this->currentDTString();
         $sql = "INSERT INTO {$regTable} (clientid,entity,conditions,registereddt) VALUES("
             . implode(',', array(
                 $this->link->quote($clientId),
@@ -889,7 +888,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             foreach ($tableInfo['default-values'] as $itemDef) {
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
-                if (! in_array($field, $setColumnNames)) {
+                if (!in_array($field, $setColumnNames)) {
                     $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
                     $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
                     $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
@@ -1268,10 +1267,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
-
-        $currentDT = new DateTime();
-        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
-
+        $currentDTFormat = $this->currentDTString();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $sql = "UPDATE {$hashTable} SET hash=" . $this->link->quote($challenge)
                 . ",expired=" . $this->link->quote($currentDTFormat)
@@ -1324,14 +1320,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $expiredDT = new DateTime($row['expired']);
             $hashValue = $row['hash'];
-            // For 5.3
-//            $intervalDT = $expiredDT->diff(new DateTime(), true);
-//            $seconds = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
-            // For 5.2
-            $currentDT = new DateTime();
-            $seconds = $currentDT->format("U") - $expiredDT->format("U");
+            $seconds = $this->secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
                 return false;
             }
@@ -1360,15 +1350,15 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id,hash,expired FROM {$hashTable} "
-            . "WHERE user_id={$uid} AND clienthost=" . $this->link->quote($clientId) . " ORDER BY expired DESC";
+        $sql = "SELECT id,hash,expired FROM {$hashTable}"
+            . " WHERE user_id={$uid} AND clienthost=" . $this->link->quote($clientId)
+            . " ORDER BY expired DESC";
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $expiredDT = new DateTime($row['expired']);
             $hashValue = $row['hash'];
             $recordId = $row['id'];
             if ($isDelete) {
@@ -1379,13 +1369,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     return false;
                 }
             }
-            // For 5.3
-//            $intervalDT = $expiredDT->diff(new DateTime(), true);
-//            $seconds = (($intervalDT->days * 24 + $intervalDT->h) * 60 + $intervalDT->i) * 60 + $intervalDT->s;
-            // For 5.2
-            $currentDT = new DateTime();
-            $seconds = $currentDT->format("U") - $expiredDT->format("U");
-            // End of version blanching.
+            $seconds = $this->secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
                 return false;
             }
@@ -1409,16 +1393,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-
-        $currentDT = new DateTime();
-        // sub method and DateInterval class work on over 5.3
-        //    $currentDT->sub(new DateInterval("PT" . $this->dbSettings->getExpiringSeconds() . "S"));
-//        $currentDTStr = $this->link->quote($currentDT->format('Y-m-d H:i:s'));
-
-        // For 5.2
-        $timeValue = $currentDT->format("U");
-        $currentDTStr = $this->link->quote(date('Y-m-d H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds()));
-        // End of for 5.2
+        $currentDTStr = $this->link->quote($this->currentDTString($this->dbSettings->getExpiringSeconds()));
         $sql = "delete from {$hashTable} where expired < {$currentDTStr}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
@@ -1427,6 +1402,31 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         return true;
+    }
+
+    private function currentDTString($addSeconds = 0)
+    {
+//        $currentDT = new DateTime();
+//        $timeValue = $currentDT->format("U");
+//        $currentDTStr = $this->link->quote($currentDT->format('Y-m-d H:i:s'));
+
+        // For 5.2
+        $timeValue = time();
+        $currentDTStr = date('Y-m-d H:i:s', $timeValue - $addSeconds);
+        // End of for 5.2
+        return $currentDTStr;
+    }
+
+    private function secondsFromNow($dtStr)
+    {
+//        $currentDT = new DateTime();
+//        $anotherDT = new DateTime($dtStr);
+//        $timeValue = $currentDT->format("U") - $anotherDT->format("U");
+
+        // For 5.2
+        $timeValue = time() - strtotime($dtStr);
+        // End of for 5.2
+        return $timeValue;
     }
 
     /**
@@ -1459,40 +1459,93 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         return false;
     }
-
-//    function authSupportGetSalt($username)
-//    {
-//        $hashedpw = $this->authSupportRetrieveHashedPassword($username);
-//        return substr($hashedpw, -8);
-//    }
-//
     /**
      * @param $username
      * @param $hashedpassword
+     * @param $isLDAP
      * @return bool
      *
      * Using 'authuser'
      */
-    function authSupportCreateUser($username, $hashedpassword)
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
-        if ($this->authSupportRetrieveHashedPassword($username) !== false) {
-            $this->logger->setErrorMessage('User Already exist: ' . $username);
-            return false;
-        }
-        if (!$this->setupConnection()) { //Establish the connection
-            return false;
-        }
         $userTable = $this->dbSettings->getUserTable();
-        $sql = "INSERT INTO {$userTable} (username, hashedpasswd) "
-            . "VALUES ({$this->link->quote($username)}, {$this->link->quote($hashedpassword)})";
-        $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
-        if ($result === false) {
-            $this->errorMessageStore('Insert:' . $sql);
-            return false;
+        if ($isLDAP !== true) {
+            if ($this->authSupportRetrieveHashedPassword($username) !== false) {
+                $this->logger->setErrorMessage('User Already exist: ' . $username);
+                return false;
+            }
+            if (!$this->setupConnection()) { //Establish the connection
+                return false;
+            }
+            $sql = "INSERT INTO {$userTable} (username, hashedpasswd) "
+                . "VALUES ({$this->link->quote($username)}, {$this->link->quote($hashedpassword)})";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Insert:' . $sql);
+                return false;
+            }
+        } else {
+            $user_id = -1;
+            $timeUp = false;
+            $hpw = null;
+            if (!$this->setupConnection()) { //Establish the connection
+                return false;
+            }
+
+            $sql = "SELECT * FROM {$userTable} WHERE username=" . $this->link->quote($username);
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+                return false;
+            }
+            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
+                    if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
+                        $timeUp = true;
+                        $hpw = $row['hashedpasswd'];
+                    }
+                }
+                $user_id = $row['id'];
+            }
+            $currentDTFormat = $this->currentDTString();
+            if ($user_id > 0) {
+                $setClause = "limitdt=" . $this->link->quote($currentDTFormat);
+                if ($timeUp)    {
+                    $hexSalt = substr($hpw, -8, 8);
+                    $prevPwHash = sha1($ldapPassword . hex2bin($hexSalt)) . $hexSalt;
+                    if ($prevPwHash != $hpw) {
+                        $setClause .= ",hashedpasswd=" . $this->link->quote($hashedpassword);
+                    }
+                }
+                $sql = "UPDATE {$userTable} SET {$setClause} WHERE id=" . $user_id;
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->query($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Update:' . $sql);
+                    return false;
+                }
+                if ($timeUp)    {
+                    //    $setClause .= ",hashedpasswd=" . $this->link->quote($hashedpassword);
+                    $this->logger->setDebugMessage("LDAP cached account time over.");
+                    return false;
+                }
+            } else {
+                $sql = "INSERT INTO {$userTable} (username, hashedpasswd,limitdt) VALUES "
+                    . "({$this->link->quote($username)},"
+                    . " {$this->link->quote($hashedpassword)}, "
+                    . " {$this->link->quote($currentDTFormat)})";
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->query($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Insert:' . $sql);
+                    return false;
+                }
+            }
         }
         return true;
-
     }
 
     /**
@@ -1532,6 +1585,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      */
     function authSupportGetUserIdFromUsername($username)
     {
+        $this->logger->setDebugMessage("[authSupportGetUserIdFromUsername]username={$username}", 2);
+
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
             return false;
@@ -1543,7 +1598,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id FROM {$userTable} WHERE username=" . $this->link->quote($username);
+        $sql = "SELECT * FROM {$userTable} WHERE username=" . $this->link->quote($username);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -1551,6 +1606,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
+                if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
+                    return -1;
+                }
+            }
             return $row['id'];
         }
         return false;
@@ -1619,15 +1679,18 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     /**
      * @var
      */
-    private $candidateGroups;
+    private
+        $candidateGroups;
     /**
      * @var
      */
-    private $belongGroups;
+    private
+        $belongGroups;
     /**
      * @var
      */
-    private $firstLevel;
+    private
+        $firstLevel;
 
     /**
      * @param $groupid
@@ -1635,7 +1698,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      *
      * Using 'authcor'
      */
-    private function resolveGroup($groupid)
+    private
+    function resolveGroup($groupid)
     {
         $corrTable = $this->dbSettings->getCorrTable();
 
@@ -1809,8 +1873,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDT = new DateTime();
-        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
+        $currentDTFormat = $this->currentDTString();
         $sql = "INSERT INTO {$hashTable} (hash,expired,clienthost,user_id) VALUES("
             . implode(',', array($this->link->quote($hash), $this->link->quote($currentDTFormat),
                 $this->link->quote($clienthost), $this->link->quote($userid))) . ')';
@@ -1852,14 +1915,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
-            $expiredDT = $row['expired'];
-
-            $expired = strptime($expiredDT, "%Y-%m-%d %H:%M:%S");
-            $expiredValue = mktime($expired['tm_hour'], $expired['tm_min'], $expired['tm_sec'],
-                $expired['tm_mon'] + 1, $expired['tm_mday'], $expired['tm_year'] + 1900);
-            $currentDT = new DateTime();
-            $timeValue = $currentDT->format("U");
-            if ($timeValue > $expiredValue + 3600) {
+            if ($this->secondsFromNow($row['expired']) > 3600) {
                 return false;
             }
             if ($hash == $hashValue) {
@@ -1878,15 +1934,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        // For PHP 5.3
-//        $currentDT = new DateTime();
-//        $currentDT->add(new DateInterval('P1H'));
-//        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
-
-        // For PHP 5.2
-        $currentDT = time() + 3600;
-        $currentDTFormat = date('Y-m-d H:i:s', $currentDT);
-
+        $currentDTFormat = $this->currentDTString();
         $sql = "INSERT INTO {$hashTable} (hash,expired,user_id) VALUES(" . implode(',', array(
                 $this->link->quote($hash),
                 $this->link->quote($currentDTFormat),
@@ -1910,15 +1958,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        // For PHP 5.3
-//        $currentDT = new DateTime();
-//        $currentDT->add(new DateInterval('P1H'));
-//        $currentDTFormat = $currentDT->format('Y-m-d H:i:s');
-
-        // For PHP 5.2
-        $currentDT = time();
-        $currentDTFormat = date('Y-m-d H:i:s', $currentDT);
-
+        $currentDTFormat = $this->currentDTString();
         $sql = "SELECT user_id FROM {$hashTable} WHERE hash = " . $this->link->quote($hash) .
             " AND clienthost IS NULL AND expired > " . $this->link->quote($currentDTFormat);
         $this->logger->setDebugMessage($sql);
@@ -1957,7 +1997,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return false;
     }
 
-    public function isPossibleOperator($operator)
+    public
+    function isPossibleOperator($operator)
     {
         //for MySQL
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
@@ -2070,7 +2111,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     }
 
-    public function isPossibleOrderSpecifier($specifier)
+    public
+    function isPossibleOrderSpecifier($specifier)
     {
         /* for MySQL */
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
@@ -2096,7 +2138,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
     }
 
-    public function normalizedCondition($condition)
+    public
+    function normalizedCondition($condition)
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -2139,7 +2182,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
     }
 
-    private function quotedFieldName($fieldName)
+    private
+    function quotedFieldName($fieldName)
     {
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
             return "`{$fieldName}`";
@@ -2157,17 +2201,20 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
     }
 
-    public function isContainingFieldName($fname, $fieldnames)
+    public
+    function isContainingFieldName($fname, $fieldnames)
     {
         return in_array($fname, $fieldnames);
     }
 
-    public function isNullAcceptable()
+    public
+    function isNullAcceptable()
     {
         return true;
     }
 
-    public function queryForTest($table, $conditions = null)
+    public
+    function queryForTest($table, $conditions = null)
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
@@ -2206,7 +2253,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $recordSet;
     }
 
-    public function deleteForTest($table, $conditions = null)
+    public
+    function deleteForTest($table, $conditions = null)
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");

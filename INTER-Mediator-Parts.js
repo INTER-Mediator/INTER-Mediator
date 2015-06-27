@@ -293,10 +293,8 @@ IMParts_Catalog["fileupload"] = {
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', 'response');
                     if (INTERMediatorOnPage.authUser.length > 0) {
-                    //    if (INTERMediatorOnPage.isNativeAuth) {
                             thisForm.elements["cresponse"].value = INTERMediatorOnPage.publickey.biEncryptedString(
                                 INTERMediatorOnPage.authCryptedPassword + "\n" + INTERMediatorOnPage.authChallenge);
-                    //    } else {
                             if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
                                 shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
                                 hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
@@ -306,7 +304,6 @@ IMParts_Catalog["fileupload"] = {
                                 inputNode.value = "dummy";
                             }
                         }
-                    //}
                     formNode.appendChild(inputNode);
                     if (this.progressSupported) {
 

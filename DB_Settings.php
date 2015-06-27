@@ -451,6 +451,11 @@ class DB_Settings
         return $this->getAuthenticationItem('authexpired');
     }
 
+    function getLDAPExpiringSeconds()
+    {
+        return 120;
+    }
+
     function setCurrentUser($str)
     {
         $this->currentUser = $str;

@@ -750,13 +750,16 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
                     $authSucceed = false;
                     if ($this->checkAuthorization($signedUser, $paramResponse, $clientId)) {
+                        $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                         $authSucceed = true;
                     } else {
                         $ldap = new LDAPAuth();
                         if ($ldap->isActive) {
                             list($password, $challenge) = $this->decrypting($paramCryptResponse);
                             if ($ldap->bindCheck($signedUser, $password)) {
+                                $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
+                                $this->addUser($signedUser, $password, true);
                             }
                         }
                     }
@@ -1021,17 +1024,22 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authSupportGetUserIdFromUsername($signedUser);
-        $storedChalenge = $this->authDbClass->authSupportRetrieveChallenge($uid, $clientId);
-        $this->logger->setDebugMessage("[checkAuthorization]storedChalenge={$storedChalenge}", 2);
+        if ($uid < 0)  {
+            return $returnValue;
+        }
+        $storedChallenge = $this->authDbClass->authSupportRetrieveChallenge($uid, $clientId);
+        $this->logger->setDebugMessage("[checkAuthorization]storedChallenge={$storedChallenge}", 2);
 
-        if (strlen($storedChalenge) == 24) { // ex.fc0d54312ce33c2fac19d758
+        if (strlen($storedChallenge) == 24) { // ex.fc0d54312ce33c2fac19d758
             $hashedPassword = $this->dbClass->authSupportRetrieveHashedPassword($username);
+            $hmacValue = hash_hmac('sha256', $hashedPassword, $storedChallenge);
             $this->logger->setDebugMessage("[checkAuthorization]hashedPassword={$hashedPassword}", 2);
-            $this->logger->setDebugMessage(
-                "[checkAuthorization]hmac_value=" . hash_hmac('sha256', $hashedPassword, $storedChalenge), 2);
+            $this->logger->setDebugMessage("[checkAuthorization]hmac_value={$hmacValue}", 2);
             if (strlen($hashedPassword) > 0) {
-                if ($hashedvalue == hash_hmac('sha256', $hashedPassword, $storedChalenge)) {
+                if ($hashedvalue ==  $hmacValue) {
                     $returnValue = true;
+                } else {
+                    $this->logger->setDebugMessage("[checkAuthorization]Built-in authorization fail.", 2);
                 }
             }
         }
@@ -1080,11 +1088,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      * @param $password
      * @return mixed
      */
-    function addUser($username, $password)
+    function addUser($username, $password, $isLDAP = false)
     {
         $salt = $this->generateSalt();
         $hexSalt = bin2hex($salt);
-        $returnValue = $this->dbClass->authSupportCreateUser($username, sha1($password . $salt) . $hexSalt);
+        $returnValue = $this->dbClass->authSupportCreateUser(
+            $username, sha1($password . $salt) . $hexSalt, $isLDAP, $password);
         return $returnValue;
     }
 

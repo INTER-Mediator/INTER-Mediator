@@ -1,9 +1,10 @@
 /*
- * INTER-Mediator
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- * 
- * This project started at the end of 2009.
- * 
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ *
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ *   INTER-Mediator is supplied under MIT License.
 
 This schema file is for the sample of INTER-Mediator using MySQL, encoded by UTF-8.
 
@@ -413,6 +414,7 @@ CREATE TABLE authuser (
 	username			VARCHAR(48),
 	hashedpasswd		VARCHAR(48),
 	email               VARCHAR(100),
+	limitdt             DATETIME,
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
