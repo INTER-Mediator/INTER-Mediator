@@ -34,7 +34,9 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DataConverter_Number_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NumberBase_Test.php');
         $suite->addTestFile($folder . 'GenerateJSCode_Test.php');
+        $suite->addTestFile($folder . 'IMUtil_Test.php');
         $suite->addTestFile($folder . 'INTERMediator_Test.php');
+        $suite->addTestFile($folder . 'LDAPAuth_Test.php');
         $suite->addTestFile($folder . 'MediaAccess_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_ja_Test.php');

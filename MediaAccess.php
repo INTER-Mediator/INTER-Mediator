@@ -1,12 +1,15 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ *
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ *   INTER-Mediator is supplied under MIT License.
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 class MediaAccess
 {
@@ -40,7 +43,8 @@ class MediaAccess
              * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
              * style URL. In case of an image, $file is just the path info as like above.
              */
-            $file = str_replace('\0', '', $file);
+            $util = new IMUtil();
+            $file = $util->removeNull($file);
             if (strpos($file, '../') !== false) {
                 return;
             }

@@ -5,22 +5,31 @@
 #
 
 WEBROOT="/var/www/html"
-
 IMROOT="${WEBROOT}/INTER-Mediator"
 IMDISTDOC="${IMROOT}/dist-docs"
 
-mysql -u root --password=im4135dev < "${IMDISTDOC}/sample_schema_mysql.txt"
+VMPASSWORD="im4135dev"
 
-echo "im4135dev" | sudo -u postgres -S psql -c 'drop database if exists test_db;'
-echo "im4135dev" | sudo -u postgres -S psql -c 'create database test_db;'
-echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql.txt" test_db
+read -p "Do you initialize the test databases? [y/n]: " INPUT
 
-SQLITEDIR="/var/db/im"
-SQLITEDB="${SQLITEDIR}/sample.sq3"
-if [ -f "${SQLITEDB}" ]; then
-    echo "im4135dev" | sudo -S rm "${SQLITEDB}"
+if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
+    echo "Initializing databases..."
+
+    mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
+
+    echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'drop database if exists test_db;'
+    echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'create database test_db;'
+    echo "${VMPASSWORD}" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql.txt" test_db
+
+    SQLITEDIR="/var/db/im"
+    SQLITEDB="${SQLITEDIR}/sample.sq3"
+    if [ -f "${SQLITEDB}" ]; then
+        echo "${VMPASSWORD}" | sudo -S rm "${SQLITEDB}"
+    fi
+    echo "${VMPASSWORD}" | sudo -S sqlite3 "${SQLITEDB}" < "${IMDISTDOC}/sample_schema_sqlite.txt"
+    echo "${VMPASSWORD}" | sudo -S chown -R www-data:im-developer "${SQLITEDIR}"
+    echo "${VMPASSWORD}" | sudo -S chmod 775 "${SQLITEDIR}"
+    echo "${VMPASSWORD}" | sudo -S chmod 664 "${SQLITEDB}"
+
+    echo "Finished initializing databases."
 fi
-echo "im4135dev" | sudo -S sqlite3 "${SQLITEDB}" < "${IMDISTDOC}/sample_schema_sqlite.txt"
-echo "im4135dev" | sudo -S chown -R www-data:im-developer "${SQLITEDIR}"
-echo "im4135dev" | sudo -S chmod 775 "${SQLITEDIR}"
-echo "im4135dev" | sudo -S chmod 664 "${SQLITEDB}"
