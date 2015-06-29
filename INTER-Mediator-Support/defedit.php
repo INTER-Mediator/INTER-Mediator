@@ -101,7 +101,7 @@ $defContexts = array(
         ),
     ),
     array(
-        'name' => 'sending-email',
+        'name' => 'send-mail',
         'records' => 100000,
         'key' => 'id',
         'repeat-control' => 'confirm-delete confirm-insert',

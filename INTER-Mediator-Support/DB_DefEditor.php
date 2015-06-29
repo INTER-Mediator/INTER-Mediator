@@ -148,6 +148,70 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'authentication-delete-group' => getValueFromArray($context, 'authentication', 'delete', 'group'),
                         'authentication-delete-target' => getValueFromArray($context, 'authentication', 'delete', 'target'),
                         'authentication-delete-field' => getValueFromArray($context, 'authentication', 'delete', 'field'),
+                        'send-mail-load-from' => getValueFromArray($context, 'send-mail', 'load', 'from'),
+                        'send-mail-load-to' => getValueFromArray($context, 'send-mail', 'load', 'to'),
+                        'send-mail-load-cc' => getValueFromArray($context, 'send-mail', 'load', 'cc'),
+                        'send-mail-load-bcc' => getValueFromArray($context, 'send-mail', 'load', 'bcc'),
+                        'send-mail-load-subject' => getValueFromArray($context, 'send-mail', 'load', 'subject'),
+                        'send-mail-load-body' => getValueFromArray($context, 'send-mail', 'load', 'body'),
+                        'send-mail-load-from-constant' => getValueFromArray($context, 'send-mail', 'load', 'from-constant'),
+                        'send-mail-load-to-constant' => getValueFromArray($context, 'send-mail', 'load', 'to-constant'),
+                        'send-mail-load-cc-constant' => getValueFromArray($context, 'send-mail', 'load', 'cc-constant'),
+                        'send-mail-load-bcc-constant' => getValueFromArray($context, 'send-mail', 'load', 'bcc-constant'),
+                        'send-mail-load-subject-constant' => getValueFromArray($context, 'send-mail', 'load', 'subject-constant'),
+                        'send-mail-load-body-constant' => getValueFromArray($context, 'send-mail', 'load', 'body-constant'),
+                        'send-mail-load-body-template' => getValueFromArray($context, 'send-mail', 'load', 'body-template'),
+                        'send-mail-load-body-fields' => getValueFromArray($context, 'send-mail', 'load', 'body-fields'),
+                        'send-mail-load-f-option' => getValueFromArray($context, 'send-mail', 'load', 'f-option'),
+                        'send-mail-load-body-wrap' => getValueFromArray($context, 'send-mail', 'load', 'body-wrap'),
+                        'send-mail-load-from' => getValueFromArray($context, 'send-mail', 'load', 'from'),
+                        'send-mail-load-to' => getValueFromArray($context, 'send-mail', 'load', 'to'),
+                        'send-mail-load-cc' => getValueFromArray($context, 'send-mail', 'load', 'cc'),
+                        'send-mail-load-bcc' => getValueFromArray($context, 'send-mail', 'load', 'bcc'),
+                        'send-mail-load-subject' => getValueFromArray($context, 'send-mail', 'load', 'subject'),
+                        'send-mail-load-body' => getValueFromArray($context, 'send-mail', 'load', 'body'),
+                        'send-mail-load-from-constant' => getValueFromArray($context, 'send-mail', 'load', 'from-constant'),
+                        'send-mail-load-to-constant' => getValueFromArray($context, 'send-mail', 'load', 'to-constant'),
+                        'send-mail-load-cc-constant' => getValueFromArray($context, 'send-mail', 'load', 'cc-constant'),
+                        'send-mail-load-bcc-constant' => getValueFromArray($context, 'send-mail', 'load', 'bcc-constant'),
+                        'send-mail-load-subject-constant' => getValueFromArray($context, 'send-mail', 'load', 'subject-constant'),
+                        'send-mail-load-body-constant' => getValueFromArray($context, 'send-mail', 'load', 'body-constant'),
+                        'send-mail-load-body-template' => getValueFromArray($context, 'send-mail', 'load', 'body-template'),
+                        'send-mail-load-body-fields' => getValueFromArray($context, 'send-mail', 'load', 'body-fields'),
+                        'send-mail-load-f-option' => getValueFromArray($context, 'send-mail', 'load', 'f-option'),
+                        'send-mail-load-body-wrap' => getValueFromArray($context, 'send-mail', 'load', 'body-wrap'),
+                        'send-mail-edit-from' => getValueFromArray($context, 'send-mail', 'edit', 'from'),
+                        'send-mail-edit-to' => getValueFromArray($context, 'send-mail', 'edit', 'to'),
+                        'send-mail-edit-cc' => getValueFromArray($context, 'send-mail', 'edit', 'cc'),
+                        'send-mail-edit-bcc' => getValueFromArray($context, 'send-mail', 'edit', 'bcc'),
+                        'send-mail-edit-subject' => getValueFromArray($context, 'send-mail', 'edit', 'subject'),
+                        'send-mail-edit-body' => getValueFromArray($context, 'send-mail', 'edit', 'body'),
+                        'send-mail-edit-from-constant' => getValueFromArray($context, 'send-mail', 'edit', 'from-constant'),
+                        'send-mail-edit-to-constant' => getValueFromArray($context, 'send-mail', 'edit', 'to-constant'),
+                        'send-mail-edit-cc-constant' => getValueFromArray($context, 'send-mail', 'edit', 'cc-constant'),
+                        'send-mail-edit-bcc-constant' => getValueFromArray($context, 'send-mail', 'edit', 'bcc-constant'),
+                        'send-mail-edit-subject-constant' => getValueFromArray($context, 'send-mail', 'edit', 'subject-constant'),
+                        'send-mail-edit-body-constant' => getValueFromArray($context, 'send-mail', 'edit', 'body-constant'),
+                        'send-mail-edit-body-template' => getValueFromArray($context, 'send-mail', 'edit', 'body-template'),
+                        'send-mail-edit-body-fields' => getValueFromArray($context, 'send-mail', 'edit', 'body-fields'),
+                        'send-mail-edit-f-option' => getValueFromArray($context, 'send-mail', 'edit', 'f-option'),
+                        'send-mail-edit-body-wrap' => getValueFromArray($context, 'send-mail', 'edit', 'body-wrap'),
+                        'send-mail-new-from' => getValueFromArray($context, 'send-mail', 'new', 'from'),
+                        'send-mail-new-to' => getValueFromArray($context, 'send-mail', 'new', 'to'),
+                        'send-mail-new-cc' => getValueFromArray($context, 'send-mail', 'new', 'cc'),
+                        'send-mail-new-bcc' => getValueFromArray($context, 'send-mail', 'new', 'bcc'),
+                        'send-mail-new-subject' => getValueFromArray($context, 'send-mail', 'new', 'subject'),
+                        'send-mail-new-body' => getValueFromArray($context, 'send-mail', 'new', 'body'),
+                        'send-mail-new-from-constant' => getValueFromArray($context, 'send-mail', 'new', 'from-constant'),
+                        'send-mail-new-to-constant' => getValueFromArray($context, 'send-mail', 'new', 'to-constant'),
+                        'send-mail-new-cc-constant' => getValueFromArray($context, 'send-mail', 'new', 'cc-constant'),
+                        'send-mail-new-bcc-constant' => getValueFromArray($context, 'send-mail', 'new', 'bcc-constant'),
+                        'send-mail-new-subject-constant' => getValueFromArray($context, 'send-mail', 'new', 'subject-constant'),
+                        'send-mail-new-body-constant' => getValueFromArray($context, 'send-mail', 'new', 'body-constant'),
+                        'send-mail-new-body-template' => getValueFromArray($context, 'send-mail', 'new', 'body-template'),
+                        'send-mail-new-body-fields' => getValueFromArray($context, 'send-mail', 'new', 'body-fields'),
+                        'send-mail-new-f-option' => getValueFromArray($context, 'send-mail', 'new', 'f-option'),
+                        'send-mail-new-body-wrap' => getValueFromArray($context, 'send-mail', 'new', 'body-wrap'),
                     );
                     $seq++;
                 }
@@ -225,7 +289,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'script':
                 $contextID = $this->dbSettings->getForeignKeysValue('id');
                 if (isset($globalDataSource[$contextID]['script'])) {
-                    foreach ($globalDataSource[$contextID]['script'] as $rel) {
+                    foreach ($globalDataSource[$contextID]['script'] as $operation => $rel) {
                         $result[] = array(
                             'id' => $seq + $contextID * 10000,
                             'db-operation' => getValueFromArray($rel, 'db-operation'),
@@ -252,7 +316,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'global':
                 $contextID = $this->dbSettings->getForeignKeysValue('id');
                 if (isset($globalDataSource[$contextID]['global'])) {
-                    foreach ($globalDataSource[$contextID]['global'] as $rel) {
+                    foreach ($globalDataSource[$contextID]['global'] as $operation => $rel) {
                         $result[] = array(
                             'id' => $seq + $contextID * 10000,
                             'db-operation' => getValueFromArray($rel, 'db-operation'),
@@ -272,34 +336,6 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             'field' => getValueFromArray($rel, 'field'),
                             'context' => getValueFromArray($rel, 'context'),
                             'container' => getValueFromArray($rel, 'container'),
-                        );
-                        $seq++;
-                    }
-                }
-                break;
-            case 'sending-email':
-                $contextID = $this->dbSettings->getForeignKeysValue('id');
-                if (isset($globalDataSource[$contextID]['sending-email'])) {
-                    foreach ($globalDataSource[$contextID]['sending-email'] as $rel) {
-                        $result[] = array(
-                            'id' => $seq + $contextID * 10000,
-                            'db-operation' => getValueFromArray($rel, 'db-operation'),
-                            'from' => getValueFromArray($rel, 'from'),
-                            'to' => getValueFromArray($rel, 'to'),
-                            'cc' => getValueFromArray($rel, 'cc'),
-                            'bcc' => getValueFromArray($rel, 'bcc'),
-                            'subject' => getValueFromArray($rel, 'subject'),
-                            'body' => getValueFromArray($rel, 'body'),
-                            'from-constant' => getValueFromArray($rel, 'from-constant'),
-                            'to-constant' => getValueFromArray($rel, 'to-constant'),
-                            'cc-constant' => getValueFromArray($rel, 'cc-constant'),
-                            'bcc-constant' => getValueFromArray($rel, 'bcc-constant'),
-                            'subject-constant' => getValueFromArray($rel, 'subject-constant'),
-                            'body-constant' => getValueFromArray($rel, 'body-constant'),
-                            'body-template' => getValueFromArray($rel, 'body-template'),
-                            'body-fields' => getValueFromArray($rel, 'body-fields'),
-                            'f-option' => getValueFromArray($rel, 'f-option'),
-                            'body-wrap' => getValueFromArray($rel, 'body-wrap'),
                         );
                         $seq++;
                     }
@@ -440,12 +476,12 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'query' => array('field', 'value', 'operator'),
             'sort' => array('field', 'direction'),
             'default-values' => array('field', 'value'),
-            'validation' => array('field', 'rule', 'message','notify'),
+            'validation' => array('field', 'rule', 'message', 'notify'),
             'script' => array('db-operation', 'situation', 'definition'),
             'global' => array('db-operation', 'field', 'value'),
             'calculation' => array('field', 'expression'),
             'file-upload' => array('field', 'context', 'container'),
-            'sending-email' => array('db-operation', 'from', 'to', 'cc', 'bcc', 'subject', 'body',
+            'send-mail' => array('db-operation', 'from', 'to', 'cc', 'bcc', 'subject', 'body',
                 'from-constant', 'to-constant', 'cc-constant', 'bcc-constant', 'subject-constant',
                 'body-constant', 'body-template', 'body-fields', 'f-option', 'body-wrap'),
         );
@@ -461,7 +497,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
         $keysShouldBoolean = array(
             'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct',
-            'container', 'soft-delete',
+            'container', 'soft-delete', 'f-option',
         );
 
         switch ($dataSourceName) {
@@ -491,6 +527,32 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     }
                     $globalDataSource[$contextID][$firstKey][$secondKey]
                         = $this->dbSettings->getValueOfField($theKey);
+                } else if (strpos($theKey, "send-mail-") === 0) {
+                    $firstKey = "send-mail";
+                    $keyRest = substr($theKey, 10);
+                    $secondKey = substr($keyRest, 0, strpos($keyRest, "-"));
+                    $thirdKey = substr($keyRest, strpos($keyRest, "-") + 1);
+                    if (!isset($globalDataSource[$contextID][$firstKey])) {
+                        $globalDataSource[$contextID][$firstKey] = array();
+                    }
+                    if (!isset($globalDataSource[$contextID][$firstKey][$secondKey])) {
+                        $globalDataSource[$contextID][$firstKey][$secondKey] = array();
+                    }
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
+                    } else if (array_search($thirdKey, $keysShouldBoolean) !== false) {
+                        if (preg_match("/^false$/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/^true$/i", $setValue)) {
+                            $setValue = true;
+                        }
+                    }
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey])) {
+                        unset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey]);
+                    }
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
@@ -514,14 +576,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'sort':
             case 'default-values':
             case 'validation':
-            case 'global':
-            case 'script':
             case 'calculation':
             case 'file-upload':
-            case 'sending-email':
-                $recordID = $contextID % 10000;
-                $contextID = floor($contextID / 10000);
-                foreach ($allKeys[$dataSourceName] as $key) {
+            case 'global':
+            case 'script':
+            foreach ($allKeys[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
                     if (array_search($key, $keysShouldInteger) !== false) {
                         $fieldValue = ($fieldValue === '') ? '' : (int)$fieldValue;
@@ -533,7 +592,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         }
                     }
                     if (!is_null($fieldValue)) {
-                        $globalDataSource[$contextID][$dataSourceName][$recordID][$key] = $fieldValue;
+                        $globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key] = $fieldValue;
                         break;
                     }
                 }
@@ -623,7 +682,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         $newFileContent .= var_export($globalDBSpecs, true);
         $newFileContent .= ",\n";
         $newFileContent .= var_export($globalDebug, true);
-        $newFileContent .= ");\n?>";
+        $newFileContent .= ");\n";
 
         $sq = "'";
         foreach ($this->spacialValue as $term) {
@@ -752,30 +811,6 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'container' => true,
                 );
                 break;
-            case 'sending-email':
-                if (!isset($globalDataSource[$contextID]['sending-email'])) {
-                    $globalDataSource[$contextID]['sending-email'] = array();
-                }
-                $globalDataSource[$contextID]['sending-email'][] = array(
-                    'db-operation' => '= new value =',
-                    'from' => '= new value =',
-                    'to' => '= new value =',
-                    'cc' => '= new value =',
-                    'bcc' => '= new value =',
-                    'subject' => '= new value =',
-                    'body' => '= new value =',
-                    'from-constant' => '= new value =',
-                    'to-constant' => '= new value =',
-                    'cc-constant' => '= new value =',
-                    'bcc-constant' => '= new value =',
-                    'subject-constant' => '= new value =',
-                    'body-constant' => '= new value =',
-                    'body-template' => '= new value =',
-                    'body-fields' => '= new value =',
-                    'f-option' => '= new value =',
-                    'body-wrap' => 68,
-                );
-                break;
             case 'options':
                 break;
             case 'aliases':
@@ -869,11 +904,18 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'sort':
             case 'default-values':
             case 'validation':
-            case 'global':
-            case 'script':
             case 'calculation':
             case 'file-upload':
-            case 'sending-email':
+                $recordID = $contextID % 10000;
+                $contextID = floor($contextID / 10000);
+                if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
+                    unset($globalDataSource[$contextID][$dataSourceName]);
+                } else {
+                    unset($globalDataSource[$contextID][$dataSourceName][$recordID]);
+                }
+                break;
+            case 'global':
+            case 'script':
                 $recordID = $contextID % 10000;
                 $contextID = floor($contextID / 10000);
                 if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
