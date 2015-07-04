@@ -123,13 +123,18 @@ class GenerateJSCode
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
             $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
-                . $_SERVER['SCRIPT_NAME'] . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
+                . filter_input(INPUT_SERVER, 'SCRIPT_NAME')
+                . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
         } else {
-            $pathToMySelf = $_SERVER['SCRIPT_NAME'];
+            $pathToMySelf = filter_input(INPUT_SERVER, 'SCRIPT_NAME');
         }
+
+        $pathToIMRootDir = mb_ereg_replace("^" . filter_input(INPUT_SERVER, 'DOCUMENT_ROOT'), "", (dirname(__FILE__)));
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.getIMRootPath", "function(){return {$q}{$pathToIMRootDir}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ",
             arrayToJSExcluding($datasource, '', array('password')), ";}");
