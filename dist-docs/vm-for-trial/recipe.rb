@@ -14,6 +14,7 @@ IMSAMPLE = "#{IMROOT}/Samples"
 IMUNITTEST = "#{IMROOT}/INTER-Mediator-UnitTest"
 IMDISTDOC = "#{IMROOT}/dist-docs"
 IMVMROOT = "#{IMROOT}/dist-docs/vm-for-trial"
+APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF = "/etc/samba/smb.conf"
 
 
@@ -335,6 +336,15 @@ end
 if node[:platform] == 'ubuntu'
   execute 'aptitude clean' do
     command 'aptitude clean'
+  end
+  file "#{APACHEOPTCONF}" do
+    content '#Header add Content-Security-Policy "default-src \'self\'"'
+  end
+end
+
+if node[:platform] == 'ubuntu'
+  execute 'a2enmod headers' do
+    command 'a2enmod headers'
   end
 end
 
@@ -700,8 +710,8 @@ execute "sqlite3 /var/db/im/sample.sq3 < \"#{IMDISTDOC}/sample_schema_sqlite.txt
   command "sqlite3 /var/db/im/sample.sq3 < \"#{IMDISTDOC}/sample_schema_sqlite.txt\""
 end
 
-execute "setfacl --recursive --modify g:im-developer:rw \"#{WEBROOT}\"" do
-  command "setfacl --recursive --modify g:im-developer:rw \"#{WEBROOT}\""
+execute "setfacl --recursive --modify g:im-developer:rw,d:g:im-developer:rw \"#{WEBROOT}\"" do
+  command "setfacl --recursive --modify g:im-developer:rw,d:g:im-developer:rw \"#{WEBROOT}\""
 end
 
 execute "chown -R developer:im-developer \"#{WEBROOT}\"" do

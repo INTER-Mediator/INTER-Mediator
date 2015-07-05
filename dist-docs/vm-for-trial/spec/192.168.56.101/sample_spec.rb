@@ -252,6 +252,15 @@ describe package('samba') do
   it { should be_installed }
 end
 
+describe file('/etc/apache2/mods-enabled/headers.load'), :if => os[:family] == 'ubuntu' do
+  it { should be_file }
+end
+
+describe file('/etc/apache2/sites-enabled/inter-mediator-server.conf'), :if => os[:family] == 'ubuntu' do
+  it { should be_file }
+  its(:content) { should match /#Header add Content-Security-Policy "default-src 'self'"/ }
+end
+
 describe file('/var/www/html/INTER-Mediator') do
   it { should be_directory }
 end

@@ -20,6 +20,7 @@ IMSAMPLE="${IMROOT}/Samples"
 IMUNITTEST="${IMROOT}/INTER-Mediator-UnitTest"
 IMDISTDOC="${IMROOT}/dist-docs"
 IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
+APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF="/etc/samba/smb.conf"
 
 groupadd im-developer
@@ -56,6 +57,9 @@ aptitude install libfontconfig1 --assume-yes
 aptitude install phpunit --assume-yes
 aptitude install samba --assume-yes
 aptitude clean
+
+a2enmod headers
+echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
 
 cd "${WEBROOT}"
 git clone https://github.com/INTER-Mediator/INTER-Mediator.git

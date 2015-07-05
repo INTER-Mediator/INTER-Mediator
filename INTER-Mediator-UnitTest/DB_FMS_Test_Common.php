@@ -22,6 +22,26 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
+    public function testQueriedEntity()
+    {
+        $layoutName = 'person_layout';
+        $expected = $layoutName;
+
+        $this->dbProxySetupForAccess($layoutName, 1);
+        $this->db_proxy->getFromDB($layoutName);
+        $this->assertEquals($expected, $this->db_proxy->dbClass->queriedEntity());
+    }
+
+    public function testQueriedCondition()
+    {
+        $layoutName = 'person_layout';
+        $expected = '-db=TestDB&-lay=person_layout&-lay.response=person_layout&-max=1&-sortfield.1=id&-sortorder.1=ascend&-findall';
+
+        $this->dbProxySetupForAccess($layoutName, 1);
+        $this->db_proxy->getFromDB($layoutName);
+        $this->assertEquals($expected, $this->db_proxy->dbClass->queriedCondition());
+    }
+
     public function testIsPossibleOperator()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -102,6 +122,35 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $condition['operator'] = '*match*';
         $expected['operator'] = 'cn';
         $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+    }
+
+    public function testAdjustSortDirection()
+    {
+        if (((float)phpversion()) >= 5.3) {
+            $layoutName = 'person_layout';
+
+            $this->dbProxySetupForAccess($layoutName, 1);
+            $this->db_proxy->getFromDB($layoutName);
+
+            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $method = $this->reflectionClass->getMethod('_adjustSortDirection');
+            $method->setAccessible(true);
+
+            $this->assertEquals('ascend', $method->invokeArgs($this->db_proxy->dbClass, array('ASC')));
+            $this->assertEquals('ascend', $method->invokeArgs($this->db_proxy->dbClass, array('asc')));
+            $this->assertEquals('descend', $method->invokeArgs($this->db_proxy->dbClass, array('DESC')));
+            $this->assertEquals('descend', $method->invokeArgs($this->db_proxy->dbClass, array('desc')));
+            $this->assertEquals('default', $method->invokeArgs($this->db_proxy->dbClass, array('default')));
+        }
+    }
+
+    public function testIsNullAcceptable()
+    {
+        $layoutName = 'person_layout';
+
+        $this->dbProxySetupForAccess($layoutName, 1);
+        $this->db_proxy->getFromDB($layoutName);
+        $this->assertFalse($this->db_proxy->dbClass->isNullAcceptable());
     }
 
     public function testQuery1_singleRecord()
@@ -342,26 +391,20 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
     }
 
-    /**
-     * @runInSeparateProcess
-     * @preserveGlobalState disabled
-     */
     public function testDefaultKey()
     {
-        $this->dbProxySetupForAccess("person_layout", 1);
+        $this->dbProxySetupForAccess('person_layout', 1);
 
-        $testName = "The default key field name";
-        $presetValue = "id";
-        if (get_class($this->db_proxy->dbClass) == "DB_FileMaker_FX") {
-            $presetValue = "-recid";
-        }
+        $className = get_class($this->db_proxy->dbClass);
+        $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
+    }
+
+    public function testGetDefaultKey()
+    {
+        $this->dbProxySetupForAccess('person_layout', 1);
+
         $value = $this->db_proxy->dbClass->getDefaultKey();
-        $this->assertTrue($presetValue == $value, $testName);
-        if (((int)phpversion()) >= 5.3) {
-            $className = get_class($this->db_proxy->dbClass);
-            $value = $className::defaultKey();
-            $this->assertTrue($presetValue == $value, $testName);
-        }
+        $this->assertEquals('-recid', $value);
     }
 
     public function testMultiClientSyncTableExsistence()

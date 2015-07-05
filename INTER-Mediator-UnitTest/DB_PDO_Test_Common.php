@@ -285,15 +285,16 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     {
         $this->dbProxySetupForAccess("person", 1);
 
-        $testName = "The default key field name";
-        $presetValue = "id";
+        $className = get_class($this->db_proxy->dbClass);
+        $this->assertEquals('id', call_user_func(array($className, 'defaultKey')));
+    }
+
+    public function testGetDefaultKey()
+    {
+        $this->dbProxySetupForAccess("person", 1);
+
         $value = $this->db_proxy->dbClass->getDefaultKey();
-        $this->assertTrue($presetValue == $value, $testName);
-        if (((int)phpversion()) >= 5.3) {
-            $className = get_class($this->db_proxy->dbClass);
-            eval("$value = $className::defaultKey();");
-        }
-        $this->assertTrue($presetValue == $value, $testName);
+        $this->assertEquals('id', $value);
     }
 
     public function testMultiClientSyncTableExsistence()    {
