@@ -175,4 +175,9 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
     {
         return null;
     }
+
+    public function copyInDB($dataSourceName)
+    {
+        // TODO: Implement copyInDB() method.
+    }
 }

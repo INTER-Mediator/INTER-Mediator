@@ -1103,4 +1103,9 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     {
         // TODO: Implement softDeleteActivate() method.
     }
+
+    public function copyInDB($dataSourceName)
+    {
+        // TODO: Implement copyInDB() method.
+    }
 }
