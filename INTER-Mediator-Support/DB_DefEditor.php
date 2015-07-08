@@ -493,6 +493,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
         $keysShouldInteger = array(
             'records', 'maxrecords', 'smtp-port',
+            'send-mail-load-body-wrap', 'send-mail-edit-body-wrap', 'send-mail-new-body-wrap',
         );
 
         $keysShouldBoolean = array(
