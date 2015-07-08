@@ -190,7 +190,7 @@ var IMLibUI = {
                 if (matched[1] !== IMLibLocalContext.contextName) {
                     context = INTERMediatorLib.getNamedObject(
                         INTERMediatorOnPage.getDataSources(), "name", matched[1]);
-                    if (context.validation != null) {
+                    if (context != null && context.validation != null) {
                         for (i = 0; i < linkInfo.length; i++) {
                             matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
                             for (index in context.validation) {
