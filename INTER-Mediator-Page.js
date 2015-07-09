@@ -784,7 +784,7 @@ INTERMediatorOnPage = {
             frontPanel = document.createElement("div");
             frontPanel.setAttribute("id", "_im_progress");
             linkElement = document.createElement("link");
-            linkElement.setAttribute("href", rootPath + "/theme/default/css/style.css");
+            linkElement.setAttribute("href", rootPath + "/themes/default/css/style.css");
             linkElement.setAttribute("rel", "stylesheet");
             linkElement.setAttribute("type", "text/css");
             headNode.appendChild(linkElement);
@@ -799,10 +799,10 @@ INTERMediatorOnPage = {
              */
             imageIM = document.createElement("img");
             imageIM.setAttribute("id", "_im_logo");
-            imageIM.setAttribute("src", rootPath + "/theme/default/images/logo.gif");
+            imageIM.setAttribute("src", rootPath + "/themes/default/images/logo.gif");
             frontPanel.appendChild(imageIM);
             imageProgress = document.createElement("img");
-            imageProgress.setAttribute("src", rootPath + "/theme/default/images/inprogress.gif");
+            imageProgress.setAttribute("src", rootPath + "/themes/default/images/inprogress.gif");
             frontPanel.appendChild(imageProgress);
             frontPanel.appendChild(document.createElement("BR"));
             frontPanel.appendChild(document.createTextNode("INTER-Mediator working"));
