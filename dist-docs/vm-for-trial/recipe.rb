@@ -710,8 +710,8 @@ execute "sqlite3 /var/db/im/sample.sq3 < \"#{IMDISTDOC}/sample_schema_sqlite.txt
   command "sqlite3 /var/db/im/sample.sq3 < \"#{IMDISTDOC}/sample_schema_sqlite.txt\""
 end
 
-execute "setfacl --recursive --modify g:im-developer:rw,d:g:im-developer:rw \"#{WEBROOT}\"" do
-  command "setfacl --recursive --modify g:im-developer:rw,d:g:im-developer:rw \"#{WEBROOT}\""
+execute "setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx \"#{WEBROOT}\"" do
+  command "setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx \"#{WEBROOT}\""
 end
 
 execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
