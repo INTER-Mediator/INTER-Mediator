@@ -1,7 +1,8 @@
 <!DOCTYPE html>
+<?php $version = '5.2-dev'; ?>
 <!--
 /*
- * INTER-Mediator 5.2-dev - VM for Trial
+ * INTER-Mediator Server VM for Trial
  *
  *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee
  *
@@ -12,11 +13,13 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>INTER-Mediator 5.2-dev - VM for Trial</title>
+    <title>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</title>
     <link href="/INTER-Mediator/Samples/sample.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="./INTER-Mediator/dist-docs/vm-for-trial/include_MySQL.php"></script>
+    <script type="text/javascript" src="./INTER-Mediator/dist-docs/vm-for-trial/index.js"></script>
 </head>
 <body>
-<h1>INTER-Mediator 5.2-dev - VM for Trial</h1>
+<h1>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial<span><?php echo htmlspecialchars(exec('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +（%Y年%-m月%-d日更新）'), ENT_QUOTES, 'UTF-8'); ?></span></h1>
 
 <h2>現在アクセスしているマシンについて</h2>
 
@@ -27,16 +30,46 @@
     <li>利便性のために、パスワードなどの情報はこのページに記載しています。</li>
     <li>原則として、稼働マシン以外からのアクセスができない状態で利用してください。</li>
 </ul>
+
 <h2>リンク</h2>
 
-<p><a href="/INTER-Mediator/Samples/" target="_blank">サンプルプログラム</a>（サンプルデータベースの更新日：2015年6月27日）</p>
+<p><a href="/INTER-Mediator/Samples/" target="_blank">サンプルプログラム</a></p>
 <ul>
-    <li>
-        サンプルの中にある認証ユーザー用のデータベースには、user1〜user5の5つのユーザーが定義されており、パスワードはユーザー名と同一です。概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。
-    </li>
-    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker
-        Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、/var/www/html/params.phpファイルの、$dbServer変数の値を変更してください。
-    </li>
+    <li>サンプルの中にある認証ユーザー用のデータベースには、user1〜user5の5つのユーザーが定義されており、パスワードはユーザー名と同一です。概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。</li>
+    <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、/var/www/html/params.phpファイルの、$dbServer変数の値を変更してください。</li>
+    <li><strong>サンプルデータベースの最終更新日</strong>：MySQL=<?php system('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +%Y年%-m月%-d日') ?>、FileMaker=<?php system('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 -- -p dist-docs/TestDB.fmp12 | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +%Y年%-m月%-d日') ?><br><strong>あなたがお使いのサンプルデータベース</strong>：MySQL=<span data-im="information@lastupdated"></span><?php
+        $filePath = '/var/www/html/params.php';
+        try {
+            if (file_exists($filePath)) {
+                include($filePath);
+            }
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, strtolower($dbProtocol) . '://' . $dbServer . ':' . $dbPort . '/fmi/xml/fmresultset.xml');
+            curl_setopt($ch, CURLOPT_USERPWD, $dbUser . ':' . $dbPassword);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, '-db=' . $dbDatabase . '&-lay=information&-findall&-max=1');
+            curl_setopt($ch, CURLOPT_HEADER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $xml = curl_exec($ch);
+            curl_close($ch);
+            libxml_use_internal_errors(true);
+            $parsedData = simplexml_load_string($xml);
+            if ($parsedData === false) {
+            }
+            require_once('/var/www/html/INTER-Mediator/DataConverter_FMDateTime.php');
+            $converter = new DataConverter_FMDateTime();
+            foreach ($parsedData->resultset->record->field as $key => $field) {
+                if ((string)$field->attributes()->name === 'lastupdated') {
+                    $dateInfo = $converter->dateArrayFromFMDate($field->data);
+                    echo '、FileMaker=' . intval($dateInfo['year']) . '年' .
+                        intval($dateInfo['month']) . '月' .
+                        intval($dateInfo['day']) . '日';
+                    break;
+                }
+            }
+        } catch (Exception $e) {
+        }
+    ?></span></li>
 </ul>
 
 <p><a href="/INTER-Mediator/Auth_Support/MySQL_accountmanager.html" target="_blank">ユーザー管理ページサンプル</a></p>

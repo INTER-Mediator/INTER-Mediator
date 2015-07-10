@@ -10,7 +10,7 @@ This schema file is for the sample of INTER-Mediator using MySQL, encoded by UTF
 
 Example:
 $ mysql -u root -p < sample_schema_mysql.txt
-Enter password: 
+Enter password:
 
 */
 SET NAMES 'utf8mb4';
@@ -212,7 +212,7 @@ CREATE TABLE product (
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
-		ENGINE=InnoDB;	
+		ENGINE=InnoDB;
 
 CREATE VIEW item_display AS
     SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty,
@@ -496,6 +496,13 @@ CREATE TABLE testtable (
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4, COLLATE utf8mb4_unicode_ci ENGINE=InnoDB;
 
+CREATE TABLE information (
+	id		  INT  AUTO_INCREMENT,
+	lastupdated	  DATE,
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
+		ENGINE=InnoDB;
 
 # Grant to All operations for all objects with web account
 GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
@@ -5503,3 +5510,5 @@ INSERT saleslog SET dt=timestamp'2010-1-1 22:51:40',item='Shallots ',customer='
 INSERT saleslog SET dt=timestamp'2010-1-1 23:03:16',item='Carrot ',customer='Oriental loach Food, Co.',qty=9,item_id=10,customer_id=643,unitprice=460,total=4140;
 INSERT saleslog SET dt=timestamp'2010-1-1 23:29:13',item='Carrot ',customer='Cepalin Food, Co.',qty=5,item_id=10,customer_id=182,unitprice=460,total=2300;
 INSERT saleslog SET dt=timestamp'2010-1-1 23:52:34',item='Courgette ',customer='Snubnose parasitic eel Food, Co.',qty=5,item_id=15,customer_id=913,unitprice=251,total=1255;
+
+INSERT information SET id=1,lastupdated=CURDATE();

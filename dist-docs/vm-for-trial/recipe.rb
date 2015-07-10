@@ -362,8 +362,8 @@ execute "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirr
   command "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git"
 end
 
-execute "cd \"#{WEBROOT}\" && ln -s \"#{IMVMROOT}/index.html\" index.html" do
-  command "cd \"#{WEBROOT}\" && ln -s \"#{IMVMROOT}/index.html\" index.html"
+execute "cd \"#{WEBROOT}\" && ln -s \"#{IMVMROOT}/index.php\" index.php" do
+  command "cd \"#{WEBROOT}\" && ln -s \"#{IMVMROOT}/index.php\" index.php"
 end
 
 file "#{WEBROOT}/.htaccess" do
