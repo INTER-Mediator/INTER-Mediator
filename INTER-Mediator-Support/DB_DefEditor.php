@@ -518,16 +518,33 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (!isset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]])) {
                         $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]] = array();
                     }
-                    $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]]
-                        = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]])) {
+                        unset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]]);
+                        if (count($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]]) === 0) {
+                            unset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]]);
+                            if (count($globalDataSource[$contextID][$authKeyArray[0]]) === 0) {
+                                unset($globalDataSource[$contextID][$authKeyArray[0]]);
+                            }
+                        }
+                    }
                 } else if (strpos($theKey, "buttonnames-") === 0) {
                     $firstKey = "button-names";
                     $secondKey = substr($theKey, 12);
                     if (!isset($globalDataSource[$contextID][$firstKey])) {
                         $globalDataSource[$contextID][$firstKey] = array();
                     }
-                    $globalDataSource[$contextID][$firstKey][$secondKey]
-                        = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalDataSource[$contextID][$firstKey][$secondKey] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$firstKey][$secondKey])) {
+                        unset($globalDataSource[$contextID][$firstKey][$secondKey]);
+                        if (count($globalDataSource[$contextID][$firstKey]) === 0) {
+                            unset($globalDataSource[$contextID][$firstKey]);
+                        }
+                    }
                 } else if (strpos($theKey, "send-mail-") === 0) {
                     $firstKey = "send-mail";
                     $keyRest = substr($theKey, 10);
@@ -553,6 +570,12 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         $globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey] = $setValue;
                     } else if (isset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey])) {
                         unset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey]);
+                        if (count($globalDataSource[$contextID][$firstKey][$secondKey]) === 0) {
+                            unset($globalDataSource[$contextID][$firstKey][$secondKey]);
+                            if (count($globalDataSource[$contextID][$firstKey]) === 0) {
+                                unset($globalDataSource[$contextID][$firstKey]);
+                            }
+                        }
                     }
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
@@ -581,7 +604,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'file-upload':
             case 'global':
             case 'script':
-            foreach ($allKeys[$dataSourceName] as $key) {
+                foreach ($allKeys[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
                     if (array_search($key, $keysShouldInteger) !== false) {
                         $fieldValue = ($fieldValue === '') ? '' : (int)$fieldValue;
@@ -605,8 +628,12 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (!isset($globalOptions["authentication"][$authKey])) {
                         $globalOptions["authentication"][$authKey] = array();
                     }
-                    $globalOptions["authentication"][$authKey]
-                        = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalOptions["authentication"][$authKey] = $setValue;
+                    } else if (isset($globalOptions["authentication"][$authKey])) {
+                        unset($globalOptions["authentication"][$authKey]);
+                    }
                 } else if (strpos($theKey, "smtp-") === 0) {
                     $authKey = substr($theKey, 5);
                     if (!isset($globalOptions["smtp"][$authKey])) {
@@ -616,7 +643,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (array_search($theKey, $keysShouldInteger) !== false) {
                         $setValue = ($setValue === '') ? '' : (int)$setValue;
                     }
-                    $globalOptions["smtp"][$authKey] = $setValue;
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalOptions["smtp"][$authKey] = $setValue;
+                    } else if (isset($globalOptions["smtp"][$authKey])) {
+                        unset($globalOptions["smtp"][$authKey]);
+                        if (count($globalOptions["smtp"]) === 0) {
+                            unset($globalOptions["smtp"]);
+                        }
+                    }
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
