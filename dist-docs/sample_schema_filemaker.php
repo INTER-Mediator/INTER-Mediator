@@ -6,7 +6,7 @@
  * This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  * INTER-Mediator is supplied under MIT License.
  *
- * 
+ *
  * This schema file is for the sample of INTER-Mediator using FileMaker ODBC, encoded by UTF-8.
  *
  * [Required software]
@@ -25,6 +25,7 @@
  * Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]:
  *
  */
+date_default_timezone_set('Asia/Tokyo');
 set_time_limit(0);
 $stdin = fopen("php://stdin", "r");
 echo "Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]: ";
@@ -5166,6 +5167,15 @@ if ('y' == trim(fgets($stdin, 64))) {
         odbc_exec($conn, 'INSERT INTO "saleslog" ("dt", "item", "customer", "qty", "item_id", "customer_id", "unitprice", "total") VALUES (TIMESTAMP \'2010-1-1 23:52:34\', \'Courgette\', \'Snubnose parasitic eel Food, Co.\', 5, 15, 913, 251, 1255)');
     } catch (Exception $e) {
         echo 'Table "saleslog" is missing.' . "\n";
+    }
+
+    try {
+        if (!odbc_exec($conn, 'DELETE FROM "information"')) {
+            throw new Exception('Table Missing');
+        }
+        odbc_exec($conn, 'INSERT INTO "information" ("lastupdated") VALUES (DATE \'' . date("Y-m-d") . '\')');
+    } catch (Exception $e) {
+        echo 'Table "information" is missing.' . "\n";
     }
 
     odbc_close($conn);
