@@ -34,10 +34,10 @@
 <h2>リンク</h2>
 
 <p><a href="/INTER-Mediator/Samples/" target="_blank">サンプルプログラム</a></p>
-<ul>
+<ul data-im-control="ignore_enc_rep">
     <li>サンプルの中にある認証ユーザー用のデータベースには、user1〜user5の5つのユーザーが定義されており、パスワードはユーザー名と同一です。概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。設定を参照の上ログインの確認や、あるいはできないことの確認をしてください。</li>
     <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。他のホストや異なるネットワーク設定の場合は、/var/www/html/params.phpファイルの、$dbServer変数の値を変更してください。</li>
-    <li><strong>サンプルデータベースの最終更新日</strong>：MySQL=<?php system('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +%Y年%-m月%-d日') ?>、FileMaker=<?php system('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 -- -p dist-docs/TestDB.fmp12 | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +%Y年%-m月%-d日') ?><br><strong>あなたがお使いのサンプルデータベース</strong>：MySQL=<span data-im="information@lastupdated"></span><?php
+    <li><strong>サンプルデータベースの最終更新日</strong>：MySQL=<?php system('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +%Y年%-m月%-d日') ?>、FileMaker=<?php system('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 -- -p dist-docs/TestDB.fmp12 | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +%Y年%-m月%-d日') ?><br><strong>あなたがお使いのサンプルデータベース</strong>：<span data-im-control="enclosure"><span data-im-control="noresult">MySQL=2015年7月10日以前</span><span data-im-control="repeater"><span data-im="information@lastupdated">MySQL=</span></span></span><?php
         $filePath = '/var/www/html/params.php';
         try {
             if (file_exists($filePath)) {
@@ -70,7 +70,7 @@
             }
         } catch (Exception $e) {
         }
-    ?></span></li>
+    ?></li>
 </ul>
 
 <p><a href="/INTER-Mediator/Auth_Support/MySQL_accountmanager.html" target="_blank">ユーザー管理ページサンプル</a></p>
