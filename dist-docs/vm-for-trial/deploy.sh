@@ -70,7 +70,7 @@ cd "${IMSUPPORT}"
 git clone https://github.com/codemirror/CodeMirror.git
 
 cd "${WEBROOT}"
-ln -s "${IMVMROOT}/index.html" index.html
+ln -s "${IMVMROOT}/index.php" index.php
 
 echo 'AddType "text/html; charset=UTF-8" .html' > "${WEBROOT}/.htaccess"
 
