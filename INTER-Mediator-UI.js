@@ -620,6 +620,13 @@ var IMLibUI = {
                 return;
             }
         }
+
+        if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
+            if (!INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
+                return;
+            }
+        }
+
         linkedNodes = []; // Collecting linked elements to this array.
         namedNodes = [];
         for (i = 0; i < targetNode.childNodes.length; i++) {
@@ -753,12 +760,6 @@ var IMLibUI = {
         }
         if (hasInvalid) {
             return;
-        }
-
-        if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
-            if (!INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
-                return;
-            }
         }
 
         contextInfo = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);
