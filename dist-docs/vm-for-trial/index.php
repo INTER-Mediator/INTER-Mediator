@@ -15,8 +15,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</title>
     <link href="/INTER-Mediator/Samples/sample.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="./INTER-Mediator/dist-docs/vm-for-trial/include_MySQL.php"></script>
-    <script type="text/javascript" src="./INTER-Mediator/dist-docs/vm-for-trial/index.js"></script>
+    <script type="text/javascript" src="/INTER-Mediator/dist-docs/vm-for-trial/include_MySQL.php"></script>
+    <script type="text/javascript" src="/INTER-Mediator/dist-docs/vm-for-trial/index.js"></script>
 </head>
 <body>
 <h1>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial<span><?php echo htmlspecialchars(exec('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +（%Y年%-m月%-d日更新）'), ENT_QUOTES, 'UTF-8'); ?></span></h1>
@@ -58,6 +58,7 @@
             }
             require_once('/var/www/html/INTER-Mediator/DataConverter_FMDateTime.php');
             $converter = new DataConverter_FMDateTime();
+            error_reporting(0);
             foreach ($parsedData->resultset->record->field as $key => $field) {
                 if ((string)$field->attributes()->name === 'lastupdated') {
                     $dateInfo = $converter->dateArrayFromFMDate($field->data);
