@@ -70,7 +70,7 @@ cd "${IMSUPPORT}"
 git clone https://github.com/codemirror/CodeMirror.git
 
 cd "${WEBROOT}"
-ln -s "${IMVMROOT}/index.html" index.html
+ln -s "${IMVMROOT}/index.php" index.php
 
 echo 'AddType "text/html; charset=UTF-8" .html' > "${WEBROOT}/.htaccess"
 
@@ -135,7 +135,7 @@ chown -R www-data:im-developer /var/db/im
 chmod 775 /var/db/im
 chmod 664 /var/db/im/sample.sq3
 
-setfacl --recursive --modify g:im-developer:rw,d:g:im-developer:rw "${WEBROOT}"
+setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
 chmod -R g+w "${WEBROOT}"
 
