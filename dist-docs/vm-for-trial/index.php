@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<?php $version = '5.2-dev'; ?>
 <!--
 /*
  * INTER-Mediator Server VM for Trial
@@ -9,6 +8,19 @@
  *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
  */  -->
+<?php
+   $version = '';
+   $handle = fopen(dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'buildup.sh', 'r');
+   if ($handle) {
+       while (($line = fgets($handle)) !== false) {
+           if (substr($line, 0, strlen('version="')) === 'version="') {
+               $version = substr($line, strlen('version="'), strlen($line) - strlen('version="') - 2);
+               break;
+           }
+       }
+       fclose($handle);
+   }
+?>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -19,11 +31,12 @@
     <script type="text/javascript" src="/INTER-Mediator/dist-docs/vm-for-trial/index.js"></script>
 </head>
 <body>
-<h1>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial<span><?php echo htmlspecialchars(exec('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +（%Y年%-m月%-d日更新）'), ENT_QUOTES, 'UTF-8'); ?></span></h1>
+<h1>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</h1>
 
 <h2>現在アクセスしているマシンについて</h2>
 
 <p>このVirtual Machineは、INTER-Mediatorが動作するサーバを試用したり、あるいはINTER-MediatorによるWebアプリケーション開発を学習するために作成したものです。サンプルデータベースはスキーマを読み込ませており、すぐに動作を見ることができます。</p>
+<p>このVirtual Machineに含まれるINTER-Mediatorの最終更新日は<strong><?php echo htmlspecialchars(exec('date -d "`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'`" +%Y年%-m月%-d日'), ENT_QUOTES, 'UTF-8'); ?></strong>です。</p>
 
 <h3>注意点など</h3>
 <ul>
