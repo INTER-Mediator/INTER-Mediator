@@ -67,7 +67,9 @@
             curl_close($ch);
             libxml_use_internal_errors(true);
             $parsedData = simplexml_load_string($xml);
-            if ($parsedData === false) {
+            $output = '';
+            if ($parsedData !== false) {
+                $output = '、FileMaker=2015年7月11日以前';
             }
             require_once('/var/www/html/INTER-Mediator/DataConverter_FMDateTime.php');
             $converter = new DataConverter_FMDateTime();
@@ -75,12 +77,13 @@
             foreach ($parsedData->resultset->record->field as $key => $field) {
                 if ((string)$field->attributes()->name === 'lastupdated') {
                     $dateInfo = $converter->dateArrayFromFMDate($field->data);
-                    echo '、FileMaker=' . intval($dateInfo['year']) . '年' .
+                    $output = '、FileMaker=' . intval($dateInfo['year']) . '年' .
                         intval($dateInfo['month']) . '月' .
                         intval($dateInfo['day']) . '日';
                     break;
                 }
             }
+            echo htmlspecialchars($output, ENT_QUOTES, 'UTF-8');
         } catch (Exception $e) {
         }
     ?></li>
