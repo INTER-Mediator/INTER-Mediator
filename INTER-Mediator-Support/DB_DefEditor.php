@@ -366,6 +366,9 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'smtp-port' => getValueFromArray($globalOptions, 'smtp', 'port'),
                     'smtp-username' => getValueFromArray($globalOptions, 'smtp', 'username'),
                     'smtp-password' => getValueFromArray($globalOptions, 'smtp', 'password'),
+                    'pusher-app_id' => getValueFromArray($globalOptions, 'pusher', 'app_id'),
+                    'pusher-key' => getValueFromArray($globalOptions, 'pusher', 'key'),
+                    'pusher-secret' => getValueFromArray($globalOptions, 'pusher', 'secret'),
                 );
                 $seq++;
                 break;
@@ -649,6 +652,23 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         unset($globalOptions["smtp"][$authKey]);
                         if (count($globalOptions["smtp"]) === 0) {
                             unset($globalOptions["smtp"]);
+                        }
+                    }
+                } else if (strpos($theKey, "pusher-") === 0) {
+                    $authKey = substr($theKey, 7);
+                    if (!isset($globalOptions["pusher"][$authKey])) {
+                        $globalOptions["pusher"][$authKey] = array();
+                    }
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
+                    }
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalOptions["pusher"][$authKey] = $setValue;
+                    } else if (isset($globalOptions["pusher"][$authKey])) {
+                        unset($globalOptions["pusher"][$authKey]);
+                        if (count($globalOptions["pusher"]) === 0) {
+                            unset($globalOptions["pusher"]);
                         }
                     }
                 } else {

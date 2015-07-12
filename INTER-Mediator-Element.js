@@ -181,7 +181,9 @@ var IMLibElement = {
         if (nodeTag === "INPUT" || nodeTag === "SELECT" || nodeTag === "TEXTAREA") {
             INTERMediatorLib.addEvent(element, "blur", function (e) {
                 var idValue = element.id;
-                IMLibUI.valueChange(idValue, true);
+                if (! IMLibUI.valueChange(idValue, true)){
+                    element.focus();
+                }
             });
         }
         return needPostValueSet;

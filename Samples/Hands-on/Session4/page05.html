@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * 
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ * 
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ *   INTER-Mediator is supplied under MIT License.
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <script type="text/javascript" src="def05.php"></script>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            INTERMediator.construct();
+        }
+        INTERMediatorOnPage.processingBeforePostOnlyContext = function (node) {
+            var dtString, nodeIds, idValue, aNode;
+            dtString = INTERMediatorLib.dateTimeStringISO();
+            nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(node, "message@postdt");
+            if (nodeIds.length > 0) {
+                document.getElementById(nodeIds[0]).value = dtString;
+            }
+            nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(node, "comment@message");
+            if (nodeIds.length > 0) {
+                aNode = node.parentNode.parentNode.parentNode;
+                nodeIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(aNode, "message@id");
+                idValue = document.getElementById(nodeIds[0]).value;
+                INTERMediator.additionalFieldValueOnNewRecord = {};
+                INTERMediator.additionalFieldValueOnNewRecord['comment'] = [
+                    {field: "groupname", value: idValue},
+                    {field: "postdt", value: dtString}
+                ];
+            }
+            return true;
+        };
+    </script>
+    <style>
+        TEXTAREA {
+            width: 400px;
+            height: 60px;
+        }
+    </style>
+
+</head>
+<body>
+<table>
+    <tbody data-im-control="post">
+    <tr>
+        <th>From:</th>
+        <td>
+            <input type="text" data-im="message@user">
+            <input type="hidden" data-im="message@postdt">
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <textarea data-im="message@message"></textarea>
+            <button data-im-control="post">投稿</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+
+<table>
+    <tbody>
+    <tr>
+        <td colspan="4">
+            <hr/>
+        </td>
+    </tr>
+    <tr>
+        <th>From:</th>
+        <td data-im="message@user"></td>
+        <th>Date:</th>
+        <td data-im="message@postdt"></td>
+    </tr>
+    <tr>
+        <td colspan="4" data-im="message@message@innerHTML"
+            style="background-color: #CCCCCC"></td>
+    </tr>
+    <tr>
+        <td style="width: 50px; background-color: gray">Comment</td>
+        <td colspan="3">
+            <input type="hidden" data-im="message@id"/>
+            <table>
+                <tbody data-im-control="post">
+                <tr>
+                    <th>From:</th>
+                    <td>
+                        <input type="text" data-im="comment@user">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><textarea data-im="comment@message"></textarea>
+                        <button data-im-control="post">投稿</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table>
+                <tbody>
+                <tr>
+                    <th>From:</th>
+                    <td data-im="comment@user"></td>
+                    <th>Date:</th>
+                    <td data-im="comment@postdt"></td>
+                </tr>
+                <tr>
+                    <td colspan="4" data-im="comment@message@innerHTML"
+                        style="background-color: #CCCCCC"></td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

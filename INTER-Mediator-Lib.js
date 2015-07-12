@@ -910,7 +910,7 @@ var INTERMediatorLib = {
     },
 
     removeChildNodes: function (node) {
-        while (node.childNodes.length > 0)  {
+        while (node.childNodes.length > 0) {
             node.removeChild(node.childNodes[0]);
         }
     },
@@ -921,6 +921,26 @@ var INTERMediatorLib = {
         for (j = 0; j < errorMsgs.length; j++) {
             errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
         }
+    },
+
+    dateTimeStringISO: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return dt.getFullYear() + '-'
+            + ("0" + (dt.getMonth() + 1)).substr(-2, 2) + '-'
+            + ("0" + dt.getDate()).substr(-2, 2) + ' '
+            + ("0" + dt.getHours()).substr(-2, 2) + ':'
+            + ("0" + dt.getMinutes()).substr(-2, 2) + ':'
+            + ("0" + dt.getSeconds()).substr(-2, 2);
+    },
+
+    dateTimeStringFileMaker: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return ("0" + (dt.getMonth() + 1)).substr(-2, 2) + '/'
+            + ("0" + dt.getDate()).substr(-2, 2) + '/'
+            + dt.getFullYear() + ' '
+            + ("0" + dt.getHours()).substr(-2, 2) + ':'
+            + ("0" + dt.getMinutes()).substr(-2, 2) + ':'
+            + ("0" + dt.getSeconds()).substr(-2, 2);
     }
 };
 

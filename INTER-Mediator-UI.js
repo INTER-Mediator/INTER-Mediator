@@ -37,14 +37,14 @@ var IMLibUI = {
      */
     valueChange: function (idValue, validationOnly) {
         var changedObj, objType, contextInfo, i, updateRequiredContext, associatedNode, currentValue, newValue,
-            linkInfo, nodeInfo;
+            linkInfo, nodeInfo, validataonResult = true;
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
             INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
             INTERMediator.flushMessage();
             IMLibUI.isShiftKeyDown = false;
             IMLibUI.isControlKeyDown = false;
-            return;
+            return validataonResult;
         }
         IMLibUI.isShiftKeyDown = false;
         IMLibUI.isControlKeyDown = false;
@@ -52,7 +52,7 @@ var IMLibUI = {
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
             if (changedObj.readOnly) {  // for Internet Explorer
-                return;
+                return validataonResult;
             }
 
             linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
@@ -64,24 +64,28 @@ var IMLibUI = {
             contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
 
             if (!this.validation(changedObj)) {  // Validation error.
-                window.setTimeout(function () {
-                    if (contextInfo) {
-                        changedObj.value = contextInfo.context.getValue(
-                            contextInfo.record, contextInfo.field);
-                        changedObj.removeAttribute("data-im-validation-notification");
+                changedObj.focus();
+                window.setTimeout((function () {
+                    var originalObj = changedObj;
+                    var originalContextInfo = contextInfo;
+                    return function() {
+                        if (originalContextInfo) {
+                            originalObj.value = originalContextInfo.context.getValue(
+                                originalContextInfo.record, originalContextInfo.field);
+                        }
+                        originalObj.removeAttribute("data-im-validation-notification");
                     }
-                    changedObj.focus();
-                }, 0);
-                return;
+                })(), 0);
+                return false;
             }
             if (validationOnly === true) {
-                return;
+                return true;
             }
 
             objType = changedObj.getAttribute("type");
             if (objType === "radio" && !changedObj.checked) {
                 INTERMediatorOnPage.hideProgress();
-                return;
+                return true;
             }
 
             if (contextInfo) {
@@ -122,6 +126,7 @@ var IMLibUI = {
             }
             IMLibCalc.recalculation();//IMLibCalc.recalculation(idValue); // Optimization Required
             INTERMediator.flushMessage();
+            return true;
         }
 
         function updateDB(changedObj, idValue, target) {
@@ -620,6 +625,13 @@ var IMLibUI = {
                 return;
             }
         }
+
+        if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
+            if (!INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
+                return;
+            }
+        }
+
         linkedNodes = []; // Collecting linked elements to this array.
         namedNodes = [];
         for (i = 0; i < targetNode.childNodes.length; i++) {
@@ -753,12 +765,6 @@ var IMLibUI = {
         }
         if (hasInvalid) {
             return;
-        }
-
-        if (INTERMediatorOnPage.processingBeforePostOnlyContext) {
-            if (!INTERMediatorOnPage.processingBeforePostOnlyContext(targetNode)) {
-                return;
-            }
         }
 
         contextInfo = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);

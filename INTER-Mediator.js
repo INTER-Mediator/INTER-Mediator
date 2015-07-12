@@ -68,6 +68,7 @@ INTERMediator = {
 
     dateTimeFunction: false,
     postOnlyNodes: null,
+    postOnlyNumber: 1,
 
     errorMessageByAlert: false,
     errorMessageOnAlert: null,
@@ -548,7 +549,7 @@ INTERMediator = {
          Post only mode.
          */
         function setupPostOnlyEnclosure(node) {
-            var nodes, postNodes, number = 1;
+            var nodes, postNodes;
             postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, "_im_post");
             for (i = 0; i < postNodes.length; i++) {
                 if (postNodes[i].tagName === "BUTTON") {
@@ -575,8 +576,8 @@ INTERMediator = {
                     try {
                         if (node.getAttribute("data-im")) { // Linked element
                             if (!node.id) {
-                                node.id = "IMPOST-" + number;
-                                number++;
+                                node.id = "IMPOST-" + INTERMediator.postOnlyNumber;
+                                INTERMediator.postOnlyNumber++;
                             }
                             INTERMediatorLib.addEvent(node, "blur", function (e) {
                                 var idValue = node.id;
@@ -2015,7 +2016,6 @@ if (!Object.keys) {
         return results;
     }
 }
-;
 
 if (!Array.indexOf) {
     var isWebkit = 'WebkitAppearance' in document.documentElement.style;
