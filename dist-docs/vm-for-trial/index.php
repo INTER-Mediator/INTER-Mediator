@@ -606,6 +606,13 @@
 <h3>インストール後に実行したコマンド</h3>
 <p>INTER-Mediatorの中にある、<a href="https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/vm-for-trial/deploy.sh">deploy.sh</a>を実行しました。</p>
 
+<h3>サンプルデータベースの初期化方法</h3>
+<p>VM上で下記のコマンドを実行すると、サンプルデータベース（MySQL、PostgreSQL、SQLite）を初期化できます。</p>
+<ul>
+    <li>source /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh</li>
+</ul>
+<p>上記コマンドを実行すると「Do you initialize the test databases? [y/n]: 」と尋ねられるので、「y」を入力してenterキーあるいはreturnキーを押すとサンプルデータベースが初期化されます。
+
 <h3>テストの実行方法</h3>
 <p>VM上で下記のコマンドを実行すると、INTER-Mediatorのテストを実行できます。</p>
 <ul>

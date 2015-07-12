@@ -325,10 +325,6 @@ describe file('/var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh')
   it { should be_mode 664 }
 end
 
-describe command('cat /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/index.html | grep /INTER-Mediator/Samples/ | grep `date -d "\`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'\`" +%Y年%-m月%-d日` | wc -l') do
-  its(:stdout) { should match /1/ }
-end
-
 describe command('date -d "`cat /var/www/html/INTER-Mediator/dist-docs/readme.txt  | grep TestDB | cut -d"(" -f2 | cut -d")" -f1 | cut -d":" -f2`" +"%Y-%m-%d" | grep -o `git --git-dir=/var/www/html/INTER-Mediator/.git log -1 --date=short --pretty=format:"%cd" -- -p dist-docs/TestDB.fmp12` | wc -l') do
   its(:stdout) { should match /1/ }
 end
