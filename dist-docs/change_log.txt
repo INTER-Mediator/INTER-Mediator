@@ -35,14 +35,24 @@ Ver.5.2 (in development)
       $httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
 - Add circle.yml to test with CircleCI.
 - Update TestDB.fmp12 and TestDB.fp7 to add the last updated date on "person_layout" layout.
+- Update sample_schema_mysql.txt, TestDB.fmp12, TestDB_clone.fmp12 and TestDB.fp7 to add
+  "information" table.
 - The sample with jQuery's DatePicker UI component on
   Samples/Sample_webpage/jquery_datepicker_MySQL.html.
 - The VM DB update script on dist-docs/vm-for-trial/dbupdate.sh. I'd like to ask you to use
   the "source" commmand to execute it.
 - Customized login panel can include the error messages with the im_login_message and
   the im_newpass_message class's DIV node.
+- Enable SMB in INTER-Mediator Server Virtual Machine.
+- Update an index page of INTER-Mediator Server Virtual Machine to display the last updated
+  date.
+- Add image and css files (inprogress.gif, logo.gif and style.css).
+- Add .codeclimate.yml.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
-  cant contain ether boolean or string value appropriately.
+  can't contain ether boolean or string value appropriately.
+- [BUG FIX] The definition file editor supports the 'pusher-app_id', 'pusher-key' and
+  'pusher-secret' keys and send-mail settings etc.
+- [BUG FIX] Fix other issues of the definition file editor.
 - [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 
   file using FileMaker Server.
 - [BUG FIX] Calculation bug fixed. In case of multiple uses of a calculated property.
