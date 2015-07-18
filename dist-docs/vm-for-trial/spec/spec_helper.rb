@@ -3,6 +3,9 @@ require 'net/ssh'
 
 set :backend, :ssh
 
+# for RSpec 3.3
+RSpec::Expectations::MultipleExpectationsNotMetError = Class.new(Exception)
+
 if ENV['ASK_SUDO_PASSWORD']
   begin
     require 'highline/import'
@@ -31,7 +34,7 @@ set :ssh_options, options
 
 
 # Set environment variables
-# set :env, :LANG => 'C', :LC_MESSAGES => 'C' 
+# set :env, :LANG => 'C', :LC_MESSAGES => 'C'
 
 # Set PATH
 # set :path, '/sbin:/usr/local/sbin:$PATH'
