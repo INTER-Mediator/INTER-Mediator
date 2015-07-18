@@ -120,8 +120,6 @@ do
         "${IMSAMPLE}/templates/page_file_simple.html" > "${WEBROOT}/${PageFile}"
 done
 
-chmod -R g+rw "${WEBROOT}"
-
 # Import schema
 
 mysql -u root --password=im4135dev < "${IMDISTDOC}/sample_schema_mysql.txt"
@@ -137,7 +135,7 @@ chmod 664 /var/db/im/sample.sq3
 
 setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
-chmod -R g+w "${WEBROOT}"
+chmod -R a=rX,u+w,g+w "${WEBROOT}"
 
 # Home directory permissions modifying
 

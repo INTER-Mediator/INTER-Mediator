@@ -499,11 +499,6 @@ for num in 1..40 do
   end
 end
 
-execute "chmod -R g+w \"#{WEBROOT}\"" do
-  command "chmod -R g+w \"#{WEBROOT}\""
-end
-
-
 # Import schema
 
 if node[:platform] == 'redhat'
@@ -718,8 +713,8 @@ execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
   command "chown -R developer:im-developer \"#{WEBROOT}\""
 end
 
-execute "chmod -R g+w \"#{WEBROOT}\"" do
-  command "chmod -R g+w \"#{WEBROOT}\""
+execute "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\"" do
+  command "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\""
 end
 
 execute 'chown -R developer:developer /home/developer' do
