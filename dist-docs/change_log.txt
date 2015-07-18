@@ -64,6 +64,8 @@ Ver.5.2 (in development)
 - [BUG FIX] PDO class had a bug for authentication but it would affect in a rare case.
 - [BUG FIX] Fix inserting data including null character to the database when using FileMaker Server.
 - [BUG FIX] Post Only Mode and Validation work fine.
+- [BUG FIX] Fix showing an image of FileMaker's container field if the value of "src" attribute in 
+  the page file includes "?media=". The affected version is 5.1 only.
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.
