@@ -161,6 +161,9 @@ class GenerateJSCode
                 $langCountry = explode(';', $oneLanguage);
                 if (strlen($langCountry[0]) > 0) {
                     $clientLang = explode('-', $langCountry[0]);
+                    if ($clientLang[0] === 'en') {
+                        break;
+                    }
                     $messageClass = "MessageStrings_$clientLang[0]";
                     if (file_exists("$currentDir$messageClass.php")) {
                         $messageClass = new $messageClass();
