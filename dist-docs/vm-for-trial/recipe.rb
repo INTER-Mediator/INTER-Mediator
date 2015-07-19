@@ -299,6 +299,12 @@ execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
   command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
 end
 
+if node[:platform] == 'ubuntu'
+  package 'nodejs-legacy' do
+    action :install
+  end
+end
+
 if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'npm' do
     action :install
@@ -689,8 +695,8 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-execute "echo \"y\" | source \"${IMVMROOT}/dbupdate.sh\"" do
-  command "echo \"y\" | source \"${IMVMROOT}/dbupdate.sh\""
+execute "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\"" do
+  command "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\""
 end
 
 execute "setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx \"#{WEBROOT}\"" do
