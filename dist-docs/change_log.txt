@@ -66,6 +66,8 @@ Ver.5.2 (in development)
 - [BUG FIX] Post Only Mode and Validation work fine.
 - [BUG FIX] Fix showing an image of FileMaker's container field if the value of "src" attribute in 
   the page file includes "?media=". The affected version is 5.1 only.
+- [BUG FIX] Fix loading English MessageStrings class when the value of Accept-Language request header 
+  includes 'ja'.
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.
