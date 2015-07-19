@@ -13,7 +13,7 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder '.', '/vagrant', disabled: true
   #config.vm.synced_folder 'html/', '/var/www/html'
   config.vm.hostname = "inter-mediator-server"
-  config.vm.post_up_message = "INTER-Mediator-Server is ready."
+  config.vm.post_up_message = "INTER-Mediator-Server VM is ready."
   config.vm.provider "virtualbox" do |vb|
     #vb.gui = true
     vb.memory = "1024"

@@ -7,6 +7,8 @@
 WEBROOT="/var/www/html"
 IMROOT="${WEBROOT}/INTER-Mediator"
 IMDISTDOC="${IMROOT}/dist-docs"
+SQLITEDIR="/var/db/im"
+SQLITEDB="${SQLITEDIR}/sample.sq3"
 
 VMPASSWORD="im4135dev"
 
@@ -22,8 +24,9 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'create database test_db;'
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql.txt" test_db
 
-    SQLITEDIR="/var/db/im"
-    SQLITEDB="${SQLITEDIR}/sample.sq3"
+    if [ ! -e "${SQLITEDIR}" ]; then
+        echo "${VMPASSWORD}" | sudo -S mkdir -p "${SQLITEDIR}"
+    fi
     if [ -f "${SQLITEDB}" ]; then
         echo "${VMPASSWORD}" | sudo -S rm "${SQLITEDB}"
     fi
