@@ -75,7 +75,7 @@ Ver.5.2 (in development)
   the page file includes "?media=". The affected version is 5.1 only.
 - [BUG FIX] Fix loading English MessageStrings class when the value of Accept-Language request header 
   includes 'ja'.
-- [BUG FIX] Fix the behavior of 'maxrecords' key for pagination.
+- [BUG FIX] Fix the behavior of 'maxrecords' key for pagination (Thanks to Kazuaki Osawa).
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.
