@@ -460,7 +460,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $limitParam = $this->dbSettings->getRecordCount();
             }
         } else if (isset($context['records'])) {
-            $limitParam = $this->dbSettings->getRecordCount();
+            if (intval($context['records']) < $this->dbSettings->getRecordCount()) {
+                $limitParam = intval($context['records']);
+            } else {
+                $limitParam = $this->dbSettings->getRecordCount();
+            }
         }
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), $limitParam);
 

@@ -666,7 +666,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $limitParam = $this->dbSettings->getRecordCount();
             }
         } else if (isset($tableInfo['records'])) {
-            $limitParam = $this->dbSettings->getRecordCount();
+            if (intval($tableInfo['records']) < $this->dbSettings->getRecordCount()) {
+                $limitParam = intval($tableInfo['records']);
+            } else {
+                $limitParam = $this->dbSettings->getRecordCount();
+            }
         }
 
         $skipParam = 0;
