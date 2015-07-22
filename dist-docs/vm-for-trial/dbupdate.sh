@@ -7,6 +7,8 @@
 WEBROOT="/var/www/html"
 IMROOT="${WEBROOT}/INTER-Mediator"
 IMDISTDOC="${IMROOT}/dist-docs"
+SQLITEDIR="/var/db/im"
+SQLITEDB="${SQLITEDIR}/sample.sq3"
 
 VMPASSWORD="im4135dev"
 
@@ -16,13 +18,15 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
     mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
+    mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
 
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'drop database if exists test_db;'
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'create database test_db;'
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql.txt" test_db
 
-    SQLITEDIR="/var/db/im"
-    SQLITEDB="${SQLITEDIR}/sample.sq3"
+    if [ ! -e "${SQLITEDIR}" ]; then
+        echo "${VMPASSWORD}" | sudo -S mkdir -p "${SQLITEDIR}"
+    fi
     if [ -f "${SQLITEDB}" ]; then
         echo "${VMPASSWORD}" | sudo -S rm "${SQLITEDB}"
     fi

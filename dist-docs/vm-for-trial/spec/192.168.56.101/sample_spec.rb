@@ -218,6 +218,10 @@ describe file('/usr/bin/node'), :if => os[:family] == 'ubuntu' || (os[:family] =
   it { should be_file }
 end
 
+describe package('nodejs-legacy'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
 describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
 end
@@ -266,7 +270,7 @@ describe file('/var/www/html/INTER-Mediator') do
 end
 
 describe file('/var/www/html/index_original.html'), :if => os[:family] == 'ubuntu' do
-  it { should be_file }
+  it { should_not be_file }
 end
 
 describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support') do
@@ -283,10 +287,19 @@ describe file('/var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/DB_PDO-SQLit
 end
 
 describe file('/var/www/html/index.html') do
+  it { should_not be_file }
+end
+
+describe file('/var/www/html/index.php') do
   it { should be_symlink }
 end
 
-describe command('diff -c /var/www/html/index.html /var/www/html/vm-for-trial/index.html') do
+describe file('/var/www/html/INTER-Mediator/dist-docs/vm-for-trial/index.html') do
+  it { should be_file }
+  its(:content) { should match /<meta http-equiv="refresh" content="0; URL=http:\/\/192.168.56.101\/INTER-Mediator\/dist-docs\/vm-for-trial\/index.php">/ }
+end
+
+describe command('diff -c /var/www/html/index.php /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/index.php') do
   its(:stdout) { should match // }
 end
 
@@ -323,10 +336,6 @@ end
 describe file('/var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh') do
   it { should be_file }
   it { should be_mode 664 }
-end
-
-describe command('cat /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/index.html | grep /INTER-Mediator/Samples/ | grep `date -d "\`git --git-dir=/var/www/html/INTER-Mediator/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk \'{print $2,$3,$4,$5,$6}\'\`" +%Y年%-m月%-d日` | wc -l') do
-  its(:stdout) { should match /1/ }
 end
 
 describe command('date -d "`cat /var/www/html/INTER-Mediator/dist-docs/readme.txt  | grep TestDB | cut -d"(" -f2 | cut -d")" -f1 | cut -d":" -f2`" +"%Y-%m-%d" | grep -o `git --git-dir=/var/www/html/INTER-Mediator/.git log -1 --date=short --pretty=format:"%cd" -- -p dist-docs/TestDB.fmp12` | wc -l') do
@@ -392,8 +401,8 @@ describe command('sqlite3 /var/db/im/sample.sq3 ".tables"') do
 end
 
 describe command('getfacl /var/www/html'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
-  its(:stdout) { should match /^group:im-developer:rw-$/ }
-  its(:stdout) { should match /^default:group:im-developer:rw-$/ }
+  its(:stdout) { should match /^group:im-developer:rwx$/ }
+  its(:stdout) { should match /^default:group:im-developer:rwx$/ }
 end
 
 describe file('/var/www/html') do

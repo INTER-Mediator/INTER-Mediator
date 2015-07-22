@@ -69,7 +69,7 @@ IM_Entry(
             ),
             // Modify
             'calculation' => array(
-                array("field" => "datelength", "expression" => "if(backdate = '', '', date(backdate) - date(rentdate))"),
+                array("field" => "datelength", "expression" => "if(backdate = '', '', date(backdate) - date(rentdate) +1)"),
             )
         ),
         array(

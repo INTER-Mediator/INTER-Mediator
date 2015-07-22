@@ -52,6 +52,7 @@ aptitude install php5-xmlrpc --assume-yes
 aptitude install php5-intl --assume-yes
 aptitude install git --assume-yes
 aptitude install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
+aptitude install nodejs-legacy --assume-yes
 aptitude install npm --assume-yes
 aptitude install libfontconfig1 --assume-yes
 aptitude install phpunit --assume-yes
@@ -64,7 +65,7 @@ echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPT
 cd "${WEBROOT}"
 git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git
 
-mv "${WEBROOT}/index.html" "${WEBROOT}/index_original.html"
+rm -f "${WEBROOT}/index.html"
 
 cd "${IMSUPPORT}"
 git clone https://github.com/codemirror/CodeMirror.git
@@ -120,24 +121,18 @@ do
         "${IMSAMPLE}/templates/page_file_simple.html" > "${WEBROOT}/${PageFile}"
 done
 
-chmod -R g+rw "${WEBROOT}"
-
 # Import schema
 
-mysql -u root --password=im4135dev < "${IMDISTDOC}/sample_schema_mysql.txt"
+echo "y" | source "${IMVMROOT}/dbupdate.sh"
 
-echo "im4135dev" | sudo -u postgres -S psql -c 'create database test_db;'
-echo "im4135dev" | sudo -u postgres -S psql -f "${IMDISTDOC}/sample_schema_pgsql.txt" test_db
-
-mkdir -p /var/db/im
-sqlite3 /var/db/im/sample.sq3 < "${IMDISTDOC}/sample_schema_sqlite.txt"
-chown -R www-data:im-developer /var/db/im
-chmod 775 /var/db/im
-chmod 664 /var/db/im/sample.sq3
+# Modify permissions
 
 setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
-chmod -R g+w "${WEBROOT}"
+chmod -R a=rX,u+w,g+w "${WEBROOT}"
+chmod 664 ${WEBROOT}/*.html
+chmod 664 ${WEBROOT}/*.php
+chmod 664 "${IMVMROOT}/dbupdate.sh"
 
 # Home directory permissions modifying
 

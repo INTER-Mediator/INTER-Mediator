@@ -299,6 +299,12 @@ execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
   command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
 end
 
+if node[:platform] == 'ubuntu'
+  package 'nodejs-legacy' do
+    action :install
+  end
+end
+
 if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'npm' do
     action :install
@@ -353,8 +359,8 @@ execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-
 end
 
 if node[:platform] == 'ubuntu'
-  execute "mv \"#{WEBROOT}/index.html\" \"#{WEBROOT}/index_original.html\"" do
-    command "mv \"#{WEBROOT}/index.html\" \"#{WEBROOT}/index_original.html\""
+  execute "rm -f \"#{WEBROOT}/index.html\"" do
+    command "rm -f \"#{WEBROOT}/index.html\""
   end
 end
 
@@ -499,11 +505,6 @@ for num in 1..40 do
   end
 end
 
-execute "chmod -R g+w \"#{WEBROOT}\"" do
-  command "chmod -R g+w \"#{WEBROOT}\""
-end
-
-
 # Import schema
 
 if node[:platform] == 'redhat'
@@ -576,18 +577,6 @@ if node[:platform] == 'redhat'
   execute "mv \"#{IMDISTDOC}/temp\" \"#{IMDISTDOC}/sample_schema_mysql.txt\"" do
     command "mv \"#{IMDISTDOC}/temp\" \"#{IMDISTDOC}/sample_schema_mysql.txt\""
   end
-end
-
-execute "mysql -u root --password=im4135dev < \"#{IMDISTDOC}/sample_schema_mysql.txt\"" do
-  command "mysql -u root --password=im4135dev < \"#{IMDISTDOC}/sample_schema_mysql.txt\""
-end
-
-execute 'echo "im4135dev" | sudo -u postgres -S psql -c "create database test_db;"' do
-  command 'echo "im4135dev" | sudo -u postgres -S psql -c "create database test_db;"'
-end
-
-execute "echo 'im4135dev' | sudo -u postgres -S psql -f \"#{IMDISTDOC}/sample_schema_pgsql.txt\" test_db" do
-  command "echo 'im4135dev' | sudo -u postgres -S psql -f \"#{IMDISTDOC}/sample_schema_pgsql.txt\" test_db"
 end
 
 if node[:platform] == 'redhat'
@@ -706,8 +695,8 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-execute "sqlite3 /var/db/im/sample.sq3 < \"#{IMDISTDOC}/sample_schema_sqlite.txt\"" do
-  command "sqlite3 /var/db/im/sample.sq3 < \"#{IMDISTDOC}/sample_schema_sqlite.txt\""
+execute "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\"" do
+  command "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\""
 end
 
 execute "setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx \"#{WEBROOT}\"" do
@@ -718,8 +707,20 @@ execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
   command "chown -R developer:im-developer \"#{WEBROOT}\""
 end
 
-execute "chmod -R g+w \"#{WEBROOT}\"" do
-  command "chmod -R g+w \"#{WEBROOT}\""
+execute "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\"" do
+  command "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\""
+end
+
+execute "chmod 664 #{WEBROOT}/*.html" do
+  command "chmod 664 #{WEBROOT}/*.html"
+end
+
+execute "chmod 664 #{WEBROOT}/*.php" do
+  command "chmod 664 #{WEBROOT}/*.php"
+end
+
+execute "chmod 664 \"#{IMVMROOT}/dbupdate.sh\"" do
+  command "chmod 664 \"#{IMVMROOT}/dbupdate.sh\""
 end
 
 execute 'chown -R developer:developer /home/developer' do

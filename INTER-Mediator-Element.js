@@ -64,7 +64,7 @@ var IMLibElement = {
                     element.style[styleName] = curVal;
                 } else {
                     currentValue = element.getAttribute(curTarget);
-                    if (curVal.indexOf("/fmi/xml/cnt/") === 0) {
+                    if (curVal.indexOf("/fmi/xml/cnt/") === 0 && currentValue.indexOf("?media=") === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() + "?media=" + curVal;
                     }
                     element.setAttribute(curTarget, currentValue + curVal);
@@ -87,7 +87,7 @@ var IMLibElement = {
                     element.style[styleName] = curVal;
                 } else {
                     currentValue = element.getAttribute(curTarget);
-                    if (curVal.indexOf("/fmi/xml/cnt/") === 0) {
+                    if (curVal.indexOf("/fmi/xml/cnt/") === 0 && currentValue.indexOf("?media=") === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() + "?media=" + curVal;
                     }
                     element.setAttribute(curTarget, currentValue.replace("$", curVal));
