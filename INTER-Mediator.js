@@ -97,8 +97,8 @@ INTERMediator = {
         moreMessage = moreMessage === undefined ? "" : (" - " + moreMessage);
 
         if (INTERMediator.errorMessageByAlert) {
-            alert(INTERMediator.errorMessageOnAlert === null
-                ? (ex + moreMessage) : INTERMediator.errorMessageOnAlert);
+            alert(INTERMediator.errorMessageOnAlert === null ?
+                (ex + moreMessage) : INTERMediator.errorMessageOnAlert);
         }
 
         if ((typeof ex == 'string' || ex instanceof String)) {
@@ -125,8 +125,8 @@ INTERMediator = {
         if (INTERMediator.errorMessageByAlert) {
             INTERMediator.supressErrorMessageOnPage = true;
         }
-        if (!INTERMediator.supressErrorMessageOnPage
-            && INTERMediator.errorMessages.length > 0) {
+        if (!INTERMediator.supressErrorMessageOnPage &&
+            INTERMediator.errorMessages.length > 0) {
             debugNode = document.getElementById('_im_error_panel_4873643897897');
             if (debugNode === null) {
                 debugNode = document.createElement('div');
@@ -153,9 +153,9 @@ INTERMediator = {
                 debugNode.appendChild(document.createElement('hr'));
             }
         }
-        if (!INTERMediator.supressDebugMessageOnPage
-            && INTERMediator.debugMode
-            && INTERMediator.debugMessages.length > 0) {
+        if (!INTERMediator.supressDebugMessageOnPage &&
+            INTERMediator.debugMode &&
+            INTERMediator.debugMessages.length > 0) {
             debugNode = document.getElementById('_im_debug_panel_4873643897897');
             if (debugNode === null) {
                 debugNode = document.createElement('div');
@@ -453,8 +453,8 @@ INTERMediator = {
 
             // After work to set up popup menus.
             for (i = 0; i < postSetFields.length; i++) {
-                if (postSetFields[i]['value'] == ""
-                    && document.getElementById(postSetFields[i]['id']).tagName == "SELECT") {
+                if (postSetFields[i]['value'] === "" &&
+                    document.getElementById(postSetFields[i]['id']).tagName == "SELECT") {
                     // for compatibility with Firefox when the value of select tag is empty.
                     emptyElement = document.createElement('option');
                     emptyElement.setAttribute("value", "");
@@ -508,8 +508,8 @@ INTERMediator = {
                     if (INTERMediatorLib.isEnclosure(node, false)) { // Linked element and an enclosure
                         className = INTERMediatorLib.getClassAttributeFromNode(node);
                         attr = node.getAttribute("data-im-control");
-                        if ((className && className.match(/_im_post/))
-                            || (attr && attr == "post")) {
+                        if ((className && className.match(/_im_post/)) ||
+                            (attr && attr == "post")) {
                             setupPostOnlyEnclosure(node);
                         } else {
                             if (INTERMediator.isIE) {
@@ -644,7 +644,7 @@ INTERMediator = {
                     newNode = node.appendChild(repeatersOriginal[i]);
 
                     // for compatibility with Firefox
-                    if (repeatersOriginal[i].getAttribute("selected") != null) {
+                    if (repeatersOriginal[i].getAttribute("selected") !== null) {
                         selectedNode = newNode;
                     }
                     if (selectedNode !== undefined) {
@@ -679,7 +679,7 @@ INTERMediator = {
                         contextObj.setOriginal(repeatersOriginal);
                         if (relationDef) {
                             for (index in relationDef) {
-                                if (relationDef[index]["portal"] == true) {
+                                if (relationDef[index]["portal"] === true) {
                                     currentContextDef["portal"] = true;
                                 }
                                 joinField = relationDef[index]['join-field'];
@@ -687,8 +687,8 @@ INTERMediator = {
                                 for (fieldName in parentObjectInfo) {
                                     if (fieldName == relationDef[index]['join-field']) {
                                         contextObj.addDependingObject(parentObjectInfo[fieldName]);
-                                        contextObj.dependingParentObjectInfo
-                                            = JSON.parse(JSON.stringify(parentObjectInfo));
+                                        contextObj.dependingParentObjectInfo =
+                                            JSON.parse(JSON.stringify(parentObjectInfo));
                                     }
                                 }
                             }
@@ -741,7 +741,7 @@ INTERMediator = {
             targetRecordset = targetRecords.recordset;
             targetTotalCount = targetRecords.totalCount;
 
-            if (targetRecords.count == 0) {
+            if (targetRecords.count === 0) {
                 for (i = 0; i < repeatersOriginal.length; i++) {
                     newNode = repeatersOriginal[i].cloneNode(true);
                     nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
@@ -769,7 +769,7 @@ INTERMediator = {
                     }
 
                     dbspec = INTERMediatorOnPage.getDBSpecification();
-                    if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
+                    if (dbspec["db-class"] !== null && dbspec["db-class"] == "FileMaker_FX") {
                         keyField = currentContextDef["key"] ? currentContextDef["key"] : "-recid";
                     } else {
                         keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
@@ -777,8 +777,8 @@ INTERMediator = {
 
                     if (currentContextDef["relation"]) {
                         for (i = 0; i < Object.keys(currentContextDef["relation"]).length; i++) {
-                            if (currentContextDef["relation"][i]["portal"]
-                                && Number(currentContextDef["relation"][i]["portal"]) === 1) {
+                            if (currentContextDef["relation"][i]["portal"] &&
+                                Number(currentContextDef["relation"][i]["portal"]) === 1) {
                                 usePortal = true;
                             }
                         }
@@ -828,8 +828,8 @@ INTERMediator = {
                     }
                 }
 
-                if (currentContextDef['portal'] != true
-                    || (currentContextDef['portal'] == true && targetTotalCount > 0)) {
+                if (currentContextDef['portal'] !== true ||
+                    (currentContextDef['portal'] === true && targetTotalCount > 0)) {
                     nameTable = {};
                     for (k = 0; k < currentLinkedNodes.length; k++) {
                         try {
@@ -864,7 +864,7 @@ INTERMediator = {
                             for (j = 0; j < linkInfoArray.length; j++) {
                                 nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
                                 curVal = targetRecordset[ix][nInfo['field']];
-                                if (!INTERMediator.isDBDataPreferable || curVal != null) {
+                                if (!INTERMediator.isDBDataPreferable || curVal !== null) {
                                     IMLibCalc.updateCalculationInfo(
                                         contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
                                 }
@@ -895,9 +895,9 @@ INTERMediator = {
                                 }
                             }
 
-                            if (isContext
-                                && !isInsidePostOnly
-                                && (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
+                            if (isContext &&
+                                !isInsidePostOnly &&
+                                (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                                 //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
                                 var changeFunction = function (a) {
                                     var id = a;
@@ -934,7 +934,7 @@ INTERMediator = {
                     }
                 }
 
-                if (usePortal == true) {
+                if (usePortal === true) {
                     keyField = "-recid";
                     foreignField = currentContextDef['name'] + "::-recid";
                     foreignValue = targetRecordset[ix][foreignField];
@@ -952,13 +952,13 @@ INTERMediator = {
                 setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                     currentContextDef, targetRecordset[ix]);
 
-                if (currentContextDef['portal'] != true
-                    || (currentContextDef['portal'] == true && targetTotalCount > 0)) {
+                if (currentContextDef['portal'] !== true ||
+                    (currentContextDef['portal'] === true && targetTotalCount > 0)) {
                     newlyAddedNodes = [];
                     insertNode = null;
                     if (!contextObj.sequencing) {
                         indexContext = contextObj.checkOrder(targetRecordset[ix]);
-                        insertNode = contextObj.getRepeaterEndNode(indexContext + 1)
+                        insertNode = contextObj.getRepeaterEndNode(indexContext + 1);
                     }
                     for (i = 0; i < repeatersOneRec.length; i++) {
                         newNode = repeatersOneRec[i];
@@ -991,11 +991,11 @@ INTERMediator = {
             var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition,
                 recordNumber, useLimit, optionalCondition = [], pagingValue, recordsValue, i, recordset = [];
 
-            if (currentContextDef['cache'] == true) {
+            if (currentContextDef['cache'] === true) {
                 try {
                     if (!INTERMediatorOnPage.dbCache[currentContextDef['name']]) {
-                        INTERMediatorOnPage.dbCache[currentContextDef['name']]
-                            = INTERMediator_DBAdapter.db_query({
+                        INTERMediatorOnPage.dbCache[currentContextDef['name']] =
+                            INTERMediator_DBAdapter.db_query({
                             name: currentContextDef['name'],
                             records: null,
                             paging: null,
@@ -1056,12 +1056,34 @@ INTERMediator = {
                     if (currentContextDef["records"] && currentContextDef["paging"]) {
                         useLimit = true;
                     }
-                    if (currentContextDef['maxrecords'] && useLimit && Number(INTERMediator.pagedSize) > 0
-                        && Number(currentContextDef['maxrecords']) >= Number(INTERMediator.pagedSize)) {
-                        recordNumber = Number(INTERMediator.pagedSize);
+
+                    if (currentContextDef.maxrecords) {
+                        if (parseInt(INTERMediator.pagedSize, 10) === 0) {
+                            if (currentContextDef.records) {
+                                recordNumber = parseInt(currentContextDef.records, 10);
+                            } else {
+                                recordNumber = parseInt(currentContextDef.maxrecords, 10);
+                            }
+                        } else {
+                            if (parseInt(currentContextDef.maxrecords, 10) < parseInt(INTERMediator.pagedSize, 10)) {
+                                if (parseInt(currentContextDef.maxrecords, 10) < parseInt(currentContextDef.records, 10)) {
+                                    recordNumber = parseInt(currentContextDef.records, 10);
+                                } else {
+                                    recordNumber = parseInt(currentContextDef.maxrecords, 10);
+                                }
+                            } else {
+                                recordNumber = parseInt(INTERMediator.pagedSize, 10);
+                            }
+                        }
                     } else {
-                        recordNumber = Number(currentContextDef['records']);
+                        if (parseInt(INTERMediator.pagedSize, 10) === 0 ||
+                            (parseInt(currentContextDef.records, 10) < parseInt(INTERMediator.pagedSize, 10))) {
+                            recordNumber = parseInt(currentContextDef.records, 10);
+                        } else {
+                            recordNumber = parseInt(INTERMediator.pagedSize, 10);
+                        }
                     }
+                    INTERMediator.setLocalProperty("_im_pagedSize", recordNumber);
 
                     targetRecords = {};
                     if (currentContextDef["portal"] === true) {

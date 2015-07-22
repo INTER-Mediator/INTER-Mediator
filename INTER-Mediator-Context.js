@@ -1085,6 +1085,7 @@ IMLibLocalContext = {
                             return function () {
                                 INTERMediator.startFrom = 0;
                                 IMLibUI.eventUpdateHandler(contextName);
+                                IMLibPageNavigation.navigationSetup();
                             };
                         })());
                         break;
@@ -1094,6 +1095,7 @@ IMLibLocalContext = {
                             return function () {
                                 INTERMediator.pagedSize = document.getElementById(idValue).value;
                                 IMLibUI.eventUpdateHandler(contextName);
+                                IMLibPageNavigation.navigationSetup();
                             };
                         })());
                         break;
@@ -1174,4 +1176,3 @@ IMLibLocalContext = {
         }
     }
 };
-

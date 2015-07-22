@@ -33,13 +33,13 @@ INTERMediator_DBAdapter = {
             if (INTERMediatorOnPage.isNativeAuth || INTERMediatorOnPage.isLDAP) {
                 if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
                     authParams += "&cresponse=" + encodeURIComponent(
-                        INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword
-                        + "\n" + INTERMediatorOnPage.authChallenge));
+                        INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword +
+                            "\n" + INTERMediatorOnPage.authChallenge));
                     if (INTERMediator_DBAdapter.degubMessage) {
-                        INTERMediator.setDebugMessage("generate_authParams/authCryptedPassword="
-                        + INTERMediatorOnPage.authCryptedPassword);
-                        INTERMediator.setDebugMessage("generate_authParams/authChallenge="
-                        + INTERMediatorOnPage.authChallenge);
+                        INTERMediator.setDebugMessage("generate_authParams/authCryptedPassword=" +
+                            INTERMediatorOnPage.authCryptedPassword);
+                        INTERMediator.setDebugMessage("generate_authParams/authChallenge=" +
+                            INTERMediatorOnPage.authChallenge);
                     }
                 } else {
                     authParams += "&cresponse=dummy";
@@ -50,10 +50,10 @@ INTERMediator_DBAdapter = {
                 hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, "ASCII", "SHA-256", "HEX");
                 authParams += "&response=" + encodeURIComponent(hmacValue);
                 if (INTERMediator_DBAdapter.degubMessage) {
-                    INTERMediator.setDebugMessage("generate_authParams/authHashedPassword="
-                    + INTERMediatorOnPage.authHashedPassword);
-                    INTERMediator.setDebugMessage("generate_authParams/authChallenge="
-                    + INTERMediatorOnPage.authChallenge);
+                    INTERMediator.setDebugMessage("generate_authParams/authHashedPassword=" +
+                        INTERMediatorOnPage.authHashedPassword);
+                    INTERMediator.setDebugMessage("generate_authParams/authChallenge=" +
+                        INTERMediatorOnPage.authChallenge);
                 }
             } else {
                 authParams += "&response=dummy";
@@ -85,8 +85,8 @@ INTERMediator_DBAdapter = {
 
     logging_comAction: function (debugMessageNumber, appPath, accessURL, authParams) {
         INTERMediator.setDebugMessage(
-            INTERMediatorOnPage.getMessages()[debugMessageNumber]
-            + "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
+            INTERMediatorOnPage.getMessages()[debugMessageNumber] +
+                "Accessing:" + decodeURI(appPath) + ", Parameters:" + decodeURI(accessURL + authParams));
     },
 
     logging_comResult: function (myRequest, resultCount, dbresult, requireAuth, challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
@@ -98,12 +98,12 @@ INTERMediator_DBAdapter = {
                 responseTextTrancated = myRequest.responseText;
             }
             INTERMediator.setDebugMessage("myRequest.responseText=" + responseTextTrancated);
-            INTERMediator.setDebugMessage("Return: resultCount=" + resultCount
-                + ", dbresult=" + INTERMediatorLib.objectToString(dbresult) + "\n"
-                + "Return: requireAuth=" + requireAuth
-                + ", challenge=" + challenge + ", clientid=" + clientid + "\n"
-                + "Return: newRecordKeyValue=" + newRecordKeyValue
-                + ", changePasswordResult=" + changePasswordResult + ", mediatoken=" + mediatoken
+            INTERMediator.setDebugMessage("Return: resultCount=" + resultCount +
+                ", dbresult=" + INTERMediatorLib.objectToString(dbresult) + "\n" +
+                "Return: requireAuth=" + requireAuth +
+                ", challenge=" + challenge + ", clientid=" + clientid + "\n" +
+                "Return: newRecordKeyValue=" + newRecordKeyValue +
+                ", changePasswordResult=" + changePasswordResult + ", mediatoken=" + mediatoken
             );
         }
     },
@@ -192,8 +192,8 @@ INTERMediator_DBAdapter = {
 
         if (username && oldpassword) {
             INTERMediatorOnPage.authUser = username;
-            if (username != ''    // No usename and no challenge, get a challenge.
-                && (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
+            if (username !== "" &&  // No usename and no challenge, get a challenge.
+                (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                 INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
                 challengeResult = INTERMediator_DBAdapter.getChallenge();
                 if (!challengeResult) {
@@ -201,9 +201,9 @@ INTERMediator_DBAdapter = {
                     return false; // If it's failed to get a challenge, finish everything.
                 }
             }
-            INTERMediatorOnPage.authHashedPassword
-                = SHA1(oldpassword + INTERMediatorOnPage.authUserSalt)
-            + INTERMediatorOnPage.authUserHexSalt;
+            INTERMediatorOnPage.authHashedPassword =
+                SHA1(oldpassword + INTERMediatorOnPage.authUserSalt) +
+                INTERMediatorOnPage.authUserHexSalt;
         } else {
             INTERMediatorOnPage.retrieveAuthInfo();
         }
@@ -211,10 +211,10 @@ INTERMediator_DBAdapter = {
         try {
             result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
             if (result.newPasswordResult && result.newPasswordResult === true) {
-                INTERMediatorOnPage.authCryptedPassword
-                    = INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
-                INTERMediatorOnPage.authHashedPassword
-                    = SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
+                INTERMediatorOnPage.authCryptedPassword =
+                    INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
+                INTERMediatorOnPage.authHashedPassword =
+                    SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
                 INTERMediatorOnPage.storeCredencialsToCookie();
             }
         } catch (e) {
@@ -326,7 +326,7 @@ INTERMediator_DBAdapter = {
      This function returns recordset of retrieved.
      */
     db_query: function (args) {
-        var noError = true, i, index, params, counter, extCount, criteriaObject, sortkeyObject,
+        var noError = true, i, index, params, dbspec, counter, extCount, criteriaObject, sortkeyObject,
             returnValue, result, ix, extCountSort, recordLimit = 10000000, conditions, conditionSign;
 
         if (args.name === null || args.name === "") {
@@ -337,20 +337,22 @@ INTERMediator_DBAdapter = {
             return;
         }
 
-        if (args['records'] == null) {
-            params = "access=select&name=" + encodeURIComponent(args['name']);
+        if (args.records === null) {
+            params = "access=select&name=" + encodeURIComponent(args.name);
         } else {
-            if (Number(args.records) === 0) {
-                params = "access=describe&name=" + encodeURIComponent(args['name']);
+            dbspec = INTERMediatorOnPage.getDBSpecification();
+            if (parseInt(args.records, 10) === 0 &&
+                dbspec["db-class"] !== null && dbspec["db-class"] === "FileMaker_FX") {
+                params = "access=describe&name=" + encodeURIComponent(args.name);
             } else {
-                params = "access=select&name=" + encodeURIComponent(args['name']);
+                params = "access=select&name=" + encodeURIComponent(args.name);
             }
-            if (args['uselimit'] === true
-                && Number(args.records) >= INTERMediator.pagedSize
-                && Number(INTERMediator.pagedSize) > 0) {
+            if (args.uselimit === true &&
+                parseInt(args.records, 10) >= INTERMediator.pagedSize &&
+                parseInt(INTERMediator.pagedSize, 10) > 0) {
                 recordLimit = INTERMediator.pagedSize;
             } else {
-                recordLimit = args['records'];
+                recordLimit = args.records;
             }
         }
 
@@ -368,15 +370,15 @@ INTERMediator_DBAdapter = {
             //noinspection JSDuplicatedDeclaration
             for (index in args['parentkeyvalue']) {
                 if (args['parentkeyvalue'].hasOwnProperty(index)) {
-                    params += "&foreign" + counter
-                    + "field=" + encodeURIComponent(index);
-                    params += "&foreign" + counter
-                    + "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
+                    params += "&foreign" + counter +
+                        "field=" + encodeURIComponent(index);
+                    params += "&foreign" + counter +
+                        "value=" + encodeURIComponent(args['parentkeyvalue'][index]);
                     counter++;
                 }
             }
         }
-        if (args['useoffset'] && INTERMediator.startFrom != null) {
+        if (args.useoffset && INTERMediator.startFrom !== null) {
             params += "&start=" + encodeURIComponent(INTERMediator.startFrom);
         }
         extCount = 0;
@@ -504,15 +506,16 @@ INTERMediator_DBAdapter = {
             for (ix in result.dbresult) {
                 returnValue.count++;
             }
+            if (!(Number(args['records']) >= Number(INTERMediator.pagedSize) &&
+                Number(INTERMediator.pagedSize) > 0)) {
+                INTERMediator.pagedSize = Number(args['records']);
+            }
+            INTERMediator.pagedAllCount = Number(result.resultCount);
+            if (result.totalCount) {
+                INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
+            }
             if (( args['paging'] != null) && ( args['paging'] == true )) {
-                if (!(Number(args['records']) >= Number(INTERMediator.pagedSize)
-                    && Number(INTERMediator.pagedSize) > 0)) {
-                    INTERMediator.pagedSize = Number(args['records']);
-                }
-                INTERMediator.pagedAllCount = Number(result.resultCount);
-                if (result.totalCount) {
-                    INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
-                }
+                INTERMediator.pagination = true;
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {

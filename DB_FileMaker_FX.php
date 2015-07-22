@@ -449,18 +449,17 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
 
         $limitParam = 100000000;
-        if ($this->dbSettings->getRecordCount() > 0) {
-            $limitParam = $this->dbSettings->getRecordCount();
-        }
-        if (isset($context['records'])) {
-            $limitParam = $context['records'];
-        } elseif (isset($context['maxrecords'])) {
-            $limitParam = $context['maxrecords'];
-        }
-        if (isset($context['maxrecords'])
-            && intval($context['maxrecords']) >= $this->dbSettings->getRecordCount()
-            && $this->dbSettings->getRecordCount() > 0
-        ) {
+        if (isset($context['maxrecords'])) {
+            if (intval($context['maxrecords']) < $this->dbSettings->getRecordCount()) {
+                if (intval($context['maxrecords']) < intval($context['records'])) {
+                    $limitParam = intval($context['records']);
+                } else {
+                    $limitParam = intval($context['maxrecords']);
+                }
+            } else {
+                $limitParam = $this->dbSettings->getRecordCount();
+            }
+        } else if (isset($context['records'])) {
             $limitParam = $this->dbSettings->getRecordCount();
         }
         $this->setupFXforDB($this->dbSettings->getEntityForRetrieve(), $limitParam);
