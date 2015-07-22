@@ -50,7 +50,7 @@ Ver.5.2 (in development)
   the "source" commmand to execute it.
 - Customized login panel can include the error messages with the im_login_message and
   the im_newpass_message class's DIV node.
-- Enable SMB in INTER-Mediator Server Virtual Machine.
+- Update smb.conf in INTER-Mediator Server Virtual Machine.
 - Update an index page of INTER-Mediator Server Virtual Machine to display the last updated
   date.
 - Add image and css files (inprogress.gif, logo.gif and style.css).
@@ -95,6 +95,7 @@ Ver.5.1 (May 22, 2015)
 - The script to build the VM contains installation of samba and sharing the web root.
 - Update Vagrantfile for the INTER-Mediator-Server virtual machine to use a box file 
   which be installed VirtualBox Guest Additions.
+- Enable SMB in INTER-Mediator Server Virtual Machine.
 - [BUG FIX] Fix loading DB_Null.php in some cases.
 - [BUG FIX] The page editor title was "Definition File Editor" and correct it.
 - [BUG FIX] The 'navi-control' behavior was sometimes wrong.
