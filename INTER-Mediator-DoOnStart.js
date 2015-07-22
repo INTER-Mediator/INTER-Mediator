@@ -16,6 +16,7 @@ INTERMediator.propertyIETridentSetup();
 if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
     INTERMediator.startFrom = 0;
     INTERMediator.pagedSize = 0;
+    INTERMediator.pagination = false;
     INTERMediator.additionalCondition = {};
     INTERMediator.additionalSortKey = {};
 } else {
@@ -33,6 +34,14 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
         },
         set: function (value) {
             INTERMediator.setLocalProperty("_im_pagedSize", value);
+        }
+    });
+    Object.defineProperty(INTERMediator, 'pagination', {
+        get: function () {
+            return INTERMediator.getLocalProperty("_im_pagination", 0);
+        },
+        set: function (value) {
+            INTERMediator.setLocalProperty("_im_pagination", value);
         }
     });
     Object.defineProperty(INTERMediator, 'additionalCondition', {
@@ -75,5 +84,3 @@ INTERMediatorLib.addEvent(window, "unload", function (e) {
 });
 
 // ****** This file should terminate on the new line. INTER-Mediator adds some codes before here. ****
-
-
