@@ -679,7 +679,7 @@ INTERMediator = {
                         contextObj.setOriginal(repeatersOriginal);
                         if (relationDef) {
                             for (index in relationDef) {
-                                if (relationDef[index]["portal"] === true) {
+                                if (Boolean(relationDef[index].portal) === true) {
                                     currentContextDef["portal"] = true;
                                 }
                                 joinField = relationDef[index]['join-field'];
@@ -702,7 +702,7 @@ INTERMediator = {
                     }
                 }
 
-                if (currentContextDef["portal"] === true) {
+                if (Boolean(currentContextDef.portal) === true) {
                     currentContextDef["currentrecord"] = currentRecord;
                     keyValue = currentRecord["-recid"];
                 }
@@ -828,8 +828,8 @@ INTERMediator = {
                     }
                 }
 
-                if (currentContextDef['portal'] !== true ||
-                    (currentContextDef['portal'] === true && targetTotalCount > 0)) {
+                if (Boolean(currentContextDef.portal) !== true ||
+                    (Boolean(currentContextDef.portal) === true && targetTotalCount > 0)) {
                     nameTable = {};
                     for (k = 0; k < currentLinkedNodes.length; k++) {
                         try {
@@ -952,8 +952,8 @@ INTERMediator = {
                 setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                     currentContextDef, targetRecordset[ix]);
 
-                if (currentContextDef['portal'] !== true ||
-                    (currentContextDef['portal'] === true && targetTotalCount > 0)) {
+                if (Boolean(currentContextDef.portal) !== true ||
+                    (Boolean(currentContextDef.portal) === true && targetTotalCount > 0)) {
                     newlyAddedNodes = [];
                     insertNode = null;
                     if (!contextObj.sequencing) {
@@ -991,7 +991,7 @@ INTERMediator = {
             var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition,
                 recordNumber, useLimit, optionalCondition = [], pagingValue, recordsValue, i, recordset = [];
 
-            if (currentContextDef['cache'] === true) {
+            if (Boolean(currentContextDef.cache) === true) {
                 try {
                     if (!INTERMediatorOnPage.dbCache[currentContextDef['name']]) {
                         INTERMediatorOnPage.dbCache[currentContextDef['name']] =
@@ -1086,7 +1086,7 @@ INTERMediator = {
                     INTERMediator.setLocalProperty("_im_pagedSize", recordNumber);
 
                     targetRecords = {};
-                    if (currentContextDef["portal"] === true) {
+                    if (Boolean(currentContextDef.portal) === true) {
                         for (i = 0; i < Object.keys(currentContextDef["currentrecord"]).length; i++) {
                             if (currentContextDef["currentrecord"][i]) {
                                 recordset.push(currentContextDef["currentrecord"][i]);
