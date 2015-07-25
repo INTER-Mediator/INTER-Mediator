@@ -1,12 +1,15 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
-*
-*   This project started at the end of 2009.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ *
+ *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ *
+ *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ *   INTER-Mediator is supplied under MIT License.
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 function IM_Dummy_Entry($datasource, $options, $dbspecification, $debug = false)
 {
@@ -447,6 +450,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     }
 
     function countQueryResult($dataSourceName)
+    {
+        return $this->recordCount;
+    }
+
+    function getTotalCount($dataSourceName)
     {
         return $this->recordCount;
     }
