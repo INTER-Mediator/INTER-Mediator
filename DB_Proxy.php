@@ -174,6 +174,20 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      * @param $dataSourceName
      * @return mixed
      */
+    function getTotalCount($dataSourceName)
+    {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "getTotalCount")) {
+            return $result = $this->userExpanded->getTotalCount($dataSourceName);
+        }
+        if ($this->dbClass !== null) {
+            return $result = $this->dbClass->getTotalCount($dataSourceName);
+        }
+    }
+
+    /**
+     * @param $dataSourceName
+     * @return mixed
+     */
     function setToDB($dataSourceName)
     {
         $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
@@ -791,7 +805,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->outputOfProcessing['dbresult'] = $result;
                 $this->outputOfProcessing['resultCount'] = $this->countQueryResult($this->dbSettings->getTargetName());
                 $this->outputOfProcessing['totalCount']
-                    = $this->dbClass->getTotalCount($this->dbSettings->getTargetName());
+                    = $this->getTotalCount($this->dbSettings->getTargetName());
                 break;
             case 'update':
                 if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
