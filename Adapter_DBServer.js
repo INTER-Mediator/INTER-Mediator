@@ -347,7 +347,7 @@ INTERMediator_DBAdapter = {
             } else {
                 params = "access=select&name=" + encodeURIComponent(args.name);
             }
-            if (args.uselimit === true &&
+            if (Boolean(args.uselimit) === true &&
                 parseInt(args.records, 10) >= INTERMediator.pagedSize &&
                 parseInt(INTERMediator.pagedSize, 10) > 0) {
                 recordLimit = INTERMediator.pagedSize;
@@ -506,15 +506,17 @@ INTERMediator_DBAdapter = {
             for (ix in result.dbresult) {
                 returnValue.count++;
             }
-            if (!(Number(args['records']) >= Number(INTERMediator.pagedSize) &&
+            if (!(Number(args.records) >= Number(INTERMediator.pagedSize) &&
                 Number(INTERMediator.pagedSize) > 0)) {
-                INTERMediator.pagedSize = Number(args['records']);
+                INTERMediator.pagedSize = parseInt(args.records, 10);
             }
-            INTERMediator.pagedAllCount = Number(result.resultCount);
-            if (result.totalCount) {
-                INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
+            if (INTERMediator.pagedAllCount === 0 && INTERMediator.pagedAllCount < result.resultCount) {
+                INTERMediator.pagedAllCount = parseInt(result.resultCount, 10);
+                if (result.totalCount) {
+                    INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
+                }
             }
-            if (( args['paging'] != null) && ( args['paging'] == true )) {
+            if ((args.paging !== null) && (Boolean(args.paging) === true)) {
                 INTERMediator.pagination = true;
             }
         } catch (ex) {
