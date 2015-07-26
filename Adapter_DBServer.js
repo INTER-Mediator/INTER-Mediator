@@ -506,10 +506,6 @@ INTERMediator_DBAdapter = {
             for (ix in result.dbresult) {
                 returnValue.count++;
             }
-            if (!(Number(args.records) >= Number(INTERMediator.pagedSize) &&
-                Number(INTERMediator.pagedSize) > 0)) {
-                INTERMediator.pagedSize = parseInt(args.records, 10);
-            }
             if (INTERMediator.pagedAllCount === 0 && INTERMediator.pagedAllCount < result.resultCount) {
                 INTERMediator.pagedAllCount = parseInt(result.resultCount, 10);
                 if (result.totalCount) {
@@ -518,6 +514,10 @@ INTERMediator_DBAdapter = {
             }
             if ((args.paging !== null) && (Boolean(args.paging) === true)) {
                 INTERMediator.pagination = true;
+                if (!(Number(args.records) >= Number(INTERMediator.pagedSize) &&
+                    Number(INTERMediator.pagedSize) > 0)) {
+                    INTERMediator.pagedSize = parseInt(args.records, 10);
+                }
             }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
