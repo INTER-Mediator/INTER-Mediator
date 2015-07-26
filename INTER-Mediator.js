@@ -1083,7 +1083,11 @@ INTERMediator = {
                             recordNumber = parseInt(INTERMediator.pagedSize, 10);
                         }
                     }
-                    INTERMediator.setLocalProperty("_im_pagedSize", recordNumber);
+                    if (!currentContextDef["navi-control"] ||
+                        (currentContextDef["navi-control"] &&
+                            currentContextDef["navi-control"] !== "detail")) {
+                        INTERMediator.setLocalProperty("_im_pagedSize", recordNumber);
+                    }
 
                     targetRecords = {};
                     if (Boolean(currentContextDef.portal) === true) {
