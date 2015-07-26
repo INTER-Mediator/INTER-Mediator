@@ -407,6 +407,15 @@ var IMLibUI = {
                     ]
                 });
             }
+            INTERMediator.pagedAllCount--;
+            if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
+                INTERMediator.startFrom = INTERMediator.startFrom - INTERMediator.pagedSize;
+                if (INTERMediator.startFrom < 0) {
+                    INTERMediator.startFrom = 0;
+                }
+                INTERMediator.construct();
+            }
+            IMLibPageNavigation.navigationSetup();
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
