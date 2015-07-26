@@ -37,6 +37,9 @@ Ver.5.2 (in development)
   will actually bring maxrecords to the same value, no need to repeat yourself.
 - Update the navigation bar automaticallay after updating the value of _@condition:... and
   _@limitnumber:contextname.
+- Update the navigation bar automaticallay after inserting a new record.
+- Preserve the value of INTERMediator.startFrom after inserting a new record not to move to
+  the first page when pagination is enabled.
 - Hide buttons and the input area for pagination on the navigation bar when the 'paging' key
   is not set.
 - Update record information on the navigation bar automaticallay after using deleteButton().

@@ -286,7 +286,7 @@ IMLibPageNavigation = {
 
         if (newId > -1) {
             restore = INTERMediator.additionalCondition;
-            INTERMediator.startFrom = 0;
+            //INTERMediator.startFrom = 0;
             if (contextDef.records <= 1) {
                 conditions = INTERMediator.additionalCondition;
                 conditions[targetName] = {field: keyField, value: newId};
@@ -296,6 +296,8 @@ IMLibPageNavigation = {
             INTERMediator_DBAdapter.unregister();
             INTERMediator.constructMain(true);
             INTERMediator.additionalCondition = restore;
+            INTERMediator.pagedAllCount++;
+            IMLibPageNavigation.navigationSetup();
         }
         IMLibCalc.recalculation();
         INTERMediatorOnPage.hideProgress();
