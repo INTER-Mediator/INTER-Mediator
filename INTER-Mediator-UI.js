@@ -413,6 +413,8 @@ var IMLibUI = {
                 if (INTERMediator.startFrom < 0) {
                     INTERMediator.startFrom = 0;
                 }
+            }
+            if (INTERMediator.pagedAllCount >= INTERMediator.pagedSize) {
                 INTERMediator.construct();
             }
             IMLibPageNavigation.navigationSetup();
