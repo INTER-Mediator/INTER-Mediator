@@ -42,7 +42,9 @@ Ver.5.2 (in development)
   the first page when pagination is enabled.
 - Hide buttons and the input area for pagination on the navigation bar when the 'paging' key
   is not set.
-- Update record information on the navigation bar automaticallay after using deleteButton().
+- Update record information on the navigation bar automaticallay after using deleteButton 
+  method.
+- Call INTERMediator.construct method after using deleteButton method.
 - Add getTotalCount() to DB_PDO class to get the total number of records in the main table.
 - Add circle.yml to test with CircleCI.
 - Update TestDB.fmp12 and TestDB.fp7 to add the last updated date on "person_layout" layout.
