@@ -82,6 +82,7 @@ Ver.5.2 (in development)
 - [BUG FIX] Fix loading English MessageStrings class when the value of Accept-Language request header
   includes 'ja'.
 - [BUG FIX] Fix the behavior of 'maxrecords' key for pagination (Thanks to Kazuaki Osawa).
+- [BUG FIX] Fix the behavior of 'maxrecords' key for Master/Detail style page.
 - [BUG FIX] Fix displaying the navigation bar when using the master-detail style UI.
 
 Ver.5.1 (May 22, 2015)
