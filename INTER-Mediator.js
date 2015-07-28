@@ -1057,35 +1057,36 @@ INTERMediator = {
                         useLimit = true;
                     }
 
-                    if (currentContextDef.maxrecords) {
-                        if (parseInt(INTERMediator.pagedSize, 10) === 0) {
-                            if (currentContextDef.records) {
-                                recordNumber = parseInt(currentContextDef.records, 10);
-                            } else {
-                                recordNumber = parseInt(currentContextDef.maxrecords, 10);
-                            }
-                        } else {
-                            if (parseInt(currentContextDef.maxrecords, 10) < parseInt(INTERMediator.pagedSize, 10)) {
-                                if (parseInt(currentContextDef.maxrecords, 10) < parseInt(currentContextDef.records, 10)) {
+                    if (currentContextDef["navi-control"] &&
+                            currentContextDef["navi-control"] === "detail") {
+                        recordNumber = 1;
+                    } else {
+                        if (currentContextDef.maxrecords) {
+                            if (parseInt(INTERMediator.pagedSize, 10) === 0) {
+                                if (currentContextDef.records) {
                                     recordNumber = parseInt(currentContextDef.records, 10);
                                 } else {
                                     recordNumber = parseInt(currentContextDef.maxrecords, 10);
                                 }
                             } else {
+                                if (parseInt(currentContextDef.maxrecords, 10) < parseInt(INTERMediator.pagedSize, 10)) {
+                                    if (parseInt(currentContextDef.maxrecords, 10) < parseInt(currentContextDef.records, 10)) {
+                                        recordNumber = parseInt(currentContextDef.records, 10);
+                                    } else {
+                                        recordNumber = parseInt(currentContextDef.maxrecords, 10);
+                                    }
+                                } else {
+                                    recordNumber = parseInt(INTERMediator.pagedSize, 10);
+                                }
+                            }
+                        } else {
+                            if (parseInt(INTERMediator.pagedSize, 10) === 0 ||
+                                (parseInt(currentContextDef.records, 10) < parseInt(INTERMediator.pagedSize, 10))) {
+                                recordNumber = parseInt(currentContextDef.records, 10);
+                            } else {
                                 recordNumber = parseInt(INTERMediator.pagedSize, 10);
                             }
                         }
-                    } else {
-                        if (parseInt(INTERMediator.pagedSize, 10) === 0 ||
-                            (parseInt(currentContextDef.records, 10) < parseInt(INTERMediator.pagedSize, 10))) {
-                            recordNumber = parseInt(currentContextDef.records, 10);
-                        } else {
-                            recordNumber = parseInt(INTERMediator.pagedSize, 10);
-                        }
-                    }
-                    if (!currentContextDef["navi-control"] ||
-                        (currentContextDef["navi-control"] &&
-                            currentContextDef["navi-control"] !== "detail")) {
                         INTERMediator.setLocalProperty("_im_pagedSize", recordNumber);
                     }
 
