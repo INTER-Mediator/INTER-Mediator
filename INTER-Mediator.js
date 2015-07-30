@@ -1076,7 +1076,11 @@ INTERMediator = {
                                         recordNumber = parseInt(currentContextDef.maxrecords, 10);
                                     }
                                 } else {
-                                    recordNumber = parseInt(INTERMediator.pagedSize, 10);
+                                    if (currentContextDef.relation) {
+                                        recordNumber = parseInt(currentContextDef.records, 10);
+                                    } else {
+                                        recordNumber = parseInt(INTERMediator.pagedSize, 10);
+                                    }
                                 }
                             }
                         } else {
@@ -1084,10 +1088,16 @@ INTERMediator = {
                                 (parseInt(currentContextDef.records, 10) < parseInt(INTERMediator.pagedSize, 10))) {
                                 recordNumber = parseInt(currentContextDef.records, 10);
                             } else {
-                                recordNumber = parseInt(INTERMediator.pagedSize, 10);
+                                if (currentContextDef.relation) {
+                                    recordNumber = parseInt(currentContextDef.records, 10);
+                                } else {
+                                    recordNumber = parseInt(INTERMediator.pagedSize, 10);
+                                }
                             }
                         }
-                        INTERMediator.setLocalProperty("_im_pagedSize", recordNumber);
+                        if (!currentContextDef.relation) {
+                            INTERMediator.setLocalProperty("_im_pagedSize", recordNumber);
+                        }
                     }
 
                     targetRecords = {};
