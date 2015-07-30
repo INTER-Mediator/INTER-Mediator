@@ -136,6 +136,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 function loadClass($className)
 {
     if (strpos($className, 'PHPUnit_') === false &&
+        strpos($className, 'PHPExcel_') === false &&
         (include_once $className . '.php') === false) {
         $errorGenerator = new GenerateJSCode();
         if (strpos($className, "MessageStrings_") !== 0) {
