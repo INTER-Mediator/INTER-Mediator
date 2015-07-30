@@ -39,7 +39,7 @@ Ver.5.2 (in development)
   _@limitnumber:contextname.
 - Update the navigation bar automaticallay after inserting a new record.
 - Preserve the value of INTERMediator.startFrom after inserting a new record not to move to
-  the first page when pagination is enabled.
+  the first page for a list page when pagination is enabled.
 - Hide buttons and the input area for pagination on the navigation bar when the 'paging' key
   is not set.
 - Update record information on the navigation bar automaticallay after using deleteButton 

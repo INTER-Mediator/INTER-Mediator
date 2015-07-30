@@ -286,17 +286,19 @@ IMLibPageNavigation = {
 
         if (newId > -1) {
             restore = INTERMediator.additionalCondition;
-            //INTERMediator.startFrom = 0;
             if (contextDef.records <= 1) {
+                INTERMediator.startFrom = 0;
+                INTERMediator.pagedAllCount = 1;
                 conditions = INTERMediator.additionalCondition;
                 conditions[targetName] = {field: keyField, value: newId};
                 INTERMediator.additionalCondition = conditions;
                 IMLibLocalContext.archive();
+            } else {
+                INTERMediator.pagedAllCount++;
             }
             INTERMediator_DBAdapter.unregister();
             INTERMediator.constructMain(true);
             INTERMediator.additionalCondition = restore;
-            INTERMediator.pagedAllCount++;
             IMLibPageNavigation.navigationSetup();
         }
         IMLibCalc.recalculation();
