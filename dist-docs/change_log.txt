@@ -33,6 +33,19 @@ Ver.5.2 (in development)
       $prohibitIgnoreCondition = true;
       $httpAccounts = array('user'=>'testtest');
       $httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
+- Now setting the 'records' key manually in the definition file to a value bigger than maxrecords
+  will actually bring maxrecords to the same value, no need to repeat yourself.
+- Update the navigation bar automaticallay after updating the value of _@condition:... and
+  _@limitnumber:contextname.
+- Update the navigation bar automaticallay after inserting a new record.
+- Preserve the value of INTERMediator.startFrom after inserting a new record not to move to
+  the first page for a list page when pagination is enabled.
+- Hide buttons and the input area for pagination on the navigation bar when the 'paging' key
+  is not set.
+- Update record information on the navigation bar automaticallay after using deleteButton 
+  method.
+- Call INTERMediator.construct method after using deleteButton method.
+- Add getTotalCount() to DB_PDO class to get the total number of records in the main table.
 - Add circle.yml to test with CircleCI.
 - Update TestDB.fmp12 and TestDB.fp7 to add the last updated date on "person_layout" layout.
 - Update sample_schema_mysql.txt, TestDB.fmp12, TestDB_clone.fmp12 and TestDB.fp7 to add
@@ -43,7 +56,7 @@ Ver.5.2 (in development)
   the "source" commmand to execute it.
 - Customized login panel can include the error messages with the im_login_message and
   the im_newpass_message class's DIV node.
-- Enable SMB in INTER-Mediator Server Virtual Machine.
+- Update smb.conf in INTER-Mediator Server Virtual Machine.
 - Update an index page of INTER-Mediator Server Virtual Machine to display the last updated
   date.
 - Add image and css files (inprogress.gif, logo.gif and style.css).
@@ -53,10 +66,10 @@ Ver.5.2 (in development)
 - [BUG FIX] The definition file editor supports the 'pusher-app_id', 'pusher-key' and
   'pusher-secret' keys and send-mail settings etc.
 - [BUG FIX] Fix other issues of the definition file editor.
-- [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition 
+- [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition
   file using FileMaker Server.
 - [BUG FIX] Calculation bug fixed. In case of multiple uses of a calculated property.
-- [BUG FIX] Fix 'inline' and 'end-of-sibling' key options of validation. The affected version is 
+- [BUG FIX] Fix 'inline' and 'end-of-sibling' key options of validation. The affected version is
   5.1 only.
 - [BUG FIX] A term of the "send-mail" in DefinitionChecker class was wrong.
 - [BUG FIX] Some value in the Local Context weren't archived.
@@ -64,10 +77,14 @@ Ver.5.2 (in development)
 - [BUG FIX] PDO class had a bug for authentication but it would affect in a rare case.
 - [BUG FIX] Fix inserting data including null character to the database when using FileMaker Server.
 - [BUG FIX] Post Only Mode and Validation work fine.
-- [BUG FIX] Fix showing an image of FileMaker's container field if the value of "src" attribute in 
+- [BUG FIX] Fix showing an image of FileMaker's container field if the value of "src" attribute in
   the page file includes "?media=". The affected version is 5.1 only.
-- [BUG FIX] Fix loading English MessageStrings class when the value of Accept-Language request header 
+- [BUG FIX] Fix loading English MessageStrings class when the value of Accept-Language request header
   includes 'ja'.
+- [BUG FIX] Fix the behavior of 'maxrecords' key for pagination (Thanks to Kazuaki Osawa).
+- [BUG FIX] Fix the behavior of 'maxrecords' key for Master/Detail style page.
+- [BUG FIX] Fix displaying the navigation bar when using the master-detail style UI.
+- [BUG FIX] Fix compatibility with PHPExcel due to autoloading.
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.
@@ -87,6 +104,7 @@ Ver.5.1 (May 22, 2015)
 - The script to build the VM contains installation of samba and sharing the web root.
 - Update Vagrantfile for the INTER-Mediator-Server virtual machine to use a box file 
   which be installed VirtualBox Guest Additions.
+- Enable SMB in INTER-Mediator Server Virtual Machine.
 - [BUG FIX] Fix loading DB_Null.php in some cases.
 - [BUG FIX] The page editor title was "Definition File Editor" and correct it.
 - [BUG FIX] The 'navi-control' behavior was sometimes wrong.

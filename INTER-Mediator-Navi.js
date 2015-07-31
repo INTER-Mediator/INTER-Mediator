@@ -18,7 +18,7 @@ IMLibPageNavigation = {
             prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction, onNaviCopyFunction;
 
         navigation = document.getElementById('IM_NAVIGATOR');
-        if (navigation != null) {
+        if (navigation !== null) {
             insideNav = navigation.childNodes;
             for (i = 0; i < insideNav.length; i++) {
                 navigation.removeChild(insideNav[i]);
@@ -49,21 +49,21 @@ IMLibPageNavigation = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     ((navLabel === null || navLabel[4] === null) ?
-                        INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
-                        + ((Math.min(start + pageSize, allCount) - start > 1) ?
-                        (((navLabel === null || navLabel[5] === null) ? "-" : navLabel[5])
-                            + Math.min(start + pageSize, allCount)) : '')
-                        + ((navLabel === null || navLabel[6] === null) ? " / " : navLabel[6]) + (allCount)
-                        + ((navLabel === null || navLabel[7] === null) ? "" : navLabel[7])));
-                node.setAttribute('class', 'IM_NAV_info');
+                        INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1) +
+                    ((Math.min(start + pageSize, allCount) - start > 1) ?
+                        (((navLabel === null || navLabel[5] === null) ? "-" : navLabel[5]) +
+                            Math.min(start + pageSize, allCount)) : "") +
+                    ((navLabel === null || navLabel[6] === null) ? " / " : navLabel[6]) + (allCount) +
+                    ((navLabel === null || navLabel[7] === null) ? "" : navLabel[7])));
+                node.setAttribute("class", "IM_NAV_info");
             }
 
-            if (navLabel === null || navLabel[0] !== false) {
+            if ((navLabel === null || navLabel[0] !== false) && INTERMediator.pagination === true) {
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[0] === null) ? '<<' : navLabel[0]));
-                node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
+                node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ""));
                 INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator_DBAdapter.unregister();
                     INTERMediator.startFrom = 0;
@@ -74,7 +74,7 @@ IMLibPageNavigation = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[1] === null) ? '<' : navLabel[1]));
-                node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
+                node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ""));
                 prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
                 INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator_DBAdapter.unregister();
@@ -87,8 +87,8 @@ IMLibPageNavigation = {
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[2] === null) ? '>' : navLabel[2]));
                 node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                nextPageCount
-                    = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
+                nextPageCount =
+                    (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
                 INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator_DBAdapter.unregister();
                     INTERMediator.startFrom = nextPageCount;
@@ -100,7 +100,7 @@ IMLibPageNavigation = {
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[3] === null) ? '>>' : navLabel[3]));
                 node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                if (allCount % pageSize == 0) {
+                if (allCount % pageSize === 0) {
                     endPageCount = allCount - (allCount % pageSize) - pageSize;
                 } else {
                     endPageCount = allCount - (allCount % pageSize);
@@ -147,8 +147,8 @@ IMLibPageNavigation = {
                             navigation.appendChild(node);
                             node.appendChild(
                                 document.createTextNode(
-                                    INTERMediatorOnPage.getMessages()[3] + ': '
-                                        + IMLibPageNavigation.deleteInsertOnNavi[i]['name']));
+                                    INTERMediatorOnPage.getMessages()[3] + ': ' +
+                                        IMLibPageNavigation.deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
                             onNaviInsertFunction = function (a, b, c) {
                                 var contextName = a, keyValue = b, confirming = c;
@@ -170,8 +170,8 @@ IMLibPageNavigation = {
                             navigation.appendChild(node);
                             node.appendChild(
                                 document.createTextNode(
-                                    INTERMediatorOnPage.getMessages()[4] + ': '
-                                        + IMLibPageNavigation.deleteInsertOnNavi[i]['name']));
+                                    INTERMediatorOnPage.getMessages()[4] + ': ' +
+                                        IMLibPageNavigation.deleteInsertOnNavi[i]['name']));
                             node.setAttribute('class', 'IM_NAV_button');
                             onNaviDeleteFunction = function (a, b, c, d) {
                                 var contextName = a, keyName = b, keyValue = c, confirming = d;
@@ -193,8 +193,8 @@ IMLibPageNavigation = {
                             navigation.appendChild(node);
                             node.appendChild(
                                 document.createTextNode(
-                                    INTERMediatorOnPage.getMessages()[15] + ': '
-                                    + IMLibPageNavigation.deleteInsertOnNavi[i]['contextDef']['name']));
+                                    INTERMediatorOnPage.getMessages()[15] + ': ' +
+                                        IMLibPageNavigation.deleteInsertOnNavi[i]['contextDef']['name']));
                             node.setAttribute('class', 'IM_NAV_button');
                             onNaviCopyFunction = function (a, b) {
                                 var contextDef = a, record = b;
@@ -286,16 +286,20 @@ IMLibPageNavigation = {
 
         if (newId > -1) {
             restore = INTERMediator.additionalCondition;
-            INTERMediator.startFrom = 0;
             if (contextDef.records <= 1) {
+                INTERMediator.startFrom = 0;
+                INTERMediator.pagedAllCount = 1;
                 conditions = INTERMediator.additionalCondition;
                 conditions[targetName] = {field: keyField, value: newId};
                 INTERMediator.additionalCondition = conditions;
                 IMLibLocalContext.archive();
+            } else {
+                INTERMediator.pagedAllCount++;
             }
             INTERMediator_DBAdapter.unregister();
             INTERMediator.constructMain(true);
             INTERMediator.additionalCondition = restore;
+            IMLibPageNavigation.navigationSetup();
         }
         IMLibCalc.recalculation();
         INTERMediatorOnPage.hideProgress();
@@ -347,7 +351,7 @@ IMLibPageNavigation = {
         var newId;
 
         INTERMediatorOnPage.showProgress();
-        newId = IMLibUI.copyRecordImpl(contextDef, keyValue)
+        newId = IMLibUI.copyRecordImpl(contextDef, keyValue);
         if (newId > -1) {
             restore = INTERMediator.additionalCondition;
             INTERMediator.startFrom = 0;
@@ -403,8 +407,8 @@ IMLibPageNavigation = {
                         currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
                     } catch (ex) {
                         if (ex == "_im_requath_request_") {
-                            if (INTERMediatorOnPage.requireAuthentication
-                                && !INTERMediatorOnPage.isComplementAuthData()) {
+                            if (INTERMediatorOnPage.requireAuthentication &&
+                                !INTERMediatorOnPage.isComplementAuthData()) {
                                 INTERMediatorOnPage.clearCredentials();
                                 INTERMediatorOnPage.authenticating(
                                     function () {
@@ -418,8 +422,8 @@ IMLibPageNavigation = {
                         }
                     }
 
-                    if (currentVal.recordset == null
-                        || currentVal.recordset[0] === null) {
+                    if (currentVal.recordset === null ||
+                        currentVal.recordset[0] === null) {
                         alert(INTERMediatorLib.getInsertedString(
                             INTERMediatorOnPage.getMessages()[1003], [fieldArray.join(',')]));
                         return;
@@ -463,8 +467,8 @@ IMLibPageNavigation = {
 
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
-                        if (INTERMediatorOnPage.requireAuthentication
-                            && !INTERMediatorOnPage.isComplementAuthData()) {
+                        if (INTERMediatorOnPage.requireAuthentication &&
+                            !INTERMediatorOnPage.isComplementAuthData()) {
                             INTERMediatorOnPage.clearCredentials();
                             INTERMediatorOnPage.authenticating(
                                 function () {

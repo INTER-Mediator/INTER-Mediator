@@ -174,6 +174,20 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      * @param $dataSourceName
      * @return mixed
      */
+    function getTotalCount($dataSourceName)
+    {
+        if ($this->userExpanded !== null && method_exists($this->userExpanded, "getTotalCount")) {
+            return $result = $this->userExpanded->getTotalCount($dataSourceName);
+        }
+        if ($this->dbClass !== null) {
+            return $result = $this->dbClass->getTotalCount($dataSourceName);
+        }
+    }
+
+    /**
+     * @param $dataSourceName
+     * @return mixed
+     */
     function setToDB($dataSourceName)
     {
         $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
@@ -774,6 +788,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $result = $this->dbClass->getSchema($this->dbSettings->getTargetName());
                 $this->outputOfProcessing['dbresult'] = $result;
                 $this->outputOfProcessing['resultCount'] = 0;
+                $this->outputOfProcessing['totalCount'] = 0;
                 break;
             case 'select':
                 $result = $this->getFromDB($this->dbSettings->getTargetName());
@@ -789,10 +804,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
                 $this->outputOfProcessing['dbresult'] = $result;
                 $this->outputOfProcessing['resultCount'] = $this->countQueryResult($this->dbSettings->getTargetName());
-                if (get_class($this->dbClass) == 'DB_FileMaker_FX') {
-                    $this->outputOfProcessing['totalCount']
-                        = $this->dbClass->getTotalCount($this->dbSettings->getTargetName());
-                }
+                $this->outputOfProcessing['totalCount']
+                    = $this->getTotalCount($this->dbSettings->getTargetName());
                 break;
             case 'update':
                 if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {

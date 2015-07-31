@@ -24,6 +24,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @var int
      */
     private $mainTableCount = 0;
+    private $mainTableTotalCount = 0;
     /**
      * @var null
      */
@@ -598,6 +599,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         $this->fieldInfo = null;
         $this->mainTableCount = 0;
+        $this->mainTableTotalCount = 0;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForRetrieve();
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
@@ -641,21 +643,34 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $this->mainTableCount = $result->fetchColumn(0);
 
+        // Count all records
+        $sql = "SELECT count(*) FROM {$viewOrTableName}";
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Select:' . $sql);
+            return array();
+        }
+        $this->mainTableTotalCount = $result->fetchColumn(0);
+
         // Create SQL
         $limitParam = 100000000;
-        if ($this->dbSettings->getRecordCount() > 0) {
-            $limitParam = $this->dbSettings->getRecordCount();
-        }
-        if (isset($tableInfo['records'])) {
-            $limitParam = $tableInfo['records'];
-        } elseif (isset($tableInfo['maxrecords'])) {
-            $limitParam = $tableInfo['maxrecords'];
-        }
-        if (isset($tableInfo['maxrecords'])
-            && intval($tableInfo['maxrecords']) >= $this->dbSettings->getRecordCount()
-            && $this->dbSettings->getRecordCount() > 0
-        ) {
-            $limitParam = $this->dbSettings->getRecordCount();
+        if (isset($tableInfo['maxrecords'])) {
+            if (intval($tableInfo['maxrecords']) < $this->dbSettings->getRecordCount()) {
+                if (intval($tableInfo['maxrecords']) < intval($tableInfo['records'])) {
+                    $limitParam = intval($tableInfo['records']);
+                } else {
+                    $limitParam = intval($tableInfo['maxrecords']);
+                }
+            } else {
+                $limitParam = $this->dbSettings->getRecordCount();
+            }
+        } else if (isset($tableInfo['records'])) {
+            if (intval($tableInfo['records']) < $this->dbSettings->getRecordCount()) {
+                $limitParam = intval($tableInfo['records']);
+            } else {
+                $limitParam = $this->dbSettings->getRecordCount();
+            }
         }
 
         $skipParam = 0;
@@ -726,9 +741,18 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @param $dataSourceName
      * @return int
      */
-    function countQueryResult($dataSourceName)
+    public function countQueryResult($dataSourceName)
     {
         return $this->mainTableCount;
+    }
+
+    /**
+     * @param $dataSourceName
+     * @return int
+     */
+    public function getTotalCount($dataSourceName)
+    {
+        return $this->mainTableTotalCount;
     }
 
     /**
