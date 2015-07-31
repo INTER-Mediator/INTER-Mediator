@@ -319,6 +319,7 @@ class DefinitionChecker
                 '*' => array(
                     'field' => 'string',
                     'context' => 'string',
+                    'container' => 'boolean',
                 )
             ),
             'calculation' => array(
