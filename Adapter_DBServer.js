@@ -327,7 +327,8 @@ INTERMediator_DBAdapter = {
      */
     db_query: function (args) {
         var noError = true, i, index, params, dbspec, counter, extCount, criteriaObject, sortkeyObject,
-            returnValue, result, ix, extCountSort, recordLimit = 10000000, conditions, conditionSign;
+            returnValue, result, ix, extCountSort, recordLimit = 10000000, conditions, conditionSign,
+            contextDef;
 
         if (args.name === null || args.name === "") {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
@@ -506,7 +507,10 @@ INTERMediator_DBAdapter = {
             for (ix in result.dbresult) {
                 returnValue.count++;
             }
-            if (INTERMediator.pagedAllCount === 0 && INTERMediator.pagedAllCount < result.resultCount) {
+
+            contextDef = INTERMediatorLib.getNamedObject(
+                INTERMediatorOnPage.getDataSources(), "name", args.name);
+            if (!contextDef.relation) {
                 INTERMediator.pagedAllCount = parseInt(result.resultCount, 10);
                 if (result.totalCount) {
                     INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
