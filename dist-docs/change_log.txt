@@ -35,15 +35,10 @@ Ver.5.2 (in development)
       $httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
 - Now setting the 'records' key manually in the definition file to a value bigger than maxrecords
   will actually bring maxrecords to the same value, no need to repeat yourself.
-- Update the navigation bar automaticallay after updating the value of _@condition:... and
-  _@limitnumber:contextname.
-- Update the navigation bar automaticallay after inserting a new record.
 - Preserve the value of INTERMediator.startFrom after inserting a new record not to move to
   the first page for a list page when pagination is enabled.
 - Hide buttons and the input area for pagination on the navigation bar when the 'paging' key
   is not set.
-- Update record information on the navigation bar automaticallay after using deleteButton 
-  method or deleteRecordFromNavi method.
 - Call INTERMediator.construct method after using deleteButton method.
 - Add getTotalCount() to DB_PDO class to get the total number of records in the main table.
 - Add circle.yml to test with CircleCI.
