@@ -43,7 +43,7 @@ Ver.5.2 (in development)
 - Hide buttons and the input area for pagination on the navigation bar when the 'paging' key
   is not set.
 - Update record information on the navigation bar automaticallay after using deleteButton 
-  method.
+  method or deleteRecordFromNavi method.
 - Call INTERMediator.construct method after using deleteButton method.
 - Add getTotalCount() to DB_PDO class to get the total number of records in the main table.
 - Add circle.yml to test with CircleCI.

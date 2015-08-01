@@ -318,9 +318,17 @@ IMLibPageNavigation = {
             INTERMediator_DBAdapter.db_delete({
                 name: targetName,
                 conditions: [
-                    {field: keyField, operator: '=', value: keyValue}
+                    {field: keyField, operator: "=", value: keyValue}
                 ]
             });
+
+            INTERMediator.pagedAllCount--;
+            if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
+                INTERMediator.startFrom--;
+                if (INTERMediator.startFrom < 0) {
+                    INTERMediator.startFrom = 0;
+                }
+            }
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 INTERMediatorOnPage.clearCredentials();
@@ -336,12 +344,6 @@ IMLibPageNavigation = {
             }
         }
 
-        if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 2) {
-            INTERMediator.startFrom--;
-            if (INTERMediator.startFrom < 0) {
-                INTERMediator.startFrom = 0;
-            }
-        }
         INTERMediator.constructMain(true);
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
