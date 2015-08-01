@@ -510,7 +510,8 @@ INTERMediator_DBAdapter = {
 
             contextDef = INTERMediatorLib.getNamedObject(
                 INTERMediatorOnPage.getDataSources(), "name", args.name);
-            if (!contextDef.relation) {
+            if (!contextDef.relation &&
+                args.paging && Boolean(args.paging) === true) {
                 INTERMediator.pagedAllCount = parseInt(result.resultCount, 10);
                 if (result.totalCount) {
                     INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
