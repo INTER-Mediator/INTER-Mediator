@@ -1095,7 +1095,8 @@ INTERMediator = {
                                 }
                             }
                         }
-                        if (!currentContextDef.relation) {
+                        if (!currentContextDef.relation &&
+                            currentContextDef.paging && Boolean(currentContextDef.paging) === true) {
                             INTERMediator.setLocalProperty("_im_pagedSize", recordNumber);
                         }
                     }
