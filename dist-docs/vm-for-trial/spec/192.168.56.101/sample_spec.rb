@@ -172,6 +172,13 @@ describe package('php-mysqlnd'), :if => os[:family] == 'redhat' && os[:release].
   it { should be_installed }
 end
 
+describe package('php5-mysql'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+describe package('php-mysql'), :if => os[:family] == 'readhat' do
+  it { should be_installed }
+end
+
 describe package('php5-pgsql'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
