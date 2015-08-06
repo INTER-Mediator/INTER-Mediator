@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# setup shell script for Ubuntu Server 14.04.2
+#
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
 #
@@ -23,27 +25,33 @@ IMVMROOT="${IMROOT}/dist-docs/vm-for-trial"
 APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF="/etc/samba/smb.conf"
 
+RESULT=`id developer 2>/dev/null`
+if [ $RESULT = ''] ; then
+    adduser developer
+    yes im4135dev | passwd developer
+    echo "developer ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/developer
+    chmod 440 /etc/sudoers.d/developer
+    touch /home/developer/.viminfo
+    chown developer:developer /home/developer/.viminfo
+fi
+
 groupadd im-developer
 usermod -a -G im-developer developer
 usermod -a -G im-developer www-data
 yes im4135dev | passwd postgres
 
-echo "[mysqld]" > /etc/mysql/conf.d/im.cnf
-echo "character-set-server=utf8mb4" >> /etc/mysql/conf.d/im.cnf
-echo "skip-character-set-client-handshake" >> /etc/mysql/conf.d/im.cnf
-echo "[client]" >> /etc/mysql/conf.d/im.cnf
-echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
-echo "[mysqldump]" >> /etc/mysql/conf.d/im.cnf
-echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
-echo "[mysql]" >> /etc/mysql/conf.d/im.cnf
-echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
-
 echo "set grub-pc/install_devices /dev/sda" | debconf-communicate
+aptitude clean
 aptitude update
 aptitude full-upgrade --assume-yes
+aptitude install apache2 --assume-yes
+aptitude install openssh-server --assume-yes
+aptitude install mysql-server --assume-yes
+aptitude install postgresql --assume-yes
 aptitude install sqlite --assume-yes
 aptitude install acl --assume-yes
 aptitude install libmysqlclient-dev --assume-yes
+aptitude install php5-mysql --assume-yes
 aptitude install php5-pgsql --assume-yes
 aptitude install php5-sqlite --assume-yes
 aptitude install php5-curl --assume-yes
@@ -58,6 +66,17 @@ aptitude install libfontconfig1 --assume-yes
 aptitude install phpunit --assume-yes
 aptitude install samba --assume-yes
 aptitude clean
+
+mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' identified by 'im4135dev';" -u root
+echo "[mysqld]" > /etc/mysql/conf.d/im.cnf
+echo "character-set-server=utf8mb4" >> /etc/mysql/conf.d/im.cnf
+echo "skip-character-set-client-handshake" >> /etc/mysql/conf.d/im.cnf
+echo "[client]" >> /etc/mysql/conf.d/im.cnf
+echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
+echo "[mysqldump]" >> /etc/mysql/conf.d/im.cnf
+echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
+echo "[mysql]" >> /etc/mysql/conf.d/im.cnf
+echo "default-character-set=utf8mb4" >> /etc/mysql/conf.d/im.cnf
 
 a2enmod headers
 echo "#Header add Content-Security-Policy \"default-src 'self'\"" > "${APACHEOPTCONF}"
