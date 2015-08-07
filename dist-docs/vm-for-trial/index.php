@@ -596,7 +596,7 @@
 
 <h3>VMに関する情報</h3>
 <ul>
-    <li>OS：Ubuntu Server 14.04.2</li>
+    <li>OS：Ubuntu Server 14.04.3</li>
     <li>インストール言語：English/en_EN.UTF-8</li>
     <li>キーボード：Japanese</li>
     <li>タイムゾーン：Asia/Tokyo</li>
