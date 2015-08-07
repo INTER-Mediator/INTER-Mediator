@@ -36,14 +36,14 @@ if node[:platform] == 'ubuntu'
   file '/etc/sudoers.d/developer' do
     owner 'root'
     group 'root'
-    mode 440
+    mode '440'
     content 'developer ALL=(ALL) NOPASSWD:ALL'
   end
 end
 
 file '/home/developer/.viminfo' do
-  owner 'devloper'
-  group 'devloper'
+  owner 'developer'
+  group 'developer'
 end
 
 execute 'groupadd im-developer' do
@@ -55,10 +55,28 @@ execute 'usermod -a -G im-developer developer' do
 end
 
 if node[:platform] == 'ubuntu'
+  execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
+    command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
+  end
+
   execute 'aptitude clean' do
     command 'aptitude clean'
   end
 
+  execute 'aptitude update' do
+    command 'aptitude update'
+  end
+
+  execute 'aptitude full-upgrade' do
+    command 'aptitude full-upgrade --assume-yes'
+  end
+elsif node[:platform] == 'redhat'
+  execute 'yum -y update' do
+    command 'yum -y update'
+  end
+end
+
+if node[:platform] == 'ubuntu'
   package 'apache2' do
     action :install
   end
@@ -107,11 +125,9 @@ if node[:platform] == 'ubuntu'
   package 'mysql-server' do
     action :install
   end
-  service 'mysql' do
-    action [ :enable, :start ]
-  end
   file '/etc/mysql/conf.d/im.cnf' do
     content <<-EOF
+[mysqld]
 character-set-server=utf8mb4
 skip-character-set-client-handshake
 
@@ -122,8 +138,11 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4
 
 [mysql]
-default-character-set=utf8mb4'
+default-character-set=utf8mb4
 EOF
+  end
+  service 'mysql' do
+    action [ :enable, :start ]
   end
 elsif node[:platform] == 'redhat'
   if node[:platform_version].to_f < 7
@@ -190,27 +209,6 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4
 EOF
     end
-  end
-end
-execute 'mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'*********\';" -u root' do
-  command 'mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'im4135dev\';" -u root'
-end
-
-if node[:platform] == 'ubuntu'
-  execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
-    command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
-  end
-
-  execute 'aptitude update' do
-    command 'aptitude update'
-  end
-
-  execute 'aptitude full-upgrade' do
-    command 'aptitude full-upgrade --assume-yes'
-  end
-elsif node[:platform] == 'redhat'
-  execute 'yum -y update' do
-    command 'yum -y update'
   end
 end
 
@@ -394,14 +392,18 @@ if node[:platform] == 'ubuntu'
   execute 'aptitude clean' do
     command 'aptitude clean'
   end
-  file "#{APACHEOPTCONF}" do
-    content '#Header add Content-Security-Policy "default-src \'self\'"'
-  end
+end
+
+execute 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'*********\';" -u root ; fi' do
+  command 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'im4135dev\';" -u root ; fi'
 end
 
 if node[:platform] == 'ubuntu'
   execute 'a2enmod headers' do
     command 'a2enmod headers'
+  end
+  file "#{APACHEOPTCONF}" do
+    content '#Header add Content-Security-Policy "default-src \'self\'"'
   end
 end
 
