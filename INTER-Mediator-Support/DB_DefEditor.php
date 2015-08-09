@@ -616,6 +616,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'global':
             case 'script':
             case 'script':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
                 foreach ($allKeys[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
                     if (array_search($key, $keysShouldInteger) !== false) {
@@ -631,7 +632,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     }
                     if (!is_null($fieldValue)) {
                         $globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key] = $fieldValue;
-                    } else if (isset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key])) {
+                    } else if ($key === $theKey &&
+                        isset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key])) {
                         unset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key]);
                     }
                 }
