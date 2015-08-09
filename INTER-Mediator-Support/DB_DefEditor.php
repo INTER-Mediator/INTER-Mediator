@@ -389,10 +389,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 break;
             case 'browser-compatibility':
                 if (isset($globalOptions['browser-compatibility'])) {
-                    foreach ($globalOptions['browser-compatibility'] as $rel) {
+                    foreach ($globalOptions['browser-compatibility'] as $agent => $vNum) {
                         $result[] = array(
                             'id' => $seq,
-                            'browserdef' => $rel,
+                            'agent' => $agent,
+                            'version' => $vNum,
                         );
                         $seq++;
                     }
@@ -512,6 +513,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'container', 'soft-delete', 'f-option',
         );
 
+        $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
+
         switch ($dataSourceName) {
             case 'contexts':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
@@ -624,15 +627,19 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             $fieldValue = false;
                         } else if (preg_match("/(true)/i", $fieldValue)) {
                             $fieldValue = true;
+                        } else {
+                            $fieldValue = null;
                         }
                     }
                     if (!is_null($fieldValue)) {
                         $globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key] = $fieldValue;
-                        break;
+                    } else if (isset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key])) {
+                        unset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key]);
                     }
                 }
                 break;
-            case 'options':
+            case
+            'options':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 if (strpos($theKey, "authentication-") === 0) {
                     $authKey = substr($theKey, 15);
@@ -698,7 +705,6 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 }
                 break;
             case 'aliases':
-            case 'browser-compatibility':
             case 'formatter':
                 $recordID = $contextID % 10000;
                 foreach ($allKeysOptions[$dataSourceName] as $key) {
@@ -707,6 +713,38 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         $globalOptions[$dataSourceName][$recordID][$key] = $fieldValue;
                         break;
                     }
+                }
+                break;
+            case 'browser-compatibility':
+                $recordID = $contextID % 10000;
+                $key = $this->dbSettings->getFieldOfIndex(1);
+                $pValue = $this->dbSettings->getValueOfField($key);
+                $this->logger->setDebugMessage("key={$key}, pValue={$pValue}");
+                if (!is_null($pValue)) {
+                    $currentAgents = array_keys($globalOptions[$dataSourceName]);
+                    $tempBCArray = array();
+                    if ($key == 'agent') {
+                        //$agentIndex = array_keys($currentAgents, $pValue);
+                        for ($i = 0; $i < count($currentAgents); $i++) {
+                            if ($i == $recordID) {
+                                $tempBCArray[$pValue]
+                                    = $globalOptions[$dataSourceName][$currentAgents[$i]];
+                            } else {
+                                $tempBCArray[$currentAgents[$i]]
+                                    = $globalOptions[$dataSourceName][$currentAgents[$i]];
+                            }
+                        }
+                    } else if ($key == 'version') {
+                        for ($i = 0; $i < count($currentAgents); $i++) {
+                            if ($i == $recordID) {
+                                $tempBCArray[$currentAgents[$i]] = $pValue;
+                            } else {
+                                $tempBCArray[$currentAgents[$i]]
+                                    = $globalOptions[$dataSourceName][$currentAgents[$i]];
+                            }
+                        }
+                    }
+                    $globalOptions[$dataSourceName] = $tempBCArray;
                 }
                 break;
             case 'dbsettings':
@@ -889,9 +927,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (!isset($globalOptions['browser-compatibility'])) {
                     $globalOptions['browser-compatibility'] = array();
                 }
-                $globalOptions['browser-compatibility'][] = array(
-                    'browserdef' => '= new value =',
-                );
+                $index = count($globalOptions['browser-compatibility']);
+                $globalOptions['browser-compatibility']["agent{$index}"] = '= version =';
                 break;
             case 'formatter':
                 if (!isset($globalOptions['formatter'])) {
@@ -1001,10 +1038,20 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 }
                 break;
             case 'aliases':
-            case 'browser-compatibility':
             case 'formatter':
                 $recordID = $contextID % 10000;
                 unset($globalOptions[$dataSourceName][$recordID]);
+                if (count($globalOptions[$dataSourceName]) < 1) {
+                    unset($globalOptions[$dataSourceName]);
+                }
+                break;
+            case 'browser-compatibility':
+                $recordID = $contextID % 10000;
+                $keys = array_keys($globalOptions[$dataSourceName]);
+                unset($globalOptions[$dataSourceName][$keys[$recordID]]);
+                if (count($globalOptions[$dataSourceName]) < 1) {
+                    unset($globalOptions[$dataSourceName]);
+                }
                 break;
             case 'debug':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
@@ -1117,12 +1164,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement authSupportCheckIssuedHashForResetPassword() method.
     }
 
-    public function setupConnection()
+    public
+    function setupConnection()
     {
         // TODO: Implement setupConnection() method.
     }
 
-    public static function defaultKey()
+    public
+    static function defaultKey()
     {
         // TODO: Implement defaultKey() method.
     }
