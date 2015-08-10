@@ -338,14 +338,14 @@ INTERMediator_DBAdapter = {
         }
 
         if (args.records === null) {
-            params = "access=select&name=" + encodeURIComponent(args.name);
+            params = "access=read&name=" + encodeURIComponent(args.name);
         } else {
             dbspec = INTERMediatorOnPage.getDBSpecification();
             if (parseInt(args.records, 10) === 0 &&
                 dbspec["db-class"] !== null && dbspec["db-class"] === "FileMaker_FX") {
                 params = "access=describe&name=" + encodeURIComponent(args.name);
             } else {
-                params = "access=select&name=" + encodeURIComponent(args.name);
+                params = "access=read&name=" + encodeURIComponent(args.name);
             }
             if (Boolean(args.uselimit) === true &&
                 parseInt(args.records, 10) >= INTERMediator.pagedSize &&

@@ -1,4 +1,5 @@
 <?php
+
 /*
 * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
 *
@@ -11,38 +12,57 @@
 abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interface_CommonDB
 {
 
+    private function getOperationSeries($operation)    {
+        $operations = array();
+        if (($operation === 'select') || ($operation === 'load') || ($operation === 'read')) {
+            $operations = array('read', 'select', 'load');
+        } else if (($operation === 'update') || ($operation === 'edit')) {
+            $operations = array('update', 'edit');
+        } else if (($operation === 'create') || ($operation === 'new')) {
+            $operations = array('create', 'new');
+        } else if ($operation === 'delete') {
+            $operations = array('delete');
+        }
+        return $operations;
+    }
+
     function getFieldForAuthorization($operation)
     {
-        $operation = ($operation == 'select') ? 'load' : $operation;
-
+        $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $authInfoField = null;
         if (isset($tableInfo['authentication']['all']['field'])) {
             $authInfoField = $tableInfo['authentication']['all']['field'];
         }
-        if (isset($tableInfo['authentication'][$operation]['field'])) {
-            $authInfoField = $tableInfo['authentication'][$operation]['field'];
+        foreach ($operations as $op) {
+            if (isset($tableInfo['authentication'][$op]['field'])) {
+                $authInfoField = $tableInfo['authentication'][$op]['field'];
+                break;
+            }
         }
         return $authInfoField;
     }
 
     function getTargetForAuthorization($operation)
     {
+        $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $authInfoTarget = null;
         if (isset($tableInfo['authentication']['all']['target'])) {
             $authInfoTarget = $tableInfo['authentication']['all']['target'];
         }
-        if (isset($tableInfo['authentication'][$operation]['target'])) {
-            $authInfoTarget = $tableInfo['authentication'][$operation]['target'];
+        foreach ($operations as $op) {
+            if (isset($tableInfo['authentication'][$op]['field'])) {
+                $authInfoTarget = $tableInfo['authentication'][$op]['field'];
+                break;
+            }
         }
         return $authInfoTarget;
     }
 
     function getAuthorizedUsers($operation = null)
     {
-        $operation = ($operation == 'select') ? 'load' : $operation;
-
+        $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $usersArray = array();
         if ($this->dbSettings->getAuthenticationItem('user')) {
@@ -51,16 +71,18 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
         if (isset($tableInfo['authentication']['all']['user'])) {
             $usersArray = array_merge($usersArray, $tableInfo['authentication']['all']['user']);
         }
-        if (isset($tableInfo['authentication'][$operation]['user'])) {
-            $usersArray = array_merge($usersArray, $tableInfo['authentication'][$operation]['user']);
+        foreach ($operations as $op) {
+            if (isset($tableInfo['authentication'][$op]['user'])) {
+                $usersArray = array_merge($usersArray, $tableInfo['authentication'][$op]['user']);
+                break;
+            }
         }
         return $usersArray;
     }
 
     function getAuthorizedGroups($operation = null)
     {
-        $operation = ($operation == 'select') ? 'load' : $operation;
-
+        $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $groupsArray = array();
         if ($this->dbSettings->getAuthenticationItem('group')) {
@@ -69,8 +91,11 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
         if (isset($tableInfo['authentication']['all']['group'])) {
             $groupsArray = array_merge($groupsArray, $tableInfo['authentication']['all']['group']);
         }
-        if (isset($tableInfo['authentication'][$operation]['group'])) {
-            $groupsArray = array_merge($groupsArray, $tableInfo['authentication'][$operation]['group']);
+        foreach ($operations as $op) {
+            if (isset($tableInfo['authentication'][$op]['group'])) {
+                $groupsArray = array_merge($groupsArray, $tableInfo['authentication'][$op]['group']);
+                break;
+            }
         }
         return $groupsArray;
     }

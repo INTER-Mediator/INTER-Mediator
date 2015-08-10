@@ -53,7 +53,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
             $sortArray = $this->getSortClause();
             $sortKey = isset($sortArray[0]) ? $sortArray[0]["field"] : null;
             $sortDirection = isset($sortArray[0]) ? $sortArray[0]["direction"] : null;
-            $queryArray = $this->getWhereClause('load');
+            $queryArray = $this->getWhereClause('read');
 
             $crlfPosition = strpos($fileContent, "\r\n");
             $crlfPosition = $crlfPosition === false ? 999999 : $crlfPosition;

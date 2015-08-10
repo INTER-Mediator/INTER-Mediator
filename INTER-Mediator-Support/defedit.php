@@ -162,4 +162,4 @@ if (php_uname('n') === 'inter-mediator-server' && $_SERVER['SERVER_ADDR'] === '1
 /**
  * Don't remove comment slashes below on any 'release.'
  */
-//IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), false);
+IM_Entry($defContexts, null, array('db-class' => 'DefEditor'), false);

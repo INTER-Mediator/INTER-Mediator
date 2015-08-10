@@ -61,6 +61,8 @@ Ver.5.2 (in development)
   date.
 - Add image and css files (inprogress.gif, logo.gif and style.css).
 - Add .codeclimate.yml.
+- Some terms of "new", "load", "edit" replaced to CRUD words "create", "read", "update".
+  But all original terms are still available.
 - [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
   can't contain ether boolean or string value appropriately.
 - [BUG FIX] The definition file editor supports the 'pusher-app_id', 'pusher-key' and
@@ -85,6 +87,7 @@ Ver.5.2 (in development)
 - [BUG FIX] Fix the behavior of 'maxrecords' key for Master/Detail style page.
 - [BUG FIX] Fix displaying the navigation bar when using the master-detail style UI.
 - [BUG FIX] Fix compatibility with PHPExcel due to autoloading.
+- [BUG FIX] Fix calculation for over-million numbers.
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.

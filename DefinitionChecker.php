@@ -252,14 +252,14 @@ class DefinitionChecker
             'post-enclosure' => 'string',
             'script' => array(
                 '*' => array(
-                    'db-operation' => 'string(load|update|new|delete)',
+                    'db-operation' => 'string(load|read|update|new|create|delete)',
                     'situation' => 'string(pre|presort|post)',
                     'definition' => 'string'
                 )
             ),
             'global' => array(
                 '*' => array(
-                    'db-operation' => 'string(load|update|new|delete)',
+                    'db-operation' => 'string(load|read|update|new|create|delete)',
                     'field' => 'string',
                     'value' => 'scalar'
                 )
@@ -278,6 +278,12 @@ class DefinitionChecker
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string'
                 ),
+                'read' => array(
+                    'user' => 'array',
+                    'group' => 'array',
+                    'target' => 'string(table|field-user|field-group)',
+                    'field' => 'string'
+                ),
                 'update' => array(
                     'user' => 'array',
                     'group' => 'array',
@@ -285,6 +291,12 @@ class DefinitionChecker
                     'field' => 'string'
                 ),
                 'new' => array(
+                    'user' => 'array',
+                    'group' => 'array',
+                    'target' => 'string(table|field-user|field-group)',
+                    'field' => 'string'
+                ),
+                'create' => array(
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
@@ -354,7 +366,43 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                 ),
+                'read' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
                 'new' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
+                'create' => array(
                     'from' => 'string',
                     'to' => 'string',
                     'cc' => 'string',
@@ -390,8 +438,25 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                 ),
+                'update' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
             )
-
         ),
     );
 
