@@ -212,7 +212,7 @@ class FileUploader
                         $values[] = $filePartialPath;
                         $relatedContext->dbSettings->setTargetFields($fields);
                         $relatedContext->dbSettings->setValue($values);
-                        $relatedContext->processingRequest($options, "new", true);
+                        $relatedContext->processingRequest($options, "create", true);
                     //    $relatedContext->finishCommunication(true);
                     //    $relatedContext->exportOutputDataAsJSON();
                     }

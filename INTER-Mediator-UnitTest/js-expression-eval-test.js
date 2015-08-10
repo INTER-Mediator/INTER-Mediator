@@ -144,6 +144,10 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         var result = Parser.evaluate("sum(p)", {p: [1.1, 1.1, 1.1, 5]});
         assert.equals(result, 8.3);
     },
+    "Sum function and array variable.4": function () {
+        var result = Parser.evaluate("sum(p)", {p: ["1,111,111","1,111,111","1,111,111"]});
+        assert.equals(result, 3333333);
+    },
     "If function and array variable.2": function () {
         var result = Parser.evaluate("if(a = 1,'b','c')", {a: [1]});
         assert.equals(result, 'b');

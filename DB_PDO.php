@@ -507,7 +507,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 }
             }
         }
-        $keywordAuth = ($currentOperation == "select") ? "load" : $currentOperation;
+        $keywordAuth = ($currentOperation == "select") ? "read" : $currentOperation;
+        $keywordAuth = ($currentOperation == "load") ? "read" : $currentOperation;
         if (isset($tableInfo['authentication'])
             && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$keywordAuth]))
         ) {
@@ -609,7 +610,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'load') {
+                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
                     if ($condition['situation'] == 'pre') {
                         $sql = $condition['definition'];
                         $this->logger->setDebugMessage($sql);
@@ -624,7 +625,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
         $viewOrTableName = isset($tableInfo['view']) ? $tableInfo['view'] : $tableName;
 
-        $queryClause = $this->getWhereClause('load', true, true, $signedUser);
+        $queryClause = $this->getWhereClause('read', true, true, $signedUser);
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
@@ -713,7 +714,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'load') {
+                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
                     if ($condition['situation'] == 'post') {
                         $sql = $condition['definition'];
                         $this->logger->setDebugMessage($sql);
@@ -885,7 +886,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'new' && $condition['situation'] == 'pre') {
+                if (($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create')
+                    && $condition['situation'] == 'pre'
+                ) {
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
@@ -921,8 +924,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
         }
         if (!$bypassAuth && isset($tableInfo['authentication'])) {
-            $authInfoField = $this->getFieldForAuthorization("new");
-            $authInfoTarget = $this->getTargetForAuthorization("new");
+            $authInfoField = $this->getFieldForAuthorization("create");
+            $authInfoTarget = $this->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
@@ -984,7 +987,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
-                if ($condition['db-operation'] == 'new' && $condition['situation'] == 'post') {
+                if (($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create')
+                    && $condition['situation'] == 'post'
+                ) {
                     $sql = $condition['definition'];
                     $this->logger->setDebugMessage($sql);
                     $result = $this->link->query($sql);
@@ -1483,6 +1488,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         return false;
     }
+
     /**
      * @param $username
      * @param $hashedpassword
@@ -1537,7 +1543,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $currentDTFormat = $this->currentDTString();
             if ($user_id > 0) {
                 $setClause = "limitdt=" . $this->link->quote($currentDTFormat);
-                if ($timeUp)    {
+                if ($timeUp) {
                     $hexSalt = substr($hpw, -8, 8);
                     $prevPwHash = sha1($ldapPassword . hex2bin($hexSalt)) . $hexSalt;
                     if ($prevPwHash != $hpw) {
@@ -1551,7 +1557,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     $this->errorMessageStore('Update:' . $sql);
                     return false;
                 }
-                if ($timeUp)    {
+                if ($timeUp) {
                     //    $setClause .= ",hashedpasswd=" . $this->link->quote($hashedpassword);
                     $this->logger->setDebugMessage("LDAP cached account time over.");
                     return false;

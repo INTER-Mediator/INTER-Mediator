@@ -201,7 +201,9 @@ class MediaAccess
         $dbProxyInstance->dbSettings->setTargetName($options['media-context']);
         $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         if (isset($context['authentication'])
-            && (isset($context['authentication']['all']) || isset($context['authentication']['load']))
+            && (isset($context['authentication']['all'])
+                || isset($context['authentication']['load'])
+                || isset($context['authentication']['read']))
         ) {
             $realm = isset($context['authentication']['realm']) ? "_{$context['authentication']['realm']}" : '';
             $cookieNameUser = "_im_username{$realm}";
@@ -213,8 +215,15 @@ class MediaAccess
             if (!$dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken])) {
                 $this->exitAsError(401);
             }
-            $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("load");
-            $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("load");
+            if (isset($context['authentication']['load'])){
+                $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("load");
+                $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("load");
+            }
+            else if (isset($context['authentication']['read'])){
+                $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("read");
+                $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("read");
+            }
+
             if ($authInfoTarget == 'field-user') {
                 $endOfPath = strpos($target, "?");
                 $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
@@ -245,8 +254,14 @@ class MediaAccess
             } else if ($authInfoTarget == 'field-group') {
                 //
             } else {
-                $authorizedUsers = $dbProxyInstance->dbClass->getAuthorizedUsers("load");
-                $authorizedGroups = $dbProxyInstance->dbClass->getAuthorizedGroups("load");
+                if (isset($context['authentication']['load'])){
+                    $authorizedUsers = $dbProxyInstance->dbClass->getAuthorizedUsers("load");
+                    $authorizedGroups = $dbProxyInstance->dbClass->getAuthorizedGroups("load");
+                }
+                else if (isset($context['authentication']['read'])){
+                    $authorizedUsers = $dbProxyInstance->dbClass->getAuthorizedUsers("read");
+                    $authorizedGroups = $dbProxyInstance->dbClass->getAuthorizedGroups("read");
+                }
                 if (count($authorizedGroups) == 0 && count($authorizedUsers) == 0)   {
                     return;
                 }

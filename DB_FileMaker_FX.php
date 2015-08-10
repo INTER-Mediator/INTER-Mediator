@@ -578,11 +578,18 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
 
         if (isset($context['authentication'])
-            && (isset($context['authentication']['all']) || isset($context['authentication']['load']))
+            && (isset($context['authentication']['all'])
+                || isset($context['authentication']['load'])
+                || isset($context['authentication']['read']))
         ) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization("load");
-            $authInfoTarget = $this->getTargetForAuthorization("load");
+            if (isset($context['authentication']['load'])) {
+                $authInfoField = $this->getFieldForAuthorization("load");
+                $authInfoTarget = $this->getTargetForAuthorization("load");
+            } else if (isset($context['authentication']['read'])) {
+                $authInfoField = $this->getFieldForAuthorization("read");
+                $authInfoTarget = $this->getTargetForAuthorization("read");
+            }
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
@@ -672,14 +679,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         if (isset($context['global'])) {
             foreach ($context['global'] as $condition) {
-                if ($condition['db-operation'] == 'load') {
+                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
                     $this->fx->SetFMGlobal($condition['field'], $condition['value']);
                 }
             }
         }
         if (isset($context['script'])) {
             foreach ($context['script'] as $condition) {
-                if ($condition['db-operation'] == 'load') {
+                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
                     if ($condition['situation'] == 'pre') {
                         $this->fx->PerformFMScriptPrefind($condition['definition']);
                     } else if ($condition['situation'] == 'presort') {
@@ -1202,8 +1209,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         if (!$bypassAuth && isset($context['authentication'])
             && (isset($context['authentication']['all']) || isset($context['authentication']['new']))
         ) {
-            $authInfoField = $this->getFieldForAuthorization("new");
-            $authInfoTarget = $this->getTargetForAuthorization("new");
+            $authInfoField = $this->getFieldForAuthorization("create");
+            $authInfoTarget = $this->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
                 $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                 $this->fx->AddDBParam($authInfoField,
@@ -1215,8 +1222,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             } else {
                 if ($this->dbSettings->isDBNative()) {
                 } else {
-                    $authorizedUsers = $this->getAuthorizedUsers("new");
-                    $authorizedGroups = $this->getAuthorizedGroups("new");
+                    $authorizedUsers = $this->getAuthorizedUsers("create");
+                    $authorizedGroups = $this->getAuthorizedGroups("create");
                     $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                     if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
                         && array_intersect($belongGroups, $authorizedGroups)
@@ -1228,14 +1235,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         }
         if (isset($context['global'])) {
             foreach ($context['global'] as $condition) {
-                if ($condition['db-operation'] == 'new') {
+                if ($condition['db-operation'] == 'new'||$condition['db-operation'] == 'create') {
                     $this->fx->SetFMGlobal($condition['field'], $condition['value']);
                 }
             }
         }
         if (isset($context['script'])) {
             foreach ($context['script'] as $condition) {
-                if ($condition['db-operation'] == 'new') {
+                if ($condition['db-operation'] == 'new'||$condition['db-operation'] == 'create') {
                     if ($condition['situation'] == 'pre') {
                         $this->fx->PerformFMScriptPrefind($condition['definition']);
                     } else if ($condition['situation'] == 'presort') {

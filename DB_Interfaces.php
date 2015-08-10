@@ -189,6 +189,14 @@ interface Extending_Interface_AfterCreate
 {
     public function doAfterCreateToDB($dataSourceName, $result);
 }
+interface Extending_Interface_BeforeCopy
+{
+    public function doBeforeCopyInDB($dataSourceName);
+}
+interface Extending_Interface_AfterCopy
+{
+    public function doAfterCopyInDB($dataSourceName, $result);
+}
 
 interface DB_Interface_Previous
 {

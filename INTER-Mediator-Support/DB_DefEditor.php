@@ -513,7 +513,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'container', 'soft-delete', 'f-option',
         );
 
-        $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
+       // $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
 
         switch ($dataSourceName) {
             case 'contexts':
@@ -722,7 +722,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 $recordID = $contextID % 10000;
                 $key = $this->dbSettings->getFieldOfIndex(1);
                 $pValue = $this->dbSettings->getValueOfField($key);
-                $this->logger->setDebugMessage("key={$key}, pValue={$pValue}");
+                // $this->logger->setDebugMessage("key={$key}, pValue={$pValue}");
                 if (!is_null($pValue)) {
                     $currentAgents = array_keys($globalOptions[$dataSourceName]);
                     $tempBCArray = array();
