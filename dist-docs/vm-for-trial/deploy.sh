@@ -159,6 +159,11 @@ chmod 664 "${IMVMROOT}/dbupdate.sh"
 cd ~developer
 chown developer:developer .*
 
+# Modify php.ini
+
+cat /etc/php5/apache2/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php5/apache2/php.ini.tmp
+mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini
+
 # Share the Web Root Directory with SMB.
 
 sed ':loop; N; $!b loop; ;s/#### Networking ####\n/#### Networking ####\n   hosts allow = 192.168.56. 127./g' "${SMBCONF}" > "${SMBCONF}".tmp
