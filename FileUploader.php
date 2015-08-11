@@ -123,7 +123,7 @@ class FileUploader
                 $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
             }
         }
-        $result = move_uploaded_file($fileInfo['tmp_name'], $filePath);
+        $result = move_uploaded_file($util->removeNull($fileInfo['tmp_name']), $filePath);
         if (!$result) {
             if (isset($_POST["_im_redirect"])) {
                 header("Location: {$_POST["_im_redirect"]}");
