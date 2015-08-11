@@ -135,7 +135,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
  */
 function loadClass($className)
 {
-    if (strpos($className, 'PHPUnit_') === false &&
+    if (strpos($className, 'PHPUnit_') === false && $className !== 'PHP_Invoker' &&
         strpos($className, 'PHPExcel_') === false &&
         (include_once $className . '.php') === false) {
         $errorGenerator = new GenerateJSCode();
