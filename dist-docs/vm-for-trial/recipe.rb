@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Ubuntu Server 14.04.2, CentOS 6.6 and CentOS 7
+# Recipe file of Itamae for Ubuntu Server 14.04.3, CentOS 6.6 and CentOS 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on OS X usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -764,6 +764,10 @@ execute "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\"" do
   command "chmod -R a=rX,u+w,g+w \"#{WEBROOT}\""
 end
 
+execute "cd \"#{WEBROOT}\" && cd INTER-Mediator && git checkout ." do
+  command "cd \"#{WEBROOT}\" && cd INTER-Mediator && git checkout ."
+end
+
 execute "chmod 664 #{WEBROOT}/*.html" do
   command "chmod 664 #{WEBROOT}/*.html"
 end
@@ -781,6 +785,12 @@ directory '/home/developer' do
 end
 execute 'chown -R developer:developer /home/developer' do
   command 'chown -R developer:developer /home/developer'
+end
+
+if node[:platform] == 'ubuntu'
+  execute 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini' do
+    command 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini'
+  end
 end
 
 file "#{SMBCONF}" do
