@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Ubuntu Server 14.04.2
+# setup shell script for Ubuntu Server 14.04.3
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -149,6 +149,7 @@ echo "y" | source "${IMVMROOT}/dbupdate.sh"
 setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx "${WEBROOT}"
 chown -R developer:im-developer "${WEBROOT}"
 chmod -R a=rX,u+w,g+w "${WEBROOT}"
+cd "${WEBROOT}" && cd INTER-Mediator && git checkout .
 chmod 664 ${WEBROOT}/*.html
 chmod 664 ${WEBROOT}/*.php
 chmod 664 "${IMVMROOT}/dbupdate.sh"
