@@ -242,7 +242,7 @@ describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >
 end
 
 describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('1.9.17') }
+  it { should be_installed.by('npm').with_version('1.9.18') }
 end
 
 describe package('libfontconfig1'), :if => os[:family] == 'ubuntu' do
