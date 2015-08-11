@@ -264,7 +264,15 @@ INTERMediator_DBAdapter = {
                     case 3:
                         break;
                     case 4:
-                        jsonObject = JSON.parse(myRequest.responseText);
+                        try {
+                            jsonObject = JSON.parse(myRequest.responseText);
+                        } catch (ex) {
+                            INTERMediator.setErrorMessage(ex,
+                                INTERMediatorLib.getInsertedString(
+                                    INTERMediatorOnPage.getMessages()[1032], ["", ""]));
+                            INTERMediator.flushMessage();
+                            break;
+                        }
                         resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
                         dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
                         requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
