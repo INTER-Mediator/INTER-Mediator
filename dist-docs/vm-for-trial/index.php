@@ -63,6 +63,7 @@
             curl_setopt($ch, CURLOPT_POSTFIELDS, '-db=' . $dbDatabase . '&-lay=information&-findall&-max=1');
             curl_setopt($ch, CURLOPT_HEADER, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 1);
             $xml = curl_exec($ch);
             curl_close($ch);
             libxml_use_internal_errors(true);
@@ -595,7 +596,7 @@
 
 <h3>VMに関する情報</h3>
 <ul>
-    <li>OS：Ubuntu Server 14.04.2</li>
+    <li>OS：Ubuntu Server 14.04.3</li>
     <li>インストール言語：English/en_EN.UTF-8</li>
     <li>キーボード：Japanese</li>
     <li>タイムゾーン：Asia/Tokyo</li>

@@ -6,7 +6,11 @@
 #   - Change directory to "vm-for-trial" directory on the host of VM
 #   - Run "rake spec" on the host of VM
 
-WEBROOT = "/var/www/html"
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 14
+  WEBROOT = "/var/www"
+else
+  WEBROOT = "/var/www/html"
+end
 
 IMROOT = "#{WEBROOT}/INTER-Mediator"
 IMSUPPORT = "#{IMROOT}/INTER-Mediator-Support"
@@ -24,6 +28,24 @@ if node[:platform] == 'redhat' && node[:platform_version].to_f < 6
   #end
 end
 
+user "developer" do
+  password "$6$inter-mediator$kEUWd5ZQNPEfNF7CPzRMDoHhmz67rgJTmDbUsJ3AL35vV3c5sGk9ml2kLRj.2z5BkygH7SS2E549qTB2FYs6S/"
+end
+
+if node[:platform] == 'ubuntu'
+  file '/etc/sudoers.d/developer' do
+    owner 'root'
+    group 'root'
+    mode '440'
+    content 'developer ALL=(ALL) NOPASSWD:ALL'
+  end
+end
+
+file '/home/developer/.viminfo' do
+  owner 'developer'
+  group 'developer'
+end
+
 execute 'groupadd im-developer' do
   command 'groupadd im-developer'
 end
@@ -33,6 +55,31 @@ execute 'usermod -a -G im-developer developer' do
 end
 
 if node[:platform] == 'ubuntu'
+  execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
+    command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
+  end
+
+  execute 'aptitude clean' do
+    command 'aptitude clean'
+  end
+
+  execute 'aptitude update' do
+    command 'aptitude update'
+  end
+
+  execute 'aptitude full-upgrade' do
+    command 'aptitude full-upgrade --assume-yes'
+  end
+elsif node[:platform] == 'redhat'
+  execute 'yum -y update' do
+    command 'yum -y update'
+  end
+end
+
+if node[:platform] == 'ubuntu'
+  package 'apache2' do
+    action :install
+  end
   execute 'usermod -a -G im-developer www-data' do
     command 'usermod -a -G im-developer www-data'
   end
@@ -48,7 +95,11 @@ elsif node[:platform] == 'redhat'
   end
 end
 
-if node[:platform] == 'redhat'
+if node[:platform] == 'ubuntu'
+  package 'postgresql' do
+    action :install
+  end
+elsif node[:platform] == 'redhat'
   package 'postgresql-server' do
     action :install
   end
@@ -61,9 +112,9 @@ if node[:platform] == 'redhat'
       command 'service postgresql initdb'
     end
   end
-  service 'postgresql' do
-    action [ :enable, :start ]
-  end
+end
+service 'postgresql' do
+  action [ :enable, :start ]
 end
 
 user 'postgres' do
@@ -71,8 +122,12 @@ user 'postgres' do
 end
 
 if node[:platform] == 'ubuntu'
+  package 'mysql-server' do
+    action :install
+  end
   file '/etc/mysql/conf.d/im.cnf' do
     content <<-EOF
+[mysqld]
 character-set-server=utf8mb4
 skip-character-set-client-handshake
 
@@ -83,8 +138,11 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4
 
 [mysql]
-default-character-set=utf8mb4'
+default-character-set=utf8mb4
 EOF
+  end
+  service 'mysql' do
+    action [ :enable, :start ]
   end
 elsif node[:platform] == 'redhat'
   if node[:platform_version].to_f < 7
@@ -151,27 +209,6 @@ default-character-set=utf8mb4
 default-character-set=utf8mb4
 EOF
     end
-  end
-  execute 'mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'*********\';" -u root' do
-    command 'mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'im4135dev\';" -u root'
-  end
-end
-
-if node[:platform] == 'ubuntu'
-  execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
-    command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
-  end
-
-  execute 'aptitude update' do
-    command 'aptitude update'
-  end
-
-  execute 'aptitude full-upgrade' do
-    command 'aptitude full-upgrade --assume-yes'
-  end
-elsif node[:platform] == 'redhat'
-  execute 'yum -y update' do
-    command 'yum -y update'
   end
 end
 
@@ -250,6 +287,16 @@ elsif node[:platform] == 'redhat'
 end
 
 if node[:platform] == 'ubuntu'
+  package 'php5-mysql' do
+    action :install
+  end
+elsif node[:platform] == 'redhat'
+  package 'php-mysql' do
+    action :install
+  end
+end
+
+if node[:platform] == 'ubuntu'
   package 'php5-pgsql' do
     action :install
   end
@@ -295,11 +342,13 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   end
 end
 
-execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
-  command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || node[:platform] == 'redhat'
+  execute 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10' do
+    command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
+  end
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14
   package 'nodejs-legacy' do
     action :install
   end
@@ -343,14 +392,18 @@ if node[:platform] == 'ubuntu'
   execute 'aptitude clean' do
     command 'aptitude clean'
   end
-  file "#{APACHEOPTCONF}" do
-    content '#Header add Content-Security-Policy "default-src \'self\'"'
-  end
+end
+
+execute 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'*********\';" -u root ; fi' do
+  command 'RESULT=`id vagrant 2>/dev/null`; if [ "$RESULT" != "" ]; then mysql -e "GRANT ALL PRIVILEGES ON *.* TO \'root\'@\'localhost\' identified by \'im4135dev\';" -u root ; fi'
 end
 
 if node[:platform] == 'ubuntu'
   execute 'a2enmod headers' do
     command 'a2enmod headers'
+  end
+  file "#{APACHEOPTCONF}" do
+    content '#Header add Content-Security-Policy "default-src \'self\'"'
   end
 end
 
@@ -468,7 +521,7 @@ end
 
 # Install npm packages
 
-if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   execute 'npm install -g buster' do
     command 'npm install -g buster'
   end
@@ -723,6 +776,9 @@ execute "chmod 664 \"#{IMVMROOT}/dbupdate.sh\"" do
   command "chmod 664 \"#{IMVMROOT}/dbupdate.sh\""
 end
 
+directory '/home/developer' do
+  action :create
+end
 execute 'chown -R developer:developer /home/developer' do
   command 'chown -R developer:developer /home/developer'
 end
@@ -994,7 +1050,7 @@ file "#{SMBCONF}" do
 
 [webroot]
    comment = Apache Root Directory
-   path = /var/www/html
+   path = #{WEBROOT}
    guest ok = no
    browseable = yes
    read only = no

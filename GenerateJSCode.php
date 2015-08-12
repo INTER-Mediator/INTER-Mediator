@@ -187,7 +187,11 @@ class GenerateJSCode
             "INTERMediatorOnPage.browserCompatibility",
             "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
 
-        $clientIdSeed = time() + $_SERVER['REMOTE_ADDR'] + mt_rand();
+        $remoteAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
+        if (is_null($remoteAddr) || $remoteAddr === FALSE) {
+            $remoteAddr = '0.0.0.0';
+        }
+        $clientIdSeed = time() + $remoteAddr + mt_rand();
         $randomSecret = mt_rand();
         $clientId = hash_hmac('sha256', $clientIdSeed, $randomSecret);
 
