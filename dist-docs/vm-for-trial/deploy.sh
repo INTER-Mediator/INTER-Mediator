@@ -65,6 +65,12 @@ aptitude install npm --assume-yes
 aptitude install libfontconfig1 --assume-yes
 aptitude install phpunit --assume-yes
 aptitude install samba --assume-yes
+
+# for Japanese
+aptitude install language-pack-ja --assume-yes
+aptitude install fbterm --assume-yes
+aptitude install unifont --assume-yes
+
 aptitude clean
 
 mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' identified by 'im4135dev';" -u root
@@ -179,6 +185,15 @@ echo "   create mask = 0664" >> "${SMBCONF}"
 echo "   directory mask = 0775" >> "${SMBCONF}"
 echo "   force group = im-developer" >> "${SMBCONF}"
 ( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer
+
+# Modify /etc/default/keyboard, /etc/default/locale for Japanese
+
+cat /etc/default/keyboard | sed -e 's/XKBLAYOUT="us"/XKBLAYOUT="jp"/g' > /etc/default/keyboard.tmp
+mv /etc/default/keyboard.tmp /etc/default/keyboard
+cat /etc/default/locale | sed -e 's/LANG="en_US.UTF-8"/LANG="ja_JP.UTF-8"/g' > /etc/default/locale.tmp
+mv /etc/default/locale.tmp /etc/default/locale
+chmod u+s /usr/bin/fbterm
+dpkg-reconfigure -f noninteractive keyboard-configuration
 
 # Launch buster-server for unit testing
 

@@ -384,6 +384,18 @@ package 'samba' do
   action :install
 end
 
+if node[:platform] == 'ubuntu'
+  package 'language-pack-ja' do
+    action :install
+  end
+  package 'fbterm' do
+    action :install
+  end
+  package 'unifont' do
+    action :install
+  end
+end
+
 package 'git' do
   action :install
 end
@@ -1075,6 +1087,36 @@ execute '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer' do
 end
 
 if node[:platform] == 'ubuntu'
+  file '/etc/default/keyboard' do
+    owner 'root'
+    group 'root'
+    mode '644'
+    content <<-EOF
+# Check /usr/share/doc/keyboard-configuration/README.Debian for
+# documentation on what to do after having modified this file.
+
+# The following variables describe your keyboard and can have the same
+# values as the XkbModel, XkbLayout, XkbVariant and XkbOptions options
+# in /etc/X11/xorg.conf.
+
+XKBMODEL="pc105"
+XKBLAYOUT="jp"
+XKBVARIANT=""
+XKBOPTIONS=""
+
+# If you don't want to use the XKB layout on the console, you can
+# specify an alternative keymap.  Make sure it will be accessible
+# before /usr is mounted.
+# KMAP=/etc/console-setup/defkeymap.kmap.gz
+EOF
+  end
+  file '/etc/default/locale' do
+    owner 'root'
+    group 'root'
+    mode '644'
+    content 'LANG="ja_JP.UTF-8"'
+  end
+
   file '/etc/rc.local' do
     owner 'root'
     group 'root'
@@ -1098,5 +1140,13 @@ if node[:platform] == 'ubuntu'
 /usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
 exit 0
 EOF
+  end
+
+  execute 'chmod u+s /usr/bin/fbterm' do
+    command 'chmod u+s /usr/bin/fbterm'
+  end
+
+  execute 'dpkg-reconfigure -f noninteractive keyboard-configuration' do
+    command 'dpkg-reconfigure -f noninteractive keyboard-configuration'
   end
 end
