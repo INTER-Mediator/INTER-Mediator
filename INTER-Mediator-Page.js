@@ -522,6 +522,9 @@ INTERMediatorOnPage = {
             positiveList = {"trident": positiveList.trident};
         } else if (navigator.userAgent.indexOf("MSIE ") > -1) {
             positiveList = {"msie": positiveList.msie};
+        } else if (navigator.userAgent.indexOf("Opera/") > -1 ||
+            navigator.userAgent.indexOf("OPR/") > -1) {
+            positiveList = {"opera": positiveList.opera, "opr": positiveList.opera};
         }
 
         for (agent in positiveList) {
@@ -542,6 +545,7 @@ INTERMediatorOnPage = {
                 }
             }
         }
+        console.log(versionStr);
         if (matchAgent && matchOS) {
             specifiedVersion = parseInt(versionStr, 10);
 
