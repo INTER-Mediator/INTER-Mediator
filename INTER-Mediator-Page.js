@@ -545,7 +545,7 @@ INTERMediatorOnPage = {
                 }
             }
         }
-        console.log(versionStr);
+        
         if (matchAgent && matchOS) {
             specifiedVersion = parseInt(versionStr, 10);
 
