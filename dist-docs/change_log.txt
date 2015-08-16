@@ -88,6 +88,8 @@ Ver.5.2 (in development)
 - [BUG FIX] Fix displaying the navigation bar when using the master-detail style UI.
 - [BUG FIX] Fix compatibility with PHPExcel due to autoloading.
 - [BUG FIX] Fix calculation for over-million numbers.
+- [BUG FIX] Fix detecting web browsers (Chrome, Safari, Firefox and Opera) for "browser-compatibility"
+  key.
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.

@@ -509,64 +509,97 @@ INTERMediatorOnPage = {
 
     INTERMediatorCheckBrowser: function (deleteNode) {
         "use strict";
-        var positiveList, matchAgent, matchOS, versionStr, agent, os, judge, specifiedVersion, versionNum,
-            agentMark, dotPos, bodyNode, elm, childElm, grandChildElm, i;
+        var positiveList, matchAgent, matchOS, versionStr, agent, os, judge = false, specifiedVersion,
+            versionNum, agentPos = -1, dotPos, bodyNode, elm, childElm, grandChildElm, i;
 
         positiveList = INTERMediatorOnPage.browserCompatibility();
         matchAgent = false;
         matchOS = false;
+
+        if (navigator.userAgent.indexOf("Edge/") > -1) {
+            positiveList = {"edge": positiveList.edge};
+        } else if (navigator.userAgent.indexOf("Trident/") > -1) {
+            positiveList = {"trident": positiveList.trident};
+        } else if (navigator.userAgent.indexOf("MSIE ") > -1) {
+            positiveList = {"msie": positiveList.msie};
+        }
+
         for (agent in positiveList) {
-            if (positiveList.edge === undefined ||
-                navigator.userAgent.indexOf("Edge/") === -1 ||
-                (agent.toLowerCase() === "edge" && positiveList.edge !== undefined)) {
-                if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
-                    matchAgent = true;
-                    if (positiveList[agent] instanceof Object) {
-                        for (os in positiveList[agent]) {
-                            if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
-                                matchOS = true;
-                                versionStr = positiveList[agent][os];
-                                break;
-                            }
+            if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
+                matchAgent = true;
+                if (positiveList[agent] instanceof Object) {
+                    for (os in positiveList[agent]) {
+                        if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
+                            matchOS = true;
+                            versionStr = positiveList[agent][os];
+                            break;
                         }
-                    } else {
-                        matchOS = true;
-                        versionStr = positiveList[agent];
-                        break;
                     }
+                } else {
+                    matchOS = true;
+                    versionStr = positiveList[agent];
+                    break;
                 }
             }
         }
-        judge = false;
         if (matchAgent && matchOS) {
             specifiedVersion = parseInt(versionStr, 10);
-            if (navigator.appVersion.indexOf("MSIE") > -1) {
-                agentMark = navigator.appVersion.indexOf("MSIE");
-                dotPos = navigator.appVersion.indexOf(".", agentMark);
-                versionNum = parseInt(navigator.appVersion.substring(agentMark + 4, dotPos), 10);
+
+            if (navigator.appVersion.indexOf("Edge/") > -1) {
+                agentPos = navigator.appVersion.indexOf("Edge/") + 5;
+            } else if (navigator.appVersion.indexOf("Trident/") > -1) {
+                agentPos = navigator.appVersion.indexOf("Trident/") + 8;
+            } else if (navigator.appVersion.indexOf("MSIE ") > -1) {
+                agentPos = navigator.appVersion.indexOf("MSIE ") + 5;
+            } else if (navigator.appVersion.indexOf("OPR/") > -1) {
+                agentPos = navigator.appVersion.indexOf("OPR/") + 4;
+            } else if (navigator.appVersion.indexOf("Opera/") > -1) {
+                agentPos = navigator.appVersion.indexOf("Opera/") + 6;
+            } else if (navigator.appVersion.indexOf("Chrome/") > -1) {
+                agentPos = navigator.appVersion.indexOf("Chrome/") + 7;
+            } else if (navigator.appVersion.indexOf("Safari/") > -1 &&
+                navigator.appVersion.indexOf("Version/") > -1) {
+                agentPos = navigator.appVersion.indexOf("Version/") + 8;
+            } else if (navigator.userAgent.indexOf("Firefox/") > -1) {
+                agentPos = navigator.userAgent.indexOf("Firefox/") + 8;
+            }
+
+            if (agentPos > -1) {
+                if (navigator.userAgent.indexOf("Firefox/") > -1) {
+                    dotPos = navigator.userAgent.indexOf(".", agentPos);
+                    versionNum = parseInt(navigator.userAgent.substring(agentPos, dotPos), 10);
+                } else {
+                    dotPos = navigator.appVersion.indexOf(".", agentPos);
+                    versionNum = parseInt(navigator.appVersion.substring(agentPos, dotPos), 10);
+                }
                 /*
                  As for the appVersion property of IE, refer http://msdn.microsoft.com/en-us/library/aa478988.aspx
                  */
-            } else if (navigator.appVersion.indexOf("Edge/") > -1) {
-                agentMark = navigator.appVersion.indexOf("Edge/");
-                dotPos = navigator.appVersion.indexOf(".", agentMark);
-                versionNum = parseInt(navigator.appVersion.substring(agentMark + 5, dotPos), 10);
             } else {
                 dotPos = navigator.appVersion.indexOf(".");
                 versionNum = parseInt(navigator.appVersion.substring(0, dotPos), 10);
             }
+            if (INTERMediator.isTrident) {
+                specifiedVersion = specifiedVersion + 4;
+            }
             if (versionStr.indexOf("-") > -1) {
                 judge = (specifiedVersion >= versionNum);
+                if (document.documentMode) {
+                    judge = (specifiedVersion >= document.documentMode);
+                }
             } else if (versionStr.indexOf("+") > -1) {
                 judge = (specifiedVersion <= versionNum);
+                if (document.documentMode) {
+                    judge = (specifiedVersion <= document.documentMode);
+                }
             } else {
                 judge = (specifiedVersion == versionNum);
-            }
-            if (document.documentMode) {
-                judge = (specifiedVersion <= document.documentMode);
+                if (document.documentMode) {
+                    judge = (specifiedVersion == document.documentMode);
+                }
             }
         }
-        if (judge) {
+        if (judge === true) {
             if (deleteNode !== null) {
                 deleteNode.parentNode.removeChild(deleteNode);
             }
