@@ -8,14 +8,6 @@
  */
 
 var IMLibCalc = {
-        get regexpForSeparator() {
-            if (INTERMediator) {
-                return new RegExp(INTERMediator.separator);
-            }
-            return new RegExp("@");
-        },
-        // The INTERMediator object has to setup prior to this object.
-
         calculateRequiredObject: null,
         /*
          key => {    // Key is the id attribute of the node which is defined as "calcuration"
@@ -45,8 +37,8 @@ var IMLibCalc = {
                         field = calcDef[index]["field"];
                         elements = Parser.parse(exp).variables();
                         calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
-                        objectKey = nodeId
-                        + (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : "");
+                        objectKey = nodeId +
+                            (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : "");
                     } catch (ex) {
                         INTERMediator.setErrorMessage(ex,
                             INTERMediatorLib.getInsertedString(
@@ -85,8 +77,8 @@ var IMLibCalc = {
             IMLibNodeGraph.clear();
             for (nodeId in IMLibCalc.calculateRequiredObject) {
                 calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                idValue = nodeId.match(IMLibCalc.regexpForSeparator)
-                    ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                    nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
                 if (calcObject) {
                     calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(idValue);
                     targetNode = document.getElementById(calcFieldInfo.field);
@@ -109,8 +101,8 @@ var IMLibCalc = {
                     calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
                     calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
                     if (calcObject) {
-                        idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator)
-                            ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
+                        idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ?
+                            leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
                         targetNode = document.getElementById(calcFieldInfo.field);
                         exp = calcObject.expression;
                         nInfo = calcObject.nodeInfo;
@@ -170,8 +162,8 @@ var IMLibCalc = {
             IMLibNodeGraph.clear();
             for (nodeId in IMLibCalc.calculateRequiredObject) {
                 calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                idValue = nodeId.match(IMLibCalc.regexpForSeparator)
-                    ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                    nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
                 calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(idValue);
                 targetNode = document.getElementById(calcFieldInfo.field);
                 for (field in calcObject.referes) {
@@ -186,8 +178,8 @@ var IMLibCalc = {
                     calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
                     calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
                     if (calcObject) {
-                        idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator)
-                            ? leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
+                        idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ?
+                            leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
                         targetNode = document.getElementById(calcFieldInfo.field);
                         exp = calcObject.expression;
                         nInfo = calcObject.nodeInfo;
@@ -247,8 +239,8 @@ var IMLibCalc = {
                 // Spanning Tree Detected.
             }
 
-        }
-        ,
+        },
+
 
         setUndefinedToAllValues: function () {
             var nodeId, calcObject, ix, calcFieldInfo, targetNode, field, targetExp, targetIds, isRemoved, idValue;
@@ -256,8 +248,8 @@ var IMLibCalc = {
             do {
                 isRemoved = false;
                 for (nodeId in IMLibCalc.calculateRequiredObject) {
-                    idValue = nodeId.match(IMLibCalc.regexpForSeparator)
-                        ? nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                    idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                        nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
                     if (!document.getElementById(idValue)) {
                         delete IMLibCalc.calculateRequiredObject[nodeId];
                         isRemoved = true;

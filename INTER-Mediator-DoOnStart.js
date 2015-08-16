@@ -19,6 +19,7 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
     INTERMediator.pagination = false;
     INTERMediator.additionalCondition = {};
     INTERMediator.additionalSortKey = {};
+    IMLibCalc.regexpForSeparator = INTERMediator.separator;
 } else {
     Object.defineProperty(INTERMediator, 'startFrom', {
         get: function () {
@@ -58,6 +59,14 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
         },
         set: function (value) {
             INTERMediator.setLocalProperty("_im_additionalSortKey", value);
+        }
+    });
+    Object.defineProperty(IMLibCalc, 'regexpForSeparator', {
+        get: function () {
+            if (INTERMediator) {
+                return new RegExp(INTERMediator.separator);
+            }
+            return new RegExp("@");
         }
     });
 }
