@@ -46,6 +46,8 @@ $browserCompatibility = array(
     // Trident/6.0(Internet Explorer 10)
     // Trident/7.0(Internet Explorer 11)
     // Before IE 7, 'Trident' token doesn't exist.
+    'Edge' => '12+',
+    // Edge/12.0(Microsoft Edge 20)
 );
 /*
  * The list of User Agents, it's a wonderful site!

@@ -87,10 +87,10 @@ INTERMediatorOnPage = {
 
     isComplementAuthData: function () {
         "use strict";
-        if (this.authUser != null && this.authUser.length > 0
-            && this.authHashedPassword != null && this.authHashedPassword.length > 0
-            && this.authUserSalt != null && this.authUserSalt.length > 0
-            && this.authChallenge != null && this.authChallenge.length > 0) {
+        if (this.authUser != null && this.authUser.length > 0 &&
+            this.authHashedPassword != null && this.authHashedPassword.length > 0 &&
+            this.authUserSalt != null && this.authUserSalt.length > 0 &&
+            this.authChallenge != null && this.authChallenge.length > 0) {
             return true;
         }
         return false;
@@ -184,12 +184,12 @@ INTERMediatorOnPage = {
         }
     },
 
-    defaultBackgroundImage: "url(data:image/png;base64,"
-    + "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA"
-    + "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ"
-    + "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA"
-    + "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-    + "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
+    defaultBackgroundImage: "url(data:image/png;base64," +
+        "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
+        "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ" +
+        "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA" +
+        "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+        "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
 
     defaultBackgroundColor: null,
     loginPanelHTML: null,
@@ -381,8 +381,8 @@ INTERMediatorOnPage = {
             }
             INTERMediatorOnPage.authUser = inputUsername;
             bodyNode.removeChild(backBox);
-            if (inputUsername !== ""    // No usename and no challenge, get a challenge.
-                && (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
+            if (inputUsername !== "" &&  // No usename and no challenge, get a challenge.
+                (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                 INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
                 challengeResult = INTERMediator_DBAdapter.getChallenge();
                 if (!challengeResult) {
@@ -390,11 +390,11 @@ INTERMediatorOnPage = {
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
-            INTERMediatorOnPage.authCryptedPassword
-                = INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
-            INTERMediatorOnPage.authHashedPassword
-                = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
-            + INTERMediatorOnPage.authUserHexSalt;
+            INTERMediatorOnPage.authCryptedPassword =
+                INTERMediatorOnPage.publickey.biEncryptedString(inputPassword);
+            INTERMediatorOnPage.authHashedPassword =
+                SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
+                INTERMediatorOnPage.authUserHexSalt;
 
             if (INTERMediatorOnPage.authUser.length > 0) {   // Authentication succeed, Store coockies.
                 INTERMediatorOnPage.storeCredencialsToCookie();
@@ -419,8 +419,8 @@ INTERMediatorOnPage = {
                     return;
                 }
                 INTERMediatorOnPage.authUser = inputUsername;
-                if (inputUsername !== ""    // No usename and no challenge, get a challenge.
-                    && (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
+                if (inputUsername !== "" &&  // No usename and no challenge, get a challenge.
+                    (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                     INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
                     challengeResult = INTERMediator_DBAdapter.getChallenge();
                     if (!challengeResult) {
@@ -433,9 +433,9 @@ INTERMediatorOnPage = {
                         return; // If it's failed to get a challenge, finish everything.
                     }
                 }
-                INTERMediatorOnPage.authHashedPassword
-                    = SHA1(inputPassword + INTERMediatorOnPage.authUserSalt)
-                + INTERMediatorOnPage.authUserHexSalt;
+                INTERMediatorOnPage.authHashedPassword =
+                    SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
+                    INTERMediatorOnPage.authUserHexSalt;
                 params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(inputNewPassword);
                 try {
                     result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
@@ -478,12 +478,12 @@ INTERMediatorOnPage = {
         backBox.style.height = "100%";
         backBox.style.width = "100%";
         //backBox.style.backgroundColor = "#BBBBBB";
-        backBox.style.backgroundImage = "url(data:image/png;base64,"
-        + "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA"
-        + "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHlJ"
-        + "REFUeJzs0UENACAQA8EzdAl2EIEg3CKjyTGP/TfTur1OuJ2sAAAAAAAAAAAAAAAA"
-        + "AAAAAAAAAAAAAAAAAAAAAAAAAADAJwDRAekDAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        + "AAAAAAAAAAAAAAAAAADzAR4AAAD//wMAkUKRPI/rh/AAAAAASUVORK5CYII=)";
+        backBox.style.backgroundImage = "url(data:image/png;base64," +
+            "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
+            "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHlJ" +
+            "REFUeJzs0UENACAQA8EzdAl2EIEg3CKjyTGP/TfTur1OuJ2sAAAAAAAAAAAAAAAA" +
+            "AAAAAAAAAAAAAAAAAAAAAAAAAADAJwDRAekDAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+            "AAAAAAAAAAAAAAAAAADzAR4AAAD//wMAkUKRPI/rh/AAAAAASUVORK5CYII=)";
         backBox.style.position = "absolute";
         backBox.style.padding = " 50px 0 0 0";
         backBox.style.top = "0";
@@ -510,43 +510,50 @@ INTERMediatorOnPage = {
     INTERMediatorCheckBrowser: function (deleteNode) {
         "use strict";
         var positiveList, matchAgent, matchOS, versionStr, agent, os, judge, specifiedVersion, versionNum,
-            msieMark, dotPos, bodyNode, elm, childElm, grandChildElm, i;
+            agentMark, dotPos, bodyNode, elm, childElm, grandChildElm, i;
 
         positiveList = INTERMediatorOnPage.browserCompatibility();
         matchAgent = false;
         matchOS = false;
-        versionStr;
-        for (agent in  positiveList) {
-            if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
-                matchAgent = true;
-                if (positiveList[agent] instanceof Object) {
-                    for (os in positiveList[agent]) {
-                        if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
-                            matchOS = true;
-                            versionStr = positiveList[agent][os];
-                            break;
+        for (agent in positiveList) {
+            if (positiveList.edge === undefined ||
+                navigator.userAgent.indexOf("Edge/") === -1 ||
+                (agent.toLowerCase() === "edge" && positiveList.edge !== undefined)) {
+                if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
+                    matchAgent = true;
+                    if (positiveList[agent] instanceof Object) {
+                        for (os in positiveList[agent]) {
+                            if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
+                                matchOS = true;
+                                versionStr = positiveList[agent][os];
+                                break;
+                            }
                         }
+                    } else {
+                        matchOS = true;
+                        versionStr = positiveList[agent];
+                        break;
                     }
-                } else {
-                    matchOS = true;
-                    versionStr = positiveList[agent];
-                    break;
                 }
             }
         }
         judge = false;
         if (matchAgent && matchOS) {
-            specifiedVersion = parseInt(versionStr);
+            specifiedVersion = parseInt(versionStr, 10);
             if (navigator.appVersion.indexOf("MSIE") > -1) {
-                msieMark = navigator.appVersion.indexOf("MSIE");
-                dotPos = navigator.appVersion.indexOf(".", msieMark);
-                versionNum = parseInt(navigator.appVersion.substring(msieMark + 4, dotPos));
+                agentMark = navigator.appVersion.indexOf("MSIE");
+                dotPos = navigator.appVersion.indexOf(".", agentMark);
+                versionNum = parseInt(navigator.appVersion.substring(agentMark + 4, dotPos), 10);
                 /*
                  As for the appVersion property of IE, refer http://msdn.microsoft.com/en-us/library/aa478988.aspx
                  */
+            } else if (navigator.appVersion.indexOf("Edge/") > -1) {
+                agentMark = navigator.appVersion.indexOf("Edge/");
+                dotPos = navigator.appVersion.indexOf(".", agentMark);
+                versionNum = parseInt(navigator.appVersion.substring(agentMark + 5, dotPos), 10);
             } else {
                 dotPos = navigator.appVersion.indexOf(".");
-                versionNum = parseInt(navigator.appVersion.substring(0, dotPos));
+                versionNum = parseInt(navigator.appVersion.substring(0, dotPos), 10);
             }
             if (versionStr.indexOf("-") > -1) {
                 judge = (specifiedVersion >= versionNum);
@@ -560,7 +567,7 @@ INTERMediatorOnPage = {
             }
         }
         if (judge) {
-            if (deleteNode != null) {
+            if (deleteNode !== null) {
                 deleteNode.parentNode.removeChild(deleteNode);
             }
         } else {
