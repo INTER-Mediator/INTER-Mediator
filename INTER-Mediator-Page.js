@@ -517,6 +517,7 @@ INTERMediatorOnPage = {
         matchOS = false;
         for (agent in positiveList) {
             if (positiveList.edge === undefined ||
+                navigator.userAgent.indexOf("Edge/") === -1 ||
                 (agent.toLowerCase() === "edge" && positiveList.edge !== undefined)) {
                 if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
                     matchAgent = true;
