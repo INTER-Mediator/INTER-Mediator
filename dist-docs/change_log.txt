@@ -58,6 +58,7 @@ Ver.5.2 (in development)
 - Add .codeclimate.yml.
 - Some terms of "new", "load", "edit" replaced to CRUD words "create", "read", "update".
   But all original terms are still available.
+- Output an error message when after a failed upload due to a server side error.
 - [SECURITY FIX] Update FileUploader.php to prevent move_uploaded_file() NULL byte injection in
   file name (CVE-2015-2348) for PHP 5.2.x and PHP 5.3.x (CVE-2015-2348 was fixed in PHP 5.4.39,
   PHP 5.5.23 and PHP 5.6.7).

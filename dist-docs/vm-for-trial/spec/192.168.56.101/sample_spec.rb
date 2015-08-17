@@ -425,6 +425,15 @@ describe file('/home/developer') do
   it { should be_grouped_into 'developer' }
 end
 
+describe file('/etc/php5/apache2/php.ini'), :if => os[:family] == 'ubuntu' do
+  it { should be_file }
+  its(:content) { should match /max_execution_time = 120/ }
+  its(:content) { should match /max_input_time = 120/ }
+  its(:content) { should match /memory_limit = 256M/ }
+  its(:content) { should match /post_max_size = 100M/ }
+  its(:content) { should match /upload_max_filesize = 100M/ }
+end
+
 describe file('/etc/samba/smb.conf') do
   it { should be_file }
   its(:content) { should match /hosts allow = 192.168.56. 127./ }
