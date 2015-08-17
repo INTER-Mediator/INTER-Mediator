@@ -263,6 +263,18 @@ describe package('samba') do
   it { should be_installed }
 end
 
+describe package('language-pack-ja'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
+describe package('fbterm'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
+describe package('unifont'), :if => os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+
 describe file('/etc/apache2/mods-enabled/headers.load'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
 end
@@ -274,6 +286,10 @@ end
 
 describe file('/var/www/html/INTER-Mediator') do
   it { should be_directory }
+end
+
+describe command('git --git-dir=/var/www/html/INTER-Mediator/.git status | grep -o "Changes not staged for commit:"') do
+  its(:stdout) { should match // }
 end
 
 describe file('/var/www/html/index_original.html'), :if => os[:family] == 'ubuntu' do
@@ -456,6 +472,15 @@ describe file('/home/developer/.viminfo') do
   it { should be_file }
   it { should be_owned_by 'developer' }
   it { should be_grouped_into 'developer' }
+end
+
+describe file('/etc/default/keyboard'), :if => os[:family] == 'ubuntu' do
+  its(:content) { should match /XKBMODEL="pc105"/ }
+  its(:content) { should match /XKBLAYOUT="jp"/ }
+end
+
+describe file('/etc/default/locale'), :if => os[:family] == 'ubuntu' do
+  its(:content) { should match /LANG="ja_JP.UTF-8"/ }
 end
 
 describe file('/etc/sysconfig/iptables'), :if => os[:family] == 'redhat' && os[:release].to_f >= 6 && os[:release].to_f < 7 do

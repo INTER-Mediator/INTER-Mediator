@@ -2,9 +2,6 @@
 /**
  * defedit_Test file
  */
-require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../GenerateJSCode.php');
-require_once(dirname(__FILE__) . '/../INTER-Mediator-Support/defedit.php');
 
 class defedit_Test extends PHPUnit_Framework_TestCase
 {
@@ -20,6 +17,7 @@ class defedit_Test extends PHPUnit_Framework_TestCase
     public function test___construct()
     {
         ob_start();
+        require_once(dirname(__FILE__) . '/../INTER-Mediator-Support/defedit.php');
         $output = ob_get_contents();
         $this->assertNotContains('INTERMediator.debugMode=', $output);
         ob_clean();

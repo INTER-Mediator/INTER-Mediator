@@ -183,6 +183,12 @@ class GenerateJSCode
         if (isset($options['browser-compatibility'])) {
             $browserCompatibility = $options['browser-compatibility'];
         }
+        foreach ($browserCompatibility as $browser => $browserInfo) {
+            if (strtolower($browser) !== $browser) {
+                $browserCompatibility[strtolower($browser)] = $browserCompatibility[$browser];
+                unset($browserCompatibility[$browser]);
+            }
+        }
         $this->generateAssignJS(
             "INTERMediatorOnPage.browserCompatibility",
             "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
