@@ -516,14 +516,14 @@ INTERMediatorOnPage = {
         matchAgent = false;
         matchOS = false;
 
-        if (navigator.userAgent.indexOf("Edge/") > -1) {
+        if (positiveList.edge && navigator.userAgent.indexOf("Edge/") > -1) {
             positiveList = {"edge": positiveList.edge};
-        } else if (navigator.userAgent.indexOf("Trident/") > -1) {
+        } else if (positiveList.trident && navigator.userAgent.indexOf("Trident/") > -1) {
             positiveList = {"trident": positiveList.trident};
-        } else if (navigator.userAgent.indexOf("MSIE ") > -1) {
+        } else if (positiveList.msie && navigator.userAgent.indexOf("MSIE ") > -1) {
             positiveList = {"msie": positiveList.msie};
-        } else if (navigator.userAgent.indexOf("Opera/") > -1 ||
-            navigator.userAgent.indexOf("OPR/") > -1) {
+        } else if (positiveList.opera &&
+            (navigator.userAgent.indexOf("Opera/") > -1 || navigator.userAgent.indexOf("OPR/") > -1)) {
             positiveList = {"opera": positiveList.opera, "opr": positiveList.opera};
         }
 
@@ -545,7 +545,7 @@ INTERMediatorOnPage = {
                 }
             }
         }
-        
+
         if (matchAgent && matchOS) {
             specifiedVersion = parseInt(versionStr, 10);
 
