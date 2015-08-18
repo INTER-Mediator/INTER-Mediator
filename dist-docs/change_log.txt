@@ -89,8 +89,8 @@ Ver.5.2 (in development)
 - [BUG FIX] Fix displaying the navigation bar when using the master-detail style UI.
 - [BUG FIX] Fix compatibility with PHPExcel due to autoloading.
 - [BUG FIX] Fix calculation for over-million numbers.
-- [BUG FIX] Fix detecting web browsers (excluding MSIE) for $browserCompatibility or the
-  "browser-compatibility" key.
+- [BUG FIX] Fix detecting a browser's version number (excluding MSIE) for $browserCompatibility or
+  the "browser-compatibility" key.
 - [BUG FIX] Fix checking the version of Internet Explorer when specifying the version number string
   with '-' (ex. 'Trident' => '6-') in $browserCompatibility or the "browser-compatibility" key.
 
