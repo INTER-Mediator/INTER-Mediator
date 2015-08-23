@@ -60,6 +60,7 @@ Ver.5.2 (in development)
   But all original terms are still available.
 - Output an error message when after a failed upload due to a server side error.
 - Detect Microsoft Edge in "browser-compatibility" key.
+- Remove the 'MSIE' token from $browserCompatibility in params.php.
 - [SECURITY FIX] Update FileUploader.php to prevent move_uploaded_file() NULL byte injection in
   file name (CVE-2015-2348) for PHP 5.2.x and PHP 5.3.x (CVE-2015-2348 was fixed in PHP 5.4.39,
   PHP 5.5.23 and PHP 5.6.7).
@@ -88,7 +89,10 @@ Ver.5.2 (in development)
 - [BUG FIX] Fix displaying the navigation bar when using the master-detail style UI.
 - [BUG FIX] Fix compatibility with PHPExcel due to autoloading.
 - [BUG FIX] Fix calculation for over-million numbers.
-- [BUG FIX] Fix detecting web browsers for the "browser-compatibility" key.
+- [BUG FIX] Fix detecting a browser's version number (excluding MSIE) for $browserCompatibility or
+  the "browser-compatibility" key.
+- [BUG FIX] Fix checking the version of Internet Explorer when specifying the version number string
+  with '-' (ex. 'Trident' => '6-') in $browserCompatibility or the "browser-compatibility" key.
 
 Ver.5.1 (May 22, 2015)
 - Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.

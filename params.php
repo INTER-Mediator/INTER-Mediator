@@ -34,20 +34,19 @@ $dbOption = array();
 /* Browser Compatibility Check:
  */
 $browserCompatibility = array(
-    'Chrome' => '1+',
-    'Firefox' => '2+',
-    'MSIE' => '8+',
-    'Opera' => '1+',
-    'Safari' => '4+',
-//    'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
+    'Edge' => '12+',
+    // Edge/12.0(Microsoft Edge 20)
     'Trident' => '4+',
     // Trident/4.0(Internet Explorer 8)
     // Trident/5.0(Internet Explorer 9)
     // Trident/6.0(Internet Explorer 10)
     // Trident/7.0(Internet Explorer 11)
     // Before IE 7, 'Trident' token doesn't exist.
-    'Edge' => '12+',
-    // Edge/12.0(Microsoft Edge 20)
+    'Chrome' => '1+',
+    'Firefox' => '2+',
+    'Safari' => '4+',
+    //'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
+    'Opera' => '1+',
 );
 /*
  * The list of User Agents, it's a wonderful site!
