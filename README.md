@@ -1,4 +1,4 @@
-# INTER-Mediator [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/master.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator)
+# INTER-Mediator [![Build Status](https://travis-ci.org/INTER-Mediator/INTER-Mediator.svg?branch=master)](https://travis-ci.org/INTER-Mediator/INTER-Mediator) [![Build Status](https://circleci.com/gh/INTER-Mediator/INTER-Mediator/tree/master.svg?style=shield)](https://circleci.com/gh/INTER-Mediator/INTER-Mediator)
 by INTER-Mediator Directive Committee (http://inter-mediator.org)
 
 This is the root of INTER-Mediator source repository.
@@ -16,11 +16,12 @@ Sample pages with this archived file are published at below.
 You don't have to deploy the samples if you just want to just a glance.
 http://msyk.dyndns.org/im-sample.html
 
-### Contributor:
+### Contributors:
 - Masayuki Nii
 - Atsushi Matsuo
 - Kiyonori Ito
 - Kentaro Suzuki
+- Nobuo Hayashi
 
 ### Special Thanks to:
 - Katsunori Eda
