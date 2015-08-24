@@ -705,7 +705,7 @@ INTERMediatorOnPage = {
 
     getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
         "use strict";
-        var enclosureNode, nodeIds, nodeDefs;
+        var enclosureNode, nodeIds, i;
 
         if (justFromNode === true) {
             enclosureNode = fromNode;
@@ -716,7 +716,13 @@ INTERMediatorOnPage = {
         }
         if (enclosureNode != null) {
             nodeIds = [];
-            seekNode(enclosureNode, imDefinition);
+            if (Array.isArray(enclosureNode))   {
+                for (i = 0 ; i < enclosureNode.length ; i++)    {
+                    seekNode(enclosureNode[i], imDefinition);
+                }
+            } else {
+                seekNode(enclosureNode, imDefinition);
+            }
         }
         return nodeIds;
 
@@ -731,7 +737,11 @@ INTERMediatorOnPage = {
                     if (children[i].nodeType == 1) {
                         nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                         if (nodeDefs && nodeDefs.indexOf(imDefinition) > -1) {
-                            nodeIds.push(children[i].getAttribute("id"));
+                            if (children[i].getAttribute("id")) {
+                                nodeIds.push(children[i].getAttribute("id"));
+                            } else {
+                                nodeIds.push(children[i]);
+                            }
                         }
                     }
                     seekNode(children[i], imDefinition);

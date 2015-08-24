@@ -941,6 +941,27 @@ var INTERMediatorLib = {
             + ("0" + dt.getHours()).substr(-2, 2) + ':'
             + ("0" + dt.getMinutes()).substr(-2, 2) + ':'
             + ("0" + dt.getSeconds()).substr(-2, 2);
+    },
+
+    dateStringISO: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return dt.getFullYear() + '-'
+            + ("0" + (dt.getMonth() + 1)).substr(-2, 2) + '-'
+            + ("0" + dt.getDate()).substr(-2, 2);
+    },
+
+    dateStringFileMaker: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return ("0" + (dt.getMonth() + 1)).substr(-2, 2) + '/'
+            + ("0" + dt.getDate()).substr(-2, 2) + '/'
+            + dt.getFullYear();
+    },
+
+    timeString: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return ("0" + dt.getHours()).substr(-2, 2) + ':'
+            + ("0" + dt.getMinutes()).substr(-2, 2) + ':'
+            + ("0" + dt.getSeconds()).substr(-2, 2);
     }
 };
 

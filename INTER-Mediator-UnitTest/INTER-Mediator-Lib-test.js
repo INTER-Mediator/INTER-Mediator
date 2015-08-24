@@ -105,3 +105,26 @@ buster.testCase("IMLibElement.getValueFromIMNode() Test", {
         assert.equals(IMLibElement.getValueFromIMNode(null), "");
     }
 });
+
+buster.testCase("IMLib Date/Time String Test", {
+    "should return the valid date time string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateTimeStringISO(dt), "2015-08-25 12:43:51");
+    },
+    "should return the valid date time string(2)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateTimeStringFileMaker(dt), "08/25/2015 12:43:51");
+    },
+    "should return the valid date string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateStringISO(dt), "2015-08-25");
+    },
+    "should return the valid date string(2)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateStringFileMaker(dt), "08/25/2015");
+    },
+    "should return the valid time string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.timeString(dt), "12:43:51");
+    }
+});
