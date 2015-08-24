@@ -737,7 +737,11 @@ INTERMediatorOnPage = {
                     if (children[i].nodeType == 1) {
                         nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                         if (nodeDefs && nodeDefs.indexOf(imDefinition) > -1) {
-                            nodeIds.push(children[i].getAttribute("id"));
+                            if (children[i].getAttribute("id")) {
+                                nodeIds.push(children[i].getAttribute("id"));
+                            } else {
+                                nodeIds.push(children[i]);
+                            }
                         }
                     }
                     seekNode(children[i], imDefinition);
