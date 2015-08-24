@@ -26,6 +26,11 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
         return 0;
     }
 
+    public function getTotalCount($dataSourceName)
+    {
+        return 0;
+    }
+
     public function setToDB($dataSourceName)
     {
         return null;
