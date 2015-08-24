@@ -9,6 +9,9 @@ Latest changes might exist on the GitHub repository.
 Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.5.3 (in development)
+- Update phpseclib to version 1.0.0.
+
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.
 - Authentication with an LDAP user.
