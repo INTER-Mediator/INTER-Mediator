@@ -57,6 +57,7 @@ buster.testCase("Operators Test2", {
 
 buster.testCase("Functions Test", {
     "should be equal to": function () {
+        var x;
         assert.equals(Math.round(Parser.evaluate("sin(PI/4)") * 100), 71);
         assert.equals(Math.round(Parser.evaluate("cos(PI/4)") * 100), 71);
         assert.equals(Math.round(Parser.evaluate("tan(PI/4)") * 100), 100);
@@ -91,9 +92,9 @@ buster.testCase("Functions Test", {
         assert.equals(Parser.evaluate("format(-1500.9)"), "-1,501");
         assert.equals(Math.round(Parser.evaluate("exp(0.5)") * 100), 165);
         assert.equals(Math.round(Parser.evaluate("log(0.5)") * 100), -69);
-        var x = Parser.evaluate("random()");
+        x = Parser.evaluate("random()");
         assert.equals(x > 0 && x < 1, true);
-        var x = Parser.evaluate("random()+1");
+        x = Parser.evaluate("random()+1");
         assert.equals(x > 1 && x < 2, true);
         assert.equals(Parser.evaluate("pow(2,3)"), 8);
         assert.equals(Parser.evaluate("min(3,1,2,1,5,1)"), 1);
@@ -120,7 +121,7 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         var exp, vals, result;
 
         exp = "dog * cat";
-        vals = {dog: [20], cat: [4]}
+        vals = {dog: [20], cat: [4]};
         result = Parser.evaluate(exp, vals);
         assert.equals(result, 80);
     },
@@ -128,7 +129,7 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         var exp, vals, result;
 
         exp = "dog * cat";
-        vals = {dog: [29], cat: [4.1]}
+        vals = {dog: [29], cat: [4.1]};
         result = Parser.evaluate(exp, vals);
         assert.equals(INTERMediatorLib.Round(result, 1), 118.9);
     },
@@ -173,7 +174,7 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         var exp, vals, result;
 
         exp = "dog + cat";
-        vals = {dog: ["Bowwow!"], cat: ["Mewww"]}
+        vals = {dog: ["Bowwow!"], cat: ["Mewww"]};
         result = Parser.evaluate(exp, vals);
         assert.equals(result, "Bowwow!Mewww");
     },
@@ -181,7 +182,7 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         var exp, vals, result;
 
         exp = "dog + cat";
-        vals = {dog: ["Bowwow!"], cat: ["4.3"]}
+        vals = {dog: ["Bowwow!"], cat: ["4.3"]};
         result = Parser.evaluate(exp, vals);
         assert.equals(result, "Bowwow!4.3");
     },
