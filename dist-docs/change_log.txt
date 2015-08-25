@@ -7,7 +7,14 @@ http://inter-mediator.org/
 Change Log will be supplied by English only.
 Latest changes might exist on the GitHub repository.
 Please check: https://github.com/INTER-Mediator/INTER-Mediator
-Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/for-developers/migration.html
+Also the Migration Guide (Japanese) might be informative:
+  http://inter-mediator.info/ja/for-developers/migration.html
+
+Ver.5.3 (in development)
+- Update phpseclib to ver.1.0.
+- The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
+  for the first parameter.
+- Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.
