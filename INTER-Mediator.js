@@ -592,8 +592,7 @@ INTERMediator = {
         function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
             var linkedNodes, encNodeTag, repeatersOriginal, repeaters, linkDefs, voteResult, currentContextDef,
                 fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
-                keyValue, selectedNode, calcDef, calcFields, contextObj, masterContext, masterNaviControlValue,
-                currentNaviControlValue;
+                keyValue, selectedNode, calcDef, calcFields, contextObj;
 
             currentLevel++;
 
@@ -637,7 +636,9 @@ INTERMediator = {
                 calcDef = currentContextDef['calculation'];
                 calcFields = [];
                 for (ix in calcDef) {
-                    calcFields.push(calcDef[ix]["field"]);
+                    if(calcDef.hasOwnProperty(ix)) {
+                        calcFields.push(calcDef[ix]["field"]);
+                    }
                 }
                 for (i = 0; i < voteResult.fieldlist.length; i++) {
                     if (!calcFields[voteResult.fieldlist[i]]) {
@@ -651,16 +652,20 @@ INTERMediator = {
                         contextObj.setOriginal(repeatersOriginal);
                         if (relationDef) {
                             for (index in relationDef) {
-                                if (relationDef[index]["portal"] == true) {
-                                    currentContextDef["portal"] = true;
-                                }
-                                joinField = relationDef[index]['join-field'];
-                                contextObj.addForeignValue(joinField, currentRecord[joinField]);
-                                for (fieldName in parentObjectInfo) {
-                                    if (fieldName == relationDef[index]['join-field']) {
-                                        contextObj.addDependingObject(parentObjectInfo[fieldName]);
-                                        contextObj.dependingParentObjectInfo
-                                            = JSON.parse(JSON.stringify(parentObjectInfo));
+                                if(relationDef.hasOwnProperty(index)) {
+                                    if (relationDef[index]["portal"] == true) {
+                                        currentContextDef["portal"] = true;
+                                    }
+                                    joinField = relationDef[index]['join-field'];
+                                    contextObj.addForeignValue(joinField, currentRecord[joinField]);
+                                    for (fieldName in parentObjectInfo) {
+                                        if(parentObjectInfo.hasOwnProperty(fieldName)) {
+                                            if (fieldName == relationDef[index]['join-field']) {
+                                                contextObj.addDependingObject(parentObjectInfo[fieldName]);
+                                                contextObj.dependingParentObjectInfo
+                                                    = JSON.parse(JSON.stringify(parentObjectInfo));
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -958,7 +963,7 @@ INTERMediator = {
 
          */
         function retrieveDataForEnclosure(currentContextDef, fieldList, relationValue) {
-            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition,
+            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition, targerRecordSet,
                 recordNumber, useLimit, optionalCondition = [], pagingValue, recordsValue, i, recordset = [];
 
             if (currentContextDef['cache'] == true) {
@@ -980,30 +985,35 @@ INTERMediator = {
                     } else {
                         targetRecords = {recordset: [], count: 0};
                         counter = 0;
-                        for (ix in INTERMediatorOnPage.dbCache[currentContextDef['name']].recordset) {
-                            oneRecord = INTERMediatorOnPage.dbCache[currentContextDef['name']].recordset[ix];
-                            isMatch = true;
-                            index = 0;
-                            for (keyField in relationValue) {
-                                fieldName = currentContextDef['relation'][index]['foreign-key'];
-                                if (oneRecord[fieldName] != relationValue[keyField]) {
-                                    isMatch = false;
-                                    break;
-                                }
-                                index++;
-                            }
-                            if (isMatch) {
-                                pagingValue = currentContextDef['paging'] ? currentContextDef['paging'] : false;
-                                recordsValue = currentContextDef['records'] ? currentContextDef['records'] : 10000000000;
-
-                                if (!pagingValue || (pagingValue && ( counter >= INTERMediator.startFrom ))) {
-                                    targetRecords.recordset.push(oneRecord);
-                                    targetRecords.count++;
-                                    if (recordsValue <= targetRecords.count) {
-                                        break;
+                        targerRecordSet = INTERMediatorOnPage.dbCache[currentContextDef['name']].recordset;
+                        for (ix in targerRecordSet) {
+                            if(targerRecordSet.hasOwnProperty(ix)) {
+                                oneRecord = INTERMediatorOnPage.dbCache[currentContextDef['name']].recordset[ix];
+                                isMatch = true;
+                                index = 0;
+                                for (keyField in relationValue) {
+                                    if (relationValue.hasOwnProperty(keyField)) {
+                                        fieldName = currentContextDef['relation'][index]['foreign-key'];
+                                        if (oneRecord[fieldName] != relationValue[keyField]) {
+                                            isMatch = false;
+                                            break;
+                                        }
+                                        index++;
                                     }
                                 }
-                                counter++;
+                                if (isMatch) {
+                                    pagingValue = currentContextDef['paging'] ? currentContextDef['paging'] : false;
+                                    recordsValue = currentContextDef['records'] ? currentContextDef['records'] : 10000000000;
+
+                                    if (!pagingValue || (pagingValue && ( counter >= INTERMediator.startFrom ))) {
+                                        targetRecords.recordset.push(oneRecord);
+                                        targetRecords.count++;
+                                        if (recordsValue <= targetRecords.count) {
+                                            break;
+                                        }
+                                    }
+                                    counter++;
+                                }
                             }
                         }
                     }
@@ -1018,14 +1028,13 @@ INTERMediator = {
                 try {
                     if (currentContextDef["portal"] == true) {
                         for (condition in INTERMediator.additionalCondition) {
-                            optionalCondition.push(INTERMediator.additionalCondition[condition]);
-                            break;
+                            if (INTERMediator.additionalCondition.hasOwnProperty(condition)) {
+                                optionalCondition.push(INTERMediator.additionalCondition[condition]);
+                                break;
+                            }
                         }
                     }
-                    useLimit = false;
-                    if (currentContextDef["records"] && currentContextDef["paging"]) {
-                        useLimit = true;
-                    }
+                    useLimit = currentContextDef["records"] && currentContextDef["paging"];
                     if (currentContextDef['maxrecords'] && useLimit && Number(INTERMediator.pagedSize) > 0
                         && Number(currentContextDef['maxrecords']) >= Number(INTERMediator.pagedSize)) {
                         recordNumber = Number(INTERMediator.pagedSize);
@@ -1285,9 +1294,11 @@ INTERMediator = {
             maxVoted = -1;
             maxTableName = ''; // Which is the maximum voted table name.
             for (tableName in tableVote) {
-                if (maxVoted < tableVote[tableName]) {
-                    maxVoted = tableVote[tableName];
-                    maxTableName = tableName.substring(10);
+                if (tableVote.hasOwnProperty(tableName)) {
+                    if (maxVoted < tableVote[tableName]) {
+                        maxVoted = tableVote[tableName];
+                        maxTableName = tableName.substring(10);
+                    }
                 }
             }
             context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName);
@@ -1602,7 +1613,7 @@ INTERMediator = {
 
          */
         function setupBackNaviButton(currentContext, node) {
-            var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode,
+            var buttonNode, enclosedNode, trNode, tdNode, liNode, divNode,
                 insertJSFunction, i, firstLevelNodes, targetNodeTag, existingButtons, masterContext,
                 naviControlValue, thisId, repNodeTag, currentContextDef, showingNode, targetNode, isHidePageNavi;
 
@@ -1637,7 +1648,6 @@ INTERMediator = {
             buttonNode.setAttribute('id', thisId);
             INTERMediator.buttonIdNum++;
 
-            shouldRemove = [];
             switch (node.tagName) {
                 case 'TBODY':
                     if (currentContextDef['navi-control'].match(/top/i)) {
@@ -1672,7 +1682,6 @@ INTERMediator = {
                         targetNode.appendChild(trNode);
                         trNode.appendChild(tdNode);
                         tdNode.appendChild(buttonNode);
-                        shouldRemove = [trNode.getAttribute('id')];
                     }
                     break;
                 case 'UL':
@@ -1719,7 +1728,7 @@ INTERMediator = {
                     if (showingNode.tagName == "TBODY") {
                         showingNode = showingNode.parentNode;
                     }
-                    showingNode.style.display = INTERMediator.masterNodeOriginalDisplay
+                    showingNode.style.display = INTERMediator.masterNodeOriginalDisplay;
 
                     if (pageNaviShow) {
                         document.getElementById("IM_NAVIGATOR").style.display = "block";
@@ -1875,7 +1884,7 @@ if (!Object.keys) {
         }
         return results;
     }
-};
+}
 
 if (!Array.indexOf) {
     var isWebkit = 'WebkitAppearance' in document.documentElement.style;
