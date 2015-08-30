@@ -81,7 +81,83 @@
     </tr>
     <tr>
         <td>Total:</td>
-        <td data-im="invoice@total_calc" data-im-format="currency(2)"></td>
+        <td data-im="invoice@total_calc"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：論理値）:</td>
+        <td data-im="invoice@total_calc" data-im-format="boolean('True', 'False')" data-im-format-options="blankifzero"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：通貨）:</td>
+        <td data-im="invoice@total_calc" data-im-format="currency"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：パーセント）:</td>
+        <td data-im="invoice@total_calc" data-im-format="percent"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、3桁区切りを使用）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-options="useseparator"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、3桁区切りを使用、小数点以下の桁数2桁）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number(2)" data-im-format-options="useseparator"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、0の場合は数値を表示しない）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-options="blankifzero"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、マイナス表示書式例：-1234）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-negative-color="#FF0000" data-im-format-negative-style="leadingminus"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、マイナス表示書式例：1234-）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-negative-color="#FF0000" data-im-format-negative-style="trailingminus"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、マイナス表示書式例：(1234)）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-negative-color="#FF0000" data-im-format-negative-style="parenthesis"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、マイナス表示書式例：<1234>）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-negative-color="#FF0000" data-im-format-negative-style="angle"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、マイナス表示書式例：1234 CR）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-negative-color="#FF0000" data-im-format-negative-style="credit"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、マイナス表示書式例：▲1234）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-negative-color="#FF0000" data-im-format-negative-style="triangle"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、数字の形式：半角）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="half-width"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、数字の形式：全角）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="full-width"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、数字の形式：漢数字1）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="kanji-numeral-modern"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、数字の形式：漢数字2）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="kanji-numeral"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、数字の形式：半角、漢字の区切り：4桁区切り）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="half-width" data-im-format-kanji-separator="every-4th-place"></td>
+    </tr>
+    <tr>
+        <td>Total（数字書式：小数、数字の形式：半角、漢字の区切り：十百千万）:</td>
+        <td data-im="invoice@total_calc" data-im-format="number" data-im-format-numeral-type="half-width" data-im-format-kanji-separator="full-notation"></td>
     </tr>
     </tbody>
 </table>

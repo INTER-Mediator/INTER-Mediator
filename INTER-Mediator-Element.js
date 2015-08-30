@@ -9,10 +9,11 @@
 
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
-        var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
+        "use strict";
+        var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
             needPostValueSet = false, nodeTag, curValues, i, patterns, formattedValue = null,
-            formatSpec, flags = {}, formatOption, negativeColor, negativeStyle, param1, mark, 
-            negativeSign, negativeTailSign;
+            formatSpec, flags = {}, formatOption, negativeColor, negativeStyle, charStyle,
+            kanjiSeparator, param1, negativeSign, negativeTailSign;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -22,7 +23,7 @@ var IMLibElement = {
             return false;   // Or should be an error?
         }
         if (curVal === null || curVal === false) {
-            curVal = '';
+            curVal = "";
         }
 
         nodeTag = element.tagName;
@@ -53,7 +54,9 @@ var IMLibElement = {
             flags = {
                 useSeparator: false,
                 blankIfZero: false,
-                negativeStyle: 0
+                negativeStyle: 0,
+                charStyle: 0,
+                kanjiSeparator: 0
             };
             formatOption = element.getAttribute("data-im-format-options");
             if (formatOption) {
@@ -67,7 +70,7 @@ var IMLibElement = {
             negativeColor = element.getAttribute("data-im-format-negative-color");
             negativeStyle = element.getAttribute("data-im-format-negative-style");
             if (negativeStyle) {
-                if (negativeStyle.toLowerCase() === "leadingminus" || 
+                if (negativeStyle.toLowerCase() === "leadingminus" ||
                     negativeStyle.toLowerCase() === "leading-minus") {
                     flags.negativeStyle = 0;
                 } else if (negativeStyle.toLowerCase() === "trailingminus" ||
@@ -83,7 +86,30 @@ var IMLibElement = {
                     flags.negativeStyle = 5;
                 }
             }
-            
+            charStyle = element.getAttribute("data-im-format-numeral-type");
+            if (charStyle) {
+                if (charStyle.toLowerCase() === "half-width") {
+                    flags.charStyle = 0;
+                } else if (charStyle.toLowerCase() === "full-width") {
+                    flags.charStyle = 1;
+                } else if (charStyle.toLowerCase() === "kanji-numeral-modern") {
+                    flags.charStyle = 2;
+                } else if (charStyle.toLowerCase() === "kanji-numeral") {
+                    flags.charStyle = 3;
+                }
+            }
+            kanjiSeparator = element.getAttribute("data-im-format-kanji-separator");
+            if (kanjiSeparator) {
+                if (kanjiSeparator.toLowerCase() === "every-4th-place") {
+                    flags.kanjiSeparator = 1;
+                } else if (kanjiSeparator.toLowerCase() === "full-notation") {
+                    flags.kanjiSeparator = 2;
+                }
+                if (flags.kanjiSeparator > 0) {
+                    flags.useSeparator = true;
+                }
+            }
+
             patterns = [
                 /^number\(([0-9]+)\)/,
                 /^number[\(\)]*/,
@@ -104,7 +130,7 @@ var IMLibElement = {
                             break;
                         case 2:
                             if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.numberFormat(curVal, param1[1], flags);
+                                formattedValue = INTERMediatorLib.decimalFormat(curVal, param1[1], flags);
                             } else if (param1[0].indexOf("currency") > -1) {
                                 formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1], flags);
                             } else if (param1[0].indexOf("percent") > -1) {
@@ -113,7 +139,7 @@ var IMLibElement = {
                             break;
                         default:
                             if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.numberFormat(curVal, 0, flags);
+                                formattedValue = INTERMediatorLib.decimalFormat(curVal, 0, flags);
                             } else if (param1[0].indexOf("currency") > -1) {
                                 formattedValue = INTERMediatorLib.currencyFormat(curVal, 0, flags);
                             } else if (param1[0].indexOf("percent") > -1) {
@@ -132,22 +158,22 @@ var IMLibElement = {
         }
 
         if (curTarget !== null && curTarget.length > 0) { //target is specified
-            if (curTarget.charAt(0) == '#') { // Appending
+            if (curTarget.charAt(0) === "#") { // Appending
                 curTarget = curTarget.substring(1);
-                if (curTarget == 'innerHTML') {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                if (curTarget === "innerHTML") {
+                    if (INTERMediator.isIE && nodeTag === "TEXTAREA") {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                     }
                     element.innerHTML += curVal;
-                } else if (curTarget == 'textNode' || curTarget == 'script') {
+                } else if (curTarget === "textNode" || curTarget === "script") {
                     textNode = document.createTextNode(curVal);
-                    if (nodeTag == "TEXTAREA") {
+                    if (nodeTag === "TEXTAREA") {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     element.appendChild(textNode);
                 } else if (curTarget.indexOf("style.") === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
-                    if (curTarget !== "style.color" || 
+                    if (curTarget !== "style.color" ||
                         (curTarget === "style.color" && !negativeColor)) {
                         element.style[styleName] = curVal;
                     }
@@ -156,21 +182,21 @@ var IMLibElement = {
                     element.setAttribute(curTarget, currentValue + curVal);
                 }
             }
-            else if (curTarget.charAt(0) == '$') { // Replacing
+            else if (curTarget.charAt(0) === "$") { // Replacing
                 curTarget = curTarget.substring(1);
-                if (curTarget == 'innerHTML') {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                if (curTarget === "innerHTML") {
+                    if (INTERMediator.isIE && nodeTag === "TEXTAREA") {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                     }
                     element.innerHTML = element.innerHTML.replace("$", curVal);
-                } else if (curTarget == 'textNode' || curTarget == 'script') {
-                    if (nodeTag == "TEXTAREA") {
+                } else if (curTarget === "textNode" || curTarget === "script") {
+                    if (nodeTag === "TEXTAREA") {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     element.innerHTML = element.innerHTML.replace("$", curVal);
                 } else if (curTarget.indexOf("style.") === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
-                    if (curTarget !== "style.color" || 
+                    if (curTarget !== "style.color" ||
                         (curTarget === "style.color" && !negativeColor)) {
                         element.style[styleName] = curVal;
                     }
@@ -181,20 +207,20 @@ var IMLibElement = {
             } else { // Setting
                 if (INTERMediatorLib.isWidgetElement(element)) {
                     element._im_setValue(curVal);
-                } else if (curTarget == 'innerHTML') { // Setting
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                } else if (curTarget === "innerHTML") { // Setting
+                    if (INTERMediator.isIE && nodeTag === "TEXTAREA") {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                     }
                     element.innerHTML = curVal;
-                } else if (curTarget == 'textNode') {
-                    if (nodeTag == "TEXTAREA") {
+                } else if (curTarget === "textNode") {
+                    if (nodeTag === "TEXTAREA") {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     textNode = document.createTextNode(curVal);
                     element.appendChild(textNode);
-                } else if (curTarget == 'script') {
+                } else if (curTarget === "script") {
                     textNode = document.createTextNode(curVal);
-                    if (nodeTag == "SCRIPT") {
+                    if (nodeTag === "SCRIPT") {
                         element.appendChild(textNode);
                     } else {
                         scriptNode = document.createElement("script");
@@ -204,7 +230,7 @@ var IMLibElement = {
                     }
                 } else if (curTarget.indexOf("style.") === 0) {
                     styleName = curTarget.substring(6, curTarget.length);
-                    if (curTarget !== "style.color" || 
+                    if (curTarget !== "style.color" ||
                         (curTarget === "style.color" && !negativeColor)) {
                         element.style[styleName] = curVal;
                     }
@@ -215,25 +241,25 @@ var IMLibElement = {
         } else { // if the 'target' is not specified.
             if (INTERMediatorLib.isWidgetElement(element)) {
                 element._im_setValue(curVal);
-            } else if (nodeTag == "INPUT") {
-                typeAttr = element.getAttribute('type');
-                if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
+            } else if (nodeTag === "INPUT") {
+                typeAttr = element.getAttribute("type");
+                if (typeAttr === "checkbox" || typeAttr === "radio") { // set the value
                     valueAttr = element.value;
                     curValues = curVal.toString().split("\n");
-                    if (typeAttr == 'checkbox' && curValues.length > 1) {
+                    if (typeAttr === "checkbox" && curValues.length > 1) {
                         for (i = 0; i < curValues.length; i++) {
-                            if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
+                            if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                                 if (INTERMediator.isIE) {
-                                    element.setAttribute('checked', 'checked');
+                                    element.setAttribute("checked", "checked");
                                 } else {
                                     element.checked = true;
                                 }
                             }
                         }
                     } else {
-                        if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
+                        if (valueAttr === curVal && !INTERMediator.dontSelectRadioCheck) {
                             if (INTERMediator.isIE) {
-                                element.setAttribute('checked', 'checked');
+                                element.setAttribute("checked", "checked");
                             } else {
                                 element.checked = true;
                             }
@@ -244,17 +270,17 @@ var IMLibElement = {
                 } else { // this node must be text field
                     element.value = curVal;
                 }
-            } else if (nodeTag == "SELECT") {
+            } else if (nodeTag === "SELECT") {
                 needPostValueSet = true;
                 element.value = curVal;
             } else { // include option tag node
                 if (INTERMediator.defaultTargetInnerHTML) {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                    if (INTERMediator.isIE && nodeTag === "TEXTAREA") {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
                     }
                     element.innerHTML = curVal;
                 } else {
-                    if (nodeTag == "TEXTAREA") {
+                    if (nodeTag === "TEXTAREA") {
                         if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
                             // for IE11
                             curVal = curVal.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
@@ -267,7 +293,7 @@ var IMLibElement = {
                 }
             }
         }
-        
+
         if (formatSpec && negativeColor) {
             negativeSign = INTERMediatorOnPage.localeInfo.negative_sign;
             negativeTailSign = "";
@@ -284,19 +310,19 @@ var IMLibElement = {
             } else if (flags.negativeStyle === 5) {
                 negativeSign = "▲";
             }
-            
+
             if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
                 if (curVal.indexOf(negativeSign) === 0) {
                     element.style.color = negativeColor;
                 }
             } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {
-                if (curVal.indexOf(negativeSign) > -1 && 
+                if (curVal.indexOf(negativeSign) > -1 &&
                     curVal.indexOf(negativeSign) === curVal.length - negativeSign.length) {
                     element.style.color = negativeColor;
                 }
             } else if (flags.negativeStyle === 2 || flags.negativeStyle === 3) {
                 if (curVal.indexOf(negativeSign) === 0) {
-                    if (curVal.indexOf(negativeTailSign) > -1 && 
+                    if (curVal.indexOf(negativeTailSign) > -1 &&
                         curVal.indexOf(negativeTailSign) === curVal.length - 1) {
                         element.style.color = negativeColor;
                     }
@@ -316,7 +342,7 @@ var IMLibElement = {
         } else {
             return "";
         }
-        if (INTERMediatorLib.isWidgetElement(element) || 
+        if (INTERMediatorLib.isWidgetElement(element) ||
             (INTERMediatorLib.isWidgetElement(element.parentNode))) {
             newValue = element._im_getValue();
         } else if (nodeTag == "INPUT") {
@@ -414,8 +440,8 @@ var IMLibElement = {
             if (currentVal.recordset && currentVal.recordset[0]) {
                 for (portalIndex in currentVal.recordset[0]) {
                     var portalRecord = currentVal.recordset[0][portalIndex];
-                    if (portalRecord[portalKey] && 
-                        portalRecord[targetField] !== undefined && 
+                    if (portalRecord[portalKey] &&
+                        portalRecord[targetField] !== undefined &&
                         portalRecord[portalKey] == contextInfo.portal) {
                         currentFieldVal = portalRecord[targetField];
                         isCheckResult = true;
@@ -428,8 +454,8 @@ var IMLibElement = {
                 return false;
             }
         } else {
-            if (currentVal.recordset === null || 
-                currentVal.recordset[0] === null || 
+            if (currentVal.recordset === null ||
+                currentVal.recordset[0] === null ||
                 currentVal.recordset[0][targetField] === undefined) {
                 alert(INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1003], [targetField]));
