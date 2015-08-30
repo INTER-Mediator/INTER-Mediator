@@ -8,9 +8,22 @@
  */
 
 var IMLibElement = {
+    patterns: [
+        /^number\(([0-9]+)\)/,
+        /^number[\(\)]*/,
+        /^currency\(([0-9]+)\)/,
+        /^currency[\(\)]*/,
+        /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/,
+        /^percent\(([0-9]+)\)/,
+        /^percent[\(\)]*/
+    ],
+
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
-        var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i;
+        "use strict";
+        var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
+            needPostValueSet = false, nodeTag, curValues, i, formattedValue = null,
+            formatSpec, flags = {}, formatOption, negativeColor, negativeStyle, charStyle,
+            kanjiSeparator, param1;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -35,8 +48,8 @@ var IMLibElement = {
                         default:
                             break;
                     }
-                case "SELECT":
-                    break;
+                //case "SELECT":
+                //    break;
                 default:
                     while (element.childNodes.length > 0) {
                         element.removeChild(element.childNodes[0]);
@@ -45,8 +58,106 @@ var IMLibElement = {
             }
         }
 
-        if (curTarget != null && curTarget.length > 0) { //target is specified
-            if (curTarget.charAt(0) == '#') { // Appending
+        formatSpec = element.getAttribute("data-im-format");
+        if (formatSpec) {
+            flags = {
+                useSeparator: false,
+                blankIfZero: false,
+                negativeStyle: 0,
+                charStyle: 0,
+                kanjiSeparator: 0
+            };
+            formatOption = element.getAttribute("data-im-format-options");
+            if (formatOption) {
+                if (formatOption.toLowerCase().split(" ").indexOf("useseparator") > -1) {
+                    flags.useSeparator = true;
+                }
+                if (formatOption.toLowerCase().split(" ").indexOf("blankifzero") > -1) {
+                    flags.blankIfZero = true;
+                }
+            }
+            negativeColor = element.getAttribute("data-im-format-negative-color");
+            negativeStyle = element.getAttribute("data-im-format-negative-style");
+            if (negativeStyle) {
+                if (negativeStyle.toLowerCase() === "leadingminus" ||
+                    negativeStyle.toLowerCase() === "leading-minus") {
+                    flags.negativeStyle = 0;
+                } else if (negativeStyle.toLowerCase() === "trailingminus" ||
+                    negativeStyle.toLowerCase() === "trailing-minus") {
+                    flags.negativeStyle = 1;
+                } else if (negativeStyle.toLowerCase() === "parenthesis") {
+                    flags.negativeStyle = 2;
+                } else if (negativeStyle.toLowerCase() === "angle") {
+                    flags.negativeStyle = 3;
+                } else if (negativeStyle.toLowerCase() === "credit") {
+                    flags.negativeStyle = 4;
+                } else if (negativeStyle.toLowerCase() === "triangle") {
+                    flags.negativeStyle = 5;
+                }
+            }
+            charStyle = element.getAttribute("data-im-format-numeral-type");
+            if (charStyle) {
+                if (charStyle.toLowerCase() === "half-width") {
+                    flags.charStyle = 0;
+                } else if (charStyle.toLowerCase() === "full-width") {
+                    flags.charStyle = 1;
+                } else if (charStyle.toLowerCase() === "kanji-numeral-modern") {
+                    flags.charStyle = 2;
+                } else if (charStyle.toLowerCase() === "kanji-numeral") {
+                    flags.charStyle = 3;
+                }
+            }
+            kanjiSeparator = element.getAttribute("data-im-format-kanji-separator");
+            if (kanjiSeparator) {
+                if (kanjiSeparator.toLowerCase() === "every-4th-place") {
+                    flags.kanjiSeparator = 1;
+                } else if (kanjiSeparator.toLowerCase() === "full-notation") {
+                    flags.kanjiSeparator = 2;
+                }
+                if (flags.kanjiSeparator > 0) {
+                    flags.useSeparator = true;
+                }
+            }
+            for (i = 0; i < IMLibElement.patterns.length; i++) {
+                param1 = formatSpec.match(IMLibElement.patterns[i]);
+                if (param1) {
+                    switch (param1.length) {
+                        case 3:
+                            if (param1[0].indexOf("boolean") > -1) {
+                                formattedValue = INTERMediatorLib.booleanFormat(curVal, param1[1], param1[2]);
+                            }
+                            break;
+                        case 2:
+                            if (param1[0].indexOf("number") > -1) {
+                                formattedValue = INTERMediatorLib.decimalFormat(curVal, param1[1], flags);
+                            } else if (param1[0].indexOf("currency") > -1) {
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1], flags);
+                            } else if (param1[0].indexOf("percent") > -1) {
+                                formattedValue = INTERMediatorLib.percentFormat(curVal, param1[1], flags);
+                            }
+                            break;
+                        default:
+                            if (param1[0].indexOf("number") > -1) {
+                                formattedValue = INTERMediatorLib.decimalFormat(curVal, 0, flags);
+                            } else if (param1[0].indexOf("currency") > -1) {
+                                formattedValue = INTERMediatorLib.currencyFormat(curVal, 0, flags);
+                            } else if (param1[0].indexOf("percent") > -1) {
+                                formattedValue = INTERMediatorLib.percentFormat(curVal, 0, flags);
+                            }
+                            break;
+                    }
+                    break;
+                }
+            }
+            if (formattedValue === null) {
+                formattedValue = curVal;
+                INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
+            }
+            curVal = formattedValue;
+        }
+
+        if (curTarget !== null && curTarget.length > 0) { //target is specified
+            if (curTarget.charAt(0) === "#") { // Appending
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
                     if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
@@ -295,12 +406,14 @@ var IMLibElement = {
             portalKey = contextInfo.context.contextName + "::-recid";
             if (currentVal.recordset && currentVal.recordset[0]) {
                 for (portalIndex in currentVal.recordset[0]) {
-                    var portalRecord = currentVal.recordset[0][portalIndex];
-                    if (portalRecord[portalKey]
-                        && portalRecord[targetField] !== undefined
-                        && portalRecord[portalKey] == contextInfo.portal) {
-                        currentFieldVal = portalRecord[targetField];
-                        isCheckResult = true;
+                    if (currentVal.recordset[0].hasOwnProperty(portalIndex)) {
+                        var portalRecord = currentVal.recordset[0][portalIndex];
+                        if (portalRecord[portalKey] &&
+                            portalRecord[targetField] !== undefined &&
+                            portalRecord[portalKey] == contextInfo.portal) {
+                            currentFieldVal = portalRecord[targetField];
+                            isCheckResult = true;
+                        }
                     }
                 }
             }
@@ -333,10 +446,8 @@ var IMLibElement = {
                     case "checkbox":
                         if (initialvalue == element.value) {
                             isOthersModified = false;
-                        } else if (!parseInt(currentFieldVal)) {
-                            isOthersModified = false;
                         } else {
-                            isOthersModified = true;
+                            isOthersModified = !!parseInt(currentFieldVal);
                         }
                         break;
                     default:
@@ -371,40 +482,49 @@ var IMLibElement = {
         var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;
 
         for (key in removeNodes) {
-            removeNode = document.getElementById(removeNodes[key]);
-            removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
-            if (removingNodes) {
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    if (removeNodeId in IMLibCalc.calculateRequiredObject) {
-                        delete IMLibCalc.calculateRequiredObject[removeNodeId];
+            if (removeNodes.hasOwnProperty(key)) {
+                removeNode = document.getElementById(removeNodes[key]);
+                removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
+                if (removingNodes) {
+                    for (i = 0; i < removingNodes.length; i++) {
+                        removeNodeId = removingNodes[i].id;
+                        if (removeNodeId in IMLibCalc.calculateRequiredObject) {
+                            delete IMLibCalc.calculateRequiredObject[removeNodeId];
+                        }
                     }
-                }
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    for (nodeId in IMLibCalc.calculateRequiredObject) {
-                        calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                        referes = {};
-                        values = {};
-                        for (j in calcObject.referes) {
-                            referes[j] = [], values[j] = [];
-                            for (k = 0; k < calcObject.referes[j].length; k++) {
-                                if (removeNodeId != calcObject.referes[j][k]) {
-                                    referes[j].push(calcObject.referes[j][k]);
-                                    values[j].push(calcObject.values[j][k]);
+                    for (i = 0; i < removingNodes.length; i++) {
+                        removeNodeId = removingNodes[i].id;
+                        for (nodeId in IMLibCalc.calculateRequiredObject) {
+                            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
+                                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
+                                referes = {};
+                                values = {};
+                                for (j in calcObject.referes) {
+                                    if (calcObject.referes.hasOwnProperty(j)) {
+                                        referes[j] = [];
+                                        values[j] = [];
+                                        for (k = 0; k < calcObject.referes[j].length; k++) {
+                                            if (calcObject.referes.hasOwnProperty(j)) {
+                                                if (removeNodeId != calcObject.referes[j][k]) {
+                                                    referes[j].push(calcObject.referes[j][k]);
+                                                    values[j].push(calcObject.values[j][k]);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
+                                calcObject.referes = referes;
+                                calcObject.values = values;
                             }
                         }
-                        calcObject.referes = referes;
-                        calcObject.values = values;
                     }
                 }
-            }
-            try {
-                removeNode.parentNode.removeChild(removeNode);
-            } catch
-                (ex) {
-                // Avoid an error for Safari
+                try {
+                    removeNode.parentNode.removeChild(removeNode);
+                } catch
+                    (ex) {
+                    // Avoid an error for Safari
+                }
             }
         }
     }
