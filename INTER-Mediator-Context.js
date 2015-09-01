@@ -176,7 +176,7 @@ IMLibContextPool = {
     },
 
     getContextsFromNameAndForeignValue: function (cName, fValue, parentKeyField) {
-        var i, j, result = [], parentKeyField;
+        var i, result = [];
         if (!cName) {
             return false;
         }
@@ -232,17 +232,21 @@ IMLibContextPool = {
     },
 
     removeRecordFromPool: function (repeaterIdValue) {
-        var i, j, targetContext, keying, field, nodeIds = [], targetContextIndex = -1, targetKeying,
+        var i, j, keying, field, nodeIds = [], targetContextIndex = -1, targetKeying,
             targetKeyingObj = null, idValue;
         for (i = 0; i < this.poolingContexts.length; i++) {
             for (keying in this.poolingContexts[i].binding) {
-                for (field in this.poolingContexts[i].binding[keying]) {
-                    if (field == '_im_repeater') {
-                        for (j = 0; j < this.poolingContexts[i].binding[keying][field].length; j++) {
-                            if (repeaterIdValue == this.poolingContexts[i].binding[keying][field][j].id) {
-                                targetKeyingObj = this.poolingContexts[i].binding[keying];
-                                targetKeying = keying;
-                                targetContextIndex = i;
+                if (this.poolingContexts[i].binding.hasOwnProperty(keying)) {
+                    for (field in this.poolingContexts[i].binding[keying]) {
+                        if (this.poolingContexts[i].binding[keying].hasOwnProperty(field)) {
+                            if (field == '_im_repeater') {
+                                for (j = 0; j < this.poolingContexts[i].binding[keying][field].length; j++) {
+                                    if (repeaterIdValue == this.poolingContexts[i].binding[keying][field][j].id) {
+                                        targetKeyingObj = this.poolingContexts[i].binding[keying];
+                                        targetKeying = keying;
+                                        targetContextIndex = i;
+                                    }
+                                }
                             }
                         }
                     }
@@ -251,14 +255,18 @@ IMLibContextPool = {
         }
 
         for (field in targetKeyingObj) {
-            for (j = 0; j < targetKeyingObj[field].length; j++) {
-                nodeIds.push(targetKeyingObj[field][j].id);
+            if (targetKeyingObj.hasOwnProperty(field)) {
+                for (j = 0; j < targetKeyingObj[field].length; j++) {
+                    nodeIds.push(targetKeyingObj[field][j].id);
+                }
             }
         }
         if (targetContextIndex > -1) {
             for (idValue in this.poolingContexts[targetContextIndex].contextInfo) {
-                if (nodeIds.indexOf(idValue) >= 0) {
-                    delete this.poolingContexts[targetContextIndex].contextInfo[idValue];
+                if (this.poolingContexts[targetContextIndex].contextInfo.hasOwnProperty(idValue)) {
+                    if (nodeIds.indexOf(idValue) >= 0) {
+                        delete this.poolingContexts[targetContextIndex].contextInfo[idValue];
+                    }
                 }
             }
             delete this.poolingContexts[targetContextIndex].binding[targetKeying];
@@ -374,7 +382,7 @@ IMLibContext = function (contextName) {
     this.getInsertOrder = function (record) {
         var cName, sortKeys = [], contextDef, i, sortFields = [], sortDirections = [];
         for (cName in INTERMediator.additionalSortKey) {
-            if (cName == this.contextName) {
+            if (INTERMediator.additionalSortKey.hasOwnProperty(cName) && cName == this.contextName) {
                 sortKeys.push(INTERMediator.additionalSortKey[cName]);
             }
         }
@@ -589,14 +597,16 @@ IMLibContext = function (contextName) {
     };
 
     this.getRepeaterEndNode = function (index) {
-        var nodeId, field, repeaters = [], repeater, node, i, sibling, enclosure, children;
+        var nodeId, field, repeaters = [], repeater, node, i, enclosure, children;
 
         var recKey = this.recordOrder[index];
         for (field in this.binding[recKey]) {
-            nodeId = this.binding[recKey][field].nodeId;
-            repeater = INTERMediatorLib.getParentRepeater(document.getElementById(nodeId));
-            if (!repeater in repeaters) {
-                repeaters.push(repeater);
+            if (this.binding[recKey].hasOwnProperty(field)) {
+                nodeId = this.binding[recKey][field].nodeId;
+                repeater = INTERMediatorLib.getParentRepeater(document.getElementById(nodeId));
+                if (!repeater in repeaters) {
+                    repeaters.push(repeater);
+                }
             }
         }
         if (repeaters.length < 1) {
@@ -634,8 +644,7 @@ IMLibContext = function (contextName) {
     };
 
     this.setDataWithKey = function (pkValue, key, value) {
-        var targetKey, contextDef, keyAndValue, storeElements;
-        var storekeys = Object.keys(this.store);
+        var targetKey, contextDef, storeElements;
         contextDef = this.getContextDef();
         if (!contextDef) {
             return;
@@ -808,7 +817,9 @@ IMLibContext = function (contextName) {
         contextName = contextDef.name;
         if (contextDef.query) {
             for (i in contextDef.query) {
-                checkResult.push(checkCondition(contextDef.query[i], value));
+                if (contextDef.query.hasOwnProperty(i)) {
+                    checkResult.push(checkCondition(contextDef.query[i], value));
+                }
             }
         }
         if (INTERMediator.additionalCondition[contextName]) {
@@ -857,14 +868,16 @@ IMLibContext = function (contextName) {
 
         if (this.foreignValue) {
             for (fieldName in this.foreignValue) {
-                if (contextDef.relation) {
+                if (this.foreignValue.hasOwnProperty(fieldName) && contextDef.relation) {
                     for (i in contextDef.relation) {
-                        if (contextDef.relation[i]['join-field'] == fieldName) {
-                            result &= (checkCondition({
-                                field: contextDef.relation[i]['foreign-key'],
-                                operator: "=",
-                                value: this.foreignValue[fieldName]
-                            }, value));
+                        if (contextDef.relation.hasOwnProperty(i)) {
+                            if (contextDef.relation[i]['join-field'] == fieldName) {
+                                result &= (checkCondition({
+                                    field: contextDef.relation[i]['foreign-key'],
+                                    operator: "=",
+                                    value: this.foreignValue[fieldName]
+                                }, value));
+                            }
                         }
                     }
                 }
@@ -1034,8 +1047,8 @@ IMLibLocalContext = {
         }
     },
 
-    binding: function (node) {
-        var linkInfos, nodeInfo, idValue, i, j, value, params, idArray, unexistId;
+    bindingNode: function (node) {
+        var linkInfos, nodeInfo, idValue, i, value, params;
         if (node.nodeType != 1) {
             return;
         }
@@ -1092,8 +1105,9 @@ IMLibLocalContext = {
                     case "limitnumber":
                         IMLibChangeEventDispatch.setExecute(idValue, (function () {
                             var contextName = params[1];
+                            var targetIdValue = idValue;
                             return function () {
-                                INTERMediator.pagedSize = document.getElementById(idValue).value;
+                                INTERMediator.pagedSize = document.getElementById(targetIdValue).value;
                                 IMLibUI.eventUpdateHandler(contextName);
                                 IMLibPageNavigation.navigationSetup();
                             };
@@ -1136,15 +1150,17 @@ IMLibLocalContext = {
 
     updateAll: function () {
         var index, key, nodeIds, idValue, targetNode;
-        for (key in IMLibLocalContext.binding) {
-            nodeIds = IMLibLocalContext.binding[key];
-            for (index = 0; index < nodeIds.length; index++) {
-                idValue = nodeIds[index];
-                targetNode = document.getElementById(idValue);
-                if (targetNode &&
-                    ( targetNode.tagName == "INPUT" || targetNode.tagName == "TEXTAREA" || targetNode.tagName == "SELECT")) {
-                    IMLibLocalContext.update(idValue);
-                    break;
+        for (key in this.binding) {
+            if (this.binding.hasOwnProperty(key)) {
+                nodeIds = this.binding[key];
+                for (index = 0; index < nodeIds.length; index++) {
+                    idValue = nodeIds[index];
+                    targetNode = document.getElementById(idValue);
+                    if (targetNode &&
+                        ( targetNode.tagName == "INPUT" || targetNode.tagName == "TEXTAREA" || targetNode.tagName == "SELECT")) {
+                        IMLibLocalContext.update(idValue);
+                        break;
+                    }
                 }
             }
         }
@@ -1158,7 +1174,7 @@ IMLibLocalContext = {
             var children, i;
             if (node.nodeType === 1) { // Work for an element
                 try {
-                    self.binding(node);
+                    self.bindingNode(node);
                     children = node.childNodes; // Check all child nodes.
                     if (children) {
                         for (i = 0; i < children.length; i++) {
