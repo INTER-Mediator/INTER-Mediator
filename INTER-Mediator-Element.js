@@ -8,6 +8,16 @@
  */
 
 var IMLibElement = {
+    patterns: [
+        /^number\(([0-9]+)\)/,
+        /^number[\(\)]*/,
+        /^currency\(([0-9]+)\)/,
+        /^currency[\(\)]*/,
+        /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/,
+        /^percent\(([0-9]+)\)/,
+        /^percent[\(\)]*/
+    ],
+
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         "use strict";
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
@@ -38,9 +48,8 @@ var IMLibElement = {
                         default:
                             break;
                     }
-                    break;
-                case "SELECT":
-                    break;
+                //case "SELECT":
+                //    break;
                 default:
                     while (element.childNodes.length > 0) {
                         element.removeChild(element.childNodes[0]);
@@ -109,18 +118,8 @@ var IMLibElement = {
                     flags.useSeparator = true;
                 }
             }
-
-            patterns = [
-                /^number\(([0-9]+)\)/,
-                /^number[\(\)]*/,
-                /^currency\(([0-9]+)\)/,
-                /^currency[\(\)]*/,
-                /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/,
-                /^percent\(([0-9]+)\)/,
-                /^percent[\(\)]*/
-            ];
-            for (i = 0; i < patterns.length; i++) {
-                param1 = formatSpec.match(patterns[i]);
+            for (i = 0; i < IMLibElement.patterns.length; i++) {
+                param1 = formatSpec.match(IMLibElement.patterns[i]);
                 if (param1) {
                     switch (param1.length) {
                         case 3:
@@ -453,12 +452,14 @@ var IMLibElement = {
             portalKey = contextInfo.context.contextName + "::-recid";
             if (currentVal.recordset && currentVal.recordset[0]) {
                 for (portalIndex in currentVal.recordset[0]) {
-                    var portalRecord = currentVal.recordset[0][portalIndex];
-                    if (portalRecord[portalKey] &&
-                        portalRecord[targetField] !== undefined &&
-                        portalRecord[portalKey] == contextInfo.portal) {
-                        currentFieldVal = portalRecord[targetField];
-                        isCheckResult = true;
+                    if (currentVal.recordset[0].hasOwnProperty(portalIndex)) {
+                        var portalRecord = currentVal.recordset[0][portalIndex];
+                        if (portalRecord[portalKey] &&
+                            portalRecord[targetField] !== undefined &&
+                            portalRecord[portalKey] == contextInfo.portal) {
+                            currentFieldVal = portalRecord[targetField];
+                            isCheckResult = true;
+                        }
                     }
                 }
             }
@@ -491,10 +492,8 @@ var IMLibElement = {
                     case "checkbox":
                         if (initialvalue == element.value) {
                             isOthersModified = false;
-                        } else if (!parseInt(currentFieldVal)) {
-                            isOthersModified = false;
                         } else {
-                            isOthersModified = true;
+                            isOthersModified = !!parseInt(currentFieldVal);
                         }
                         break;
                     default:
@@ -525,45 +524,53 @@ var IMLibElement = {
         return true;
     },
 
-    deleteNodes: function (removeNodes) {
+    deleteNodes: function(removeNodes) {
         var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;
 
         for (key in removeNodes) {
-            removeNode = document.getElementById(removeNodes[key]);
-            removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
-            if (removingNodes) {
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    if (removeNodeId in IMLibCalc.calculateRequiredObject) {
-                        delete IMLibCalc.calculateRequiredObject[removeNodeId];
+            if (removeNodes.hasOwnProperty(key)) {
+                removeNode = document.getElementById(removeNodes[key]);
+                removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
+                if (removingNodes) {
+                    for (i = 0; i < removingNodes.length; i++) {
+                        removeNodeId = removingNodes[i].id;
+                        if (removeNodeId in IMLibCalc.calculateRequiredObject) {
+                            delete IMLibCalc.calculateRequiredObject[removeNodeId];
+                        }
                     }
-                }
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    for (nodeId in IMLibCalc.calculateRequiredObject) {
-                        calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                        referes = {};
-                        values = {};
-                        for (j in calcObject.referes) {
-                            referes[j] = [];
-                            values[j] = [];
-                            for (k = 0; k < calcObject.referes[j].length; k++) {
-                                if (removeNodeId != calcObject.referes[j][k]) {
-                                    referes[j].push(calcObject.referes[j][k]);
-                                    values[j].push(calcObject.values[j][k]);
+                    for (i = 0; i < removingNodes.length; i++) {
+                        removeNodeId = removingNodes[i].id;
+                        for (nodeId in IMLibCalc.calculateRequiredObject) {
+                            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
+                                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
+                                referes = {};
+                                values = {};
+                                for (j in calcObject.referes) {
+                                    if (calcObject.referes.hasOwnProperty(j)) {
+                                        referes[j] = [];
+                                        values[j] = [];
+                                        for (k = 0; k < calcObject.referes[j].length; k++) {
+                                            if (calcObject.referes.hasOwnProperty(j)) {
+                                                if (removeNodeId != calcObject.referes[j][k]) {
+                                                    referes[j].push(calcObject.referes[j][k]);
+                                                    values[j].push(calcObject.values[j][k]);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
+                                calcObject.referes = referes;
+                                calcObject.values = values;
                             }
                         }
-                        calcObject.referes = referes;
-                        calcObject.values = values;
                     }
                 }
-            }
-            try {
-                removeNode.parentNode.removeChild(removeNode);
-            } catch
-                (ex) {
-                // Avoid an error for Safari
+                try {
+                    removeNode.parentNode.removeChild(removeNode);
+                } catch
+                    (ex) {
+                    // Avoid an error for Safari
+                }
             }
         }
     }
