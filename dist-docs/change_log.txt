@@ -11,6 +11,8 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.3 (in development)
+- MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
+  for PHP).
 - Update phpseclib to version 1.0.0.
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
