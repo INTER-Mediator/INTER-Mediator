@@ -41,11 +41,6 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-file '/home/developer/.viminfo' do
-  owner 'developer'
-  group 'developer'
-end
-
 execute 'groupadd im-developer' do
   command 'groupadd im-developer'
 end
@@ -55,20 +50,24 @@ execute 'usermod -a -G im-developer developer' do
 end
 
 if node[:platform] == 'ubuntu'
-  execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
-    command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
+  if node[:virtualization][:system] != 'docker'
+    execute 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate' do
+      command 'echo "set grub-pc/install_devices /dev/sda" | debconf-communicate'
+    end
   end
 
-  execute 'aptitude clean' do
-    command 'aptitude clean'
+  execute 'apt-get clean' do
+    command 'apt-get clean'
   end
 
-  execute 'aptitude update' do
-    command 'aptitude update'
+  execute 'apt-get update' do
+    command 'apt-get update'
   end
-
-  execute 'aptitude full-upgrade' do
-    command 'aptitude full-upgrade --assume-yes'
+  
+  if node[:virtualization][:system] != 'docker'
+    execute 'aptitude full-upgrade' do
+      command 'aptitude full-upgrade --assume-yes'
+    end
   end
 elsif node[:platform] == 'redhat'
   execute 'yum -y update' do
@@ -77,8 +76,17 @@ elsif node[:platform] == 'redhat'
 end
 
 if node[:platform] == 'ubuntu'
+  package 'openssh-server' do
+    action :install
+  end
+end
+
+if node[:platform] == 'ubuntu'
   package 'apache2' do
     action :install
+  end
+  service 'apache2' do
+    action [ :enable, :start ]
   end
   execute 'usermod -a -G im-developer www-data' do
     command 'usermod -a -G im-developer www-data'
@@ -401,8 +409,8 @@ package 'git' do
 end
 
 if node[:platform] == 'ubuntu'
-  execute 'aptitude clean' do
-    command 'aptitude clean'
+  execute 'apt-get clean' do
+    command 'apt-get clean'
   end
 end
 
@@ -794,6 +802,18 @@ end
 
 directory '/home/developer' do
   action :create
+  owner 'developer'
+  group 'developer'
+end
+file '/home/developer/.bashrc' do
+  action :create
+  owner 'developer'
+  group 'developer'
+end
+file '/home/developer/.viminfo' do
+  action :create
+  owner 'developer'
+  group 'developer'
 end
 execute 'chown -R developer:developer /home/developer' do
   command 'chown -R developer:developer /home/developer'
