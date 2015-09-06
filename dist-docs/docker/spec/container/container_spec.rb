@@ -376,20 +376,20 @@ describe command('date -d "`cat /var/www/html/INTER-Mediator/dist-docs/readme.tx
   its(:stdout) { should match /1/ }
 end
 
-range = 1..40
-range.each{|num|
-  describe file('/var/www/html/def' + "%02d" % num + '.php') do
-    it { should be_file }
-    it { should be_mode 664 }
-    its(:content) { should match /require_once\('INTER-Mediator\/INTER-Mediator.php'\);/ }
-  end
-
-  describe file('/var/www/html/page' + "%02d" % num + '.html') do
-    it { should be_file }
-    it { should be_mode 664 }
-    its(:content) { should match /<!DOCTYPE html>/ }
-  end
-}
+#range = 1..40
+#range.each{|num|
+#  describe file('/var/www/html/def' + "%02d" % num + '.php') do
+#    it { should be_file }
+#    it { should be_mode 664 }
+#    its(:content) { should match /require_once\('INTER-Mediator\/INTER-Mediator.php'\);/ }
+#  end
+#
+#  describe file('/var/www/html/page' + "%02d" % num + '.html') do
+#    it { should be_file }
+#    it { should be_mode 664 }
+#    its(:content) { should match /<!DOCTYPE html>/ }
+#  end
+#}
 
 #describe command('mysql -u root --password=im4135dev test_db -e \'SHOW TABLES\'') do
 #  its(:stdout) { should match /cor_way_kind/ }
@@ -483,11 +483,11 @@ describe file('/home/developer/.bashrc') do
   it { should be_grouped_into 'developer' }
 end
 
-describe file('/home/developer/.viminfo') do
-  it { should be_file }
-  it { should be_owned_by 'developer' }
-  it { should be_grouped_into 'developer' }
-end
+#describe file('/home/developer/.viminfo') do
+#  it { should be_file }
+#  it { should be_owned_by 'developer' }
+#  it { should be_grouped_into 'developer' }
+#end
 
 describe file('/etc/default/keyboard'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /XKBMODEL="pc105"/ }
