@@ -1,7 +1,14 @@
 machine:
+  services:
+    - docker
   timezone: Asia/Tokyo
   php:
     version: 5.4.37
+
+dependencies:
+  override:
+    - docker info
+    - docker build -t ubuntu ./dist-docs/docker
 
 database:
   override:
@@ -26,3 +33,5 @@ test:
   override:
     - vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
     - npm test
+    - BUNDLE_GEMFILE=dist-docs/docker/Gemfile bundle
+    - rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/container/container_spec.rb -f doc -c
