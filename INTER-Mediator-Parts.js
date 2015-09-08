@@ -115,7 +115,6 @@ IMParts_Catalog["fileupload"] = {
             this.formFromId[newId] = formNode;
         }
         if (parentNode.getAttribute("data-im-move-children") === "true") {
-            // 子要素の移動
             var children = parentNode.children;
             for (var c = children.length - 1; c >= 0; c--) {
                 newNode.appendChild(children[c]);
