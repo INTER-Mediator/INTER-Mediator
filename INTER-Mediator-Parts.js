@@ -1,4 +1,4 @@
- /*
+/*
  * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
  *
  *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
