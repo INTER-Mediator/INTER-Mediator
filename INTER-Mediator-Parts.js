@@ -118,7 +118,7 @@ IMParts_Catalog["fileupload"] = {
             // 子要素の移動
             var children = parentNode.children;
             for (var c = children.length - 1; c >= 0; c--) {
-                n.appendChild(children[c]);
+                newNode.appendChild(children[c]);
             }
         }
         parentNode.appendChild(newNode);
