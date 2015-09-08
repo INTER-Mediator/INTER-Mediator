@@ -828,6 +828,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         $authSucceed = true;
                     } else {
                         $ldap = new LDAPAuth();
+                        $ldap->setLogger($this->logger);
                         if ($ldap->isActive) {
                             list($password, $challenge) = $this->decrypting($paramCryptResponse);
                             if ($ldap->bindCheck($signedUser, $password)) {
