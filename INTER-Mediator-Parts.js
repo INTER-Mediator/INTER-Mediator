@@ -50,19 +50,22 @@ IMParts_Catalog["fileupload"] = {
         }
         if (this.html5DDSuported) {
             newNode.dropzone = "copy";
-            newNode.style.width = "200px";
-            newNode.style.height = "100px";
-            newNode.style.paddingTop = "20px";
-            newNode.style.backgroundColor = "#AAAAAA";
-            newNode.style.border = "3px dotted #808080";
-            newNode.style.textAlign = "center";
-            newNode.style.fontSize = "75%";
-            var eachLine = INTERMediatorOnPage.getMessages()[3101].split(/\n/);
-            for (var i = 0; i < eachLine.length; i++) {
-                if (i > 0) {
-                    newNode.appendChild(document.createElement("BR"));
+            var widgetStyle = (parentNode.getAttribute("data-im-widget-style") === "false") ? false : true;
+            if (widgetStyle) {
+                newNode.style.width = "200px";
+                newNode.style.height = "100px";
+                newNode.style.paddingTop = "20px";
+                newNode.style.backgroundColor = "#AAAAAA";
+                newNode.style.border = "3px dotted #808080";
+                newNode.style.textAlign = "center";
+                newNode.style.fontSize = "75%";
+                var eachLine = INTERMediatorOnPage.getMessages()[3101].split(/\n/);
+                for (var i = 0; i < eachLine.length; i++) {
+                    if (i > 0) {
+                        newNode.appendChild(document.createElement("BR"));
+                    }
+                    newNode.appendChild(document.createTextNode(eachLine[i]));
                 }
-                newNode.appendChild(document.createTextNode(eachLine[i]));
             }
         } else {
             formNode = document.createElement('FORM');
@@ -110,6 +113,13 @@ IMParts_Catalog["fileupload"] = {
             buttonNode.appendChild(document.createTextNode('送信'));
             formNode.appendChild(buttonNode);
             this.formFromId[newId] = formNode;
+        }
+        if (parentNode.getAttribute("data-im-move-children") === "true") {
+            // 子要素の移動
+            var children = parentNode.children;
+            for (var c = children.length - 1; c >= 0; c--) {
+                n.appendChild(children[c]);
+            }
         }
         parentNode.appendChild(newNode);
 
