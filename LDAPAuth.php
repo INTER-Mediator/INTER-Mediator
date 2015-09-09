@@ -19,6 +19,7 @@ class LDAPAuth
     private $base = "";
     private $container = "";
     private $accountKey = "uid";
+    private $logger = null;
 
     public function __construct()
     {
@@ -45,8 +46,17 @@ class LDAPAuth
         $this->isActive = (strlen($this->server) > 0);
     }
 
+    public function setLogger($log) {
+        $this->logger = $log;
+    }
+
     function bindCheck($username, $password)
     {
+        if (! function_exists("ldap_connect"))  {
+            $this->errorString = "This PHP doesn't support LDAP, check the result of infophp() function.";
+            return false;
+        }
+
         $this->errorString = "";
         if (! $this->isActive)  {
             $this->errorString = "LDAP Setting isn't supplied.";
@@ -74,6 +84,9 @@ class LDAPAuth
             $r = false;
         }
         ldap_close($ds);
+        if (strlen($this->errorString)) {
+            $this->logger->setErrorMessage($this->errorString);
+        }
         return $r;
     }
 }
