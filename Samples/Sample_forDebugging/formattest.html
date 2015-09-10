@@ -9,15 +9,24 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 -->
-<html>
+<html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>INTER-Mediator - Sample - Client-Side Calculation/MySQL</title>
-    <link rel="stylesheet" type="text/css" href="../sample.css">
-    <script type="text/javascript" src="formattest.php"></script>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>INTER-Mediator - Sample - Client-Side Calculation/MySQL</title>
+<link rel="stylesheet" type="text/css" href="../sample.css">
+<script src="formattest.php"></script>
+<script src="format-client-side.js"></script>
+<script>
+    window.onload =function() {
+        INTERMediator.construct(true);
+        INTERMediatorOnPage.doAfterConstruct = function() {
+            createDisplayFieldsController();
+        }
+    }
+</script>
 </head>
-<body onload="INTERMediator.construct(true)">
+<body>
 <div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <table border="1">
     <tbody>
@@ -58,10 +67,10 @@
                     </td>
                     <td><input class="price" type="text" data-im="item@qty" size="5"></td>
                     <td>
-                        <input class="price" type="text" data-im="item@unitprice" size="8">
+                        <input class="price" type="text" data-im="item@unitprice" size="8" data-im-format="number" data-im-format-options="useseparator">
                         <div class="inline" data-im-control="enclosure">
                             <div class="inline price" data-im-control="repeater">
-                                (<span data-im="product@unitprice"></span>)
+                                (<span data-im="product@unitprice" data-im-format="number" data-im-format-options="useseparator"></span>)
                             </div>
                         </div>
                     </td>
