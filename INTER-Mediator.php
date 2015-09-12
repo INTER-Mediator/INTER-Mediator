@@ -33,7 +33,7 @@ if (!class_exists('Math_BigInteger')) {
     require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Math' . DIRECTORY_SEPARATOR . 'BigInteger.php');
 }
 
-$currentDirParam = $currentDir . 'params.php';
+$currentDirParam = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'params.php';
 $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
 if (file_exists($parentDirParam)) {
     include($parentDirParam);
