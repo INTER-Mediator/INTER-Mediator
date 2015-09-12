@@ -221,6 +221,10 @@ class GenerateJSCode
                 "INTERMediatorOnPage.clientNotificationChannel",
                 "function(){return ", arrayToJS($chName, ''), ";}");
         }
+        $metadata = json_decode(file_get_contents(
+            dirname(__FILE__) . DIRECTORY_SEPARATOR . "metadata.json"));
+        $this->generateAssignJS("INTERMediatorOnPage.metadata",
+            "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->releasedate}{$q}}");
 
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
             $this->generateAssignJS("INTERMediator.debugMode", "false");

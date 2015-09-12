@@ -7,6 +7,6 @@
  *   INTER-Mediator is supplied under MIT License.
  */
 window.onload = function () {
-    INTERMediator. supressErrorMessageOnPage = true;
+    INTERMediator.supressErrorMessageOnPage = true;
     INTERMediator.construct(true);
 }

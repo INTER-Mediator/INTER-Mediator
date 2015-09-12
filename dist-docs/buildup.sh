@@ -32,6 +32,8 @@ EOF
 distDocDir=$(cd $(dirname "$0"); pwd)
 originalPath=$(dirname "${distDocDir}")
 
+printf '{"version":"%s","releasedate":"%s"}' "${version}" "${dt}" > "${originalPath}/metadata.json"
+
 topOfDir=$(dirname "${originalPath}")
 buildDir="${topOfDir}/${buildRootName}"
 buildPath="${buildDir}/${imRootName}"
@@ -44,9 +46,14 @@ echo "Choose the build result from these:"
 echo ' (1) Complete (everything contains)'
 echo ' (2) Core only (the least set to work wep applications)'
 echo ' (3) Core + Support (add Auth_Support and INTER-Mediator-Support)'
-/bin/echo -n "Type 1, 2 or 3, and then type return----> "
+echo ' (4) Write just version and release date to metadata.json'
+/bin/echo -n "Type 1, 2, 3 or 4, and then type return----> "
 read choice
 echo ""
+
+if [ $choice = 4 ]; then
+    exit 0;
+fi
 
 if [ -d "${buildDir}" ]; then
     rm -r "${buildDir}"
