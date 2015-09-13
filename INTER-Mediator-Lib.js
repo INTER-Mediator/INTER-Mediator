@@ -1,10 +1,11 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
 //"use strict"
@@ -113,16 +114,16 @@ var INTERMediatorLib = {
             return false;
         }
         tagName = node.tagName;
-        if ((tagName === 'TBODY')
-            || (tagName === 'UL')
-            || (tagName === 'OL')
-            || (tagName === 'SELECT')
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && className
-            && className.indexOf(INTERMediatorLib.rollingEnclosureClassName) >= 0)
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && controlAttr
-            && controlAttr.indexOf(INTERMediatorLib.rollingEnclosureDataControlName) >= 0)) {
+        if ((tagName === "TBODY") ||
+            (tagName === "UL") ||
+            (tagName === "OL") ||
+            (tagName === "SELECT") ||
+            ((tagName === "DIV" || tagName === "SPAN") &&
+            className &&
+            className.indexOf(INTERMediatorLib.rollingEnclosureClassName) >= 0) ||
+            ((tagName === "DIV" || tagName === "SPAN") &&
+            controlAttr &&
+            controlAttr.indexOf(INTERMediatorLib.rollingEnclosureDataControlName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -311,27 +312,27 @@ var INTERMediatorLib = {
             }
             repeaterTag = repeater.tagName;
             enclosureTag = enclosure.tagName;
-            if ((repeaterTag === 'TR' && enclosureTag === 'TBODY')
-                || (repeaterTag === 'OPTION' && enclosureTag === 'SELECT')
-                || (repeaterTag === 'LI' && enclosureTag === 'OL')
-                || (repeaterTag === 'LI' && enclosureTag === 'UL')) {
+            if ((repeaterTag === 'TR' && enclosureTag === 'TBODY') ||
+                (repeaterTag === 'OPTION' && enclosureTag === 'SELECT') ||
+                (repeaterTag === 'LI' && enclosureTag === 'OL') ||
+                (repeaterTag === 'LI' && enclosureTag === 'UL')) {
                 return true;
             }
             if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
                 enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
                 enclosureDataAttr = enclosure.getAttribute("data-im-control");
-                if ((enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0)
-                    || (enclosureDataAttr && enclosureDataAttr == "enclosure")) {
+                if ((enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0) ||
+                    (enclosureDataAttr && enclosureDataAttr == "enclosure")) {
                     repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
                     repeaterDataAttr = repeater.getAttribute("data-im-control");
-                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN')
-                        && ((repeaterClass && repeaterClass.indexOf('_im_repeater') >= 0)
-                        || (repeaterDataAttr && repeaterDataAttr == "repeater"))) {
+                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN') &&
+                        ((repeaterClass && repeaterClass.indexOf('_im_repeater') >= 0) ||
+                        (repeaterDataAttr && repeaterDataAttr == "repeater"))) {
                         return true;
                     } else if (repeaterTag === 'INPUT') {
                         repeaterType = repeater.getAttribute('type');
-                        if (repeaterType
-                            && ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
+                        if (repeaterType &&
+                            ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
                             return true;
                         }
                     }
