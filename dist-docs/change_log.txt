@@ -22,6 +22,9 @@ Ver.5.3 (in development)
   for the first parameter.
 - Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
 - Add Dockerfile for CircleCI.
+- INTER-Mediator version can be described in the 'metadata.json' file, and dist-docs/build.sh
+  can update the metadata.json.
+- All header description of source files are updated, and build.sh was adapted them.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.

@@ -1,16 +1,18 @@
 <?php
-
 /**
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
  * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 class GenerateJSCode
 {
     public function __construct()
@@ -223,6 +225,10 @@ class GenerateJSCode
                 "INTERMediatorOnPage.clientNotificationChannel",
                 "function(){return ", arrayToJS($chName, ''), ";}");
         }
+        $metadata = json_decode(file_get_contents(
+            dirname(__FILE__) . DIRECTORY_SEPARATOR . "metadata.json"));
+        $this->generateAssignJS("INTERMediatorOnPage.metadata",
+            "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->releasedate}{$q}}");
 
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
             $this->generateAssignJS("INTERMediator.debugMode", "false");
