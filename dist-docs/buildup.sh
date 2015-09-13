@@ -22,13 +22,6 @@ echo " Start to build the INTER-Mediator Ver.${version}"
 echo "-------------------------------------------------"
 
 dt=$(date "+%Y-%m-%d")
-
-sedrule="/tmp/sedrule"
-cat << EOF > "${sedrule}"
-s/@@@@1@@@@/${dt}/
-s/@@@@2@@@@/${version}/
-EOF
-
 distDocDir=$(cd $(dirname "$0"); pwd)
 originalPath=$(dirname "${distDocDir}")
 
@@ -65,13 +58,14 @@ cd "${originalPath}"
 for aFile in $(ls *.php)
 do
     filename=$(basename "${aFile}")
-#    echo "SED: ${aFile}"
-    sed -f "${sedrule}" "${aFile}" > "${buildPath}/${filename}"
+    cp "${aFile}" "${buildPath}/${filename}"
 done
+
+cp  "${originalPath}/metadata.json" "${buildPath}/metadata.json"
 
 #### Merge js files
 echo "PROCESSING: Merging JS files"
-sed -f "${sedrule}" "${originalPath}/INTER-Mediator.js"        > "${buildPath}/temp.js"
+cp  "${originalPath}/INTER-Mediator.js"                          "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
@@ -90,7 +84,7 @@ cat "${originalPath}/Adapter_DBServer.js"                     >> "${buildPath}/t
 cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/temp.js"
 
-sed -f "${sedrule}" "${buildPath}/temp.js" > "${buildPath}/INTER-Mediator.js"
+cp "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
 
 #### Compress INTER-Mediator.js
 if [ -f "${topOfDir}/${YUICOMP}" ]; then
@@ -140,8 +134,7 @@ do
     do
 #        echo "Processing: ${originalPath}/${TARGET}/${DIR}"
         if [ -f "${originalPath}/${TARGET}/${DIR}" ]; then
-#            echo "SED: ${originalPath}/${TARGET}/${DIR}"
-            sed -f "${sedrule}" "${originalPath}/${TARGET}/${DIR}" > "${buildPath}/${TARGET}/${DIR}"
+            cp "${originalPath}/${TARGET}/${DIR}" "${buildPath}/${TARGET}/${DIR}"
         else
             mkdir -p "${buildPath}/${TARGET}/${DIR}"
             for FILE in $(ls "${originalPath}/${TARGET}/${DIR}")
@@ -150,7 +143,7 @@ do
                     case "${FILE}" in
                         *\.html | *\.php | *\.js | *\.css | *\.txt)
 #                          echo "SED: ${originalPath}/${TARGET}/${DIR}/${FILE}"
-                            sed -f "${sedrule}" "${originalPath}/${TARGET}/${DIR}/${FILE}" > "${buildPath}/${TARGET}/${DIR}/${FILE}"
+                            cp "${originalPath}/${TARGET}/${DIR}/${FILE}" "${buildPath}/${TARGET}/${DIR}/${FILE}"
                             ;;
                         *)
 #                            echo "CP: ${originalPath}/${TARGET}/${DIR}/${FILE}"
@@ -172,13 +165,12 @@ if [ $choice = 1 ]; then
 
     echo "PROCESSING: Rest of ${originalPath}/Samples"
     cp -pr  "${originalPath}/Samples/Sample_products/images" "${buildPath}/Samples/Sample_products/"
-    cp -pr  "${originalPath}/Samples/WebSite/previous_rsrcs" "${buildPath}/Samples/WebSite/"
 
 # Invalidate the definition file of the DefEditor.
-    echo "PROCESSING: Invalidate the Definition File Editor for security reason."
-    defeditdeffile="${buildPath}/INTER-Mediator-Support/defedit.php"
-    sed 's|IM_Entry|/* IM_Entry|' "${defeditdeffile}" > /tmp/defedit.php
-    cp -p /tmp/defedit.php "${defeditdeffile}"
+#    echo "PROCESSING: Invalidate the Definition File Editor for security reason."
+#    defeditdeffile="${buildPath}/INTER-Mediator-Support/defedit.php"
+#    sed 's|IM_Entry|/* IM_Entry|' "${defeditdeffile}" > /tmp/defedit.php
+#    cp -p /tmp/defedit.php "${defeditdeffile}"
 else
     echo "PROCESSING: ${originalPath}/dist-docs/License.txt"
     cp -p   "${originalPath}/dist-docs/License.txt" "${buildPath}"
@@ -189,8 +181,6 @@ else
 fi
 
 find "${buildPath}" -name "\.*" -exec rm -rf {} \;
-
-rm "${sedrule}"
 
 #
 echo ""
