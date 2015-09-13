@@ -9,7 +9,7 @@
  *   INTER-Mediator is supplied under MIT License.
  */  -->
 <?php
-$imRoot = dirname(dirname(dirname(__FILE__)));
+$imRoot = '/var/www/html/INTER-Mediator';
 
 $currentDirParam = $imRoot . DIRECTORY_SEPARATOR . 'params.php';
 $parentDirParam = dirname($imRoot) . DIRECTORY_SEPARATOR . 'params.php';
@@ -45,9 +45,9 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</title>
-    <link href="<?php echo $vmFilesRootURI; ?>/../../Samples/sample.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="<?php echo $vmFilesRootURI; ?>/include_MySQL.php"></script>
-    <script type="text/javascript" src="<?php echo $vmFilesRootURI; ?>/index.js"></script>
+    <link href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/sample.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/include_MySQL.php"></script>
+    <script type="text/javascript" src="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/index.js"></script>
 </head>
 <body>
 <h1>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</h1>
@@ -61,7 +61,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 </p>
 
 <p>
-    このVirtual Machineに含まれるINTER-Mediatorの最終更新日は<strong><?php echo $imModDate; ?></strong>です。
+    このVirtual Machineに含まれるINTER-Mediatorの最終更新日は<strong><?php echo htmlspecialchars($imModDate, ENT_QUOTES, 'UTF-8'); ?></strong>です。
 </p>
 
 <h3>注意点など</h3>
@@ -72,7 +72,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <h2>リンク</h2>
 
-<p><a href="<?php echo $vmFilesRootURI; ?>/../../Samples/" target="_blank">サンプルプログラム</a></p>
+<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/" target="_blank">サンプルプログラム</a></p>
 <ul data-im-control="ignore_enc_rep">
     <li>サンプルの中にある認証ユーザー用のデータベースには、user1〜user5の5つのユーザーが定義されており、パスワードはユーザー名と同一です。
         概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。
@@ -83,8 +83,8 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
         他のホストや異なるネットワーク設定の場合は、/var/www/html/params.phpファイルの、
         $dbServer変数の値を変更してください。
     </li>
-    <li><strong>サンプルデータベースの最終更新日</strong>：MySQL=<?php echo $mysqlModDate; ?>、
-        FileMaker=<?php echo $fmModDate; ?>
+    <li><strong>サンプルデータベースの最終更新日</strong>：MySQL=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
+        FileMaker=<?php echo htmlspecialchars($fmModDate, ENT_QUOTES, 'UTF-8'); ?>
         <br><strong>あなたがお使いのサンプルデータベース</strong>：
         <span data-im-control="enclosure"><span data-im-control="noresult">MySQL=2015年7月10日以前</span>
             <span data-im-control="repeater"><span data-im="information@lastupdated">MySQL=</span></span>
@@ -124,16 +124,16 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
         ?></li>
 </ul>
 
-<p><a href="<?php echo $vmFilesRootURI; ?>/../../Auth_Support/MySQL_accountmanager.html"
+<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Auth_Support/MySQL_accountmanager.html"
       target="_blank">ユーザー管理ページサンプル</a></p>
 <ul>
     <li>ユーザー名、パスワード共に、user1でログインができますが、通常の利用は、利用者と別の管理者を作り、その管理者でのみログインできるようにします。</li>
 </ul>
 
-<p><a href="<?php echo $vmFilesRootURI; ?>/info.php" target="_blank">phpinfo()関数の実行</a></p>
+<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/info.php" target="_blank">phpinfo()関数の実行</a></p>
 
 <p>
-    <a href="http://inter-mediator.com/" target="_blank">INTER-Mediator Site</a>|
+    <a href="https://inter-mediator.com/" target="_blank">INTER-Mediator Site</a>|
     <a href="http://inter-mediator.info/" target="_blank">Manual</a>|
     <a href="http://inter-mediator.org/" target="_blank">Committee</a>
 </p>
@@ -632,7 +632,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 <h3>VMに関する情報</h3>
 <ul>
     <li>OS：Ubuntu Server 14.04.3</li>
-    <li>インストール言語：English/en_EN.UTF-8</li>
+    <li>インストール言語：Japanese/ja_JP.UTF-8</li>
     <li>キーボード：Japanese</li>
     <li>タイムゾーン：Asia/Tokyo</li>
     <li>ホスト名：inter-mediator-server</li>
@@ -662,10 +662,6 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 <p>VM上で下記のコマンドを実行すると、INTER-Mediatorのテストを実行できます。</p>
 <ul>
     <li>phpunit /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php</li>
-    <!--
-    <li>buster-server &amp;</li>
-    <li>phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture &amp;</li>
-    -->
     <li>/usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/buster.js</li>
 </ul>
 
