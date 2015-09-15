@@ -2076,4 +2076,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     {
         // TODO: Implement removeOutdatedChallenges() method.
     }
+
+    public function isSupportAggregation()
+    {
+        return false;
+    }
 }

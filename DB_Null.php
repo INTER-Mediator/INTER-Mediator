@@ -185,6 +185,11 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
 
     public function copyInDB($dataSourceName)
     {
-        // TODO: Implement copyInDB() method.
+        return false;
+    }
+
+    public function isSupportAggregation()
+    {
+        return false;
     }
 }
