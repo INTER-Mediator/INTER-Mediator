@@ -374,11 +374,16 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
 
     public function copyInDB($dataSourceName)
     {
-        // TODO: Implement copyInDB() method.
+        return false;
     }
 
     public function getTotalCount($dataSourceName)
     {
         // TODO: Implement getTotalCount() method.
+    }
+
+    public function isSupportAggregation()
+    {
+        return false;
     }
 }
