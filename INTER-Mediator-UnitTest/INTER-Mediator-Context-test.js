@@ -85,6 +85,7 @@ buster.testCase("Remote Context Test", {
         }
     },
     "Remote-Context-Test3": function () {
+        /*
         Object.defineProperty(INTERMediator, 'startFrom', {
             get: function () {
                 return INTERMediator.getLocalProperty("_im_startFrom", 0);
@@ -125,7 +126,7 @@ buster.testCase("Remote Context Test", {
         if (!INTERMediator.additionalSortKey) {
             INTERMediator.additionalSortKey = {};
         }
-
+*/
 
         var context1 = new IMLibContext("test");
         context1.sequencing = true;
