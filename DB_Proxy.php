@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
     /**
@@ -574,6 +574,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
         }
 
+        /* Setup Database Class's Object */
         require_once("{$dbClassName}.php");
         $this->dbClass = new $dbClassName();
         if ($this->dbClass == null) {
@@ -588,6 +589,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
         $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
 
+        $this->dbSettings->setAggregationSelect(
+            isset($context['aggregation-select']) ? $context['aggregation-select'] : null);
+        $this->dbSettings->setAggregationFrom(
+            isset($context['aggregation-from']) ? $context['aggregation-from'] : null);
+        $this->dbSettings->setAggregationGroupBy(
+            isset($context['aggregation-group-by']) ? $context['aggregation-group-by'] : null);
+
+        /* Authentication and Authorization Judgement */
         $challengeDSN = null;
         if (isset($options['authentication']) && isset($options['authentication']['issuedhash-dsn'])) {
             $challengeDSN = $options['authentication']['issuedhash-dsn'];
@@ -718,6 +727,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->outputOfProcessing = array();
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
 
+        // Message Class Detection
         $messageClass = null;
         if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
             $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
@@ -738,6 +748,25 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $messageClass = new MessageStrings();
         }
 
+        /* Aggregation Judgement */
+        $isSelect = $this->dbSettings->getAggregationSelect();
+        $isFrom = $this->dbSettings->getAggregationFrom();
+        $isGroupBy = $this->dbSettings->getAggregationGroupBy();
+        $isDBSupport = $this->dbClass->isSupportAggregation();
+        if (! $isDBSupport && ($isSelect || $isFrom || $isGroupBy)) {
+            $this->logger->setErrorMessage($messageClass->getMessageAs(1042));
+            $access = "do nothing";
+        } else if ($isDBSupport && (($isSelect && !$isFrom) || (!$isSelect && $isFrom))) {
+            $this->logger->setErrorMessage($messageClass->getMessageAs(1043));
+            $access = "do nothing";
+        } else if ($isDBSupport && $isSelect && $isFrom
+            && in_array($access, array("update", "new", "create", "delete", "copy"))
+        ) {
+            $this->logger->setErrorMessage($messageClass->getMessageAs(1044));
+            $access = "do nothing";
+        }
+
+        // Authentication and Authorization
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $access = is_null($access) ? $_POST['access'] : $access;
         $clientId = isset($_POST['clientid']) ? $_POST['clientid'] :
@@ -1282,5 +1311,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     public function softDeleteActivate($field, $value)
     {
 
+    }
+
+    public function isSupportAggregation()
+    {
+        // TODO: Implement isSupportAggregation() method.
     }
 }

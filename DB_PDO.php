@@ -625,8 +625,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
         }
 
-        $viewOrTableName = isset($tableInfo['view']) ? $tableInfo['view'] : $tableName;
-
         $queryClause = $this->getWhereClause('read', true, true, $signedUser);
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
@@ -636,26 +634,32 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $sortClause = "ORDER BY {$sortClause}";
         }
 
-        // Count all records matched with the condtions
-        $sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause}";
-        $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
-        if ($result === false) {
-            $this->errorMessageStore('Select:' . $sql);
-            return array();
-        }
-        $this->mainTableCount = $result->fetchColumn(0);
+        $isAggregate = ($this->dbSettings->getAggregationSelect() != null);
 
-        // Count all records
-        $sql = "SELECT count(*) FROM {$viewOrTableName}";
-        $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
-        if ($result === false) {
-            $this->errorMessageStore('Select:' . $sql);
-            return array();
-        }
-        $this->mainTableTotalCount = $result->fetchColumn(0);
+        $viewOrTableName = $isAggregate ? $this->dbSettings->getAggregationFrom()
+            : (isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
 
+        if (!$isAggregate) {
+            // Count all records matched with the condtions
+            $sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause}";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+                return array();
+            }
+            $this->mainTableCount = $result->fetchColumn(0);
+
+            // Count all records
+            $sql = "SELECT count(*) FROM {$viewOrTableName}";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+                return array();
+            }
+            $this->mainTableTotalCount = $result->fetchColumn(0);
+        }
         // Create SQL
         $limitParam = 100000000;
         if (isset($tableInfo['maxrecords'])) {
@@ -680,12 +684,13 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (isset($tableInfo['paging']) and $tableInfo['paging'] === true) {
             $skipParam = $this->dbSettings->getStart();
         }
-        $fields = '*';
-        if (isset($tableInfo['specify-fields'])) {
-            $fields = implode(',', array_unique($this->dbSettings->getFieldsRequired()));
-        }
-        $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$sortClause} "
-            . " LIMIT {$limitParam} OFFSET {$skipParam}";
+        $fields = $isAggregate ? $this->dbSettings->getAggregationSelect()
+            : (isset($tableInfo['specify-fields']) ?
+                implode(',', array_unique($this->dbSettings->getFieldsRequired())) : "*");
+        $groupBy = $isAggregate ? ("GROUP BY " . $this->dbSettings->getAggregationGroupBy()) : "";
+        $offset = $isAggregate ? '' : "OFFSET {$skipParam}";
+        $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} {$sortClause} "
+            . " LIMIT {$limitParam} {$offset}";
         $this->logger->setDebugMessage($sql);
         $this->queriedEntity = $viewOrTableName;
         $this->queriedCondition = "{$queryClause} {$sortClause} LIMIT {$limitParam} OFFSET {$skipParam}";
@@ -710,8 +715,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
             }
             $sqlResult[] = $rowArray;
-            $this->queriedPrimaryKeys[] = $rowArray[$keyField];
+            if ($keyField && isset($rowArray[$keyField])) {
+                $this->queriedPrimaryKeys[] = $rowArray[$keyField];
+            }
             $isFirstRow = false;
+        }
+        if ($isAggregate) {
+            $this->mainTableCount = count($sqlResult);
+            $this->mainTableTotalCount = count($sqlResult);
         }
 
         if (isset($tableInfo['script'])) {
@@ -744,7 +755,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @param $dataSourceName
      * @return int
      */
-    public function countQueryResult($dataSourceName)
+    public
+    function countQueryResult($dataSourceName)
     {
         return $this->mainTableCount;
     }
@@ -753,7 +765,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @param $dataSourceName
      * @return int
      */
-    public function getTotalCount($dataSourceName)
+    public
+    function getTotalCount($dataSourceName)
     {
         return $this->mainTableTotalCount;
     }
@@ -871,7 +884,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @param $bypassAuth
      * @return bool
      */
-    public function newToDB($dataSourceName, $bypassAuth)
+    public
+    function newToDB($dataSourceName, $bypassAuth)
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -1148,7 +1162,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $lastKeyValue;
     }
 
-    private function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
+    private
+    function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
     {
         $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
@@ -1176,17 +1191,17 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $listList = implode(',', $listArray);
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
             /*
-# select table_catalog,table_schema,table_name,column_name,column_default from information_schema.columns where table_name='person';
- table_catalog | table_schema | table_name | column_name |                column_default
----------------+--------------+------------+-------------+----------------------------------------------
- test_db       | im_sample    | person     | id          | nextval('im_sample.person_id_seq'::regclass)
- test_db       | im_sample    | person     | name        |
- test_db       | im_sample    | person     | address     |
- test_db       | im_sample    | person     | mail        |
- test_db       | im_sample    | person     | category    |
- test_db       | im_sample    | person     | checking    |
- test_db       | im_sample    | person     | location    |
- test_db       | im_sample    | person     | memo        |
+    # select table_catalog,table_schema,table_name,column_name,column_default from information_schema.columns where table_name='person';
+    table_catalog | table_schema | table_name | column_name |                column_default
+    ---------------+--------------+------------+-------------+----------------------------------------------
+    test_db       | im_sample    | person     | id          | nextval('im_sample.person_id_seq'::regclass)
+    test_db       | im_sample    | person     | name        |
+    test_db       | im_sample    | person     | address     |
+    test_db       | im_sample    | person     | mail        |
+    test_db       | im_sample    | person     | category    |
+    test_db       | im_sample    | person     | checking    |
+    test_db       | im_sample    | person     | location    |
+    test_db       | im_sample    | person     | memo        |
              */
             if (strpos($tableName, ".") !== false) {
                 $tName = substr($tableName, strpos($tableName, ".") + 1);
@@ -1435,7 +1450,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return true;
     }
 
-    private function currentDTString($addSeconds = 0)
+    private
+    function currentDTString($addSeconds = 0)
     {
 //        $currentDT = new DateTime();
 //        $timeValue = $currentDT->format("U");
@@ -1448,7 +1464,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $currentDTStr;
     }
 
-    private function secondsFromNow($dtStr)
+    private
+    function secondsFromNow($dtStr)
     {
 //        $currentDT = new DateTime();
 //        $anotherDT = new DateTime($dtStr);
@@ -2314,6 +2331,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             var_dump($this->link->errorInfo());
             return false;
         }
+        return true;
+    }
+
+    public
+    function isSupportAggregation()
+    {
         return true;
     }
 }

@@ -13,6 +13,11 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
 
     }
 
+    public function testAggregation()
+    {
+        // The sample schema doesn't have a data to check this feature.
+    }
+
     function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
     {
         $this->schemaName = "";
@@ -25,7 +30,7 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
                 'key' => 'id',
                 'repeat-control' => is_null($subContextName) ? 'copy' : "copy-{$subContextName}",
                 'sort' => array(
-                    array('field'=>'id','direction'=>'asc'),
+                    array('field' => 'id', 'direction' => 'asc'),
                 ),
             )
         );
@@ -53,7 +58,8 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
     function dbProxySetupForAuth()
     {
         $this->db_proxy = new DB_Proxy(true);
-        $this->db_proxy->initialize(array(
+        $this->db_proxy->initialize(
+            array(
                 array(
                     'records' => 1,
                     'paging' => true,
@@ -81,11 +87,43 @@ class DB_PDO_SQLite_Test extends DB_PDO_Test_Common
                 'db-class' => 'PDO',
                 'dsn' => 'sqlite:/var/db/im/sample.sq3',
             ),
-            false);
+            false
+        );
     }
 
     public function testNativeUser()
     {
         // SQLite doesn't have native users.
+    }
+
+    function dbProxySetupForAggregation()
+    {
+        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy->initialize(
+            array(
+                array(
+                    'name' => 'summary',
+                    'view' => 'saleslog',
+                    'query' => array(
+                        array('field' => 'dt', 'operator' => '>=', 'value' => '2010-01-01',),
+                        array('field' => 'dt', 'operator' => '<', 'value' => '2010-02-01',),
+                    ),
+                    'sort' => array(
+                        array('field' => 'total', 'direction' => 'desc'),
+                    ),
+                    'records' => 10,
+                    'aggregation-select' => "item_master.name as item_name,sum(total) as total",
+                    'aggregation-from' => "saleslog inner join item_master on saleslog.item_id=item_master.id",
+                    'aggregation-group-by' => "item_id",
+                ),
+            ),
+            null,
+            array(
+                'db-class' => 'PDO',
+                'dsn' => 'sqlite:/var/db/im/sample.sq3',
+            ),
+            2,
+            "summary"
+        );
     }
 }

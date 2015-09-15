@@ -93,6 +93,40 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
                 'user' => 'web',
                 'password' => 'password',
             ),
-            2);
+            2
+        );
+    }
+
+    function dbProxySetupForAggregation()
+    {
+        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy->initialize(
+            array(
+                array(
+                    'name' => 'summary',
+                    'view' => 'saleslog',
+                    'query' => array(
+                        array('field' => 'dt', 'operator' => '>=', 'value' => '2010-01-01',),
+                        array('field' => 'dt', 'operator' => '<', 'value' => '2010-02-01',),
+                    ),
+                    'sort' => array(
+                        array('field' => 'total', 'direction' => 'desc'),
+                    ),
+                    'records' => 10,
+                    'aggregation-select' => "item_master.name as item_name,sum(total) as total",
+                    'aggregation-from' => "saleslog inner join item_master on saleslog.item_id=item_master.id",
+                    'aggregation-group-by' => "item_id",
+                ),
+            ),
+            null,
+            array(
+                'db-class' => 'PDO',
+                'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+                'user' => 'web',
+                'password' => 'password',
+            ),
+            2,
+            "summary"
+        );
     }
 }
