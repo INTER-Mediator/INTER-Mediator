@@ -48,6 +48,7 @@ interface DB_Spec_Behavior
     public function isContainingFieldName($fname, $fieldnames);
     public function isNullAcceptable();
     public function softDeleteActivate($field, $value);
+    public function isSupportAggregation();
 }
 
 interface DB_Interface_Registering

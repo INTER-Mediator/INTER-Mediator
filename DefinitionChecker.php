@@ -332,6 +332,9 @@ class DefinitionChecker
             'post-dismiss-message' => 'string',
             'post-move-url' => 'string',
             'soft-delete' => 'boolean|string',
+            'aggregation-select' => 'string',
+            'aggregation-from' => 'string',
+            'aggregation-group-by' => 'string',
             'file-upload' => array(
                 '*' => array(
                     'field' => 'string',
