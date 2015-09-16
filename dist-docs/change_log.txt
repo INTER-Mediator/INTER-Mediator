@@ -15,6 +15,7 @@ format-client-side branch (in development)
   It can be overridden by params.php file's $appLocale variable.
 
 Ver.5.3 (in development)
+- SQL aggregation support. The aggregation-select, aggregation-from, aggregation-group-by key are added.
 - MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
   for PHP).
 - Update phpseclib to version 1.0.0.
@@ -22,9 +23,13 @@ Ver.5.3 (in development)
   for the first parameter.
 - Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
 - Add Dockerfile for CircleCI.
+- Be able to customize a style of the file uploading area when using the file upload component.
+- LDAPAuth class can report errors.
 - INTER-Mediator version can be described in the 'metadata.json' file, and dist-docs/build.sh
   can update the metadata.json.
 - All header description of source files are updated, and build.sh was adapted them.
+- [BUG FIX] Fix detection of params.php file.
+- [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.

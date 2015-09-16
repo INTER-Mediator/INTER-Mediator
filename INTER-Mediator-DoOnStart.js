@@ -82,7 +82,7 @@ if (!INTERMediator.additionalSortKey) {
 
 
 INTERMediatorLib.addEvent(window, "beforeunload", function (e) {
-    var confirmationMessage = "";
+//    var confirmationMessage = "";
 
 //    (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
 //    return confirmationMessage;                                //Webkit, Safari, Chrome etc.

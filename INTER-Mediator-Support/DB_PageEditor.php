@@ -209,6 +209,11 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
 
     public function copyInDB($dataSourceName)
     {
-        // TODO: Implement copyInDB() method.
+        return false;
+    }
+
+    public function isSupportAggregation()
+    {
+        return false;
     }
 }

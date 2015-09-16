@@ -127,6 +127,9 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'navi-control' => getValueFromArray($context, 'navi-control'),
                         'post-repeater' => getValueFromArray($context, 'post-repeater'),
                         'post-enclosure' => getValueFromArray($context, 'post-enclosure'),
+                        'aggregation-select' => getValueFromArray($context, 'aggregation-select'),
+                        'aggregation-from' => getValueFromArray($context, 'aggregation-from'),
+                        'aggregation-group-by' => getValueFromArray($context, 'aggregation-group-by'),
                         'buttonnames-insert' => getValueFromArray($context, 'button-names', 'insert'),
                         'buttonnames-delete' => getValueFromArray($context, 'button-names', 'delete'),
                         'buttonnames-copy' => getValueFromArray($context, 'button-names', 'copy'),
@@ -153,22 +156,6 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'authentication-delete-group' => getValueFromArray($context, 'authentication', 'delete', 'group'),
                         'authentication-delete-target' => getValueFromArray($context, 'authentication', 'delete', 'target'),
                         'authentication-delete-field' => getValueFromArray($context, 'authentication', 'delete', 'field'),
-                        'send-mail-load-from' => getValueFromArray($context, 'send-mail', 'load', 'from'),
-                        'send-mail-load-to' => getValueFromArray($context, 'send-mail', 'load', 'to'),
-                        'send-mail-load-cc' => getValueFromArray($context, 'send-mail', 'load', 'cc'),
-                        'send-mail-load-bcc' => getValueFromArray($context, 'send-mail', 'load', 'bcc'),
-                        'send-mail-load-subject' => getValueFromArray($context, 'send-mail', 'load', 'subject'),
-                        'send-mail-load-body' => getValueFromArray($context, 'send-mail', 'load', 'body'),
-                        'send-mail-load-from-constant' => getValueFromArray($context, 'send-mail', 'load', 'from-constant'),
-                        'send-mail-load-to-constant' => getValueFromArray($context, 'send-mail', 'load', 'to-constant'),
-                        'send-mail-load-cc-constant' => getValueFromArray($context, 'send-mail', 'load', 'cc-constant'),
-                        'send-mail-load-bcc-constant' => getValueFromArray($context, 'send-mail', 'load', 'bcc-constant'),
-                        'send-mail-load-subject-constant' => getValueFromArray($context, 'send-mail', 'load', 'subject-constant'),
-                        'send-mail-load-body-constant' => getValueFromArray($context, 'send-mail', 'load', 'body-constant'),
-                        'send-mail-load-body-template' => getValueFromArray($context, 'send-mail', 'load', 'body-template'),
-                        'send-mail-load-body-fields' => getValueFromArray($context, 'send-mail', 'load', 'body-fields'),
-                        'send-mail-load-f-option' => getValueFromArray($context, 'send-mail', 'load', 'f-option'),
-                        'send-mail-load-body-wrap' => getValueFromArray($context, 'send-mail', 'load', 'body-wrap'),
                         'send-mail-load-from' => getValueFromArray($context, 'send-mail', 'load', 'from'),
                         'send-mail-load-to' => getValueFromArray($context, 'send-mail', 'load', 'to'),
                         'send-mail-load-cc' => getValueFromArray($context, 'send-mail', 'load', 'cc'),
@@ -1223,6 +1210,12 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
     public function copyInDB($dataSourceName)
     {
-        // TODO: Implement copyInDB() method.
+        return false;
+    }
+
+    public function isSupportAggregation()
+    {
+        return false;
+
     }
 }
