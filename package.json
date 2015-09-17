@@ -5,14 +5,15 @@
     "contributors": [
         {"name" : "Atsushi Matsuo"},
         {"name" : "Kiyonori Ito"},
-        {"name" : "Kentaro Suzuki"}
+        {"name" : "Kentaro Suzuki"},
+        {"name" : "Nobuo Hayashi"}
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/msyk/INTER-Mediator.git"
+        "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
     },
     "scripts" : {
-        "test" : "node_modules/.bin/buster-test -r specification",
+        "test" : "node_modules/.bin/buster-test -r specification -c ./spec/buster.js",
         "test-local" : "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies" : {

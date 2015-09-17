@@ -662,7 +662,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 <p>VM上で下記のコマンドを実行すると、INTER-Mediatorのテストを実行できます。</p>
 <ul>
     <li>phpunit /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php</li>
-    <li>/usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/buster.js</li>
+    <li>/usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js</li>
 </ul>
 
 </body>
