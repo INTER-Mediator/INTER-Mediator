@@ -687,7 +687,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $fields = $isAggregate ? $this->dbSettings->getAggregationSelect()
             : (isset($tableInfo['specify-fields']) ?
                 implode(',', array_unique($this->dbSettings->getFieldsRequired())) : "*");
-        $groupBy = $isAggregate ? ("GROUP BY " . $this->dbSettings->getAggregationGroupBy()) : "";
+        $groupBy = ($isAggregate && $this->dbSettings->getAggregationGroupBy())
+            ? ("GROUP BY " . $this->dbSettings->getAggregationGroupBy()) : "";
         $offset = $isAggregate ? '' : "OFFSET {$skipParam}";
         $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} {$sortClause} "
             . " LIMIT {$limitParam} {$offset}";
