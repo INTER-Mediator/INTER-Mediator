@@ -325,6 +325,7 @@ IMLibPageNavigation = {
             });
 
             INTERMediator.pagedAllCount--;
+            INTERMediator.totalRecordCount--;
             if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
                 INTERMediator.startFrom--;
                 if (INTERMediator.startFrom < 0) {
