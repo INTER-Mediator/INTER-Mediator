@@ -1276,7 +1276,7 @@ INTERMediator = {
 
             children = node.childNodes; // Check all child node of the enclosure.
             for (i = 0; i < children.length; i++) {
-                if (children[i].nodeType === 1 && children[i].tagName == repNodeTag) {
+                if (children[i].nodeType === 1 && repNodeTag.indexOf(children[i].tagName) >= 0) {
                     // If the element is a repeater.
                     repeatersOriginal.push(children[i]); // Record it to the array.
                 }
@@ -1418,17 +1418,18 @@ INTERMediator = {
 
                 // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
                 switch (encNodeTag) {
-                    case 'TBODY':
-                        tdNodes = endOfRepeaters.getElementsByTagName('TD');
+                    case "TBODY":
+                        tdNodes = endOfRepeaters.getElementsByTagName("TD");
                         tdNode = tdNodes[tdNodes.length - 1];
                         tdNode.appendChild(buttonNode);
                         break;
-                    case 'UL':
-                    case 'OL':
+                    case "UL":
+                    case "OL":
+                    //case "DL":
                         endOfRepeaters.appendChild(buttonNode);
                         break;
-                    case 'DIV':
-                    case 'SPAN':
+                    case "DIV":
+                    case "SPAN":
                         if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                             endOfRepeaters.appendChild(buttonNode);
                         }
@@ -1482,17 +1483,18 @@ INTERMediator = {
 
                 // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
                 switch (encNodeTag) {
-                    case 'TBODY':
+                    case "TBODY":
                         tdNodes = endOfRepeaters.getElementsByTagName('TD');
                         tdNode = tdNodes[tdNodes.length - 1];
                         tdNode.appendChild(buttonNode);
                         break;
-                    case 'UL':
-                    case 'OL':
+                    case "UL":
+                    case "OL":
+                    //case "DL":
                         endOfRepeaters.appendChild(buttonNode);
                         break;
-                    case 'DIV':
-                    case 'SPAN':
+                    case "DIV":
+                    case "SPAN":
                         if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                             endOfRepeaters.appendChild(buttonNode);
                         }
@@ -1534,7 +1536,7 @@ INTERMediator = {
                     INTERMediator.buttonIdNum++;
                     shouldRemove = [];
                     switch (encNodeTag) {
-                        case 'TBODY':
+                        case "TBODY":
                             setTop = false;
                             targetNodeTag = "TFOOT";
                             if (currentContextDef['repeat-control'].match(/top/i)) {
@@ -1571,9 +1573,10 @@ INTERMediator = {
                                 shouldRemove = [trNode.getAttribute('id')];
                             }
                             break;
-                        case 'UL':
-                        case 'OL':
-                            liNode = document.createElement('LI');
+                        case "UL":
+                        case "OL":
+                        //case "DL":
+                            liNode = document.createElement("LI");
                             existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert');
                             if (existingButtons.length == 0) {
                                 liNode.appendChild(buttonNode);
@@ -1584,8 +1587,8 @@ INTERMediator = {
                                 }
                             }
                             break;
-                        case 'DIV':
-                        case 'SPAN':
+                        case "DIV":
+                        case "SPAN":
                             if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                                 divNode = document.createElement(repNodeTag);
                                 existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
@@ -1724,7 +1727,7 @@ INTERMediator = {
             });
 
             switch (encNodeTag) {
-                case 'TBODY':
+                case "TBODY":
                     tdNodes = endOfRepeaters.getElementsByTagName('TD');
                     tdNode = tdNodes[0];
                     firstInNode = tdNode.childNodes[0];
@@ -1734,8 +1737,9 @@ INTERMediator = {
                         tdNode.appendChild(buttonNode);
                     }
                     break;
-                case 'UL':
-                case 'OL':
+                case "UL":
+                case "OL":
+                //case "DL":
                     firstInNode = endOfRepeaters.childNodes[0];
                     if (firstInNode) {
                         endOfRepeaters.insertBefore(buttonNode, firstInNode);
@@ -1743,8 +1747,8 @@ INTERMediator = {
                         endOfRepeaters.appendChild(buttonNode);
                     }
                     break;
-                case 'DIV':
-                case 'SPAN':
+                case "DIV":
+                case "SPAN":
                     if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                         firstInNode = endOfRepeaters.childNodes[0];
                         if (firstInNode) {
@@ -1805,7 +1809,7 @@ INTERMediator = {
 
             shouldRemove = [];
             switch (node.tagName) {
-                case 'TBODY':
+                case "TBODY":
                     if (currentContextDef['navi-control'].match(/top/i)) {
                         targetNodeTag = "THEAD";
                     } else if (currentContextDef['navi-control'].match(/bottom/i)) {
@@ -1843,9 +1847,10 @@ INTERMediator = {
                         shouldRemove = [trNode.getAttribute('id')];
                     }
                     break;
-                case 'UL':
-                case 'OL':
-                    liNode = document.createElement('LI');
+                case "UL":
+                case "OL":
+                //case "DL":
+                    liNode = document.createElement("LI");
                     existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_BackNavi');
                     if (existingButtons.length == 0) {
                         liNode.appendChild(buttonNode);
@@ -1856,8 +1861,8 @@ INTERMediator = {
                         }
                     }
                     break;
-                case 'DIV':
-                case 'SPAN':
+                case "DIV":
+                case "SPAN":
                     repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(node.tagName);
                     if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
                         divNode = document.createElement(repNodeTag);

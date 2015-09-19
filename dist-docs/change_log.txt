@@ -18,6 +18,7 @@ Ver.5.3 (in development)
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
 - Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
+- Support DL/DT/DD tags as the enclosure/repeater partly.
 - Add Dockerfile for CircleCI.
 - Be able to customize a style of the file uploading area when using the file upload component.
 - LDAPAuth class can report errors.
