@@ -2,6 +2,7 @@ var config = module.exports;
 
 config["My tests"] = {
     environment: "browser",
+    rootPath: "../",
     sources: [
         "INTER-Mediator.js",
         "INTER-Mediator-Context.js",
@@ -13,4 +14,4 @@ config["My tests"] = {
     tests: [
         "INTER-Mediator-UnitTest/*-test.js"
     ]
-}
+};
