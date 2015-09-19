@@ -510,7 +510,7 @@ INTERMediator = {
                         className = INTERMediatorLib.getClassAttributeFromNode(node);
                         attr = node.getAttribute("data-im-control");
                         if ((className && className.match(/_im_post/)) ||
-                            (attr && attr == "post")) {
+                            (attr && attr.indexOf("post") >= 0)) {
                             setupPostOnlyEnclosure(node);
                         } else {
                             if (INTERMediator.isIE) {
