@@ -117,6 +117,7 @@ var INTERMediatorLib = {
         if ((tagName === "TBODY") ||
             (tagName === "UL") ||
             (tagName === "OL") ||
+            (tagName === "DL") ||
             (tagName === "SELECT") ||
             ((tagName === "DIV" || tagName === "SPAN") &&
             className &&
@@ -153,15 +154,16 @@ var INTERMediatorLib = {
             return false;
         }
         tagName = node.tagName;
-        if ((tagName === 'TR')
-            || (tagName === 'LI')
-            || (tagName === 'OPTION')
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && className
-            && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && controlAttr
-            && controlAttr.indexOf(INTERMediatorLib.rollingRepeaterDataControlName) >= 0)) {
+        if ((tagName === "TR") ||
+            (tagName === "LI") ||
+            (tagName === "DT" || tagName === "DD") ||
+            (tagName === "OPTION") ||
+            ((tagName === "DIV" || tagName === "SPAN") &&
+            className &&
+            className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0) ||
+            ((tagName === "DIV" || tagName === "SPAN") &&
+            controlAttr &&
+            controlAttr.indexOf(INTERMediatorLib.rollingRepeaterDataControlName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -312,10 +314,12 @@ var INTERMediatorLib = {
             }
             repeaterTag = repeater.tagName;
             enclosureTag = enclosure.tagName;
-            if ((repeaterTag === 'TR' && enclosureTag === 'TBODY') ||
-                (repeaterTag === 'OPTION' && enclosureTag === 'SELECT') ||
-                (repeaterTag === 'LI' && enclosureTag === 'OL') ||
-                (repeaterTag === 'LI' && enclosureTag === 'UL')) {
+            if ((repeaterTag === "TR" && enclosureTag === "TBODY") ||
+                (repeaterTag === "OPTION" && enclosureTag === "SELECT") ||
+                (repeaterTag === "LI" && enclosureTag === "OL") ||
+                (repeaterTag === "LI" && enclosureTag === "UL") ||
+                (repeaterTag === "DL" && enclosureTag === "DT") ||
+                (repeaterTag === "DL" && enclosureTag === "DD")) {
                 return true;
             }
             if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
@@ -451,12 +455,13 @@ var INTERMediatorLib = {
      */
 
     repeaterTagFromEncTag: function (tag) {
-        if (tag == 'TBODY') return 'TR';
-        else if (tag == 'SELECT') return 'OPTION';
-        else if (tag == 'UL') return 'LI';
-        else if (tag == 'OL') return 'LI';
-        else if (tag == 'DIV') return 'DIV';
-        else if (tag == 'SPAN') return 'SPAN';
+        if (tag === "TBODY") return "TR";
+        else if (tag === "SELECT") return "OPTION";
+        else if (tag === "UL") return "LI";
+        else if (tag === "OL") return "LI";
+        else if (tag === "DL") return ["DT", "DD"];
+        else if (tag === "DIV") return "DIV";
+        else if (tag === "SPAN") return "SPAN";
         return null;
     },
 

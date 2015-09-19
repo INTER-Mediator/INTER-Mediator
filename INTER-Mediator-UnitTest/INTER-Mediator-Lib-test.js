@@ -31,6 +31,9 @@ buster.testCase("repeaterTagFromEncTag() Test", {
     "should return 'LI' if parameter is 'OL'": function () {
         assert.equals(INTERMediatorLib.repeaterTagFromEncTag("OL"), "LI");
     },
+    "should return '['DT', 'DD']' if parameter is 'DL'": function () {
+        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("DL"), ["DT", "DD"]);
+    },
     "should return 'DIV' if parameter is 'DIV'": function () {
         assert.equals(INTERMediatorLib.repeaterTagFromEncTag("DIV"), "DIV");
     },
