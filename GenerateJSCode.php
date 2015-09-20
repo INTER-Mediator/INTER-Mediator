@@ -290,11 +290,11 @@ class GenerateJSCode
         $bi2phpDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'bi2php' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-UI.js');
