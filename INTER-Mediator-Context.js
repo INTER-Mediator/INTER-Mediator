@@ -567,7 +567,7 @@ IMLibContext = function (contextName) {
         }
         if (isDebug === true) {
             console.log("#lower=" + lower + ",upper=" + upper + ",index=" + index
-            + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
+                + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
         }
         return index;
     };
@@ -971,7 +971,7 @@ IMLibLocalContext = {
     },
 
     archive: function () {
-        var jsonString;
+        var jsonString, trailLength, key;
         INTERMediatorOnPage.removeCookie('_im_localcontext');
         if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
             this.store._im_additionalCondition = INTERMediator.additionalCondition;
@@ -992,7 +992,9 @@ IMLibLocalContext = {
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
-                sessionStorage.setItem("_im_localcontext" + document.URL, jsonString);
+                trailLength = document.URL.search.length + document.URL.hash.length;
+                key = "_im_localcontext" + document.URL.toString().substr(-trailLength);
+                sessionStorage.setItem(key, jsonString);
             } catch (ex) {
                 INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
             }
@@ -1002,12 +1004,14 @@ IMLibLocalContext = {
     },
 
     unarchive: function () {
-        var localContext = "";
+        var localContext = "", trailLength, key;
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
-                localContext = sessionStorage.getItem("_im_localcontext" + document.URL);
+                trailLength = document.URL.search.length + document.URL.hash.length;
+                key = "_im_localcontext" + document.URL.toString().substr(-trailLength);
+                localContext = sessionStorage.getItem(key);
             } catch (ex) {
                 localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
             }
@@ -1056,9 +1060,9 @@ IMLibLocalContext = {
                     //this.store[nodeInfo.field] = document.getElementById(idValue).value;
                 }
                 unexistId = -1;
-                while(unexistId >= 0)   {
-                    for ( j = 0 ; j < this.binding[nodeInfo.field].length ; j++ )    {
-                        if (! document.getElementById(this.binding[nodeInfo.field][j]))  {
+                while (unexistId >= 0) {
+                    for (j = 0; j < this.binding[nodeInfo.field].length; j++) {
+                        if (!document.getElementById(this.binding[nodeInfo.field][j])) {
                             unexistId = j;
                         }
                     }
