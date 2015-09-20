@@ -1158,7 +1158,7 @@ EOF
 /usr/local/bin/buster-server &
 /bin/sleep 5
 /usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
-/usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR &
+/usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
 exit 0
 EOF
   end
