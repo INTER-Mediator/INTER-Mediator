@@ -685,7 +685,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             }
             $util = new IMUtil();
-            $value = $util->removeNull(filter_input(INPUT_POST, "value_{$i}"));
+            $value = $util->removeNull(filter_var($_POST["value_{$i}"]));
             $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($value) : $value);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {

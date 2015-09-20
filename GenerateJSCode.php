@@ -125,7 +125,7 @@ class GenerateJSCode
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
             $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
-                . filter_input(INPUT_SERVER, 'SCRIPT_NAME')
+                . filter_var($_SERVER['SCRIPT_NAME'])
                 . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
         } else {
             $pathToMySelf = filter_var($_SERVER['SCRIPT_NAME']);
@@ -196,7 +196,7 @@ class GenerateJSCode
             "INTERMediatorOnPage.browserCompatibility",
             "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
 
-        $remoteAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
+        $remoteAddr = filter_var($_SERVER['REMOTE_ADDR']);
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
             $remoteAddr = '0.0.0.0';
         }
