@@ -23,6 +23,8 @@ Ver.5.3 (in development)
 - LDAPAuth class can report errors.
 - INTER-Mediator version can be described in the 'metadata.json' file, and dist-docs/build.sh
   can update the metadata.json.
+- When the local context is stored in sessionStorage, the search and hash sections of the url of document
+  are eliminated from the key of storage item.
 - All header description of source files are updated, and build.sh was adapted them.
 - Update buster.js and package.json for unit testing.
 - [BUG FIX] Fix detection of params.php file.
