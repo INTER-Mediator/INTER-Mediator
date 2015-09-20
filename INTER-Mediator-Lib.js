@@ -321,8 +321,8 @@ var INTERMediatorLib = {
             if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
                 enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
                 enclosureDataAttr = enclosure.getAttribute("data-im-control");
-                if ((enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0) ||
-                    (enclosureDataAttr && enclosureDataAttr == "enclosure")) {
+                if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.rollingEnclosureClassName) >= 0) ||
+                    (enclosureDataAttr && enclosureDataAttr.indexOf("enclosure") >= 0)) {
                     repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
                     repeaterDataAttr = repeater.getAttribute("data-im-control");
                     if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN') &&
