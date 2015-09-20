@@ -769,6 +769,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // Authentication and Authorization
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $access = is_null($access) ? $_POST['access'] : $access;
+        $access = (($access == "select")||($access == "load")) ? "read" : $access;
         $clientId = isset($_POST['clientid']) ? $_POST['clientid'] :
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
@@ -782,8 +783,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);
         $this->dbSettings->setDBNative(false);
-        $keywordAuth = ($access == "select") ? "read" : $access;
-        $keywordAuth = ($access == "load") ? "read" : $access;
+        $keywordAuth = $access;
         if (isset($options['authentication'])
             || $access == 'challenge' || $access == 'changepassword'
             || (isset($tableInfo['authentication'])
