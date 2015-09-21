@@ -685,7 +685,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             }
             $util = new IMUtil();
-            $value = $util->removeNull(filter_input(INPUT_POST, "value_{$i}"));
+            $value = $util->removeNull(filter_var($_POST["value_{$i}"]));
             $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($value) : $value);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
@@ -783,11 +783,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);
         $this->dbSettings->setDBNative(false);
-        $keywordAuth = $access;
         if (isset($options['authentication'])
             || $access == 'challenge' || $access == 'changepassword'
             || (isset($tableInfo['authentication'])
-                && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$keywordAuth])))
+                && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
             $this->dbSettings->setRequireAuthorization(true);
             $this->dbSettings->setDBNative(false);
