@@ -1004,7 +1004,7 @@ IMLibLocalContext = {
     },
 
     unarchive: function () {
-        var localContext = "", trailLength, key, addingConditions, contextName, value, hasIdentical, i;
+        var localContext = "", trailLength, key;
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
@@ -1019,7 +1019,6 @@ IMLibLocalContext = {
             localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
         }
         if (localContext && localContext.length > 0) {
-            addingConditions = INTERMediator.additionalCondition;
             this.store = JSON.parse(localContext);
                 //console.log("##Unarchive:",this.store);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
