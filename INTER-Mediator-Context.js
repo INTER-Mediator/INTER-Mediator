@@ -971,7 +971,7 @@ IMLibLocalContext = {
     },
 
     archive: function () {
-        var jsonString, trailLength, key;
+        var jsonString, trailLength, key, index, i;
         INTERMediatorOnPage.removeCookie('_im_localcontext');
         if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
             this.store._im_additionalCondition = INTERMediator.additionalCondition;
@@ -1004,7 +1004,7 @@ IMLibLocalContext = {
     },
 
     unarchive: function () {
-        var localContext = "", trailLength, key;
+        var localContext = "", trailLength, key, addingConditions, contextName, value, hasIdentical, i;
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
@@ -1019,8 +1019,9 @@ IMLibLocalContext = {
             localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
         }
         if (localContext && localContext.length > 0) {
+            addingConditions = INTERMediator.additionalCondition;
             this.store = JSON.parse(localContext);
-            //console.log("##Unarchive:",this.store);
+                //console.log("##Unarchive:",this.store);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
                     INTERMediator.additionalCondition = this.store._im_additionalCondition;

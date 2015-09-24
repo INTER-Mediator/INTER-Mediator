@@ -362,8 +362,8 @@ INTERMediator = {
                 IMLibCalc.updateCalculationFields();
                 //IMLibPageNavigation.navigationSetup();
                 /*
-                If the pagination control should be setup, the property IMLibPageNavigation.deleteInsertOnNavi
-                to maintain to be a valid data.
+                 If the pagination control should be setup, the property IMLibPageNavigation.deleteInsertOnNavi
+                 to maintain to be a valid data.
                  */
             }
         } catch (ex) {
@@ -896,8 +896,7 @@ INTERMediator = {
                                 }
                             }
 
-                            if (isContext &&
-                                !isInsidePostOnly &&
+                            if (isContext && !isInsidePostOnly &&
                                 (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                                 //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
                                 var changeFunction = function (a) {
@@ -997,14 +996,14 @@ INTERMediator = {
                     if (!INTERMediatorOnPage.dbCache[currentContextDef['name']]) {
                         INTERMediatorOnPage.dbCache[currentContextDef['name']] =
                             INTERMediator_DBAdapter.db_query({
-                            name: currentContextDef['name'],
-                            records: null,
-                            paging: null,
-                            fields: fieldList,
-                            parentkeyvalue: null,
-                            conditions: null,
-                            useoffset: false
-                        });
+                                name: currentContextDef['name'],
+                                records: null,
+                                paging: null,
+                                fields: fieldList,
+                                parentkeyvalue: null,
+                                conditions: null,
+                                useoffset: false
+                            });
                     }
                     if (relationValue === null) {
                         targetRecords = INTERMediatorOnPage.dbCache[currentContextDef['name']];
@@ -1059,7 +1058,7 @@ INTERMediator = {
                     }
 
                     if (currentContextDef["navi-control"] &&
-                            currentContextDef["navi-control"] === "detail") {
+                        currentContextDef["navi-control"] === "detail") {
                         recordNumber = 1;
                     } else {
                         if (currentContextDef.maxrecords) {
@@ -1205,8 +1204,8 @@ INTERMediator = {
                     INTERMediatorOnPage[currentContextDef['post-repeater']](newlyAddedNodes);
 
                     INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
-                    + currentContextDef['post-repeater'] + "' with the context: "
-                    + currentContextDef['name'], 2);
+                        + currentContextDef['post-repeater'] + "' with the context: "
+                        + currentContextDef['name'], 2);
                 }
             } catch (ex) {
                 if (ex == "_im_requath_request_") {
@@ -1395,7 +1394,7 @@ INTERMediator = {
                 buttonNode = document.createElement('BUTTON');
                 INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Copy");
                 buttonName = INTERMediatorOnPage.getMessages()[14];
-                if (currentContextDef['button-names'] && currentContextDef['button-names']['copy'])   {
+                if (currentContextDef['button-names'] && currentContextDef['button-names']['copy']) {
                     buttonName = currentContextDef['button-names']['copy'];
                 }
                 buttonNode.appendChild(document.createTextNode(buttonName));
@@ -1436,6 +1435,7 @@ INTERMediator = {
                 }
             }
         }
+
         /* --------------------------------------------------------------------
 
          */
@@ -1454,7 +1454,7 @@ INTERMediator = {
                 buttonNode = document.createElement('BUTTON');
                 INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Delete");
                 buttonName = INTERMediatorOnPage.getMessages()[6];
-                if (currentContextDef['button-names'] && currentContextDef['button-names']['delete'])   {
+                if (currentContextDef['button-names'] && currentContextDef['button-names']['delete']) {
                     buttonName = currentContextDef['button-names']['delete'];
                 }
                 buttonNode.appendChild(document.createTextNode(buttonName));
@@ -1525,7 +1525,7 @@ INTERMediator = {
                     buttonNode = document.createElement('BUTTON');
                     INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Insert");
                     buttonName = INTERMediatorOnPage.getMessages()[5];
-                    if (currentContextDef['button-names'] && currentContextDef['button-names']['insert'])   {
+                    if (currentContextDef['button-names'] && currentContextDef['button-names']['insert']) {
                         buttonName = currentContextDef['button-names']['insert'];
                     }
                     buttonNode.appendChild(document.createTextNode(buttonName));
@@ -1665,7 +1665,7 @@ INTERMediator = {
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_Master");
             buttonName = INTERMediatorOnPage.getMessages()[12];
-            if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail'])   {
+            if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail']) {
                 buttonName = currentContextDef['button-names']['navi-detail'];
             }
             buttonNode.appendChild(document.createTextNode(buttonName));
@@ -1795,7 +1795,7 @@ INTERMediator = {
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, "IM_Button_BackNavi");
             buttonName = INTERMediatorOnPage.getMessages()[13];
-            if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back'])   {
+            if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back']) {
                 buttonName = currentContextDef['button-names']['navi-back'];
             }
             buttonNode.appendChild(document.createTextNode(buttonName));
@@ -1895,7 +1895,7 @@ INTERMediator = {
                     if (pageNaviShow) {
                         document.getElementById("IM_NAVIGATOR").style.display = "block";
                     }
-                    if (masterUpdate)   {
+                    if (masterUpdate) {
                         INTERMediator.constructMain(masterContextCL);
                     }
                     if (INTERMediatorOnPage.naviAfterMoveToMaster) {
@@ -1983,7 +1983,7 @@ INTERMediator = {
                 spNode.appendChild(document.createTextNode('Generated by '));
                 spNode.appendChild(aNode);
                 versionStrng = " Ver." + INTERMediatorOnPage.metadata.version
-                + "(" + INTERMediatorOnPage.metadata.releasedate + ")";
+                    + "(" + INTERMediatorOnPage.metadata.releasedate + ")";
                 spNode.appendChild(document.createTextNode(versionStrng));
             }
         }
@@ -1999,14 +1999,34 @@ INTERMediator = {
         IMLibLocalContext.setValue(localKey, value, true);
     },
 
-    addCondition: function (contextName, condition) {
-        var value = INTERMediator.additionalCondition;
-        if (value[contextName]) {
-            value[contextName].push(condition);
-        } else {
-            value[contextName] = [condition];
+    addCondition: function (contextName, condition, notMatching) {
+        var value, i, hasIdentical;
+        condition['matching'] = !notMatching;
+        if (INTERMediator.additionalCondition) {
+            value = INTERMediator.additionalCondition;
+            if (condition) {
+                if (!value[contextName]) {
+                    value[contextName] = [];
+                }
+                if (!condition.matching) {
+                    value[contextName].push(condition);
+                } else {
+                    hasIdentical = false;
+                    for (i = 0; i < value[contextName].length; i++) {
+                        if (value[contextName][i].field == condition.field
+                            && value[contextName][i].operator == condition.operator) {
+                            hasIdentical = true;
+                            value[contextName][i].value = condition.value;
+                            break;
+                        }
+                    }
+                    if (!hasIdentical) {
+                        value[contextName].push(condition);
+                    }
+                }
+            }
+            INTERMediator.additionalCondition = value;
         }
-        INTERMediator.additionalCondition = value;
         IMLibLocalContext.archive();
     },
 
