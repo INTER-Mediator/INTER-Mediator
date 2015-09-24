@@ -56,8 +56,8 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
             $authInfoTarget = $tableInfo['authentication']['all']['target'];
         }
         foreach ($operations as $op) {
-            if (isset($tableInfo['authentication'][$op]['field'])) {
-                $authInfoTarget = $tableInfo['authentication'][$op]['field'];
+            if (isset($tableInfo['authentication'][$op]['target'])) {
+                $authInfoTarget = $tableInfo['authentication'][$op]['target'];
                 break;
             }
         }
