@@ -348,7 +348,8 @@ var IMLibElement = {
     },
 
     getValueFromIMNode: function (element) {
-        var nodeTag, typeAttr, newValue, dbspec, mergedValues, targetNodes, k, valueAttr;
+        var nodeTag, typeAttr, newValue, dbspec, mergedValues, targetNodes, k,
+            valueAttr, imFormat;
 
         if (element) {
             nodeTag = element.tagName;
@@ -391,6 +392,20 @@ var IMLibElement = {
         } else {
             newValue = element.innerHTML;
         }
+
+        /*
+         * The following part has to be implemented for all formatting data.
+         * Ths method has to return the unformated data.
+         */
+        imFormat = element.getAttribute("data-im-format");
+        if (imFormat)   {
+            switch(imFormat){
+                case "number":
+                    newValue = INTERMediatorLib.toNumber(newValue);
+                    break;
+            }
+        }
+
         return newValue;
     },
 

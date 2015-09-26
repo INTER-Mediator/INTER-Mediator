@@ -68,16 +68,22 @@
                     <td><input class="price" type="text"  size="5"
                                data-im="item@qty item@qty_color@style.color"/></td>
                     <td>
-                        <input class="price" type="text" data-im="item@unitprice" size="8" data-im-format="number" data-im-format-options="useseparator">
+                        <input class="price" type="text"
+                               data-im="item@unitprice" size="8"
+                               data-im-format="number"
+                               data-im-format-options="useseparator">
                         <div class="inline" data-im-control="enclosure">
                             <div class="inline price" data-im-control="repeater">
-                                (<span data-im="product@unitprice" data-im-format="number" data-im-format-options="useseparator"></span>)
+                                (<span data-im="product@unitprice"
+                                       data-im-format="number"
+                                       data-im-format-options="useseparator"></span>)
                             </div>
                         </div>
                     </td>
                     <td align="right">
                         <span align="right" data-im="item@amount_calc"
-                              data-im-format="number()"></span>
+                              data-im-format="number()"
+                              data-im-format-options="useseparator"></span>
                     </td>
                     <td></td>
                 </tr>

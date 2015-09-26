@@ -38,14 +38,14 @@ var IMLibUI = {
      */
     valueChange: function (idValue, validationOnly) {
         var changedObj, objType, contextInfo, i, updateRequiredContext, associatedNode, currentValue, newValue,
-            linkInfo, nodeInfo, validataonResult = true;
+            linkInfo, nodeInfo, validationResult = true;
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
             INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
             INTERMediator.flushMessage();
             IMLibUI.isShiftKeyDown = false;
             IMLibUI.isControlKeyDown = false;
-            return validataonResult;
+            return validationResult;
         }
         IMLibUI.isShiftKeyDown = false;
         IMLibUI.isControlKeyDown = false;
@@ -53,7 +53,7 @@ var IMLibUI = {
         changedObj = document.getElementById(idValue);
         if (changedObj != null) {
             if (changedObj.readOnly) {  // for Internet Explorer
-                return validataonResult;
+                return validationResult;
             }
 
             linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
