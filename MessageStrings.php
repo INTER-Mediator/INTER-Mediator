@@ -1,13 +1,15 @@
 <?php
 /**
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
  * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
@@ -87,6 +89,9 @@ class MessageStrings
         1039 => "Preparing the Pusher, although the client library is included, the settings in the server side is not available.",
         1040 => "The field '@2@' in the context '@1@' does not exist in the table.",
         1041 => "Are you sure to copy this record?",
+        1042 => "The database class doesn't support aggregation-select/from/group-by.",
+        1043 => "Both aggregation-select and aggregation-from are required. One of them doesn't exist in the context definition.",
+        1044 => "The context having aggregation-select/from/group-by is read-only.",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',

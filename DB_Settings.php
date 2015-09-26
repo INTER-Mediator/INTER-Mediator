@@ -1,14 +1,18 @@
 <?php
 
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
-
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 class DB_Settings
 {
     private $dbSpecServer = null;
@@ -66,6 +70,10 @@ class DB_Settings
     private $params_ldapAccountKey;
     private $params_ldapExpiringSeconds;
 
+    private $aggregation_select = null;
+    private $aggregation_from = null;
+    private $aggregation_group_by = null;
+
     function __construct()
     {
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
@@ -82,6 +90,36 @@ class DB_Settings
         $this->params_ldapContainer = isset($ldapContainer) ? $ldapContainer : null;
         $this->params_ldapAccountKey = isset($ldapAccountKey) ? $ldapAccountKey : null;
         $this->params_ldapExpiringSeconds = isset($ldapExpiringSeconds) ? $ldapExpiringSeconds : 600;
+    }
+
+    public function getAggregationSelect()
+    {
+        return $this->aggregation_select;
+    }
+
+    public function setAggregationSelect($value)
+    {
+        $this->aggregation_select = $value;
+    }
+
+    public function getAggregationFrom()
+    {
+        return $this->aggregation_from;
+    }
+
+    public function setAggregationFrom($value)
+    {
+        $this->aggregation_from = $value;
+    }
+
+    public function getAggregationGroupBy()
+    {
+        return $this->aggregation_group_by;
+    }
+
+    public function setAggregationGroupBy($value)
+    {
+        $this->aggregation_group_by = $value;
     }
 
     public function getLDAPSettings()

@@ -1,16 +1,18 @@
 <?php
-
 /**
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
  * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 class GenerateJSCode
 {
     public function __construct()
@@ -39,6 +41,8 @@ class GenerateJSCode
     public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
     {
         $q = '"';
+        $po = '{';
+        $pc = '}';
         $generatedPrivateKey = null;
         $passPhrase = null;
 
@@ -221,6 +225,10 @@ class GenerateJSCode
                 "INTERMediatorOnPage.clientNotificationChannel",
                 "function(){return ", arrayToJS($chName, ''), ";}");
         }
+        $metadata = json_decode(file_get_contents(
+            dirname(__FILE__) . DIRECTORY_SEPARATOR . "metadata.json"));
+        $this->generateAssignJS("INTERMediatorOnPage.metadata",
+            "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->releasedate}{$q}}");
 
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
             $this->generateAssignJS("INTERMediator.debugMode", "false");
@@ -276,6 +284,24 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
+        $localeSign = isset($appLocale) ? $appLocale : ini_get("intl.default_locale");
+        setlocale(LC_ALL, $localeSign);
+        $localInfo = localeconv();
+        
+        $localDefaultInfo = array(
+            "negative_sign" => "-",
+            "decimal_point" => ".",
+            "mon_decimal_point" => ".",
+            "thousands_sep" => ",",
+            "mon_thousands_sep" => ",",
+        );
+        foreach($localDefaultInfo as $localInfoKey => $localInfoValue) {
+            if (!isset($localInfo[$localInfoKey]) || $localInfo[$localInfoKey] === '') {
+                $localInfo[$localInfoKey] = $localInfoValue;
+            }
+        }
+        
+        $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS($localInfo,""));
     }
 
     private function combineScripts($currentDir)
@@ -287,6 +313,7 @@ class GenerateJSCode
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
+        $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
@@ -299,7 +326,6 @@ class GenerateJSCode
         $content .= file_get_contents($bi2phpDir . 'biRSA.js');
         $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
-        $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
 
         return $content;

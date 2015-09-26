@@ -1,10 +1,11 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
 IMLibContextPool = {
@@ -302,7 +303,7 @@ IMLibContextPool = {
                     }
                 }
             }
-            IMLibCalc.recalculation();
+            IMLibCalc.recalculation(undefined, true);
         } else if (eventName == 'create') {
             for (i = 0; i < this.poolingContexts.length; i++) {
                 contextDef = this.getContextDef(this.poolingContexts[i].contextName);
@@ -323,7 +324,7 @@ IMLibContextPool = {
                     this.poolingContexts[i].removeEntry(info.pkvalue);
                 }
             }
-            IMLibCalc.recalculation();
+            IMLibCalc.recalculation(undefined, true);
         }
     },
 
@@ -638,7 +639,7 @@ IMLibContext = function (contextName) {
                 conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
                 dataset: [{field: key, value: value}]
             });
-            IMLibCalc.recalculation();
+            IMLibCalc.recalculation(undefined, true);
             INTERMediator.flushMessage();
         }
     };

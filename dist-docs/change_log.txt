@@ -10,11 +10,28 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+format-client-side branch (in development)
+- The locale for number and currency format follows the server-side setting of "intl.default_locale" key in php.ini.
+  It can be overridden by params.php file's $appLocale variable.
+
 Ver.5.3 (in development)
-- Update phpseclib to ver.1.0.
+- SQL aggregation support. The aggregation-select, aggregation-from, aggregation-group-by key are added.
+- MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
+  for PHP).
+- Update phpseclib to version 1.0.0.
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
 - Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
+- Add Dockerfile for CircleCI.
+- Be able to customize a style of the file uploading area when using the file upload component.
+- LDAPAuth class can report errors.
+- INTER-Mediator version can be described in the 'metadata.json' file, and dist-docs/build.sh
+  can update the metadata.json.
+- All header description of source files are updated, and build.sh was adapted them.
+- Update buster.js and package.json for unit testing.
+- [BUG FIX] Fix detection of params.php file.
+- [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
+- [BUG FIX] Modify INTERMediator.totalRecordCount after IMLibPageNavigation.deleteRecordFromNavi method.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.

@@ -1,13 +1,17 @@
 <?php
-
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 class LDAPAuth
 {
@@ -19,6 +23,7 @@ class LDAPAuth
     private $base = "";
     private $container = "";
     private $accountKey = "uid";
+    private $logger = null;
 
     public function __construct()
     {
@@ -45,8 +50,17 @@ class LDAPAuth
         $this->isActive = (strlen($this->server) > 0);
     }
 
+    public function setLogger($log) {
+        $this->logger = $log;
+    }
+
     function bindCheck($username, $password)
     {
+        if (! function_exists("ldap_connect"))  {
+            $this->errorString = "This PHP doesn't support LDAP, check the result of infophp() function.";
+            return false;
+        }
+
         $this->errorString = "";
         if (! $this->isActive)  {
             $this->errorString = "LDAP Setting isn't supplied.";
@@ -74,6 +88,9 @@ class LDAPAuth
             $r = false;
         }
         ldap_close($ds);
+        if (strlen($this->errorString)) {
+            $this->logger->setErrorMessage($this->errorString);
+        }
         return $r;
     }
 }

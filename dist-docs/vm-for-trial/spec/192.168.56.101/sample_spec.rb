@@ -1,5 +1,16 @@
 require 'spec_helper'
 
+if ENV['CIRCLECI']
+  class Docker::Container
+    def remove(options={}); end
+    alias_method :delete, :remove
+  end
+end
+
+#describe package('ruby'), :if => os[:virtualization][:system] == 'docker' do
+#  it { should be_installed }
+#end
+
 describe package('apache2'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
@@ -460,6 +471,10 @@ describe file('/etc/samba/smb.conf') do
   its(:content) { should match /create mask = 0664/ }
   its(:content) { should match /directory mask = 0775/ }
   its(:content) { should match /force group = im-developer/ }
+end
+
+describe file('/home/developer') do
+  it { should be_directory }
 end
 
 describe file('/home/developer/.bashrc') do

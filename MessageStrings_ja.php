@@ -1,13 +1,15 @@
 <?php
 /**
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
  * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
@@ -71,6 +73,9 @@ class MessageStrings_ja extends MessageStrings
         1039 => "Pusherの利用に関して、クライアントライブラリは読み込まれていますが、サーバー側の設定は行われていません。",
         1040 => "コンテキスト「@1@」のフィールド「@２@」はテーブルには存在しません。",
         1041 => "本当にこのレコードの複製を行いますか?",
+        1042 => "このデータベースクラスはaggregation-select/from/group-byをサポートしていません。",
+        1043 => "aggregation-selectとaggregation-fromの両方が必要です。いずれかの設定がコンテキスト定義にありません。",
+        1044 => "aggregation-select/from/group-byを指定したコンテキストへの書き込みや更新はできません。読み出しのみです。",
         2001 => '認証エラー!',
         2002 => 'ユーザー名:',
         2003 => 'パスワード:',
