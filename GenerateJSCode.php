@@ -43,7 +43,11 @@ class GenerateJSCode
         $q = '"';
         $generatedPrivateKey = null;
         $passPhrase = null;
-
+        $oAuthClientID = null;
+        $oAuthClientSecret = null;
+        $oAuthBaseURL = null;
+        $oAuthRedirect = null;
+        $oAuthScope = array();
         /*
          * Decide the params.php file and load it.
          */
@@ -256,6 +260,15 @@ class GenerateJSCode
         $ldap = new LDAPAuth(); // for PHP 5.2, 5.3
         $this->generateAssignJS(
             "INTERMediatorOnPage.isLDAP", $ldap->isActive ? "true" : "false");
+        $this->generateAssignJS(
+            "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthClientID) ? "true" : "false");
+        if (isset($oAuthClientID))   {
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthClientID", $q, $oAuthClientID, $q);
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthClientSecret", $q, $oAuthClientSecret, $q);
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthBaseURL", $q, $oAuthBaseURL, $q);
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthRedirect", $q, $oAuthRedirect, $q);
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthScope", $q, implode(' ',$oAuthScope), $q);
+        }
         $this->generateAssignJS(
             "INTERMediatorOnPage.isNativeAuth",
             (isset($options['authentication'])

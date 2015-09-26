@@ -127,3 +127,12 @@ $pusherParameters = array(
 // $ldapContainer = "cn=users";
 // $ldapAccountKey = "uid";
 //$ldapExpiringSeconds = 1800;
+
+/* OAuth Support */
+$oAuthClientID = '1044341943970-3q053ucl9i8882m56fpm6dqg93julckv.apps.googleusercontent.com';
+$oAuthClientSecret = 'lC2edOOpXZBpNJ9s0Iha8Nez';
+$oAuthBaseURL = 'https://accounts.google.com/o/oauth2/auth';
+$oAuthTokenURL = 'https://accounts.google.com/o/oauth2/token';
+$oAuthRedirect = 'http://localhost:7001/OAuthAuth.php';
+    //'http://aa106ctz9i.smartrelease.jp/keihi/INTER-Mediator/OAuthAuth.php';
+$oAuthScope = array('openid', 'profile', 'email');

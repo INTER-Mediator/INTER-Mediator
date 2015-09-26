@@ -39,6 +39,13 @@ INTERMediatorOnPage = {
     isShowChangePassword: true,
     isSetDefaultStyle: true,
     authPanelTitle: null,
+    isOAuthAvailable: false,
+    oAuthClientID: null,
+    oAuthClientSecret: null,
+    oAuthBaseURL: null,
+    oAuthRedirect: null,
+    oAuthScope: null,
+
 
     additionalExpandingEnclosureFinish: {},
     additionalExpandingRecordFinish: {},
@@ -186,11 +193,11 @@ INTERMediatorOnPage = {
     },
 
     defaultBackgroundImage: "url(data:image/png;base64," +
-        "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
-        "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ" +
-        "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA" +
-        "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-        "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
+    "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
+    "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ" +
+    "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA" +
+    "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+    "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
 
     defaultBackgroundColor: null,
     loginPanelHTML: null,
@@ -200,7 +207,7 @@ INTERMediatorOnPage = {
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
-            messageNode;
+            messageNode, oAuthButton, oAuthLabel;
 
         if (INTERMediatorOnPage.authCount > INTERMediatorOnPage.authCountLimit) {
             INTERMediatorOnPage.authenticationError();
@@ -232,6 +239,7 @@ INTERMediatorOnPage = {
             userBox = document.getElementById("_im_username");
             authButton = document.getElementById("_im_authbutton");
             chgpwButton = document.getElementById("_im_changebutton");
+            oAuthButton = document.getElementById("_im_oauthbutton");
         } else {
             frontPanel = document.createElement("div");
             if (INTERMediatorOnPage.isSetDefaultStyle) {
@@ -318,7 +326,6 @@ INTERMediatorOnPage = {
             frontPanel.appendChild(newPasswordMessage);
 
             if (this.isShowChangePassword && !INTERMediatorOnPage.isNativeAuth) {
-
                 breakLine = document.createElement("HR");
                 frontPanel.appendChild(breakLine);
 
@@ -351,6 +358,14 @@ INTERMediatorOnPage = {
                 newPasswordMessage.style.color = "#994433";
                 newPasswordMessage.id = "_im_newpass_message";
                 frontPanel.appendChild(newPasswordMessage);
+            }
+            if (this.isOAuthAvailable) {
+                breakLine = document.createElement("HR");
+                frontPanel.appendChild(breakLine);
+                oAuthButton = document.createElement("BUTTON");
+                oAuthButton.appendChild(document.createTextNode(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(2014)));
+                frontPanel.appendChild(oAuthButton);
             }
         }
         passwordBox.onkeydown = function (event) {
@@ -453,6 +468,17 @@ INTERMediatorOnPage = {
                 INTERMediator.flushMessage();
             };
         }
+        if (this.isOAuthAvailable && oAuthButton) {
+            oAuthButton.onclick = function () {
+                var authURL;
+                authURL = INTERMediatorOnPage.oAuthBaseURL
+                    + '?scope=' + encodeURIComponent(INTERMediatorOnPage.oAuthScope)
+                    + '&redirect_uri=' + encodeURIComponent(INTERMediatorOnPage.oAuthRedirect)
+                    + '&response_type=code'
+                    + '&client_id=' + encodeURIComponent(INTERMediatorOnPage.oAuthClientID);
+                location.href = authURL;
+            }
+        }
 
         if (INTERMediatorOnPage.authCount > 0) {
             messageNode = document.getElementById("_im_login_message");
@@ -529,20 +555,23 @@ INTERMediatorOnPage = {
         }
 
         for (agent in positiveList) {
-            if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
-                matchAgent = true;
-                if (positiveList[agent] instanceof Object) {
-                    for (os in positiveList[agent]) {
-                        if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
-                            matchOS = true;
-                            versionStr = positiveList[agent][os];
-                            break;
+            if (positiveList.hasOwnProperty(agent)) {
+                if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
+                    matchAgent = true;
+                    if (positiveList[agent] instanceof Object) {
+                        for (os in positiveList[agent]) {
+                            if (positiveList[agent].hasOwnProperty(os)
+                                && navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
+                                matchOS = true;
+                                versionStr = positiveList[agent][os];
+                                break;
+                            }
                         }
+                    } else {
+                        matchOS = true;
+                        versionStr = positiveList[agent];
+                        break;
                     }
-                } else {
-                    matchOS = true;
-                    versionStr = positiveList[agent];
-                    break;
                 }
             }
         }
@@ -605,7 +634,7 @@ INTERMediatorOnPage = {
             }
         }
         if (judge === true) {
-            if (deleteNode !== null) {
+            if (deleteNode) {
                 deleteNode.parentNode.removeChild(deleteNode);
             }
         } else {
@@ -717,8 +746,8 @@ INTERMediatorOnPage = {
         }
         if (enclosureNode != null) {
             nodeIds = [];
-            if (Array.isArray(enclosureNode))   {
-                for (i = 0 ; i < enclosureNode.length ; i++)    {
+            if (Array.isArray(enclosureNode)) {
+                for (i = 0; i < enclosureNode.length; i++) {
                     seekNode(enclosureNode[i], imDefinition);
                 }
             } else {
