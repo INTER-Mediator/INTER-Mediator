@@ -186,11 +186,11 @@ INTERMediatorOnPage = {
     },
 
     defaultBackgroundImage: "url(data:image/png;base64," +
-        "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
-        "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ" +
-        "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA" +
-        "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-        "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
+    "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
+    "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ" +
+    "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA" +
+    "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+    "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
 
     defaultBackgroundColor: null,
     loginPanelHTML: null,
@@ -717,8 +717,8 @@ INTERMediatorOnPage = {
         }
         if (enclosureNode != null) {
             nodeIds = [];
-            if (Array.isArray(enclosureNode))   {
-                for (i = 0 ; i < enclosureNode.length ; i++)    {
+            if (Array.isArray(enclosureNode)) {
+                for (i = 0; i < enclosureNode.length; i++) {
                     seekNode(enclosureNode[i], imDefinition);
                 }
             } else {
@@ -766,6 +766,45 @@ INTERMediatorOnPage = {
         return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, false);
     },
 
+    /* Local storage support, and use cookie if it's not available */
+    isLocalStorage: function()  {
+        return INTERMediator.useSessionStorage === true &&
+            typeof sessionStorage !== 'undefined' &&
+            sessionStorage !== null;
+    },
+
+    storeForClient: function (key, value) {
+        var storeKey;
+        if (INTERMediatorOnPage.isLocalStorage()) {
+            try {
+                trailLength = document.URL.search.length + document.URL.hash.length;
+                storeKey = INTERMediatorOnPage.getKeyWithRealm(key)
+                    + document.URL.toString().substr(-trailLength);
+                localContext = sessionStorage.getItem(storeKey);
+            } catch (ex) {
+                localContext = INTERMediatorOnPage.setCookie(key);
+            }
+        } else {
+            localContext = INTERMediatorOnPage.setCookie(key);
+        }
+    },
+
+    retrieveForClient: function (key) {
+        var storeKey;
+        if (INTERMediatorOnPage.isLocalStorage()) {
+            try {
+                trailLength = document.URL.search.length + document.URL.hash.length;
+                storeKey = INTERMediatorOnPage.getKeyWithRealm(key)
+                    + document.URL.toString().substr(-trailLength);
+                localContext = sessionStorage.getItem(storeKey);
+            } catch (ex) {
+                localContext = INTERMediatorOnPage.getCookie(key);
+            }
+        } else {
+            localContext = INTERMediatorOnPage.getCookie(key);
+        }
+    },
+
     /* Cookies support */
     getKeyWithRealm: function (str) {
         "use strict";
@@ -779,7 +818,7 @@ INTERMediatorOnPage = {
         "use strict";
         var s, i, targetKey;
         s = document.cookie.split("; ");
-        targetKey = this.getKeyWithRealm(key);
+        targetKey = INTERMediatorOnPage.getKeyWithRealm(key);
         for (i = 0; i < s.length; i++) {
             if (s[i].indexOf(targetKey + "=") == 0) {
                 return decodeURIComponent(s[i].substring(s[i].indexOf("=") + 1));
@@ -789,18 +828,28 @@ INTERMediatorOnPage = {
     },
     removeCookie: function (key) {
         "use strict";
-        document.cookie = this.getKeyWithRealm(key) + "=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;";
-        document.cookie = this.getKeyWithRealm(key) + "=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;";
+        document.cookie = INTERMediatorOnPage.getKeyWithRealm(key)
+            + "=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;";
+        document.cookie = INTERMediatorOnPage.getKeyWithRealm(key)
+            + "=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;";
     },
 
     setCookie: function (key, val) {
         "use strict";
-        this.setCookieWorker(this.getKeyWithRealm(key), val, false, INTERMediatorOnPage.authExpired);
+        INTERMediatorOnPage.setCookieWorker(
+            INTERMediatorOnPage.getKeyWithRealm(key),
+            val,
+            false,
+            INTERMediatorOnPage.authExpired);
     },
 
     setCookieDomainWide: function (key, val) {
         "use strict";
-        this.setCookieWorker(this.getKeyWithRealm(key), val, true, INTERMediatorOnPage.authExpired);
+        INTERMediatorOnPage.setCookieWorker(
+            INTERMediatorOnPage.getKeyWithRealm(key),
+            val,
+            true,
+            INTERMediatorOnPage.authExpired);
     },
 
     setCookieWorker: function (key, val, isDomain, expired) {
@@ -818,6 +867,7 @@ INTERMediatorOnPage = {
         document.cookie = cookieString;
     },
 
+    /* Progress Display */
     hideProgress: function () {
         "use strict";
         var frontPanel;
