@@ -971,7 +971,7 @@ IMLibLocalContext = {
     },
 
     archive: function () {
-        var jsonString, trailLength, key, index, i;
+        var jsonString, key, searchLen, hashLen, trailLen;
         INTERMediatorOnPage.removeCookie('_im_localcontext');
         if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
             this.store._im_additionalCondition = INTERMediator.additionalCondition;
@@ -992,8 +992,11 @@ IMLibLocalContext = {
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
-                trailLength = document.URL.search.length + document.URL.hash.length;
-                key = "_im_localcontext" + document.URL.toString().substr(-trailLength);
+                searchLen = location.search ? location.search.length : 0;
+                hashLen = location.hash ? location.hash.length : 0;
+                trailLen = searchLen+hashLen;
+                key = "_im_localcontext" + document.URL.toString();
+                key =  (trailLen > 0) ? key.slice(0, -trailLen) : key;
                 sessionStorage.setItem(key, jsonString);
             } catch (ex) {
                 INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
@@ -1001,16 +1004,21 @@ IMLibLocalContext = {
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
         }
+        //console.log("##Archive:",key);
+        //console.log("##Archive:",this.store);
     },
 
     unarchive: function () {
-        var localContext = "", trailLength, key;
+        var localContext = "", searchLen, hashLen, key, trailLen;
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
-                trailLength = document.URL.search.length + document.URL.hash.length;
-                key = "_im_localcontext" + document.URL.toString().substr(-trailLength);
+                searchLen = location.search ? location.search.length : 0;
+                hashLen = location.hash ? location.hash.length : 0;
+                trailLen = searchLen+hashLen;
+                key = "_im_localcontext" + document.URL.toString();
+                key =  (trailLen > 0) ? key.slice(0, -trailLen) : key;
                 localContext = sessionStorage.getItem(key);
             } catch (ex) {
                 localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
@@ -1020,7 +1028,8 @@ IMLibLocalContext = {
         }
         if (localContext && localContext.length > 0) {
             this.store = JSON.parse(localContext);
-                //console.log("##Unarchive:",this.store);
+            //console.log("##Unarchive:",key);
+            //console.log("##Unarchive:",this.store);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
                     INTERMediator.additionalCondition = this.store._im_additionalCondition;
