@@ -138,6 +138,7 @@ INTERMediatorOnPage = {
         INTERMediatorOnPage.removeCookie("_im_credential");
         INTERMediatorOnPage.removeCookie("_im_mediatoken");
         INTERMediatorOnPage.removeCookie("_im_crypted");
+        INTERMediatorOnPage.removeCookie("_im_localcontext");
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== "undefined" &&
             sessionStorage !== null) {

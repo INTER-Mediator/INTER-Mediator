@@ -509,10 +509,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 }
             }
         }
-        $keywordAuth = ($currentOperation == "select") ? "read" : $currentOperation;
-        $keywordAuth = ($currentOperation == "load") ? "read" : $currentOperation;
+        $keywordAuth = (($currentOperation == "load")||($currentOperation == "select"))
+            ? "read" : $currentOperation;
         if (isset($tableInfo['authentication'])
-            && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$keywordAuth]))
+            && ((isset($tableInfo['authentication']['all'])
+                || isset($tableInfo['authentication'][$keywordAuth])))
         ) {
             $authInfoField = $this->getFieldForAuthorization($keywordAuth);
             $authInfoTarget = $this->getTargetForAuthorization($keywordAuth);
