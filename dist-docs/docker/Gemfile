@@ -1,7 +1,7 @@
 source 'https://rubygems.org/'
 
-gem 'docker-api'
 gem 'net-ssh', '3.0.1'
+gem 'docker-api'
 
 group :test do
   gem 'specinfra', '2.12.7'
