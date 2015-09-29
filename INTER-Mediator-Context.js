@@ -1048,7 +1048,7 @@ IMLibLocalContext = {
         }
     },
 
-    binding: function (node) {
+    bindingNode: function (node) {
         var linkInfos, nodeInfo, idValue, i, j, value, params, idArray, unexistId;
         if (node.nodeType != 1) {
             return;
@@ -1172,7 +1172,7 @@ IMLibLocalContext = {
             var children, i;
             if (node.nodeType === 1) { // Work for an element
                 try {
-                    self.binding(node);
+                    self.bindingNode(node);
                     children = node.childNodes; // Check all child nodes.
                     if (children) {
                         for (i = 0; i < children.length; i++) {
