@@ -1007,9 +1007,9 @@ IMLibLocalContext = {
             try {
                 searchLen = location.search ? location.search.length : 0;
                 hashLen = location.hash ? location.hash.length : 0;
-                trailLen = searchLen+hashLen;
+                trailLen = searchLen + hashLen;
                 key = "_im_localcontext" + document.URL.toString();
-                key =  (trailLen > 0) ? key.slice(0, -trailLen) : key;
+                key = (trailLen > 0) ? key.slice(0, -trailLen) : key;
                 sessionStorage.setItem(key, jsonString);
             } catch (ex) {
                 INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
@@ -1017,8 +1017,8 @@ IMLibLocalContext = {
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
         }
-        //console.log("##Archive:",key);
-        //console.log("##Archive:",this.store);
+        //console.log("##Archive:", key);
+        //console.log("##Archive:", this.store);
     },
 
     unarchive: function () {
@@ -1029,9 +1029,9 @@ IMLibLocalContext = {
             try {
                 searchLen = location.search ? location.search.length : 0;
                 hashLen = location.hash ? location.hash.length : 0;
-                trailLen = searchLen+hashLen;
+                trailLen = searchLen + hashLen;
                 key = "_im_localcontext" + document.URL.toString();
-                key =  (trailLen > 0) ? key.slice(0, -trailLen) : key;
+                key = (trailLen > 0) ? key.slice(0, -trailLen) : key;
                 localContext = sessionStorage.getItem(key);
             } catch (ex) {
                 localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
@@ -1041,8 +1041,8 @@ IMLibLocalContext = {
         }
         if (localContext && localContext.length > 0) {
             this.store = JSON.parse(localContext);
-            //console.log("##Unarchive:",key);
-            //console.log("##Unarchive:",this.store);
+            //console.log("##Unarchive:", key);
+            //console.log("##Unarchive:", this.store);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
                     INTERMediator.additionalCondition = this.store._im_additionalCondition;
@@ -1062,7 +1062,7 @@ IMLibLocalContext = {
     },
 
     bindingNode: function (node) {
-        var linkInfos, nodeInfo, idValue, i, value, params;
+        var linkInfos, nodeInfo, idValue, i, j, value, params, idArray, unexistId;
         if (node.nodeType != 1) {
             return;
         }
@@ -1149,6 +1149,10 @@ IMLibLocalContext = {
     },
 
     update: function (idValue) {
+        IMLibLocalContext.updateFromNodeValue(idValue);
+    },
+
+    updateFromNodeValue: function (idValue) {
         var node, nodeValue, linkInfos, nodeInfo, i;
         node = document.getElementById(idValue);
         nodeValue = IMLibElement.getValueFromIMNode(node);
@@ -1162,17 +1166,39 @@ IMLibLocalContext = {
         }
     },
 
-    updateAll: function () {
+    updateFromStore: function (idValue) {
+        var node, nodeValue, linkInfos, nodeInfo, i, target, comp;
+        node = document.getElementById(idValue);
+        target = node.getAttribute("data-im");
+        comp = target.split(INTERMediator.separator);
+        if (comp[1]) {
+            nodeValue = IMLibLocalContext.store[comp[1]];
+            linkInfos = INTERMediatorLib.getLinkedElementInfo(node);
+            for (i = 0; i < linkInfos.length; i++) {
+                IMLibLocalContext.store[linkInfos[i]] = nodeValue;
+                nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i]);
+                if (nodeInfo.table == IMLibLocalContext.contextName) {
+                    IMLibLocalContext.setValue(nodeInfo.field, nodeValue);
+                }
+            }
+        }
+    },
+
+    updateAll: function (isStore) {
         var index, key, nodeIds, idValue, targetNode;
-        for (key in this.binding) {
-            if (this.binding.hasOwnProperty(key)) {
-                nodeIds = this.binding[key];
+        for (key in IMLibLocalContext.binding) {
+            if (IMLibLocalContext.hasOwnProperty(key)) {
+                nodeIds = IMLibLocalContext.binding[key];
                 for (index = 0; index < nodeIds.length; index++) {
                     idValue = nodeIds[index];
                     targetNode = document.getElementById(idValue);
                     if (targetNode &&
                         ( targetNode.tagName == "INPUT" || targetNode.tagName == "TEXTAREA" || targetNode.tagName == "SELECT")) {
-                        IMLibLocalContext.update(idValue);
+                        if (isStore === true) {
+                            IMLibLocalContext.updateFromStore(idValue);
+                        } else {
+                            IMLibLocalContext.updateFromNodeValue(idValue);
+                        }
                         break;
                     }
                 }
