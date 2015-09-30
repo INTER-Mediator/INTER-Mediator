@@ -159,7 +159,8 @@ var IMLibCalc = {
     recalculation: function (updatedNodeId, updateOnServer) {
         var nodeId, newValueAdded, leafNodes, calcObject, ix, calcFieldInfo, updatedValue, isRecalcAll = false;
         var targetNode, newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, exp, nInfo, valuesArray;
-        var refersArray, valueSeries, targetElement, serverSideContexts, aContext, isNoRemoved;
+        var refersArray, valueSeries, targetElement, contextInfo, record, idValue;
+        var serverSideContexts, aContext, isNoRemoved;
 
         if (updatedNodeId === undefined) {
             isRecalcAll = true;
@@ -177,7 +178,9 @@ var IMLibCalc = {
             if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
                 calcObject = IMLibCalc.calculateRequiredObject[nodeId];
                 if (IMLibCalc.calculateOnServer != calcObject.expression) {
-                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
+                    idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
+                        nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
+                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(idValue);
                     targetNode = document.getElementById(calcFieldInfo.field);
                     for (field in calcObject.referes) {
                         if (calcObject.referes.hasOwnProperty(field)) {
@@ -226,6 +229,8 @@ var IMLibCalc = {
                 calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
                 calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
                 if (calcObject) {
+                    idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ?
+                        leafNodes[i].split(IMLibCalc.regexpForSeparator)[0] : leafNodes[i];
                     targetNode = document.getElementById(calcFieldInfo.field);
                     exp = calcObject.expression;
                     nInfo = calcObject.nodeInfo;
@@ -274,13 +279,13 @@ var IMLibCalc = {
                             calcObject.values
                         );
                         IMLibElement.setValueToIMNode(
-                            document.getElementById(calcFieldInfo.field),
-                            calcFieldInfo.target,
-                            updatedValue,
-                            true);
+                            document.getElementById(calcFieldInfo.field), nInfo.target, updatedValue, true);
                         updatedNodeIds.push(calcFieldInfo.field);
                         updateNodeValues.push(updatedValue);
                     }
+                }
+                else {
+
                 }
             }
         } while (leafNodes.length > 0);
@@ -288,6 +293,7 @@ var IMLibCalc = {
             // Spanning Tree Detected.
         }
     },
+
 
     setUndefinedToAllValues: function () {
         var nodeId, calcObject, ix, calcFieldInfo, targetNode, field, targetExp, targetIds, isRemoved, idValue;

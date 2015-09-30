@@ -575,7 +575,7 @@ IMLibContext = function (contextName) {
         }
         if (isDebug === true) {
             console.log("#lower=" + lower + ",upper=" + upper + ",index=" + index
-            + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
+                + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
         }
         return index;
     };
@@ -984,7 +984,7 @@ IMLibLocalContext = {
     },
 
     archive: function () {
-        var jsonString;
+        var jsonString, key, searchLen, hashLen, trailLen;
         INTERMediatorOnPage.removeCookie('_im_localcontext');
         if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
             this.store._im_additionalCondition = INTERMediator.additionalCondition;
@@ -1005,22 +1005,34 @@ IMLibLocalContext = {
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
-                sessionStorage.setItem("_im_localcontext" + document.URL, jsonString);
+                searchLen = location.search ? location.search.length : 0;
+                hashLen = location.hash ? location.hash.length : 0;
+                trailLen = searchLen+hashLen;
+                key = "_im_localcontext" + document.URL.toString();
+                key =  (trailLen > 0) ? key.slice(0, -trailLen) : key;
+                sessionStorage.setItem(key, jsonString);
             } catch (ex) {
                 INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
             }
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
         }
+        //console.log("##Archive:",key);
+        //console.log("##Archive:",this.store);
     },
 
     unarchive: function () {
-        var localContext = "";
+        var localContext = "", searchLen, hashLen, key, trailLen;
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
             try {
-                localContext = sessionStorage.getItem("_im_localcontext" + document.URL);
+                searchLen = location.search ? location.search.length : 0;
+                hashLen = location.hash ? location.hash.length : 0;
+                trailLen = searchLen+hashLen;
+                key = "_im_localcontext" + document.URL.toString();
+                key =  (trailLen > 0) ? key.slice(0, -trailLen) : key;
+                localContext = sessionStorage.getItem(key);
             } catch (ex) {
                 localContext = INTERMediatorOnPage.getCookie('_im_localcontext');
             }
@@ -1029,6 +1041,7 @@ IMLibLocalContext = {
         }
         if (localContext && localContext.length > 0) {
             this.store = JSON.parse(localContext);
+            //console.log("##Unarchive:",key);
             //console.log("##Unarchive:",this.store);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
@@ -1069,9 +1082,9 @@ IMLibLocalContext = {
                     //this.store[nodeInfo.field] = document.getElementById(idValue).value;
                 }
                 unexistId = -1;
-                while(unexistId >= 0)   {
-                    for ( j = 0 ; j < this.binding[nodeInfo.field].length ; j++ )    {
-                        if (! document.getElementById(this.binding[nodeInfo.field][j]))  {
+                while (unexistId >= 0) {
+                    for (j = 0; j < this.binding[nodeInfo.field].length; j++) {
+                        if (!document.getElementById(this.binding[nodeInfo.field][j])) {
                             unexistId = j;
                         }
                     }

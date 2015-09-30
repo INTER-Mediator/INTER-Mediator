@@ -127,13 +127,14 @@ class GenerateJSCode
             $pathToMySelf = $callURL;
         } else if (isset($scriptPathPrefix) || isset($scriptPathSuffix)) {
             $pathToMySelf = (isset($scriptPathPrefix) ? $scriptPathPrefix : '')
-                . filter_input(INPUT_SERVER, 'SCRIPT_NAME')
+                . filter_var($_SERVER['SCRIPT_NAME'])
                 . (isset($scriptPathSufix) ? $scriptPathSuffix : '');
         } else {
-            $pathToMySelf = filter_input(INPUT_SERVER, 'SCRIPT_NAME');
+            $pathToMySelf = filter_var($_SERVER['SCRIPT_NAME']);
         }
 
-        $pathToIMRootDir = mb_ereg_replace("^" . filter_input(INPUT_SERVER, 'DOCUMENT_ROOT'), "", (dirname(__FILE__)));
+        $pathToIMRootDir = mb_ereg_replace(
+            "^" . filter_var($_SERVER['DOCUMENT_ROOT']), "", (dirname(__FILE__)));
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
@@ -197,7 +198,7 @@ class GenerateJSCode
             "INTERMediatorOnPage.browserCompatibility",
             "function(){return ", arrayToJS($browserCompatibility, ''), ";}");
 
-        $remoteAddr = filter_input(INPUT_SERVER, 'REMOTE_ADDR');
+        $remoteAddr = filter_var($_SERVER['REMOTE_ADDR']);
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
             $remoteAddr = '0.0.0.0';
         }
@@ -310,12 +311,12 @@ class GenerateJSCode
         $bi2phpDir = $currentDir . 'lib' . DIRECTORY_SEPARATOR . 'bi2php' . DIRECTORY_SEPARATOR;
         $content = '';
         $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
         $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-UI.js');

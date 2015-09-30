@@ -27,11 +27,15 @@ Ver.5.3 (in development)
 - LDAPAuth class can report errors.
 - INTER-Mediator version can be described in the 'metadata.json' file, and dist-docs/build.sh
   can update the metadata.json.
+- When the local context is stored in sessionStorage, the search and hash sections of the url of document
+  are eliminated from the key of storage item.
 - All header description of source files are updated, and build.sh was adapted them.
 - Update buster.js and package.json for unit testing.
 - [BUG FIX] Fix detection of params.php file.
 - [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
 - [BUG FIX] Modify INTERMediator.totalRecordCount after IMLibPageNavigation.deleteRecordFromNavi method.
+- [BUG FIX] Fix detecting the Post Only Mode when the value of the enclosure's data-im-control element
+  is "enclosure post".
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.
