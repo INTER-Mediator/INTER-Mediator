@@ -2036,6 +2036,9 @@ INTERMediator = {
             delete value[contextName];
             INTERMediator.additionalCondition = value;
             IMLibLocalContext.archive();
+        } else {
+            INTERMediator.additionalCondition = {};
+            IMLibLocalContext.archive();
         }
     },
 
