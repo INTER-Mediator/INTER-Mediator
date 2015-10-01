@@ -65,6 +65,9 @@ class DataConverter_MySQLDateTime
 
     function converterFromUserToDB($str)
     {
+        if ($str == "") {
+            return null;
+        }
         $dtAr = date_parse(str_replace('.', '-', $str));
         if ($dtAr === false) return $str;
         $dt = '';
