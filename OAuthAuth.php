@@ -14,76 +14,178 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-// Accept redirect all after confirmation.
-
-OAuthAuth::afterAuth();
+require_once("IMUtil.php");
 
 class OAuthAuth
 {
-    public static function afterAuth()
+    private $baseURL;
+    private $getTokenURL;
+    private $getInfoURL;
+    private $clientId;
+    private $clientSecret;
+    private $redirectURL;
+    private $infoScope;
+    private $errorMessage = array();
+    private $jsCode = '';
+    private $id_token;
+
+    public function __construct($service)
     {
+        switch (strtolower($service)) {
+            case "google":
+                $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
+                $this->getTokenURL = 'https://accounts.google.com/o/oauth2/token';
+                $this->getInfoURL = 'https://www.googleapis.com/oauth2/v1/userinfo';
+                $this->infoScope = array('openid', 'profile', 'email');
+
+                /* Set up for Google
+                 * 1. Go to https://console.developers.google.com.
+                 * 2. Create a project.
+                 */
+                break;
+            default:
+                break;
+        }
+    }
+
+    public function oAuthBaseURL()
+    {
+        return $this->baseURL;
+    }
+
+    public function infoScope()
+    {
+        return $this->infoScope;
+    }
+
+    public function javaScriptCode()
+    {
+        return $this->jsCode;
+    }
+
+    public function errorMessages()
+    {
+        return implode(", ", $this->errorMessage);
+    }
+
+    public function afterAuth()
+    {
+        // The following variables come from param.php file.
         $oAuthClientID = null;
         $oAuthClientSecret = null;
-        $oAuthBaseURL = null;
-        $oAuthTokenURL = null;
         $oAuthRedirect = null;
-        $oAuthScope = array();
-        /*
-         * Decide the params.php file and load it.
-         */
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
+        $oAuthStoring = null;
+        $oAuthRealm = null;
+
+        $params = IMUtil::getFromParamsPHPFile(
+            array(
+                "oAuthClientID",
+                "oAuthClientSecret",
+                "oAuthRedirect",
+                "oAuthStoring",
+                "oAuthRealm"),
+            true);
+        if ($params === false) {
+            $this->errorMessage[] = "Wrong Paramters";
+            return false;
+        }
+        $this->clientId = $params["oAuthClientID"];
+        $this->clientSecret = $params["oAuthClientSecret"];
+        $this->redirectURL = $params["oAuthRedirect"];
+
+        if (!isset($_REQUEST['code'])) {
+            $this->errorMessage[] = "This isn't redirected from the providers site.";
+            return false;
+        }
+        $tokenID = $this->decodeIDToken($_REQUEST['code']);
+        if ($tokenID === false) {
+            return false;
         }
 
-        $code = $_REQUEST['code'];
-        $params = array(
+        $dbProxy = new DB_Proxy();
+        $dbProxy->initialize(null, null, null, false);
+        $dbProxy->dbSettings->setLDAPExpiringSeconds(3600 * 24);
+
+        $userId = $dbProxy->dbClass->authSupportGetUserIdFromUsername($tokenID["username"]);
+
+        $password = '';
+        for ($i = 0; $i < 30; $i++) {
+            $password .= chr(32 + rand(0, 127 - 32));
+        }
+        $salt = $dbProxy->generateSalt();
+        $hexSalt = bin2hex($salt);
+        $credential = sha1($password . $salt) . $hexSalt;
+        var_dump($credential);
+        $returnValue = $dbProxy->dbClass->authSupportCreateUser(
+            $tokenID["username"], $credential, true, 'dummy');
+
+        $credKey = (strlen($_COOKIE["_im_oauth_realm"]) > 0) ? ("_" . $_COOKIE["_im_oauth_realm"]) : "";
+        $oAuthStoring = isset($params["oAuthStoring"]) ? $params["oAuthStoring"] : "";
+        $oAuthStoring = $oAuthStoring == 'session-storage' ? "true" : "false";
+        $oAuthRealm = isset($params["oAuthRealm"]) ? $params["oAuthRealm"] : "";
+
+        $this->jsCode = '';
+        $this->jsCode .= 'function setAnyStore(key, val) {';
+        $this->jsCode .= "var isSession = {$oAuthStoring}, realm = '{$oAuthRealm}';";
+        $this->jsCode .= 'var d, isFinish = false, ex = 3600, authKey;';
+        $this->jsCode .= 'd = new Date();d.setTime(d.getTime() + ex * 1000);';
+        $this->jsCode .= 'authKey = key + ((realm.length > 0) ? ("_" + realm) : "");';
+        $this->jsCode .= 'try {if (isSession){sessionStorage.setItem(authKey, val);isFinish = true;}}';
+        $this->jsCode .= 'catch(ex){}';
+        $this->jsCode .= 'if (!isFinish) {document.cookie = authKey + "=" + encodeURIComponent(val)';
+        $this->jsCode .= '+ ";path=/;" + "max-age=" + ex + ";expires=" + d.toUTCString() + ";"';
+        $this->jsCode .= '+ ((document.URL.substring(0, 8) == "https://") ? "secure;" : "")}}';
+
+        $this->jsCode .= "setAnyStore('_im_username{$credKey}', '" . $tokenID["username"] . "');";
+        $this->jsCode .= "setAnyStore('_im_credential{$credKey}', '" . $credential . "');";
+        $this->jsCode .= "setAnyStore('_im_openidtoken{$credKey}', '" . $this->id_token . "');";
+        //$this->jsCode .= "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
+
+        return true;
+    }
+
+    private function decodeIDToken($code)
+    {
+        $tokenparams = array(
             'code' => $code,
-            'client_id' => $oAuthClientID,
-            'client_secret' => $oAuthClientSecret,
-            'redirect_uri' => $oAuthRedirect,
+            'client_id' => $this->clientId,
+            'client_secret' => $this->clientSecret,
+            'redirect_uri' => $this->redirectURL,
             'grant_type' => 'authorization_code'
         );
 
         if (function_exists('curl_init')) {
-            $session = curl_init($oAuthTokenURL);
+            $session = curl_init($this->getTokenURL);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-//            curl_setopt($session, CURLOPT_HTTPHEADER, array(
-//                'Content-length: ' + strlen($params)
-//            ));
             curl_setopt($session, CURLOPT_POST, true);
-            curl_setopt($session, CURLOPT_POSTFIELDS, $params);
+            curl_setopt($session, CURLOPT_POSTFIELDS, $tokenparams);
             $content = curl_exec($session);
             curl_close($session);
         } else {
-            echo "error";
-            exit;
+            $this->errorMessage[] = "Coundn't get information with the access token.";
+            return false;
         }
         $response = json_decode($content);
-        /* $response: {
+        /* The example of Google in case of no error.
+        $response: {
         "access_token" : "ya29.9AG4QGFUvt7Daoys1BHPszeXqrw3zPLMmYIdCxQ7eS3fGhOSE3LwZAUOskW-eowbDZIA",
         "token_type" : "Bearer",
         "expires_in" : 3599,
-        "id_token" : "eyJhbGciOiJSUzI1.....OZm9XnugiIg" }
-         */
+        "id_token" : "eyJhbGciOiJSUzI1.....OZm9XnugiIg" } */
 
         if (isset($response->error)) {
-            /* for example
+            /* The example of Google in case of error
             { "error" : "invalid_grant", "error_description" : "Code was already redeemed." }
             */
-            echo "Error: {$response->error}<br/>Description: {$response->error_description}";
-            exit;
+            $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
+            return false;
         }
+        $this->id_token = $response->id_token;
         $jWebToken = explode(".", $response->id_token);
-        for ($i = 0 ; $i < count($jWebToken) ; $i++ ) {
-            var_dump($i);
-            var_dump(base64_decode($jWebToken[$i]));
+        for ($i = 0; $i < count($jWebToken); $i++) {
+            $jWebToken[$i] = json_decode(base64_decode($jWebToken[$i]));
         }
-        /*
+        /* The example for Google: First two elements of $jWebToken
          * {
          * "alg":"RS256",
          * "kid":"0352564c1a4ac6c5097d4c5dee238b6de2cdf16e"}
@@ -96,14 +198,15 @@ class OAuthAuth
          * "azp":"1044341943970-3q053ucl9i8882m56fpm6dqg93julckv.apps.googleusercontent.com",
          * "email":"msyk.nii83@gmail.com",
          * "iat":1442762077,
-         * "exp":1442765677}
-         */
+         * "exp":1442765677} */
+        $username = $jWebToken[1]->sub . "@" . $jWebToken[1]->iss;
+        $email = $jWebToken[1]->email;
 
         $userInfo = json_decode(
-            file_get_contents('https://www.googleapis.com/oauth2/v1/userinfo?' .
-                'access_token=' . $response->access_token)
+            $userInfo = file_get_contents(
+                $this->getInfoURL . '?access_token=' . $response->access_token)
         );
-        /* var_dump($userInfo);
+        /* The example of $userInfo about Google.
          object(stdClass)#2 (10) {
         ["id"]=> string(21) "113160982833865516666"
         ["email"]=> string(20) "msyk.nii83@gmail.com"
@@ -115,6 +218,13 @@ class OAuthAuth
         ["picture"]=> string(92) "https://lh5.googleusercontent.com/-pVUMKEVd13Y/AAAAAAAAAAI/AAAAAAAAAD8/cn7jkZa6adc/photo.jpg"
         ["gender"]=> string(4) "male"
         ["locale"]=> string(2) "ja" } */
-    }
 
+        $realname = $userInfo->name;
+
+        return array(
+            "realname" => $realname,
+            "username" => $username,
+            "email" => $email,
+        );
+    }
 }

@@ -13,6 +13,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+$dbClass = "PDO";
 /*
  * common settings for DB_FileMaker_FX and DB_PDO:
  */
@@ -129,10 +130,9 @@ $pusherParameters = array(
 //$ldapExpiringSeconds = 1800;
 
 /* OAuth Support */
+$oAuthProvider = "Google";
 $oAuthClientID = '1044341943970-3q053ucl9i8882m56fpm6dqg93julckv.apps.googleusercontent.com';
 $oAuthClientSecret = 'lC2edOOpXZBpNJ9s0Iha8Nez';
-$oAuthBaseURL = 'https://accounts.google.com/o/oauth2/auth';
-$oAuthTokenURL = 'https://accounts.google.com/o/oauth2/token';
-$oAuthRedirect = 'http://localhost:7001/OAuthAuth.php';
-    //'http://aa106ctz9i.smartrelease.jp/keihi/INTER-Mediator/OAuthAuth.php';
-$oAuthScope = array('openid', 'profile', 'email');
+$oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
+$oAuthStoring = 'session-storage';
+$oAuthRealm = 'Sample_Auth/MySQL_definitions';
