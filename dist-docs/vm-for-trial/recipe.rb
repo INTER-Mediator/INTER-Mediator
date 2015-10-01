@@ -63,7 +63,7 @@ if node[:platform] == 'ubuntu'
   execute 'apt-get update' do
     command 'apt-get update'
   end
-  
+
   if node[:virtualization][:system] != 'docker'
     execute 'aptitude full-upgrade' do
       command 'aptitude full-upgrade --assume-yes'
@@ -1158,6 +1158,7 @@ EOF
 /usr/local/bin/buster-server &
 /bin/sleep 5
 /usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
+/usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
 exit 0
 EOF
   end
@@ -1168,5 +1169,67 @@ EOF
 
   execute 'dpkg-reconfigure -f noninteractive keyboard-configuration' do
     command 'dpkg-reconfigure -f noninteractive keyboard-configuration'
+  end
+end
+
+
+# Install Selenium WebDriver
+if node[:platform] == 'ubuntu'
+  package 'xvfb' do
+    action :install
+  end
+  package 'x11-xkb-utils' do
+    action :install
+  end
+  package 'xfonts-100dpi' do
+    action :install
+  end
+  package 'xfonts-75dpi' do
+    action :install
+  end
+  package 'xfonts-cyrillic' do
+    action :install
+  end
+  package 'xfonts-scalable' do
+    action :install
+  end
+  package 'x11-xkb-utils' do
+    action :install
+  end
+  package 'xserver-xorg-core' do
+    action :install
+  end
+  package 'dbus-x11' do
+    action :install
+  end
+  package 'libfontconfig1-dev' do
+    action :install
+  end
+  package 'libexif12' do
+    action :install
+  end
+  package 'xbase-clients' do
+    action :install
+  end
+  package 'ruby2.0' do
+    action :install
+  end
+  package 'ruby2.0-dev' do
+    action :install
+  end
+  execute 'gem2.0 install rspec --no-ri --no-rdoc' do
+    command 'gem2.0 install rspec --no-ri --no-rdoc'
+  end
+  execute 'gem2.0 install selenium-webdriver --no-ri --no-rdoc' do
+    command 'gem2.0 install selenium-webdriver --no-ri --no-rdoc'
+  end
+  package 'firefox' do
+    action :install
+  end
+  package 'chromium-browser' do
+    action :install
+  end
+  execute 'npm install -g chromedriver' do
+    command 'npm install -g chromedriver'
   end
 end
