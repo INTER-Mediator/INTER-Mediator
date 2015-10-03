@@ -187,11 +187,11 @@ INTERMediatorOnPage = {
     },
 
     defaultBackgroundImage: "url(data:image/png;base64," +
-        "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
-        "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ" +
-        "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA" +
-        "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-        "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
+    "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
+    "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ" +
+    "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA" +
+    "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
+    "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
 
     defaultBackgroundColor: null,
     loginPanelHTML: null,
@@ -530,20 +530,23 @@ INTERMediatorOnPage = {
         }
 
         for (agent in positiveList) {
-            if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
-                matchAgent = true;
-                if (positiveList[agent] instanceof Object) {
-                    for (os in positiveList[agent]) {
-                        if (navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
-                            matchOS = true;
-                            versionStr = positiveList[agent][os];
-                            break;
+            if (positiveList.hasOwnProperty(agent)) {
+                if (navigator.userAgent.toUpperCase().indexOf(agent.toUpperCase()) > -1) {
+                    matchAgent = true;
+                    if (positiveList[agent] instanceof Object) {
+                        for (os in positiveList[agent]) {
+                            if (positiveList[agent].hasOwnProperty(os)
+                                && navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
+                                matchOS = true;
+                                versionStr = positiveList[agent][os];
+                                break;
+                            }
                         }
+                    } else {
+                        matchOS = true;
+                        versionStr = positiveList[agent];
+                        break;
                     }
-                } else {
-                    matchOS = true;
-                    versionStr = positiveList[agent];
-                    break;
                 }
             }
         }
@@ -718,8 +721,8 @@ INTERMediatorOnPage = {
         }
         if (enclosureNode != null) {
             nodeIds = [];
-            if (Array.isArray(enclosureNode))   {
-                for (i = 0 ; i < enclosureNode.length ; i++)    {
+            if (Array.isArray(enclosureNode)) {
+                for (i = 0; i < enclosureNode.length; i++) {
                     seekNode(enclosureNode[i], imDefinition);
                 }
             } else {
