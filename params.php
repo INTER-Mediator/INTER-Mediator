@@ -130,9 +130,7 @@ $pusherParameters = array(
 //$ldapExpiringSeconds = 1800;
 
 /* OAuth Support */
-$oAuthProvider = "Google";
-$oAuthClientID = '1044341943970-3q053ucl9i8882m56fpm6dqg93julckv.apps.googleusercontent.com';
-$oAuthClientSecret = 'lC2edOOpXZBpNJ9s0Iha8Nez';
-$oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
-$oAuthStoring = 'session-storage';
-$oAuthRealm = 'Sample_Auth/MySQL_definitions';
+//$oAuthProvider = "Google";
+//$oAuthClientID = '1084721348801-jv3hvi4shcmr4j7unuhioq8k2mm47n6s.apps.googleusercontent.com';
+//$oAuthClientSecret = 'hV5TZD8x108K1Zac4RfZopur';
+//$oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';

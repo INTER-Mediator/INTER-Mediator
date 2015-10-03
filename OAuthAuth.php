@@ -74,17 +74,9 @@ class OAuthAuth
         $oAuthClientID = null;
         $oAuthClientSecret = null;
         $oAuthRedirect = null;
-        $oAuthStoring = null;
-        $oAuthRealm = null;
 
         $params = IMUtil::getFromParamsPHPFile(
-            array(
-                "oAuthClientID",
-                "oAuthClientSecret",
-                "oAuthRedirect",
-                "oAuthStoring",
-                "oAuthRealm"),
-            true);
+            array("oAuthClientID", "oAuthClientSecret", "oAuthRedirect",), true);
         if ($params === false) {
             $this->errorMessage[] = "Wrong Paramters";
             return false;
@@ -105,24 +97,13 @@ class OAuthAuth
         $dbProxy = new DB_Proxy();
         $dbProxy->initialize(null, null, null, false);
         $dbProxy->dbSettings->setLDAPExpiringSeconds(3600 * 24);
+        $credential = $dbProxy->generateCredential(30);
+        $dbProxy->dbClass->authSupportOAuthUserHandling($tokenID["username"], $credential);
+        $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
 
-        $userId = $dbProxy->dbClass->authSupportGetUserIdFromUsername($tokenID["username"]);
-
-        $password = '';
-        for ($i = 0; $i < 30; $i++) {
-            $password .= chr(32 + rand(0, 127 - 32));
-        }
-        $salt = $dbProxy->generateSalt();
-        $hexSalt = bin2hex($salt);
-        $credential = sha1($password . $salt) . $hexSalt;
-        var_dump($credential);
-        $returnValue = $dbProxy->dbClass->authSupportCreateUser(
-            $tokenID["username"], $credential, true, 'dummy');
-
-        $credKey = (strlen($_COOKIE["_im_oauth_realm"]) > 0) ? ("_" . $_COOKIE["_im_oauth_realm"]) : "";
-        $oAuthStoring = isset($params["oAuthStoring"]) ? $params["oAuthStoring"] : "";
+        $oAuthStoring = isset($_COOKIE["_im_oauth_storing"]) ? $_COOKIE["_im_oauth_storing"] : "";
         $oAuthStoring = $oAuthStoring == 'session-storage' ? "true" : "false";
-        $oAuthRealm = isset($params["oAuthRealm"]) ? $params["oAuthRealm"] : "";
+        $oAuthRealm = isset($_COOKIE["_im_oauth_realm"]) ? $_COOKIE["_im_oauth_realm"] : "";
 
         $this->jsCode = '';
         $this->jsCode .= 'function setAnyStore(key, val) {';
@@ -136,12 +117,15 @@ class OAuthAuth
         $this->jsCode .= '+ ";path=/;" + "max-age=" + ex + ";expires=" + d.toUTCString() + ";"';
         $this->jsCode .= '+ ((document.URL.substring(0, 8) == "https://") ? "secure;" : "")}}';
 
-        $this->jsCode .= "setAnyStore('_im_username{$credKey}', '" . $tokenID["username"] . "');";
-        $this->jsCode .= "setAnyStore('_im_credential{$credKey}', '" . $credential . "');";
-        $this->jsCode .= "setAnyStore('_im_openidtoken{$credKey}', '" . $this->id_token . "');";
-        //$this->jsCode .= "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
+        $this->jsCode .= "setAnyStore('_im_username', '" . $tokenID["username"] . "');";
+        $this->jsCode .= "setAnyStore('_im_credential', '" . $credential . "');";
+        $this->jsCode .= "setAnyStore('_im_openidtoken', '" . $this->id_token . "');";
+        if (count($this->errorMessage) < 1) {
+            $this->jsCode .= "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
+            return true;
+        }
 
-        return true;
+        return false;
     }
 
     private function decodeIDToken($code)

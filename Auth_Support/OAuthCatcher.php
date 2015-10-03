@@ -13,11 +13,12 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+// The variable pathToIM has to point the INTER-Mediator directory.
 $pathToIM = "..";   // Modify this to match your directories.
+//---------------------------------------------
 
 require_once("{$pathToIM}/INTER-Mediator.php");
 spl_autoload_register('loadClass');
-
 $providerKey = "oAuthProvider";
 $params = IMUtil::getFromParamsPHPFile(array($providerKey));
 if ($params === false) {
@@ -45,5 +46,7 @@ header("Content-Type: text/html");
 <body>
 Provider: <?php echo $params[$providerKey]; ?><br>
 Status: <?php echo $err; ?>
+
+<?php echo $err; ?>
 </body>
 </html>

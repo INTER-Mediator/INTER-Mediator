@@ -1086,6 +1086,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return sha1($pw . $salt) . bin2hex($salt);
     }
 
+    function generateCredential($digit) {
+        $password = '';
+        for ($i = 0; $i < $digit; $i++) {
+            $password .= chr(rand(32, 127));
+        }
+        return $this->convertHashedPassword($password);
+    }
     /**
      * @param $username
      * @return string

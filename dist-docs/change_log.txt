@@ -20,6 +20,7 @@ Ver.5.3 (in development)
   for the first parameter.
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
   in the Auth_Support directory.
+- The credential for authentication can be stored in the sessionStorage.
 - Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
 - Add Dockerfile for CircleCI.
 - Be able to customize a style of the file uploading area when using the file upload component.

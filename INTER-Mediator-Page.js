@@ -547,9 +547,10 @@ INTERMediatorOnPage = {
         if (this.isOAuthAvailable && oAuthButton) {
             oAuthButton.onclick = function () {
                 var authURL;
-                INTERMediatorOnPage.setCookieDomainWide("_im_oauth_backurl", location.href);
-                INTERMediatorOnPage.setCookieDomainWide("_im_oauth_realm", INTERMediatorOnPage.realm);
-                INTERMediatorOnPage.setCookieDomainWide("_im_oauth_expired", INTERMediatorOnPage.authExpired);
+                INTERMediatorOnPage.setCookieDomainWide("_im_oauth_backurl", location.href, true);
+                INTERMediatorOnPage.setCookieDomainWide("_im_oauth_realm", INTERMediatorOnPage.realm, true);
+                INTERMediatorOnPage.setCookieDomainWide("_im_oauth_expired", INTERMediatorOnPage.authExpired, true);
+                INTERMediatorOnPage.setCookieDomainWide("_im_oauth_storing", INTERMediatorOnPage.authStoring, true);
                 authURL = INTERMediatorOnPage.oAuthBaseURL
                     + '?scope=' + encodeURIComponent(INTERMediatorOnPage.oAuthScope)
                     + '&redirect_uri=' + encodeURIComponent(INTERMediatorOnPage.oAuthRedirect)
@@ -911,9 +912,11 @@ INTERMediatorOnPage = {
         this.setCookieWorker(this.getKeyWithRealm(key), val, false, INTERMediatorOnPage.authExpired);
     },
 
-    setCookieDomainWide: function (key, val) {
+    setCookieDomainWide: function (key, val, noRealm) {
         "use strict";
-        this.setCookieWorker(this.getKeyWithRealm(key), val, true, INTERMediatorOnPage.authExpired);
+        var realKey;
+        realKey = (noRealm === true) ? key : this.getKeyWithRealm(key);
+        this.setCookieWorker(realKey, val, true, INTERMediatorOnPage.authExpired);
     },
 
     setCookieWorker: function (key, val, isDomain, expired) {
