@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>function setAnyStore(key, val) {
+        var isSession = true, realm = "";
+        var d, isFinish = false, ex = 3600, authKey;
+        d = new Date();
+        d.setTime(d.getTime() + ex * 1000);
+        authKey = key + ((realm.length > 0) ? ("_" + realm) : "");
+        try {
+            if (isSession) {
+                sessionStorage.setItem(authKey, val);
+                isFinish = true;
+            }
+        }
+        if (!isFinish) {
+            document.cookie = authKey + "=" + encodeURIComponent(val)
+                    + ";path=/;" + "max-age=" + ex + ";expires="
+                    + d.toGMTString() + ";"
+                    + ((document.URL.substring(0, 8) == "https://") ? "secure;" : "");
+        }
+    }
+    setAnyStore('_im_username', '113160982833865516666@accounts.google.com');
+    setAnyStore('_im_credential', 'def091f17219381ea94af7e4609f5c0c44015b314f253e27');
+    setAnyStore('_im_openidtoken', 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImI2ODdlMGM4YzlhOGMzZDNkMzY4M2IyMDM0OWQ3Yzk4ZmE1N2EyY2IifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXRfaGFzaCI6IjNyRjdxd3Q2Z2dpS3NJRTNwQ0txSlEiLCJhdWQiOiIxMDQ0MzQxOTQzOTcwLTNxMDUzdWNsOWk4ODgybTU2ZnBtNmRxZzkzanVsY2t2LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTEzMTYwOTgyODMzODY1NTE2NjY2IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF6cCI6IjEwNDQzNDE5NDM5NzAtM3EwNTN1Y2w5aTg4ODJtNTZmcG02ZHFnOTNqdWxja3YuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJlbWFpbCI6Im1zeWsubmlpODNAZ21haWwuY29tIiwiaWF0IjoxNDQzNTQ2NTM3LCJleHAiOjE0NDM1NTAxMzd9.k11fqiPba6NvY3Wa_HHyNWQhZA5uSsE4_jk6jwUDczAQPNEfZKgNFaXgMLNe2D0kg68_lSbeO64FZFbd7O6Yuq_abtNyCr2nOvVd_sTVhZYBgwHuihCHdcE8luqb_yfHArbqWFGIGa_orG1O_X4BiUvJNkhH8aN_gsAAG72VZ6VoQ07MLMVQCyULwLnpsBKJfwqct5yCcjWNMOYkXvb5BVCQzHNfcqXB_XVYzAoM0DkkG9LYeTNie8v3VCeGtv_iXNavW963sRN21vtv2HA4eUq4rfYjwTMrPuneF99Ojrwx6tfs-JBvEE0smXpo5YY6z7EyN9fSdA_B1FCMysCvXA');</script>
+</head>
+string(48) "c29e11b51d4d68015df15590b20a8e4394378e736d727c34"
+<html>
+<head>
+    <script type="text/javascript">
+        function setAnyStore(key, val) {
+            var isSession = false, realm = '';
+            var d, isFinish = false, ex = 3600, authKey;
+            d = new Date();
+            d.setTime(d.getTime() + ex * 1000);
+            authKey = key + ((realm.length > 0) ? ("_" + realm) : "");
+            try { if (isSession) { sessionStorage.setItem(authKey, val);isFinish = true;}}
+            catch (ex) {}
+            if (!isFinish) {
+                document.cookie = authKey + "=" + encodeURIComponent(val) + ";path=/;" + "max-age=" + ex + ";expires=" + d.toUTCString() + ";" + ((document.URL.substring(0, 8) == "https://")
+            }
+        }
+        setAnyStore('_im_username', '113160982833865516666@accounts.google.com');
+        setAnyStore('_im_credential', 'c29e11b51d4d68015df15590b20a8e4394378e736d727c34');
+        setAnyStore('_im_openidtoken', 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImI2ODdlMGM4YzlhOGMzZDNkMzY4M2IyMDM0OWQ3Yzk4ZmE1N2EyY2IifQ.eyJpc3MiOiJhY2NvdW50cy5nb29nbGUuY29tIiwiYXRfaGFzaCI6IkVfR2lrQVlxeFRSLW9WTXp4QU4zaXciLCJhdWQiOiIxMDQ0MzQxOTQzOTcwLTNxMDUzdWNsOWk4ODgybTU2ZnBtNmRxZzkzanVsY2t2LmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwic3ViIjoiMTEzMTYwOTgyODMzODY1NTE2NjY2IiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF6cCI6IjEwNDQzNDE5NDM5NzAtM3EwNTN1Y2w5aTg4ODJtNTZmcG02ZHFnOTNqdWxja3YuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJlbWFpbCI6Im1zeWsubmlpODNAZ21haWwuY29tIiwiaWF0IjoxNDQzNTQ3OTQ1LCJleHAiOjE0NDM1NTE1NDV9.Mh1iUbh6iG5TzVA8BDFUgt55wU7qVZ0Hhs2IheWZ_Lvy4h_gcbb7cp3tylEa6TXBRO3nFK86EO4SH9y4ZBfTOhhHzuyMUBoE1pLOswP7wnSlvoi6eAXaYEIVCUiqcWcoKdg1YFhSHpuSQdns-RPb9-Ep6n5AnuJkN0mcc9uXvWAmFuFRDm-YrpDWQgdLj1hI6GSFGXB5mKj5-FC5m-ED5Z0QmY6aACvPqS4EECVcFP1YNQFSYyCi1UWs8mywZaoOnFGUJItlzwoi0h7wJNY3wI_BXhsuZ5PA0pXgOUtSjW96MCBUOThIXar6vZW1Fgc2SBywFbYJQ_dTZhjW4Yb3sA');
+    </script>
+</head>
+<body>
+Provider: Google<br>
+Status: No Error
+</body>
+</html>

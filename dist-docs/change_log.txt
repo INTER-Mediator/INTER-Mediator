@@ -11,12 +11,16 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.3 (in development)
-- SQL aggregation support. The aggregation-select, aggregation-from, aggregation-group-by key are added.
+- SQL aggregation can be defined as a read-only context. The aggregation-select,
+  aggregation-from, aggregation-group-by key are added.
 - MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
   for PHP).
 - Update phpseclib to version 1.0.0.
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
+- Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
+  in the Auth_Support directory.
+- The credential for authentication can be stored in the sessionStorage.
 - Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
 - Add Dockerfile for CircleCI.
 - Be able to customize a style of the file uploading area when using the file upload component.
@@ -27,6 +31,8 @@ Ver.5.3 (in development)
   replace the value. The default behavior is matching, and set the 3rd parameter to true for appending.
 - When the local context is stored in sessionStorage, the search and hash sections of the url of document
   are eliminated from the key of storage item.
+- The 'storing' key in 'authentication' in the second option parameter of IM_Entry function
+  supports the 'session-storage' key, and it stores credentials into sessionStorage object.
 - All header description of source files are updated, and build.sh was adapted them.
 - Update buster.js and package.json for unit testing.
 - [BUG FIX] Fix detection of params.php file.

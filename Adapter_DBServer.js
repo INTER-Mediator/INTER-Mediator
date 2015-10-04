@@ -175,7 +175,7 @@ INTERMediator_DBAdapter = {
         if (!accessURL.match(/access=challenge/)) {
             INTERMediatorOnPage.authCount = 0;
         }
-        INTERMediatorOnPage.storeCredencialsToCookie();
+        INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
         INTERMediatorOnPage.notifySupport = notifySupport;
         return {
             dbresult: dbresult,
@@ -216,7 +216,7 @@ INTERMediator_DBAdapter = {
                     INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
                 INTERMediatorOnPage.authHashedPassword =
                     SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
-                INTERMediatorOnPage.storeCredencialsToCookie();
+                INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
             }
         } catch (e) {
             return false;
@@ -304,7 +304,7 @@ INTERMediator_DBAdapter = {
                             throw "_im_requath_request_";
                         }
                         INTERMediatorOnPage.authCount = 0;
-                        INTERMediatorOnPage.storeCredencialsToCookie();
+                        INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
                         doItOnFinish(dbresult);
                         break;
                 }
