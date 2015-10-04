@@ -1479,6 +1479,39 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $timeValue;
     }
 
+    function authSupportOAuthUserHandling($username, $credential) {
+        $user_id = $this->authSupportGetUserIdFromUsername($username);
+
+        $userTable = $this->dbSettings->getUserTable();
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+
+        $currentDTFormat = $this->currentDTString();
+        if ($user_id > 0) {
+            $setClause = "limitdt=" . $this->link->quote($currentDTFormat);
+            $setClause .= ",hashedpasswd=" . $this->link->quote($credential);
+            $sql = "UPDATE {$userTable} SET {$setClause} WHERE id=" . $user_id;
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Update:' . $sql);var_dump('Update:' . $sql);
+                return false;
+            }
+        } else {
+            $sql = "INSERT INTO {$userTable} (username, hashedpasswd,limitdt) VALUES "
+                . "({$this->link->quote($username)},"
+                . " {$this->link->quote($credential)}, "
+                . " {$this->link->quote($currentDTFormat)})";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Insert:' . $sql);
+                return false;
+            }
+        }
+        return true;
+    }
     /**
      * @param $username
      * @return bool
@@ -1579,7 +1612,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     return false;
                 }
                 if ($timeUp) {
-                    //    $setClause .= ",hashedpasswd=" . $this->link->quote($hashedpassword);
                     $this->logger->setDebugMessage("LDAP cached account time over.");
                     return false;
                 }

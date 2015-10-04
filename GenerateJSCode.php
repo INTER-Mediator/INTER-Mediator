@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class GenerateJSCode
 {
     public function __construct()
@@ -43,22 +43,30 @@ class GenerateJSCode
         $q = '"';
         $generatedPrivateKey = null;
         $passPhrase = null;
-
-        /*
-         * Decide the params.php file and load it.
-         */
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-        $currentDirParam = $currentDir . 'params.php';
-        $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
-        if (file_exists($parentDirParam)) {
-            include($parentDirParam);
-        } else if (file_exists($currentDirParam)) {
-            include($currentDirParam);
-        }
+        $browserCompatibility = null;
+        $scriptPathPrefix = null;
+        $scriptPathSuffix = null;
+        $oAuthProvider = null;
+        $oAuthClientID = null;
+        $oAuthRedirect = null;
+        $params = IMUtil::getFromParamsPHPFile(array(
+            "generatedPrivateKey", "passPhrase", "browserCompatibility",
+            "scriptPathPrefix", "scriptPathSuffix",
+            "oAuthProvider", "oAuthClientID", "oAuthRedirect",
+        ), true);
+        $generatedPrivateKey = $params["generatedPrivateKey"];
+        $passPhrase = $params["passPhrase"];
+        $browserCompatibility = $params["browserCompatibility"];
+        $scriptPathPrefix = $params["scriptPathPrefix"];
+        $scriptPathSuffix = $params["scriptPathSuffix"];
+        $oAuthProvider = $params["oAuthProvider"];
+        $oAuthClientID = $params["oAuthClientID"];
+        $oAuthRedirect = $params["oAuthRedirect"];
 
         /*
          * Read the JS programs regarding by the developing or deployed.
          */
+        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         if (file_exists($currentDir . 'INTER-Mediator-Lib.js')) {
             echo $this->combineScripts($currentDir);
         } else {
@@ -257,10 +265,24 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.isLDAP", $ldap->isActive ? "true" : "false");
         $this->generateAssignJS(
+            "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthProvider) ? "true" : "false");
+        if (isset($oAuthProvider)) {
+            $authObj = new OAuthAuth($oAuthProvider);
+
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthClientID",
+                $q, $oAuthClientID, $q);
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthBaseURL",
+                $q, $authObj->oAuthBaseURL(), $q);
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthRedirect",
+                $q, $oAuthRedirect, $q);
+            $this->generateAssignJS("INTERMediatorOnPage.oAuthScope",
+                $q, implode(' ', $authObj->infoScope()), $q);
+        }
+        $this->generateAssignJS(
             "INTERMediatorOnPage.isNativeAuth",
             (isset($options['authentication'])
-                    && isset($options['authentication']['user'])
-                    && ($options['authentication']['user'][0] === 'database_native')) ? "true" : "false");
+                && isset($options['authentication']['user'])
+                && ($options['authentication']['user'][0] === 'database_native')) ? "true" : "false");
         $this->generateAssignJS(
             "INTERMediatorOnPage.authStoring",
             $q, (isset($options['authentication']) && isset($options['authentication']['storing'])) ?
