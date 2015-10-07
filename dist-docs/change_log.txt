@@ -33,6 +33,7 @@ Ver.5.3 (in development)
   are eliminated from the key of storage item.
 - The 'storing' key in 'authentication' in the second option parameter of IM_Entry function
   supports the 'session-storage' key, and it stores credentials into sessionStorage object.
+- Save NULL to the database when the user's input is empty via DataConverter_MySQLDateTime class.
 - All header description of source files are updated, and build.sh was adapted them.
 - Update buster.js and package.json for unit testing.
 - [BUG FIX] Fix detection of params.php file.
