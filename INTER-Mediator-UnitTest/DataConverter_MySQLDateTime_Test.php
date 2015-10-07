@@ -59,7 +59,7 @@ class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
     
     public function test_converterFromUserToDB()
     {
-        $expected = '';
+        $expected = null;
         $string = '';
         $this->assertSame($expected, $this->dataconverter->converterFromUserToDB($string));
 

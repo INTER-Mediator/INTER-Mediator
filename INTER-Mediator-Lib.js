@@ -1349,5 +1349,15 @@ var IMLibNodeGraph = {
             f(this.nodes[i]);
         }
 
+    },
+
+    decodeOpenIDToken: function ($token) {
+        var header, payload, cert, components = $token.split(".");
+        if (components.length != 3) {
+            return false;
+        }
+        header = Base64.decode(components[0]);
+        payload = Base64.decode(components[1]);
+        cert = Base64.decode(components[2]);
     }
 };
