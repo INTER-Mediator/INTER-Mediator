@@ -36,6 +36,7 @@ Ver.5.3 (in development)
 - Add match() in js-expression-eval-parser.js for the validation rules.
 - All header description of source files are updated, and build.sh was adapted them.
 - Add Dockerfile for CircleCI.
+- Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.
 - [BUG FIX] Fix detection of params.php file.
 - [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
