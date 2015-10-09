@@ -23,6 +23,7 @@ Ver.5.3 (in development)
 - LDAPAuth class can report errors.
 - INTER-Mediator version can be described in the 'metadata.json' file, and dist-docs/build.sh
   can update the metadata.json.
+- Polish code for sending messages. Sending mail for each record.
 - The INTERMediator.addCondition method works not only append conditions but also matching and
   replace the value. The default behavior is matching, and set the 3rd parameter to true for appending.
 - When the local context is stored in sessionStorage, the search and hash sections of the url of document
