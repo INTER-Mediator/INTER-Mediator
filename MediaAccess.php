@@ -99,7 +99,7 @@ class MediaAccess
                 header('X-XSS-Protection: 1; mode=block');
                 header('X-Frame-Options: SAMEORIGIN');
                 $this->outputImage($content);
-            } else { // class
+            } else if (stripos($target, 'class://') === 0) { // class
                 $noscheme = substr($target, 8);
                 $className = substr($noscheme, 0, strpos($noscheme, "/"));
                 $processingObject = new $className();
@@ -290,14 +290,15 @@ class MediaAccess
                     $fieldComponents = explode('=', $decodedComponent);
                     $keyField = $fieldComponents[0];
                     $keyValue = $fieldComponents[1];
-                    $contextName = $pathComponents[$index - 1];
+                    $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
+                } else {
+                    $contextName = $pathComponents[$index];
                 }
             }
             if ($indexKeying == -1) {
-                $this->exitAsError(401);
+            //    $this->exitAsError(401);
             }
-            $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-            $this->contextRecord = $dbProxyInstance->dbClass->getFromDB($contextName);
+            $this->contextRecord = $dbProxyInstance->getFromDB($contextName);
         }
     }
 
