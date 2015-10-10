@@ -21,102 +21,110 @@ class SendMail
 
     public function processing($sendMailParam, $result, $smtpConfig)
     {
-        $ome = new OME();
+        $isError = false;
+        $errorMsg = "";
+        for($i = 0 ; $i < count($result) ; $i++) {
+            $ome = new OME();
 
-        if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
-            $ome->useSendMailParam();
-        }
-        if (isset($sendMailParam['body-wrap']) && $sendMailParam['body-wrap'] > 1) {
-            $ome->setBodyWidth($sendMailParam['body-wrap']);
-        }
+            if (isset($sendMailParam['f-option']) && $sendMailParam['f-option'] === true) {
+                $ome->useSendMailParam();
+            }
+            if (isset($sendMailParam['body-wrap']) && $sendMailParam['body-wrap'] > 1) {
+                $ome->setBodyWidth($sendMailParam['body-wrap']);
+            }
 
-        $altSMTPConfig = $this->getSmtpConfigFromParams();
-        if ($altSMTPConfig !== false && is_array($altSMTPConfig)) {
-            $smtpConfig = $altSMTPConfig;
-        }
-        if (isset($smtpConfig) && is_array($smtpConfig)) {
-            if (isset($smtpConfig['password'])) {
-                $ome->setSmtpInfo(array(
-                    'host' => $smtpConfig['server'],
-                    'port' => $smtpConfig['port'],
-                    'protocol' => 'SMTP_AUTH',
-                    'user' => $smtpConfig['username'],
-                    'pass' => $smtpConfig['password'],
-                ));
-            } else {
-                $ome->setSmtpInfo(array(
-                    'host' => $smtpConfig['server'],
-                    'port' => $smtpConfig['port'],
-                    'protocol' => 'SMTP',
-                ));
+            $altSMTPConfig = $this->getSmtpConfigFromParams();
+            if ($altSMTPConfig !== false && is_array($altSMTPConfig)) {
+                $smtpConfig = $altSMTPConfig;
             }
-        }
-
-        if (isset($sendMailParam['to-constant'])) {
-            $items = explode(",", $sendMailParam['to-constant']);
-            foreach($items as $item) {
-                $ome->appendToField(trim($item));
-            }
-        } else if (isset($result[0]) && isset($sendMailParam['to']) && isset($result[0][$sendMailParam['to']])) {
-            $items = explode(",", $result[0][$sendMailParam['to']]);
-            foreach($items as $item) {
-                $ome->appendToField(trim($item));
-            }
-        }
-        if (isset($sendMailParam['cc-constant'])) {
-            $items = explode(",", $sendMailParam['cc-constant']);
-            foreach($items as $item) {
-                $ome->appendCcField(trim($item));
-            }
-        } else if (isset($result[0]) && isset($sendMailParam['cc']) && isset($result[0][$sendMailParam['cc']])) {
-            $items = explode(",", $result[0][$sendMailParam['cc']]);
-            foreach($items as $item) {
-                $ome->appendCcField(trim($item));
-            }
-        }
-        if (isset($sendMailParam['bcc-constant'])) {
-            $items = explode(",", $sendMailParam['bcc-constant']);
-            foreach($items as $item) {
-                $ome->appendBccField(trim($item));
-            }
-        } else if (isset($result[0]) && isset($sendMailParam['bcc']) && isset($result[0][$sendMailParam['bcc']])) {
-            $items = explode(",", $result[0][$sendMailParam['bcc']]);
-            foreach($items as $item) {
-                $ome->appendBccField(trim($item));
-            }
-        }
-        if (isset($sendMailParam['from-constant'])) {
-            $ome->setFromField($sendMailParam['from-constant']);
-        } else if (isset($result[0]) && isset($sendMailParam['from']) && isset($result[0][$sendMailParam['from']])) {
-            $ome->setFromField($result[0][$sendMailParam['from']]);
-        }
-        if (isset($sendMailParam['subject-constant'])) {
-            $ome->setSubject($sendMailParam['subject-constant']);
-        } else if (isset($result[0]) && isset($sendMailParam['subject']) && isset($result[0][$sendMailParam['subject']])) {
-            $ome->setSubject($result[0][$sendMailParam['subject']]);
-        }
-
-        if (isset($sendMailParam['body-template'])) {
-            $ome->setTemplateAsFile(dirname($_SERVER["SCRIPT_FILENAME"]) . '/' . $sendMailParam['body-template']);
-            $dataArray = array();
-            if (isset($sendMailParam['body-fields'])) {
-                foreach (explode(',', $sendMailParam['body-fields']) as $fieldName) {
-                    if (isset($result[0]) && isset($result[0][$fieldName])) {
-                        $dataArray[] = $result[0][$fieldName];
-                    } else {
-                        $dataArray[] = '';
-                    }
+            if (isset($smtpConfig) && is_array($smtpConfig)) {
+                if (isset($smtpConfig['password'])) {
+                    $ome->setSmtpInfo(array(
+                        'host' => $smtpConfig['server'],
+                        'port' => $smtpConfig['port'],
+                        'protocol' => 'SMTP_AUTH',
+                        'user' => $smtpConfig['username'],
+                        'pass' => $smtpConfig['password'],
+                    ));
+                } else {
+                    $ome->setSmtpInfo(array(
+                        'host' => $smtpConfig['server'],
+                        'port' => $smtpConfig['port'],
+                        'protocol' => 'SMTP',
+                    ));
                 }
             }
-            $ome->insertToTemplate($dataArray);
-        } else if (isset($sendMailParam['body-constant'])) {
-            $ome->setBody($sendMailParam['body-constant']);
-        } else if (isset($result[0]) && $sendMailParam['body'] && isset($result[0][$sendMailParam['body']])) {
-            $ome->setBody($result[0][$sendMailParam['body']]);
-        }
 
-        if (!$ome->send()) {
-            return $ome->getErrorMessage();
+            if (isset($sendMailParam['to-constant'])) {
+                $items = explode(",", $sendMailParam['to-constant']);
+                foreach ($items as $item) {
+                    $ome->appendToField(trim($item));
+                }
+            } else if (isset($result[$i]) && isset($sendMailParam['to']) && isset($result[$i][$sendMailParam['to']])) {
+                $items = explode(",", $result[$i][$sendMailParam['to']]);
+                foreach ($items as $item) {
+                    $ome->appendToField(trim($item));
+                }
+            }
+            if (isset($sendMailParam['cc-constant'])) {
+                $items = explode(",", $sendMailParam['cc-constant']);
+                foreach ($items as $item) {
+                    $ome->appendCcField(trim($item));
+                }
+            } else if (isset($result[$i]) && isset($sendMailParam['cc']) && isset($result[$i][$sendMailParam['cc']])) {
+                $items = explode(",", $result[$i][$sendMailParam['cc']]);
+                foreach ($items as $item) {
+                    $ome->appendCcField(trim($item));
+                }
+            }
+            if (isset($sendMailParam['bcc-constant'])) {
+                $items = explode(",", $sendMailParam['bcc-constant']);
+                foreach ($items as $item) {
+                    $ome->appendBccField(trim($item));
+                }
+            } else if (isset($result[$i]) && isset($sendMailParam['bcc']) && isset($result[$i][$sendMailParam['bcc']])) {
+                $items = explode(",", $result[$i][$sendMailParam['bcc']]);
+                foreach ($items as $item) {
+                    $ome->appendBccField(trim($item));
+                }
+            }
+            if (isset($sendMailParam['from-constant'])) {
+                $ome->setFromField($sendMailParam['from-constant']);
+            } else if (isset($result[$i]) && isset($sendMailParam['from']) && isset($result[$i][$sendMailParam['from']])) {
+                $ome->setFromField($result[$i][$sendMailParam['from']]);
+            }
+            if (isset($sendMailParam['subject-constant'])) {
+                $ome->setSubject($sendMailParam['subject-constant']);
+            } else if (isset($result[$i]) && isset($sendMailParam['subject']) && isset($result[$i][$sendMailParam['subject']])) {
+                $ome->setSubject($result[$i][$sendMailParam['subject']]);
+            }
+
+            if (isset($sendMailParam['body-template'])) {
+                $ome->setTemplateAsFile(dirname($_SERVER["SCRIPT_FILENAME"]) . '/' . $sendMailParam['body-template']);
+                $dataArray = array();
+                if (isset($sendMailParam['body-fields'])) {
+                    foreach (explode(',', $sendMailParam['body-fields']) as $fieldName) {
+                        if (isset($result[$i]) && isset($result[$i][$fieldName])) {
+                            $dataArray[] = $result[$i][$fieldName];
+                        } else {
+                            $dataArray[] = '';
+                        }
+                    }
+                }
+                $ome->insertToTemplate($dataArray);
+            } else if (isset($sendMailParam['body-constant'])) {
+                $ome->setBody($sendMailParam['body-constant']);
+            } else if (isset($result[$i]) && $sendMailParam['body'] && isset($result[$i][$sendMailParam['body']])) {
+                $ome->setBody($result[$i][$sendMailParam['body']]);
+            }
+            if (!$ome->send()) {
+                $isError = true;
+                $errorMsg .= strlen($errorMsg) > 0 ; " / ";
+                $errorMsg .= $ome->getErrorMessage();
+            }
+        }
+        if($isError)    {
+            return $errorMsg;
         }
         return true;
     }
