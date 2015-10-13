@@ -699,6 +699,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             $this->dbSettings->addAssociated($_POST["assoc{$i}"], $_POST["asfield{$i}"], $_POST["asvalue{$i}"]);
         }
+
+        if (isset($options['smtp'])) {
+            $this->dbSettings->setSmtpConfiguration($options['smtp']);
+        }
     }
 
     /*
@@ -775,10 +779,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
         $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
         $paramCryptResponse = isset($_POST['cresponse']) ? $_POST['cresponse'] : "";
-
-        if (isset($options['smtp'])) {
-            $this->dbSettings->setSmtpConfiguration($options['smtp']);
-        }
 
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);
@@ -1086,6 +1086,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return sha1($pw . $salt) . bin2hex($salt);
     }
 
+    function generateCredential($digit) {
+        $password = '';
+        for ($i = 0; $i < $digit; $i++) {
+            $password .= chr(rand(32, 127));
+        }
+        return $this->convertHashedPassword($password);
+    }
     /**
      * @param $username
      * @return string

@@ -11,29 +11,41 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.3 (in development)
-- SQL aggregation support. The aggregation-select, aggregation-from, aggregation-group-by key are added.
+- SQL aggregation can be defined as a read-only context. The aggregation-select,
+  aggregation-from, aggregation-group-by key are added.
 - MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
   for PHP).
 - Update phpseclib to version 1.0.0.
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
+- Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
+  in the Auth_Support directory.
+- The credential for authentication can be stored in the sessionStorage.
 - Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
-- Add Dockerfile for CircleCI.
 - Be able to customize a style of the file uploading area when using the file upload component.
 - LDAPAuth class can report errors.
 - INTER-Mediator version can be described in the 'metadata.json' file, and dist-docs/build.sh
   can update the metadata.json.
+- Polish code for sending messages. Sending mail for each record.
 - The INTERMediator.addCondition method works not only append conditions but also matching and
   replace the value. The default behavior is matching, and set the 3rd parameter to true for appending.
 - When the local context is stored in sessionStorage, the search and hash sections of the url of document
   are eliminated from the key of storage item.
+- The 'storing' key in 'authentication' in the second option parameter of IM_Entry function
+  supports the 'session-storage' key, and it stores credentials into sessionStorage object.
+- Save NULL to the database when the user's input is empty via DataConverter_MySQLDateTime class.
+- Add match() in js-expression-eval-parser.js for the validation rules.
 - All header description of source files are updated, and build.sh was adapted them.
+- Add Dockerfile for CircleCI.
+- Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.
 - [BUG FIX] Fix detection of params.php file.
 - [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
 - [BUG FIX] Modify INTERMediator.totalRecordCount after IMLibPageNavigation.deleteRecordFromNavi method.
 - [BUG FIX] Fix detecting the Post Only Mode when the value of the enclosure's data-im-control element
   is "enclosure post".
+- [BUG FIX] Fix not to remove focus from input field on the Post Only Mode when using validation in some 
+  cases.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.
