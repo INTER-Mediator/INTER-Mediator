@@ -33,13 +33,13 @@ IMLibContextPool = {
         }
         if (portal) {
             for (i = 0; i < this.poolingContexts.length; i++) {
-                if (this.poolingContexts[i].viewName === viewName
-                    && this.poolingContexts[i].binding[recKey] !== undefined
-                    && this.poolingContexts[i].binding[recKey][key] !== undefined
-                    && this.poolingContexts[i].binding[recKey][key][portal] !== undefined
-                    && this.poolingContexts[i].store[recKey] !== undefined
-                    && this.poolingContexts[i].store[recKey][key] !== undefined
-                    && this.poolingContexts[i].store[recKey][key][portal] !== undefined) {
+                if (this.poolingContexts[i].viewName === viewName &&
+                    this.poolingContexts[i].binding[recKey] !== undefined &&
+                    this.poolingContexts[i].binding[recKey][key] !== undefined &&
+                    this.poolingContexts[i].binding[recKey][key][portal] !== undefined &&
+                    this.poolingContexts[i].store[recKey] !== undefined &&
+                    this.poolingContexts[i].store[recKey][key] !== undefined &&
+                    this.poolingContexts[i].store[recKey][key][portal] !== undefined) {
 
                     this.poolingContexts[i].store[recKey][key][portal] = value;
                     targetNodes = this.poolingContexts[i].binding[recKey][key][portal];
@@ -53,11 +53,11 @@ IMLibContextPool = {
             }
         } else {
             for (i = 0; i < this.poolingContexts.length; i++) {
-                if (this.poolingContexts[i].viewName === viewName
-                    && this.poolingContexts[i].binding[recKey] !== undefined
-                    && this.poolingContexts[i].binding[recKey][key] !== undefined
-                    && this.poolingContexts[i].store[recKey] !== undefined
-                    && this.poolingContexts[i].store[recKey][key] !== undefined) {
+                if (this.poolingContexts[i].viewName === viewName &&
+                    this.poolingContexts[i].binding[recKey] !== undefined &&
+                    this.poolingContexts[i].binding[recKey][key] !== undefined &&
+                    this.poolingContexts[i].store[recKey] !== undefined &&
+                    this.poolingContexts[i].store[recKey][key] !== undefined) {
 
                     this.poolingContexts[i].store[recKey][key] = value;
                     targetNodes = this.poolingContexts[i].binding[recKey][key];
@@ -96,6 +96,9 @@ IMLibContextPool = {
         nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
 
         targetName = target === "" ? "_im_no_target" : target;
+        if (this.poolingContexts === null) {
+            return null;
+        }
         for (i = 0; i < this.poolingContexts.length; i++) {
             targetContext = this.poolingContexts[i];
             if (targetContext.contextInfo[idValue] &&
@@ -183,8 +186,8 @@ IMLibContextPool = {
         }
         //parentKeyField = "id";
         for (i = 0; i < this.poolingContexts.length; i++) {
-            if (this.poolingContexts[i].contextName == cName
-                && this.poolingContexts[i].foreignValue[parentKeyField] == fValue) {
+            if (this.poolingContexts[i].contextName == cName &&
+                this.poolingContexts[i].foreignValue[parentKeyField] == fValue) {
                 result.push(this.poolingContexts[i]);
             }
         }
@@ -574,8 +577,8 @@ IMLibContext = function (contextName) {
             }
         }
         if (isDebug === true) {
-            console.log("#lower=" + lower + ",upper=" + upper + ",index=" + index
-                + ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
+            console.log("#lower=" + lower + ",upper=" + upper + ",index=" + index +
+                ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
         }
         return index;
     };
@@ -704,8 +707,8 @@ IMLibContext = function (contextName) {
                     if (this.contextInfo[nodeId] === undefined) {
                         this.contextInfo[nodeId] = {};
                     }
-                    this.contextInfo[nodeId][target == "" ? "_im_no_target" : target]
-                        = {context: this, record: recKey, field: key};
+                    this.contextInfo[nodeId][target == "" ? "_im_no_target" : target] =
+                        {context: this, record: recKey, field: key};
                     if (portal) {
                         this.contextInfo[nodeId][target == "" ? "_im_no_target" : target].portal = portal;
                     }

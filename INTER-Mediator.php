@@ -109,8 +109,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
         $mediaHandler->processing($dbProxyInstance, $options, $_GET['media']);
     } else if ((isset($_POST['access']) && $_POST['access'] == 'uploadfile')
-        || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
-    ) {
+        || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')) {
         $fileUploader = new FileUploader();
         $fileUploader->processing($datasource, $options, $dbspecification, $debug);
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
