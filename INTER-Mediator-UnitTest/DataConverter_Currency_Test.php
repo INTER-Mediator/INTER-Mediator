@@ -21,7 +21,13 @@ class DataConverter_Currency_Test extends PHPUnit_Framework_TestCase
 
     public function test_converterFromDBtoUser()
     {
-        $expected = $this->currencyMark . '1' . $this->thSepMark . '000';
+        if (getenv('TRAVIS') === 'true') {
+            $currencyMark = "¥";
+            $thSepMark = ",";
+            $expected = $currencyMark . '1' . $thSepMark . '000';
+        } else {
+            $expected = $this->currencyMark . '1' . $this->thSepMark . '000';
+        }
         $string = '1000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
     }
