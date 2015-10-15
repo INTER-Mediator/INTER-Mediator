@@ -3,9 +3,6 @@ require 'net/ssh'
 
 set :backend, :ssh
 
-# for RSpec 3.3
-RSpec::Expectations::MultipleExpectationsNotMetError = Class.new(Exception)
-
 if ENV['ASK_SUDO_PASSWORD']
   begin
     require 'highline/import'

@@ -95,7 +95,7 @@ class MessageStrings
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
-        2004 => 'Log In',
+        2004 => 'Login',
         2005 => 'Change Password',
         2006 => 'New Password:',
         2007 => 'Missing any of Username, old and new password.',
@@ -105,6 +105,7 @@ class MessageStrings
         2011 => 'User(Mail Assress):',
         2012 => 'Retry to login. You should clarify the user and the password.',
         2013 => 'You should input user and/or password.',
+        2014 => 'OAuth Login',
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
     );

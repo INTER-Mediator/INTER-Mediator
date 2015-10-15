@@ -82,8 +82,8 @@ IM_Entry(
 //            'corresponding-table' => 'authcor',
 //            'challenge-table' => 'issuedhash',
 //            'authexpired' => '600', // Set as seconds.
-//            'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
-//            'realm' => 'Sample_Auth/MySQL_definitions', //
+            'storing' => 'session-storage', // 'cookie'(default), 'cookie-domainwide', 'none'
+            'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,
         ),
     ),

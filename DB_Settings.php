@@ -525,6 +525,11 @@ class DB_Settings
         return $this->getAuthenticationItem('authexpired');
     }
 
+    function setLDAPExpiringSeconds($sec)
+    {
+        $this->params_ldapExpiringSeconds = (int)$sec;
+    }
+
     function getLDAPExpiringSeconds()
     {
         return $this->params_ldapExpiringSeconds;
