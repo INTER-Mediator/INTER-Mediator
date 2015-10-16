@@ -39,6 +39,7 @@ Ver.5.3 (in development)
 - Add Dockerfile for CircleCI.
 - Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.
+- Avoid outputting an error message in an error log file in case of an invalid request.
 - [BUG FIX] Fix detection of params.php file.
 - [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
 - [BUG FIX] Modify INTERMediator.totalRecordCount after IMLibPageNavigation.deleteRecordFromNavi method.

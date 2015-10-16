@@ -118,7 +118,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     } else {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
             $dbInstance->processingRequest($options);
             $dbInstance->finishCommunication(false);
         } else {
