@@ -553,7 +553,10 @@ INTERMediator = {
             var nodes, postNodes;
             postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, "_im_post");
             for (i = 0; i < postNodes.length; i++) {
-                if (postNodes[i].tagName === "BUTTON") {
+                if (postNodes[i].tagName === "BUTTON" ||
+                    (postNodes[i].tagName === "INPUT" &&
+                    (postNodes[i].getAttribute("type").toLowerCase() === "button" ||
+                    postNodes[i].getAttribute("type").toLowerCase() === "submit"))) {
                     INTERMediatorLib.addEvent(postNodes[i], "click",
                         (function () {
                             var targetNode = postNodes[i];
