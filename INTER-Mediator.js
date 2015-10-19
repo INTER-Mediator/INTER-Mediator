@@ -1641,7 +1641,7 @@ INTERMediator = {
         function setupNavigationButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
             // Handling Detail buttons
             var buttonNode, thisId, navigateJSFunction, tdNodes, tdNode, firstInNode, contextDef, isHide,
-                detailContext, showingNode, isHidePageNavi, buttonName;
+                masterContext, detailContext, showingNode, isHidePageNavi, buttonName;
 
             if (!currentContextDef['navi-control']
                 || !currentContextDef['navi-control'].match(/master/i)) {
@@ -1672,6 +1672,9 @@ INTERMediator = {
             thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
             buttonNode.setAttribute('id', thisId);
             INTERMediator.buttonIdNum++;
+            masterContext = IMLibContextPool.getMasterContext();
+            masterContext.setValue(keyField +"="+ keyValue, "_im_buttom_master_id", thisId, thisId);
+
             navigateJSFunction = function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi) {
                 var f = keyField, v = keyValue, ff = foreignField, fv = foreignValue;
                 var fvalue = {}, etag = encNodeTag, isMasterHide = isHide, isPageHide = isHidePageNavi;
