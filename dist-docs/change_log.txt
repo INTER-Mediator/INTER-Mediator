@@ -35,6 +35,8 @@ Ver.5.3 (in development)
   supports the 'session-storage' key, and it stores credentials into sessionStorage object.
 - Save NULL to the database when the user's input is empty via DataConverter_MySQLDateTime class.
 - Add match() in js-expression-eval-parser.js for the validation rules.
+- The master context object can store the id attribute value of "Detail" buttons. These can be retrieved
+  from MASTER_CONTEXT.getValue(RECORD_KEY, "_im_buttom_master_id").
 - Enable the Post Only Mode when using an input elemement button (<input type="button"> or <input 
   type="submit">).
 - All header description of source files are updated, and build.sh was adapted them.
