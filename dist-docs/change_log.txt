@@ -36,6 +36,9 @@ Ver.5.3 (in development)
 - Save NULL to the database when the user's input is empty via DataConverter_MySQLDateTime class.
 - Add match() in js-expression-eval-parser.js for the validation rules.
 - All header description of source files are updated, and build.sh was adapted them.
+- Password policy can be set in the 2nd "option" parameter of IM_Entry function.
+  The key is 'password-policy' and the following terms can be applied.
+  "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
 - Add Dockerfile for CircleCI.
 - Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.

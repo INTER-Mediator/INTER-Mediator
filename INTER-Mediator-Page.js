@@ -35,6 +35,7 @@ INTERMediatorOnPage = {
     realm: "",
     dbCache: {},
     isEmailAsUsername: false,
+    passwordPolicy: null,
 
     isShowChangePassword: true,
     isSetDefaultStyle: true,
@@ -345,12 +346,12 @@ INTERMediatorOnPage = {
                 frontPanel.appendChild(breakLine);
             }
 
-            labelWidth = "200px";
+            labelWidth = "100px";
             userLabel = document.createElement("LABEL");
             frontPanel.appendChild(userLabel);
             userSpan = document.createElement("span");
             if (INTERMediatorOnPage.isSetDefaultStyle) {
-                userSpan.style.width = labelWidth;
+                userSpan.style.minWidth = labelWidth;
                 userSpan.style.textAlign = "right";
                 userSpan.style.cssFloat = "left";
             }
@@ -361,7 +362,7 @@ INTERMediatorOnPage = {
             userBox = document.createElement("INPUT");
             userBox.type = "text";
             userBox.id = "_im_username";
-            userBox.size = "24";
+            userBox.size = "20";
             userBox.setAttribute("autocapitalize", "off");
             userLabel.appendChild(userBox);
 
@@ -383,7 +384,7 @@ INTERMediatorOnPage = {
             passwordBox = document.createElement("INPUT");
             passwordBox.type = "password";
             passwordBox.id = "_im_password";
-            passwordBox.size = "24";
+            passwordBox.size = "20";
             passwordLabel.appendChild(passwordBox);
 
             authButton = document.createElement("BUTTON");
@@ -497,7 +498,11 @@ INTERMediatorOnPage = {
         };
         if (chgpwButton) {
             chgpwButton.onclick = function () {
-                var inputUsername, inputPassword, inputNewPassword, challengeResult, params, result, messageNode;
+                var inputUsername, inputPassword, inputNewPassword, challengeResult, params,
+                    result, messageNode, terms, i, policyCheck = true, message = [];
+
+                messageNode = document.getElementById("_im_newpass_message");
+                INTERMediatorLib.removeChildNodes(messageNode);
 
                 inputUsername = document.getElementById("_im_username").value;
                 inputPassword = document.getElementById("_im_password").value;
@@ -510,6 +515,62 @@ INTERMediatorOnPage = {
                             INTERMediatorLib.getInsertedStringFromErrorNumber(2007)));
                     return;
                 }
+
+                terms = INTERMediatorOnPage.passwordPolicy.split(/[\s,]/);
+                for (i = 0; i < terms.length; i++) {
+                    switch (terms[i].toUpperCase()) {
+                        case "USEALPHABET":
+                            if (!inputNewPassword.match(/[A-Za-z]/)) {
+                                policyCheck = false;
+                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2015));
+                            }
+                            break;
+                        case "USENUMBER":
+                            if (!inputNewPassword.match(/[0-9]/)) {
+                                policyCheck = false;
+                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2016));
+                            }
+                            break;
+                        case "USEUPPER":
+                            if (!inputNewPassword.match(/[A-Z]/)) {
+                                policyCheck = false;
+                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2017));
+                            }
+                            break;
+                        case "USELOWER":
+                            if (!inputNewPassword.match(/[a-z]/)) {
+                                policyCheck = false;
+                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2018));
+                            }
+                            break;
+                        case "USEPUNCTUATION":
+                            if (!inputNewPassword.match(/[^A-Za-z0-9]/)) {
+                                policyCheck = false;
+                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2019));
+                            }
+                            break;
+                        case "NOTUSERNAME":
+                            if (inputNewPassword == inputUsername) {
+                                policyCheck = false;
+                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2020));
+                            }
+                            break;
+                        default:
+                            if (terms[i].toUpperCase().indexOf("LENGTH") === 0) {
+                                var minLen = terms[i].match(/[0-9]+/)[0];
+                                if (inputNewPassword.length < minLen) {
+                                    policyCheck = false;
+                                    message.push(
+                                        INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]));
+                                }
+                            }
+                    }
+                }
+                if (!policyCheck) {
+                    messageNode.appendChild(document.createTextNode(message.join(", ")));
+                    return;
+                }
+
                 INTERMediatorOnPage.authUser = inputUsername;
                 if (inputUsername !== "" &&  // No usename and no challenge, get a challenge.
                     (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
@@ -534,8 +595,6 @@ INTERMediatorOnPage = {
                 } catch (e) {
                     result = {newPasswordResult: false};
                 }
-                messageNode = document.getElementById("_im_newpass_message");
-                INTERMediatorLib.removeChildNodes(messageNode);
                 messageNode.appendChild(
                     document.createTextNode(
                         INTERMediatorLib.getInsertedStringFromErrorNumber(
