@@ -53,6 +53,7 @@ class GenerateJSCode
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
+            "passwordPolicy",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -62,6 +63,7 @@ class GenerateJSCode
         $oAuthProvider = $params["oAuthProvider"];
         $oAuthClientID = $params["oAuthClientID"];
         $oAuthRedirect = $params["oAuthRedirect"];
+        $passwordPolicy = $params["passwordPolicy"];
 
         /*
          * Read the JS programs regarding by the developing or deployed.
@@ -304,6 +306,15 @@ class GenerateJSCode
             $this->generateAssignJS(
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
+        }
+        if (isset($passwordPolicy)) {
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.passwordPolicy", $q, $passwordPolicy, $q);
+        } else if (isset($options["authentication"])
+            && isset($options["authentication"]["password-policy"])
+        ) {
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.passwordPolicy", $q, $options["authentication"]["password-policy"], $q);
         }
     }
 

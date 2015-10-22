@@ -509,7 +509,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 }
             }
         }
-        $keywordAuth = (($currentOperation == "load")||($currentOperation == "select"))
+        $keywordAuth = (($currentOperation == "load") || ($currentOperation == "select"))
             ? "read" : $currentOperation;
         if (isset($tableInfo['authentication'])
             && ((isset($tableInfo['authentication']['all'])
@@ -1479,7 +1479,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $timeValue;
     }
 
-    function authSupportOAuthUserHandling($username, $credential) {
+    function authSupportOAuthUserHandling($username, $credential)
+    {
         $user_id = $this->authSupportGetUserIdFromUsername($username);
 
         $userTable = $this->dbSettings->getUserTable();
@@ -1495,7 +1496,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if ($result === false) {
-                $this->errorMessageStore('Update:' . $sql);var_dump('Update:' . $sql);
+                $this->errorMessageStore('Update:' . $sql);
+                var_dump('Update:' . $sql);
                 return false;
             }
         } else {
@@ -1512,6 +1514,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         return true;
     }
+
     /**
      * @param $username
      * @return bool
@@ -1660,13 +1663,17 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return true;
     }
 
-    /**
-     * @param $username
-     * @return bool|int
-     *
-     * Using 'authuser'
-     */
+    function authTableGetUserIdFromUsername($username)
+    {
+        return $this->privateGetUserIdFromUsername($username, false);
+    }
+
     function authSupportGetUserIdFromUsername($username)
+    {
+        return $this->privateGetUserIdFromUsername($username, true);
+    }
+
+    private function privateGetUserIdFromUsername($username, $isCheckLimit)
     {
         $this->logger->setDebugMessage("[authSupportGetUserIdFromUsername]username={$username}", 2);
 
@@ -1689,7 +1696,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
+            if ($isCheckLimit && isset($row['limitdt']) && !is_null($row['limitdt'])) {
                 if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
                     return -1;
                 }
@@ -1698,6 +1705,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         return false;
     }
+
 
     /**
      * @param $groupid
@@ -1734,17 +1742,28 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      *
      * Using 'authcor'
      */
-    function authSupportGetGroupsOfUser($user)
+    function authSupportGetGroupsOfUser($user) {
+        return $this->privateGetGroupsOfUser($user, true);
+    }
+
+    function authTableGetGroupsOfUser($user) {
+        return $this->privateGetGroupsOfUser($user, false);
+    }
+
+    private function privateGetGroupsOfUser($user, $isCheckLimit)
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {
             return array();
         }
 
-        $userid = $this->authSupportGetUserIdFromUsername($user);
+        $userid = $this->privateGetUserIdFromUsername($user, $isCheckLimit);
         if ($userid === false && $this->dbSettings->getEmailAsAccount()) {
             $userid = $this->authSupportGetUserIdFromEmail($user);
         }
+
+        $this->logger->setDebugMessage("[authSupportGetGroupsOfUser]user={$user}, userid={$userid}");
+
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
