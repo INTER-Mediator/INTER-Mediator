@@ -939,7 +939,7 @@ var INTERMediatorLib = {
         var resultStr, counter;
 
         resultStr = INTERMediatorOnPage.getMessages()[errNum];
-        if (dataArray != null) {
+        if (dataArray) {
             for (counter = 1; counter <= dataArray.length; counter++) {
                 resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
             }

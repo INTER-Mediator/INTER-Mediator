@@ -55,6 +55,7 @@ class GenerateJSCode
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
+            "passwordPolicy",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -64,6 +65,7 @@ class GenerateJSCode
         $oAuthProvider = $params["oAuthProvider"];
         $oAuthClientID = $params["oAuthClientID"];
         $oAuthRedirect = $params["oAuthRedirect"];
+        $passwordPolicy = $params["passwordPolicy"];
 
         /*
          * Read the JS programs regarding by the developing or deployed.
@@ -307,10 +309,10 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
         }
+
         $localeSign = isset($appLocale) ? $appLocale : ini_get("intl.default_locale");
         setlocale(LC_ALL, $localeSign);
         $localInfo = localeconv();
-        
         $localDefaultInfo = array(
             "negative_sign" => "-",
             "decimal_point" => ".",
@@ -323,8 +325,17 @@ class GenerateJSCode
                 $localInfo[$localInfoKey] = $localInfoValue;
             }
         }
-        
         $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS($localInfo,""));
+
+        if (isset($passwordPolicy)) {
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.passwordPolicy", $q, $passwordPolicy, $q);
+        } else if (isset($options["authentication"])
+            && isset($options["authentication"]["password-policy"])
+        ) {
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.passwordPolicy", $q, $options["authentication"]["password-policy"], $q);
+        }
     }
 
     private function combineScripts($currentDir)
