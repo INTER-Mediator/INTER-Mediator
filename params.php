@@ -99,6 +99,7 @@ EOL;
 //$issuedHashDSN = 'sqlite:/var/db/im/sample.sq3';
 
 //$emailAsAliasOfUserName = true;
+//$passwordPolicy = "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName";
 
 $customLoginPanel = '';
 

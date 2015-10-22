@@ -189,6 +189,7 @@ class DefinitionChecker
             'realm' => 'string',
             'email-as-username' => 'boolean',
             'issuedhash-dsn' => 'string',
+            'password-policy' => 'string',
         ),
         'media-root-dir'=> 'string',
         'media-context'=> 'string',
