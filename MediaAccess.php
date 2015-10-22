@@ -356,42 +356,46 @@ class MediaAccess
             }
 
             $fp = fopen($tempPath, 'w');
-            fwrite($fp, $content);
-            fclose($fp);
+            if ($fp !== false) {
+                fwrite($fp, $content);
+                fclose($fp);
 
-            $imageType = image_type_to_mime_type(exif_imagetype($tempPath));
-            if ($imageType === 'image/jpeg') {
-                $image = imagecreatefromstring($content);
-                if ($image !== false) {
-                    $exif = exif_read_data($tempPath);
-                    if($exif !== false && !empty($exif['Orientation'])) {
-                        switch($exif['Orientation']) {
-                            case 3:
-                                $content = imagerotate($image, 180, 0);
-                                $rotate = true;
-                                break;
-                            case 6:
-                                $content = imagerotate($image, -90, 0);
-                                $rotate = true;
-                                break;
-                            case 8:
-                                $content = imagerotate($image, 90, 0);
-                                $rotate = true;
-                                break;
+                $imageType = image_type_to_mime_type(exif_imagetype($tempPath));
+                if ($imageType === 'image/jpeg') {
+                    $image = imagecreatefromstring($content);
+                    if ($image !== false) {
+                        $exif = exif_read_data($tempPath);
+                        if($exif !== false && !empty($exif['Orientation'])) {
+                            switch($exif['Orientation']) {
+                                case 3:
+                                    $content = imagerotate($image, 180, 0);
+                                    $rotate = true;
+                                    break;
+                                case 6:
+                                    $content = imagerotate($image, -90, 0);
+                                    $rotate = true;
+                                    break;
+                                case 8:
+                                    $content = imagerotate($image, 90, 0);
+                                    $rotate = true;
+                                    break;
+                            }
                         }
                     }
+                    if ($rotate === true) {
+                        header('Content-Type: image/jpeg');
+                        ob_start();
+                        imagejpeg($content);
+                        $size = ob_get_length();
+                        header('Content-Length: ' . $size);
+                        header('X-XSS-Protection: 1; mode=block');
+                        header('X-Frame-Options: SAMEORIGIN');
+                        ob_end_flush();
+                    }
+                    imagedestroy($image);
                 }
-                if ($rotate === true) {
-                    header('Content-Type: image/jpeg');
-                    ob_start();
-                    imagejpeg($content);
-                    $size = ob_get_length();
-                    header('Content-Length: ' . $size);
-                    ob_end_flush();
-                }
-                imagedestroy($image);
+                unlink($tempPath);
             }
-            unlink($tempPath);
         }
 
         if ($rotate === false) {
