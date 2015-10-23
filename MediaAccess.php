@@ -343,7 +343,8 @@ class MediaAccess
     private function outputImage($content)
     {
         $rotate = false;
-        if (function_exists('exif_imagetype') && function_exists('imagejpeg')) {
+        if (function_exists('exif_imagetype') && function_exists('imagejpeg') &&
+            strlen($content) > 0) {
             $tmpDir = ini_get('upload_tmp_dir');
             if ($tmpDir === '') {
                 $tmpDir = sys_get_temp_dir();
