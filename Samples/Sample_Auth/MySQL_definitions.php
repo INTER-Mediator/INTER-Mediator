@@ -85,7 +85,7 @@ IM_Entry(
             'storing' => 'session-storage', // 'cookie'(default), 'cookie-domainwide', 'none'
             'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,
-        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
+//        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
         ),
     ),
     array('db-class' => 'PDO'),

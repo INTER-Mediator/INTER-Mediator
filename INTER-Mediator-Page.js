@@ -288,6 +288,9 @@ INTERMediatorOnPage = {
 
         this.checkPasswordPolicy = function(newPassword, userName, policyString) {
             var terms, i, policyCheck, message = [], minLen;
+            if (!policyString)  {
+                return message;
+            }
             terms = policyString.split(/[\s,]/);
             for (i = 0; i < terms.length; i++) {
                 switch (terms[i].toUpperCase()) {
@@ -556,10 +559,10 @@ INTERMediatorOnPage = {
             INTERMediator.flushMessage();
         };
         if (chgpwButton) {
+            var checkPolicyMethod = this.checkPasswordPolicy;
             chgpwButton.onclick = function () {
                 var inputUsername, inputPassword, inputNewPassword, challengeResult, params,
                     result, messageNode, message;
-                var checkPolicyMethod = this.checkPasswordPolicy;
 
                 messageNode = document.getElementById("_im_newpass_message");
                 INTERMediatorLib.removeChildNodes(messageNode);
@@ -582,34 +585,10 @@ INTERMediatorOnPage = {
                     return;
                 }
 
-                INTERMediatorOnPage.authUser = inputUsername;
-                if (inputUsername !== "" &&  // No usename and no challenge, get a challenge.
-                    (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
-                    INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
-                    challengeResult = INTERMediator_DBAdapter.getChallenge();
-                    if (!challengeResult) {
-                        messageNode = document.getElementById("_im_newpass_message");
-                        INTERMediatorLib.removeChildNodes(messageNode);
-                        messageNode.appendChild(
-                            document.createTextNode(
-                                INTERMediatorLib.getInsertedStringFromErrorNumber(2008)));
-                        INTERMediator.flushMessage();
-                        return; // If it's failed to get a challenge, finish everything.
-                    }
-                }
-                INTERMediatorOnPage.authHashedPassword =
-                    SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
-                    INTERMediatorOnPage.authUserHexSalt;
-                params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(inputNewPassword);
-                try {
-                    result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
-                } catch (e) {
-                    result = {newPasswordResult: false};
-                }
+                result = INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword);
                 messageNode.appendChild(
                     document.createTextNode(
-                        INTERMediatorLib.getInsertedStringFromErrorNumber(
-                            result.newPasswordResult === true ? 2009 : 2010)));
+                        INTERMediatorLib.getInsertedStringFromErrorNumber(result ? 2009 : 2010)));
 
                 INTERMediator.flushMessage();
             };

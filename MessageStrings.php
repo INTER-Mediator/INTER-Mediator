@@ -92,6 +92,7 @@ class MessageStrings
         1042 => "The database class doesn't support aggregation-select/from/group-by.",
         1043 => "Both aggregation-select and aggregation-from are required. One of them doesn't exist in the context definition.",
         1044 => "The context having aggregation-select/from/group-by is read-only.",
+        1045 => "The 'key' is required in the context definition if writing operations apply to the context '@1@'.",
         2001 => 'Authentication Error!',
         2002 => 'User:',
         2003 => 'Password:',
