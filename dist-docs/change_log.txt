@@ -56,6 +56,7 @@ Ver.5.3 (in development)
 - [BUG FIX] Fix not to remove focus from input field on the Post Only Mode when using validation in some 
   cases.
 - [BUG FIX] Definition File Editor can store the some values that are as array.
+- [BUG FIX] If the "key" key wasn't supplied, the calculation goes wrong results.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.
