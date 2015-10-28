@@ -365,7 +365,7 @@ var IMLibUI = {
     },
 
     deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
-        var i, currentContext, relationDef;
+        var i, index, currentContext, relationDef;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
@@ -380,7 +380,7 @@ var IMLibUI = {
             relationDef = currentContext["relation"];
             if (relationDef) {
                 for (index in relationDef) {
-                    if (relationDef[index]["portal"] == true) {
+                    if (relationDef.hasOwnProperty(index) && relationDef[index]["portal"] == true) {
                         currentContext["portal"] = true;
                     }
                 }
@@ -447,7 +447,7 @@ var IMLibUI = {
     },
 
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
-        var currentContext, recordSet, index, key, conditions, i, relationDef, targetRecord, portalField,
+        var currentContext, recordSet, index, key, conditions, relationDef, targetRecord, portalField,
             targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet, newRecordId,
             keyField, associatedContext, createdRecord, newRecord, portalRowNum, recId, maxRecId;
 
@@ -458,13 +458,15 @@ var IMLibUI = {
         }
         INTERMediatorOnPage.showProgress();
         currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
-        recordSet = [], relatedRecordSet = [];
+        recordSet = []; relatedRecordSet = [];
         if (foreignValues != null) {
             for (index in currentContext['relation']) {
-                recordSet.push({
-                    field: currentContext['relation'][index]["foreign-key"],
-                    value: foreignValues[currentContext['relation'][index]["join-field"]]
-                });
+                if (currentContext['relation'].hasOwnProperty(index)) {
+                    recordSet.push({
+                        field: currentContext['relation'][index]["foreign-key"],
+                        value: foreignValues[currentContext['relation'][index]["join-field"]]
+                    });
+                }
             }
         }
         try {
@@ -473,7 +475,7 @@ var IMLibUI = {
             relationDef = currentContext["relation"];
             if (relationDef) {
                 for (index in relationDef) {
-                    if (relationDef[index]["portal"] == true) {
+                    if (relationDef.hasOwnProperty(index) && relationDef[index]["portal"] == true) {
                         currentContext["portal"] = true;
                     }
                 }
@@ -481,10 +483,12 @@ var IMLibUI = {
             if (currentContext["portal"] == true) {
                 relatedRecordSet = [];
                 for (index in currentContext["default-values"]) {
-                    relatedRecordSet.push({
-                        field: targetName + "::" + currentContext["default-values"][index]["field"] + ".0",
-                        value: currentContext["default-values"][index]["value"]
-                    });
+                    if (currentContext["default-values"].hasOwnProperty(index)) {
+                        relatedRecordSet.push({
+                            field: targetName + "::" + currentContext["default-values"][index]["field"] + ".0",
+                            value: currentContext["default-values"][index]["value"]
+                        });
+                    }
                 }
 
                 if (relatedRecordSet.length == 0) {

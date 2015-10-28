@@ -25,6 +25,17 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
+            'authentication' => array(
+                'read' => array( /* load, update, new, delete*/
+                    'user' => array(),
+                    'group' => array("group1","group2"),
+                ),
+                'update' => array( /* load, update, new, delete*/
+                    'user' => array(),
+                    'group' => array("group2"),
+                ),
+            ),
+
         ),
         array(
             'name' => 'contact',

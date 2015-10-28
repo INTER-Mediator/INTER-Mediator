@@ -40,6 +40,7 @@ Ver.5.3 (in development)
 - Enable the Post Only Mode when using an input elemement button (<input type="button"> or <input 
   type="submit">).
 - Modify the sample application of uploading a file.
+- Send mail for each record in queried ones.
 - All header description of source files are updated, and build.sh was adapted them.
 - Password policy can be set in the 2nd "option" parameter of IM_Entry function.
   The key is 'password-policy' and the following terms can be applied.

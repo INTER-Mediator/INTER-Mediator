@@ -349,6 +349,10 @@ IMLibContextPool = {
             }
         }
         return null;
+    },
+
+    getContextDef: function(contextName)    {
+        return INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName);
     }
 };
 
