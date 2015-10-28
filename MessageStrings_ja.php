@@ -76,6 +76,7 @@ class MessageStrings_ja extends MessageStrings
         1042 => "このデータベースクラスはaggregation-select/from/group-byをサポートしていません。",
         1043 => "aggregation-selectとaggregation-fromの両方が必要です。いずれかの設定がコンテキスト定義にありません。",
         1044 => "aggregation-select/from/group-byを指定したコンテキストへの書き込みや更新はできません。読み出しのみです。",
+        1045 => "コンテキスト「@1@」に書き込み処理をする場合は、コンテキスト定義にkeyキーの指定が必要です。",
         2001 => '認証エラー!',
         2002 => 'ユーザー名:',
         2003 => 'パスワード:',

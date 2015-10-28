@@ -757,7 +757,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $isFrom = $this->dbSettings->getAggregationFrom();
         $isGroupBy = $this->dbSettings->getAggregationGroupBy();
         $isDBSupport = $this->dbClass->isSupportAggregation();
-        if (! $isDBSupport && ($isSelect || $isFrom || $isGroupBy)) {
+        if (!$isDBSupport && ($isSelect || $isFrom || $isGroupBy)) {
             $this->logger->setErrorMessage($messageClass->getMessageAs(1042));
             $access = "do nothing";
         } else if ($isDBSupport && (($isSelect && !$isFrom) || (!$isSelect && $isFrom))) {
@@ -773,7 +773,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // Authentication and Authorization
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $access = is_null($access) ? $_POST['access'] : $access;
-        $access = (($access == "select")||($access == "load")) ? "read" : $access;
+        $access = (($access == "select") || ($access == "load")) ? "read" : $access;
         $clientId = isset($_POST['clientid']) ? $_POST['clientid'] :
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
         $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
@@ -825,9 +825,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $authorizedGroups = $this->dbClass->getAuthorizedGroups($access);
                     $authorizedUsers = $this->dbClass->getAuthorizedUsers($access);
 
-                    $this->logger->setDebugMessage(
-                        "authorizedUsers=" . var_export($authorizedUsers, true)
-                        . "/authorizedGroups=" . var_export($authorizedGroups, true)
+                    $this->logger->setDebugMessage(str_replace("\n", "",
+                            "contextName={$access}/access={$this->dbSettings->getTargetName()}/"
+                            . "authorizedUsers=" . var_export($authorizedUsers, true)
+                            . "/authorizedGroups=" . var_export($authorizedGroups, true))
                         , 2);
                     if ((count($authorizedUsers) == 0 && count($authorizedGroups) == 0)) {
                         $noAuthorization = false;
@@ -1086,13 +1087,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return sha1($pw . $salt) . bin2hex($salt);
     }
 
-    function generateCredential($digit) {
+    function generateCredential($digit)
+    {
         $password = '';
         for ($i = 0; $i < $digit; $i++) {
             $password .= chr(rand(32, 127));
         }
         return $this->convertHashedPassword($password);
     }
+
     /**
      * @param $username
      * @return string

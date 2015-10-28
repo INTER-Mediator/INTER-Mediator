@@ -25,6 +25,20 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
+            'authentication' => array(
+                'read' => array( /* load, update, new, delete*/
+                    'group' => array("group1","group2"),
+                ),
+                'update' => array( /* load, update, new, delete*/
+                    'group' => array("group2"),
+                ),
+                'create' => array( /* load, update, new, delete*/
+                    'group' => array("dummy"),
+                ),
+                'delete' => array( /* load, update, new, delete*/
+                    'group' => array("dummy"),
+                ),
+            ),
         ),
         array(
             'name' => 'contact',
@@ -85,7 +99,7 @@ IM_Entry(
             'storing' => 'session-storage', // 'cookie'(default), 'cookie-domainwide', 'none'
             'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,
-        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
+//        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
         ),
     ),
     array('db-class' => 'PDO'),
