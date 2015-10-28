@@ -81,7 +81,7 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
                 break;
             }
         }
-        return $usersArray;
+        return array_values(array_unique($usersArray));
     }
 
     function getAuthorizedGroups($operation = null)
@@ -101,7 +101,7 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
                 break;
             }
         }
-        return $groupsArray;
+        return array_values(array_unique($groupsArray));
     }
 
 }

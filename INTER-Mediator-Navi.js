@@ -347,7 +347,7 @@ IMLibPageNavigation = {
             }
         }
 
-        INTERMediator.constructMain(true);
+        //INTERMediator.constructMain(true);
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
     },
