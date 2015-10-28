@@ -127,14 +127,14 @@ IMLibPageNavigation = {
                     c_node,
                     "change",
                     function () {
-                        if (this.value < 1) {
-                            this.value = 1;
+                        if (c_node.value < 1) {
+                            c_node.value = 1;
                         }
                         var max_page = Math.ceil(allCount / pageSize);
-                        if (max_page < this.value) {
-                            this.value = max_page;
+                        if (max_page < c_node.value) {
+                            c_node.value = max_page;
                         }
-                        INTERMediator.startFrom = ( ~~this.value - 1 ) * pageSize;
+                        INTERMediator.startFrom = ( ~~c_node.value - 1 ) * pageSize;
                         INTERMediator.construct(true);
                     }
                 );
@@ -250,7 +250,7 @@ IMLibPageNavigation = {
     },
 
     insertRecordFromNavi: function (targetName, keyField, isConfirm) {
-        var newId, conditions, fieldObj, contextDef, responseCreateRecord;
+        var newId, conditions, restore, contextDef, responseCreateRecord;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
@@ -347,13 +347,13 @@ IMLibPageNavigation = {
             }
         }
 
-        //INTERMediator.constructMain(true);
+        INTERMediator.constructMain(true);
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
     },
 
     copyRecordFromNavi: function(contextDef, keyValue)  {
-        var newId;
+        var newId, restore;
 
         INTERMediatorOnPage.showProgress();
         newId = IMLibUI.copyRecordImpl(contextDef, keyValue);
@@ -385,108 +385,115 @@ IMLibPageNavigation = {
             context = IMLibContextPool.poolingContexts[i];
             updateData = context.getModified();
             for (keying in updateData) {
-                fieldArray = [];
-                valueArray = [];
-                for (field in updateData[keying]) {
-                    fieldArray.push(field);
-                    valueArray.push({field: field, value: updateData[keying][field]});
-                }
-                if (!INTERMediator.ignoreOptimisticLocking) {
-                    keyingComp = keying.split('=');
-                    keyingField = keyingComp[0];
-                    keyingComp.shift();
-                    keyingValue = keyingComp.join('=');
-                    checkQueryParameter = {
-                        name: context.contextName,
-                        records: 1,
-                        paging: false,
-                        fields: fieldArray,
-                        parentkeyvalue: null,
-                        conditions: [
-                            {field: keyingField, operator: '=', value: keyingValue}
-                        ],
-                        useoffset: false,
-                        primaryKeyOnly: true
-                    };
+                if (updateData.hasOwnProperty(keying)) {
+                    fieldArray = [];
+                    valueArray = [];
+                    for (field in updateData[keying]) {
+                        if (updateData[keying].hasOwnProperty(field)) {
+                            fieldArray.push(field);
+                            valueArray.push({field: field, value: updateData[keying][field]});
+                        }
+                    }
+                    if (!INTERMediator.ignoreOptimisticLocking) {
+                        keyingComp = keying.split('=');
+                        keyingField = keyingComp[0];
+                        keyingComp.shift();
+                        keyingValue = keyingComp.join('=');
+                        checkQueryParameter = {
+                            name: context.contextName,
+                            records: 1,
+                            paging: false,
+                            fields: fieldArray,
+                            parentkeyvalue: null,
+                            conditions: [
+                                {field: keyingField, operator: '=', value: keyingValue}
+                            ],
+                            useoffset: false,
+                            primaryKeyOnly: true
+                        };
+                        try {
+                            currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
+                        } catch (ex) {
+                            if (ex == "_im_requath_request_") {
+                                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                                    INTERMediatorOnPage.clearCredentials();
+                                    INTERMediatorOnPage.authenticating(
+                                        (function () {
+                                            var qParam = checkQueryParameter;
+                                            return function () {
+                                                INTERMediator.db_query(qParam);
+                                            }
+                                        })()
+                                    );
+                                    return;
+                                }
+                            } else {
+                                INTERMediator.setErrorMessage(ex, "EXCEPTION-28");
+                            }
+                        }
+
+                        if (currentVal.recordset === null ||
+                            currentVal.recordset[0] === null) {
+                            alert(INTERMediatorLib.getInsertedString(
+                                INTERMediatorOnPage.getMessages()[1003], [fieldArray.join(',')]));
+                            return;
+                        }
+                        if (currentVal.count > 1) {
+                            response = confirm(INTERMediatorOnPage.getMessages()[1024]);
+                            if (!response) {
+                                return;
+                            }
+                        }
+
+                        difference = false;
+                        for (field in updateData[keying]) {
+                            if (updateData[keying].hasOwnProperty(field)) {
+                                initialValue = context.getValue(keying, field);
+                                if (initialValue != currentVal.recordset[0][field]) {
+                                    difference += INTERMediatorLib.getInsertedString(
+                                        INTERMediatorOnPage.getMessages()[1035], [
+                                            field,
+                                            currentVal.recordset[0][field],
+                                            updateData[keying][field]
+                                        ]);
+                                }
+                            }
+                        }
+                        if (difference !== false) {
+                            if (!confirm(INTERMediatorLib.getInsertedString(
+                                    INTERMediatorOnPage.getMessages()[1034], [difference]))) {
+                                return;
+                            }
+                            INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
+                        }
+                    }
+
                     try {
-                        currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
+                        INTERMediator_DBAdapter.db_update({
+                            name: context.contextName,
+                            conditions: [
+                                {field: keyingField, operator: '=', value: keyingValue}
+                            ],
+                            dataset: valueArray
+                        });
+
                     } catch (ex) {
                         if (ex == "_im_requath_request_") {
-                            if (INTERMediatorOnPage.requireAuthentication &&
-                                !INTERMediatorOnPage.isComplementAuthData()) {
+                            if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                                 INTERMediatorOnPage.clearCredentials();
                                 INTERMediatorOnPage.authenticating(
                                     function () {
-                                        INTERMediator.db_query(checkQueryParameter);
+                                        IMLibPageNavigation.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);
                                     }
                                 );
                                 return;
                             }
                         } else {
-                            INTERMediator.setErrorMessage(ex, "EXCEPTION-28");
+                            INTERMediator.setErrorMessage(ex, "EXCEPTION-29");
                         }
                     }
-
-                    if (currentVal.recordset === null ||
-                        currentVal.recordset[0] === null) {
-                        alert(INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1003], [fieldArray.join(',')]));
-                        return;
-                    }
-                    if (currentVal.count > 1) {
-                        response = confirm(INTERMediatorOnPage.getMessages()[1024]);
-                        if (!response) {
-                            return;
-                        }
-                    }
-
-                    difference = false;
-                    for (field in updateData[keying]) {
-                        initialValue = context.getValue(keying, field);
-                        if (initialValue != currentVal.recordset[0][field]) {
-                            difference += INTERMediatorLib.getInsertedString(
-                                INTERMediatorOnPage.getMessages()[1035], [
-                                    field,
-                                    currentVal.recordset[0][field],
-                                    updateData[keying][field]
-                                ]);
-                        }
-                    }
-                    if (difference !== false) {
-                        if (!confirm(INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1034], [difference]))) {
-                            return;
-                        }
-                        INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
-                    }
+                    context.clearModified();
                 }
-
-                try {
-                    INTERMediator_DBAdapter.db_update({
-                        name: context.contextName,
-                        conditions: [
-                            {field: keyingField, operator: '=', value: keyingValue}
-                        ],
-                        dataset: valueArray
-                    });
-
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        if (INTERMediatorOnPage.requireAuthentication &&
-                            !INTERMediatorOnPage.isComplementAuthData()) {
-                            INTERMediatorOnPage.clearCredentials();
-                            INTERMediatorOnPage.authenticating(
-                                function () {
-                                    IMLibPageNavigation.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);
-                                }
-                            );
-                            return;
-                        }
-                    } else {
-                        INTERMediator.setErrorMessage(ex, "EXCEPTION-29");
-                    }
-                }
-                context.clearModified();
             }
         }
         if (needUpdate && (dontUpdate !== true)) {

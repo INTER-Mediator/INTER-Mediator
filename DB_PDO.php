@@ -1743,7 +1743,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * Using 'authcor'
      */
     function authSupportGetGroupsOfUser($user) {
-        return $this->privateGetGroupsOfUser($user, true);
+        $ldap = new LDAPAuth();
+        if($ldap->isActive) {
+            return $this->privateGetGroupsOfUser($user, true);
+        } else {
+            return $this->privateGetGroupsOfUser($user, false);
+        }
     }
 
     function authTableGetGroupsOfUser($user) {

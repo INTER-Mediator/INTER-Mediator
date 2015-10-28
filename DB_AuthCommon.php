@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,11 +13,11 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interface_CommonDB
 {
 
-    private function getOperationSeries($operation)    {
+    private function getOperationSeries($operation)
+    {
         $operations = array();
         if (($operation === 'select') || ($operation === 'load') || ($operation === 'read')) {
             $operations = array('read', 'select', 'load');
@@ -88,6 +89,7 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+//        $this->logger->setDebugMessage("tableInfo=" . var_export($tableInfo, true), 2);
         $groupsArray = array();
         if ($this->dbSettings->getAuthenticationItem('group')) {
             $groupsArray = array_merge($groupsArray, $this->dbSettings->getAuthenticationItem('group'));
