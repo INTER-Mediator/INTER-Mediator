@@ -617,15 +617,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             } else {
                 if ($this->dbSettings->isDBNative()) {
                 } else {
-//                    $authorizedUsers = $this->getAuthorizedUsers("load");
-//                    $authorizedGroups = $this->getAuthorizedGroups("load");
-//                    $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-//                    $this->logger->setDebugMessage("#####".var_export($belongGroups, true));
-//                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
-//                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
-//                    ) {
-//                        $authFailure = true;
-//                    }
+                    $authorizedUsers = $this->getAuthorizedUsers("load");
+                    $authorizedGroups = $this->getAuthorizedGroups("load");
+                    $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
+                    $this->logger->setDebugMessage("#####".var_export($belongGroups, true));
+                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
+                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
+                    ) {
+                        $authFailure = true;
+                    }
                 }
             }
             if ($authFailure) {
