@@ -19,6 +19,7 @@ require_once(dirname(__FILE__) . '/../DB_Proxy.php');
 require_once(dirname(__FILE__) . '/../DB_Logger.php');
 require_once(dirname(__FILE__) . '/../MessageStrings.php');
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../OAuthAuth.php');
 
 abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 {

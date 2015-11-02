@@ -19,18 +19,16 @@ $pathToIM = "..";   // Modify this to match your directories.
 
 require_once("{$pathToIM}/INTER-Mediator.php");
 spl_autoload_register('loadClass');
-$providerKey = "oAuthProvider";
-$params = IMUtil::getFromParamsPHPFile(array($providerKey));
-if ($params === false) {
-    echo "Passed wrong parameters to the getFromParamsPHPFile method.";
-    exit;
-}
-$authObj = new OAuthAuth($params[$providerKey]);
+$authObj = new OAuthAuth();
 if (is_null($authObj)) {
     echo "Couldn't authenticate with parameters you supplied.";
     exit;
 }
 $jsCode = "";
+if (! $authObj->isActive) {
+    echo "Missing parameters for OAuth authentication.";
+    exit;
+}
 $err = "No Error";
 if ($authObj->afterAuth()) {
     $jsCode = $authObj->javaScriptCode();

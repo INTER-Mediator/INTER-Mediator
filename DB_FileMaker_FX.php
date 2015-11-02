@@ -620,6 +620,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $authorizedUsers = $this->getAuthorizedUsers("load");
                     $authorizedGroups = $this->getAuthorizedGroups("load");
                     $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
+                    $this->logger->setDebugMessage("#####".var_export($belongGroups, true));
                     if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
                         && count(array_intersect($belongGroups, $authorizedGroups)) == 0
                     ) {
@@ -1779,9 +1780,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             return null;
         }
 
-        $this->setupFXforDB($groupTable, 1);
-        $this->fx->AddDBParam('id', $groupid);
-        $result = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $this->setupFXforDB_Alt($groupTable, 1);
+        $this->fxAlt->AddDBParam('id', $groupid);
+        $result = $this->fxAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
             return false;
@@ -1820,15 +1821,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     private function resolveGroup($groupid)
     {
-        $this->setupFXforDB($this->dbSettings->getCorrTable(), 1);
+        $this->setupFXforDB_Alt($this->dbSettings->getCorrTable(), 1);
         if ($this->firstLevel) {
-            $this->fx->AddDBParam('user_id', $groupid);
+            $this->fxAlt->AddDBParam('user_id', $groupid);
             $this->firstLevel = false;
         } else {
-            $this->fx->AddDBParam('group_id', $groupid);
+            $this->fxAlt->AddDBParam('group_id', $groupid);
             $this->belongGroups[] = $groupid;
         }
-        $result = $this->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
+        $result = $this->fxAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;

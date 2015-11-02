@@ -268,8 +268,9 @@ class GenerateJSCode
             "INTERMediatorOnPage.isLDAP", $ldap->isActive ? "true" : "false");
         $this->generateAssignJS(
             "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthProvider) ? "true" : "false");
-        if (isset($oAuthProvider)) {
-            $authObj = new OAuthAuth($oAuthProvider);
+        $authObj = new OAuthAuth();
+        if ($authObj->isActive) {
+
 
             $this->generateAssignJS("INTERMediatorOnPage.oAuthClientID",
                 $q, $oAuthClientID, $q);
