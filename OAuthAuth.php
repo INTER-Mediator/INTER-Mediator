@@ -18,6 +18,8 @@ require_once("IMUtil.php");
 
 class OAuthAuth
 {
+    public $isActive;
+
     private $baseURL;
     private $getTokenURL;
     private $getInfoURL;
@@ -28,10 +30,21 @@ class OAuthAuth
     private $errorMessage = array();
     private $jsCode = '';
     private $id_token;
+    private $provider;
 
-    public function __construct($service)
+    public function __construct()
     {
-        switch (strtolower($service)) {
+        $params = IMUtil::getFromParamsPHPFile(
+            array("oAuthClientID", "oAuthClientSecret", "oAuthRedirect", "oAuthProvider"), true);
+        if ($params === false) {
+            $this->errorMessage[] = "Wrong Paramters";
+            $this->isActive = false;
+            return;
+        }
+        $this->isActive = false;
+        $this->provider = "unspecified";
+
+        switch (strtolower($params["oAuthProvider"])) {
             case "google":
                 $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
                 $this->getTokenURL = 'https://accounts.google.com/o/oauth2/token';
@@ -42,15 +55,26 @@ class OAuthAuth
                  * 1. Go to https://console.developers.google.com.
                  * 2. Create a project.
                  */
+                $this->isActive = true;
+                $this->provider = "Google";
+
                 break;
             default:
                 break;
         }
+        $this->clientId = $params["oAuthClientID"];
+        $this->clientSecret = $params["oAuthClientSecret"];
+        $this->redirectURL = $params["oAuthRedirect"];
     }
 
     public function oAuthBaseURL()
     {
         return $this->baseURL;
+    }
+
+    public function oAuthProvider()
+    {
+        return $this->provider;
     }
 
     public function infoScope()
@@ -70,21 +94,6 @@ class OAuthAuth
 
     public function afterAuth()
     {
-        // The following variables come from param.php file.
-        $oAuthClientID = null;
-        $oAuthClientSecret = null;
-        $oAuthRedirect = null;
-
-        $params = IMUtil::getFromParamsPHPFile(
-            array("oAuthClientID", "oAuthClientSecret", "oAuthRedirect",), true);
-        if ($params === false) {
-            $this->errorMessage[] = "Wrong Paramters";
-            return false;
-        }
-        $this->clientId = $params["oAuthClientID"];
-        $this->clientSecret = $params["oAuthClientSecret"];
-        $this->redirectURL = $params["oAuthRedirect"];
-
         if (!isset($_REQUEST['code'])) {
             $this->errorMessage[] = "This isn't redirected from the providers site.";
             return false;

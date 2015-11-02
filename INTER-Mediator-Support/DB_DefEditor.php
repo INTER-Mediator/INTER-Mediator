@@ -38,6 +38,9 @@ function getValueFromArray($ar, $index1, $index2 = null, $index3 = null)
             $value = $ar[$index1];
         }
     }
+    if (is_array($value)) {
+        $value = implode(",", $value);
+    }
     if ($value === true) {
         $value = "true";
     }
@@ -352,8 +355,18 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         $globalOptions, 'authentication', 'authexpired'),
                     'authentication-realm' => getValueFromArray(
                         $globalOptions, 'authentication', 'realm'),
+                    'authentication-storing' => getValueFromArray(
+                        $globalOptions, 'authentication', 'storing'),
                     'authentication-email-as-username' => getValueFromArray(
                         $globalOptions, 'authentication', 'email-as-username'),
+                    'authentication-user' => getValueFromArray(
+                        $globalOptions, 'authentication', 'user'),
+                    'authentication-group' => getValueFromArray(
+                        $globalOptions, 'authentication', 'group'),
+                    'authentication-issuedhash-dsn' => getValueFromArray(
+                        $globalOptions, 'authentication', 'issuedhash-dsn'),
+                    'authentication-password-policy' => getValueFromArray(
+                        $globalOptions, 'authentication', 'password-policy'),
                     'smtp-server' => getValueFromArray($globalOptions, 'smtp', 'server'),
                     'smtp-port' => getValueFromArray($globalOptions, 'smtp', 'port'),
                     'smtp-username' => getValueFromArray($globalOptions, 'smtp', 'username'),
@@ -502,7 +515,15 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'container', 'soft-delete', 'f-option',
         );
 
-       // $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
+        $keysShouldArray = array(
+            'protect-writing', 'protect-reading', 'authentication-all-user', 'authentication-all-group',
+            'authentication-load-user', 'authentication-load-group',
+            'authentication-update-user', 'authentication-update-group',
+            'authentication-new-user', 'authentication-new-group',
+            'authentication-delete-user', 'authentication-delete-group',
+        );
+
+        // $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
 
         switch ($dataSourceName) {
             case 'contexts':
@@ -511,8 +532,17 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (!isset($globalDataSource[$contextID]["authentication"])) {
                         $globalDataSource[$contextID]["authentication"] = array();
                     }
-                    $globalDataSource[$contextID]["authentication"]["media-handling"]
-                        = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (preg_match("/^false$/i", $setValue)) {
+                        $setValue = false;
+                    } else if (preg_match("/^true$/i", $setValue)) {
+                        $setValue = true;
+                    }
+                    if ($setValue === true || $setValue === false) {
+                        $globalDataSource[$contextID]["authentication"]["media-handling"] = $setValue;
+                    } else if (isset($globalDataSource[$contextID]["authentication"]["media-handling"])) {
+                        unset($globalDataSource[$contextID]["authentication"]["media-handling"]);
+                    }
                 } else if (strpos($theKey, "authentication-") === 0) {
                     $authKeyArray = explode("-", $theKey);
                     if (!isset($globalDataSource[$contextID][$authKeyArray[0]])) {
@@ -522,7 +552,12 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (strlen($setValue) > 0 || $setValue === false) {
+                    if (array_search($theKey, $keysShouldArray) !== false) {
+                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                    }
+                    if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
+                        || strlen($setValue) > 0
+                    ) {
                         $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]] = $setValue;
                     } else if (isset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]])) {
                         unset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]]);
@@ -532,6 +567,18 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                                 unset($globalDataSource[$contextID][$authKeyArray[0]]);
                             }
                         }
+                    }
+                } else if (strpos($theKey, "protect-") === 0) {
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldArray) !== false) {
+                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                    }
+                    if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
+                        || strlen($setValue) > 0
+                    ) {
+                        $globalDataSource[$contextID][$theKey] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$theKey])) {
+                        unset($globalDataSource[$contextID][$theKey]);
                     }
                 } else if (strpos($theKey, "buttonnames-") === 0) {
                     $firstKey = "button-names";
@@ -607,7 +654,6 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'file-upload':
             case 'global':
             case 'script':
-            case 'script':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 foreach ($allKeys[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
@@ -625,7 +671,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (!is_null($fieldValue)) {
                         $globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key] = $fieldValue;
                     } else if ($key === $theKey &&
-                        isset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key])) {
+                        isset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key])
+                    ) {
                         unset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key]);
                     }
                 }
@@ -639,10 +686,35 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         $globalOptions["authentication"][$authKey] = array();
                     }
                     $setValue = $this->dbSettings->getValueOfField($theKey);
-                    if (strlen($setValue) > 0 || $setValue === false) {
-                        $globalOptions["authentication"][$authKey] = $setValue;
-                    } else if (isset($globalOptions["authentication"][$authKey])) {
-                        unset($globalOptions["authentication"][$authKey]);
+                    if ($authKey === "email-as-username") {
+                        if (preg_match("/^false$/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/^true$/i", $setValue)) {
+                            $setValue = true;
+                        }
+                        if ($setValue === true || $setValue === false) {
+                            $globalOptions["authentication"]["email-as-username"] = $setValue;
+                        } else if (isset($globalOptions["authentication"]["email-as-username"])) {
+                            unset($globalOptions["authentication"]["email-as-username"]);
+                        }
+                    } else if ($authKey === "user" || $authKey === "group") {
+                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                        if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
+                            || strlen($setValue) > 0
+                        ) {
+                            $globalOptions["authentication"][$authKey] = $setValue;
+                        } else if (isset($globalOptions["authentication"][$authKey])) {
+                            unset($globalOptions["authentication"][$authKey]);
+                        }
+                    } else {
+                        if (strlen($setValue) > 0 || $setValue === false) {
+                            $globalOptions["authentication"][$authKey] = $setValue;
+                        } else if (isset($globalOptions["authentication"][$authKey])) {
+                            unset($globalOptions["authentication"][$authKey]);
+                        }
+                    }
+                    if (count($globalOptions["authentication"]) === 0) {
+                        unset($globalOptions["authentication"]);
                     }
                 } else if (strpos($theKey, "smtp-") === 0) {
                     $authKey = substr($theKey, 5);
@@ -780,392 +852,294 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         $sq = "'";
         foreach ($this->spacialValue as $term) {
             $newFileContent = str_replace($sq . $term . $sq, $term, $newFileContent);
+            $fileWriteResult = file_put_contents($filePath, $newFileContent);
+            if ($fileWriteResult === false) {
+                $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
+                return null;
+            }
         }
 
-        $fileWriteResult = file_put_contents($filePath, $newFileContent);
-        if ($fileWriteResult === false) {
-            $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
-            return null;
-        }
-    }
+        function newToDB($dataSourceName, $bypassAuth)
+        {
+            global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
-    function newToDB($dataSourceName, $bypassAuth)
-    {
-        global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
+            // $this->logger->setErrorMessage(var_export($this->dbSettings, true));
+            $filePath = $this->dbSettings->getValueOfField('target');
+            $contextID = $this->dbSettings->getValueOfField('context_id');
 
-        // $this->logger->setErrorMessage(var_export($this->dbSettings, true));
-        $filePath = $this->dbSettings->getValueOfField('target');
-        $contextID = $this->dbSettings->getValueOfField('context_id');
+            $fileContent = file_get_contents($filePath);
+            if ($fileContent === false) {
+                $this->logger->setErrorMessage(
+                    "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+                return null;
+            }
+            $funcStartPos = strpos($fileContent, "IM_Entry");
+            $convert = str_replace("<?php", "",
+                str_replace("?>", "",
+                    str_replace("IM_Entry", "IM_Dummy_Entry",
+                        changeIncludeIMPath(
+                            $fileContent,
+                            "require_once('../INTER-Mediator.php');"
+                        ))));
+            eval($convert);
 
-        $fileContent = file_get_contents($filePath);
-        if ($fileContent === false) {
-            $this->logger->setErrorMessage(
-                "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
-            return null;
-        }
-        $funcStartPos = strpos($fileContent, "IM_Entry");
-        $convert = str_replace("<?php", "",
-            str_replace("?>", "",
-                str_replace("IM_Entry", "IM_Dummy_Entry",
-                    changeIncludeIMPath(
-                        $fileContent,
-                        "require_once('../INTER-Mediator.php');"
-                    ))));
-        eval($convert);
-
-        switch ($dataSourceName) {
-            case 'contexts':
-                $globalDataSource[] = array('name' => '= new context =');
-                break;
-            case 'relation':
-                if (!isset($globalDataSource[$contextID]['relation'])) {
-                    $globalDataSource[$contextID]['relation'] = array();
-                }
-                $globalDataSource[$contextID]['relation'][] = array(
-                    'foreign-key' => '= new value =',
-                    'join-field' => '= new value =',
-                    'operator' => '= new value =',
-                );
-                break;
-            case 'query':
-                if (!isset($globalDataSource[$contextID]['query'])) {
-                    $globalDataSource[$contextID]['query'] = array();
-                }
-                $globalDataSource[$contextID]['query'][] = array(
-                    'field' => '= new value =',
-                    'value' => '= new value =',
-                    'operator' => '= new value =',
-                );
-                break;
-            case 'sort':
-                if (!isset($globalDataSource[$contextID]['sort'])) {
-                    $globalDataSource[$contextID]['sort'] = array();
-                }
-                $globalDataSource[$contextID]['sort'][] = array(
-                    'field' => '= new value =',
-                    'direction' => '= new value =',
-                );
-                break;
-            case 'default-values':
-                if (!isset($globalDataSource[$contextID]['default-values'])) {
-                    $globalDataSource[$contextID]['default-values'] = array();
-                }
-                $globalDataSource[$contextID]['default-values'][] = array(
-                    'field' => '= new value =',
-                    'value' => '= new value =',
-                );
-                break;
-            case 'validation':
-                if (!isset($globalDataSource[$contextID]['validation'])) {
-                    $globalDataSource[$contextID]['validation'] = array();
-                }
-                $globalDataSource[$contextID]['validation'][] = array(
-                    'field' => '= new value =',
-                    'rule' => '= new value =',
-                    'message' => '= new value =',
-                );
-                break;
-            case 'script':
-                if (!isset($globalDataSource[$contextID]['script'])) {
-                    $globalDataSource[$contextID]['script'] = array();
-                }
-                $globalDataSource[$contextID]['script'][] = array(
-                    'db-operation' => '= new value =',
-                    'situation' => '= new value =',
-                    'definition' => '= new value =',
-                );
-                break;
-            case 'global':
-                if (!isset($globalDataSource[$contextID]['global'])) {
-                    $globalDataSource[$contextID]['global'] = array();
-                }
-                $globalDataSource[$contextID]['global'][] = array(
-                    'db-operation' => '= new value =',
-                    'field' => '= new value =',
-                    'value' => '= new value =',
-                );
-                break;
-            case 'calculation':
-                if (!isset($globalDataSource[$contextID]['calculation'])) {
-                    $globalDataSource[$contextID]['calculation'] = array();
-                }
-                $globalDataSource[$contextID]['calculation'][] = array(
-                    'field' => '= new value =',
-                    'expression' => '= new value =',
-                );
-                break;
-            case 'file-upload':
-                if (!isset($globalDataSource[$contextID]['file-upload'])) {
-                    $globalDataSource[$contextID]['file-upload'] = array();
-                }
-                $globalDataSource[$contextID]['file-upload'][] = array(
-                    'field' => '= new value =',
-                    'context' => '= new value =',
-                    'container' => true,
-                );
-                break;
-            case 'options':
-                break;
-            case 'aliases':
-                if (!isset($globalOptions['aliases'])) {
-                    $globalOptions['aliases'] = array();
-                }
-                $globalOptions['aliases'][] = array(
-                    'alias' => '= new value =',
-                    'original' => '= new value =',
-                );
-                break;
-            case 'browser-compatibility':
-                if (!isset($globalOptions['browser-compatibility'])) {
-                    $globalOptions['browser-compatibility'] = array();
-                }
-                $index = count($globalOptions['browser-compatibility']);
-                $globalOptions['browser-compatibility']["agent{$index}"] = '= version =';
-                break;
-            case 'formatter':
-                if (!isset($globalOptions['formatter'])) {
-                    $globalOptions['formatter'] = array();
-                }
-                $globalOptions['formatter'][] = array(
-                    'field' => '= new value =',
-                    'converter-class' => '= new value =',
-                    'parameter' => '= new value =',
-                );
-                break;
-            case 'dbsettings':
-                break;
-            case 'external-db':
-                if (!isset($globalDBSpecs['external-db'])) {
-                    $globalDBSpecs['external-db'] = array();
-                }
-                $globalDBSpecs['external-db'][] = array(
-                    'db' => '= new value =',
-                );
-                break;
-            case 'debug':
-                break;
-        }
-
-        $newFileContent = substr($fileContent, 0, $funcStartPos);
-        $newFileContent .= "IM_Entry(";
-        $newFileContent .= var_export($globalDataSource, true);
-        $newFileContent .= ",\n";
-        $newFileContent .= var_export($globalOptions, true);
-        $newFileContent .= ",\n";
-        $newFileContent .= var_export($globalDBSpecs, true);
-        $newFileContent .= ",\n";
-        $newFileContent .= var_export($globalDebug, true);
-        $newFileContent .= ");\n?>";
-
-        $fileWriteResult = file_put_contents($filePath, $newFileContent);
-        if ($fileWriteResult === false) {
-            $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
-            return null;
-        }
-    }
-
-    function deleteFromDB($dataSourceName)
-    {
-        global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
-
-        $filePath = $this->dbSettings->getValueOfField('target');
-        $contextID = $this->dbSettings->getCriteriaValue('id');
-
-        $fileContent = file_get_contents($filePath);
-        if ($fileContent === false) {
-            $this->logger->setErrorMessage(
-                "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
-            return null;
-        }
-        $funcStartPos = strpos($fileContent, "IM_Entry");
-        $convert = str_replace("<?php", "",
-            str_replace("?>", "",
-                str_replace("IM_Entry", "IM_Dummy_Entry",
-                    changeIncludeIMPath(
-                        $fileContent,
-                        "require_once('../INTER-Mediator.php');"
-                    ))));
-        eval($convert);
-
-        switch ($dataSourceName) {
-            case 'contexts':
-                unset($globalDataSource[$contextID]);
-                break;
-            case 'relation':
-            case 'query':
-            case 'sort':
-            case 'default-values':
-            case 'validation':
-            case 'calculation':
-            case 'file-upload':
-                $recordID = $contextID % 10000;
-                $contextID = floor($contextID / 10000);
-                if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
-                    unset($globalDataSource[$contextID][$dataSourceName]);
-                } else {
-                    unset($globalDataSource[$contextID][$dataSourceName][$recordID]);
-                }
-                break;
-            case 'global':
-            case 'script':
-                $recordID = $contextID % 10000;
-                $contextID = floor($contextID / 10000);
-                if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
-                    unset($globalDataSource[$contextID][$dataSourceName]);
-                } else {
-                    unset($globalDataSource[$contextID][$dataSourceName][$recordID]);
-                }
-                break;
-            case 'options':
-                $theKey = $this->dbSettings->getFieldOfIndex(1);
-                if (strpos($theKey, "authentication-") === 0) {
-                    $authKey = substr($theKey, 15);
-                    if (!isset($globalOptions["authentication"][$authKey])) {
-                        $globalOptions["authentication"][$authKey] = array();
+            switch ($dataSourceName) {
+                case 'contexts':
+                    $globalDataSource[] = array('name' => '= new context =');
+                    break;
+                case 'relation':
+                    if (!isset($globalDataSource[$contextID]['relation'])) {
+                        $globalDataSource[$contextID]['relation'] = array();
                     }
-                    $globalOptions["authentication"][$authKey]
-                        = $this->dbSettings->getValueOfField($theKey);
-                } else {
-                    $globalOptions[$theKey] = $this->dbSettings->getValueOfField($theKey);
-                }
-                break;
-            case 'aliases':
-            case 'formatter':
-                $recordID = $contextID % 10000;
-                unset($globalOptions[$dataSourceName][$recordID]);
-                if (count($globalOptions[$dataSourceName]) < 1) {
-                    unset($globalOptions[$dataSourceName]);
-                }
-                break;
-            case 'browser-compatibility':
-                $recordID = $contextID % 10000;
-                $keys = array_keys($globalOptions[$dataSourceName]);
-                unset($globalOptions[$dataSourceName][$keys[$recordID]]);
-                if (count($globalOptions[$dataSourceName]) < 1) {
-                    unset($globalOptions[$dataSourceName]);
-                }
-                break;
-            case 'debug':
-                $theKey = $this->dbSettings->getFieldOfIndex(1);
-                $globalDebug = $this->dbSettings->getValueOfField($theKey);
-                break;
-            default:
-                break;
+                    $globalDataSource[$contextID]['relation'][] = array(
+                        'foreign-key' => '= new value =',
+                        'join-field' => '= new value =',
+                        'operator' => '= new value =',
+                    );
+                    break;
+                case 'query':
+                    if (!isset($globalDataSource[$contextID]['query'])) {
+                        $globalDataSource[$contextID]['query'] = array();
+                    }
+                    $globalDataSource[$contextID]['query'][] = array(
+                        'field' => '= new value =',
+                        'value' => '= new value =',
+                        'operator' => '= new value =',
+                    );
+                    break;
+                case 'sort':
+                    if (!isset($globalDataSource[$contextID]['sort'])) {
+                        $globalDataSource[$contextID]['sort'] = array();
+                    }
+                    $globalDataSource[$contextID]['sort'][] = array(
+                        'field' => '= new value =',
+                        'direction' => '= new value =',
+                    );
+                    break;
+                case 'default-values':
+                    if (!isset($globalDataSource[$contextID]['default-values'])) {
+                        $globalDataSource[$contextID]['default-values'] = array();
+                    }
+                    $globalDataSource[$contextID]['default-values'][] = array(
+                        'field' => '= new value =',
+                        'value' => '= new value =',
+                    );
+                    break;
+                case 'validation':
+                    if (!isset($globalDataSource[$contextID]['validation'])) {
+                        $globalDataSource[$contextID]['validation'] = array();
+                    }
+                    $globalDataSource[$contextID]['validation'][] = array(
+                        'field' => '= new value =',
+                        'rule' => '= new value =',
+                        'message' => '= new value =',
+                    );
+                    break;
+                case 'script':
+                    if (!isset($globalDataSource[$contextID]['script'])) {
+                        $globalDataSource[$contextID]['script'] = array();
+                    }
+                    $globalDataSource[$contextID]['script'][] = array(
+                        'db-operation' => '= new value =',
+                        'situation' => '= new value =',
+                        'definition' => '= new value =',
+                    );
+                    break;
+                case 'global':
+                    if (!isset($globalDataSource[$contextID]['global'])) {
+                        $globalDataSource[$contextID]['global'] = array();
+                    }
+                    $globalDataSource[$contextID]['global'][] = array(
+                        'db-operation' => '= new value =',
+                        'field' => '= new value =',
+                        'value' => '= new value =',
+                    );
+                    break;
+                case 'calculation':
+                    if (!isset($globalDataSource[$contextID]['calculation'])) {
+                        $globalDataSource[$contextID]['calculation'] = array();
+                    }
+                    $globalDataSource[$contextID]['calculation'][] = array(
+                        'field' => '= new value =',
+                        'expression' => '= new value =',
+                    );
+                    break;
+                case 'file-upload':
+                    if (!isset($globalDataSource[$contextID]['file-upload'])) {
+                        $globalDataSource[$contextID]['file-upload'] = array();
+                    }
+                    $globalDataSource[$contextID]['file-upload'][] = array(
+                        'field' => '= new value =',
+                        'context' => '= new value =',
+                        'container' => true,
+                    );
+                    break;
+                case 'options':
+                    break;
+                case 'aliases':
+                    if (!isset($globalOptions['aliases'])) {
+                        $globalOptions['aliases'] = array();
+                    }
+                    $globalOptions['aliases'][] = array(
+                        'alias' => '= new value =',
+                        'original' => '= new value =',
+                    );
+                    break;
+                case 'browser-compatibility':
+                    if (!isset($globalOptions['browser-compatibility'])) {
+                        $globalOptions['browser-compatibility'] = array();
+                    }
+                    $index = count($globalOptions['browser-compatibility']);
+                    $globalOptions['browser-compatibility']["agent{$index}"] = '= version =';
+                    break;
+                case 'formatter':
+                    if (!isset($globalOptions['formatter'])) {
+                        $globalOptions['formatter'] = array();
+                    }
+                    $globalOptions['formatter'][] = array(
+                        'field' => '= new value =',
+                        'converter-class' => '= new value =',
+                        'parameter' => '= new value =',
+                    );
+                    break;
+                case 'dbsettings':
+                    break;
+                case 'external-db':
+                    if (!isset($globalDBSpecs['external-db'])) {
+                        $globalDBSpecs['external-db'] = array();
+                    }
+                    $globalDBSpecs['external-db'][] = array(
+                        'db' => '= new value =',
+                    );
+                    break;
+                case 'debug':
+                    break;
+            }
+
+            $newFileContent = substr($fileContent, 0, $funcStartPos);
+            $newFileContent .= "IM_Entry(";
+            $newFileContent .= var_export($globalDataSource, true);
+            $newFileContent .= ",\n";
+            $newFileContent .= var_export($globalOptions, true);
+            $newFileContent .= ",\n";
+            $newFileContent .= var_export($globalDBSpecs, true);
+            $newFileContent .= ",\n";
+            $newFileContent .= var_export($globalDebug, true);
+            $newFileContent .= ");\n?>";
+
+            $fileWriteResult = file_put_contents($filePath, $newFileContent);
+            if ($fileWriteResult === false) {
+                $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
+                return null;
+            }
         }
 
-        $newFileContent = substr($fileContent, 0, $funcStartPos);
-        $newFileContent .= "IM_Entry(";
-        $newFileContent .= var_export($globalDataSource, true);
-        $newFileContent .= ",\n";
-        $newFileContent .= var_export($globalOptions, true);
-        $newFileContent .= ",\n";
-        $newFileContent .= var_export($globalDBSpecs, true);
-        $newFileContent .= ",\n";
-        $newFileContent .= var_export($globalDebug, true);
-        $newFileContent .= ");\n?>";
+        function deleteFromDB($dataSourceName)
+        {
+            global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
-        $fileWriteResult = file_put_contents($filePath, $newFileContent);
-        if ($fileWriteResult === false) {
-            $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
-            return null;
+            $filePath = $this->dbSettings->getValueOfField('target');
+            $contextID = $this->dbSettings->getCriteriaValue('id');
+
+            $fileContent = file_get_contents($filePath);
+            if ($fileContent === false) {
+                $this->logger->setErrorMessage(
+                    "The 'target' parameter doesn't point the valid file path in context: {$dataSourceName}.");
+                return null;
+            }
+            $funcStartPos = strpos($fileContent, "IM_Entry");
+            $convert = str_replace("<?php", "",
+                str_replace("?>", "",
+                    str_replace("IM_Entry", "IM_Dummy_Entry",
+                        changeIncludeIMPath(
+                            $fileContent,
+                            "require_once('../INTER-Mediator.php');"
+                        ))));
+            eval($convert);
+
+            switch ($dataSourceName) {
+                case 'contexts':
+                    unset($globalDataSource[$contextID]);
+                    break;
+                case 'relation':
+                case 'query':
+                case 'sort':
+                case 'default-values':
+                case 'validation':
+                case 'calculation':
+                case 'file-upload':
+                    $recordID = $contextID % 10000;
+                    $contextID = floor($contextID / 10000);
+                    if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
+                        unset($globalDataSource[$contextID][$dataSourceName]);
+                    } else {
+                        unset($globalDataSource[$contextID][$dataSourceName][$recordID]);
+                    }
+                    break;
+                case 'global':
+                case 'script':
+                    $recordID = $contextID % 10000;
+                    $contextID = floor($contextID / 10000);
+                    if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
+                        unset($globalDataSource[$contextID][$dataSourceName]);
+                    } else {
+                        unset($globalDataSource[$contextID][$dataSourceName][$recordID]);
+                    }
+                    break;
+                case 'options':
+                    $theKey = $this->dbSettings->getFieldOfIndex(1);
+                    if (strpos($theKey, "authentication-") === 0) {
+                        $authKey = substr($theKey, 15);
+                        if (!isset($globalOptions["authentication"][$authKey])) {
+                            $globalOptions["authentication"][$authKey] = array();
+                        }
+                        $globalOptions["authentication"][$authKey]
+                            = $this->dbSettings->getValueOfField($theKey);
+                    } else {
+                        $globalOptions[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                    }
+                    break;
+                case 'aliases':
+                case 'formatter':
+                    $recordID = $contextID % 10000;
+                    unset($globalOptions[$dataSourceName][$recordID]);
+                    if (count($globalOptions[$dataSourceName]) < 1) {
+                        unset($globalOptions[$dataSourceName]);
+                    }
+                    break;
+                case 'browser-compatibility':
+                    $recordID = $contextID % 10000;
+                    $keys = array_keys($globalOptions[$dataSourceName]);
+                    unset($globalOptions[$dataSourceName][$keys[$recordID]]);
+                    if (count($globalOptions[$dataSourceName]) < 1) {
+                        unset($globalOptions[$dataSourceName]);
+                    }
+                    break;
+                case 'debug':
+                    $theKey = $this->dbSettings->getFieldOfIndex(1);
+                    $globalDebug = $this->dbSettings->getValueOfField($theKey);
+                    break;
+                default:
+                    break;
+            }
+
+            $newFileContent = substr($fileContent, 0, $funcStartPos);
+            $newFileContent .= "IM_Entry(";
+            $newFileContent .= var_export($globalDataSource, true);
+            $newFileContent .= ",\n";
+            $newFileContent .= var_export($globalOptions, true);
+            $newFileContent .= ",\n";
+            $newFileContent .= var_export($globalDBSpecs, true);
+            $newFileContent .= ",\n";
+            $newFileContent .= var_export($globalDebug, true);
+            $newFileContent .= ");\n?>";
+
+            $fileWriteResult = file_put_contents($filePath, $newFileContent);
+            if ($fileWriteResult === false) {
+                $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
+                return null;
+            }
         }
-    }
-
-    function getFieldInfo($dataSourceName)
-    {
-        // TODO: Implement getFieldInfo() method.
-    }
-
-    function authSupportStoreChallenge($username, $challenge, $clientId)
-    {
-        // TODO: Implement authSupportStoreChallenge() method.
-    }
-
-    function authSupportRemoveOutdatedChallenges()
-    {
-        // TODO: Implement authSupportRemoveOutdatedChallenges() method.
-    }
-
-    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true)
-    {
-        // TODO: Implement authSupportRetrieveChallenge() method.
-    }
-
-    function authSupportRetrieveHashedPassword($username)
-    {
-        // TODO: Implement authSupportRetrieveHashedPassword() method.
-    }
-
-    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
-    {
-        // TODO: Implement authSupportCreateUser() method.
-    }
-
-    function authSupportChangePassword($username, $hashednewpassword)
-    {
-        // TODO: Implement authSupportChangePassword() method.
-    }
-
-    function authSupportCheckMediaToken($user)
-    {
-        // TODO: Implement authSupportCheckMediaToken() method.
-    }
-
-    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
-    {
-        // TODO: Implement authSupportCheckMediaPrivilege() method.
-    }
-
-    function authSupportGetUserIdFromEmail($email)
-    {
-        // TODO: Implement authSupportGetUserIdFromEmail() method.
-    }
-
-    function authSupportGetUserIdFromUsername($username)
-    {
-        // TODO: Implement authSupportGetUserIdFromUsername() method.
-    }
-
-    function authSupportGetUsernameFromUserId($userid)
-    {
-        // TODO: Implement authSupportGetUsernameFromUserId() method.
-    }
-
-    function authSupportGetGroupNameFromGroupId($groupid)
-    {
-        // TODO: Implement authSupportGetGroupNameFromGroupId() method.
-    }
-
-    function authSupportGetGroupsOfUser($user)
-    {
-        // TODO: Implement authSupportGetGroupsOfUser() method.
-    }
-
-    function authSupportUnifyUsernameAndEmail($username)
-    {
-        // TODO: Implement authSupportUnifyUsernameAndEmail() method.
-    }
-
-    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
-    {
-        // TODO: Implement authSupportStoreIssuedHashForResetPassword() method.
-    }
-
-    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
-    {
-        // TODO: Implement authSupportCheckIssuedHashForResetPassword() method.
-    }
-
-    public
-    function setupConnection()
-    {
-        // TODO: Implement setupConnection() method.
-    }
-
-    public
-    static function defaultKey()
-    {
-        // TODO: Implement defaultKey() method.
     }
 
     public function getDefaultKey()
@@ -1217,5 +1191,110 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     {
         return false;
 
+    }
+
+    public function newToDB($dataSourceName, $bypassAuth)
+    {
+        // TODO: Implement newToDB() method.
+    }
+
+    public function deleteFromDB($dataSourceName)
+    {
+        // TODO: Implement deleteFromDB() method.
+    }
+
+    public function getFieldInfo($dataSourceName)
+    {
+        // TODO: Implement getFieldInfo() method.
+    }
+
+    public function setupConnection()
+    {
+        // TODO: Implement setupConnection() method.
+    }
+
+    public static function defaultKey()
+    {
+        // TODO: Implement defaultKey() method.
+    }
+
+    public function authSupportStoreChallenge($uid, $challenge, $clientId)
+    {
+        // TODO: Implement authSupportStoreChallenge() method.
+    }
+
+    public function authSupportRemoveOutdatedChallenges()
+    {
+        // TODO: Implement authSupportRemoveOutdatedChallenges() method.
+    }
+
+    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
+    {
+        // TODO: Implement authSupportRetrieveChallenge() method.
+    }
+
+    public function authSupportCheckMediaToken($uid)
+    {
+        // TODO: Implement authSupportCheckMediaToken() method.
+    }
+
+    public function authSupportRetrieveHashedPassword($username)
+    {
+        // TODO: Implement authSupportRetrieveHashedPassword() method.
+    }
+
+    public function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
+    {
+        // TODO: Implement authSupportCreateUser() method.
+    }
+
+    public function authSupportChangePassword($username, $hashednewpassword)
+    {
+        // TODO: Implement authSupportChangePassword() method.
+    }
+
+    public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
+    {
+        // TODO: Implement authSupportCheckMediaPrivilege() method.
+    }
+
+    public function authSupportGetUserIdFromEmail($email)
+    {
+        // TODO: Implement authSupportGetUserIdFromEmail() method.
+    }
+
+    public function authSupportGetUserIdFromUsername($username)
+    {
+        // TODO: Implement authSupportGetUserIdFromUsername() method.
+    }
+
+    public function authSupportGetUsernameFromUserId($userid)
+    {
+        // TODO: Implement authSupportGetUsernameFromUserId() method.
+    }
+
+    public function authSupportGetGroupNameFromGroupId($groupid)
+    {
+        // TODO: Implement authSupportGetGroupNameFromGroupId() method.
+    }
+
+    public function authSupportGetGroupsOfUser($user)
+    {
+        // TODO: Implement authSupportGetGroupsOfUser() method.
+    }
+
+    public function authSupportUnifyUsernameAndEmail($username)
+    {
+        // TODO: Implement authSupportUnifyUsernameAndEmail() method.
+    }
+
+    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
+    {
+        // TODO: Implement authSupportStoreIssuedHashForResetPassword() method.
+    }
+
+    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
+    {
+        // TODO: Implement authSupportCheckIssuedHashForResetPassword() method.
     }
 }

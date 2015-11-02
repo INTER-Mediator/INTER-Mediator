@@ -936,9 +936,10 @@ var INTERMediatorLib = {
     },
 
     getInsertedStringFromErrorNumber: function (errNum, dataArray) {
-        var resultStr, counter;
+        var resultStr, counter, messageArray;
 
-        resultStr = INTERMediatorOnPage.getMessages()[errNum];
+        messageArray = INTERMediatorOnPage.getMessages();
+        resultStr = messageArray ? messageArray[errNum] : "Error:" + errNum;
         if (dataArray) {
             for (counter = 1; counter <= dataArray.length; counter++) {
                 resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);

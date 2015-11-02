@@ -279,12 +279,74 @@ INTERMediatorOnPage = {
     defaultBackgroundColor: null,
     loginPanelHTML: null,
 
-    authenticating: function (doAfterAuth) {
+    authenticating: function (doAfterAuth, doTest) {
         "use strict";
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
             messageNode, oAuthButton;
+
+        this.checkPasswordPolicy = function(newPassword, userName, policyString) {
+            var terms, i, policyCheck, message = [], minLen;
+            if (!policyString)  {
+                return message;
+            }
+            terms = policyString.split(/[\s,]/);
+            for (i = 0; i < terms.length; i++) {
+                switch (terms[i].toUpperCase()) {
+                    case "USEALPHABET":
+                        if (!newPassword.match(/[A-Za-z]/)) {
+                            policyCheck = false;
+                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2015));
+                        }
+                        break;
+                    case "USENUMBER":
+                        if (!newPassword.match(/[0-9]/)) {
+                            policyCheck = false;
+                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2016));
+                        }
+                        break;
+                    case "USEUPPER":
+                        if (!newPassword.match(/[A-Z]/)) {
+                            policyCheck = false;
+                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2017));
+                        }
+                        break;
+                    case "USELOWER":
+                        if (!newPassword.match(/[a-z]/)) {
+                            policyCheck = false;
+                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2018));
+                        }
+                        break;
+                    case "USEPUNCTUATION":
+                        if (!newPassword.match(/[^A-Za-z0-9]/)) {
+                            policyCheck = false;
+                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2019));
+                        }
+                        break;
+                    case "NOTUSERNAME":
+                        if (newPassword == userName) {
+                            policyCheck = false;
+                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2020));
+                        }
+                        break;
+                    default:
+                        if (terms[i].toUpperCase().indexOf("LENGTH") === 0) {
+                            minLen = terms[i].match(/[0-9]+/)[0];
+                            if (newPassword.length < minLen) {
+                                policyCheck = false;
+                                message.push(
+                                    INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]));
+                            }
+                        }
+                }
+            }
+            return message;
+        };
+
+        if (doTest)    {
+            return;
+        }
 
         if (INTERMediatorOnPage.authCount > INTERMediatorOnPage.authCountLimit) {
             INTERMediatorOnPage.authenticationError();
@@ -497,9 +559,10 @@ INTERMediatorOnPage = {
             INTERMediator.flushMessage();
         };
         if (chgpwButton) {
+            var checkPolicyMethod = this.checkPasswordPolicy;
             chgpwButton.onclick = function () {
                 var inputUsername, inputPassword, inputNewPassword, challengeResult, params,
-                    result, messageNode, terms, i, policyCheck = true, message = [];
+                    result, messageNode, message;
 
                 messageNode = document.getElementById("_im_newpass_message");
                 INTERMediatorLib.removeChildNodes(messageNode);
@@ -516,89 +579,16 @@ INTERMediatorOnPage = {
                     return;
                 }
 
-                terms = INTERMediatorOnPage.passwordPolicy.split(/[\s,]/);
-                for (i = 0; i < terms.length; i++) {
-                    switch (terms[i].toUpperCase()) {
-                        case "USEALPHABET":
-                            if (!inputNewPassword.match(/[A-Za-z]/)) {
-                                policyCheck = false;
-                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2015));
-                            }
-                            break;
-                        case "USENUMBER":
-                            if (!inputNewPassword.match(/[0-9]/)) {
-                                policyCheck = false;
-                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2016));
-                            }
-                            break;
-                        case "USEUPPER":
-                            if (!inputNewPassword.match(/[A-Z]/)) {
-                                policyCheck = false;
-                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2017));
-                            }
-                            break;
-                        case "USELOWER":
-                            if (!inputNewPassword.match(/[a-z]/)) {
-                                policyCheck = false;
-                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2018));
-                            }
-                            break;
-                        case "USEPUNCTUATION":
-                            if (!inputNewPassword.match(/[^A-Za-z0-9]/)) {
-                                policyCheck = false;
-                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2019));
-                            }
-                            break;
-                        case "NOTUSERNAME":
-                            if (inputNewPassword == inputUsername) {
-                                policyCheck = false;
-                                message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2020));
-                            }
-                            break;
-                        default:
-                            if (terms[i].toUpperCase().indexOf("LENGTH") === 0) {
-                                var minLen = terms[i].match(/[0-9]+/)[0];
-                                if (inputNewPassword.length < minLen) {
-                                    policyCheck = false;
-                                    message.push(
-                                        INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]));
-                                }
-                            }
-                    }
-                }
-                if (!policyCheck) {
+                message = checkPolicyMethod(inputNewPassword, inputUsername, INTERMediatorOnPage.passwordPolicy);
+                if (message.length > 0) {  // Policy violated.
                     messageNode.appendChild(document.createTextNode(message.join(", ")));
                     return;
                 }
 
-                INTERMediatorOnPage.authUser = inputUsername;
-                if (inputUsername !== "" &&  // No usename and no challenge, get a challenge.
-                    (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
-                    INTERMediatorOnPage.authHashedPassword = "need-hash-pls";   // Dummy Hash for getting a challenge
-                    challengeResult = INTERMediator_DBAdapter.getChallenge();
-                    if (!challengeResult) {
-                        messageNode = document.getElementById("_im_newpass_message");
-                        INTERMediatorLib.removeChildNodes(messageNode);
-                        messageNode.appendChild(
-                            document.createTextNode(
-                                INTERMediatorLib.getInsertedStringFromErrorNumber(2008)));
-                        INTERMediator.flushMessage();
-                        return; // If it's failed to get a challenge, finish everything.
-                    }
-                }
-                INTERMediatorOnPage.authHashedPassword =
-                    SHA1(inputPassword + INTERMediatorOnPage.authUserSalt) +
-                    INTERMediatorOnPage.authUserHexSalt;
-                params = "access=changepassword&newpass=" + INTERMediatorLib.generatePasswordHash(inputNewPassword);
-                try {
-                    result = INTERMediator_DBAdapter.server_access(params, 1029, 1030);
-                } catch (e) {
-                    result = {newPasswordResult: false};
-                }
+                result = INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword);
                 messageNode.appendChild(
                     document.createTextNode(
-                        INTERMediatorLib.getInsertedStringFromErrorNumber(
-                            result.newPasswordResult === true ? 2009 : 2010)));
+                        INTERMediatorLib.getInsertedStringFromErrorNumber(result ? 2009 : 2010)));
 
                 INTERMediator.flushMessage();
             };

@@ -803,7 +803,7 @@ INTERMediator = {
                         foreignValue = null;
                     }
                     keyValue = targetRecordset[ix][keyField];
-                    keyingValue = keyField + "=" + keyValue;
+                    keyingValue = keyField + "=" + ((keyValue == undefined) ? ix : keyValue);
 
                     for (k = 0; k < currentLinkedNodes.length; k++) {
                         // for each linked element
@@ -1691,7 +1691,7 @@ INTERMediator = {
             buttonNode.setAttribute('id', thisId);
             INTERMediator.buttonIdNum++;
             masterContext = IMLibContextPool.getMasterContext();
-            masterContext.setValue(keyField +"="+ keyValue, "_im_buttom_master_id", thisId, thisId);
+            masterContext.setValue(keyField + "=" + keyValue, "_im_buttom_master_id", thisId, thisId);
 
             navigateJSFunction = function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi) {
                 var f = keyField, v = keyValue, ff = foreignField, fv = foreignValue;
