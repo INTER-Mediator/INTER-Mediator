@@ -579,20 +579,16 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         }
 
-        if (isset($context['authentication'])
-            && (isset($context['authentication']['all'])
-                || isset($context['authentication']['load'])
-                || isset($context['authentication']['read']))
+        if (isset($tableInfo['authentication'])
+            && ((isset($tableInfo['authentication']['all'])
+                || isset($tableInfo['authentication']["read"])
+                || isset($tableInfo['authentication']["select"])
+                || isset($tableInfo['authentication']["load"])))
         ) {
             $authFailure = FALSE;
-            if (isset($context['authentication']['load'])) {
-                $authInfoField = $this->getFieldForAuthorization("load");
-                $authInfoTarget = $this->getTargetForAuthorization("load");
-            } else if (isset($context['authentication']['read'])) {
                 $authInfoField = $this->getFieldForAuthorization("read");
                 $authInfoTarget = $this->getTargetForAuthorization("read");
-            }
-            if ($authInfoTarget == 'field-user') {
+                if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
                 } else {
