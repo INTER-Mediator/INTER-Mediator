@@ -614,19 +614,18 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
                     $hasFindParams = true;
                 }
-            } else {
-                if ($this->dbSettings->isDBNative()) {
-                } else {
-                    $authorizedUsers = $this->getAuthorizedUsers("load");
-                    $authorizedGroups = $this->getAuthorizedGroups("load");
-                    $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                    $this->logger->setDebugMessage("#####".var_export($belongGroups, true));
-                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
-                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
-                    ) {
-                        $authFailure = true;
-                    }
-                }
+//            } else {
+//                if ($this->dbSettings->isDBNative()) {
+//                } else {
+//                    $authorizedUsers = $this->getAuthorizedUsers("load");
+//                    $authorizedGroups = $this->getAuthorizedGroups("load");
+//                    $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
+//                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
+//                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
+//                    ) {
+//                        $authFailure = true;
+//                    }
+//                }
             }
             if ($authFailure) {
                 $this->logger->setErrorMessage("Authorization Error.");
