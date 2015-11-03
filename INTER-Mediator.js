@@ -734,7 +734,7 @@ INTERMediator = {
                 keyValue, keyingValue, k, nodeId, replacedNode, children, wInfo, nameTable, nodeTag, typeAttr,
                 linkInfoArray, nameTableKey, nameNumber, nameAttr, nInfo, curVal, j, curTarget, newlyAddedNodes,
                 encNodeTag, repNodeTag, ix, repeatersOriginal, targetRecordset, targetTotalCount, i,
-                currentContextDef, idValuesForFieldName, indexContext, insertNode, usePortal;
+                currentContextDef, idValuesForFieldName, indexContext, insertNode, usePortal, countRecord;
 
             encNodeTag = node.tagName;
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -759,6 +759,7 @@ INTERMediator = {
 
             recordCounter = 0;
             usePortal = false;
+            countRecord = ! targetRecordset ? targetRecordset.length : 0;
             for (ix = 0; ix < targetRecordset.length; ix++) { // for each record
                 try {
                     recordCounter++;
