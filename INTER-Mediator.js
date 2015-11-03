@@ -759,8 +759,8 @@ INTERMediator = {
 
             recordCounter = 0;
             usePortal = false;
-            countRecord = ! targetRecordset ? targetRecordset.length : 0;
-            for (ix = 0; ix < targetRecordset.length; ix++) { // for each record
+            countRecord = targetRecordset ? targetRecordset.length : 0;
+            for (ix = 0; ix < countRecord; ix++) { // for each record
                 try {
                     recordCounter++;
                     repeatersOneRec = cloneEveryNodes(repeatersOriginal);
