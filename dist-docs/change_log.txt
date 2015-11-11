@@ -39,6 +39,7 @@ Ver.5.3 (in development)
   from MASTER_CONTEXT.getValue(RECORD_KEY, "_im_buttom_master_id").
 - Enable the Post Only Mode when using an input elemement button (<input type="button"> or <input 
   type="submit">).
+- Modify the sample application of uploading a file.
 - Send mail for each record in queried ones.
 - All header description of source files are updated, and build.sh was adapted them.
 - Password policy can be set in the 2nd "option" parameter of IM_Entry function.
@@ -48,6 +49,10 @@ Ver.5.3 (in development)
 - Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.
 - Avoid outputting an error message in an error log file in case of an invalid request.
+- [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
+  FileMaker Server 12 or later if using FileMaker Server.
+- The second parameter of the doAfterCreateToDB method is passed all fields of the newly created record.
+  Previously it was just a key field value of new record.
 - [BUG FIX] Fix detection of params.php file.
 - [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
 - [BUG FIX] Modify INTERMediator.totalRecordCount after IMLibPageNavigation.deleteRecordFromNavi method.
