@@ -53,7 +53,7 @@ class GenerateJSCode
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
-            "passwordPolicy",
+            "passwordPolicy", "documentRootPrefix",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -64,6 +64,7 @@ class GenerateJSCode
         $oAuthClientID = $params["oAuthClientID"];
         $oAuthRedirect = $params["oAuthRedirect"];
         $passwordPolicy = $params["passwordPolicy"];
+        $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
 
         /*
          * Read the JS programs regarding by the developing or deployed.
@@ -142,7 +143,7 @@ class GenerateJSCode
         }
 
         $pathToIMRootDir = mb_ereg_replace(
-            "^" . filter_var($_SERVER['DOCUMENT_ROOT']), "", (dirname(__FILE__)));
+            "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT']), "", (dirname(__FILE__)));
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
