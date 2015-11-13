@@ -19,6 +19,7 @@ class DataConverter_Number extends DataConverter_NumberBase
 {
 
     private $d = null;
+    private $isZeroNoString = false;
 
     /**
      *
@@ -28,11 +29,19 @@ class DataConverter_Number extends DataConverter_NumberBase
     function __construct($digits = 0)
     {
         parent::__construct();
-        $this->d = $digits;
+        if ($digits === true)    {
+            $this->isZeroNoString = true;
+            $this->d = 0;
+        } else {
+            $this->d = $digits;
+        }
     }
 
     function converterFromDBtoUser($str)
     {
-         return number_format((double)$str, (int)($this->d), $this->decimalMark, $this->thSepMark);
+        if ($this->isZeroNoString && (double)$str == 0)  {
+            return "";
+        }
+        return number_format((double)$str, (int)($this->d), $this->decimalMark, $this->thSepMark);
     }
 }
