@@ -7,9 +7,9 @@
 $url = basename($_SERVER['SCRIPT_FILENAME']);
 
 //Get file upload progress information.
-if(isset($_GET['progress_key'])) {
+if (function_exists('apc_fetch') && isset($_GET['progress_key'])) {
     $status = apc_fetch('upload_'.$_GET['progress_key']);
-    echo $status['current']/$status['total']*100;
+    echo intval($status['current']) / intval($status['total']) * 100;
     die;
 }
 ?>
@@ -46,7 +46,7 @@ if(isset($_GET['progress_key'])) {
     $(document).ready(function() {
         setInterval(function()
         {
-            $.get("<?php echo $url; ?>?progress_key=<?php echo $_GET['up_id']; ?>&randval="+ Math.random(), {},
+            $.get("<?php echo urlencode($url); ?>?progress_key=<?php echo isset($_GET['up_id']) ? urlencode($_GET['up_id']) : ''; ?>&randval="+ Math.random(), {},
                 function(data)
                 {
                     $('#progress_container').fadeIn(100);
