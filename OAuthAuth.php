@@ -31,6 +31,9 @@ class OAuthAuth
     private $jsCode = '';
     private $id_token;
     private $provider;
+    private $doRedirect = true;
+    private $isCreate = null;
+    private $userInfo = null;
 
     public function __construct()
     {
@@ -47,8 +50,9 @@ class OAuthAuth
         switch (strtolower($params["oAuthProvider"])) {
             case "google":
                 $this->baseURL = 'https://accounts.google.com/o/oauth2/auth';
-                $this->getTokenURL = 'https://accounts.google.com/o/oauth2/token';
-                $this->getInfoURL = 'https://www.googleapis.com/oauth2/v1/userinfo';
+                //    $this->getTokenURL = 'https://accounts.google.com/o/oauth2/token';
+                $this->getTokenURL = 'https://www.googleapis.com/oauth2/v4/token';
+                $this->getInfoURL = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
                 $this->infoScope = array('openid', 'profile', 'email');
 
                 /* Set up for Google
@@ -92,6 +96,21 @@ class OAuthAuth
         return implode(", ", $this->errorMessage);
     }
 
+    public function setDoRedirect($val)
+    {
+        $this->doRedirect = $val;
+    }
+
+    public function isCreate()
+    {
+        return $this->isCreate;
+    }
+
+    public function getUserInfo()
+    {
+        return $this->userInfo;
+    }
+
     public function afterAuth()
     {
         if (!isset($_REQUEST['code'])) {
@@ -103,11 +122,22 @@ class OAuthAuth
             return false;
         }
 
+        $this->userInfo = array(
+            "username" => $tokenID["username"],
+            "realname" => $tokenID["realname"],
+            "email" => $tokenID["email"]
+        );
+
         $dbProxy = new DB_Proxy();
         $dbProxy->initialize(null, null, null, false);
         $dbProxy->dbSettings->setLDAPExpiringSeconds(3600 * 24);
         $credential = $dbProxy->generateCredential(30);
-        $dbProxy->dbClass->authSupportOAuthUserHandling($tokenID["username"], $credential);
+        $this->isCreate = $dbProxy->dbClass->authSupportOAuthUserHandling(array(
+            "username" => $tokenID["username"],
+            "hashedpasswd" => $credential,
+            "realname" => $tokenID["realname"],
+            "email" => $tokenID["email"]
+        ));
         $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
 
         $oAuthStoring = isset($_COOKIE["_im_oauth_storing"]) ? $_COOKIE["_im_oauth_storing"] : "";
@@ -129,12 +159,12 @@ class OAuthAuth
         $this->jsCode .= "setAnyStore('_im_username', '" . $tokenID["username"] . "');";
         $this->jsCode .= "setAnyStore('_im_credential', '" . $credential . "');";
         $this->jsCode .= "setAnyStore('_im_openidtoken', '" . $this->id_token . "');";
-        if (count($this->errorMessage) < 1) {
+        if (count($this->errorMessage) < 1 && !(!$this->doRedirect && $this->isCreate)) {
             $this->jsCode .= "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
             return true;
         }
 
-        return false;
+        return true;
     }
 
     private function decodeIDToken($code)
@@ -143,19 +173,36 @@ class OAuthAuth
             'code' => $code,
             'client_id' => $this->clientId,
             'client_secret' => $this->clientSecret,
+            'grant_type' => 'authorization_code',
             'redirect_uri' => $this->redirectURL,
-            'grant_type' => 'authorization_code'
         );
-
+        $postParam = "";
+        $isFirstTime = true;
+        foreach ($tokenparams as $key => $value) {
+            if (!$isFirstTime) {
+                $postParam .= "&";
+            }
+            $postParam .= "{$key}=" . urlencode($value);
+            $isFirstTime = false;
+        }
         if (function_exists('curl_init')) {
             $session = curl_init($this->getTokenURL);
             curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($session, CURLOPT_POST, true);
-            curl_setopt($session, CURLOPT_POSTFIELDS, $tokenparams);
+            curl_setopt($session, CURLOPT_POSTFIELDS, $postParam);
+            //    curl_setopt($session, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded'));
             $content = curl_exec($session);
+            if (!curl_errno($session)) {
+                $header = curl_getinfo($session);
+            }
             curl_close($session);
+            $httpCode = $header['http_code'];
         } else {
-            $this->errorMessage[] = "Coundn't get information with the access token.";
+            $this->errorMessage[] = "Couldn't get information with the access token.";
+            return false;
+        }
+        if ($httpCode != 200) {
+            $this->errorMessage[] = "Error: {$this->getTokenURL}<br/>Description: {$content}";
             return false;
         }
         $response = json_decode($content);
@@ -173,6 +220,8 @@ class OAuthAuth
             $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
             return false;
         }
+//        $this->errorMessage[] = $content;
+
         $this->id_token = $response->id_token;
         $jWebToken = explode(".", $response->id_token);
         for ($i = 0; $i < count($jWebToken); $i++) {
@@ -195,10 +244,32 @@ class OAuthAuth
         $username = $jWebToken[1]->sub . "@" . $jWebToken[1]->iss;
         $email = $jWebToken[1]->email;
 
-        $userInfo = json_decode(
-            $userInfo = file_get_contents(
-                $this->getInfoURL . '?access_token=' . $response->access_token)
-        );
+        $accessURL = $this->getInfoURL . '?access_token=' . $response->access_token;
+        if (function_exists('curl_init')) {
+            $session = curl_init($accessURL);
+            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            $content = curl_exec($session);
+            if (!curl_errno($session)) {
+                $header = curl_getinfo($session);
+            }
+            curl_close($session);
+            $httpCode = $header['http_code'];
+        } else {
+            $this->errorMessage[] = "Couldn't get information with the access token.";
+            return false;
+        }
+        if ($httpCode != 200) {
+            $this->errorMessage[] = "Error: {$accessURL}<br/>Description: {$content}";
+            return false;
+        }
+        $userInfo = json_decode($content);
+//        $this->errorMessage[] = "#";
+//        $this->errorMessage[] = var_export($userInfo, true);
+//
+//        $userInfo = json_decode(
+//            $userInfo = file_get_contents(
+//                $this->getInfoURL . '?access_token=' . $response->access_token)
+//        );
         /* The example of $userInfo about Google.
          object(stdClass)#2 (10) {
         ["id"]=> string(21) "113160982833865516666"
