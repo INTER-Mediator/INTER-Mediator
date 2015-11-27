@@ -21,6 +21,7 @@ require_once('DB_Interfaces.php');
 require_once('DB_Logger.php');
 require_once('DB_Settings.php');
 require_once('DB_UseSharedObjects.php');
+require_once('DB_AuthCommon.php');
 require_once('DB_Proxy.php');
 
 $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;

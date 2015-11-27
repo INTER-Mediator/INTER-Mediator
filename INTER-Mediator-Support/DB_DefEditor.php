@@ -443,7 +443,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'debug':
                 $result[] = array(
                     'id' => 0,
-                    'debug' => $globalDebug
+                    'debug' => $globalDebug === false ? 'false' : $globalDebug
                 );
                 $seq++;
                 break;
@@ -831,7 +831,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'debug':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 $globalDebug = $this->dbSettings->getValueOfField($theKey);
-                $globalDebug = ($globalDebug == 'false') ? false : $globalDebug;
+                $globalDebug = ($globalDebug === 'false' || $globalDebug === '') ? false : intval($globalDebug);
                 break;
             default:
                 break;

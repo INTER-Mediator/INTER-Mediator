@@ -500,6 +500,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $currentDirParam = $currentDir . 'params.php';
         $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+
         if (file_exists($parentDirParam)) {
             include($parentDirParam);
         } else if (file_exists($currentDirParam)) {
@@ -1008,6 +1009,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
             $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
         }
+    }
+
+    public function getDatabaseResult() {
+        if (isset($this->outputOfProcessing['dbresult']))   {
+            return $this->outputOfProcessing['dbresult'];
+        }
+        return null;
     }
 
     /* Authentication support */
