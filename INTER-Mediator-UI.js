@@ -272,10 +272,11 @@ var IMLibUI = {
         }
     },
 
-    copyButton: function (contextDef, keyValue) {
-        var newId, restore;
+    copyButton: function (contextObj, keyValue) {
+        var newId, restore, contextDef;
 
         INTERMediatorOnPage.showProgress();
+        contextDef = contextObj.getContextDef();
         newId = IMLibUI.copyRecordImpl(contextDef, keyValue)
         if (newId > -1) {
             restore = INTERMediator.additionalCondition;
@@ -287,7 +288,7 @@ var IMLibUI = {
                 IMLibLocalContext.archive();
             }
             INTERMediator_DBAdapter.unregister();
-            INTERMediator.constructMain(true);
+            INTERMediator.constructMain(contextObj);
             INTERMediator.additionalCondition = restore;
         }
         IMLibCalc.recalculation();
@@ -299,7 +300,7 @@ var IMLibUI = {
         var assocDef, responseCreateRecord, newId, i, def, assocContexts, pStart, copyTerm;
 
         if (contextDef['repeat-control'].match(/confirm-copy/)) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1041])) {
                 return;
             }
         }
@@ -366,10 +367,11 @@ var IMLibUI = {
     },
 
     deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
-        var i, index, currentContext, relationDef;
+        var i, index, currentContext, relationDef, dialogMessage;
 
         if (isConfirm) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
+            dialogMessage = INTERMediatorOnPage.getMessages()[1025];
+            if (!window.confirm(dialogMessage)) {
                 return;
             }
         }
@@ -864,4 +866,4 @@ var IMLibUI = {
         IMLibLocalContext.setValue("valueof" + targetKey.substring(2), 1);
         IMLibUI.eventUpdateHandler(targetSplit[1]);
     }
-}
+};

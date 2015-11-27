@@ -740,7 +740,7 @@ INTERMediator = {
                 keyValue, keyingValue, k, nodeId, replacedNode, children, wInfo, nameTable, nodeTag, typeAttr,
                 linkInfoArray, nameTableKey, nameNumber, nameAttr, nInfo, curVal, j, curTarget, newlyAddedNodes,
                 encNodeTag, repNodeTag, ix, repeatersOriginal, targetRecordset, targetTotalCount, i,
-                currentContextDef, idValuesForFieldName, indexContext, insertNode, usePortal;
+                currentContextDef, idValuesForFieldName, indexContext, insertNode, usePortal, countRecord;
 
             encNodeTag = node.tagName;
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -765,7 +765,8 @@ INTERMediator = {
 
             recordCounter = 0;
             usePortal = false;
-            for (ix = 0; ix < targetRecordset.length; ix++) { // for each record
+            countRecord = targetRecordset ? targetRecordset.length : 0;
+            for (ix = 0; ix < countRecord; ix++) { // for each record
                 try {
                     recordCounter++;
                     repeatersOneRec = cloneEveryNodes(repeatersOriginal);
@@ -959,7 +960,7 @@ INTERMediator = {
                 setupNavigationButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
                     currentContextDef, keyField, keyValue, foreignField, foreignValue);
                 setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
-                    currentContextDef, targetRecordset[ix]);
+                    contextObj, targetRecordset[ix]);
 
                 if (Boolean(currentContextDef.portal) !== true ||
                     (Boolean(currentContextDef.portal) === true && targetTotalCount > 0)) {
@@ -1394,10 +1395,11 @@ INTERMediator = {
         /* --------------------------------------------------------------------
 
          */
-        function setupCopyButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, currentRecord) {
+        function setupCopyButton(encNodeTag, repNodeTag, endOfRepeaters, currentContext, currentRecord) {
             // Handling Copy buttons
-            var buttonNode, thisId, copyJSFunction, tdNodes, tdNode, buttonName;
+            var buttonNode, thisId, copyJSFunction, tdNodes, tdNode, buttonName, currentContextDef;
 
+            currentContextDef = currentContext.getContextDef();
             if (!currentContextDef['repeat-control']
                 || !currentContextDef['repeat-control'].match(/copy/i)) {
                 return;
@@ -1420,17 +1422,16 @@ INTERMediator = {
                 buttonNode.setAttribute('id', thisId);
                 INTERMediator.buttonIdNum++;
                 copyJSFunction = function (a, b) {
-                    var currentContextDef = a, currentRecord = b;
+                    var currentContext = a, currentRecord = b;
 
                     return function () {
-                        IMLibUI.copyButton(
-                            currentContextDef, currentRecord);
+                        IMLibUI.copyButton(currentContext, currentRecord);
                     };
                 };
                 eventListenerPostAdding.push({
                     'id': thisId,
                     'event': 'click',
-                    'todo': copyJSFunction(currentContextDef, currentRecord[currentContextDef['key']])
+                    'todo': copyJSFunction(currentContext, currentRecord[currentContextDef['key']])
                 });
 
                 // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];

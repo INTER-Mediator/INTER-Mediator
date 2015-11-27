@@ -53,6 +53,12 @@ Ver.5.3 (in development)
 - Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.
 - Avoid outputting an error message in an error log file in case of an invalid request.
+- [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
+  FileMaker Server 12 or later if using FileMaker Server.
+- The second parameter of the doAfterCreateToDB method is passed all fields of the newly created record.
+  Previously it was just a key field value of new record.
+- Avoid outputting messages in an error log file if there is no portal objects on the layout when using 
+  FileMaker Server.
 - [BUG FIX] Fix detection of params.php file.
 - [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
 - [BUG FIX] Modify INTERMediator.totalRecordCount after IMLibPageNavigation.deleteRecordFromNavi method.

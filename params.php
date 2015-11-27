@@ -77,6 +77,10 @@ jU6zr1wG9awuXj8j5x37eFXnfD/p92GpteyHuIDpog==
 -----END RSA PRIVATE KEY-----
 EOL;
 
+// The DOCUMENT_ROOT isn't full path on a rental server, this variable
+// is set before the result of DOCUMENT_ROOT.
+//$documentRootPrefix = "/usr/local/chroot";
+
 //$httpAccounts = array('user'=>'testtest');
 //$httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
 

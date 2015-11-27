@@ -892,6 +892,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
+        $viewName = $this->dbSettings->getEntityForRetrieve();
 
         if (!$bypassAuth && isset($tableInfo['authentication'])) {
             $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
@@ -978,7 +979,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $this->queriedEntity = $tableName;
 
         if ($this->isRequiredUpdated) {
-            $sql = "SELECT * FROM " . $tableName
+            $sql = "SELECT * FROM " . $viewName
                 . " WHERE " . $keyField . "=" . $this->link->quote($lastKeyValue);
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
@@ -1479,40 +1480,48 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $timeValue;
     }
 
-    function authSupportOAuthUserHandling($username, $credential)
+    /**
+     * @param $username
+     * @param $credential
+     * @return bool(true: create user, false: reuse user)|null in error
+     */
+    function authSupportOAuthUserHandling($keyValues)
     {
-        $user_id = $this->authSupportGetUserIdFromUsername($username);
+        $user_id = $this->authSupportGetUserIdFromUsername($keyValues["username"]);
 
+        $returnValue = null;
         $userTable = $this->dbSettings->getUserTable();
         if (!$this->setupConnection()) { //Establish the connection
-            return false;
+            return $returnValue;
         }
 
-        $currentDTFormat = $this->currentDTString();
-        if ($user_id > 0) {
-            $setClause = "limitdt=" . $this->link->quote($currentDTFormat);
-            $setClause .= ",hashedpasswd=" . $this->link->quote($credential);
-            $sql = "UPDATE {$userTable} SET {$setClause} WHERE id=" . $user_id;
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Update:' . $sql);
-                var_dump('Update:' . $sql);
-                return false;
-            }
-        } else {
-            $sql = "INSERT INTO {$userTable} (username, hashedpasswd,limitdt) VALUES "
-                . "({$this->link->quote($username)},"
-                . " {$this->link->quote($credential)}, "
-                . " {$this->link->quote($currentDTFormat)})";
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Insert:' . $sql);
-                return false;
+        $currentDTFormat = $this->link->quote($this->currentDTString());
+        $keys = array("limitdt");
+        $values = array($currentDTFormat);
+        $updates = array("limitdt=" . $currentDTFormat);
+        if (is_array($keyValues)) {
+            foreach ($keyValues as $key => $value) {
+                $keys[] = $key;
+                $values[] = $this->link->quote($value);
+                $updates[] = "$key=" . $this->link->quote($value);
             }
         }
-        return true;
+        if ($user_id > 0) {
+            $returnValue = false;
+            $sql = "UPDATE {$userTable} SET " . implode(",", $updates)
+                . " WHERE id=" . $user_id;
+        } else {
+            $returnValue = true;
+            $sql = "INSERT INTO {$userTable} (" . implode(",", $keys) . ") "
+                . "VALUES (" . implode(",", $values) . ")";
+        }
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('authSupportOAuthUserHandling:' . $sql);
+            return $returnValue;
+        }
+        return $returnValue;
     }
 
     /**
@@ -1673,7 +1682,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $this->privateGetUserIdFromUsername($username, true);
     }
 
-    private function privateGetUserIdFromUsername($username, $isCheckLimit)
+    private
+    function privateGetUserIdFromUsername($username, $isCheckLimit)
     {
         $this->logger->setDebugMessage("[authSupportGetUserIdFromUsername]username={$username}", 2);
 
@@ -1742,21 +1752,24 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      *
      * Using 'authcor'
      */
-    function authSupportGetGroupsOfUser($user) {
+    function authSupportGetGroupsOfUser($user)
+    {
         $ldap = new LDAPAuth();
         $oAuth = new OAuthAuth();
-        if($ldap->isActive || $oAuth->isActive) {
+        if ($ldap->isActive || $oAuth->isActive) {
             return $this->privateGetGroupsOfUser($user, true);
         } else {
             return $this->privateGetGroupsOfUser($user, false);
         }
     }
 
-    function authTableGetGroupsOfUser($user) {
+    function authTableGetGroupsOfUser($user)
+    {
         return $this->privateGetGroupsOfUser($user, false);
     }
 
-    private function privateGetGroupsOfUser($user, $isCheckLimit)
+    private
+    function privateGetGroupsOfUser($user, $isCheckLimit)
     {
         $corrTable = $this->dbSettings->getCorrTable();
         if ($corrTable == null) {

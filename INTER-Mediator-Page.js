@@ -286,9 +286,9 @@ INTERMediatorOnPage = {
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
             messageNode, oAuthButton;
 
-        this.checkPasswordPolicy = function(newPassword, userName, policyString) {
+        this.checkPasswordPolicy = function (newPassword, userName, policyString) {
             var terms, i, policyCheck, message = [], minLen;
-            if (!policyString)  {
+            if (!policyString) {
                 return message;
             }
             terms = policyString.split(/[\s,]/);
@@ -344,7 +344,7 @@ INTERMediatorOnPage = {
             return message;
         };
 
-        if (doTest)    {
+        if (doTest) {
             return;
         }
 
@@ -521,7 +521,12 @@ INTERMediatorOnPage = {
             }
         };
         authButton.onclick = function () {
-            var inputUsername, inputPassword, challengeResult;
+            var inputUsername, inputPassword, challengeResult, messageNode;
+
+            messageNode = document.getElementById("_im_newpass_message");
+            if (messageNode) {
+                INTERMediatorLib.removeChildNodes(messageNode);
+            }
 
             inputUsername = document.getElementById("_im_username").value;
             inputPassword = document.getElementById("_im_password").value;
@@ -564,6 +569,8 @@ INTERMediatorOnPage = {
                 var inputUsername, inputPassword, inputNewPassword, challengeResult, params,
                     result, messageNode, message;
 
+                messageNode = document.getElementById("_im_login_message");
+                INTERMediatorLib.removeChildNodes(messageNode);
                 messageNode = document.getElementById("_im_newpass_message");
                 INTERMediatorLib.removeChildNodes(messageNode);
 

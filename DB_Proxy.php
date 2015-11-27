@@ -313,11 +313,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterNewToDB' of the class '{$className}' is calling.", 2);
-                $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $result);
+                $result = $this->userExpanded->doAfterNewToDB($dataSourceName, $this->dbClass->updatedRecord());
             }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCreateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
-                $result = $this->userExpanded->doAfterCreateToDB($dataSourceName, $result);
+                $result = $this->userExpanded->doAfterCreateToDB($dataSourceName, $this->dbClass->updatedRecord());
             }
             if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
@@ -500,6 +500,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
         $currentDirParam = $currentDir . 'params.php';
         $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
+
         if (file_exists($parentDirParam)) {
             include($parentDirParam);
         } else if (file_exists($currentDirParam)) {
@@ -1008,6 +1009,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
             $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
         }
+    }
+
+    public function getDatabaseResult() {
+        if (isset($this->outputOfProcessing['dbresult']))   {
+            return $this->outputOfProcessing['dbresult'];
+        }
+        return null;
     }
 
     /* Authentication support */

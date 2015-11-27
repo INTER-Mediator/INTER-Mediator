@@ -412,7 +412,7 @@ CREATE TABLE registeredpks (
 
 CREATE TABLE authuser (
 	id					INT  AUTO_INCREMENT,
-	username			VARCHAR(48),
+	username			VARCHAR(64),
 	hashedpasswd		VARCHAR(48),
 	email               VARCHAR(100),
 	limitdt             DATETIME,
