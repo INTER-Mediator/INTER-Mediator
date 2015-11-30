@@ -347,26 +347,76 @@ IMLibPageNavigation = {
     },
 
     copyRecordFromNavi: function (contextDef, keyValue) {
-        var newId, restore;
+        var assocDef, i, def, assocContexts, pStart, copyTerm;
 
         INTERMediatorOnPage.showProgress();
-        newId = IMLibUI.copyRecordImpl(contextDef, keyValue);
-        if (newId > -1) {
-            restore = INTERMediator.additionalCondition;
-            INTERMediator.startFrom = 0;
-            if (contextDef.records <= 1) {
-                conditions = INTERMediator.additionalCondition;
-                conditions[contextDef.name] = {field: contextDef.key, value: newId};
-                INTERMediator.additionalCondition = conditions;
-                IMLibLocalContext.archive();
+        if (contextDef['repeat-control'].match(/confirm-copy/)) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1041])) {
+                return;
             }
-            INTERMediator_DBAdapter.unregister();
-            INTERMediator.constructMain(true);
-            INTERMediator.additionalCondition = restore;
         }
-        IMLibCalc.recalculation();
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
+        try {
+            if (contextDef["relation"]) {
+                for (index in contextDef["relation"]) {
+                    if (contextDef["relation"][index]["portal"] == true) {
+                        contextDef["portal"] = true;
+                    }
+                }
+            }
+
+            assocDef = [];
+            if (contextDef['repeat-control'].match(/copy-/)) {
+                pStart = contextDef['repeat-control'].indexOf('copy-');
+                copyTerm = contextDef['repeat-control'].substr(pStart + 5);
+                if ((pStart = copyTerm.search(/\s/)) > -1) {
+                    copyTerm = copyTerm.substr(0, pStart)
+                }
+                assocContexts = copyTerm.split(",");
+                for (i = 0; i < assocContexts.length; i++) {
+                    def = IMLibContextPool.getContextDef(assocContexts[i]);
+                    if (def['relation'][0]['foreign-key']) {
+                        assocDef.push({
+                            name: def['name'],
+                            field: def['relation'][0]['foreign-key'],
+                            value: keyValue
+                        });
+                    }
+                }
+            }
+            INTERMediatorOnPage.retrieveAuthInfo();
+            INTERMediator_DBAdapter.db_copy_async({
+                    name: contextDef["name"],
+                    conditions: [{field: contextDef["key"], operator: "=", value: keyValue}],
+                    associated: assocDef.length > 0 ? assocDef : null
+                },
+                (function () {
+                    var contextDefCapt = contextDef;
+                    return function (result) {
+                        var restore, conditions;
+                        var newId = result.newRecordKeyValue;
+                        if (newId > -1) {
+                            restore = INTERMediator.additionalCondition;
+                            INTERMediator.startFrom = 0;
+                            if (contextDefCapt.records <= 1) {
+                                conditions = INTERMediator.additionalCondition;
+                                conditions[contextDefCapt.name] = {field: contextDefCapt.key, value: newId};
+                                INTERMediator.additionalCondition = conditions;
+                                IMLibLocalContext.archive();
+                            }
+                            INTERMediator_DBAdapter.unregister();
+                            INTERMediator.constructMain(true);
+                            INTERMediator.additionalCondition = restore;
+                        }
+                        IMLibCalc.recalculation();
+                        INTERMediatorOnPage.hideProgress();
+                        INTERMediator.flushMessage();
+                    }
+                })(),
+                null
+            );
+        } catch (ex) {
+            INTERMediator.setErrorMessage(ex, "EXCEPTION-43");
+        }
     },
 
     saveRecordFromNavi: function (dontUpdate) {

@@ -107,7 +107,6 @@ var IMLibUI = {
                                 INTERMediatorOnPage.hideProgress();
                             } else {
                                 IMLibContextPool.updateContext(idValue, nodeInfo.target);
-                                //updateDB(changedObj, idValue, nodeInfo.target);
                                 INTERMediatorOnPage.retrieveAuthInfo();
                                 contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);   // Just supporting NON-target info.
                                 newValue = IMLibElement.getValueFromIMNode(changedObj);
@@ -162,50 +161,6 @@ var IMLibUI = {
                 INTERMediator.flushMessage();
                 return true;
             }
-
-            //    function updateDB(changedObj, idValue, target) {
-            //        var newValue, contextInfo, criteria;
-            //
-            //        INTERMediatorOnPage.retrieveAuthInfo();
-            //        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);   // Just supporting NON-target info.
-            //        newValue = IMLibElement.getValueFromIMNode(changedObj);
-            //
-            //        if (newValue != null) {
-            //            criteria = contextInfo.record.split('=');
-            //            try {
-            //                INTERMediator_DBAdapter.db_update({
-            //                    name: contextInfo.context.contextName,
-            //                    conditions: [
-            //                        {
-            //                            field: criteria[0],
-            //                            operator: '=',
-            //                            value: criteria[1]
-            //                        }
-            //                    ],
-            //                    dataset: [
-            //                        {
-            //                            field: contextInfo.field + (contextInfo.portal ? ("." + contextInfo.portal) : ""),
-            //                            value: newValue
-            //                        }
-            //                    ]
-            //                });
-            //            } catch (ex) {
-            //                if (ex == "_im_requath_request_") {
-            //                    if (INTERMediatorOnPage.requireAuthentication
-            //                        && !INTERMediatorOnPage.isComplementAuthData()) {
-            //                        INTERMediatorOnPage.clearCredentials();
-            //                        INTERMediatorOnPage.authenticating(function () {
-            //                            updateDB(changedObj, idValue);
-            //                        });
-            //                        return;
-            //                    }
-            //                } else {
-            //                    INTERMediator.setErrorMessage(ex, "EXCEPTION-2");
-            //                }
-            //            }
-            //        }
-            //        INTERMediatorOnPage.hideProgress();
-            //    }
         },
 
         validation: function (changedObj) {
