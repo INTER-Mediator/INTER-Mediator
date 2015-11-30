@@ -1215,7 +1215,7 @@ INTERMediator_DBAdapter = {
             }
         };
     },
-    
+
     unregister: function (entityPkInfo) {
         var result = null, params;
         if (INTERMediatorOnPage.clientNotificationKey) {

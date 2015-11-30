@@ -26,17 +26,17 @@ IM_Entry(
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
             'authentication' => array(
-//                'read' => array( /* load, update, new, delete*/
-//                    'group' => array("group1","group2"),
-//                ),
-//                'update' => array( /* load, update, new, delete*/
-//                    'group' => array("group2"),
-//                ),
+                'read' => array( /* load, update, new, delete*/
+                    'group' => array("group1"),
+                ),
+                'update' => array( /* load, update, new, delete*/
+                    'group' => array("group2"),
+                ),
                 'create' => array( /* load, update, new, delete*/
                     'group' => array("group1"),
                 ),
                 'delete' => array( /* load, update, new, delete*/
-                    'group' => array("dummy"),
+                    'group' => array("group2"),
                 ),
             ),
         ),
@@ -51,14 +51,14 @@ IM_Entry(
 //                'read' => array( /* load, update, new, delete*/
 //                    'group' => array("group1","group2"),
 //                ),
-//                'update' => array( /* load, update, new, delete*/
-//                    'group' => array("group2"),
-//                ),
+                'update' => array( /* load, update, new, delete*/
+                    'group' => array("group2"),
+                ),
                 'create' => array( /* load, update, new, delete*/
                     'group' => array("group1"),
                 ),
                 'delete' => array( /* load, update, new, delete*/
-                    'group' => array("dummy"),
+                    'group' => array("group2"),
                 ),
             ),
         ),
@@ -117,5 +117,5 @@ IM_Entry(
 //        ),
     ),
     array('db-class' => 'PDO'),
-    2
+    false
 );
