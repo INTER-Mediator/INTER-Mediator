@@ -18,6 +18,7 @@ $pathToIM = "..";   // Modify this to match your directories.
 //---------------------------------------------
 
 require_once("{$pathToIM}/INTER-Mediator.php");
+require_once("{$pathToIM}/DB_PDO.php");
 spl_autoload_register('loadClass');
 $authObj = new OAuthAuth();
 if (is_null($authObj)) {
@@ -42,9 +43,8 @@ header("Content-Type: text/html");
     <script type="text/javascript"><?php echo $jsCode; ?></script>
 </head>
 <body>
-Provider: <?php echo $params[$providerKey]; ?><br>
+Provider: <?php echo $authObj->oAuthProvider(); ?><br>
 Status: <?php echo $err; ?>
 
-<?php echo $err; ?>
 </body>
 </html>

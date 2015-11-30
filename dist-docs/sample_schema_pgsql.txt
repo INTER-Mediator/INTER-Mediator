@@ -336,7 +336,7 @@ CREATE TABLE registeredpks (
 /* Authetication tables */
 CREATE TABLE authuser (
 	id					INTEGER   DEFAULT nextval('serial'),
-	username			VARCHAR(48),
+	username			VARCHAR(64),
 	hashedpasswd		VARCHAR(48),
 	email               VARCHAR(100),
 	limitdt             TIMESTAMP,
