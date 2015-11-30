@@ -19,7 +19,11 @@ IM_Entry(array (
     'repeat-control' => 'delete insert',
     'authentication' => 
     array (
-      'all' => 
+//        'read' => array('user' => array('user3')),
+//        'update' => array('user' => array('user3')),
+//        'create' => array('user' => array('dummy')),
+//        'delete' => array('user' => array('dummy')),
+      'all' =>
       array (
         'target' => 'field-user',
         'field' => 'authuser',
