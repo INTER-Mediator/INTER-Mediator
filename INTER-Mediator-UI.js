@@ -802,12 +802,12 @@ var IMLibUI = {
             contextInfo = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);
             INTERMediator_DBAdapter.db_createRecord_async(
                 {name: selectedContext, dataset: fieldData},
-                function (returnValue) {
+                function (result) {
                     var newNode, parentOfTarget, targetNode = node, thisContext = contextInfo,
                         isSetMsg = false;
                     INTERMediator.flushMessage();
                     if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
-                        INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, returnValue);
+                        INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, result.newRecordKeyValue);
                     }
                     if (thisContext['post-dismiss-message']) {
                         parentOfTarget = targetNode.parentNode;
