@@ -975,7 +975,7 @@ INTERMediator_DBAdapter = {
      */
     db_createRecord: function (args) {
         var params, result;
-        params = INTERMediator_DBAdapter.db_createParameter(args);
+        params = INTERMediator_DBAdapter.db_createParameters(args);
         if (params) {
             result = INTERMediator_DBAdapter.server_access(params, 1018, 1016);
             INTERMediator.flushMessage();
@@ -1014,7 +1014,7 @@ INTERMediator_DBAdapter = {
     },
 
     db_createRecord_async: function (args, successProc, failedProc) {
-        var params = INTERMediator_DBAdapter.db_createParameter(args);
+        var params = INTERMediator_DBAdapter.db_createParameters(args);
         if (params) {
             INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.server_access_async(
@@ -1039,24 +1039,7 @@ INTERMediator_DBAdapter = {
         }
     },
 
-    createExceptionFunc: function (errMessageNumber, AuthProc) {
-        var errorNumCapt = errMessageNumber;
-        return function () {
-            if (INTERMediatorOnPage.requireAuthentication) {
-                if (!INTERMediatorOnPage.isComplementAuthData()) {
-                    INTERMediatorOnPage.clearCredentials();
-                    INTERMediatorOnPage.authenticating(AuthProc);
-                }
-            } else {
-                INTERMediator.setErrorMessage("Communication Error",
-                    INTERMediatorLib.getInsertedString(
-                        INTERMediatorOnPage.getMessages()[errorNumCapt],
-                        ["Communication Error", myRequest.responseText]));
-            }
-        };
-    },
-
-    db_createParameter: function (args) {
+    db_createParameters: function (args) {
         var params, i, index, addedObject, counter, targetKey, ds, key, contextDef;
 
         if (args['name'] === null) {
@@ -1216,6 +1199,23 @@ INTERMediator_DBAdapter = {
         return params;
     },
 
+    createExceptionFunc: function (errMessageNumber, AuthProc) {
+        var errorNumCapt = errMessageNumber;
+        return function () {
+            if (INTERMediatorOnPage.requireAuthentication) {
+                if (!INTERMediatorOnPage.isComplementAuthData()) {
+                    INTERMediatorOnPage.clearCredentials();
+                    INTERMediatorOnPage.authenticating(AuthProc);
+                }
+            } else {
+                INTERMediator.setErrorMessage("Communication Error",
+                    INTERMediatorLib.getInsertedString(
+                        INTERMediatorOnPage.getMessages()[errorNumCapt],
+                        ["Communication Error", myRequest.responseText]));
+            }
+        };
+    },
+    
     unregister: function (entityPkInfo) {
         var result = null, params;
         if (INTERMediatorOnPage.clientNotificationKey) {
