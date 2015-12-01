@@ -470,18 +470,161 @@ INTERMediator_DBAdapter = {
      This function returns recordset of retrieved.
      */
     db_query: function (args) {
-        var noError = true, i, index, params, dbspec, counter, extCount, criteriaObject, sortkeyObject,
-            returnValue, result, ix, extCountSort, recordLimit = 10000000, conditions, conditionSign,
-            contextDef, orderFields, key, keyParams, value, fields, operator, orderedKeys;
+        var params, returnValue, result, ix, contextDef;
 
+        if (!INTERMediator_DBAdapter.db_queryChecking(args)) {
+            return;
+        }
+        params = INTERMediator_DBAdapter.db_queryParameters(args);
+        INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
+// params += "&randkey" + Math.random();    // For ie...
+// IE uses caches as the result in spite of several headers. So URL should be randomly.
+//
+// This is not requred because the Notification feature adds the client Identifier for each communication.
+// msyk June 1, 2014
+        returnValue = {};
+        try {
+            result = this.server_access(params, 1012, 1004);
+            returnValue.recordset = result.dbresult;
+            returnValue.totalCount = result.resultCount;
+            returnValue.count = 0;
+            returnValue.registeredId = result.registeredId;
+            returnValue.nullAcceptable = result.nullAcceptable;
+            for (ix in result.dbresult) {
+                returnValue.count++;
+            }
+
+            contextDef = INTERMediatorLib.getNamedObject(
+                INTERMediatorOnPage.getDataSources(), "name", args.name);
+            if (!contextDef.relation &&
+                args.paging && Boolean(args.paging) === true) {
+                INTERMediator.pagedAllCount = parseInt(result.resultCount, 10);
+                if (result.totalCount) {
+                    INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
+                }
+            }
+            if ((args.paging !== null) && (Boolean(args.paging) === true)) {
+                INTERMediator.pagination = true;
+                if (!(Number(args.records) >= Number(INTERMediator.pagedSize) &&
+                    Number(INTERMediator.pagedSize) > 0)) {
+                    INTERMediator.pagedSize = parseInt(args.records, 10);
+                }
+            }
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                throw ex;
+            } else {
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-17");
+            }
+            returnValue.recordset = null;
+            returnValue.totalCount = 0;
+            returnValue.count = 0;
+            returnValue.registeredid = null;
+            returnValue.nullAcceptable = null;
+        }
+        return returnValue;
+    },
+
+    db_queryWithAuth: function (args, completion) {
+        var returnValue = false;
+        INTERMediatorOnPage.retrieveAuthInfo();
+        try {
+            returnValue = INTERMediator_DBAdapter.db_query(args);
+        } catch (ex) {
+            if (ex == "_im_requath_request_") {
+                if (INTERMediatorOnPage.requireAuthentication) {
+                    if (!INTERMediatorOnPage.isComplementAuthData()) {
+                        INTERMediatorOnPage.clearCredentials();
+                        INTERMediatorOnPage.authenticating(
+                            function () {
+                                returnValue = INTERMediator_DBAdapter.db_queryWithAuth(arg, completion);
+                            });
+                        return;
+                    }
+                }
+            } else {
+                INTERMediator.setErrorMessage(ex, "EXCEPTION-16");
+            }
+        }
+        completion(returnValue);
+    },
+
+    db_query_async: function (args, successProc, failedProc) {
+        var params;
+
+        if (!INTERMediator_DBAdapter.db_queryChecking(args)) {
+            return;
+        }
+        params = INTERMediator_DBAdapter.db_queryParameters(args);
+        INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
+        try {
+            this.server_access_async(
+                params,
+                1012,
+                1004,
+                (function () {
+                    var ix, contextDef;
+                    var contextName = args.name;
+                    var recordsNumber = Number(args.records);
+                    var succesProcCapt = successProc;
+                    return function (result) {
+                        result.count = 0;
+                        for (ix in result.dbresult) {
+                            result.count++;
+                        }
+
+                        contextDef = IMLibContextPool.getContextDef(contextName);
+                        if (!contextDef.relation &&
+                            args.paging && Boolean(args.paging) === true) {
+                            INTERMediator.pagedAllCount = parseInt(result.resultCount, 10);
+                            if (result.totalCount) {
+                                INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
+                            }
+                        }
+                        if ((args.paging !== null) && (Boolean(args.paging) === true)) {
+                            INTERMediator.pagination = true;
+                            if (!(recordsNumber >= Number(INTERMediator.pagedSize) &&
+                                Number(INTERMediator.pagedSize) > 0)) {
+                                INTERMediator.pagedSize = parseInt(recordsNumber, 10);
+                            }
+                        }
+
+                        succesProcCapt(result);
+                    };
+                })(),
+                null,
+                INTERMediator_DBAdapter.createExceptionFunc(
+                    1016,
+                    (function () {
+                        var argsCapt = args;
+                        var succesProcCapt = successProc;
+                        var failedProcCapt = failedProc;
+                        return function () {
+                            INTERMediator_DBAdapter.db_query_async(
+                                argsCapt, succesProcCapt, failedProcCapt);
+                        };
+                    })()
+                )
+            );
+        } catch
+            (ex) {
+            INTERMediator.setErrorMessage(ex, "EXCEPTION-17");
+        }
+    },
+
+    db_queryChecking: function (args) {
+        var noError = true;
         if (args.name === null || args.name === "") {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
             noError = false;
         }
-        if (!noError) {
-            return;
-        }
+        return noError;
+    },
 
+    db_queryParameters: function (args) {
+        var i, index, params, dbspec, counter, extCount, criteriaObject, sortkeyObject,
+            extCountSort, recordLimit = 10000000, conditions, conditionSign,
+            orderFields, key, keyParams, value, fields, operator, orderedKeys;
         if (args.records === null) {
             params = "access=read&name=" + encodeURIComponent(args.name);
         } else {
@@ -635,78 +778,7 @@ INTERMediator_DBAdapter = {
             params += "&sortkey" + extCountSort + "direction=" + encodeURIComponent(orderFields[orderedKeys[i]][1]);
             extCountSort++;
         }
-
-        INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
-// params += "&randkey" + Math.random();    // For ie...
-// IE uses caches as the result in spite of several headers. So URL should be randomly.
-//
-// This is not requred because the Notification feature adds the client Identifier for each communication.
-// msyk June 1, 2014
-        returnValue = {};
-        try {
-            result = this.server_access(params, 1012, 1004);
-            returnValue.recordset = result.dbresult;
-            returnValue.totalCount = result.resultCount;
-            returnValue.count = 0;
-            returnValue.registeredId = result.registeredId;
-            returnValue.nullAcceptable = result.nullAcceptable;
-            for (ix in result.dbresult) {
-                returnValue.count++;
-            }
-
-            contextDef = INTERMediatorLib.getNamedObject(
-                INTERMediatorOnPage.getDataSources(), "name", args.name);
-            if (!contextDef.relation &&
-                args.paging && Boolean(args.paging) === true) {
-                INTERMediator.pagedAllCount = parseInt(result.resultCount, 10);
-                if (result.totalCount) {
-                    INTERMediator.totalRecordCount = parseInt(result.totalCount, 10);
-                }
-            }
-            if ((args.paging !== null) && (Boolean(args.paging) === true)) {
-                INTERMediator.pagination = true;
-                if (!(Number(args.records) >= Number(INTERMediator.pagedSize) &&
-                    Number(INTERMediator.pagedSize) > 0)) {
-                    INTERMediator.pagedSize = parseInt(args.records, 10);
-                }
-            }
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                throw ex;
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-17");
-            }
-            returnValue.recordset = null;
-            returnValue.totalCount = 0;
-            returnValue.count = 0;
-            returnValue.registeredid = null;
-            returnValue.nullAcceptable = null;
-        }
-        return returnValue;
-    },
-
-    db_queryWithAuth: function (args, completion) {
-        var returnValue = false;
-        INTERMediatorOnPage.retrieveAuthInfo();
-        try {
-            returnValue = INTERMediator_DBAdapter.db_query(args);
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                if (INTERMediatorOnPage.requireAuthentication) {
-                    if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.clearCredentials();
-                        INTERMediatorOnPage.authenticating(
-                            function () {
-                                returnValue = INTERMediator_DBAdapter.db_queryWithAuth(arg, completion);
-                            });
-                        return;
-                    }
-                }
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-16");
-            }
-        }
-        completion(returnValue);
+        return params;
     },
 
     /*
@@ -1230,4 +1302,5 @@ INTERMediator_DBAdapter = {
             }
         }
     }
-};
+}
+;
