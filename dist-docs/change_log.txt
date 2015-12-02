@@ -13,6 +13,7 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.3 (in development)
 - SQL aggregation can be defined as a read-only context. The aggregation-select,
   aggregation-from, aggregation-group-by key are added.
+- The database update communucations (Create, Update, Delete, Copy) are working in asynchronous mode.
 - MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
   for PHP).
 - Update phpseclib to version 1.0.0.

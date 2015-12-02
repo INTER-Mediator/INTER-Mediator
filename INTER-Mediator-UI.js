@@ -34,145 +34,267 @@ var IMLibUI = {
     },
     /*
      valueChange
-     Parameters:
+     Parameters: It the validationOnly parameter is set to true, this method should return the boolean value
+     if validation is succeed or not.
      */
     valueChange: function (idValue, validationOnly) {
-        var changedObj, objType, contextInfo, i, updateRequiredContext, associatedNode, currentValue, newValue,
-            linkInfo, nodeInfo, validataonResult = true;
+        var changedObj, objType, i, newValue, criteria, linkInfo, nodeInfo, contextInfo,
+            keyingComp, keyingField, keyingValue, targetField, targetContext;
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
             INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
             INTERMediator.flushMessage();
             IMLibUI.isShiftKeyDown = false;
             IMLibUI.isControlKeyDown = false;
-            return validataonResult;
+            return true;
         }
         IMLibUI.isShiftKeyDown = false;
         IMLibUI.isControlKeyDown = false;
 
         changedObj = document.getElementById(idValue);
-        if (changedObj != null) {
-            if (changedObj.readOnly) {  // for Internet Explorer
-                return validataonResult;
-            }
-
-            linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
-            // for js-widget support
-            if (!linkInfo && INTERMediatorLib.isWidgetElement(changedObj.parentNode)) {
-                linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj.parentNode);
-            }
-            nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);  // Suppose to be the first definition.
-            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
-
-            if (!this.validation(changedObj)) {  // Validation error.
-                changedObj.focus();
-                window.setTimeout((function () {
-                    var originalObj = changedObj;
-                    var originalContextInfo = contextInfo;
-                    return function() {
-                        if (originalContextInfo) {
-                            originalObj.value = originalContextInfo.context.getValue(
-                                originalContextInfo.record, originalContextInfo.field);
-                        }
-                        originalObj.removeAttribute("data-im-validation-notification");
-                    }
-                })(), 0);
-                return false;
-            }
-            if (validationOnly === true) {
-                return true;
-            }
-
-            objType = changedObj.getAttribute("type");
-            if (objType === "radio" && !changedObj.checked) {
-                INTERMediatorOnPage.hideProgress();
-                return true;
-            }
-
-            if (contextInfo) {
-                newValue = IMLibElement.getValueFromIMNode(changedObj);
-                if (contextInfo.context.isValueUndefined(contextInfo.record, contextInfo.field, contextInfo.portal)) {
-                    INTERMediator.setErrorMessage("Error in updating.",
-                        INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1040], [contextInfo.context.contextName, contextInfo.field]));
-                } else {
-                    if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
-                        // Just supporting NON-target info.
-                        // contextInfo.context.setValue(
-                        // contextInfo.record, contextInfo.field, newValue);
-                        contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
-                    } else {
-                        INTERMediatorOnPage.showProgress();
-                        if (!IMLibElement.checkOptimisticLock(changedObj, nodeInfo.target)) {
-                            INTERMediatorOnPage.hideProgress();
-                        } else {
-                            IMLibContextPool.updateContext(idValue, nodeInfo.target);
-                            updateDB(changedObj, idValue, nodeInfo.target);
-                            updateRequiredContext = IMLibContextPool.dependingObjects(idValue);
-                            for (i = 0; i < updateRequiredContext.length; i++) {
-                                updateRequiredContext[i].foreignValue = {};
-                                updateRequiredContext[i].foreignValue[contextInfo.field] = newValue;
-                                if (updateRequiredContext[i]) {
-                                    INTERMediator.constructMain(updateRequiredContext[i]);
-                                    associatedNode = updateRequiredContext[i].enclosureNode;
-                                    if (INTERMediatorLib.isPopupMenu(associatedNode)) {
-                                        currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
-                                        IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            IMLibCalc.recalculation();//IMLibCalc.recalculation(idValue); // Optimization Required
-            INTERMediator.flushMessage();
+        if (!changedObj) {
+            return false;
+        }
+        if (changedObj.readOnly) {  // for Internet Explorer
             return true;
         }
 
-        function updateDB(changedObj, idValue, target) {
-            var newValue, contextInfo, criteria;
+        linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
+        // for js-widget support
+        if (!linkInfo && INTERMediatorLib.isWidgetElement(changedObj.parentNode)) {
+            linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj.parentNode);
+        }
+        nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);  // Suppose to be the first definition.
+        contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
 
-            INTERMediatorOnPage.retrieveAuthInfo();
-            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);   // Just supporting NON-target info.
-            newValue = IMLibElement.getValueFromIMNode(changedObj);
-
-            if (newValue != null) {
-                criteria = contextInfo.record.split('=');
-                try {
-                    INTERMediator_DBAdapter.db_update({
-                        name: contextInfo.context.contextName,
-                        conditions: [
-                            {
-                                field: criteria[0],
-                                operator: '=',
-                                value: criteria[1]
-                            }
-                        ],
-                        dataset: [
-                            {
-                                field: contextInfo.field + (contextInfo.portal ? ("." + contextInfo.portal) : ""),
-                                value: newValue
-                            }
-                        ]
-                    });
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        if (INTERMediatorOnPage.requireAuthentication
-                            && !INTERMediatorOnPage.isComplementAuthData()) {
-                            INTERMediatorOnPage.clearCredentials();
-                            INTERMediatorOnPage.authenticating(function () {
-                                updateDB(changedObj, idValue);
-                            });
-                            return;
-                        }
-                    } else {
-                        INTERMediator.setErrorMessage(ex, "EXCEPTION-2");
+        if (!IMLibUI.validation(changedObj)) {  // Validation error.
+            changedObj.focus();
+            window.setTimeout((function () {
+                var originalObj = changedObj;
+                var originalContextInfo = contextInfo;
+                return function () {
+                    if (originalContextInfo) {
+                        originalObj.value = originalContextInfo.context.getValue(
+                            originalContextInfo.record, originalContextInfo.field);
                     }
+                    originalObj.removeAttribute("data-im-validation-notification");
                 }
+            })(), 0);
+            return false;
+        }
+        if (validationOnly === true) {
+            return true;
+        }
+
+        objType = changedObj.getAttribute("type");
+        if (objType === "radio" && !changedObj.checked) {
+            INTERMediatorOnPage.hideProgress();
+            return true;
+        }
+
+        if (!contextInfo) {
+            return false;
+        }
+        newValue = IMLibElement.getValueFromIMNode(changedObj);
+        if (contextInfo.context.isValueUndefined(contextInfo.record, contextInfo.field, contextInfo.portal)) {
+            INTERMediator.setErrorMessage("Error in updating.",
+                INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[1040],
+                    [contextInfo.context.contextName, contextInfo.field]));
+            return false;
+        }
+        if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
+            // Just supporting NON-target info.
+            // contextInfo.context.setValue(
+            // contextInfo.record, contextInfo.field, newValue);
+            contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
+            return false;
+        }
+        INTERMediatorOnPage.showProgress();
+        try {
+            if (!changedObj) {
+                throw "false_exit";
             }
+            linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
+            nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
+            if (nodeInfo.table == IMLibLocalContext.contextName) {
+                throw "false_exit";
+            }
+            idValue = changedObj.getAttribute('id');
+            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);   // suppose to target = ""
+            if (INTERMediator.ignoreOptimisticLocking) {
+                throw "false_exit";
+            }
+
+            targetContext = contextInfo['context'];
+            targetField = contextInfo['field'];
+            keyingComp = contextInfo['record'].split('=');
+            keyingField = keyingComp[0];
+            keyingComp.shift();
+            keyingValue = keyingComp.join('=');
+            INTERMediator_DBAdapter.eliminateDuplicatedConditions = true;
+            INTERMediator_DBAdapter.db_query_async(
+                {
+                    name: contextInfo['context'].contextName,
+                    records: 1,
+                    paging: false,
+                    fields: [targetField],
+                    parentkeyvalue: null,
+                    conditions: [
+                        {field: keyingField, operator: '=', value: keyingValue}
+                    ],
+                    useoffset: false,
+                    primaryKeyOnly: true
+                },
+                (function () {
+                    var targetFieldCapt = targetField;
+                    var contextInfoCapt = contextInfo;
+                    var targetContextCapt = targetContext;
+                    var changedObjeCapt = changedObj;
+                    var nodeInfoCapt = nodeInfo;
+                    var idValueCapt = idValue;
+                    return function (result) {
+                        var response, initialvalue, newValue, isOthersModified,
+                            isCheckResult, portalKey, portalIndex, currentFieldVal;
+                        if (contextInfoCapt.portal) {
+                            isCheckResult = false;
+                            portalKey = contextInfo.context.contextName + "::-recid";
+                            if (result.dbresult && result.dbresult[0]) {
+                                for (portalIndex in result.dbresult[0]) {
+                                    var portalRecord = result.dbresult[0][portalIndex];
+                                    if (portalRecord[portalKey]
+                                        && portalRecord[targetFieldCapt] !== undefined
+                                        && portalRecord[portalKey] == contextInfo.portal) {
+                                        currentFieldVal = portalRecord[targetFieldCapt];
+                                        isCheckResult = true;
+                                    }
+                                }
+                            }
+                            if (!isCheckResult) {
+                                alert(INTERMediatorLib.getInsertedString(
+                                    INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]));
+                                INTERMediatorOnPage.hideProgress();
+                                return;
+                            }
+                        } else {
+                            if (!result.dbresult
+                                || !result.dbresult[0]    // This value could be null or undefined
+                                || result.dbresult[0][targetFieldCapt] === undefined) {
+                                alert(INTERMediatorLib.getInsertedString(
+                                    INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]));
+                                INTERMediatorOnPage.hideProgress();
+                                return;
+                            }
+                            if (result.resultCount > 1) {
+                                response = confirm(INTERMediatorOnPage.getMessages()[1024]);
+                                if (!response) {
+                                    INTERMediatorOnPage.hideProgress();
+                                    return;
+                                }
+                            }
+                            currentFieldVal = result.dbresult[0][targetFieldCapt];
+                        }
+                        initialvalue = targetContextCapt.getValue(
+                            contextInfoCapt.record, targetFieldCapt, contextInfoCapt.portal);
+
+                        switch (changedObjeCapt.tagName) {
+                            case "INPUT":
+                                switch (changedObjeCapt.getAttribute("type")) {
+                                    case "checkbox":
+                                        if (initialvalue == changedObjeCapt.value) {
+                                            isOthersModified = false;
+                                        } else if (!parseInt(currentFieldVal)) {
+                                            isOthersModified = false;
+                                        } else {
+                                            isOthersModified = true;
+                                        }
+                                        break;
+                                    default:
+                                        isOthersModified = (initialvalue != currentFieldVal);
+                                        break;
+                                }
+                                break;
+                            default:
+                                isOthersModified = (initialvalue != currentFieldVal);
+                                break;
+                        }
+                        if (isOthersModified) {
+                            // The value of database and the field is different. Others must be changed this field.
+                            newValue = IMLibElement.getValueFromIMNode(changedObjeCapt);
+                            if (!confirm(INTERMediatorLib.getInsertedString(
+                                    INTERMediatorOnPage.getMessages()[1001],
+                                    [initialvalue, newValue, currentFieldVal]))) {
+                                window.setTimeout(function () {
+                                    changedObjeCapt.focus();
+                                }, 0);
+
+                                INTERMediatorOnPage.hideProgress();
+                                return false;
+                            }
+                            INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
+                        }
+                        IMLibContextPool.updateContext(idValueCapt, nodeInfoCapt.target);
+                        newValue = IMLibElement.getValueFromIMNode(changedObjeCapt);
+                        if (newValue != null) {
+                            criteria = contextInfo.record.split('=');
+                            INTERMediatorOnPage.retrieveAuthInfo();
+                            INTERMediator_DBAdapter.db_update_async({
+                                    name: contextInfo.context.contextName,
+                                    conditions: [
+                                        {
+                                            field: criteria[0],
+                                            operator: '=',
+                                            value: criteria[1]
+                                        }
+                                    ],
+                                    dataset: [
+                                        {
+                                            field: contextInfo.field + (contextInfo.portal ? ("." + contextInfo.portal) : ""),
+                                            value: newValue
+                                        }
+                                    ]
+                                },
+                                (function () {
+                                    var idValueCapt2 = idValueCapt;
+                                    var contextInfoCapt = contextInfo;
+                                    var newValueCapt = newValue;
+                                    return function (result) {
+                                        var updateRequiredContext, currentValue, associatedNode;
+                                        INTERMediatorOnPage.hideProgress();
+                                        updateRequiredContext = IMLibContextPool.dependingObjects(idValueCapt2);
+                                        for (i = 0; i < updateRequiredContext.length; i++) {
+                                            updateRequiredContext[i].foreignValue = {};
+                                            updateRequiredContext[i].foreignValue[contextInfoCapt.field] = newValueCapt;
+                                            if (updateRequiredContext[i]) {
+                                                INTERMediator.constructMain(updateRequiredContext[i]);
+                                                associatedNode = updateRequiredContext[i].enclosureNode;
+                                                if (INTERMediatorLib.isPopupMenu(associatedNode)) {
+                                                    currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
+                                                    IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
+                                                }
+                                            }
+                                        }
+                                        IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
+                                        INTERMediator.flushMessage();
+                                    }
+                                })(),
+                                function () {
+                                    INTERMediatorOnPage.hideProgress();
+                                    INTERMediator.setErrorMessage("Error in valueChange method.", "EXCEPTION-2");
+                                }
+                            );
+                        }
+                    }
+                })(),
+                function () {
+                    INTERMediatorOnPage.hideProgress();
+                    INTERMediator.setErrorMessage("Error in valueChange method.", "EXCEPTION-1");
+                }
+            );
+        } catch (ex) {
             INTERMediatorOnPage.hideProgress();
         }
+        return true;
     },
 
     validation: function (changedObj) {
@@ -272,40 +394,16 @@ var IMLibUI = {
     },
 
     copyButton: function (contextObj, keyValue) {
-        var newId, restore, contextDef;
+        var contextDef, assocDef, i, def, assocContexts, pStart, copyTerm;
 
         INTERMediatorOnPage.showProgress();
         contextDef = contextObj.getContextDef();
-        newId = IMLibUI.copyRecordImpl(contextDef, keyValue)
-        if (newId > -1) {
-            restore = INTERMediator.additionalCondition;
-            INTERMediator.startFrom = 0;
-            if (contextDef.records <= 1) {
-                conditions = INTERMediator.additionalCondition;
-                conditions[contextDef.name] = {field: contextDef.key, value: newId};
-                INTERMediator.additionalCondition = conditions;
-                IMLibLocalContext.archive();
-            }
-            INTERMediator_DBAdapter.unregister();
-            INTERMediator.constructMain(contextObj);
-            INTERMediator.additionalCondition = restore;
-        }
-        IMLibCalc.recalculation();
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
-    },
-
-    copyRecordImpl: function (contextDef, keyValue) {
-        var assocDef, responseCreateRecord, newId, i, def, assocContexts, pStart, copyTerm;
-
         if (contextDef['repeat-control'].match(/confirm-copy/)) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1041])) {
                 return;
             }
         }
         try {
-            INTERMediatorOnPage.retrieveAuthInfo();
-
             if (contextDef["relation"]) {
                 for (index in contextDef["relation"]) {
                     if (contextDef["relation"][index]["portal"] == true) {
@@ -333,40 +431,46 @@ var IMLibUI = {
                     }
                 }
             }
-            if (contextDef["portal"] == true) {  // For FileMaker Server
-                responseCreateRecord = INTERMediator_DBAdapter.db_copy({
+
+            INTERMediatorOnPage.retrieveAuthInfo();
+            INTERMediator_DBAdapter.db_copy_async({
                     name: contextDef["name"],
                     conditions: [{field: contextDef["key"], operator: "=", value: keyValue}],
                     associated: assocDef.length > 0 ? assocDef : null
-                });
-            } else {
-                responseCreateRecord = INTERMediator_DBAdapter.db_copy({
-                    name: contextDef["name"],
-                    conditions: [{field: contextDef["key"], operator: "=", value: keyValue}],
-                    associated: assocDef.length > 0 ? assocDef : null
-                });
-            }
-            newId = responseCreateRecord.newKeyValue;
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                    INTERMediatorOnPage.clearCredentials();
-                    INTERMediatorOnPage.authenticating(
-                        function () {
-                            IMLibUI.copyButton(contextDef, keyValue);
+                },
+                (function () {
+                    var contextDefCapt = contextDef;
+                    var contextObjCapt = contextObj;
+                    return function (result) {
+                        var restore, conditions;
+                        var newId = result.newRecordKeyValue;
+                        if (newId > -1) {
+                            restore = INTERMediator.additionalCondition;
+                            INTERMediator.startFrom = 0;
+                            if (contextDefCapt.records <= 1) {
+                                conditions = INTERMediator.additionalCondition;
+                                conditions[contextDefCapt.name] = {field: contextDefCapt.key, value: newId};
+                                INTERMediator.additionalCondition = conditions;
+                                IMLibLocalContext.archive();
+                            }
+                            INTERMediator_DBAdapter.unregister();
+                            INTERMediator.constructMain(contextObjCapt);
+                            INTERMediator.additionalCondition = restore;
                         }
-                    );
-                    return;
-                }
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-43");
-            }
+                        IMLibCalc.recalculation();
+                        INTERMediatorOnPage.hideProgress();
+                        INTERMediator.flushMessage();
+                    }
+                })(),
+                null
+            );
+        } catch (ex) {
+            INTERMediator.setErrorMessage(ex, "EXCEPTION-43");
         }
-        return newId;
     },
 
     deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
-        var i, index, currentContext, relationDef, dialogMessage;
+        var i, index, currentContext, relationDef, dialogMessage, successProc;
 
         if (isConfirm) {
             dialogMessage = INTERMediatorOnPage.getMessages()[1025];
@@ -387,9 +491,23 @@ var IMLibUI = {
                     }
                 }
             }
-
+            var successProc = function () {
+                if (currentContext["relation"] == true) {
+                    INTERMediator.pagedAllCount--;
+                    if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
+                        INTERMediator.startFrom = INTERMediator.startFrom - INTERMediator.pagedSize;
+                        if (INTERMediator.startFrom < 0) {
+                            INTERMediator.startFrom = 0;
+                        }
+                    }
+                    if (INTERMediator.pagedAllCount >= INTERMediator.pagedSize) {
+                        INTERMediator.construct();
+                    }
+                    IMLibPageNavigation.navigationSetup();
+                }
+            };
             if (foreignField != "" && currentContext["portal"] == true) {
-                INTERMediator_DBAdapter.db_update({
+                INTERMediator_DBAdapter.db_update_async({
                     name: targetName,
                     conditions: [
                         {field: keyField, operator: "=", value: keyValue}
@@ -401,28 +519,16 @@ var IMLibUI = {
                             value: foreignField.replace("\:\:-recid", "") + "." + foreignValue
                         }
                     ]
-                });
+                }, successProc, null);
             } else {
-                INTERMediator_DBAdapter.db_delete({
+                INTERMediator_DBAdapter.db_delete_async({
                     name: targetName,
                     conditions: [
                         {field: keyField, operator: '=', value: keyValue}
                     ]
-                });
+                }, successProc, null);
             }
-            if (currentContext["relation"] == true) {
-                INTERMediator.pagedAllCount--;
-                if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
-                    INTERMediator.startFrom = INTERMediator.startFrom - INTERMediator.pagedSize;
-                    if (INTERMediator.startFrom < 0) {
-                        INTERMediator.startFrom = 0;
-                    }
-                }
-                if (INTERMediator.pagedAllCount >= INTERMediator.pagedSize) {
-                    INTERMediator.construct();
-                }
-                IMLibPageNavigation.navigationSetup();
-            }
+
         } catch (ex) {
             if (ex == "_im_requath_request_") {
                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
@@ -449,9 +555,9 @@ var IMLibUI = {
     },
 
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
-        var currentContext, recordSet, index, key, conditions, relationDef, targetRecord, portalField,
-            targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet, newRecordId,
-            keyField, associatedContext, createdRecord, newRecord, portalRowNum, recId, maxRecId;
+        var currentContext, recordSet, index, key, relationDef, targetRecord, portalField,
+            targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet,
+            newRecord, portalRowNum, recId, maxRecId;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
@@ -460,7 +566,8 @@ var IMLibUI = {
         }
         INTERMediatorOnPage.showProgress();
         currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
-        recordSet = []; relatedRecordSet = [];
+        recordSet = [];
+        relatedRecordSet = [];
         if (foreignValues != null) {
             for (index in currentContext['relation']) {
                 if (currentContext['relation'].hasOwnProperty(index)) {
@@ -471,102 +578,32 @@ var IMLibUI = {
                 }
             }
         }
-        try {
-            INTERMediatorOnPage.retrieveAuthInfo();
+        //try {
+        INTERMediatorOnPage.retrieveAuthInfo();
 
-            relationDef = currentContext["relation"];
-            if (relationDef) {
-                for (index in relationDef) {
-                    if (relationDef.hasOwnProperty(index) && relationDef[index]["portal"] == true) {
-                        currentContext["portal"] = true;
-                    }
+        relationDef = currentContext["relation"];
+        if (relationDef) {
+            for (index in relationDef) {
+                if (relationDef.hasOwnProperty(index) && relationDef[index]["portal"] == true) {
+                    currentContext["portal"] = true;
                 }
             }
-            if (currentContext["portal"] == true) {
-                relatedRecordSet = [];
-                for (index in currentContext["default-values"]) {
-                    if (currentContext["default-values"].hasOwnProperty(index)) {
-                        relatedRecordSet.push({
-                            field: targetName + "::" + currentContext["default-values"][index]["field"] + ".0",
-                            value: currentContext["default-values"][index]["value"]
-                        });
-                    }
+        }
+        if (currentContext["portal"] == true) {
+            relatedRecordSet = [];
+            for (index in currentContext["default-values"]) {
+                if (currentContext["default-values"].hasOwnProperty(index)) {
+                    relatedRecordSet.push({
+                        field: targetName + "::" + currentContext["default-values"][index]["field"] + ".0",
+                        value: currentContext["default-values"][index]["value"]
+                    });
                 }
+            }
 
-                if (relatedRecordSet.length == 0) {
-                    targetPortalValue = "";
+            if (relatedRecordSet.length == 0) {
+                targetPortalValue = "";
 
-                    targetRecord = INTERMediator_DBAdapter.db_query({
-                            name: targetName,
-                            records: 1,
-                            conditions: [
-                                {
-                                    field: currentContext["key"] ? currentContext["key"] : "-recid",
-                                    operator: "=",
-                                    value: keyValue
-                                }
-                            ]
-                        }
-                    );
-                    for (portalField in targetRecord["recordset"][0][0]) {
-                        if (portalField.indexOf(targetName + "::") > -1 && portalField !== targetName + "::-recid") {
-                            existRelated = true;
-                            targetPortalField = portalField;
-                            if (portalField == targetName + "::" + recordSet[0]['field']) {
-                                targetPortalValue = recordSet[0]['value'];
-                                break;
-                            }
-                            if (portalField != targetName + "::id"
-                                && portalField != targetName + "::" + recordSet[0]['field']) {
-                                break;
-                            }
-                        }
-                    }
-
-                    if (existRelated == false) {
-                        targetRecord = INTERMediator_DBAdapter.db_query({
-                                name: targetName,
-                                records: 0,
-                                conditions: [
-                                    {
-                                        field: currentContext["key"] ? currentContext["key"] : "-recid",
-                                        operator: "=",
-                                        value: keyValue
-                                    }
-                                ]
-                            }
-                        );
-                        for (portalField in targetRecord["recordset"]) {
-                            if (portalField.indexOf(targetName + "::") > -1 && portalField !== targetName + "::-recid") {
-                                targetPortalField = portalField;
-                                if (portalField == targetName + "::" + recordSet[0]['field']) {
-                                    targetPortalValue = recordSet[0]['value'];
-                                    break;
-                                }
-                                if (portalField != targetName + "::id"
-                                    && portalField != targetName + "::" + recordSet[0]['field']) {
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    relatedRecordSet.push({field: targetPortalField + ".0", value: targetPortalValue});
-                }
-
-                INTERMediator_DBAdapter.db_update({
-                    name: targetName,
-                    conditions: [
-                        {
-                            field: currentContext["key"] ? currentContext["key"] : "-recid",
-                            operator: "=",
-                            value: keyValue
-                        }
-                    ],
-                    dataset: relatedRecordSet
-                });
-
-                targetRecord = INTERMediator_DBAdapter.db_query(
-                    {
+                targetRecord = INTERMediator_DBAdapter.db_query({
                         name: targetName,
                         records: 1,
                         conditions: [
@@ -578,60 +615,130 @@ var IMLibUI = {
                         ]
                     }
                 );
-
-                newRecord = {};
-                maxRecId = -1;
-                for (portalRowNum in targetRecord["recordset"][0]) {
-                    if (portalRowNum == Number(portalRowNum)
-                        && targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"]) {
-                        recId = parseInt(targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"], 10);
-                        if (recId > maxRecId) {
-                            maxRecId = recId;
-                            newRecord.recordset = [];
-                            newRecord.recordset.push(targetRecord["recordset"][0][portalRowNum]);
+                for (portalField in targetRecord["recordset"][0][0]) {
+                    if (portalField.indexOf(targetName + "::") > -1 && portalField !== targetName + "::-recid") {
+                        existRelated = true;
+                        targetPortalField = portalField;
+                        if (portalField == targetName + "::" + recordSet[0]['field']) {
+                            targetPortalValue = recordSet[0]['value'];
+                            break;
+                        }
+                        if (portalField != targetName + "::id"
+                            && portalField != targetName + "::" + recordSet[0]['field']) {
+                            break;
                         }
                     }
                 }
-            } else {
-                newRecord = INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: recordSet});
-                newRecordId = newRecord.newKeyValue;
-            }
-        } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                INTERMediatorOnPage.clearCredentials();
-                INTERMediatorOnPage.authenticating(
-                    function () {
-                        IMLibUI.insertButton(
-                            targetName, keyValue, foreignValues, updateNodes, removeNodes, false);
-                    }
-                );
-                INTERMediator.flushMessage();
-                return;
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-4");
-            }
-        }
-        keyField = currentContext["key"] ? currentContext["key"] : "-recid";
-        associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodes);
-        if (associatedContext) {
-            associatedContext.foreignValue = foreignValues;
-            if (currentContext["portal"] == true && existRelated == false) {
-                conditions = INTERMediator.additionalCondition;
-                conditions[targetName] = {
-                    field: keyField,
-                    operator: "=",
-                    value: keyValue
-                };
-                INTERMediator.additionalCondition = conditions;
-            }
-            createdRecord = [{}];
-            createdRecord[0][keyField] = newRecordId;
-            INTERMediator.constructMain(associatedContext, newRecord.recordset);
-        }
 
-        IMLibCalc.recalculation();
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
+                if (existRelated == false) {
+                    targetRecord = INTERMediator_DBAdapter.db_query({
+                            name: targetName,
+                            records: 0,
+                            conditions: [
+                                {
+                                    field: currentContext["key"] ? currentContext["key"] : "-recid",
+                                    operator: "=",
+                                    value: keyValue
+                                }
+                            ]
+                        }
+                    );
+                    for (portalField in targetRecord["recordset"]) {
+                        if (portalField.indexOf(targetName + "::") > -1 && portalField !== targetName + "::-recid") {
+                            targetPortalField = portalField;
+                            if (portalField == targetName + "::" + recordSet[0]['field']) {
+                                targetPortalValue = recordSet[0]['value'];
+                                break;
+                            }
+                            if (portalField != targetName + "::id"
+                                && portalField != targetName + "::" + recordSet[0]['field']) {
+                                break;
+                            }
+                        }
+                    }
+                }
+                relatedRecordSet.push({field: targetPortalField + ".0", value: targetPortalValue});
+            }
+
+            INTERMediator_DBAdapter.db_update({
+                name: targetName,
+                conditions: [
+                    {
+                        field: currentContext["key"] ? currentContext["key"] : "-recid",
+                        operator: "=",
+                        value: keyValue
+                    }
+                ],
+                dataset: relatedRecordSet
+            });
+
+            targetRecord = INTERMediator_DBAdapter.db_query(
+                {
+                    name: targetName,
+                    records: 1,
+                    conditions: [
+                        {
+                            field: currentContext["key"] ? currentContext["key"] : "-recid",
+                            operator: "=",
+                            value: keyValue
+                        }
+                    ]
+                }
+            );
+
+            newRecord = {};
+            maxRecId = -1;
+            for (portalRowNum in targetRecord["recordset"][0]) {
+                if (portalRowNum == Number(portalRowNum)
+                    && targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"]) {
+                    recId = parseInt(targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"], 10);
+                    if (recId > maxRecId) {
+                        maxRecId = recId;
+                        newRecord.recordset = [];
+                        newRecord.recordset.push(targetRecord["recordset"][0][portalRowNum]);
+                    }
+                }
+            }
+        } else {
+            INTERMediator_DBAdapter.db_createRecord_async(
+                {name: targetName, dataset: recordSet},
+                (function () {
+                    var currentContextCapt = currentContext;
+                    var updateNodesCapt = updateNodes;
+                    var foreignValuesCapt = foreignValues;
+                    var existRelatedCapt = existRelated;
+                    var keyValueCapt = keyValue;
+                    return function (result) {
+                        var keyField, newRecordId, associatedContext, conditions, createdRecord;
+                        newRecordId = result.newRecordKeyValue;
+                        keyField = currentContextCapt["key"] ? currentContextCapt["key"] : "-recid";
+                        associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt);
+                        if (associatedContext) {
+                            associatedContext.foreignValue = foreignValuesCapt;
+                            if (currentContextCapt["portal"] == true && existRelatedCapt == false) {
+                                conditions = INTERMediator.additionalCondition;
+                                conditions[targetName] = {
+                                    field: keyField,
+                                    operator: "=",
+                                    value: keyValueCapt
+                                };
+                                INTERMediator.additionalCondition = conditions;
+                            }
+                            createdRecord = [{}];
+                            createdRecord[0][keyField] = newRecordId;
+                            INTERMediator.constructMain(associatedContext, result.dbresult);
+                        }
+                        IMLibCalc.recalculation();
+                        INTERMediatorOnPage.hideProgress();
+                        INTERMediator.flushMessage();
+                    }
+                })(),
+                function () {
+                    INTERMediator.setErrorMessage("Insert Error", "EXCEPTION-4");
+                }
+            );
+
+        }
     },
 
     clickPostOnlyButton: function (node) {
@@ -788,13 +895,14 @@ var IMLibUI = {
         }
 
         contextInfo = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);
-        INTERMediator_DBAdapter.db_createRecordWithAuth(
+        INTERMediator_DBAdapter.db_createRecord_async(
             {name: selectedContext, dataset: fieldData},
-            function (returnValue) {
-                var newNode, parentOfTarget, targetNode = node, thisContext = contextInfo, isSetMsg = false;
+            function (result) {
+                var newNode, parentOfTarget, targetNode = node, thisContext = contextInfo,
+                    isSetMsg = false;
                 INTERMediator.flushMessage();
                 if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
-                    INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, returnValue);
+                    INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, result.newRecordKeyValue);
                 }
                 if (thisContext['post-dismiss-message']) {
                     parentOfTarget = targetNode.parentNode;
@@ -815,7 +923,7 @@ var IMLibUI = {
                         location.href = thisContext['post-move-url'];
                     }, isSetMsg ? INTERMediator.waitSecondsAfterPostMessage * 1000 : 0);
                 }
-            });
+            }, null);
 
         function seekLinkedElement(node) {
             var children, i;

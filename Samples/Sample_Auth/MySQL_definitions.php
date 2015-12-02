@@ -27,16 +27,16 @@ IM_Entry(
             'repeat-control' => 'insert delete',
             'authentication' => array(
                 'read' => array( /* load, update, new, delete*/
-                    'group' => array("group1","group2"),
+                    'group' => array("group1"),
                 ),
                 'update' => array( /* load, update, new, delete*/
                     'group' => array("group2"),
                 ),
                 'create' => array( /* load, update, new, delete*/
-                    'group' => array("dummy"),
+                    'group' => array("group1"),
                 ),
                 'delete' => array( /* load, update, new, delete*/
-                    'group' => array("dummy"),
+                    'group' => array("group2"),
                 ),
             ),
         ),
@@ -47,6 +47,20 @@ IM_Entry(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => '=')
             ),
             'repeat-control' => 'insert delete',
+            'authentication' => array(
+//                'read' => array( /* load, update, new, delete*/
+//                    'group' => array("group1","group2"),
+//                ),
+                'update' => array( /* load, update, new, delete*/
+                    'group' => array("group2"),
+                ),
+                'create' => array( /* load, update, new, delete*/
+                    'group' => array("group1"),
+                ),
+                'delete' => array( /* load, update, new, delete*/
+                    'group' => array("group2"),
+                ),
+            ),
         ),
         array(
             'name' => 'contact_way',
@@ -88,7 +102,7 @@ IM_Entry(
             'kindname' => 'cor_way_kindname@name_kind@innerHTML',
         ),
         //    'transaction' => 'none',
-        'authentication' => array( // table only, for all operations
+//        'authentication' => array( // table only, for all operations
 //            'user' => array('user1'), // Itemize permitted users
 //            'group' => array('group2'), // Itemize permitted groups
 //            'user-table' => 'authuser', // Default values
@@ -96,11 +110,11 @@ IM_Entry(
 //            'corresponding-table' => 'authcor',
 //            'challenge-table' => 'issuedhash',
 //            'authexpired' => '600', // Set as seconds.
-            'storing' => 'session-storage', // 'cookie'(default), 'cookie-domainwide', 'none'
-            'realm' => 'Sample_Auth/MySQL_definitions', //
+//            'storing' => 'session-storage', // 'cookie'(default), 'cookie-domainwide', 'none'
+//            'realm' => 'Sample_Auth/MySQL_definitions', //
 //            'email-as-username' => true,
 //        'password-policy' => "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
-        ),
+//        ),
     ),
     array('db-class' => 'PDO'),
     2
