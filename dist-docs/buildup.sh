@@ -1,10 +1,12 @@
 #!/bin/sh
 
 # INTER-Mediator Deployment File Set Builder
-# by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
-
-# This project started at the end of 2009.
+# Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+# This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+#
 # INTER-Mediator is supplied under MIT License.
+# Please see the full license for details:
+# https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
 version="5.3-dev"
 
@@ -179,6 +181,9 @@ else
     echo "PROCESSING: ${originalPath}/dist-docs/readme.txt"
     head -n `echo $lines` "${originalPath}/dist-docs/readme.txt" > "${buildPath}/readme.txt"
 fi
+
+echo "PROCESSING: ${originalPath}/themes"
+cp -prf "${originalPath}/themes" "${buildPath}"
 
 find "${buildPath}" -name "\.*" -exec rm -rf {} \;
 

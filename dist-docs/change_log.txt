@@ -17,6 +17,7 @@ format-client-side branch (in development)
 Ver.5.3 (in development)
 - SQL aggregation can be defined as a read-only context. The aggregation-select,
   aggregation-from, aggregation-group-by key are added.
+- The database update communucations (Create, Update, Delete, Copy) are working in asynchronous mode.
 - MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
   for PHP).
 - Update phpseclib to version 1.0.0.
@@ -68,6 +69,7 @@ Ver.5.3 (in development)
   cases.
 - [BUG FIX] Definition File Editor can store the some values that are as array.
 - [BUG FIX] If the "key" key wasn't supplied, the calculation goes wrong results.
+- [BUG FIX] Fix buildup.sh to include "themes" directory correctly. The affected version is 5.2 only.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.
