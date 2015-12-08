@@ -167,7 +167,7 @@ class DefinitionChecker
         'formatter' => array(
             '*' => array('field' => 'string',
                 'converter-class' => 'string',
-                'parameter' => 'string',
+                'parameter' => 'string|boolean',
             ),
         ),
         'aliases' => array(

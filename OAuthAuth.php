@@ -35,6 +35,8 @@ class OAuthAuth
     private $isCreate = null;
     private $userInfo = null;
 
+    public $debugMode = false;
+
     public function __construct()
     {
         $params = IMUtil::getFromParamsPHPFile(
@@ -132,12 +134,18 @@ class OAuthAuth
         $dbProxy->initialize(null, null, null, false);
         $dbProxy->dbSettings->setLDAPExpiringSeconds(3600 * 24);
         $credential = $dbProxy->generateCredential(30);
-        $this->isCreate = $dbProxy->dbClass->authSupportOAuthUserHandling(array(
+        $param = array(
             "username" => $tokenID["username"],
             "hashedpasswd" => $credential,
             "realname" => $tokenID["realname"],
             "email" => $tokenID["email"]
-        ));
+        );
+        $this->isCreate = $dbProxy->dbClass->authSupportOAuthUserHandling($param);
+        if ($this->debugMode)   {
+            $this->errorMessage[] = "authSupportOAuthUserHandling sends "
+            . var_export($param, true) . ", returns {$this->isCreate}.";
+            $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getDebugMessages());
+        }
         $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
 
         $oAuthStoring = isset($_COOKIE["_im_oauth_storing"]) ? $_COOKIE["_im_oauth_storing"] : "";
@@ -220,7 +228,9 @@ class OAuthAuth
             $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
             return false;
         }
-//        $this->errorMessage[] = $content;
+        if ($this->debugMode) {
+            $this->errorMessage[] = $content;
+        }
 
         $this->id_token = $response->id_token;
         $jWebToken = explode(".", $response->id_token);
@@ -263,9 +273,9 @@ class OAuthAuth
             return false;
         }
         $userInfo = json_decode($content);
-//        $this->errorMessage[] = "#";
-//        $this->errorMessage[] = var_export($userInfo, true);
-//
+        if ($this->debugMode) {
+            $this->errorMessage[] = var_export($userInfo, true);
+        }
 //        $userInfo = json_decode(
 //            $userInfo = file_get_contents(
 //                $this->getInfoURL . '?access_token=' . $response->access_token)
