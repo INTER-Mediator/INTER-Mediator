@@ -115,12 +115,15 @@ class OAuthAuth
 
     public function afterAuth()
     {
+        $this->errorMessage = array();
         if (!isset($_REQUEST['code'])) {
             $this->errorMessage[] = "This isn't redirected from the providers site.";
             return false;
         }
         $tokenID = $this->decodeIDToken($_REQUEST['code']);
-        if ($tokenID === false) {
+        if ($tokenID === false || strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
+            $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
+            .var_export($tokenID, true);
             return false;
         }
 
@@ -228,6 +231,9 @@ class OAuthAuth
             $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
             return false;
         }
+        if (strlen($response->access_token) < 1)    {
+            $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
+        }
         if ($this->debugMode) {
             $this->errorMessage[] = $content;
         }
@@ -253,6 +259,9 @@ class OAuthAuth
          * "exp":1442765677} */
         $username = $jWebToken[1]->sub . "@" . $jWebToken[1]->iss;
         $email = $jWebToken[1]->email;
+        if (strlen($username) < 2)    {
+            $this->errorMessage[] = "Error: User subject didn't get from: {$this->getTokenURL}.";
+        }
 
         $accessURL = $this->getInfoURL . '?access_token=' . $response->access_token;
         if (function_exists('curl_init')) {

@@ -1551,6 +1551,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
+            if (isset($row['limitdt']) && !is_null($row['limitdt'])
+                && $this->secondsFromNow($row['limitdt']) < $limitSeconds
+            ) {
+                return false;
+            }
             return $row['hashedpasswd'];
         }
         return false;
@@ -1977,11 +1983,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if ($row['email'] == $username) {
                 $usernameCandidate = $row['username'];
             }
-            $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
-            if (isset($row['limitdt']) && !is_null($row['limitdt'])
-                && $this->secondsFromNow($row['limitdt']) < $limitSeconds) {
-                return "_im_auth_failed_";
-            }
+//            $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
+//            if (isset($row['limitdt']) && !is_null($row['limitdt'])
+//                && $this->secondsFromNow($row['limitdt']) < $limitSeconds) {
+//                return "_im_auth_failed_";
+//            }
         }
         return $usernameCandidate;
     }

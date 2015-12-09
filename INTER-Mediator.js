@@ -798,7 +798,12 @@ INTERMediator = {
                         foreignValue = null;
                     }
                     keyValue = targetRecordset[ix][keyField];
-                    keyingValue = keyField + "=" + ((keyValue == undefined) ? ix : keyValue);
+                    if (keyField && !keyValue)  {
+                        //INTERMediator.setErrorMessage("The value of the key field is null.",
+                        //    "This No.["+ix+"] record will should be ignored.");
+                        keyValue = ix;
+                    }
+                    keyingValue = keyField + "=" + keyValue;
 
                     for (k = 0; k < currentLinkedNodes.length; k++) {
                         // for each linked element
