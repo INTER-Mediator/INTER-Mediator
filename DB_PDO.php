@@ -1492,6 +1492,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $returnValue = null;
         $userTable = $this->dbSettings->getUserTable();
         if (!$this->setupConnection()) { //Establish the connection
+            $this->errorMessageStore("PDO class can't set up a connection.");
             return $returnValue;
         }
 
@@ -1550,6 +1551,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
+            if (isset($row['limitdt']) && !is_null($row['limitdt'])
+                && $this->secondsFromNow($row['limitdt']) < $limitSeconds
+            ) {
+                return false;
+            }
             return $row['hashedpasswd'];
         }
         return false;
@@ -1682,11 +1689,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $this->privateGetUserIdFromUsername($username, true);
     }
 
+    private $overLimitDTUser;
+
     private
     function privateGetUserIdFromUsername($username, $isCheckLimit)
     {
         $this->logger->setDebugMessage("[authSupportGetUserIdFromUsername]username={$username}", 2);
 
+        $this->overLimitDTUser = false;
         $userTable = $this->dbSettings->getUserTable();
         if ($userTable == null) {
             return false;
@@ -1708,7 +1718,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if ($isCheckLimit && isset($row['limitdt']) && !is_null($row['limitdt'])) {
                 if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
-                    return -1;
+                    $this->overLimitDTUser = false;
                 }
             }
             return $row['id'];
@@ -1973,6 +1983,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if ($row['email'] == $username) {
                 $usernameCandidate = $row['username'];
             }
+//            $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
+//            if (isset($row['limitdt']) && !is_null($row['limitdt'])
+//                && $this->secondsFromNow($row['limitdt']) < $limitSeconds) {
+//                return "_im_auth_failed_";
+//            }
         }
         return $usernameCandidate;
     }

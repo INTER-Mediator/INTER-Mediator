@@ -36,7 +36,7 @@ if ($authObj->afterAuth()) {
 } else {
     $err = $authObj->errorMessages();
 }
-header("Content-Type: text/html");
+header("Content-Type: text/html; charset=UTF-8");
 ?>
 <html>
 <head>

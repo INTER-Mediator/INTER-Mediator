@@ -35,6 +35,8 @@ class OAuthAuth
     private $isCreate = null;
     private $userInfo = null;
 
+    public $debugMode = false;
+
     public function __construct()
     {
         $params = IMUtil::getFromParamsPHPFile(
@@ -113,12 +115,15 @@ class OAuthAuth
 
     public function afterAuth()
     {
+        $this->errorMessage = array();
         if (!isset($_REQUEST['code'])) {
             $this->errorMessage[] = "This isn't redirected from the providers site.";
             return false;
         }
         $tokenID = $this->decodeIDToken($_REQUEST['code']);
-        if ($tokenID === false) {
+        if ($tokenID === false || strlen($tokenID["username"]) < 1 || strlen($tokenID["email"]) < 1) {
+            $this->errorMessage[] = "Nothing to get from the authenticating server. tokenID="
+            .var_export($tokenID, true);
             return false;
         }
 
@@ -132,12 +137,18 @@ class OAuthAuth
         $dbProxy->initialize(null, null, null, false);
         $dbProxy->dbSettings->setLDAPExpiringSeconds(3600 * 24);
         $credential = $dbProxy->generateCredential(30);
-        $this->isCreate = $dbProxy->dbClass->authSupportOAuthUserHandling(array(
+        $param = array(
             "username" => $tokenID["username"],
             "hashedpasswd" => $credential,
             "realname" => $tokenID["realname"],
             "email" => $tokenID["email"]
-        ));
+        );
+        $this->isCreate = $dbProxy->dbClass->authSupportOAuthUserHandling($param);
+        if ($this->debugMode)   {
+            $this->errorMessage[] = "authSupportOAuthUserHandling sends "
+            . var_export($param, true) . ", returns {$this->isCreate}.";
+            $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getDebugMessages());
+        }
         $this->errorMessage = array_merge($this->errorMessage, $dbProxy->logger->getErrorMessages());
 
         $oAuthStoring = isset($_COOKIE["_im_oauth_storing"]) ? $_COOKIE["_im_oauth_storing"] : "";
@@ -220,7 +231,12 @@ class OAuthAuth
             $this->errorMessage[] = "Error: {$response->error}<br/>Description: {$response->error_description}";
             return false;
         }
-//        $this->errorMessage[] = $content;
+        if (strlen($response->access_token) < 1)    {
+            $this->errorMessage[] = "Error: Access token didn't get from: {$this->getTokenURL}.";
+        }
+        if ($this->debugMode) {
+            $this->errorMessage[] = $content;
+        }
 
         $this->id_token = $response->id_token;
         $jWebToken = explode(".", $response->id_token);
@@ -243,6 +259,9 @@ class OAuthAuth
          * "exp":1442765677} */
         $username = $jWebToken[1]->sub . "@" . $jWebToken[1]->iss;
         $email = $jWebToken[1]->email;
+        if (strlen($username) < 2)    {
+            $this->errorMessage[] = "Error: User subject didn't get from: {$this->getTokenURL}.";
+        }
 
         $accessURL = $this->getInfoURL . '?access_token=' . $response->access_token;
         if (function_exists('curl_init')) {
@@ -263,9 +282,9 @@ class OAuthAuth
             return false;
         }
         $userInfo = json_decode($content);
-//        $this->errorMessage[] = "#";
-//        $this->errorMessage[] = var_export($userInfo, true);
-//
+        if ($this->debugMode) {
+            $this->errorMessage[] = var_export($userInfo, true);
+        }
 //        $userInfo = json_decode(
 //            $userInfo = file_get_contents(
 //                $this->getInfoURL . '?access_token=' . $response->access_token)
