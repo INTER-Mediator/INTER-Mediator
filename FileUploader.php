@@ -54,7 +54,6 @@ class FileUploader
                 $dbProxyInstance->exportOutputDataAsJSON();
                 return;
             }
-            error_log($url);
         }
         
         if (!isset($options['media-root-dir']) && $useContainer === FALSE) {
