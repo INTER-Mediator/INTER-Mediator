@@ -259,9 +259,6 @@ class OAuthAuth
          * "exp":1442765677} */
         $username = $jWebToken[1]->sub . "@" . $jWebToken[1]->iss;
         $email = $jWebToken[1]->email;
-        if (strlen($username) < 2)    {
-            $this->errorMessage[] = "Error: User subject didn't get from: {$this->getTokenURL}.";
-        }
 
         $accessURL = $this->getInfoURL . '?access_token=' . $response->access_token;
         if (function_exists('curl_init')) {
@@ -303,6 +300,15 @@ class OAuthAuth
         ["locale"]=> string(2) "ja" } */
 
         $realname = $userInfo->name;
+        if (strlen($username) < 2) {
+            $username = $userInfo->sub . "@" . $userInfo->hd;
+            if (strlen($username) < 2)    {
+                $this->errorMessage[] = "Error: User subject didn't get from: {$this->getTokenURL}.";
+            }
+        }
+        if (strlen($email) < 1) {
+            $email = $userInfo->email;
+        }
 
         return array(
             "realname" => $realname,
