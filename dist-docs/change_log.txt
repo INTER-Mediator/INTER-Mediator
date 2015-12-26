@@ -56,6 +56,8 @@ Ver.5.3 (in development)
   Previously it was just a key field value of new record.
 - Avoid outputting messages in an error log file if there is no portal objects on the layout when using 
   FileMaker Server.
+- [SECURITY FIX] Update FileUploader.php to prevent the HTTP header injection in PHP's header() for 
+  Internet Explorer and PHP 5.2.x/PHP 5.3.x (Fixed in PHP 5.4.38, PHP 5.5.22 and PHP 5.6.6).
 - [BUG FIX] Fix detection of params.php file.
 - [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
 - [BUG FIX] Modify INTERMediator.totalRecordCount after IMLibPageNavigation.deleteRecordFromNavi method.
