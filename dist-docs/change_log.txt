@@ -19,6 +19,9 @@ Ver.5.3 (in development)
 - Update phpseclib to version 1.0.0.
 - Generic enclosure/repeater mechanism is implemented. See Sample_forDebugging/genericrepeater.html
   or the link "generic enclosure/repeater" in "Debugging" row of the sample portal page.
+- The "source" key for data source of first parameter of IM_Entry function is introduced. Contexts that
+  has same "source" key's value is going to be updated and re-constructed when insert/delete operation
+  is happend in one of them.
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php

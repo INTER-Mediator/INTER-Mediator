@@ -212,6 +212,7 @@ class DefinitionChecker
             'name' => 'string',
             'table' => 'string',
             'view' => 'string',
+            'source' => 'string',
             'records' => 'integer',
             'maxrecords' => 'integer',
             'paging' => 'boolean',

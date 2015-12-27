@@ -239,7 +239,7 @@ IMLibContextPool = {
         if (contextAndKey == null) {
             return;
         }
-        sameOriginContexts = this.getContextsWithSameOrigin(contextAndKey.context.viewName);
+        sameOriginContexts = this.getContextsWithSameOrigin(contextAndKey.context.sourceName);
         sameOriginContexts.push(contextAndKey.context);
         targetKeying = contextAndKey.key;
         //targetKeyingObj = contextAndKey.context.binding[targetKeying];
@@ -303,13 +303,12 @@ IMLibContextPool = {
         var i, contexts = [];
 
         for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
-            if (IMLibContextPool.poolingContexts[i].viewName == vName) {
+            if (IMLibContextPool.poolingContexts[i].sourceName == vName) {
                 contexts.push(IMLibContextPool.poolingContexts[i]);
             }
         }
         return contexts;
     },
-
 
     updateOnAnotherClient: function (eventName, info) {
         var i, j, k, entityName = info.entity, contextDef, contextView, keyField, recKey;
@@ -398,6 +397,7 @@ IMLibContext = function (contextName) {
     this.contextName = contextName;
     this.tableName = null;
     this.viewName = null;
+    this.sourceName = null;
     this.store = {};
     this.binding = {};
     this.contextInfo = {};
@@ -475,6 +475,7 @@ IMLibContext = function (contextName) {
         if (!context || !INTERMediatorOnPage.getDataSources) {
             this.tableName = this.contextName;
             this.viewName = this.contextName;
+            this.sourceName = this.contextName;
             // This is not a valid case, it just prevent the error in the unit test.
             return;
         }
@@ -482,6 +483,9 @@ IMLibContext = function (contextName) {
         if (contextDef) {
             this.viewName = contextDef['view'] ? contextDef['view'] : contextDef['name'];
             this.tableName = contextDef['table'] ? contextDef['table'] : contextDef['name'];
+            this.sourceName = (contextDef['source'] ? contextDef['source']
+                : (contextDef['table'] ? contextDef['table']
+                : (contextDef['view'] ? contextDef['view'] : contextDef['name'])));
         }
     };
 
