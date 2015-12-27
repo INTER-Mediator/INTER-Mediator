@@ -46,6 +46,8 @@ Ver.5.3 (in development)
 - Password policy can be set in the 2nd "option" parameter of IM_Entry function.
   The key is 'password-policy' and the following terms can be applied.
   "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
+- Add background image files (background.gif and background-error.gif) to improve compatibility with
+  CSP (Content Security Policy).
 - Add Dockerfile for CircleCI.
 - Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.
