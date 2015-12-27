@@ -182,7 +182,7 @@ var IMLibElement = {
         if (nodeTag === "INPUT" || nodeTag === "SELECT" || nodeTag === "TEXTAREA") {
             INTERMediatorLib.addEvent(element, "blur", function (e) {
                 var idValue = element.id;
-                if (! IMLibUI.valueChange(idValue, true)){
+                if (!IMLibUI.valueChange(idValue, true)) {
                     element.focus();
                 }
             });
@@ -237,44 +237,51 @@ var IMLibElement = {
         return newValue;
     },
 
-    deleteNodes: function(removeNodes) {
+    deleteNodes: function (removeNodes) {
         var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;
 
-        for (key in removeNodes) {
+        for (key = 0; key < removeNodes.length; key++) {
             removeNode = document.getElementById(removeNodes[key]);
-            removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
-            if (removingNodes) {
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    if (removeNodeId in IMLibCalc.calculateRequiredObject) {
-                        delete IMLibCalc.calculateRequiredObject[removeNodeId];
+            if (removeNode) {
+                removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
+                if (removingNodes) {
+                    for (i = 0; i < removingNodes.length; i++) {
+                        removeNodeId = removingNodes[i].id;
+                        if (removeNodeId in IMLibCalc.calculateRequiredObject) {
+                            delete IMLibCalc.calculateRequiredObject[removeNodeId];
+                        }
                     }
-                }
-                for (i = 0; i < removingNodes.length; i++) {
-                    removeNodeId = removingNodes[i].id;
-                    for (nodeId in IMLibCalc.calculateRequiredObject) {
-                        calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                        referes = {};
-                        values = {};
-                        for (j in calcObject.referes) {
-                            referes[j] = [], values[j] = [];
-                            for (k = 0; k < calcObject.referes[j].length; k++) {
-                                if (removeNodeId != calcObject.referes[j][k]) {
-                                    referes[j].push(calcObject.referes[j][k]);
-                                    values[j].push(calcObject.values[j][k]);
+                    for (i = 0; i < removingNodes.length; i++) {
+                        removeNodeId = removingNodes[i].id;
+                        for (nodeId in IMLibCalc.calculateRequiredObject) {
+                            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
+                                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
+                                referes = {};
+                                values = {};
+                                for (j in calcObject.referes) {
+                                    if (calcObject.referes.hasOwnProperty(j)) {
+                                        referes[j] = [];
+                                        values[j] = [];
+                                        for (k = 0; k < calcObject.referes[j].length; k++) {
+                                            if (removeNodeId != calcObject.referes[j][k]) {
+                                                referes[j].push(calcObject.referes[j][k]);
+                                                values[j].push(calcObject.values[j][k]);
+                                            }
+                                        }
+                                    }
                                 }
+                                calcObject.referes = referes;
+                                calcObject.values = values;
                             }
                         }
-                        calcObject.referes = referes;
-                        calcObject.values = values;
                     }
                 }
-            }
-            try {
-                removeNode.parentNode.removeChild(removeNode);
-            } catch
-                (ex) {
-                // Avoid an error for Safari
+                try {
+                    removeNode.parentNode.removeChild(removeNode);
+                } catch
+                    (ex) {
+                    // Avoid an error for Safari
+                }
             }
         }
     }

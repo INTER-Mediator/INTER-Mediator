@@ -798,7 +798,7 @@ INTERMediator = {
                         foreignValue = null;
                     }
                     keyValue = targetRecordset[ix][keyField];
-                    if (keyField && !keyValue)  {
+                    if (keyField && !keyValue) {
                         //INTERMediator.setErrorMessage("The value of the key field is null.",
                         //    "This No.["+ix+"] record will should be ignored.");
                         keyValue = ix;
@@ -954,12 +954,33 @@ INTERMediator = {
                     foreignFieldValue = "=";
                 }
 
-                setupDeleteButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
-                    currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes);
-                setupNavigationButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
-                    currentContextDef, keyField, keyValue, foreignField, foreignValue);
-                setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec[repeatersOneRec.length - 1],
-                    contextObj, targetRecordset[ix]);
+                setupDeleteButton(
+                    encNodeTag,
+                    repeatersOneRec,
+                    currentContextDef,
+                    keyField,
+                    keyValue,
+                    foreignField,
+                    foreignValue,
+                    shouldDeleteNodes
+                );
+                setupNavigationButton(
+                    encNodeTag,
+                    repNodeTag,
+                    repeatersOneRec[repeatersOneRec.length - 1],
+                    currentContextDef,
+                    keyField,
+                    keyValue,
+                    foreignField,
+                    foreignValue
+                );
+                setupCopyButton(
+                    encNodeTag,
+                    repNodeTag,
+                    repeatersOneRec[repeatersOneRec.length - 1],
+                    contextObj,
+                    targetRecordset[ix]
+                );
 
                 if (Boolean(currentContextDef.portal) !== true ||
                     (Boolean(currentContextDef.portal) === true && targetTotalCount > 0)) {
@@ -981,7 +1002,9 @@ INTERMediator = {
                                 insertNode.parentNode.insertBefore(newNode, insertNode);
                             }
                             newlyAddedNodes.push(newNode);
-                            setIdValue(newNode);
+                            if (!newNode.id) {  // ######## Is that right with if statement?
+                                setIdValue(newNode);
+                            }                   // ##########################################
                             contextObj.setValue(keyingValue, "_im_repeater", "", newNode.id, "", foreignValue);
                             idValuesForFieldName[nInfo['field']] = nodeId;
                             seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj);
@@ -1057,8 +1080,10 @@ INTERMediator = {
                 try {
                     if (currentContextDef["portal"] == true) {
                         for (condition in INTERMediator.additionalCondition) {
-                            optionalCondition.push(INTERMediator.additionalCondition[condition]);
-                            break;
+                            if (INTERMediator.additionalCondition.hasOwnProperty(condition)) {
+                                optionalCondition.push(INTERMediator.additionalCondition[condition]);
+                                break;
+                            }
                         }
                     }
                     useLimit = false;
@@ -1280,13 +1305,20 @@ INTERMediator = {
 
          */
         function collectRepeatersOriginal(node, repNodeTag) {
-            var i, repeatersOriginal = [], children;
+            var i, repeatersOriginal = [], children, imControl;
 
             children = node.childNodes; // Check all child node of the enclosure.
             for (i = 0; i < children.length; i++) {
-                if (children[i].nodeType === 1 && children[i].tagName == repNodeTag) {
-                    // If the element is a repeater.
-                    repeatersOriginal.push(children[i]); // Record it to the array.
+                if (children[i].nodeType === 1) {
+                    if (children[i].tagName == repNodeTag) {
+                        // If the element is a repeater.
+                        repeatersOriginal.push(children[i]); // Record it to the array.
+                    } else if (repNodeTag == null && children[i].getAttribute("data-im-control")) {
+                        imControl = children[i].getAttribute("data-im-control");
+                        if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) > -1) {
+                            repeatersOriginal.push(children[i]);
+                        }
+                    }
                 }
             }
             return repeatersOriginal;
@@ -1431,15 +1463,10 @@ INTERMediator = {
                         tdNode = tdNodes[tdNodes.length - 1];
                         tdNode.appendChild(buttonNode);
                         break;
-                    case 'UL':
-                    case 'OL':
-                        endOfRepeaters.appendChild(buttonNode);
+                    case 'SELECT':
                         break;
-                    case 'DIV':
-                    case 'SPAN':
-                        if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
-                            endOfRepeaters.appendChild(buttonNode);
-                        }
+                    default:
+                        endOfRepeaters.appendChild(buttonNode);
                         break;
                 }
             }
@@ -1448,9 +1475,10 @@ INTERMediator = {
         /* --------------------------------------------------------------------
 
          */
-        function setupDeleteButton(encNodeTag, repNodeTag, endOfRepeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
+        function setupDeleteButton(encNodeTag, repeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
             // Handling Delete buttons
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName;
+            var endOfRepeaters = repeaters[repeaters.length - 1];
 
             if (!currentContextDef['repeat-control']
                 || !currentContextDef['repeat-control'].match(/delete/i)) {
@@ -1475,7 +1503,14 @@ INTERMediator = {
 
                     return function () {
                         IMLibUI.deleteButton(
-                            contextName, keyField, keyValue, foreignField, foreignValue, removeNodes, confirming);
+                            contextName,
+                            keyField,
+                            keyValue,
+                            foreignField,
+                            foreignValue,
+                            removeNodes,
+                            confirming
+                        );
                     };
                 };
                 eventListenerPostAdding.push({
@@ -1496,13 +1531,14 @@ INTERMediator = {
                         tdNode = tdNodes[tdNodes.length - 1];
                         tdNode.appendChild(buttonNode);
                         break;
-                    case 'UL':
-                    case 'OL':
-                        endOfRepeaters.appendChild(buttonNode);
+                    case 'SELECT':
+                        // OPTION tag can't contain any other tags.
                         break;
-                    case 'DIV':
-                    case 'SPAN':
-                        if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
+                    default:
+                        if (endOfRepeaters.tagName == "BR") {
+                            repeaters.push(endOfRepeaters.cloneNode(false));
+                            repeaters[repeaters.length - 2] = buttonNode;
+                        } else {
                             endOfRepeaters.appendChild(buttonNode);
                         }
                         break;
@@ -1593,18 +1629,18 @@ INTERMediator = {
                                 }
                             }
                             break;
-                        case 'DIV':
-                        case 'SPAN':
-                            if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
-                                divNode = document.createElement(repNodeTag);
-                                existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
-                                if (existingButtons.length == 0) {
-                                    divNode.appendChild(buttonNode);
-                                    if (currentContextDef['repeat-control'].match(/top/i)) {
-                                        node.insertBefore(divNode, node.firstChild);
-                                    } else {
-                                        node.appendChild(divNode);
-                                    }
+                        case 'SELECT':
+                            // Select enclosure can't include Insert button.
+                            break;
+                        default:
+                            divNode = document.createElement("DIV");
+                            existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
+                            if (existingButtons.length == 0) {
+                                divNode.appendChild(buttonNode);
+                                if (currentContextDef['repeat-control'].match(/top/i)) {
+                                    node.insertBefore(divNode, node.firstChild);
+                                } else {
+                                    node.appendChild(divNode);
                                 }
                             }
                             break;
@@ -1755,15 +1791,14 @@ INTERMediator = {
                         endOfRepeaters.appendChild(buttonNode);
                     }
                     break;
-                case 'DIV':
-                case 'SPAN':
-                    if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
-                        firstInNode = endOfRepeaters.childNodes[0];
-                        if (firstInNode) {
-                            endOfRepeaters.insertBefore(buttonNode, firstInNode);
-                        } else {
-                            endOfRepeaters.appendChild(buttonNode);
-                        }
+                case 'SELECT':
+                    break;
+                default:
+                    firstInNode = endOfRepeaters.childNodes[0];
+                    if (firstInNode) {
+                        endOfRepeaters.insertBefore(buttonNode, firstInNode);
+                    } else {
+                        endOfRepeaters.appendChild(buttonNode);
                     }
                     break;
             }
@@ -1868,19 +1903,18 @@ INTERMediator = {
                         }
                     }
                     break;
-                case 'DIV':
-                case 'SPAN':
+                case 'SELECT':
+                    break;
+                default:
                     repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(node.tagName);
-                    if (repNodeTag == "DIV" || repNodeTag == "SPAN") {
-                        divNode = document.createElement(repNodeTag);
-                        existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi');
-                        if (existingButtons.length == 0) {
-                            divNode.appendChild(buttonNode);
-                            if (currentContextDef['navi-control'].match(/bottom/i)) {
-                                node.appendChild(divNode);
-                            } else {
-                                node.insertBefore(divNode, node.firstChild);
-                            }
+                    divNode = document.createElement(DIV);
+                    existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi');
+                    if (existingButtons.length == 0) {
+                        divNode.appendChild(buttonNode);
+                        if (currentContextDef['navi-control'].match(/bottom/i)) {
+                            node.appendChild(divNode);
+                        } else {
+                            node.insertBefore(divNode, node.firstChild);
                         }
                     }
                     break;

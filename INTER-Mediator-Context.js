@@ -125,10 +125,6 @@ IMLibContextPool = {
         return contextInfo.record.substr(keyField.length + 1);
     },
 
-    getContextDef: function (contextName) {
-        return INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName);
-    },
-
     updateContext: function (idValue, target) {
         var contextInfo, value;
         contextInfo = IMLibContextPool.getContextInfoFromId(idValue, target);
@@ -236,42 +232,84 @@ IMLibContextPool = {
     },
 
     removeRecordFromPool: function (repeaterIdValue) {
-        var i, j, targetContext, keying, field, nodeIds = [], targetContextIndex = -1, targetKeying,
-            targetKeyingObj = null, idValue;
-        for (i = 0; i < this.poolingContexts.length; i++) {
-            for (keying in this.poolingContexts[i].binding) {
-                for (field in this.poolingContexts[i].binding[keying]) {
-                    if (field == '_im_repeater') {
-                        for (j = 0; j < this.poolingContexts[i].binding[keying][field].length; j++) {
-                            if (repeaterIdValue == this.poolingContexts[i].binding[keying][field][j].id) {
-                                targetKeyingObj = this.poolingContexts[i].binding[keying];
-                                targetKeying = keying;
-                                targetContextIndex = i;
-                            }
+        var i, j, field, nodeIds = [], targetKeying, targetKeyingObj, idValue, delNodes,
+            contextAndKey, sameOriginContexts;
+
+        contextAndKey = getContextAndKeyFromId(repeaterIdValue);
+        if (contextAndKey == null) {
+            return;
+        }
+        sameOriginContexts = this.getContextsWithSameOrigin(contextAndKey.context.viewName);
+        sameOriginContexts.push(contextAndKey.context);
+        targetKeying = contextAndKey.key;
+        //targetKeyingObj = contextAndKey.context.binding[targetKeying];
+
+        for (i = 0; i < sameOriginContexts.length; i++) {
+            targetKeyingObj = sameOriginContexts[i].binding[targetKeying];
+            for (field in targetKeyingObj) {
+                if (targetKeyingObj.hasOwnProperty(field)) {
+                    for (j = 0; j < targetKeyingObj[field].length; j++) {
+                        if (nodeIds.indexOf(targetKeyingObj[field][j].id) < 0) {
+                            nodeIds.push(targetKeyingObj[field][j].id);
                         }
                     }
                 }
             }
         }
-
-        for (field in targetKeyingObj) {
-            for (j = 0; j < targetKeyingObj[field].length; j++) {
-                nodeIds.push(targetKeyingObj[field][j].id);
-            }
-        }
-        if (targetContextIndex > -1) {
-            for (idValue in this.poolingContexts[targetContextIndex].contextInfo) {
-                if (nodeIds.indexOf(idValue) >= 0) {
-                    delete this.poolingContexts[targetContextIndex].contextInfo[idValue];
+        delNodes = [];
+        for (i = 0; i < sameOriginContexts.length; i++) {
+            for (idValue in sameOriginContexts[i].contextInfo) {
+                if (sameOriginContexts[i].contextInfo.hasOwnProperty(idValue)) {
+                    if (nodeIds.indexOf(idValue) >= 0) {
+                        delete contextAndKey.context.contextInfo[idValue];
+                        delNodes.push(idValue);
+                    }
                 }
             }
-            delete this.poolingContexts[targetContextIndex].binding[targetKeying];
-            delete this.poolingContexts[targetContextIndex].store[targetKeying];
+            delete sameOriginContexts[i].binding[targetKeying];
+            delete sameOriginContexts[i].store[targetKeying];
         }
+        IMLibElement.deleteNodes(delNodes);
+
         this.poolingContexts = this.poolingContexts.filter(function (context) {
             return nodeIds.indexOf(context.enclosureNode.id) < 0;
         });
+
+        // Private functions
+        function getContextAndKeyFromId(repeaterIdValue) {
+            var i, field, j, keying;
+
+            for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
+                for (keying in IMLibContextPool.poolingContexts[i].binding) {
+                    if (IMLibContextPool.poolingContexts[i].binding.hasOwnProperty(keying)) {
+                        for (field in IMLibContextPool.poolingContexts[i].binding[keying]) {
+                            if (IMLibContextPool.poolingContexts[i].binding[keying].hasOwnProperty(field)
+                                && field == '_im_repeater') {
+                                for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field].length; j++) {
+                                    if (repeaterIdValue == IMLibContextPool.poolingContexts[i].binding[keying][field][j].id) {
+                                        return ({context: IMLibContextPool.poolingContexts[i], key: keying});
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
+        }
     },
+
+    getContextsWithSameOrigin: function (vName) {
+        var i, contexts = [];
+
+        for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
+            if (IMLibContextPool.poolingContexts[i].viewName == vName) {
+                contexts.push(IMLibContextPool.poolingContexts[i]);
+            }
+        }
+        return contexts;
+    },
+
 
     updateOnAnotherClient: function (eventName, info) {
         var i, j, k, entityName = info.entity, contextDef, contextView, keyField, recKey;
@@ -351,7 +389,7 @@ IMLibContextPool = {
         return null;
     },
 
-    getContextDef: function(contextName)    {
+    getContextDef: function (contextName) {
         return INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName);
     }
 };
@@ -703,7 +741,7 @@ IMLibContext = function (contextName) {
                         this.contextInfo[nodeId] = {};
                     }
                     this.contextInfo[nodeId][target == "" ? "_im_no_target" : target] =
-                        {context: this, record: recKey, field: key};
+                    {context: this, record: recKey, field: key};
                     if (portal) {
                         this.contextInfo[nodeId][target == "" ? "_im_no_target" : target].portal = portal;
                     }
