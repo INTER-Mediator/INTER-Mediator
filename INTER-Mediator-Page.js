@@ -353,7 +353,7 @@ INTERMediatorOnPage = {
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
         backBox.style.height = "100%";
         backBox.style.width = "100%";
-        if (INTERMediatorOnPage.isSetDefaultStyle) {
+        if (INTERMediatorOnPage.isSetDefaultStyle && INTERMediatorOnPage.getIMRootPath !== undefined) {
             backBox.style.backgroundImage =
                 "url(" + INTERMediatorOnPage.getIMRootPath() + "/themes/default/images/background.gif)";
         }
@@ -635,7 +635,7 @@ INTERMediatorOnPage = {
         backBox.style.height = "100%";
         backBox.style.width = "100%";
         //backBox.style.backgroundColor = "#BBBBBB";
-        if (INTERMediatorOnPage.isSetDefaultStyle) {
+        if (INTERMediatorOnPage.isSetDefaultStyle && INTERMediatorOnPage.getIMRootPath !== undefined) {
             backBox.style.backgroundImage =
                 "url(" + INTERMediatorOnPage.getIMRootPath() + "/themes/default/images/background-error.gif)";
         }
