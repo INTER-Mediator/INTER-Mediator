@@ -31,15 +31,15 @@ buster.testCase("repeaterTagFromEncTag() Test", {
     "should return 'LI' if parameter is 'OL'": function () {
         assert.equals(INTERMediatorLib.repeaterTagFromEncTag("OL"), "LI");
     },
-    "should return 'DIV' if parameter is 'DIV'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("DIV"), "DIV");
-    },
-    "should return 'SPAN' if parameter is 'SPAN'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("SPAN"), "SPAN");
-    },
-    "should return null if parameter is 'BODY'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("BODY"), null);
-    }
+    //"should return 'DIV' if parameter is 'DIV'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("DIV"), "DIV");
+    //},
+    //"should return 'SPAN' if parameter is 'SPAN'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("SPAN"), "SPAN");
+    //},
+    //"should return null if parameter is 'BODY'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("BODY"), null);
+    //}
 });
 
 buster.testCase("INTERMediatorLib.generatePasswordHash() Test", {
