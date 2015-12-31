@@ -96,10 +96,10 @@ INTERMediatorOnPage = {
 
     isComplementAuthData: function () {
         "use strict";
-        return INTERMediatorOnPage.authUser != null && INTERMediatorOnPage.authUser.length > 0 &&
-            INTERMediatorOnPage.authHashedPassword != null && INTERMediatorOnPage.authHashedPassword.length > 0 &&
-            INTERMediatorOnPage.authUserSalt != null && INTERMediatorOnPage.authUserSalt.length > 0 &&
-            INTERMediatorOnPage.authChallenge != null && INTERMediatorOnPage.authChallenge.length > 0;
+        return INTERMediatorOnPage.authUser !== null && INTERMediatorOnPage.authUser.length > 0 &&
+            INTERMediatorOnPage.authHashedPassword !== null && INTERMediatorOnPage.authHashedPassword.length > 0 &&
+            INTERMediatorOnPage.authUserSalt !== null && INTERMediatorOnPage.authUserSalt.length > 0 &&
+            INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0;
     },
 
     retrieveAuthInfo: function () {
@@ -109,24 +109,24 @@ INTERMediatorOnPage = {
                 switch (INTERMediatorOnPage.authStoring) {
                     case "cookie":
                     case "cookie-domainwide":
-                        INTERMediatorOnPage.authUser
-                            = INTERMediatorOnPage.getCookie("_im_username");
-                        INTERMediatorOnPage.authHashedPassword
-                            = INTERMediatorOnPage.getCookie("_im_credential");
-                        INTERMediatorOnPage.mediaToken
-                            = INTERMediatorOnPage.getCookie("_im_mediatoken");
-                        INTERMediatorOnPage.authCryptedPassword
-                            = INTERMediatorOnPage.getCookie("_im_crypted");
+                        INTERMediatorOnPage.authUser =
+                            INTERMediatorOnPage.getCookie("_im_username");
+                        INTERMediatorOnPage.authHashedPassword =
+                            INTERMediatorOnPage.getCookie("_im_credential");
+                        INTERMediatorOnPage.mediaToken =
+                            INTERMediatorOnPage.getCookie("_im_mediatoken");
+                        INTERMediatorOnPage.authCryptedPassword =
+                            INTERMediatorOnPage.getCookie("_im_crypted");
                         break;
                     case "session-storage":
-                        INTERMediatorOnPage.authUser
-                            = INTERMediatorOnPage.getSessionStorageWithFallDown("_im_username");
-                        INTERMediatorOnPage.authHashedPassword
-                            = INTERMediatorOnPage.getSessionStorageWithFallDown("_im_credential");
-                        INTERMediatorOnPage.mediaToken
-                            = INTERMediatorOnPage.getSessionStorageWithFallDown("_im_mediatoken");
-                        INTERMediatorOnPage.authCryptedPassword
-                            = INTERMediatorOnPage.getSessionStorageWithFallDown("_im_crypted");
+                        INTERMediatorOnPage.authUser =
+                            INTERMediatorOnPage.getSessionStorageWithFallDown("_im_username");
+                        INTERMediatorOnPage.authHashedPassword =
+                            INTERMediatorOnPage.getSessionStorageWithFallDown("_im_credential");
+                        INTERMediatorOnPage.mediaToken =
+                            INTERMediatorOnPage.getSessionStorageWithFallDown("_im_mediatoken");
+                        INTERMediatorOnPage.authCryptedPassword =
+                            INTERMediatorOnPage.getSessionStorageWithFallDown("_im_crypted");
                         break;
                     default:
                         INTERMediatorOnPage.removeCookie("_im_username");
@@ -269,13 +269,6 @@ INTERMediatorOnPage = {
         }
     },
 
-    defaultBackgroundImage: "url(data:image/png;base64," +
-    "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
-    "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHRJ" +
-    "REFUeJzs0bENAEAMAjHWzBC/f5sxkPIurkcmSV65KQcAAAAAAAAAAAAAAAAAAAAA" +
-    "AAAAAAAAAAAAAAAAAAAAAL4AaA9oHwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-    "AAAAAAAAAAAAOA6wAAAA//8DAF3pMFsPzhYWAAAAAElFTkSuQmCC)",
-
     defaultBackgroundColor: null,
     loginPanelHTML: null,
 
@@ -360,8 +353,9 @@ INTERMediatorOnPage = {
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
         backBox.style.height = "100%";
         backBox.style.width = "100%";
-        if (INTERMediatorOnPage.defaultBackgroundImage) {
-            backBox.style.backgroundImage = INTERMediatorOnPage.defaultBackgroundImage;
+        if (INTERMediatorOnPage.isSetDefaultStyle && INTERMediatorOnPage.getIMRootPath !== undefined) {
+            backBox.style.backgroundImage =
+                "url(" + INTERMediatorOnPage.getIMRootPath() + "/themes/default/images/background.gif)";
         }
         if (INTERMediatorOnPage.defaultBackgroundColor) {
             backBox.style.backgroundColor = INTERMediatorOnPage.defaultBackgroundColor;
@@ -607,13 +601,13 @@ INTERMediatorOnPage = {
                 INTERMediatorOnPage.setCookieDomainWide("_im_oauth_realm", INTERMediatorOnPage.realm, true);
                 INTERMediatorOnPage.setCookieDomainWide("_im_oauth_expired", INTERMediatorOnPage.authExpired, true);
                 INTERMediatorOnPage.setCookieDomainWide("_im_oauth_storing", INTERMediatorOnPage.authStoring, true);
-                authURL = INTERMediatorOnPage.oAuthBaseURL
-                    + '?scope=' + encodeURIComponent(INTERMediatorOnPage.oAuthScope)
-                    + '&redirect_uri=' + encodeURIComponent(INTERMediatorOnPage.oAuthRedirect)
-                    + '&response_type=code'
-                    + '&client_id=' + encodeURIComponent(INTERMediatorOnPage.oAuthClientID);
+                authURL = INTERMediatorOnPage.oAuthBaseURL +
+                    "?scope=" + encodeURIComponent(INTERMediatorOnPage.oAuthScope) +
+                    "&redirect_uri=" + encodeURIComponent(INTERMediatorOnPage.oAuthRedirect) +
+                    "&response_type=code" +
+                    "&client_id=" + encodeURIComponent(INTERMediatorOnPage.oAuthClientID);
                 location.href = authURL;
-            }
+            };
         }
 
         if (INTERMediatorOnPage.authCount > 0) {
@@ -641,12 +635,10 @@ INTERMediatorOnPage = {
         backBox.style.height = "100%";
         backBox.style.width = "100%";
         //backBox.style.backgroundColor = "#BBBBBB";
-        backBox.style.backgroundImage = "url(data:image/png;base64," +
-            "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAA" +
-            "ACF0RVh0U29mdHdhcmUAR3JhcGhpY0NvbnZlcnRlciAoSW50ZWwpd4f6GQAAAHlJ" +
-            "REFUeJzs0UENACAQA8EzdAl2EIEg3CKjyTGP/TfTur1OuJ2sAAAAAAAAAAAAAAAA" +
-            "AAAAAAAAAAAAAAAAAAAAAAAAAADAJwDRAekDAAAAAAAAAAAAAAAAAAAAAAAAAAAA" +
-            "AAAAAAAAAAAAAAAAAADzAR4AAAD//wMAkUKRPI/rh/AAAAAASUVORK5CYII=)";
+        if (INTERMediatorOnPage.isSetDefaultStyle && INTERMediatorOnPage.getIMRootPath !== undefined) {
+            backBox.style.backgroundImage =
+                "url(" + INTERMediatorOnPage.getIMRootPath() + "/themes/default/images/background-error.gif)";
+        }
         backBox.style.position = "absolute";
         backBox.style.padding = " 50px 0 0 0";
         backBox.style.top = "0";
@@ -701,8 +693,8 @@ INTERMediatorOnPage = {
                     matchAgent = true;
                     if (positiveList[agent] instanceof Object) {
                         for (os in positiveList[agent]) {
-                            if (positiveList[agent].hasOwnProperty(os)
-                                && navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
+                            if (positiveList[agent].hasOwnProperty(os) &&
+                                navigator.platform.toUpperCase().indexOf(os.toUpperCase()) > -1) {
                                 matchOS = true;
                                 versionStr = positiveList[agent][os];
                                 break;
@@ -885,7 +877,7 @@ INTERMediatorOnPage = {
         } else {
             enclosureNode = INTERMediatorLib.getParentRepeater(fromNode);
         }
-        if (enclosureNode != null) {
+        if (enclosureNode !== null) {
             nodeIds = [];
             if (Array.isArray(enclosureNode)) {
                 for (i = 0; i < enclosureNode.length; i++) {
@@ -951,7 +943,7 @@ INTERMediatorOnPage = {
         s = document.cookie.split("; ");
         targetKey = this.getKeyWithRealm(key);
         for (i = 0; i < s.length; i++) {
-            if (s[i].indexOf(targetKey + "=") == 0) {
+            if (s[i].indexOf(targetKey + "=") === 0) {
                 return decodeURIComponent(s[i].substring(s[i].indexOf("=") + 1));
             }
         }
