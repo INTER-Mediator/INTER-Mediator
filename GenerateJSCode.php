@@ -318,6 +318,10 @@ class GenerateJSCode
             $this->generateAssignJS(
                 "INTERMediatorOnPage.passwordPolicy", $q, $options["authentication"]["password-policy"], $q);
         }
+        if (isset($options['credit-including'])) {
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.creditIncluding", $q, $options['credit-including'], $q);
+        }
     }
 
     private function combineScripts($currentDir)

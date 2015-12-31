@@ -1992,7 +1992,12 @@ INTERMediator = {
             var bodyNode, creditNode, cNode, spNode, aNode, versionStrng;
 
             if (document.getElementById('IM_CREDIT') === null) {
-                bodyNode = document.getElementsByTagName('BODY')[0];
+                if (INTERMediatorOnPage.creditIncluding){
+                    bodyNode = document.getElementById(INTERMediatorOnPage.creditIncluding);
+                } else {
+                    bodyNode = document.getElementsByTagName('BODY')[0];
+                }
+
                 creditNode = document.createElement('div');
                 bodyNode.appendChild(creditNode);
                 creditNode.setAttribute('id', 'IM_CREDIT');
@@ -2002,22 +2007,30 @@ INTERMediator = {
                 creditNode.appendChild(cNode);
                 cNode.style.backgroundColor = '#F6F7FF';
                 cNode.style.height = '2px';
+                cNode.style.margin = '0';
+                cNode.style.padding = '0';
 
                 cNode = document.createElement('div');
                 creditNode.appendChild(cNode);
                 cNode.style.backgroundColor = '#EBF1FF';
                 cNode.style.height = '2px';
+                cNode.style.margin = '0';
+                cNode.style.padding = '0';
 
                 cNode = document.createElement('div');
                 creditNode.appendChild(cNode);
                 cNode.style.backgroundColor = '#E1EAFF';
                 cNode.style.height = '2px';
+                cNode.style.margin = '0';
+                cNode.style.padding = '0';
 
                 cNode = document.createElement('div');
                 creditNode.appendChild(cNode);
                 cNode.setAttribute('align', 'right');
                 cNode.style.backgroundColor = '#D7E4FF';
                 cNode.style.padding = '2px';
+                cNode.style.margin = '0';
+                cNode.style.padding = '0';
                 spNode = document.createElement('span');
                 cNode.appendChild(spNode);
                 cNode.style.color = '#666666';

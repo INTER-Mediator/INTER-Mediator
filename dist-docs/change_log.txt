@@ -59,6 +59,7 @@ Ver.5.3 (in development)
   Previously it was just a key field value of new record.
 - Avoid outputting messages in an error log file if there is no portal objects on the layout when using 
   FileMaker Server.
+- Add a mobile sample application to Samples/Sample_Mobile directory.
 - [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
   FileMaker Server 12 or later if using FileMaker Server.
 - [SECURITY FIX] Update FileUploader.php to prevent the HTTP header injection in PHP's header() for 
