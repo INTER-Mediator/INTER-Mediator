@@ -13,6 +13,9 @@ var IMLibUI = {
     isShiftKeyDown: false,
     isControlKeyDown: false,
 
+    mobileSelectionColor: "#BBBBBB",
+    mobileNaviBackButtonId: null,
+
     keyDown: function (evt) {
         var keyCode = (window.event) ? evt.which : evt.keyCode;
         if (keyCode == 16) {

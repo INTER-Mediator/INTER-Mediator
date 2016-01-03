@@ -816,6 +816,27 @@ var INTERMediatorLib = {
         }
     },
 
+    getElementsByAttributeValue: function (node, attribute, value) {
+        var nodes = [];
+        var reg = new RegExp(value);
+        checkNode(node);
+        return nodes;
+
+        function checkNode(target) {
+            var aValue, i;
+            if (target === undefined || target.nodeType !== 1) {
+                return;
+            }
+            aValue = target.getAttribute(attribute);
+            if (aValue && aValue.match(reg)) {
+                nodes.push(target);
+            }
+            for (i = 0; i < target.children.length; i++) {
+                checkNode(target.children[i]);
+            }
+        }
+    },
+
     getElementsByClassName: function (node, cName) {
         var nodes = [];
         var reg = new RegExp(cName);
@@ -831,7 +852,7 @@ var INTERMediatorLib = {
             if (className && className.match(reg)) {
                 nodes.push(target);
             }
-            for (var i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i++) {
                 checkNode(target.children[i]);
             }
         }

@@ -36,6 +36,7 @@ INTERMediatorOnPage = {
     dbCache: {},
     isEmailAsUsername: false,
     passwordPolicy: null,
+    creditIncluding: null,
 
     isShowChangePassword: true,
     isSetDefaultStyle: true,
@@ -46,7 +47,6 @@ INTERMediatorOnPage = {
     oAuthBaseURL: null,
     oAuthRedirect: null,
     oAuthScope: null,
-
 
     additionalExpandingEnclosureFinish: {},
     additionalExpandingRecordFinish: {},
