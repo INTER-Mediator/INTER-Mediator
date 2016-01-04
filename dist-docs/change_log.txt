@@ -24,6 +24,8 @@ Ver.5.3 (in development)
   is happend in one of them.
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
+- Master/Detail style UI (controlled by 'navi-control' key) support mobile environment ex. JQuery Mobile.
+  The Samples/Sample_Mobile folder includes some demos for mobile device.
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
   in the Auth_Support directory.
 - The credential for authentication can be stored in the sessionStorage.
@@ -61,6 +63,7 @@ Ver.5.3 (in development)
   Previously it was just a key field value of new record.
 - Avoid outputting messages in an error log file if there is no portal objects on the layout when using 
   FileMaker Server.
+- Add a mobile sample application to Samples/Sample_Mobile directory.
 - [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
   FileMaker Server 12 or later if using FileMaker Server.
 - [SECURITY FIX] Update FileUploader.php to prevent the HTTP header injection in PHP's header() for 
@@ -77,6 +80,7 @@ Ver.5.3 (in development)
 - [BUG FIX] Fix buildup.sh to include "themes" directory correctly. The affected version is 5.2 only.
 - [BUG FIX] Fix buildup.sh to include "themes" directory correctly. The affected version is 5.2 only.
 - [BUG FIX] When insert/delete record, it didn't affect to other contexts. #299 This issue was resolved.
+- [BUG FIX] Samples/templates didn't work in case of unsupported browsers.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.

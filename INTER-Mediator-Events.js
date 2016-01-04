@@ -9,6 +9,8 @@
  */
 
 IMLibEventResponder = {
+    touchEventCancel: false,
+
     isSetup: false,
 
     setup: function () {

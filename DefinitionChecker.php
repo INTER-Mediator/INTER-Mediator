@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class DefinitionChecker
 {
 
@@ -42,7 +42,7 @@ class DefinitionChecker
 
     public function checkDefinition($definition, $prohibit)
     {
-        if ( $definition === NULL ) {
+        if ($definition === NULL) {
             return;
         }
         $this->message = '';
@@ -116,22 +116,22 @@ class DefinitionChecker
                 $possibleString = substr($endPoint, $openParen + 1, $closeParen - $openParen - 1);
                 $possibleValues = explode("|", $possibleString);
                 $possibleWilds = array();
-                foreach ($possibleString as $str)   {
-                    if (strpos($str, '*') !== false)    {
+                foreach ($possibleString as $str) {
+                    if (strpos($str, '*') !== false) {
                         $possibleWilds[] = $str;
                     }
                 }
                 if (in_array($items, $possibleValues)) {
                     $judge = true;
                 } else {
-                    foreach ($possibleWilds as $str)   {
-                        if (preg_match ($str, $items))    {
+                    foreach ($possibleWilds as $str) {
+                        if (preg_match($str, $items)) {
                             $judge = true;
                             break;
                         }
                     }
                 }
-                if (! $judge) {
+                if (!$judge) {
                     $this->message = "$currentPath should be define as string within [$possibleString]. ";
                 }
             }
@@ -159,7 +159,7 @@ class DefinitionChecker
         'port' => 'string',
         'protocol' => 'string',
         'datatype' => 'string',
-        'external-db' => array( '#' => 'string' ),
+        'external-db' => array('#' => 'string'),
     );
     private
         $prohibitKeywordsForOption = array(
@@ -191,8 +191,8 @@ class DefinitionChecker
             'issuedhash-dsn' => 'string',
             'password-policy' => 'string',
         ),
-        'media-root-dir'=> 'string',
-        'media-context'=> 'string',
+        'media-root-dir' => 'string',
+        'media-context' => 'string',
         'smtp' => array(
             'server' => 'string',
             'port' => 'integer',
@@ -204,7 +204,8 @@ class DefinitionChecker
             'key' => 'integer',
             'secret' => 'string',
             'channel' => 'string',
-        )
+        ),
+        'credit-including' => 'string',
     );
     private
         $prohibitKeywordsForDataSource = array(
