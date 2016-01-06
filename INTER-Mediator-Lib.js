@@ -726,7 +726,7 @@ var INTERMediatorLib = {
     getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
         var result = [], index;
         for (index in ar) {
-            if (ar[index][key1] == named1 && ar[index][key2] == named2) {
+            if (ar.hasOwnProperty(index) && ar[index][key1] == named1 && ar[index][key2] == named2) {
                 result.push(ar[index][retrieveKey]);
             }
         }
@@ -742,7 +742,9 @@ var INTERMediatorLib = {
     getRecordsetFromFieldValueObject: function (obj) {
         var recordset = {}, index;
         for (index in obj) {
-            recordset[obj[index]['field']] = obj[index]['value'];
+            if (obj.hasOwnProperty(index)) {
+                recordset[obj[index]['field']] = obj[index]['value'];
+            }
         }
         return recordset;
     },
@@ -873,7 +875,7 @@ var INTERMediatorLib = {
             if (nodeId && nodeId.match(reg)) {
                 nodes.push(target);
             }
-            for (var i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i++) {
                 checkNode(target.children[i]);
             }
         }

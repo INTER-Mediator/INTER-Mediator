@@ -1335,9 +1335,14 @@ INTERMediator = {
                     if (children[i].tagName == repNodeTag) {
                         // If the element is a repeater.
                         repeatersOriginal.push(children[i]); // Record it to the array.
-                    } else if (repNodeTag == null && children[i].getAttribute("data-im-control")) {
+                    } else if (repNodeTag == null && (children[i].getAttribute("data-im-control"))) {
                         imControl = children[i].getAttribute("data-im-control");
                         if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) > -1) {
+                            repeatersOriginal.push(children[i]);
+                        }
+                    } else if (repNodeTag == null && INTERMediatorLib.getClassAttributeFromNode(children[i]).match(/_im_repeater/)) {
+                        imControl = INTERMediatorLib.getClassAttributeFromNode(children[i]);
+                        if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterClassName) > -1) {
                             repeatersOriginal.push(children[i]);
                         }
                     }
