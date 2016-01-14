@@ -119,8 +119,27 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     } else {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-            $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
+        /*
+         * Prevent CSRF Attack with XMLHttpRequest
+         * http://d.hatena.ne.jp/hasegawayosuke/20130302/p1
+         */
+        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
+        $webServerName = $params['webServerName'];
+        if (isset($_SERVER['HTTP_X_FROM'])) {
+            $from = parse_url($_SERVER['HTTP_X_FROM']);
+        }
+        if (isset($_SERVER['HTTP_ORIGIN'])) {
+            $origin = parse_url($_SERVER['HTTP_ORIGIN']);
+        }
+        if (isset($_SERVER['HTTP_HOST']) &&
+            (is_null($webServerName) ||
+                (!is_null($webServerName && $_SERVER['HTTP_HOST'] === $webServerName))) &&
+            isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' &&
+            isset($_SERVER['HTTP_X_FROM']) &&
+            (!isset($_SERVER['HTTP_ORIGIN']) ||
+                $from['scheme'] . '://' . $from['host'] . ':' . $from['port'] ===
+                $origin['scheme'] . '://' . $origin['host'] . ':' . $origin['port'])) {
             $dbInstance->processingRequest($options);
             $dbInstance->finishCommunication(false);
         } else {
