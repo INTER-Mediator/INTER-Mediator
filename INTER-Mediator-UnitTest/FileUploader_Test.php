@@ -3,6 +3,8 @@
  * FileUploader_Test file
  */
 require_once(dirname(__FILE__) . '/../FileUploader.php');
+require_once(dirname(__FILE__) . '/../IMUtil.php');
+require_once(dirname(__FILE__) . '/../params.php');
 
 class FileUploader_Test extends PHPUnit_Framework_TestCase
 {
@@ -10,15 +12,19 @@ class FileUploader_Test extends PHPUnit_Framework_TestCase
     {
         $this->uploader = new FileUploader();
     }
-    
+
     public function test_getRedirectUrl()
     {
         if (((float)phpversion()) >= 5.3) {
             $this->reflectionMethod = new ReflectionMethod('FileUploader', 'getRedirectUrl');
             $this->reflectionMethod->setAccessible(true);
-            
-            $expected = 'https://inter-mediator.com/';
-            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('https://inter-mediator.com/'));
+
+            $expected = 'http://' . php_uname('n') . '/';
+            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('http://' . php_uname('n') . '/'));
+            $this->assertEquals($expected, $result);
+
+            $expected = 'https://' . php_uname('n') . '/';
+            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('https://' . php_uname('n') . '/'));
             $this->assertEquals($expected, $result);
 
             $result = $this->reflectionMethod->invokeArgs($this->uploader, array('https://inter-mediator.com/%0a'));
@@ -29,11 +35,14 @@ class FileUploader_Test extends PHPUnit_Framework_TestCase
 
             $result = $this->reflectionMethod->invokeArgs($this->uploader, array('https://inter-mediator.com/%0A'));
             $this->assertNull($result);
-            
+
             $result = $this->reflectionMethod->invokeArgs($this->uploader, array('https://inter-mediator.com/%0D'));
             $this->assertNull($result);
 
             $result = $this->reflectionMethod->invokeArgs($this->uploader, array('https://inter-mediator.com/%0d%0a%20'));
+            $this->assertNull($result);
+
+            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('ftp://inter-mediator.com/'));
             $this->assertNull($result);
         }
     }
