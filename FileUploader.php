@@ -55,7 +55,7 @@ class FileUploader
                 return;
             }
         }
-        
+
         if (!isset($options['media-root-dir']) && $useContainer === FALSE) {
             if (!is_null($url)) {
                 header('Location: ' . $url);
@@ -271,13 +271,27 @@ class FileUploader
             echo "</div></div></div></body></html>";
         }
     }
-    
+
     protected function getRedirectUrl($url)
     {
-        if(strpos(strtolower($url), "%0a") !== false || strpos(strtolower($url), "%0d") !== false){
+        if (strpos(strtolower($url), '%0a') !== false || strpos(strtolower($url), '%0d') !== false) {
             return NULL;
-        } else {
+        }
+
+        if (strpos($url, 'http://' . php_uname('n') . '/') === 0 ||
+            strpos($url, 'https://' . php_uname('n') . '/') === 0) {
             return $url;
         }
+        
+        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
+        $webServerName = $params['webServerName'];
+        if (!is_null($webServerName)) {
+            if (strpos($url, 'http://' . $webServerName . '/') === 0 ||
+                strpos($url, 'https://' . $webServerName . '/') === 0) {
+                return $url;
+            }
+        }
+
+        return NULL;
     }
 }

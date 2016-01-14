@@ -66,6 +66,7 @@ Ver.5.3 (in development)
 - Add a mobile sample application to Samples/Sample_Mobile directory.
 - [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
   FileMaker Server 12 or later if using FileMaker Server.
+- [SECURITY FIX] Fix the possibility of an open redirection vulnerability in the file upload component.
 - [SECURITY FIX] Update FileUploader.php to prevent the HTTP header injection in PHP's header() for 
   Internet Explorer and PHP 5.2.x/PHP 5.3.x (Fixed in PHP 5.4.38, PHP 5.5.22 and PHP 5.6.6).
 - [BUG FIX] Fix detection of params.php file.
@@ -77,7 +78,6 @@ Ver.5.3 (in development)
   cases.
 - [BUG FIX] Definition File Editor can store the some values that are as array.
 - [BUG FIX] If the "key" key wasn't supplied, the calculation goes wrong results.
-- [BUG FIX] Fix buildup.sh to include "themes" directory correctly. The affected version is 5.2 only.
 - [BUG FIX] Fix buildup.sh to include "themes" directory correctly. The affected version is 5.2 only.
 - [BUG FIX] When insert/delete record, it didn't affect to other contexts. #299 This issue was resolved.
 - [BUG FIX] Samples/templates didn't work in case of unsupported browsers.
