@@ -120,10 +120,11 @@ INTERMediator_DBAdapter = {
         INTERMediatorOnPage.notifySupport = notifySupport;
         try {
             myRequest = new XMLHttpRequest();
-            myRequest.open('POST', appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
+            myRequest.open("POST", appPath, false, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
             myRequest.setRequestHeader("charset", "utf-8");
-            myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            myRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            myRequest.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            myRequest.setRequestHeader("X-From", location.href);
             myRequest.send(accessURL + authParams);
             jsonObject = JSON.parse(myRequest.responseText);
             resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
@@ -204,11 +205,12 @@ INTERMediator_DBAdapter = {
         INTERMediatorOnPage.notifySupport = notifySupport;
         try {
             myRequest = new XMLHttpRequest();
-            myRequest.open('POST', appPath, true,
+            myRequest.open("POST", appPath, true,
                 INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
             myRequest.setRequestHeader("charset", "utf-8");
-            myRequest.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            myRequest.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            myRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            myRequest.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            myRequest.setRequestHeader("X-From", location.href);
             myRequest.onreadystatechange = function () {
                 switch (myRequest.readyState) {
                     case 0: // Unsent
@@ -384,7 +386,7 @@ INTERMediator_DBAdapter = {
         INTERMediator_DBAdapter.logging_comAction(1031, appPath, accessURL, authParams);
         try {
             myRequest = new XMLHttpRequest();
-            myRequest.open('POST', appPath, true, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
+            myRequest.open("POST", appPath, true, INTERMediatorOnPage.httpuser, INTERMediatorOnPage.httppasswd);
             myRequest.setRequestHeader("charset", "utf-8");
             var params = (accessURL + authParams).split('&');
             var fd = new FormData();

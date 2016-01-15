@@ -13,6 +13,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
+/* FQDN for your web server */
+//$webServerName = '';
+
 $dbClass = "PDO";
 /*
  * common settings for DB_FileMaker_FX and DB_PDO:
