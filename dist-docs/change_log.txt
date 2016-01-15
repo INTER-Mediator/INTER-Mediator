@@ -66,8 +66,9 @@ Ver.5.3 (in development)
 - Add a mobile sample application to Samples/Sample_Mobile directory.
 - [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
   FileMaker Server 12 or later if using FileMaker Server.
+- [SECURITY FIX] Improve preventing CSRF Attack by specifying $webServerName (the FQDN for your web 
+  server) in params.php.
 - [SECURITY FIX] Fix the possibility of an open redirection vulnerability in the file upload component.
-- [SECURITY FIX] Prevent CSRF Attack for XMLHttpRequest Level 2.
 - [SECURITY FIX] Update FileUploader.php to prevent the HTTP header injection in PHP's header() for 
   Internet Explorer and PHP 5.2.x/PHP 5.3.x (Fixed in PHP 5.4.38, PHP 5.5.22 and PHP 5.6.6).
 - [BUG FIX] Fix detection of params.php file.
