@@ -13,6 +13,9 @@ var IMLibUI = {
     isShiftKeyDown: false,
     isControlKeyDown: false,
 
+    mobileSelectionColor: "#BBBBBB",
+    mobileNaviBackButtonId: null,
+
     keyDown: function (evt) {
         var keyCode = (window.event) ? evt.which : evt.keyCode;
         if (keyCode == 16) {
@@ -493,7 +496,7 @@ var IMLibUI = {
                     var contextDefCapt = contextDef;
                     var contextObjCapt = contextObj;
                     return function (result) {
-                        var restore, conditions;
+                        var restore, conditions, sameOriginContexts;
                         var newId = result.newRecordKeyValue;
                         if (newId > -1) {
                             restore = INTERMediator.additionalCondition;
@@ -506,6 +509,11 @@ var IMLibUI = {
                             }
                             INTERMediator_DBAdapter.unregister();
                             INTERMediator.constructMain(contextObjCapt);
+                            sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(
+                                contextObjCapt.viewName);
+                            for (i = 0; i < sameOriginContexts.length; i++) {
+                                INTERMediator.constructMain(sameOriginContexts[i], null);
+                            }
                             INTERMediator.additionalCondition = restore;
                         }
                         IMLibCalc.recalculation();
@@ -542,7 +550,7 @@ var IMLibUI = {
                     }
                 }
             }
-            var successProc = function () {
+            successProc = function () {
                 if (currentContext["relation"] == true) {
                     INTERMediator.pagedAllCount--;
                     if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
@@ -599,7 +607,7 @@ var IMLibUI = {
         for (i = 0; i < removeNodes.length; i++) {
             IMLibContextPool.removeRecordFromPool(removeNodes[i]);
         }
-        IMLibElement.deleteNodes(removeNodes);
+
         IMLibCalc.recalculation();
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
@@ -760,7 +768,8 @@ var IMLibUI = {
                     var existRelatedCapt = existRelated;
                     var keyValueCapt = keyValue;
                     return function (result) {
-                        var keyField, newRecordId, associatedContext, conditions, createdRecord;
+                        var keyField, newRecordId, associatedContext, conditions, createdRecord,
+                            i, sameOriginContexts;
                         newRecordId = result.newRecordKeyValue;
                         keyField = currentContextCapt["key"] ? currentContextCapt["key"] : "-recid";
                         associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt);
@@ -778,6 +787,11 @@ var IMLibUI = {
                             createdRecord = [{}];
                             createdRecord[0][keyField] = newRecordId;
                             INTERMediator.constructMain(associatedContext, result.dbresult);
+                            sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(
+                                associatedContext.viewName);
+                            for (i = 0; i < sameOriginContexts.length; i++) {
+                                INTERMediator.constructMain(sameOriginContexts[i], null);
+                            }
                         }
                         IMLibCalc.recalculation();
                         INTERMediatorOnPage.hideProgress();

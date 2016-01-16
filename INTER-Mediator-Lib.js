@@ -14,10 +14,10 @@ var INTERMediatorLib = {
 
     ignoreEnclosureRepeaterClassName: "_im_ignore_enc_rep",
     ignoreEnclosureRepeaterControlName: "ignore_enc_rep",
-    rollingRepeaterClassName: "_im_repeater",
-    rollingEnclosureClassName: "_im_enclosure",
-    rollingRepeaterDataControlName: "repeater",
-    rollingEnclosureDataControlName: "enclosure",
+    roleAsRepeaterClassName: "_im_repeater",
+    roleAsEnclosureClassName: "_im_enclosure",
+    roleAsRepeaterDataControlName: "repeater",
+    roleAsEnclosureDataControlName: "enclosure",
     cachedDigitSeparator: null,
 
     initialize: function () {
@@ -120,10 +120,9 @@ var INTERMediatorLib = {
             (tagName === "SELECT") ||
             ((tagName === "DIV" || tagName === "SPAN") &&
             className &&
-            className.indexOf(INTERMediatorLib.rollingEnclosureClassName) >= 0) ||
-            ((tagName === "DIV" || tagName === "SPAN") &&
-            controlAttr &&
-            controlAttr.indexOf(INTERMediatorLib.rollingEnclosureDataControlName) >= 0)) {
+            className.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
+            (controlAttr &&
+            controlAttr.indexOf(INTERMediatorLib.roleAsEnclosureDataControlName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -158,10 +157,9 @@ var INTERMediatorLib = {
             || (tagName === 'OPTION')
             || ((tagName === 'DIV' || tagName === 'SPAN' )
             && className
-            && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && controlAttr
-            && controlAttr.indexOf(INTERMediatorLib.rollingRepeaterDataControlName) >= 0)) {
+            && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
+            || (controlAttr
+            && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -321,7 +319,7 @@ var INTERMediatorLib = {
             if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
                 enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
                 enclosureDataAttr = enclosure.getAttribute("data-im-control");
-                if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.rollingEnclosureClassName) >= 0) ||
+                if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
                     (enclosureDataAttr && enclosureDataAttr.indexOf("enclosure") >= 0)) {
                     repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
                     repeaterDataAttr = repeater.getAttribute("data-im-control");
@@ -455,8 +453,8 @@ var INTERMediatorLib = {
         else if (tag == 'SELECT') return 'OPTION';
         else if (tag == 'UL') return 'LI';
         else if (tag == 'OL') return 'LI';
-        else if (tag == 'DIV') return 'DIV';
-        else if (tag == 'SPAN') return 'SPAN';
+        //else if (tag == 'DIV') return 'DIV';
+        //else if (tag == 'SPAN') return 'SPAN';
         return null;
     },
 
@@ -728,7 +726,7 @@ var INTERMediatorLib = {
     getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
         var result = [], index;
         for (index in ar) {
-            if (ar[index][key1] == named1 && ar[index][key2] == named2) {
+            if (ar.hasOwnProperty(index) && ar[index][key1] == named1 && ar[index][key2] == named2) {
                 result.push(ar[index][retrieveKey]);
             }
         }
@@ -744,7 +742,9 @@ var INTERMediatorLib = {
     getRecordsetFromFieldValueObject: function (obj) {
         var recordset = {}, index;
         for (index in obj) {
-            recordset[obj[index]['field']] = obj[index]['value'];
+            if (obj.hasOwnProperty(index)) {
+                recordset[obj[index]['field']] = obj[index]['value'];
+            }
         }
         return recordset;
     },
@@ -818,6 +818,27 @@ var INTERMediatorLib = {
         }
     },
 
+    getElementsByAttributeValue: function (node, attribute, value) {
+        var nodes = [];
+        var reg = new RegExp(value);
+        checkNode(node);
+        return nodes;
+
+        function checkNode(target) {
+            var aValue, i;
+            if (target === undefined || target.nodeType !== 1) {
+                return;
+            }
+            aValue = target.getAttribute(attribute);
+            if (aValue && aValue.match(reg)) {
+                nodes.push(target);
+            }
+            for (i = 0; i < target.children.length; i++) {
+                checkNode(target.children[i]);
+            }
+        }
+    },
+
     getElementsByClassName: function (node, cName) {
         var nodes = [];
         var reg = new RegExp(cName);
@@ -833,7 +854,7 @@ var INTERMediatorLib = {
             if (className && className.match(reg)) {
                 nodes.push(target);
             }
-            for (var i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i++) {
                 checkNode(target.children[i]);
             }
         }
@@ -854,7 +875,7 @@ var INTERMediatorLib = {
             if (nodeId && nodeId.match(reg)) {
                 nodes.push(target);
             }
-            for (var i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i++) {
                 checkNode(target.children[i]);
             }
         }

@@ -13,6 +13,7 @@
  */
 
 INTERMediator.propertyIETridentSetup();
+INTERMediator.propertyW3CUserAgentSetup();
 
 if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
     INTERMediator.startFrom = 0;

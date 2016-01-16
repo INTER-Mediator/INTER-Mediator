@@ -43,9 +43,22 @@ class FileUploader
           }
         }
 
+        $url = NULL;
+        if (isset($_POST['_im_redirect'])) {
+            $url = $this->getRedirectUrl($_POST['_im_redirect']);
+            if (is_null($url)) {
+                header("HTTP/1.1 500 Internal Server Error");
+                $dbProxyInstance->logger->setErrorMessage('Header may not contain more than a single header, new line detected.');
+                $dbProxyInstance->processingRequest($options, 'noop');
+                $dbProxyInstance->finishCommunication();
+                $dbProxyInstance->exportOutputDataAsJSON();
+                return;
+            }
+        }
+
         if (!isset($options['media-root-dir']) && $useContainer === FALSE) {
-            if (isset($_POST["_im_redirect"])) {
-                header("Location: {$_POST["_im_redirect"]}");
+            if (!is_null($url)) {
+                header('Location: ' . $url);
             } else {
                 $dbProxyInstance->logger->setErrorMessage("'media-root-dir' isn't specified");
                 $dbProxyInstance->processingRequest($options, "noop");
@@ -63,8 +76,8 @@ class FileUploader
         }
 
         if (count($_FILES) < 1) {
-            if (isset($_POST["_im_redirect"])) {
-                header("Location: {$_POST["_im_redirect"]}");
+            if (!is_null($url)) {
+                header('Location: ' . $url);
             } else {
                 $dbProxyInstance->logger->setErrorMessage("No file wasn't uploaded.");
                 $dbProxyInstance->processingRequest($options, "noop");
@@ -127,8 +140,8 @@ class FileUploader
         }
         $result = move_uploaded_file($util->removeNull($fileInfo['tmp_name']), $filePath);
         if (!$result) {
-            if (isset($_POST["_im_redirect"])) {
-                header("Location: {$_POST["_im_redirect"]}");
+            if (!is_null($url)) {
+                header('Location: ' . $url);
             } else {
                 $dbProxyInstance->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
                 $dbProxyInstance->processingRequest($options, "noop");
@@ -234,8 +247,8 @@ class FileUploader
         }
         $dbProxyInstance->finishCommunication();
         $dbProxyInstance->exportOutputDataAsJSON();
-        if (isset($_POST["_im_redirect"])) {
-            header("Location: {$_POST["_im_redirect"]}");
+        if (!is_null($url)) {
+            header('Location: ' . $url);
         }
     }
 
@@ -257,5 +270,28 @@ class FileUploader
             echo $progress  . " %";
             echo "</div></div></div></body></html>";
         }
+    }
+
+    protected function getRedirectUrl($url)
+    {
+        if (strpos(strtolower($url), '%0a') !== false || strpos(strtolower($url), '%0d') !== false) {
+            return NULL;
+        }
+
+        if (strpos($url, 'http://' . php_uname('n') . '/') === 0 ||
+            strpos($url, 'https://' . php_uname('n') . '/') === 0) {
+            return $url;
+        }
+        
+        $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
+        $webServerName = $params['webServerName'];
+        if (!is_null($webServerName)) {
+            if (strpos($url, 'http://' . $webServerName . '/') === 0 ||
+                strpos($url, 'https://' . $webServerName . '/') === 0) {
+                return $url;
+            }
+        }
+
+        return NULL;
     }
 }

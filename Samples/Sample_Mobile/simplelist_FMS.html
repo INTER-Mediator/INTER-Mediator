@@ -13,34 +13,56 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1"/>
     <title></title>
-    <script type="text/javascript" src="definition_file_full.php"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile.structure-1.4.5.min.css"/>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <script type="text/javascript" src="simplelist_FMS.php"></script>
     <script type="text/javascript">
         window.onload = function () {
             if (INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupport'))) {
                 INTERMediator.construct(true);
             }
-        };
+        }
 
         INTERMediatorOnPage.doAfterConstruct = function () {
             var node = document.getElementById('container');
             node.style.display = "block"
-        };
+        }
     </script>
 </head>
 <body>
 <div id="nonsupport">
-    <div style="text-align:center;color:yellow;background-color:black;">
+    <div style="text-align:center;color:yellow">
         If you see this, you must use any supported
         web browser with Javascript enabled.
     </div>
-    <div style="text-align:center;color:yellow;background-color:black;">
+    <div style="text-align:center;color:yellow">
         この表示はサポート対象外のWebブラウザーを使っているために表示されてます。
         対応ブラウザーをJavaScriptを有効にした上でお使い下さい。
     </div>
 </div>
 <div id="container" style="display: none">
-    #### Here is the page content area. #####
+    <div data-role="page">
+        <div data-role="header">
+            <input type="text" placeholder="&#x1F50D;" style="font-size: 16pt;"
+                   data-im="_@condition:placelist:f3,f7,f8,f9:*match*"/>
+        </div>
+        <div role="main" class="ui-content">
+            <ul data-role="listview">
+                <li>
+                    <span data-im="placelist@f7"></span>
+                    <span data-im="placelist@f8"></span>
+                    <span data-im="placelist@f9"></span>
+                </li>
+            </ul>
+        </div>
+        <div data-role="footer" id="footer">
+        </div>
+    </div>
+    <br clear="all"/>
 </div>
 </body>
 </html>
