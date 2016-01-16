@@ -88,6 +88,7 @@ var IMLibElement = {
                     element.style[styleName] = curVal;
                 } else {
                     currentValue = element.getAttribute(curTarget);
+                    curVal = String(curVal);
                     if (curVal.indexOf("/fmi/xml/cnt/") === 0 && currentValue.indexOf("?media=") === -1) {
                         curVal = INTERMediatorOnPage.getEntryPath() + "?media=" + curVal;
                     }

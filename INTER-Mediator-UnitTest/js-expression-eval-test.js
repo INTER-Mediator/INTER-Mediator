@@ -308,6 +308,31 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
             assert.greater(Parser.evaluate("today()"), 15000);
             assert.greater(Parser.evaluate("now()"), 40000000);
         }
+    },
+
+    "String regular expression matiching.": function () {
+        var str = "1234";
+        assert.equals(Parser.evaluate("test(x,'[0-9]')", {x: str}), true);
+        assert.equals(Parser.evaluate("test(x,'[^0-9]')", {x: str}), false);
+        var r = Parser.evaluate("match(x,'[0-9]')", {x: str});
+        assert.equals(r[0], "1");
+        assert.equals(Parser.evaluate("match(x,'[^0-9]')", {x: str}), null);
+        str = "12abc34";
+        r = Parser.evaluate("match(x,'[0-9]([a-z]+)([0-9])')", {x: str});
+        assert.equals(r[0], "2abc3");
+        assert.equals(r[1], "abc");
+        assert.equals(r[2], "3");
+    },
+
+    "String Items search.": function () {
+        var items = "abc\ndef\n\njkl\nwer\ntfv";
+        assert.equals(Parser.evaluate("itemIndexOf(x,'abc')", {x: items}), 0);
+        assert.equals(Parser.evaluate("itemIndexOf(x,'def')", {x: items}), 1);
+        assert.equals(Parser.evaluate("itemIndexOf(x,'tfv')", {x: items}), 5);
+        assert.equals(Parser.evaluate("itemIndexOf(x,'wer')", {x: items}), 4);
+        assert.equals(Parser.evaluate("itemIndexOf(x,'a')", {x: items}), -1);
+        assert.equals(Parser.evaluate("itemIndexOf(x,'')", {x: items}), 2);
     }
+
 
 });
