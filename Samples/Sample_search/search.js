@@ -12,27 +12,37 @@ window.onload = function () {
 //    IMLibLocalContext.setValue("placeCondition", "");
 //    IMLibLocalContext.setValue("zipCondition", "");
     INTERMediator.construct(true);
-    
+
     INTERMediatorOnPage.doAfterConstruct = function () {
-        document.getElementById("searchbutton").onclick = function () {
-            doSearch();
-        };
-        
-        document.getElementById("ascendingsortbypostalcode").onclick = function () {
-            doSortFieldChange("f3", "ASC");
-        };
-        
-        document.getElementById("descendingsortbypostalcode").onclick = function () {
-            doSortFieldChange("f3", "DESC");
-        };
-        
-        document.getElementById("ascendingsortbyname").onclick = function () {
-            doSortFieldChange("f9", "ASC");
-        };
-        
-        document.getElementById("descendingsortbyname").onclick = function () {
-            doSortFieldChange("f9", "DESC");
-        };
+        if (document.getElementById("searchbutton")) {
+            document.getElementById("searchbutton").onclick = function () {
+                doSearch();
+            };
+        }
+
+        if (document.getElementById("ascendingsortbypostalcode")) {
+            document.getElementById("ascendingsortbypostalcode").onclick = function () {
+                doSortFieldChange("f3", "ASC");
+            };
+        }
+
+        if (document.getElementById("descendingsortbypostalcode")) {
+            document.getElementById("descendingsortbypostalcode").onclick = function () {
+                doSortFieldChange("f3", "DESC");
+            };
+        }
+
+        if (document.getElementById("ascendingsortbyname")) {
+            document.getElementById("ascendingsortbyname").onclick = function () {
+                doSortFieldChange("f9", "ASC");
+            };
+        }
+
+        if (document.getElementById("descendingsortbyname")) {
+            document.getElementById("descendingsortbyname").onclick = function () {
+                doSortFieldChange("f9", "DESC");
+            };
+        }
     };
 };
 
@@ -54,7 +64,7 @@ function doSearch() {
             criteria ={field: 'f3', operator: 'bw', value: c2};
         }
     }
-    INTERMediator.additionalCondition["postalcode"] = criteria;
+    INTERMediator.additionalCondition.postalcode = criteria;
 //    IMLibLocalContext.archive();    // This isn't required other than IE8.
     INTERMediator.startFrom = 0;
     INTERMediator.construct(true);
