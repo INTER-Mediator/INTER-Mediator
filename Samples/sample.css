@@ -82,6 +82,10 @@ table {
     font-size: 10pt;
 }
 
+table._im_index {
+    float: left;
+}
+
 th {
     border: 1px solid #444444;
     padding: 6px;

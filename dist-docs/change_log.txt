@@ -55,6 +55,7 @@ Ver.5.3 (in development)
   "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
 - Add background image files (background.gif and background-error.gif) to improve compatibility with
   CSP (Content Security Policy).
+- Update some samples to improve compatibility with CSP (Content Security Policy).
 - Add Dockerfile for CircleCI.
 - Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.
