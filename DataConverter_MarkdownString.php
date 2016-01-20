@@ -66,7 +66,7 @@ class DataConverter_MarkdownString extends DataConverter_HTMLString
                 $result[] = "<li class='_im_markdown_li'>" . substr($aLine, $minusCount);
             } else if ($paraCount > 0) {
                 $tag = "h{$paraCount}";
-                $result[] = "<{$tag} class='_im_markdown_{$tag}'>" . substr($aLine, $minusCount) . "</{$tag}>";
+                $result[] = "<{$tag} class='_im_markdown_{$tag}'>" . substr($aLine, $paraCount) . "</{$tag}>";
             } else if (substr($aLine, 0, 3) == "###") {
                 $result[] = "<p class='_im_markdown_p3'>". substr($aLine, 3) . "</p>";
             } else if (substr($aLine, 0, 2) == "##") {
