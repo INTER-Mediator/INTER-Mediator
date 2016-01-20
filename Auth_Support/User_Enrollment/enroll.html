@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!--<link type="text/css" rel="stylesheet" href="default.css" />-->
+    <title></title>
+    <script type="text/javascript" src="context.php"></script>
+    <script type="text/javascript">
+        INTERMediatorOnPage.processingBeforePostOnlyContext = function(target)  {
+            var email = document.getElementById('email').value;
+            if (!checkExistsMailAddress(email)) {
+                alert('メールアドレスはすでに登録されています。');
+                return false;
+            }
+            return true;
+        };
+        function checkExistsMailAddress(addr) {
+            var com = new XMLHttpRequest();
+            com.open("get", "<< URL to Auth?_Support folder >>/accountcheck.php?m=" + encodeURIComponent(addr), false);
+            com.send(null);
+            if (com.status != 200) {
+                alert("サーバエラーです：" + com.statusText);
+            } else if (parseInt(com.responseText) < 1) {
+                INTERMediator.cancelPostOnly = true;
+                return true;
+            }
+            return false;
+        }
+    </script>
+</head>
+<body onload="INTERMediator.construct(true);">
+<h1>ユーザ登録</h1>
+<table>
+    <tbody data-im-control="post">
+    <tr>
+        <th style="text-align:right">お名前</th>
+        <td><input id="name" type="text" data-im="user-enroll@realname"/></td>
+    </tr>
+    <tr>
+        <th style="text-align:right">メールアドレス</th>
+        <td><input id="email" type="text" data-im="user-enroll@email"/></td>
+    </tr>
+    <tr>
+        <th></th>
+        <td><input type="button" data-im-control="post" value="登録する"/></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
