@@ -1340,7 +1340,8 @@ INTERMediator = {
                         if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) > -1) {
                             repeatersOriginal.push(children[i]);
                         }
-                    } else if (repNodeTag == null && INTERMediatorLib.getClassAttributeFromNode(children[i]).match(/_im_repeater/)) {
+                    } else if (repNodeTag == null && INTERMediatorLib.getClassAttributeFromNode(children[i]) &&
+                        INTERMediatorLib.getClassAttributeFromNode(children[i]).match(/_im_repeater/)) {
                         imControl = INTERMediatorLib.getClassAttributeFromNode(children[i]);
                         if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterClassName) > -1) {
                             repeatersOriginal.push(children[i]);
