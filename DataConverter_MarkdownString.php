@@ -58,13 +58,13 @@ class DataConverter_MarkdownString extends DataConverter_HTMLString
                 $result[] = "<li class='_im_markdown_li'>" . substr($aLine, $minusCount) . "</li>";
             } else if ($paraCount > 0) {
                 $tag = "h{$paraCount}";
-                $result[] = "<{$tag} class='_im_markdown_{$tag}'>" . substr($paraCount, $minusCount) . "</{$tag}>";
+                $result[] = "<{$tag} class='_im_markdown_{$tag}'>" . substr($aLine, $minusCount) . "</{$tag}>";
             } else if (substr($aLine, 0, 1) == "#") {
                 $result[] = "<p class='_im_markdown_p1'>substr($aLine, 1)</p>";
-            } else if (substr($aLine, 0, 1) == "##") {
-                $result[] = "<p class='_im_markdown_p2'>substr($aLine, 1)</p>";
-            } else if (substr($aLine, 0, 1) == "###") {
-                $result[] = "<p class='_im_markdown_p3'>substr($aLine, 1)</p>";
+            } else if (substr($aLine, 0, 2) == "##") {
+                $result[] = "<p class='_im_markdown_p2'>substr($aLine, 2)</p>";
+            } else if (substr($aLine, 0, 3) == "###") {
+                $result[] = "<p class='_im_markdown_p3'>substr($aLine, 3)</p>";
             } else if (substr($aLine, 0, 6) == "@@IMG[") {
                 $endPos = mb_strpos($aLine, ']', 6);
                 if ($endPos === FALSE)  {
