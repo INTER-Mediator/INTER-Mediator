@@ -55,7 +55,7 @@ class IMUtil
 
         if (isset($_SERVER['HTTP_X_FROM'])) {
             $from = parse_url($_SERVER['HTTP_X_FROM']);
-            $fromPort = isset($from['port']) ? ':' . $from['port'] : ':80';
+            $fromPort = isset($from['port']) ? ':' . $from['port'] : '';
             if ($fromPort === '' && $from['scheme'] === 'http') {
                 $fromPort = ':80';
             } else if ($fromPort === '' && $from['scheme'] === 'https') {
@@ -64,7 +64,7 @@ class IMUtil
         }
         if (isset($_SERVER['HTTP_ORIGIN'])) {
             $origin = parse_url($_SERVER['HTTP_ORIGIN']);
-            $originPort = isset($origin['port']) ? ':' . $origin['port'] : ':80';
+            $originPort = isset($origin['port']) ? ':' . $origin['port'] : '';
             if ($originPort === '' && $origin['scheme'] === 'http') {
                 $originPort = ':80';
             } else if ($originPort === '' && $origin['scheme'] === 'https') {
@@ -98,7 +98,7 @@ class IMUtil
         return FALSE;
     }
 
-    protected function checkHost($host, $webServerName)
+    public function checkHost($host, $webServerName)
     {
         $host = strtolower($host);
         $webServerName = strtolower($webServerName);
