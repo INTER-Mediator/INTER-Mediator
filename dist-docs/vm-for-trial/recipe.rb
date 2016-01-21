@@ -500,7 +500,7 @@ UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
 cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
 -----END RSA PRIVATE KEY-----
 EOL;
-$webServerName = array();
+$webServerName = array('');
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f < 7
@@ -524,7 +524,7 @@ $dbPort = '80';
 $dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
-$webServerName = array();
+$webServerName = array('');
 EOF
   end
 elsif node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
@@ -548,7 +548,7 @@ $dbPort = '80';
 $dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
-$webServerName = array();
+$webServerName = array('');
 EOF
   end
 end

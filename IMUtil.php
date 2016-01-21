@@ -52,7 +52,8 @@ class IMUtil
          */
         $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
         $webServerName = $params['webServerName'];
-        if ($webServerName === '' or $webServerName === array()) {
+        if ($webServerName === '' ||
+            $webServerName === array() || $webServerName === array('')) {
             $webServerName = NULL;
         }
 
