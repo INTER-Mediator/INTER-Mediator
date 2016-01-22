@@ -21,7 +21,7 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
     public function test_getFromParamsPHPFile()
     {
         $result = $this->util->getFromParamsPHPFile(array('webServerName'), true);
-        $this->assertNull($result['webServerName']);
+        $this->assertEquals($result['webServerName'], array(''));
     }
 
     public function test_protectCSRF()

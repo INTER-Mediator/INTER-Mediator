@@ -67,6 +67,8 @@ Ver.5.3 (in development)
 - Functions for expression are added: match, test, itemIndexOf.
 - The DataConverter_MarkdownString class is added.
 - Add a mobile sample application to Samples/Sample_Mobile directory.
+- Update the value of $generatedPrivateKey in params.php and output an error message if not changing 
+  the value of $generatedPrivateKey in params.php for security reasons.
 - [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
   FileMaker Server 12 or later if using FileMaker Server.
 - [SECURITY FIX] Improve preventing CSRF Attack by specifying $webServerName (the FQDN for your web 

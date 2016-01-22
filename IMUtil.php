@@ -52,6 +52,10 @@ class IMUtil
          */
         $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
         $webServerName = $params['webServerName'];
+        if ($webServerName === '' ||
+            $webServerName === array() || $webServerName === array('')) {
+            $webServerName = NULL;
+        }
 
         if (isset($_SERVER['HTTP_X_FROM'])) {
             $from = parse_url($_SERVER['HTTP_X_FROM']);
