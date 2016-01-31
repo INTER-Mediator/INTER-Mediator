@@ -81,7 +81,7 @@ var IMLibUI = {
                             originalContextInfo.record, originalContextInfo.field);
                     }
                     originalObj.removeAttribute("data-im-validation-notification");
-                }
+                };
             })(), 0);
             return false;
         }
@@ -118,8 +118,6 @@ var IMLibUI = {
             if (!changedObj) {
                 throw "false_exit";
             }
-            linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
-            nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
             if (nodeInfo.table == IMLibLocalContext.contextName) {
                 throw "false_exit";
             }
@@ -129,7 +127,7 @@ var IMLibUI = {
             if (INTERMediator.ignoreOptimisticLocking) {
                 IMLibContextPool.updateContext(idValue, nodeInfo.target);
                 newValue = IMLibElement.getValueFromIMNode(changedObj);
-                if (newValue != null) {
+                if (newValue !== null) {
                     criteria = contextInfo.record.split('=');
                     INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_update_async({
@@ -170,7 +168,7 @@ var IMLibUI = {
                                 }
                                 IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
                                 INTERMediator.flushMessage();
-                            }
+                            };
                         })(),
                         function () {
                             INTERMediatorOnPage.hideProgress();
@@ -215,9 +213,9 @@ var IMLibUI = {
                                 if (result.dbresult && result.dbresult[0]) {
                                     for (portalIndex in result.dbresult[0]) {
                                         var portalRecord = result.dbresult[0][portalIndex];
-                                        if (portalRecord[portalKey]
-                                            && portalRecord[targetFieldCapt] !== undefined
-                                            && portalRecord[portalKey] == contextInfo.portal) {
+                                        if (portalRecord[portalKey] &&
+                                            portalRecord[targetFieldCapt] !== undefined &&
+                                            portalRecord[portalKey] == contextInfo.portal) {
                                             currentFieldVal = portalRecord[targetFieldCapt];
                                             isCheckResult = true;
                                         }
@@ -230,9 +228,9 @@ var IMLibUI = {
                                     return;
                                 }
                             } else {
-                                if (!result.dbresult
-                                    || !result.dbresult[0]    // This value could be null or undefined
-                                    || result.dbresult[0][targetFieldCapt] === undefined) {
+                                if (!result.dbresult ||
+                                    !result.dbresult[0] ||  // This value could be null or undefined
+                                    result.dbresult[0][targetFieldCapt] === undefined) {
                                     alert(INTERMediatorLib.getInsertedString(
                                         INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]));
                                     INTERMediatorOnPage.hideProgress();
@@ -329,7 +327,7 @@ var IMLibUI = {
                                             }
                                             IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
                                             INTERMediator.flushMessage();
-                                        }
+                                        };
                                     })(),
                                     function () {
                                         INTERMediatorOnPage.hideProgress();
@@ -337,7 +335,7 @@ var IMLibUI = {
                                     }
                                 );
                             }
-                        }
+                        };
                     })(),
                     function () {
                         INTERMediatorOnPage.hideProgress();
@@ -471,7 +469,7 @@ var IMLibUI = {
                 pStart = contextDef['repeat-control'].indexOf('copy-');
                 copyTerm = contextDef['repeat-control'].substr(pStart + 5);
                 if ((pStart = copyTerm.search(/\s/)) > -1) {
-                    copyTerm = copyTerm.substr(0, pStart)
+                    copyTerm = copyTerm.substr(0, pStart);
                 }
                 assocContexts = copyTerm.split(",");
                 for (i = 0; i < assocContexts.length; i++) {
@@ -519,7 +517,7 @@ var IMLibUI = {
                         IMLibCalc.recalculation();
                         INTERMediatorOnPage.hideProgress();
                         INTERMediator.flushMessage();
-                    }
+                    };
                 })(),
                 null
             );
