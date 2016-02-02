@@ -1,10 +1,12 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: msyk
- * Date: 12/06/09
- * Time: 8:29
- * To change this template use File | Settings | File Templates.
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
 require_once('../../INTER-Mediator.php');
@@ -19,9 +21,9 @@ IM_Entry(
             'extending-class' => 'EnrollStart',
             'post-dismiss-message' => '確認メールを送信しました。そちらをご確認ください。',
             'authentication' => array(
-                'load' => array( 'group' => array( 'dummy' ) ),
-                'update' => array( 'group' => array( 'dummy' ) ),
-                'delete' => array( 'group' => array( 'dummy' ) ),
+                'read' => array('group' => array('dummy')),
+                'update' => array('group' => array('dummy')),
+                'delete' => array('group' => array('dummy')),
             ),
             'validation' => array(
                 array(
@@ -34,17 +36,27 @@ IM_Entry(
                     'rule' => 'length(value) > 0',
                     'message' => 'メールアドレスを入力してください。',
                 ),
-//                array(
-//                    'field' => 'email',
-//                    'rule' => 'match(value, /^[A-Za-z0-9]+[\w\.-]+@[\w\.-]+\.\w{2,}$/)',
-//                    'message' => 'メールアドレスの形式が正しくありません。',
-//                ),
+                array(
+                    'field' => 'email',
+                    'rule' => "test(value, '^.+@.+$')",
+                    'message' => 'メールアドレスの形式が正しくありません。',
+                ),
+            ),
+            'send-mail' => array(
+                'create' => array(
+                    'to' => 'email',
+                    'bcc' => 'info@msyk.net',
+                    'subject-constant' => 'ユーザ登録を受け付けました',
+                    'from-constant' => 'Masayuki Nii <info@msyk.net>',
+                    'body-template' => 'enrollmail.txt',
+                    'body-fields' => 'email,realname,hash',
+                    'f-option' => true,
+                    'body-wrap' => 78,
+                ),
             ),
         ),
     ),
     array(),
-    array(
-        'db-class' => 'PDO',
-    ),
+    array(),
     false
 );

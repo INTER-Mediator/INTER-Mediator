@@ -118,8 +118,8 @@ var IMLibUI = {
             if (!changedObj) {
                 throw "false_exit";
             }
-            linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
-            nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
+            //linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
+            //nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
             if (nodeInfo.table == IMLibLocalContext.contextName) {
                 throw "false_exit";
             }

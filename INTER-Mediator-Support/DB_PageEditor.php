@@ -216,4 +216,14 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
     {
         return false;
     }
+
+    public function authSupportUserEnrollmentStart($userid, $hash)
+    {
+        // TODO: Implement authSupportUserEnrollmentStart() method.
+    }
+
+    public function authSupportUserEnrollmentActivateUser($hash, $password)
+    {
+        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
+    }
 }

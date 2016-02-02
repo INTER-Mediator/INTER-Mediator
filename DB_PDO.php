@@ -66,6 +66,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return $this->updatedRecord;
     }
 
+    public function setUpdatedRecord($field, $value, $index = 0)
+    {
+        $this->updatedRecord[$index][$field] = $value;
+    }
+
     public function softDeleteActivate($field, $value)
     {
         $this->softDeleteField = $field;
@@ -2094,7 +2099,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $currentDTFormat = $this->currentDTString();
+        $currentDTFormat = $this->currentDTString(3600);
         $sql = "SELECT user_id FROM {$hashTable} WHERE hash = " . $this->link->quote($hash) .
             " AND clienthost IS NULL AND expired > " . $this->link->quote($currentDTFormat);
         $this->logger->setDebugMessage($sql);
@@ -2108,7 +2113,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if ($userID < 1) {
                 return false;
             }
-            $resultArray = array('user_id' => $userID);
             $sql = "UPDATE {$userTable} SET hashedpasswd=" . $this->link->quote($password)
                 . " WHERE id=" . $this->link->quote($userID);
             $this->logger->setDebugMessage($sql);
@@ -2117,18 +2121,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $this->errorMessageStore('Update:' . $sql);
                 return false;
             }
-            $sql = "SELECT email,realname FROM {$userTable} WHERE id=" . $this->link->quote($userID);
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-                return false;
-            }
-            foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $userRow) {
-                $resultArray['email'] = $userRow['email'];
-                $resultArray['realname'] = $userRow['realname'];
-                return $resultArray;
-            }
+            return $userID;
         }
         return false;
     }

@@ -13,8 +13,6 @@ IM_Entry(
     array(
     ),
     array(),
-    array(
-        'db-class' => 'PDO',
-    ),
+    array(),
     false
 );

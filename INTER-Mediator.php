@@ -52,10 +52,11 @@ if (isset($defaultTimezone)) {
 define("IM_TODAY", strftime('%Y-%m-%d'));
 $g_dbInstance = null;
 
+spl_autoload_register('loadClass');
+
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
     global $g_dbInstance, $g_serverSideCall;
-    spl_autoload_register('loadClass');
 
     // check required PHP extensions
     $requiredFunctions = array(

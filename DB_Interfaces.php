@@ -83,6 +83,8 @@ interface Auth_Interface_DB					// with using table for authentication/authoriza
     public function authSupportUnifyUsernameAndEmail($username);					// authuser
     public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash);	// issuedhash
     public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash);		// issuedhash
+    public function authSupportUserEnrollmentStart($userid, $hash);             // issuedhash
+    public function authSupportUserEnrollmentActivateUser($hash, $password);    // issuedhash, authuser
 }
 
 interface Auth_Interface_Communication

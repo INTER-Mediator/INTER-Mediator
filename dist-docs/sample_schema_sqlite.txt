@@ -320,6 +320,7 @@ CREATE TABLE authuser (
 	username			TEXT,
 	hashedpasswd		TEXT,
 	email               TEXT,
+	realname			VARCHAR(20),
     limitdt             DateTime
 );
 

@@ -49,11 +49,12 @@ class GenerateJSCode
         $oAuthProvider = null;
         $oAuthClientID = null;
         $oAuthRedirect = null;
+        $dbClass = null;
         $params = IMUtil::getFromParamsPHPFile(array(
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
-            "passwordPolicy", "documentRootPrefix",
+            "passwordPolicy", "documentRootPrefix", "dbClass",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -64,6 +65,7 @@ class GenerateJSCode
         $oAuthClientID = $params["oAuthClientID"];
         $oAuthRedirect = $params["oAuthRedirect"];
         $passwordPolicy = $params["passwordPolicy"];
+        $dbClass = $params["dbClass"];
         $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
 
         /*
@@ -104,7 +106,7 @@ class GenerateJSCode
         $defaultKey = null;
         $dbClassName = 'DB_' .
             (isset($dbspecification['db-class']) ? $dbspecification['db-class'] :
-                (isset ($dbClass) ? $dbClass : ''));
+                (!is_null($dbClass) ? $dbClass : ''));
         if ($dbClassName !== 'DB_DefEditor' && $dbClassName !== 'DB_PageEditor') {
             require_once("{$dbClassName}.php");
         } else {

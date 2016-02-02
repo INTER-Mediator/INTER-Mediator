@@ -6,33 +6,6 @@
  * Time: 20:39
  * To change this template use File | Settings | File Templates.
  */
-function sendPasswordResetMail($address, $username)
-{
-    require_once("../lib/mailsend/OME.php");
-
-    $ome = new OME();
-    $ome->setSendMailParam('-f info@msyk.net');
-    $ome->setFromField('info@msyk.net', 'Masayuki Nii');
-    $ome->setToField($address);
-    $ome->setBccField('info@msyk.net');
-    $ome->setSubject('パスワードのリセットを受付ました');
-    $ome->setTemplateAsString(<<<EOL
-以下のアカウントのパスワードをリセットしました。
-
-アカウント（メールアドレス）：@@1@@
-
-以下のリンクをクリックし、新しいパスワードでマイページにログインしてください。
-
-<< Path to any page >>
-
-___________________________________
-info@msyk.net - Masayuki Nii
-EOL
-    );
-    $ome->insertToTemplate(array($address, $username));
-    return $ome->send();
-}
-
 session_start(); // this MUST be called prior to any output including whitespaces and line breaks!
 
 $message = '';
@@ -45,38 +18,77 @@ if (count($_GET) > 0) {
     }
 }
 if (count($_POST) > 0) {
-    $g_serverSideCall = true;
+    $cred = $_POST['cred'];
+
     require_once('../../INTER-Mediator.php');
-    IM_Entry(
+    $dbInstance = new DB_Proxy();
+    $dbInstance->initialize(
         array(),
         array(
             'authentication' => array(
                 'email-as-username' => true,
             ),
         ),
-        array(
-            'db-class' => 'PDO',
-        ),
-        false
-    );
-    header('Content-Type: text/html;charset="UTF-8"');
-    $result = $g_dbInstance->resetPasswordSequenceReturnBack(
-        $_POST['account'], $_POST['mail'], $_POST['cred'], $_POST['hashedpw']);
-    $cred = $_POST['cred'];
+        array(),
+        2);
+    $result = $dbInstance->resetPasswordSequenceReturnBack(
+        null, $_POST['mail'], $_POST['cred'], $_POST['hashedpw']);
+//    $dbInstance->finishCommunication(true);
+//    $dbInstance->exportOutputDataAsJSON();
+
     if ($result) {
+        $dbInstance = new DB_Proxy();
+        $dbInstance->initialize(
+            array(
+                array(
+                    "name" => "authuser",
+                    "view" => "authuser",
+                    "table" => "dummydummy",
+                    "records" => 1,
+                    "query" => array(
+                        // For MySQL, PostgreSQL, SQLite
+                        array("field" => "email", "operator" => "=", "value" => $_POST['mail']),
+                        // For FileMaker Server
+//                        array(
+//                            "field" => "email",
+//                            "operator" => "=",
+//                            "value" => str_replace("@", "\\@", $_POST['mail'])
+//                        ),
+                    ),
+                    'send-mail' => array(
+                        'read' => array(
+                            'to' => 'email',
+                            'bcc' => 'info@msyk.net',
+                            'subject-constant' => 'パスワードのリセットを受付ました',
+                            'from-constant' => 'Masayuki Nii <info@msyk.net>',
+                            'body-template' => 'resetmail.txt',
+                            'body-fields' => "email",
+                            'f-option' => true,
+                            'body-wrap' => 78,
+                        ),
+                    ),
+                ),
+            ),
+            array(),
+            array(),
+            2,
+            "authuser");
+        $dbInstance->processingRequest(array(), "read");
+//        $dbInstance->finishCommunication(true);
+//        $dbInstance->exportOutputDataAsJSON();
         $message .= '<span style="color:black">';
         $message .= 'パスワードがリセットされました。';
         $message .= '</span>';
-        sendPasswordResetMail($_POST['mail'], $_POST['account']);
     } else {
         $message .= 'パスワードのリセット処理に問題が発生しました。';
     }
 }
+header('Content-Type: text/html;charset="UTF-8"');
 ?>
 <!DOCTYPE html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-<!--    <link type="text/css" rel="stylesheet" href="default.css"/>-->
+    <!--    <link type="text/css" rel="stylesheet" href="default.css"/>-->
     <script src="resetcontext.php"></script>
     <title></title>
     <script type="text/javascript">

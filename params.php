@@ -16,7 +16,7 @@
 /* FQDN for your web server */
 //$webServerName = '';
 
-$dbClass = "PDO";
+$dbClass = "FileMaker_FX";
 /*
  * common settings for DB_FileMaker_FX and DB_PDO:
  */
@@ -25,7 +25,8 @@ $dbPassword = 'password';
 
 /* DB_FileMaker_FX aware below:
  */
-$dbServer = '127.0.0.1';
+$dbServer = '10.0.1.21';
+//$dbServer = '127.0.0.1';
 $dbPort = '80';
 $dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
@@ -138,7 +139,7 @@ $pusherParameters = array(
 //$ldapExpiringSeconds = 1800;
 
 /* OAuth Support */
-//$oAuthProvider = "Google";
-//$oAuthClientID = '1084721348801-jv3hvi4shcmr4j7unuhioq8k2mm47n6s.apps.googleusercontent.com';
-//$oAuthClientSecret = 'hV5TZD8x108K1Zac4RfZopur';
-//$oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
+$oAuthProvider = "Google";
+$oAuthClientID = '1084721348801-2e2u61ej5tigj4fur0c9gdrpskb1mtjv.apps.googleusercontent.com';
+$oAuthClientSecret = 'q432bBWyv7Q-WKWrn0g2_1Ef';
+$oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';

@@ -1,33 +1,27 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: msyk
- * Date: 2013/05/29
- * Time: 15:04
- * To change this template use File | Settings | File Templates.
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
-    $g_serverSideCall = true;
     require_once('../../INTER-Mediator.php');
-    IM_Entry(
-        array(
-            array(
-                'name' => 'authuser',
-                'key' => 'id',
-                'query' => array(
-                    array('field' => 'email', 'operator' => '=', 'value' => $_GET['m']),
-                ),
-            ),
+    $contextDef = array(
+        'name' => 'authuser',
+        'key' => 'id',
+        'query' => array(
+            array('field' => 'email', 'operator' => '=', 'value' => $_GET['m']),
         ),
-        null,
-        array(
-            'db-class' => 'PDO',
-        ),
-        false
     );
-    $g_dbInstance->dbSettings->setTargetName('authuser');
-    $result = $g_dbInstance->getFromDB('authuser');
-    $errors = $g_dbInstance->logger->getAllErrorMessages();
+    $dbInstance = new DB_Proxy();
+    $dbInstance->initialize(array($contextDef), array(), array(), false, "authuser");
+    $dbInstance->processingRequest(array(), "read");
+    $result = $dbInstance->getDatabaseResult();
+
     echo count($result);
     exit;
 }
