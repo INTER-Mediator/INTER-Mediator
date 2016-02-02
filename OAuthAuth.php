@@ -174,7 +174,6 @@ class OAuthAuth
             $this->jsCode .= "location.href = '" . $_COOKIE["_im_oauth_backurl"] . "';";
             return true;
         }
-
         return true;
     }
 

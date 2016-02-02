@@ -33,7 +33,10 @@ Set the new password and click "Set" button on each user.
 <h2>User Accounts</h2>
 <table>
     <thead>
-    <tr><th>User Name</th><th>Hashed Password</th><th>Email</th><th>Groups</th><th>Belongings</th><th></th></tr>
+    <tr>
+        <th>User Name</th><th>Hashed Password</th><th>Email</th><th>Real Name</th>
+        <th>Groups</th><th>Belongings</th><th></th>
+    </tr>
     </thead>
     <tbody>
     <tr>
@@ -46,6 +49,9 @@ Set the new password and click "Set" button on each user.
         </td>
         <td>
             <input data-im="authuser@email" type="text" />
+        </td>
+        <td>
+            <input data-im="authuser@realname" type="text" size="10"/>
         </td>
         <td>
             <span data-im-control="enclosure">

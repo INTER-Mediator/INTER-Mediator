@@ -46,12 +46,10 @@ class DataConverter_MarkdownString extends DataConverter_HTMLString
             }
             if ($prevDepth > 0) {
                 if ($minusCount == $prevDepth) {
-                    for ($i = 0; $i < $prevDepth - $minusCount; $i++) {
-                        $result[] = "</li>";
-                    }
+                    $result[] = "</li>";
                 } else if ($minusCount < $prevDepth) {
                     for ($i = 0; $i < ($prevDepth - $minusCount); $i++) {
-                        $result[] = "</li></ul>";
+                        $result[] = "</li></ul></li>";
                     }
                 }
             }
@@ -97,6 +95,15 @@ class DataConverter_MarkdownString extends DataConverter_HTMLString
                 $result[] = "<p class='_im_markdown_para'>$aLine</p>";
             }
             $prevDepth = $minusCount;
+        }
+        if ($prevDepth > 0) {
+            for ($i = 0; $i < $prevDepth; $i++) {
+                $result[] = "</li></ul>";
+            }
+        }
+        if ($inTable) {
+            $result[] = "</table>";
+            $inTable = false;
         }
         $result[] = "</div>";
         return implode('', $result);

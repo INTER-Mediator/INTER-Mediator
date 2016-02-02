@@ -1315,4 +1315,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     {
         // TODO: Implement authSupportCheckIssuedHashForResetPassword() method.
     }
+
+    public function authSupportUserEnrollmentStart($userid, $hash)
+    {
+        // TODO: Implement authSupportUserEnrollmentStart() method.
+    }
+
+    public function authSupportUserEnrollmentActivateUser($hash, $password)
+    {
+        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
+    }
 }

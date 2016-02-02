@@ -1292,12 +1292,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function userEnrollmentActivateUser($challenge, $password)
     {
         $userInfo = null;
-        $userID = $this->authDbClass->authSupportUserEnrollmentActivateUser($challenge);
-        if ($userID !== false) {
-            $hashednewpassword = $this->convertHashedPassword($password);
-            $userInfo = authSupportUserEnrollmentCheckHash($userID, $hashednewpassword);
-        }
-        return $userInfo;
+        $result = $this->authDbClass->authSupportUserEnrollmentActivateUser(
+            $challenge, $this->convertHashedPassword($password));
+//        if ($userID !== false) {
+//            $hashednewpassword = $this->convertHashedPassword($password);
+//            $userInfo = authSupportUserEnrollmentCheckHash($userID, $hashednewpassword);
+//        }
+        return $result;
     }
 
     public function setupConnection()

@@ -77,4 +77,5 @@ class DB_Formatters_Test extends PHPUnit_Framework_TestCase
         $string = '<a href="http://inter-mediator.org/" target="_blank">http://inter-mediator.org/</a>' . "\n";
         $this->assertSame($expected, $this->dataconverter_htmlstring->formatterToDB('f8', $string));
     }
+
 }

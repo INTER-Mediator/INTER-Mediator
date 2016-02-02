@@ -104,7 +104,10 @@ class SendMail
                 $dataArray = array();
                 if (isset($sendMailParam['body-fields'])) {
                     foreach (explode(',', $sendMailParam['body-fields']) as $fieldName) {
-                        if (isset($result[$i]) && isset($result[$i][$fieldName])) {
+                        $fieldName = trim($fieldName);
+                        if (substr($fieldName, 0, 1) == '@')    {
+                            $dataArray[] = substr($fieldName, 1);
+                        } else if (isset($result[$i]) && isset($result[$i][$fieldName])) {
                             $dataArray[] = $result[$i][$fieldName];
                         } else {
                             $dataArray[] = '';

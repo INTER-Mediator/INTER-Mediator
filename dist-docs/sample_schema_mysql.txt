@@ -414,6 +414,7 @@ CREATE TABLE authuser (
 	id					INT  AUTO_INCREMENT,
 	username			VARCHAR(64),
 	hashedpasswd		VARCHAR(48),
+	realname			VARCHAR(20),
 	email               VARCHAR(100),
 	limitdt             DATETIME,
 	PRIMARY KEY(id)

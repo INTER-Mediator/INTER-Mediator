@@ -339,6 +339,7 @@ CREATE TABLE authuser (
 	username			VARCHAR(64),
 	hashedpasswd		VARCHAR(48),
 	email               VARCHAR(100),
+	realname			VARCHAR(20),
 	limitdt             TIMESTAMP,
 	PRIMARY KEY(id)
 );
