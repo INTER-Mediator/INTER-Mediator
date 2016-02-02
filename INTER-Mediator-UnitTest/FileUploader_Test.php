@@ -47,4 +47,26 @@ class FileUploader_Test extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function test_checkRedirectUrl()
+    {
+        if (((float)phpversion()) >= 5.3) {
+            $this->reflectionMethod = new ReflectionMethod('FileUploader', 'checkRedirectUrl');
+            $this->reflectionMethod->setAccessible(true);
+
+            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('http://www.inter-mediator.com/', 'inter-mediator.com'));
+            $this->assertTrue($result);
+
+            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('http://www.inter-mediator.com:8080/', 'inter-mediator.com'));
+            $this->assertTrue($result);
+
+            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('https://www.inter-mediator.com/', 'inter-mediator.com'));
+            $this->assertTrue($result);
+
+            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('https://www.inter-mediator.com/', 'www.inter-mediator.com'));
+            $this->assertTrue($result);
+
+            $result = $this->reflectionMethod->invokeArgs($this->uploader, array('ftp://www.inter-mediator.com/', 'inter-mediator.com'));
+            $this->assertFalse($result);
+        }
+    }
 }

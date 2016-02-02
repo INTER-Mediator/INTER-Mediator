@@ -29,6 +29,13 @@ class GenerateJSCode
         echo "{$variable}={$value1}{$value2}{$value3}{$value4}{$value5};\n";
     }
 
+    public function generateDebugMessageJS($message)
+    {
+        $q = '"';
+        echo "INTERMediator.setDebugMessage({$q}"
+        . str_replace("\n", " ", addslashes($message)) . "{$q});";
+    }
+
     public function generateErrorMessageJS($message)
     {
         $q = '"';
@@ -310,6 +317,12 @@ class GenerateJSCode
             $this->generateAssignJS(
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
+            if (in_array(sha1($generatedPrivateKey), array(
+                '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
+                '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3
+            ))) {
+                $this->generateDebugMessageJS('Please change the value of $generatedPrivateKey in params.php.');
+            }
         }
         if (isset($passwordPolicy)) {
             $this->generateAssignJS(

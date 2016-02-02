@@ -282,16 +282,42 @@ class FileUploader
             strpos($url, 'https://' . php_uname('n') . '/') === 0) {
             return $url;
         }
-        
+
+        if (isset($_SERVER['SERVER_ADDR']) &&
+            strpos($url, 'http://' . $_SERVER['SERVER_ADDR'] . '/') === 0) {
+            return $url;
+        }
+
         $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
         $webServerName = $params['webServerName'];
         if (!is_null($webServerName)) {
-            if (strpos($url, 'http://' . $webServerName . '/') === 0 ||
-                strpos($url, 'https://' . $webServerName . '/') === 0) {
-                return $url;
+            if (is_array($webServerName)) {
+                foreach ($webServerName as $name) {
+                    if ($this->checkRedirectUrl($url, $name) === TRUE) {
+                        return $url;
+                    }
+                }
+            } else {
+                if ($this->checkRedirectUrl($url, $webServerName) === TRUE) {
+                    return $url;
+                }
             }
         }
 
         return NULL;
+    }
+
+    protected function checkRedirectUrl($url, $webServerName)
+    {
+        if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
+            $parsedUrl = parse_url($url);
+            
+            $util = new IMUtil();
+            if ($util->checkHost($parsedUrl['host'], $webServerName)) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
     }
 }

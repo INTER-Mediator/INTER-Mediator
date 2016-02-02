@@ -10,15 +10,6 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.4 (in development)
-- The email enrollment and resetting password are added in the Auth_Support folder.
-- Two methods are added in one of the interface. Any Database Class should aware of them.
-- The 'body-fields' keyed value can contain the stirng constant with start @.
-  The value "@123,name" replaces @@1@@ to "123" and @@2@@ to the value of name field.
-- The 'realname' field is added to sample schemas for MySQL/PostgreSQL/SQLite.
-- The global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are deprecated.
-- [BUG FIX] The variable $dbClass in params.php file didn't affect.
-
 Ver.5.3 (in development)
 - SQL aggregation can be defined as a read-only context. The aggregation-select,
   aggregation-from, aggregation-group-by key are added.
@@ -64,6 +55,7 @@ Ver.5.3 (in development)
   "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
 - Add background image files (background.gif and background-error.gif) to improve compatibility with
   CSP (Content Security Policy).
+- Update some samples to improve compatibility with CSP (Content Security Policy).
 - Add Dockerfile for CircleCI.
 - Add .gitlab-ci.yml for GitLab CI.
 - Update buster.js and package.json for unit testing.
@@ -75,6 +67,15 @@ Ver.5.3 (in development)
 - Functions for expression are added: match, test, itemIndexOf.
 - The DataConverter_MarkdownString class is added.
 - Add a mobile sample application to Samples/Sample_Mobile directory.
+- Remove IMLibElement.checkOptimisticLock().
+- Update the value of $generatedPrivateKey in params.php and output an debug message if not changing 
+  the value of $generatedPrivateKey in params.php for security reasons.
+- The email enrollment and resetting password are added in the Auth_Support folder.
+- Two methods are added in one of the interface. Any Database Class should aware of them.
+- The 'body-fields' keyed value can contain the stirng constant with start @.
+  The value "@123,name" replaces @@1@@ to "123" and @@2@@ to the value of name field.
+- The 'realname' field is added to sample schemas for MySQL/PostgreSQL/SQLite.
+- The global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are deprecated.
 - [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
   FileMaker Server 12 or later if using FileMaker Server.
 - [SECURITY FIX] Improve preventing CSRF Attack by specifying $webServerName (the FQDN for your web 
@@ -94,6 +95,7 @@ Ver.5.3 (in development)
 - [BUG FIX] Fix buildup.sh to include "themes" directory correctly. The affected version is 5.2 only.
 - [BUG FIX] When insert/delete record, it didn't affect to other contexts. #299 This issue was resolved.
 - [BUG FIX] Samples/templates didn't work in case of unsupported browsers.
+- [BUG FIX] The variable $dbClass in params.php file didn't affect.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.
