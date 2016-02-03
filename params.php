@@ -49,7 +49,7 @@ $dbOption = array();
  */
 $webServerName = array('');
 
-/* 
+/*
 Command to generate the following RSA key:
 $ openssl genrsa -out gen.key 2048
  */
@@ -169,7 +169,7 @@ $pusherParameters = array(
 //$ldapExpiringSeconds = 1800;
 
 /* OAuth Support */
-$oAuthProvider = "Google";
-$oAuthClientID = '1084721348801-2e2u61ej5tigj4fur0c9gdrpskb1mtjv.apps.googleusercontent.com';
-$oAuthClientSecret = 'q432bBWyv7Q-WKWrn0g2_1Ef';
-$oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
+// $oAuthProvider = 'Google';
+// $oAuthClientID = '';
+// $oAuthClientSecret = '';
+// $oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
