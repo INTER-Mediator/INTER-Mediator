@@ -8,23 +8,6 @@
  */
 session_start(); // this MUST be called prior to any output including whitespaces and line breaks!
 
-function sendPasswordResetMail($address, $cred)
-{
-    require_once("../../lib/mailsend/OME.php");
-
-    $ome = new OME();
-    $ome->setSendMailParam('-f info@msyk.net');
-    $ome->setFromField('info@msyk.net', 'Masayuki Nii');
-    $ome->setToField($address);
-    $ome->setBccField('info@msyk.net');
-    $ome->setSubject('パスワードのリセットを受付ました');
-    $ome->setTemplateAsString(<<<EOL
-EOL
-    );
-    $ome->insertToTemplate(array($address, $cred));
-    return $ome->send();
-}
-
 $message = '';
 $mail = '';
 $account = '';
