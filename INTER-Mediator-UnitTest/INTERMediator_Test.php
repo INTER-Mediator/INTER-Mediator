@@ -45,11 +45,13 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
     public function test_params()
     {
         $testName = "Check parameters in params.php.";
-        
+
         include(dirname(__FILE__) . '/../params.php');
-        
+
         $this->assertFalse(isset($issuedHashDSN), $testName);
         $this->assertFalse(isset($scriptPathPrefix), $testName);
+        $this->assertFalse(isset($ldapServer), $testName);
+        $this->assertFalse(isset($oAuthClientSecret), $testName);
     }
 
     public function test_valueForJSInsert()
@@ -61,7 +63,7 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $expected = '\\"';
         $string = '"';
         $this->assertSame($expected, valueForJSInsert($string));
-        
+
         $expected = '\\/';
         $string = '/';
         $this->assertSame($expected, valueForJSInsert($string));
@@ -98,7 +100,7 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
     public function test_arrayToJS()
     {
         $testName = 'Check arrayToJS function in INTER-Mediator.php.';
-        
+
         $ar = array('database' => 'TestDB', 'user' => 'web', 'password' => 'password');
         $prefix = '0';
         $resultString = "'0':{'database':'TestDB','user':'web','password':'password'}";
@@ -109,7 +111,7 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
     public function test_arrayToJSExcluding()
     {
         $testName = 'Check arrayToJSExcluding function in INTER-Mediator.php.';
-        
+
         $ar = array('database' => 'TestDB', 'user' => 'web', 'password' => 'password');
         $prefix = '0';
         $exarray = array('password');
@@ -122,7 +124,7 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $resultString = "{'user':'web','database':'TestDB'}";
         $this->assertSame(arrayToJSExcluding($ar, $prefix, $exarray), $resultString, $testName);
     }
-    
+
     public function test_hex2bin_for53()
     {
         $testName = "Check hex2bin_for53 function in INTER-Mediator.php.";
@@ -154,7 +156,7 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $this->assertTrue(is_string($str), $testName);
         $this->assertTrue(strlen($str) == 0, $testName);
     }
-    
+
     public function test_getLocaleFromBrowser()
     {
         $testName = "Check getLocaleFromBrowser function in INTER-Mediator.php.";
