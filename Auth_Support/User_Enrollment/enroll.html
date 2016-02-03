@@ -31,7 +31,6 @@
             if (com.status != 200) {
                 alert("サーバエラーです：" + com.statusText);
             } else if (parseInt(com.responseText) < 1) {
-                INTERMediator.cancelPostOnly = true;
                 return true;
             }
             return false;
