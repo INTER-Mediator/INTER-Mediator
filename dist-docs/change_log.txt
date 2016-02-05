@@ -97,6 +97,7 @@ Ver.5.3 (in development)
 - [BUG FIX] Samples/templates didn't work in case of unsupported browsers.
 - [BUG FIX] The variable $dbClass in params.php file didn't affect.
 - [BUG FIX] CodeMirror component couldn't update the value to database.
+- [BUG FIX] Modify Japanese error message of error code 1040.
 
 Ver.5.2 (August 24, 2015)
 - Record Copying is supported for single record, and also with associated records for PDO.
