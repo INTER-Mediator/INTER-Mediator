@@ -45,3 +45,7 @@ script:
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
   - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
   - npm test
+
+webhooks:
+  urls:
+    - https://webhooks.gitter.im/e/ab3046b24c1b21df358d
