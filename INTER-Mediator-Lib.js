@@ -155,8 +155,8 @@ var INTERMediatorLib = {
         if ((tagName === 'TR')
             || (tagName === 'LI')
             || (tagName === 'OPTION')
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && className
+            || (/*(tagName === 'DIV' || tagName === 'SPAN' )
+            && */ className
             && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
             || (controlAttr
             && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0)) {
@@ -324,8 +324,11 @@ var INTERMediatorLib = {
                     repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
                     repeaterDataAttr = repeater.getAttribute("data-im-control");
                     if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN') &&
-                        ((repeaterClass && repeaterClass.indexOf('_im_repeater') >= 0) ||
-                        (repeaterDataAttr && repeaterDataAttr == "repeater"))) {
+                        ((repeaterClass
+                        && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
+                        || (repeaterDataAttr
+                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName
+                        ) >= 0 ))) {
                         return true;
                     } else if (repeaterTag === 'INPUT') {
                         repeaterType = repeater.getAttribute('type');
@@ -470,7 +473,7 @@ var INTERMediatorLib = {
             };
         }
         comps = nodeInfo.split(INTERMediator.separator);
-        tableName = '', fieldName = '', targetName = '';
+        tableName = ''; fieldName = ''; targetName = '';
         if (comps.length == 3) {
             tableName = comps[0];
             fieldName = comps[1];
@@ -496,7 +499,7 @@ var INTERMediatorLib = {
             return null;
         }
         comps = nodeInfo.split(INTERMediator.separator);
-        tableName = '', fieldName = '', targetName = '';
+        tableName = ''; fieldName = ''; targetName = '';
         if (comps.length == 3) {
             tableName = comps[0];
             fieldName = comps[1];

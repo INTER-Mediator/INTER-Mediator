@@ -773,7 +773,8 @@ INTERMediator = {
                     newNode = repeatersOriginal[i].cloneNode(true);
                     nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                     dataAttr = newNode.getAttribute("data-im-control");
-                    if (nodeClass == INTERMediator.noRecordClassName || dataAttr == "noresult") {
+                    if (nodeClass == INTERMediator.noRecordClassName
+                        || dataAttr.indexOf("noresult") > -1) {
                         node.appendChild(newNode);
                         setIdValue(newNode);
                     }
@@ -1017,7 +1018,7 @@ INTERMediator = {
                         //newNode = repeatersOneRec[i].cloneNode(true);
                         nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                         dataAttr = newNode.getAttribute("data-im-control");
-                        if ((nodeClass != INTERMediator.noRecordClassName) && (dataAttr != "noresult")) {
+                        if ((nodeClass != INTERMediator.noRecordClassName) && (dataAttr.indexOf("noresult") < 0)) {
                             if (!insertNode) {
                                 node.appendChild(newNode);
                             } else {
