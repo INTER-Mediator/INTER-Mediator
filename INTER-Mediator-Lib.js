@@ -18,6 +18,10 @@ var INTERMediatorLib = {
     roleAsEnclosureClassName: "_im_enclosure",
     roleAsRepeaterDataControlName: "repeater",
     roleAsEnclosureDataControlName: "enclosure",
+    roleAsSeparatorDataControlName: "separator",
+    roleAsHeaderDataControlName: "header",
+    roleAsFooterDataControlName: "footer",
+    roleAsNoResultDataControlName: "noresult",
     cachedDigitSeparator: null,
 
     initialize: function () {
@@ -152,14 +156,14 @@ var INTERMediatorLib = {
             return false;
         }
         tagName = node.tagName;
-        if ((tagName === 'TR')
-            || (tagName === 'LI')
-            || (tagName === 'OPTION')
-            || (/*(tagName === 'DIV' || tagName === 'SPAN' )
-            && */ className
-            && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
-            || (controlAttr
-            && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0)) {
+        if ((tagName === 'TR') || (tagName === 'LI') || (tagName === 'OPTION')
+            || (className && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)
+        ) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -316,19 +320,25 @@ var INTERMediatorLib = {
                 (repeaterTag === 'LI' && enclosureTag === 'UL')) {
                 return true;
             }
-            if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
                 enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
                 enclosureDataAttr = enclosure.getAttribute("data-im-control");
                 if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
                     (enclosureDataAttr && enclosureDataAttr.indexOf("enclosure") >= 0)) {
                     repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
                     repeaterDataAttr = repeater.getAttribute("data-im-control");
-                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN') &&
-                        ((repeaterClass
+                    if ((repeaterClass
                         && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
                         || (repeaterDataAttr
-                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName
-                        ) >= 0 ))) {
+                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0 )
+                        || (repeaterDataAttr
+                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0 )
+                        || (repeaterDataAttr
+                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0 )
+                        || (repeaterDataAttr
+                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0 )
+                        || (repeaterDataAttr
+                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0 )
+                    ) {
                         return true;
                     } else if (repeaterTag === 'INPUT') {
                         repeaterType = repeater.getAttribute('type');
@@ -338,7 +348,6 @@ var INTERMediatorLib = {
                         }
                     }
                 }
-            }
             return false;
         }
     },
@@ -473,7 +482,9 @@ var INTERMediatorLib = {
             };
         }
         comps = nodeInfo.split(INTERMediator.separator);
-        tableName = ''; fieldName = ''; targetName = '';
+        tableName = '';
+        fieldName = '';
+        targetName = '';
         if (comps.length == 3) {
             tableName = comps[0];
             fieldName = comps[1];
@@ -499,7 +510,9 @@ var INTERMediatorLib = {
             return null;
         }
         comps = nodeInfo.split(INTERMediator.separator);
-        tableName = ''; fieldName = ''; targetName = '';
+        tableName = '';
+        fieldName = '';
+        targetName = '';
         if (comps.length == 3) {
             tableName = comps[0];
             fieldName = comps[1];

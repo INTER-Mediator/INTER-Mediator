@@ -768,13 +768,24 @@ INTERMediator = {
             targetRecordset = targetRecords.recordset;
             targetTotalCount = targetRecords.totalCount;
 
+            repeatersOneRec = cloneEveryNodes(repeatersOriginal);
+            for (i = 0; i < repeatersOneRec.length; i++) {
+                newNode = repeatersOneRec[i];
+                dataAttr = newNode.getAttribute("data-im-control");
+                if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) {
+                    if (!insertNode) {
+                        node.appendChild(newNode);
+                    }
+                }
+            }
+
             if (targetRecords.count === 0) {
                 for (i = 0; i < repeatersOriginal.length; i++) {
                     newNode = repeatersOriginal[i].cloneNode(true);
                     nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                     dataAttr = newNode.getAttribute("data-im-control");
-                    if (nodeClass == INTERMediator.noRecordClassName
-                        || dataAttr.indexOf("noresult") > -1) {
+                    if (nodeClass.indexOf(INTERMediator.noRecordClassName) > -1
+                        || dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1) {
                         node.appendChild(newNode);
                         setIdValue(newNode);
                     }
@@ -1000,7 +1011,7 @@ INTERMediator = {
                 setupCopyButton(
                     encNodeTag,
                     repNodeTag,
-                    repeatersOneRec[repeatersOneRec.length - 1],
+                    repeatersOneRec,
                     contextObj,
                     targetRecordset[ix]
                 );
@@ -1015,10 +1026,14 @@ INTERMediator = {
                     }
                     for (i = 0; i < repeatersOneRec.length; i++) {
                         newNode = repeatersOneRec[i];
-                        //newNode = repeatersOneRec[i].cloneNode(true);
                         nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                         dataAttr = newNode.getAttribute("data-im-control");
-                        if ((nodeClass != INTERMediator.noRecordClassName) && (dataAttr.indexOf("noresult") < 0)) {
+                        if (!(nodeClass && nodeClass.indexOf(INTERMediator.noRecordClassName) >= 0)
+                            && !(dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)
+                            && !(dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0)
+                            && !(dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0)
+                            && !(dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0)
+                        ) {
                             if (!insertNode) {
                                 node.appendChild(newNode);
                             } else {
@@ -1033,10 +1048,34 @@ INTERMediator = {
                             seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj);
                         }
                     }
+                    if (ix + 1 != countRecord) {
+                        for (i = 0; i < repeatersOneRec.length; i++) {
+                            newNode = repeatersOneRec[i];
+                            dataAttr = newNode.getAttribute("data-im-control");
+                            if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) {
+                                if (!insertNode) {
+                                    node.appendChild(newNode);
+                                } else {
+                                    insertNode.parentNode.insertBefore(newNode, insertNode);
+                                }
+                            }
+                        }
+                    }
                     callbackForRepeaters(currentContextDef, node, newlyAddedNodes);
                 }
                 contextObj.rearrangePendingOrder();
             }
+            repeatersOneRec = cloneEveryNodes(repeatersOriginal);
+            for (i = 0; i < repeatersOneRec.length; i++) {
+                newNode = repeatersOneRec[i];
+                dataAttr = newNode.getAttribute("data-im-control");
+                if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) {
+                    if (!insertNode) {
+                        node.appendChild(newNode);
+                    }
+                }
+            }
+
         }
 
         /* --------------------------------------------------------------------
@@ -1338,7 +1377,12 @@ INTERMediator = {
                         repeatersOriginal.push(children[i]); // Record it to the array.
                     } else if (repNodeTag == null && (children[i].getAttribute("data-im-control"))) {
                         imControl = children[i].getAttribute("data-im-control");
-                        if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) > -1) {
+                        if (imControl.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) > -1
+                            || imControl.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) > -1
+                            || imControl.indexOf(INTERMediatorLib.roleAsFooterDataControlName) > -1
+                            || imControl.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) > -1
+                            || imControl.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1
+                        ) {
                             repeatersOriginal.push(children[i]);
                         }
                     } else if (repNodeTag == null && INTERMediatorLib.getClassAttributeFromNode(children[i]) &&
@@ -1446,7 +1490,7 @@ INTERMediator = {
         /* --------------------------------------------------------------------
 
          */
-        function setupCopyButton(encNodeTag, repNodeTag, endOfRepeaters, currentContext, currentRecord) {
+        function setupCopyButton(encNodeTag, repNodeTag, repeaters, currentContext, currentRecord) {
             // Handling Copy buttons
             var buttonNode, thisId, copyJSFunction, tdNodes, tdNode, buttonName, currentContextDef;
 
@@ -1484,18 +1528,16 @@ INTERMediator = {
                     'event': 'click',
                     'todo': copyJSFunction(currentContext, currentRecord[currentContextDef['key']])
                 });
-
-                // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
                 switch (encNodeTag) {
                     case 'TBODY':
-                        tdNodes = endOfRepeaters.getElementsByTagName('TD');
+                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
                         tdNode = tdNodes[tdNodes.length - 1];
                         tdNode.appendChild(buttonNode);
                         break;
                     case 'SELECT':
                         break;
                     default:
-                        endOfRepeaters.appendChild(buttonNode);
+                        repeaters.push(buttonNode);
                         break;
                 }
             }
@@ -1506,9 +1548,7 @@ INTERMediator = {
          */
         function setupDeleteButton(encNodeTag, repeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
             // Handling Delete buttons
-            var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName;
-            var endOfRepeaters = repeaters[repeaters.length - 1];
-
+            var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName, index;
             if (!currentContextDef['repeat-control']
                 || !currentContextDef['repeat-control'].match(/delete/i)) {
                 return;
@@ -1552,11 +1592,9 @@ INTERMediator = {
                         shouldDeleteNodes,
                         currentContextDef['repeat-control'].match(/confirm-delete/i))
                 });
-
-                // endOfRepeaters = repeatersOneRec[repeatersOneRec.length - 1];
                 switch (encNodeTag) {
                     case 'TBODY':
-                        tdNodes = endOfRepeaters.getElementsByTagName('TD');
+                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
                         tdNode = tdNodes[tdNodes.length - 1];
                         tdNode.appendChild(buttonNode);
                         break;
@@ -1564,12 +1602,7 @@ INTERMediator = {
                         // OPTION tag can't contain any other tags.
                         break;
                     default:
-                        if (endOfRepeaters.tagName == "BR") {
-                            repeaters.push(endOfRepeaters.cloneNode(false));
-                            repeaters[repeaters.length - 2] = buttonNode;
-                        } else {
-                            endOfRepeaters.appendChild(buttonNode);
-                        }
+                        repeaters.push(buttonNode);
                         break;
                 }
             } else {
@@ -1588,12 +1621,10 @@ INTERMediator = {
          */
         function setupInsertButton(currentContextDef, keyValue, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
-                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec, thisId, encNodeTag, repNodeTag,
+                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec, thisId, encNodeTag,
                 buttonName, setTop;
 
             encNodeTag = node.tagName;
-            repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
-
             if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
                 if (relationValue.length > 0 || !currentContextDef['paging'] || currentContextDef['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');

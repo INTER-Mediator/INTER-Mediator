@@ -86,7 +86,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
     <li><strong>サンプルデータベースの最終更新日</strong>：MySQL=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
         FileMaker=<?php echo htmlspecialchars($fmModDate, ENT_QUOTES, 'UTF-8'); ?>
         <br><strong>あなたがお使いのサンプルデータベース</strong>：
-        <span data-im-control="enclosure"><span data-im-control="repeater noresult">MySQL=2015年7月10日以前</span>
+        <span data-im-control="enclosure"><span data-im-control="noresult">MySQL=2015年7月10日以前</span>
             <span data-im-control="repeater"><span data-im="information@lastupdated">MySQL=</span></span>
         </span><?php
         try {
