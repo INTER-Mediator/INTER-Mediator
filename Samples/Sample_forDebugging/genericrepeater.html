@@ -36,7 +36,12 @@
     <span data-im="personlist@name" data-im-control="repeater"></span>
     <span data-im-control="repeater"> | </span>
     <span data-im="personlist@mail" data-im-control="repeater"></span>
-    <br data-im-control="repeater" />
+    <!--<br data-im-control="repeater" />-->
+    <span style="padding: 4px; background-color: #969696">NO CONTROL</span>
+    <span data-im-control="header" style="padding: 4px; background-color: palevioletred">HEADER</span>
+    <span data-im-control="separator" style="padding: 4px; background-color: greenyellow">SEPARATOR</span>
+    <span data-im-control="footer" style="padding: 4px; background-color: cadetblue">FOOTER</span>
+
 </div>
 
 <h2>DIV enclosure and SPAN repeater</h2>
@@ -44,7 +49,7 @@
     <span data-im-control="repeater"><input type="text" data-im="personlist@name"/></span>
     <span data-im-control="repeater"> | </span>
     <span data-im-control="repeater"><input type="text" data-im="personlist@mail"/></span>
-    <br data-im-control="repeater" />
+    <br data-im-control="separator" />
 </div>
 
 <h2>TBODY enclosure and TR repeater</h2>
