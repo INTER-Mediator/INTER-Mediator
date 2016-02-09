@@ -784,8 +784,8 @@ INTERMediator = {
                     newNode = repeatersOriginal[i].cloneNode(true);
                     nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
                     dataAttr = newNode.getAttribute("data-im-control");
-                    if (nodeClass.indexOf(INTERMediator.noRecordClassName) > -1
-                        || dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1) {
+                    if ((nodeClass && nodeClass.indexOf(INTERMediator.noRecordClassName) > -1)
+                        || (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1)) {
                         node.appendChild(newNode);
                         setIdValue(newNode);
                     }
