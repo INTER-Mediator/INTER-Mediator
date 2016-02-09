@@ -192,4 +192,14 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
     {
         return false;
     }
+
+    public function authSupportUserEnrollmentStart($userid, $hash)
+    {
+        return false;
+    }
+
+    public function authSupportUserEnrollmentActivateUser($hash, $password)
+    {
+        return false;
+    }
 }
