@@ -126,6 +126,7 @@ echo "GmmWk80j2KpciQIhAI/ybFa7x85Gl5EAS9F7jYy9ykjeyVyDHX0liK+V1355AiAG" >> "${WE
 echo "jU6zr1wG9awuXj8j5x37eFXnfD/p92GpteyHuIDpog==" >> "${WEBROOT}/params.php"
 echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
+echo "$webServerName = array('');" >> "${WEBROOT}/params.php"
 
 # Install npm packages
 
