@@ -49,11 +49,10 @@ script:
 notifications:
   slack:
     rooms:
-      -  intermediator:INKkFZQWI94gsq6DYxRnaWeb#product
-	on_success: change
+      - intermediator:INKkFZQWI94gsq6DYxRnaWeb#product
+    on_success: change
     on_failure: always
     on_start: change
-	on_pull_requests: false
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/ab3046b24c1b21df358d
