@@ -1529,15 +1529,19 @@ INTERMediator = {
                     'todo': copyJSFunction(currentContext, currentRecord[currentContextDef['key']])
                 });
                 switch (encNodeTag) {
-                    case 'TBODY':
-                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
+                    case "TBODY":
+                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName("TD");
                         tdNode = tdNodes[tdNodes.length - 1];
                         tdNode.appendChild(buttonNode);
                         break;
-                    case 'SELECT':
+                    case "SELECT":
                         break;
                     default:
-                        repeaters.push(buttonNode);
+                        if (repeaters[0] && repeaters[0].childNodes) {
+                            repeaters[repeaters.length - 1].appendChild(buttonNode);
+                        } else {
+                            repeaters.push(buttonNode);
+                        }
                         break;
                 }
             }
@@ -1593,16 +1597,20 @@ INTERMediator = {
                         currentContextDef['repeat-control'].match(/confirm-delete/i))
                 });
                 switch (encNodeTag) {
-                    case 'TBODY':
-                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
+                    case "TBODY":
+                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName("TD");
                         tdNode = tdNodes[tdNodes.length - 1];
                         tdNode.appendChild(buttonNode);
                         break;
-                    case 'SELECT':
+                    case "SELECT":
                         // OPTION tag can't contain any other tags.
                         break;
                     default:
-                        repeaters.push(buttonNode);
+                        if (repeaters[0] && repeaters[0].childNodes) {
+                            repeaters[repeaters.length - 1].appendChild(buttonNode);
+                        } else {
+                            repeaters.push(buttonNode);
+                        }
                         break;
                 }
             } else {
