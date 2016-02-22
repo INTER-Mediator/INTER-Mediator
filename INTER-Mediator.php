@@ -95,9 +95,9 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
     }
 
-    file_put_contents("/tmp/php2.log", "POST: " . var_export($_POST, true), FILE_APPEND);
-    file_put_contents("/tmp/php2.log", "GET: " . var_export($_GET, true), FILE_APPEND);
-    file_put_contents("/tmp/php2.log", "FILES: " . var_export($_FILES, true), FILE_APPEND);
+//    file_put_contents("/tmp/php2.log", "POST: " . var_export($_POST, true), FILE_APPEND);
+//    file_put_contents("/tmp/php2.log", "GET: " . var_export($_GET, true), FILE_APPEND);
+//    file_put_contents("/tmp/php2.log", "FILES: " . var_export($_FILES, true), FILE_APPEND);
 //    file_put_contents("/tmp/php2.log", "SERVER: " . var_export($_SERVER, true), FILE_APPEND);
 
     if (isset($g_serverSideCall) && $g_serverSideCall) {
