@@ -24,6 +24,7 @@ http://msyk.dyndns.org/im-sample.html
 - Nobuo Hayashi
 
 ### Special Thanks to:
+- Tomomitsu Baba
 - Katsunori Eda
 - Naomi Hamaji
 - Miyuki Imaizumi
