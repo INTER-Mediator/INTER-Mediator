@@ -1122,7 +1122,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $assocArray = $this->dbSettings->getAssociated();
         if ($assocArray) {
             foreach ($assocArray as $assocInfo) {
-                $assocContextDef = $this->dbSettings->getDataSource($assocInfo['name']);
+                $assocContextDef = $this->dbSettings->getDataSourceDefinition($assocInfo['name']);
                 $queryClause = $this->quotedFieldName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
                 $this->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue);

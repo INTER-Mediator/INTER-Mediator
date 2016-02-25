@@ -107,7 +107,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function getFromDB($dataSourceName)
     {
-        $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
+        $currentDataSource = $this->dbSettings->getDataSourceDefinition($dataSourceName);
         try {
             $className = get_class($this->userExpanded);
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeGetFromDB")) {
@@ -212,7 +212,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function setToDB($dataSourceName)
     {
-        $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
+        $currentDataSource = $this->dbSettings->getDataSourceDefinition($dataSourceName);
         try {
             $className = get_class($this->userExpanded);
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeSetToDB")) {
@@ -291,7 +291,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     public function newToDB($dataSourceName, $bypassAuth)
     {
-        $currentDataSource = $this->dbSettings->getDataSource($dataSourceName);
+        $currentDataSource = $this->dbSettings->getDataSourceDefinition($dataSourceName);
         try {
             $className = get_class($this->userExpanded);
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeNewToDB")) {
@@ -509,10 +509,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $this->clientPusherAvailable = (isset($_POST["pusher"]) && $_POST["pusher"] == "yes");
         $this->dbSettings->setDataSource($datasource);
+        $this->dbSettings->setOptions($options);
+        $this->dbSettings->setDbSpec($dbspec);
 
         $this->dbSettings->setSeparator(isset($options['separator']) ? $options['separator'] : '@');
         $this->formatter->setFormatter(isset($options['formatter']) ? $options['formatter'] : null);
-        $this->dbSettings->setTargetName(!is_null($target) ? $target : (isset($_POST['name']) ? $_POST['name'] : "_im_auth"));
+        $this->dbSettings->setDataSourceName(!is_null($target) ? $target : (isset($_POST['name']) ? $_POST['name'] : "_im_auth"));
         $context = $this->dbSettings->getDataSourceTargetArray();
 
         $dbClassName = 'DB_' .
@@ -724,9 +726,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      * @param null $access
      * @param bool $bypassAuth
      */
-    function processingRequest($options, $access = null, $bypassAuth = false)
+    function processingRequest($access = null, $bypassAuth = false)
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
+$options = $this->dbSettings->getAuthentication();
 
         $this->outputOfProcessing = array();
         $messageClass = IMUtil::getMessageClassInstance();
@@ -805,7 +808,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $authorizedUsers = $this->dbClass->getAuthorizedUsers($access);
 
                     $this->logger->setDebugMessage(str_replace("\n", "",
-                            "contextName={$access}/access={$this->dbSettings->getTargetName()}/"
+                            "contextName={$access}/access={$this->dbSettings->getDataSourceName()}/"
                             . "authorizedUsers=" . var_export($authorizedUsers, true)
                             . "/authorizedGroups=" . var_export($authorizedGroups, true))
                         , 2);
@@ -862,14 +865,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // Come here access=challenge or authenticated access
         switch ($access) {
             case 'describe':
-                $result = $this->dbClass->getSchema($this->dbSettings->getTargetName());
+                $result = $this->dbClass->getSchema($this->dbSettings->getDataSourceName());
                 $this->outputOfProcessing['dbresult'] = $result;
                 $this->outputOfProcessing['resultCount'] = 0;
                 $this->outputOfProcessing['totalCount'] = 0;
                 break;
             case 'read':
             case 'select':
-                $result = $this->getFromDB($this->dbSettings->getTargetName());
+                $result = $this->getFromDB($this->dbSettings->getDataSourceName());
                 if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {
                     $recordCount = count($result);
                     for ($index = 0; $index < $recordCount; $index++) {
@@ -881,9 +884,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     }
                 }
                 $this->outputOfProcessing['dbresult'] = $result;
-                $this->outputOfProcessing['resultCount'] = $this->countQueryResult($this->dbSettings->getTargetName());
+                $this->outputOfProcessing['resultCount'] = $this->countQueryResult($this->dbSettings->getDataSourceName());
                 $this->outputOfProcessing['totalCount']
-                    = $this->getTotalCount($this->dbSettings->getTargetName());
+                    = $this->getTotalCount($this->dbSettings->getDataSourceName());
                 break;
             case 'update':
                 if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
@@ -898,22 +901,22 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                         }
                         $counter++;
                     }
-                    $this->dbSettings->setTargetFields($fieldArray);
+                    $this->dbSettings->setFieldsRequired($fieldArray);
                     $this->dbSettings->setValue($valueArray);
                 }
-                $this->setToDB($this->dbSettings->getTargetName());
+                $this->setToDB($this->dbSettings->getDataSourceName());
                 break;
             case 'new':
             case 'create':
-                $result = $this->newToDB($this->dbSettings->getTargetName(), $bypassAuth);
+                $result = $this->newToDB($this->dbSettings->getDataSourceName(), $bypassAuth);
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
                 $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'delete':
-                $this->deleteFromDB($this->dbSettings->getTargetName());
+                $this->deleteFromDB($this->dbSettings->getDataSourceName());
                 break;
             case 'copy':
-                $result = $this->copyInDB($this->dbSettings->getTargetName());
+                $result = $this->copyInDB($this->dbSettings->getDataSourceName());
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
                 $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
@@ -938,7 +941,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
         }
         if ($this->logger->getDebugLevel() !== false) {
-            $fInfo = $this->getFieldInfo($this->dbSettings->getTargetName());
+            $fInfo = $this->getFieldInfo($this->dbSettings->getDataSourceName());
             if ($fInfo != null) {
                 foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
                     if (!$this->dbClass->isContainingFieldName($fieldName, $fInfo)) {
@@ -992,6 +995,27 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     public function getDatabaseResult() {
         if (isset($this->outputOfProcessing['dbresult']))   {
             return $this->outputOfProcessing['dbresult'];
+        }
+        return null;
+    }
+
+    public function getDatabaseResultCount() {
+        if (isset($this->outputOfProcessing['resultCount']))   {
+            return $this->outputOfProcessing['resultCount'];
+        }
+        return null;
+    }
+
+    public function getDatabaseTotalCount() {
+        if (isset($this->outputOfProcessing['totalCount']))   {
+            return $this->outputOfProcessing['totalCount'];
+        }
+        return null;
+    }
+
+    public function getDatabaseNewRecordKey() {
+        if (isset($this->outputOfProcessing['newRecordKeyValue']))   {
+            return $this->outputOfProcessing['newRecordKeyValue'];
         }
         return null;
     }

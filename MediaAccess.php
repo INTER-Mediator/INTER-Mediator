@@ -199,7 +199,7 @@ class MediaAccess
      */
     private function checkAuthentication($dbProxyInstance, $options, $target)
     {
-        $dbProxyInstance->dbSettings->setTargetName($options['media-context']);
+        $dbProxyInstance->dbSettings->setDataSourceName($options['media-context']);
         $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         if (isset($context['authentication'])
             && (isset($context['authentication']['all'])
@@ -297,6 +297,7 @@ class MediaAccess
             if ($indexKeying == -1) {
             //    $this->exitAsError(401);
             }
+            $dbProxyInstance->dbSettings->setDataSourceName($contextName);
             $this->contextRecord = $dbProxyInstance->getFromDB($contextName);
         }
     }

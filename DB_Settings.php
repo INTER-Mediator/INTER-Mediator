@@ -26,7 +26,9 @@ class DB_Settings
     private $dbSpecOption = null;
 
     private $dataSource = null;
-    private $targetDataSource = null;
+    private $options = null;
+    private $dbSpec = null;
+//    private $targetDataSource = null;
     private $dataSourceName = '';
     private $recordCount = 0;
     private $start = 0;
@@ -289,18 +291,18 @@ class DB_Settings
     /**
      * @param null $targetDataSource
      */
-    public function setTargetDataSource($targetDataSource)
-    {
-        $this->targetDataSource = $targetDataSource;
-    }
+//    public function setTargetDataSource($targetDataSource)
+//    {
+//        $this->targetDataSource = $targetDataSource;
+//    }
 
     /**
      * @return null
      */
-    public function getTargetDataSource()
-    {
-        return $this->targetDataSource;
-    }
+//    public function getTargetDataSource()
+//    {
+//        return $this->targetDataSource;
+//    }
 
 
     /**
@@ -337,11 +339,13 @@ class DB_Settings
         return $this->emailAsAccount;
     }
 
+    // This is private (closed) API
     function getCurrentDataAccess()
     {
         return $this->currentDataAccess;
     }
 
+    // This is private (closed) API
     function setCurrentDataAccess($dbaccess)
     {
         $this->currentDataAccess = $dbaccess;
@@ -550,7 +554,12 @@ class DB_Settings
         $this->dataSource = $src;
     }
 
-    function getDataSource($dataSourceName)
+    function getDataSource()
+    {
+        return $this->dataSource;
+    }
+
+    function getDataSourceDefinition($dataSourceName)
     {
         foreach ($this->dataSource as $index => $value) {
             if ($value['name'] == $dataSourceName) {
@@ -560,15 +569,36 @@ class DB_Settings
         return null;
     }
 
-    function getIndexOfDataSource($dataSourceName)
+    function setOptions($src)
     {
-        foreach ($this->dataSource as $index => $value) {
-            if ($value['name'] == $dataSourceName) {
-                return $index;
-            }
-        }
-        return null;
+        $this->options = $src;
     }
+
+    function getOptions()
+    {
+        return $this->options;
+    }
+
+    function setDbSpec($src)
+    {
+        $this->dbSpec = $src;
+    }
+
+    function getDbSpec()
+    {
+        return $this->dbSpec;
+    }
+
+
+//    function getIndexOfDataSource($dataSourceName)
+//    {
+//        foreach ($this->dataSource as $index => $value) {
+//            if ($value['name'] == $dataSourceName) {
+//                return $index;
+//            }
+//        }
+//        return null;
+//    }
 
     function setSeparator($sep)
     {
@@ -580,25 +610,25 @@ class DB_Settings
         return $this->separator;
     }
 
-    function setTargetName($val)
-    {
-        $this->dataSourceName = $val;
-    }
-
-    function getTargetName()
-    {
-        return $this->dataSourceName;
-    }
+//    function setTargetName($val)
+//    {
+//        $this->dataSourceName = $val;
+//    }
+//
+//    function getTargetName()
+//    {
+//        return $this->dataSourceName;
+//    }
 
     function addTargetField($field)
     {
         $this->fieldsRequired[] = $field;
     }
 
-    function setTargetFields($fields)
-    {
-        $this->fieldsRequired = $fields;
-    }
+//    function setTargetFields($fields)
+//    {
+//        $this->fieldsRequired = $fields;
+//    }
 
     function getFieldOfIndex($ix)
     {
@@ -724,29 +754,16 @@ class DB_Settings
     }
 
     /* get the information for the 'name'. */
-    function getDataSourceTargetArray($isAssociative = false)
+    function getDataSourceTargetArray()
     {
         if ($this->dataSource == null) {
             return null;
         }
-        if ($this->targetDataSource == null) {
             foreach ($this->dataSource as $record) {
                 if ($record['name'] == $this->dataSourceName) {
-                    //    $this->targetDataSource = $record;
-                    if ($isAssociative) {
-                        $resultArray = array();
-                        foreach ($record as $key => $value) {
-                            $resultArray[$key] = $value;
-                        }
-                        return $resultArray;
-                    } else {
-                        return $record;
-                    }
+                    return $record;
                 }
             }
-        } else {
-            return $this->targetDataSource;
-        }
         return null;
     }
 

@@ -115,7 +115,7 @@ interface Auth_Interface_CommonDB
  */
 interface DB_Proxy_Interface extends DB_Interface, Auth_Interface_Communication {
     public function initialize($datasource, $options, $dbspec, $debug, $target = null);
-    public function processingRequest($options, $access = null);
+    public function processingRequest($access = null, $bypassAuth = false);
     public function finishCommunication();
 }
 

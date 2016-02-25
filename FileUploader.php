@@ -67,7 +67,7 @@ class FileUploader
                 }
             }
         }
-        $dbProxyInstance->processingRequest($options, "noop");
+        $dbProxyInstance->processingRequest("noop");
         $dbProxyInstance->finishCommunication();
         $dbProxyInstance->exportOutputDataAsJSON();
         return;
@@ -97,7 +97,7 @@ class FileUploader
             if (is_null($url)) {
                 header("HTTP/1.1 500 Internal Server Error");
                 $dbProxyInstance->logger->setErrorMessage('Header may not contain more than a single header, new line detected.');
-                $dbProxyInstance->processingRequest($options, 'noop');
+                $dbProxyInstance->processingRequest('noop');
                 $dbProxyInstance->finishCommunication();
                 $dbProxyInstance->exportOutputDataAsJSON();
                 return;
@@ -109,7 +109,7 @@ class FileUploader
                 header('Location: ' . $url);
             } else {
                 $dbProxyInstance->logger->setErrorMessage("'media-root-dir' isn't specified");
-                $dbProxyInstance->processingRequest($options, "noop");
+                $dbProxyInstance->processingRequest("noop");
                 $dbProxyInstance->finishCommunication();
                 $dbProxyInstance->exportOutputDataAsJSON();
             }
@@ -128,7 +128,7 @@ class FileUploader
                 header('Location: ' . $url);
             } else {
                 $dbProxyInstance->logger->setErrorMessage("No file wasn't uploaded.");
-                $dbProxyInstance->processingRequest($options, "noop");
+                $dbProxyInstance->processingRequest("noop");
                 $dbProxyInstance->finishCommunication();
                 $dbProxyInstance->exportOutputDataAsJSON();
             }
@@ -154,7 +154,7 @@ class FileUploader
             $filePath = $fileRoot . $filePartialPath;
             if (strpos($filePath, $fileRoot) !== 0) {
                 $dbProxyInstance->logger->setErrorMessage("Invalid Path Error.");
-                $dbProxyInstance->processingRequest($options, "noop");
+                $dbProxyInstance->processingRequest("noop");
                 $dbProxyInstance->finishCommunication();
                 $dbProxyInstance->exportOutputDataAsJSON();
                 return;
@@ -164,7 +164,7 @@ class FileUploader
                 $result = mkdir($fileRoot . $dirPath, 0744, true);
                 if (!$result) {
                     $dbProxyInstance->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
-                    $dbProxyInstance->processingRequest($options, "noop");
+                    $dbProxyInstance->processingRequest("noop");
                     $dbProxyInstance->finishCommunication();
                     $dbProxyInstance->exportOutputDataAsJSON();
                     return;
@@ -190,7 +190,7 @@ class FileUploader
                 header('Location: ' . $url);
             } else {
                 $dbProxyInstance->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
-                $dbProxyInstance->processingRequest($options, "noop");
+                $dbProxyInstance->processingRequest("noop");
                 $dbProxyInstance->finishCommunication();
                 $dbProxyInstance->exportOutputDataAsJSON();
             }
@@ -213,7 +213,7 @@ class FileUploader
         $dbProxyInstance = new DB_Proxy();
         $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
         $dbProxyInstance->dbSettings->addExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
-        $dbProxyInstance->dbSettings->setTargetFields(array($targetFieldName));
+        $dbProxyInstance->dbSettings->setFieldsRequired(array($targetFieldName));
 
         $fileContent = file_get_contents($filePath, false, null, 0, 30);
         $headerTop = strpos($fileContent, "data:");
@@ -241,7 +241,7 @@ class FileUploader
             $dbProxyInstance->dbSettings->setValue(array($fileName . "\n" . base64_encode(file_get_contents($filePath))));
         }
 
-        $dbProxyInstance->processingRequest($options, "update");
+        $dbProxyInstance->processingRequest("update");
 
         $relatedContext = null;
         if ($useContainer === FALSE) {
@@ -271,9 +271,9 @@ class FileUploader
                         }
                         $fields[] = "path";
                         $values[] = $filePartialPath;
-                        $relatedContext->dbSettings->setTargetFields($fields);
+                        $relatedContext->dbSettings->setFieldsRequired($fields);
                         $relatedContext->dbSettings->setValue($values);
-                        $relatedContext->processingRequest($options, "create", true);
+                        $relatedContext->processingRequest("create", true);
                         //    $relatedContext->finishCommunication(true);
                         //    $relatedContext->exportOutputDataAsJSON();
                     }
