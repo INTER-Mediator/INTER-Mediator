@@ -298,7 +298,7 @@ class MediaAccess
             //    $this->exitAsError(401);
             }
             $dbProxyInstance->dbSettings->setDataSourceName($contextName);
-            $this->contextRecord = $dbProxyInstance->getFromDB($contextName);
+            $this->contextRecord = $dbProxyInstance->readFromDB();
         }
     }
 

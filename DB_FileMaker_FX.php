@@ -428,7 +428,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $returnArray;
     }
 
-    public function getFromDB($dataSourceName)
+    public function readFromDB()
     {
         $useOrOperation = false;
         $this->fieldInfo = null;
@@ -436,6 +436,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->mainTableTotalCount = 0;
         $context = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForRetrieve();
+        $dataSourceName = $this->dbSettings->getDataSourceName();
 
         $usePortal = false;
         if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
@@ -964,20 +965,20 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $returnArray;
     }
 
-    public function countQueryResult($dataSourceName)
+    public function countQueryResult()
     {
         return $this->mainTableCount;
     }
 
-    public function getTotalCount($dataSourceName)
+    public function getTotalCount()
     {
         return $this->mainTableTotalCount;
     }
 
-    public function setToDB($dataSourceName)
+    public function updateDB()
     {
         $this->fieldInfo = null;
-
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $context = $this->dbSettings->getDataSourceTargetArray();
 
         $usePortal = false;
@@ -1164,11 +1165,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    public function newToDB($dataSourceName, $bypassAuth)
+    public function createInDB($bypassAuth)
     {
         $this->fieldInfo = null;
 
         $context = $this->dbSettings->getDataSourceTargetArray();
+        $dataSourceName = $this->dbSettings->getDataSourceName();
 
         $usePortal = false;
         if (isset($context['relation'])) {
@@ -1295,7 +1297,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return $keyValue;
     }
 
-    public function deleteFromDB($dataSourceName)
+    public function deleteFromDB()
     {
         $this->fieldInfo = null;
 
@@ -1439,7 +1441,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function copyInDB($dataSourceName)
+    function copyInDB()
     {
         $this->errorMessage[] = "Copy operation is not implemented so far.";
     }

@@ -604,7 +604,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @param $dataSourceName
      * @return array|bool
      */
-    function getFromDB($dataSourceName)
+    function readFromDB()
     {
         $this->fieldInfo = null;
         $this->mainTableCount = 0;
@@ -763,7 +763,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @return int
      */
     public
-    function countQueryResult($dataSourceName)
+    function countQueryResult()
     {
         return $this->mainTableCount;
     }
@@ -773,7 +773,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @return int
      */
     public
-    function getTotalCount($dataSourceName)
+    function getTotalCount()
     {
         return $this->mainTableTotalCount;
     }
@@ -782,7 +782,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @param $dataSourceName
      * @return bool
      */
-    function setToDB($dataSourceName)
+    function updateDB()
     {
         $this->fieldInfo = null;
         $tableName = $this->dbSettings->getEntityForUpdate();
@@ -892,7 +892,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @return bool
      */
     public
-    function newToDB($dataSourceName, $bypassAuth)
+    function createInDB($bypassAuth)
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -1031,7 +1031,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      * @param $dataSourceName
      * @return bool
      */
-    function deleteFromDB($dataSourceName)
+    function deleteFromDB()
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
@@ -1085,7 +1085,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return true;
     }
 
-    function copyInDB($dataSourceName)
+    function copyInDB()
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();

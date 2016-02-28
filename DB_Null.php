@@ -18,32 +18,32 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.php');
 class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
 {
 
-    public function getFromDB($dataSourceName)
+    public function readFromDB()
     {
         return null;
     }
 
-    public function countQueryResult($dataSourceName)
+    public function countQueryResult()
     {
         return 0;
     }
 
-    public function getTotalCount($dataSourceName)
+    public function getTotalCount()
     {
         return 0;
     }
 
-    public function setToDB($dataSourceName)
+    public function updateDB()
     {
         return null;
     }
 
-    public function newToDB($dataSourceName, $bypassAuth)
+    public function createInDB($bypassAuth)
     {
         return null;
     }
 
-    public function deleteFromDB($dataSourceName)
+    public function deleteFromDB()
     {
         return null;
     }
@@ -183,7 +183,7 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
         return null;
     }
 
-    public function copyInDB($dataSourceName)
+    public function copyInDB()
     {
         return false;
     }
