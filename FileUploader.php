@@ -246,10 +246,10 @@ class FileUploader
                 '&-field=' . urlencode($targetFieldName));
         }
         $dbProxyInstance->finishCommunication();
-        $dbProxyInstance->exportOutputDataAsJSON();
         if (!is_null($url)) {
             header('Location: ' . $url);
         }
+        $dbProxyInstance->exportOutputDataAsJSON();
     }
 
     //
@@ -311,7 +311,7 @@ class FileUploader
     {
         if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
             $parsedUrl = parse_url($url);
-            
+
             $util = new IMUtil();
             if ($util->checkHost($parsedUrl['host'], $webServerName)) {
                 return TRUE;

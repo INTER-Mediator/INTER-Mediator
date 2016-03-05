@@ -166,7 +166,7 @@ class MediaAccess
                 $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
 
                 $cookieNameUser = '_im_username';
-                $cookieNamePassword = '_im_credential';
+                $cookieNamePassword = '_im_crypted';
                 $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
                 if (isset($_COOKIE[$cookieNamePassword])) {
                     $credential .= ':' . urlencode($keyDecrypt->biDecryptedString($_COOKIE[$cookieNamePassword]));
@@ -349,7 +349,9 @@ class MediaAccess
             if ($tmpDir === '') {
                 $tmpDir = sys_get_temp_dir();
             }
-            $temp = 'IM_TEMP_' . base64_encode(randomString(12)) . '.jpg';
+            $temp = 'IM_TEMP_' .
+                str_replace(base64_encode(randomString(12)), DIRECTORY_SEPARATOR, '-') .
+                '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;
             } else {

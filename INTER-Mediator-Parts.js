@@ -166,12 +166,12 @@ IMParts_Catalog["fileupload"] = {
     ids: [],
     formFromId: {},
     finish: function () {
-        var shaObj, hmacValue;
+        var shaObj, hmacValue, targetNode;
 
         if (this.html5DDSuported) {
             for (var i = 0; i < this.ids.length; i++) {
                 var tagetIdLocal = this.ids[i];
-                var targetNode = document.getElementById(tagetIdLocal);
+                targetNode = document.getElementById(tagetIdLocal);
                 var contextInfo = IMLibContextPool.getContextInfoFromId(tagetIdLocal);
                 if (targetNode) {
                     INTERMediatorLib.addEvent(targetNode, "dragleave", function (event) {
@@ -229,13 +229,13 @@ IMParts_Catalog["fileupload"] = {
                             }
 
                             INTERMediator_DBAdapter.uploadFile(
-                                '&_im_contextname=' + encodeURIComponent(updateInfo.context.contextName)
-                                    + '&_im_field=' + encodeURIComponent(updateInfo.field)
-                                    + '&_im_keyfield=' + encodeURIComponent(updateInfo.record.split("=")[0])
-                                    + '&_im_keyvalue=' + encodeURIComponent(updateInfo.record.split("=")[1])
-                                    + '&_im_contextnewrecord=' + encodeURIComponent('uploadfile')
-                                    + (isProgressing ?
-                                    ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : ""),
+                                "&_im_contextname=" + encodeURIComponent(updateInfo.context.contextName) +
+                                    "&_im_field=" + encodeURIComponent(updateInfo.field) +
+                                    "&_im_keyfield=" + encodeURIComponent(updateInfo.record.split("=")[0]) +
+                                    "&_im_keyvalue=" + encodeURIComponent(updateInfo.record.split("=")[1]) +
+                                    "&_im_contextnewrecord=" + encodeURIComponent("uploadfile") +
+                                    (isProgressing ?
+                                    ("&APC_UPLOAD_PROGRESS=" + encodeURIComponent(uploadId + iframeId)) : ""),
                                 {
                                     fileName: file.name,
                                     content: file
@@ -277,7 +277,7 @@ IMParts_Catalog["fileupload"] = {
 
         } else {
             for (var i = 0; i < this.ids.length; i++) {
-                var targetNode = document.getElementById(this.ids[i]);
+                targetNode = document.getElementById(this.ids[i]);
                 if (targetNode) {
                     var updateInfo = IMLibContextPool.getContextInfoFromId(this.ids[i], "");
                     //= INTERMediator.updateRequiredObject[IMParts_im_fileupload.ids[i]];
@@ -320,12 +320,10 @@ IMParts_Catalog["fileupload"] = {
                         inputNode.value = INTERMediatorOnPage.authUser;
                     }
                     formNode.appendChild(inputNode);
-                    inputNode = document.createElement('INPUT');
-                    inputNode.setAttribute('type', 'hidden');
-                    inputNode.setAttribute('name', 'response');
+                    inputNode = document.createElement("INPUT");
+                    inputNode.setAttribute("type", "hidden");
+                    inputNode.setAttribute("name", "response");
                     if (INTERMediatorOnPage.authUser.length > 0) {
-                            thisForm.elements["cresponse"].value = INTERMediatorOnPage.publickey.biEncryptedString(
-                                INTERMediatorOnPage.authCryptedPassword + "\n" + INTERMediatorOnPage.authChallenge);
                             if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
                                 shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
                                 hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
@@ -336,8 +334,19 @@ IMParts_Catalog["fileupload"] = {
                             }
                         }
                     formNode.appendChild(inputNode);
-                    if (this.progressSupported) {
 
+                    if (INTERMediatorOnPage.authUser.length > 0) {
+                        inputNode = document.createElement("INPUT");
+                        inputNode.setAttribute("type", "hidden");
+                        inputNode.setAttribute("name", "cresponse");
+                        inputNode.setAttribute("value",
+                            INTERMediatorOnPage.publickey.biEncryptedString(
+                                INTERMediatorOnPage.authCryptedPassword + "\n" +
+                                INTERMediatorOnPage.authChallenge));
+                        formNode.appendChild(inputNode);
+                    }
+
+                    if (this.progressSupported) {
                         inputNode = document.createElement('iframe');
                         inputNode.setAttribute('id', 'upload_frame' + i);
                         inputNode.setAttribute('name', 'upload_frame');
@@ -354,9 +363,9 @@ IMParts_Catalog["fileupload"] = {
                                 var iframeNode = document.getElementById('upload_frame' + iframeId);
                                 iframeNode.style.display = "block";
                                 setTimeout(function () {
-                                    var infoURL = selfURL() + '?uploadprocess='
-                                        + this.uploadId + iframeId;
-                                    iframeNode.setAttribute('src', infoURL);
+                                    var infoURL = selfURL() + "?uploadprocess=" +
+                                        this.uploadId + iframeId;
+                                    iframeNode.setAttribute("src", infoURL);
                                 });
                                 return true;
                             };
