@@ -340,13 +340,13 @@ class DB_Settings
     }
 
     // This is private (closed) API
-    private function getCurrentDataAccess()
+    public function getCurrentDataAccess()
     {
         return $this->currentDataAccess;
     }
 
     // This is private (closed) API
-    private function setCurrentDataAccess($dbaccess)
+    public function setCurrentDataAccess($dbaccess)
     {
         $this->currentDataAccess = $dbaccess;
     }
