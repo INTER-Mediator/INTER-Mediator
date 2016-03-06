@@ -13,7 +13,7 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.4 (in development)
 - FileUploader can detect exceeding file size limit and returns valid error messages.
 - [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native 
-  Authentication. The affected version is 5.3 only.
+  Authentication for mobile devices. The affected version is 5.3 only.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
