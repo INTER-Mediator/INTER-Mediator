@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,13 +13,74 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class IMUtil
 {
-    public function removeNull($str)
+    public static function removeNull($str)
     {
         return str_replace("\x00", '', $str);
     }
+
+    public static function getMessageClassInstance()
+    {
+        // Message Class Detection
+        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+        $messageClass = null;
+        if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
+            $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
+            foreach ($clientLangArray as $oneLanguage) {
+                $langCountry = explode(';', $oneLanguage);
+                if (strlen($langCountry[0]) > 0) {
+                    $clientLang = explode('-', $langCountry[0]);
+                    $messageClass = "MessageStrings_$clientLang[0]";
+                    if (file_exists("{$currentDir}{$messageClass}.php")) {
+                        $messageClass = new $messageClass();
+                        break;
+                    }
+                }
+                $messageClass = null;
+            }
+        }
+        if ($messageClass == null) {
+            $messageClass = new MessageStrings();
+        }
+        return $messageClass;
+    }
+
+    // Thanks for http://q.hatena.ne.jp/1193396523
+    public static function guessFileUploadError()
+    {
+        $postMaxSize = self::return_bytes(ini_get('post_max_size'));
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST'
+            && count($_POST) == 0
+            && $_SERVER['HTTP_CONTENT_LENGTH'] > $postMaxSize
+            && strpos($_SERVER['HTTP_CONTENT_TYPE'], 'multipart/form-data') === 0
+        ) {
+            return true;
+        }
+        foreach ($_FILES as $fn => $fileInfo) {
+            if (isset($fileInfo["error"]) && $fileInfo["error"] != UPLOAD_ERR_OK) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Example in http://php.net/manual/ja/function.ini-get.php.
+    public static function return_bytes($val)
+    {
+        $val = trim($val);
+        switch (strtolower($val[strlen($val) - 1])) {
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+        return $val;
+    }
+
 
     public static function getFromParamsPHPFile($vars, $permitUndef = false)
     {
@@ -35,7 +97,7 @@ class IMUtil
             if (isset($$var)) {
                 $result[$var] = $$var;
             } else {
-                if (! $permitUndef) {
+                if (!$permitUndef) {
                     return false;
                 }
                 $result[$var] = null;
@@ -53,7 +115,8 @@ class IMUtil
         $params = IMUtil::getFromParamsPHPFile(array('webServerName'), true);
         $webServerName = $params['webServerName'];
         if ($webServerName === '' ||
-            $webServerName === array() || $webServerName === array('')) {
+            $webServerName === array() || $webServerName === array('')
+        ) {
             $webServerName = NULL;
         }
 
@@ -82,7 +145,8 @@ class IMUtil
             isset($_SERVER['HTTP_X_FROM']) &&
             (!isset($_SERVER['HTTP_ORIGIN']) ||
                 $from['scheme'] . '://' . $from['host'] . $fromPort ===
-                $origin['scheme'] . '://' . $origin['host'] . $originPort)) {
+                $origin['scheme'] . '://' . $origin['host'] . $originPort)
+        ) {
             $host = $_SERVER['HTTP_HOST'];
             if (is_null($webServerName)) {
                 return TRUE;
@@ -117,13 +181,15 @@ class IMUtil
         }
 
         if (isset($_SERVER['SERVER_ADDR']) &&
-            $host === $_SERVER['SERVER_ADDR']) {
+            $host === $_SERVER['SERVER_ADDR']
+        ) {
             return TRUE;
         }
 
         if (substr($host, -($length + 1)) === '.' . $webServerName &&
-            strpos($webServerName, '.' ) !== FALSE &&
-            !preg_match('/^[0-9\.]+$/', $webServerName)) {
+            strpos($webServerName, '.') !== FALSE &&
+            !preg_match('/^[0-9\.]+$/', $webServerName)
+        ) {
             return TRUE;
         }
 

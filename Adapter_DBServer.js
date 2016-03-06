@@ -402,6 +402,7 @@ INTERMediator_DBAdapter = {
                         break;
                     case 4:
                         try {
+                            console.log(myRequest.responseText);
                             jsonObject = JSON.parse(myRequest.responseText);
                         } catch (ex) {
                             INTERMediator.setErrorMessage(ex,

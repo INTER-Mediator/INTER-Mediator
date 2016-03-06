@@ -685,8 +685,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if (!isset($_POST["value_{$i}"])) {
                 break;
             }
-            $util = new IMUtil();
-            $value = $util->removeNull(filter_var($_POST["value_{$i}"]));
+            $value = IMUtil::removeNull(filter_var($_POST["value_{$i}"]));
             $this->dbSettings->addValue(get_magic_quotes_gpc() ? stripslashes($value) : $value);
         }
         if (isset($options['authentication']) && isset($options['authentication']['email-as-username'])) {
@@ -730,28 +729,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->logger->setDebugMessage("[processingRequest]", 2);
 
         $this->outputOfProcessing = array();
-        $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;
-
-        // Message Class Detection
-        $messageClass = null;
-        if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
-            $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-            foreach ($clientLangArray as $oneLanguage) {
-                $langCountry = explode(';', $oneLanguage);
-                if (strlen($langCountry[0]) > 0) {
-                    $clientLang = explode('-', $langCountry[0]);
-                    $messageClass = "MessageStrings_$clientLang[0]";
-                    if (file_exists("{$currentDir}{$messageClass}.php")) {
-                        $messageClass = new $messageClass();
-                        break;
-                    }
-                }
-                $messageClass = null;
-            }
-        }
-        if ($messageClass == null) {
-            $messageClass = new MessageStrings();
-        }
+        $messageClass = IMUtil::getMessageClassInstance();
 
         /* Aggregation Judgement */
         $isSelect = $this->dbSettings->getAggregationSelect();

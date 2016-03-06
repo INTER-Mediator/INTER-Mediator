@@ -45,8 +45,7 @@ class MediaAccess
              * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
              * style URL. In case of an image, $file is just the path info as like above.
              */
-            $util = new IMUtil();
-            $file = $util->removeNull($file);
+            $file = IMUtil::removeNull($file);
             if (strpos($file, '../') !== false) {
                 return;
             }

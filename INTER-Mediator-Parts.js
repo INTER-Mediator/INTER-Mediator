@@ -26,6 +26,7 @@ IMParts_Catalog["fileupload"] = {
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
     forceOldStyleForm: false,
     uploadId: "sign" + Math.random(),
+
     instanciate: function (parentNode) {
         var inputNode, formNode, buttonNode, hasTapEvent;
         var newId = parentNode.getAttribute('id') + '-e';
@@ -49,7 +50,8 @@ IMParts_Catalog["fileupload"] = {
         if (hasTapEvent) {
             this.html5DDSuported = false;
         }
-        var autoReload = (parentNode.getAttribute("data-im-widget-reload") !== null) ? parentNode.getAttribute("data-im-widget-reload") : false;
+        var autoReload = (parentNode.getAttribute("data-im-widget-reload") !== null)
+            ? parentNode.getAttribute("data-im-widget-reload") : false;
         newNode.setAttribute("data-im-widget-reload", autoReload);
         if (this.html5DDSuported) {
             newNode.dropzone = "copy";
@@ -166,13 +168,12 @@ IMParts_Catalog["fileupload"] = {
     ids: [],
     formFromId: {},
     finish: function () {
-        var shaObj, hmacValue, targetNode;
+        var shaObj, hmacValue, targetNode, i, tagetIdLocal, targetNode, isProgressingLocal, serialIdLocal, uploadIdLocal;
 
         if (this.html5DDSuported) {
-            for (var i = 0; i < this.ids.length; i++) {
-                var tagetIdLocal = this.ids[i];
+            for (i = 0; i < this.ids.length; i++) {
+                tagetIdLocal = this.ids[i];
                 targetNode = document.getElementById(tagetIdLocal);
-                var contextInfo = IMLibContextPool.getContextInfoFromId(tagetIdLocal);
                 if (targetNode) {
                     INTERMediatorLib.addEvent(targetNode, "dragleave", function (event) {
                         event.preventDefault();
@@ -182,9 +183,9 @@ IMParts_Catalog["fileupload"] = {
                         event.preventDefault();
                         event.target.style.backgroundColor = "#AADDFF";
                     });
-                    var isProgressingLocal = this.progressSupported;
-                    var serialIdLocal = this.ids.length;
-                    var uploadIdLocal = this.uploadId;
+                    isProgressingLocal = this.progressSupported;
+                    serialIdLocal = this.ids.length;
+                    uploadIdLocal = this.uploadId;
                     INTERMediatorLib.addEvent(targetNode, "drop", (function () {
                         var iframeId = i;
                         var isProgressing = isProgressingLocal;
@@ -218,8 +219,6 @@ IMParts_Catalog["fileupload"] = {
                                 event.target.appendChild(fileNameNode);
                             }
                             var updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), "");
-                            //INTERMediator.updateRequiredObject[eventTarget.getAttribute('id')];
-
                             if (isProgressing) {
                                 infoFrame.style.display = "block";
                                 setTimeout(function () {
@@ -227,7 +226,6 @@ IMParts_Catalog["fileupload"] = {
                                         'upload_frame.php?up_id=' + uploadId + iframeId);
                                 });
                             }
-
                             INTERMediator_DBAdapter.uploadFile(
                                 "&_im_contextname=" + encodeURIComponent(updateInfo.context.contextName) +
                                     "&_im_field=" + encodeURIComponent(updateInfo.field) +
@@ -269,6 +267,10 @@ IMParts_Catalog["fileupload"] = {
                                     if (targetNode.getAttribute("data-im-widget-reload") === "true") {
                                         INTERMediator.construct();
                                     }
+                                    event.target.style.backgroundColor = "#AAAAAA";
+                                },
+                                function () {
+                                    event.target.style.backgroundColor = "#AAAAAA";
                                 });
                         };
                     })());
@@ -324,15 +326,15 @@ IMParts_Catalog["fileupload"] = {
                     inputNode.setAttribute("type", "hidden");
                     inputNode.setAttribute("name", "response");
                     if (INTERMediatorOnPage.authUser.length > 0) {
-                            if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
-                                shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
-                                hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
-                                    "ASCII", "SHA-256", "HEX");
-                                inputNode.value = hmacValue;
-                            } else {
-                                inputNode.value = "dummy";
-                            }
+                        if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
+                            shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
+                            hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
+                                "ASCII", "SHA-256", "HEX");
+                            inputNode.value = hmacValue;
+                        } else {
+                            inputNode.value = "dummy";
                         }
+                    }
                     formNode.appendChild(inputNode);
 
                     if (INTERMediatorOnPage.authUser.length > 0) {

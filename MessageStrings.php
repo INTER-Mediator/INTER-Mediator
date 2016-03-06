@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class MessageStrings
 {
 
@@ -25,7 +25,7 @@ class MessageStrings
     {
         $msg = $this->messages[$num];
         $index = 1;
-        foreach ($appending as $keyword)    {
+        foreach ($appending as $keyword) {
             $msg = str_replace("@{$index}@", $keyword, $msg);
             $index++;
         }
@@ -116,5 +116,13 @@ class MessageStrings
         2021 => 'New password have to contain more than @1@ characters.',
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
+        3201 => "Exceeded post size limit. Check the post_max_size in php.ini file.",
+        3202 => "No file wasn't uploaded.",
+        3203 => "Exceeded file size limit. Check the upload_max_filesize in php.ini file.",
+        3204 => "Partially uploaded.",
+        3205 => "Temporary directory doesn't exist.",
+        3206 => "Can't write to disk or file system.",
+        3207 => "Extension module prevents to upload.",
+        3208 => "Unknown error in file uploading.",
     );
 }

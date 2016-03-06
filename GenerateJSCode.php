@@ -177,29 +177,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.isEmailAsUsername", $isEmailAsUsernae ? "true" : "false");
 
-        $messageClass = null;
-        if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
-            $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-            foreach ($clientLangArray as $oneLanguage) {
-                $langCountry = explode(';', $oneLanguage);
-                if (strlen($langCountry[0]) > 0) {
-                    $clientLang = explode('-', $langCountry[0]);
-                    if ($clientLang[0] === 'en') {
-                        break;
-                    }
-                    $messageClass = "MessageStrings_$clientLang[0]";
-                    if (file_exists("$currentDir$messageClass.php")) {
-                        $messageClass = new $messageClass();
-                        break;
-                    }
-                }
-                $messageClass = null;
-            }
-        }
-        if ($messageClass == null) {
-            require_once('MessageStrings.php');
-            $messageClass = new MessageStrings();
-        }
+        $messageClass = IMUtil::getMessageClassInstance();
         $this->generateAssignJS(
             "INTERMediatorOnPage.getMessages",
             "function(){return ", arrayToJS($messageClass->getMessages(), ''), ";}");

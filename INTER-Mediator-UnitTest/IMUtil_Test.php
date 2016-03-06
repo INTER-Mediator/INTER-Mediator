@@ -14,7 +14,7 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
 
     public function test_removeNull()
     {
-        $str = $this->util->removeNull("INTER\x00-Mediator");
+        $str = IMUtil::removeNull("INTER\x00-Mediator");
         $this->assertEquals($str, "INTER-Mediator");
     }
 
