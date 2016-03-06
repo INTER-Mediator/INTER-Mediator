@@ -10,6 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.5.4 (in development)
+- FileUploader can detect exceeding file size limit and returns valid error messages.
+
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
   in the Auth_Support directory.

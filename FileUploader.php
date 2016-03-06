@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class FileUploader
 {
     private $db;
@@ -27,20 +27,68 @@ class FileUploader
 
     */
 
+    public function processingAsError($datasource, $options, $dbspec, $debug)
+    {
+        $dbProxyInstance = new DB_Proxy();
+        $this->db = $dbProxyInstance;
+        $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
+
+        $messages = IMUtil::getMessageClassInstance();
+        if (count($_FILES) === 0) {
+            $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3201));
+        } else {
+            foreach ($_FILES as $fn => $fileInfo) {
+                if (isset($fileInfo["error"])) {
+                    switch ($fileInfo["error"]) {
+                        case UPLOAD_ERR_OK:
+                            break;
+                        case UPLOAD_ERR_NO_FILE:
+                            $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3202));
+                            break;
+                        case UPLOAD_ERR_INI_SIZE:
+                        case UPLOAD_ERR_FORM_SIZE:
+                            $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3203));
+                            break;
+                        case UPLOAD_ERR_PARTIAL:
+                            $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3204));
+                            break;
+                        case UPLOAD_ERR_NO_TMP_DIR:
+                            $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3205));
+                            break;
+                        case UPLOAD_ERR_CANT_WRITE:
+                            $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3206));
+                            break;
+                        case UPLOAD_ERR_EXTENSION:
+                            $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3207));
+                            break;
+                        default:
+                            $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3208));
+                    }
+                }
+            }
+        }
+        $dbProxyInstance->processingRequest($options, "noop");
+        $dbProxyInstance->finishCommunication();
+        $dbProxyInstance->exportOutputDataAsJSON();
+        return;
+    }
+
     public function processing($datasource, $options, $dbspec, $debug)
     {
         $dbProxyInstance = new DB_Proxy();
         $this->db = $dbProxyInstance;
         $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
 
+        $dbProxyInstance->logger->setDebugMessage("$$$$ processing start");
+
         $useContainer = FALSE;
         $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         if ($dbspec['db-class'] === 'FileMaker_FX' && isset($dbProxyContext['file-upload'])) {
-          foreach ($dbProxyContext['file-upload'] as $item) {
-              if (isset($item['container']) && (boolean)$item['container'] === TRUE) {
-                  $useContainer = TRUE;
-              }
-          }
+            foreach ($dbProxyContext['file-upload'] as $item) {
+                if (isset($item['container']) && (boolean)$item['container'] === TRUE) {
+                    $useContainer = TRUE;
+                }
+            }
         }
 
         $url = NULL;
@@ -88,9 +136,7 @@ class FileUploader
         }
         foreach ($_FILES as $fn => $fileInfo) {
         }
-
-        $util = new IMUtil();
-        $filePathInfo = pathinfo($util->removeNull(basename($fileInfo['name'])));
+        $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfo['name'])));
 
         if ($useContainer === FALSE) {
             $fileRoot = $options['media-root-dir'];
@@ -138,7 +184,7 @@ class FileUploader
                 $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
             }
         }
-        $result = move_uploaded_file($util->removeNull($fileInfo['tmp_name']), $filePath);
+        $result = move_uploaded_file(IMUtil::removeNull($fileInfo['tmp_name']), $filePath);
         if (!$result) {
             if (!is_null($url)) {
                 header('Location: ' . $url);
@@ -209,7 +255,7 @@ class FileUploader
                         $values = array();
                         if (isset($relatedContextInfo["query"])) {
                             foreach ($relatedContextInfo["query"] as $cItem) {
-                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq" ) {
+                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
                                     $fields[] = $cItem['field'];
                                     $values[] = $cItem['value'];
                                 }
@@ -217,7 +263,7 @@ class FileUploader
                         }
                         if (isset($relatedContextInfo["relation"])) {
                             foreach ($relatedContextInfo["relation"] as $cItem) {
-                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq" ) {
+                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
                                     $fields[] = $cItem['foreign-key'];
                                     $values[] = $dbKeyValue;
                                 }
@@ -228,8 +274,8 @@ class FileUploader
                         $relatedContext->dbSettings->setTargetFields($fields);
                         $relatedContext->dbSettings->setValue($values);
                         $relatedContext->processingRequest($options, "create", true);
-                    //    $relatedContext->finishCommunication(true);
-                    //    $relatedContext->exportOutputDataAsJSON();
+                        //    $relatedContext->finishCommunication(true);
+                        //    $relatedContext->exportOutputDataAsJSON();
                     }
                 }
             }
@@ -263,11 +309,11 @@ class FileUploader
             if ($status === false) {
                 $progress = 0;
             } else {
-                $progress = round($status['current'] / $status['total'], 2)*100;
+                $progress = round($status['current'] / $status['total'], 2) * 100;
             }
             echo "<div style='width:{$progress}%;height:20px;background-color: #ffb52d;'>";
             echo "<div style='position:absolute;left:0;top:0;padding-left:8px;'>";
-            echo $progress  . " %";
+            echo $progress . " %";
             echo "</div></div></div></body></html>";
         }
     }
@@ -279,12 +325,14 @@ class FileUploader
         }
 
         if (strpos($url, 'http://' . php_uname('n') . '/') === 0 ||
-            strpos($url, 'https://' . php_uname('n') . '/') === 0) {
+            strpos($url, 'https://' . php_uname('n') . '/') === 0
+        ) {
             return $url;
         }
 
         if (isset($_SERVER['SERVER_ADDR']) &&
-            strpos($url, 'http://' . $_SERVER['SERVER_ADDR'] . '/') === 0) {
+            strpos($url, 'http://' . $_SERVER['SERVER_ADDR'] . '/') === 0
+        ) {
             return $url;
         }
 
@@ -311,7 +359,7 @@ class FileUploader
     {
         if (strpos($url, 'http://') === 0 || strpos($url, 'https://') === 0) {
             $parsedUrl = parse_url($url);
-            
+
             $util = new IMUtil();
             if ($util->checkHost($parsedUrl['host'], $webServerName)) {
                 return TRUE;

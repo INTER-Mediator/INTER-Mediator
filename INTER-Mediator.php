@@ -67,7 +67,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             if ($key == 'authentication'
                 && isset($option['user'])
                 && is_array($option['user'])
-                && array_search('database_native', $option['user']) !== false) {
+                && array_search('database_native', $option['user']) !== false
+            ) {
                 // Native Authentication requires BC Math functions
                 $requiredFunctions = array_merge($requiredFunctions, array('bcmath' => 'bcadd'));
                 break;
@@ -94,11 +95,19 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
     }
 
+//    file_put_contents("/tmp/php2.log", "POST: " . var_export($_POST, true), FILE_APPEND);
+//    file_put_contents("/tmp/php2.log", "GET: " . var_export($_GET, true), FILE_APPEND);
+//    file_put_contents("/tmp/php2.log", "FILES: " . var_export($_FILES, true), FILE_APPEND);
+//    file_put_contents("/tmp/php2.log", "SERVER: " . var_export($_SERVER, true), FILE_APPEND);
+
     if (isset($g_serverSideCall) && $g_serverSideCall) {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
         $dbInstance->processingRequest($options, "NON");
         $g_dbInstance = $dbInstance;
+    } else if (IMUtil::guessFileUploadError()) {
+        $fileUploader = new FileUploader();
+        $fileUploader->processingAsError($datasource, $options, $dbspecification, $debug);
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();
@@ -111,7 +120,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
         $mediaHandler->processing($dbProxyInstance, $options, $_GET['media']);
     } else if ((isset($_POST['access']) && $_POST['access'] == 'uploadfile')
-        || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')) {
+        || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
+    ) {
         $fileUploader = new FileUploader();
         $fileUploader->processing($datasource, $options, $dbspecification, $debug);
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
@@ -141,7 +151,8 @@ function loadClass($className)
 {
     if (strpos($className, 'PHPUnit_') === false && $className !== 'PHP_Invoker' &&
         strpos($className, 'PHPExcel_') === false &&
-        (include_once $className . '.php') === false) {
+        (include_once $className . '.php') === false
+    ) {
         $errorGenerator = new GenerateJSCode();
         if (strpos($className, "MessageStrings_") !== 0) {
             $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
