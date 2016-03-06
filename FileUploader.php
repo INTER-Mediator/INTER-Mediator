@@ -292,10 +292,10 @@ class FileUploader
                 '&-field=' . urlencode($targetFieldName));
         }
         $dbProxyInstance->finishCommunication();
-        $dbProxyInstance->exportOutputDataAsJSON();
         if (!is_null($url)) {
             header('Location: ' . $url);
         }
+        $dbProxyInstance->exportOutputDataAsJSON();
     }
 
     //
