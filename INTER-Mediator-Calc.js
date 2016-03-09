@@ -128,6 +128,7 @@ var IMLibCalc = {
                         }
                         calcObject.values[field] = valueSeries;
                     }
+                    console.log(exp, valuesArray);
                     IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
                 } else {
 
