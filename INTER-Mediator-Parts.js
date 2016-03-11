@@ -25,6 +25,8 @@ IMParts_Catalog["fileupload"] = {
     html5DDSuported: false,
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
     forceOldStyleForm: false,
+    uploadButtonLabel: "送信",
+    uploadCancelButtonLabel: "キャンセル",
     uploadId: "sign" + Math.random(),
 
     instanciate: function (parentNode) {
@@ -74,11 +76,12 @@ IMParts_Catalog["fileupload"] = {
             }
         } else {
             formNode = document.createElement('FORM');
+            formNode.className = "_im_fileupload_form";
             formNode.setAttribute('method', 'post');
             formNode.setAttribute('action', INTERMediatorOnPage.getEntryPath() + "?access=uploadfile");
             formNode.setAttribute('enctype', 'multipart/form-data');
             var divNode = document.createElement('DIV');
-            divNode.className = "form-wrapper";
+            divNode.className = "_im_fileupload_form_wrapper form-wrapper";
             divNode.appendChild(formNode);
             newNode.appendChild(divNode);
 
@@ -114,24 +117,37 @@ IMParts_Catalog["fileupload"] = {
             inputNode.setAttribute('type', 'file');
             inputNode.setAttribute('accept', '*/*');
             inputNode.setAttribute('name', '_im_uploadfile');
+            inputNode.className = '_im_uploadfile';
+            inputNode.addEventListener("change",function(){
+                if (this.files[0].size > 0) {
+                    this.nextSibling.removeAttribute("disabled");
+                }
+            }, false);
             formNode.appendChild(inputNode);
 
+            var cancelButtonWrapper, cancelButton;
+            cancelButtonWrapper = document.createElement("DIV");
+            cancelButtonWrapper.className = "_im_fileupload_cancel_button_wrapper";
+            cancelButton = document.createElement("BUTTON");
+            cancelButton.className = "_im_fileupload_cancel_button";
+            cancelButton.appendChild(document.createTextNode(this.uploadCancelButtonLabel));
+            cancelButtonWrapper.appendChild(cancelButton);
+
             buttonNode = document.createElement('BUTTON');
+            buttonNode.className = "_im_fileupload_button";
             buttonNode.setAttribute('type', 'submit');
-            buttonNode.appendChild(document.createTextNode('送信'));
-            INTERMediatorLib.addEvent(newNode, "click", function (event) {
+            buttonNode.setAttribute("disabled", "");
+            buttonNode.appendChild(document.createTextNode(this.uploadButtonLabel));
+            newNode.addEventListener("click", function (event) {
                 if (this.children[0].style.display === "none" || this.children[0].style.display === "") {
                     this.children[0].style.display = "flex";
                     this.children[0].style.display = "-webkit-flex";
-                } else {
-                    if (IMLibLocalContext.getValue("uploadFileSelect") === "false") {
-                        this.children[0].style.display = "none";
-                    }
                 }
-            }, false);
-            INTERMediatorLib.addEvent(formNode, "click", function (event) {
-                IMLibLocalContext.setValue("uploadFileSelect", "true");
-            }, false);
+            }, true);
+            cancelButtonWrapper.addEventListener("click", function(c) {
+                    this.parentNode.style.display = "none";
+            });
+            divNode.appendChild(cancelButtonWrapper);
             formNode.appendChild(buttonNode);
             this.formFromId[newId] = formNode;
         }
