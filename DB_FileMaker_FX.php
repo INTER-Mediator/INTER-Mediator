@@ -569,7 +569,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $relDef = $this->normalizedCondition($relDef);
                         $foreignOperator = isset($relDef['operator']) ? $relDef['operator'] : 'eq';
                         $formattedValue = $this->formatter->formatterToDB(
-                            "{$dataSourceName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
+                            "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
                         if (!$usePortal) {
                             if (!$this->isPossibleOperator($foreignOperator)) {
                                 throw new Exception("Invalid Operator.: {$condition['operator']}");
@@ -774,11 +774,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         if (isset($field['data']) && !is_null($field['data'])) {
                             $fieldValue = $this->formatter->formatterFromDB(
                                 "{$tableName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
-                            if ($dataSourceName != $tableName && $fieldValue == $field['data']) {
-                                // for the compatiblity of ver.4.5 or preivious (DB_FileMaker_FX class only)
-                                $fieldValue = $this->formatter->formatterFromDB(
-                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
-                            }
+//                            if ($dataSourceName != $tableName && $fieldValue == $field['data']) {
+//                                // for the compatiblity of ver.4.5 or preivious (DB_FileMaker_FX class only)
+//                                $fieldValue = $this->formatter->formatterFromDB(
+//                                    "{$tableName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+//                            }
                             if ($fieldName == $keyField && $keyField != $this->getDefaultKey()) {
                                 $this->queriedPrimaryKeys[] = $field['data'];
                             }
@@ -820,7 +820,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                             $relatedFieldValue = '';
                                             if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
                                                 $relatedFieldValue = $this->formatter->formatterFromDB(
-                                                    "{$dataSourceName}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
+                                                    "{$tableName}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
                                                     $relatedfield['data']
                                                 );
                                             }
@@ -884,6 +884,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     {
         $isFirstRecord = true;
         $returnArray = array();
+        $tableName = $this->dbSettings->getEntityForRetrieve();
         foreach ($resultData as $key => $oneRecord) {
             $oneRecordArray = array();
 
@@ -903,7 +904,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         foreach ($dataArray as $portalKey => $portalValue) {
                             $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
                             $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
-                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                                "{$tableName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                         }
                         if ($existsRelated === false) {
                             $oneRecordArray = array();
@@ -911,7 +912,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         }
                     } else {
                         $oneRecordArray[$field] = $this->formatter->formatterFromDB(
-                            "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
+                            "{$tableName}{$this->dbSettings->getSeparator()}$field", $dataArray[0]);
                     }
                 } else {
                     foreach ($dataArray as $portalKey => $portalValue) {
@@ -919,10 +920,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             $existsRelated = true;
                             $oneRecordArray[$portalKey][$this->getDefaultKey()] = $recId; // parent record id
                             $oneRecordArray[$portalKey][$field] = $this->formatter->formatterFromDB(
-                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                                "{$tableName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                         } else {
                             $oneRecordArray[$field][] = $this->formatter->formatterFromDB(
-                                "{$dataSourceName}{$this->dbSettings->getSeparator()}$field", $portalValue);
+                                "{$tableName}{$this->dbSettings->getSeparator()}$field", $portalValue);
                         }
                     }
                 }
@@ -979,6 +980,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     {
         $this->fieldInfo = null;
         $dataSourceName = $this->dbSettings->getDataSourceName();
+        $tableSourceName = $this->dbSettings->getEntityForUpdate();
         $context = $this->dbSettings->getDataSourceTargetArray();
 
         $usePortal = false;
@@ -1009,7 +1011,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         throw new Exception("Invalid Operator.");
                     }
                     $convertedValue = $this->formatter->formatterToDB(
-                        "{$dataSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}",
+                        "{$tableSourceName}{$this->dbSettings->getSeparator()}{$condition['field']}",
                         $condition['value']);
                     $this->fx->AddDBParam($condition['field'], $convertedValue, $condition['operator']);
                 }
@@ -1023,7 +1025,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     throw new Exception("Invalid Operator.: {$condition['operator']}");
                 }
                 $convertedValue = $this->formatter->formatterToDB(
-                    "{$dataSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
+                    "{$tableSourceName}{$this->dbSettings->getSeparator()}{$value['field']}", $value['value']);
                 $this->fx->AddDBParam($value['field'], $convertedValue, $value['operator']);
             }
         }
@@ -1113,7 +1115,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $counter++;
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
                     $convVal = $this->formatter->formatterToDB(
-                        "{$dataSourceName}{$this->dbSettings->getSeparator()}{$originalfield}", $convVal);
+                        "{$tableSourceName}{$this->dbSettings->getSeparator()}{$originalfield}", $convVal);
                     $this->fx->AddDBParam($field, $convVal);
                 }
                 if ($counter < 1) {
