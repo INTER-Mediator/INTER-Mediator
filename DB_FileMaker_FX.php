@@ -1925,11 +1925,20 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            return true;
+        if (!is_array($result)) {
+            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
+            return false;
         }
-        return false;
+        $array = array();
+        foreach ($result['data'] as $key => $row) {
+            $keyExpode = explode(".", $key);
+            $record = array("-recid" => $keyExpode[0], "-modid" => $keyExpode[1]);
+            foreach ($row as $field => $value) {
+                $record[$field] = implode("\n", $value);
+            }
+            $array[] = $record;
+        }
+        return $array;
     }
 
     public function authSupportUserEnrollmentStart($userid, $hash)

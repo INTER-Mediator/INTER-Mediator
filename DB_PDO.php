@@ -2315,6 +2315,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     function quotedFieldName($fieldName)
     {
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
+            if (strpos($fieldName, ".")!== false)   {
+                $components = explode(".", $fieldName);
+                $quotedName = array();
+                foreach($components as $item)   {
+                    $quotedName[] = "`{$item}`";
+                }
+                return implode(".", $quotedName);
+            }
             return "`{$fieldName}`";
 
         } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for PostgreSQL */
