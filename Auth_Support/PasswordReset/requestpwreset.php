@@ -31,8 +31,6 @@ if (count($_POST) > 0) {
             array(),
             2);
         $result = $dbInstance->resetPasswordSequenceStart($_POST['ad1']);
-//        $dbInstance->finishCommunication(true);
-//        $dbInstance->exportOutputDataAsJSON();
 
         if ($result === false) {
             $message .= 'パスワードのリセット処理に問題が発生しました。登録されたメールアドレスでない可能性があります。';
@@ -73,9 +71,7 @@ if (count($_POST) > 0) {
                 array(),
                 2,
                 "authuser");
-            $dbInstance->processingRequest(array(), "read");
-//        $dbInstance->finishCommunication(true);
-//        $dbInstance->exportOutputDataAsJSON();
+            $dbInstance->processingRequest("read");
 
             $message .= '<span style="color:black">';
             $message .= 'パスワードのリセットをご案内するメールが、指定されたメールアドレスに送信されました。';
@@ -92,6 +88,7 @@ header('Expires: 0');
 
 ?>
 <!DOCTYPE html>
+<html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <!--    <link type="text/css" rel="stylesheet" href="default.css"/>-->
@@ -151,6 +148,5 @@ header('Expires: 0');
         </tr>
     </table>
 </form>
-
 </body>
 </html>

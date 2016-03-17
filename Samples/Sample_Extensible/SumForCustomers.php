@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,15 +13,13 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
-class SumForCustomers implements Extending_Interface_AfterGet
+class SumForCustomers implements Extending_Interface_AfterRead
 {
-
-    function doAfterGetFromDB($dataSourceName, $result)
+    public function doAfterReadFromDB($result)
     {
         $sum = array();
         foreach ($result as $record) {
-            if(! isset($sum[$record["customer"]]))  {
+            if (!isset($sum[$record["customer"]])) {
                 $sum[$record["customer"]] = $record["total"];
             } else {
                 $sum[$record["customer"]] += $record["total"];
@@ -29,24 +28,16 @@ class SumForCustomers implements Extending_Interface_AfterGet
         arsort($sum);
         $result = array();
         $counter = 10;
-        foreach ( $sum as $customer => $totalprice )  {
+        foreach ($sum as $customer => $totalprice) {
             $result[] = array(
-                "customername"=>$customer,
-                "totalprice"=>number_format($totalprice)
+                "customername" => $customer,
+                "totalprice" => number_format($totalprice)
             );
             $counter--;
-            if ( $counter <= 0 )    {
+            if ($counter <= 0) {
                 break;
             }
         }
-//        $this->resultCount = count($result);
         return $result;
     }
-
-//    var $resultCount;
-//
-//    function countQueryResult($dataSourceName)
-//    {
-//        return $this->resultCount;
-//    }
 }

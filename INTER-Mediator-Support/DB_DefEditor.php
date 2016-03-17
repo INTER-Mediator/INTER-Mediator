@@ -67,11 +67,12 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 
     var $spacialValue = array('IM_TODAY');
 
-    function getFromDB($dataSourceName)
+    function readFromDB()
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
         $result = array();
+        $dataSourceName = $this->dbSettings->getDataSourceName();
 
         $filePath = $this->dbSettings->getCriteriaValue('target');
         if (substr_count($filePath, '../') > 2) {
@@ -452,20 +453,21 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         return $result;
     }
 
-    function countQueryResult($dataSourceName)
+    function countQueryResult()
     {
         return $this->recordCount;
     }
 
-    function getTotalCount($dataSourceName)
+    function getTotalCount()
     {
         return $this->recordCount;
     }
 
-    function setToDB($dataSourceName)
+    function updateDB()
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');
         $contextID = $this->dbSettings->getCriteriaValue('id');
 
@@ -859,9 +861,10 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    function newToDB($dataSourceName, $bypassAuth)
+    function createInDB($bypassAuth)
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
+        $dataSourceName = $this->dbSettings->getDataSourceName();
 
         // $this->logger->setErrorMessage(var_export($this->dbSettings, true));
         $filePath = $this->dbSettings->getValueOfField('target');
@@ -1034,10 +1037,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    function deleteFromDB($dataSourceName)
+    function deleteFromDB()
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');
         $contextID = $this->dbSettings->getCriteriaValue('id');
 
@@ -1190,7 +1194,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     }
 
     public
-    function copyInDB($dataSourceName)
+    function copyInDB()
     {
         return false;
     }
@@ -1203,7 +1207,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     }
 
     public
-    function getFieldInfo($dataSourceName)
+    function getFieldInfo()
     {
         // TODO: Implement getFieldInfo() method.
     }

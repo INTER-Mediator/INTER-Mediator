@@ -13,10 +13,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-class SumForItems implements Extending_Interface_AfterGet
+class SumForItems implements Extending_Interface_AfterRead
 {
-
-    function doAfterGetFromDB($dataSourceName, $result)
+    public function doAfterReadFromDB($result)
     {
         $sum = array();
         foreach ($result as $record) {
@@ -39,14 +38,6 @@ class SumForItems implements Extending_Interface_AfterGet
                 break;
             }
         }
-//        $this->resultCount = count($result);
         return $result;
     }
-
-//    var $resultCount;
-//
-//    function countQueryResult($dataSourceName)
-//    {
-//        return $this->resultCount;
-//    }
 }

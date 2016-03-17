@@ -256,7 +256,8 @@ INTERMediator_DBAdapter = {
                             INTERMediatorOnPage.mediaToken = mediatoken;
                         }
                         // This is forced fail-over for the password was changed in LDAP auth.
-                        if (INTERMediatorOnPage.authUserHexSalt != INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
+                        if (INTERMediatorOnPage.isLDAP === true &&
+                            INTERMediatorOnPage.authUserHexSalt != INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
                             if (accessURL != "access=challenge") {
                                 requireAuth = true;
                             }
@@ -401,6 +402,7 @@ INTERMediator_DBAdapter = {
                         break;
                     case 4:
                         try {
+                            console.log(myRequest.responseText);
                             jsonObject = JSON.parse(myRequest.responseText);
                         } catch (ex) {
                             INTERMediator.setErrorMessage(ex,
