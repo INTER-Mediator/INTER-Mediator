@@ -10,13 +10,12 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-*** Add to Ver.5.4 lines ***
-- [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
-- [BUG FIX] String array value for single value operator works fine.
 Ver.5.4 (in development)
 - FileUploader can detect exceeding file size limit and returns valid error messages.
 - [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native 
   Authentication for mobile devices. The affected version is 5.3 only.
+- [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
+- [BUG FIX] String array value for single value operator works fine.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
