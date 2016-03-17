@@ -199,7 +199,7 @@ class MediaAccess
      */
     private function checkAuthentication($dbProxyInstance, $options, $target)
     {
-        $dbProxyInstance->dbSettings->setTargetName($options['media-context']);
+        $dbProxyInstance->dbSettings->setDataSourceName($options['media-context']);
         $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         if (isset($context['authentication'])
             && (isset($context['authentication']['all'])
@@ -210,8 +210,8 @@ class MediaAccess
             $cookieNameUser = "_im_username{$realm}";
             $cookieNameToken = "_im_mediatoken{$realm}";
             if (isset($options['authentication']['realm'])) {
-                $cookieNameUser .= '_' . $options['authentication']['realm'];
-                $cookieNameToken .= '_' . $options['authentication']['realm'];
+                $cookieNameUser .= '_' . str_replace(".", "_", $options['authentication']['realm']);
+                $cookieNameToken .= '_' . str_replace(".", "_", $options['authentication']['realm']);
             }
             if (!$dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken])) {
                 $this->exitAsError(401);
@@ -297,7 +297,8 @@ class MediaAccess
             if ($indexKeying == -1) {
             //    $this->exitAsError(401);
             }
-            $this->contextRecord = $dbProxyInstance->getFromDB($contextName);
+            $dbProxyInstance->dbSettings->setDataSourceName($contextName);
+            $this->contextRecord = $dbProxyInstance->readFromDB();
         }
     }
 

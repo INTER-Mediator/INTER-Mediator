@@ -26,7 +26,9 @@ class DB_Settings
     private $dbSpecOption = null;
 
     private $dataSource = null;
-    private $targetDataSource = null;
+    private $options = null;
+    private $dbSpec = null;
+//    private $targetDataSource = null;
     private $dataSourceName = '';
     private $recordCount = 0;
     private $start = 0;
@@ -289,18 +291,18 @@ class DB_Settings
     /**
      * @param null $targetDataSource
      */
-    public function setTargetDataSource($targetDataSource)
-    {
-        $this->targetDataSource = $targetDataSource;
-    }
+//    public function setTargetDataSource($targetDataSource)
+//    {
+//        $this->targetDataSource = $targetDataSource;
+//    }
 
     /**
      * @return null
      */
-    public function getTargetDataSource()
-    {
-        return $this->targetDataSource;
-    }
+//    public function getTargetDataSource()
+//    {
+//        return $this->targetDataSource;
+//    }
 
 
     /**
@@ -337,118 +339,120 @@ class DB_Settings
         return $this->emailAsAccount;
     }
 
-    function getCurrentDataAccess()
+    // This is private (closed) API
+    public function getCurrentDataAccess()
     {
         return $this->currentDataAccess;
     }
 
-    function setCurrentDataAccess($dbaccess)
+    // This is private (closed) API
+    public function setCurrentDataAccess($dbaccess)
     {
         $this->currentDataAccess = $dbaccess;
     }
 
     /* Database connection paramters */
-    function setDbSpecServer($str)
+    public function setDbSpecServer($str)
     {
         $this->dbSpecServer = $str;
     }
 
-    function getDbSpecServer()
+    public function getDbSpecServer()
     {
         return $this->dbSpecServer;
     }
 
-    function setDbSpecPort($str)
+    public function setDbSpecPort($str)
     {
         $this->dbSpecPort = $str;
     }
 
-    function getDbSpecPort()
+    public function getDbSpecPort()
     {
         return $this->dbSpecPort;
     }
 
-    function setDbSpecUser($str)
+    public function setDbSpecUser($str)
     {
         $this->dbSpecUser = $str;
     }
 
-    function getDbSpecUser()
+    public function getDbSpecUser()
     {
         return $this->dbSpecUser;
     }
 
-    function setDbSpecPassword($str)
+    public function setDbSpecPassword($str)
     {
         $this->dbSpecPassword = $str;
     }
 
-    function getDbSpecPassword()
+    public function getDbSpecPassword()
     {
         return $this->dbSpecPassword;
     }
 
-    function setDbSpecDataType($str)
+    public function setDbSpecDataType($str)
     {
         $this->dbSpecDataType = $str;
     }
 
-    function getDbSpecDataType()
+    public function getDbSpecDataType()
     {
         return $this->dbSpecDataType;
     }
 
-    function setDbSpecDatabase($str)
+    public function setDbSpecDatabase($str)
     {
         $this->dbSpecDatabase = $str;
     }
 
-    function getDbSpecDatabase()
+    public function getDbSpecDatabase()
     {
         return $this->dbSpecDatabase;
     }
 
-    function setDbSpecProtocol($str)
+    public function setDbSpecProtocol($str)
     {
         $this->dbSpecProtocol = $str;
     }
 
-    function getDbSpecProtocol()
+    public function getDbSpecProtocol()
     {
         return $this->dbSpecProtocol;
     }
 
-    function setDbSpecDSN($str)
+    public function setDbSpecDSN($str)
     {
         $this->dbSpecDSN = $str;
     }
 
-    function getDbSpecDSN()
+    public function getDbSpecDSN()
     {
         return $this->dbSpecDSN;
     }
 
-    function setDbSpecOption($str)
+    public function setDbSpecOption($str)
     {
         $this->dbSpecOption = $str;
     }
 
-    function getDbSpecOption()
+    public function getDbSpecOption()
     {
         return $this->dbSpecOption;
     }
 
-    function getAccessUser()
+    public function getAccessUser()
     {
         return $this->accessUser != null ? $this->accessUser : $this->dbSpecUser;
     }
 
-    function getAccessPassword()
+    public function getAccessPassword()
     {
         return $this->accessPassword != null ? $this->accessPassword : $this->dbSpecPassword;
     }
 
-    function setUserAndPasswordForAccess($user, $pass)
+    public function setUserAndPasswordForAccess($user, $pass)
     {
         $this->accessUser = $user;
         $this->accessPassword = $pass;
@@ -500,57 +504,62 @@ class DB_Settings
         return null;
     }
 
-    function getUserTable()
+    public function getUserTable()
     {
         return $this->getAuthenticationItem('user-table');
     }
 
-    function getGroupTable()
+    public function getGroupTable()
     {
         return $this->getAuthenticationItem('group-table');
     }
 
-    function getCorrTable()
+    public function getCorrTable()
     {
         return $this->getAuthenticationItem('corresponding-table');
     }
 
-    function getHashTable()
+    public function getHashTable()
     {
         return $this->getAuthenticationItem('challenge-table');
     }
 
-    function getExpiringSeconds()
+    public function getExpiringSeconds()
     {
         return $this->getAuthenticationItem('authexpired');
     }
 
-    function setLDAPExpiringSeconds($sec)
+    public function setLDAPExpiringSeconds($sec)
     {
         $this->params_ldapExpiringSeconds = (int)$sec;
     }
 
-    function getLDAPExpiringSeconds()
+    public function getLDAPExpiringSeconds()
     {
         return $this->params_ldapExpiringSeconds;
     }
 
-    function setCurrentUser($str)
+    public function setCurrentUser($str)
     {
         $this->currentUser = $str;
     }
 
-    function getCurrentUser()
+    public function getCurrentUser()
     {
         return $this->currentUser;
     }
 
-    function setDataSource($src)
+    public function setDataSource($src)
     {
         $this->dataSource = $src;
     }
 
-    function getDataSource($dataSourceName)
+    public function getDataSource()
+    {
+        return $this->dataSource;
+    }
+
+    public function getDataSourceDefinition($dataSourceName)
     {
         foreach ($this->dataSource as $index => $value) {
             if ($value['name'] == $dataSourceName) {
@@ -560,62 +569,83 @@ class DB_Settings
         return null;
     }
 
-    function getIndexOfDataSource($dataSourceName)
+    public function setOptions($src)
     {
-        foreach ($this->dataSource as $index => $value) {
-            if ($value['name'] == $dataSourceName) {
-                return $index;
-            }
-        }
-        return null;
+        $this->options = $src;
     }
 
-    function setSeparator($sep)
+    public function getOptions()
+    {
+        return $this->options;
+    }
+
+    public function setDbSpec($src)
+    {
+        $this->dbSpec = $src;
+    }
+
+    public function getDbSpec()
+    {
+        return $this->dbSpec;
+    }
+
+
+//    function getIndexOfDataSource($dataSourceName)
+//    {
+//        foreach ($this->dataSource as $index => $value) {
+//            if ($value['name'] == $dataSourceName) {
+//                return $index;
+//            }
+//        }
+//        return null;
+//    }
+
+    public function setSeparator($sep)
     {
         $this->separator = $sep;
     }
 
-    function getSeparator()
+    public function getSeparator()
     {
         return $this->separator;
     }
 
-    function setTargetName($val)
-    {
-        $this->dataSourceName = $val;
-    }
+//    function setTargetName($val)
+//    {
+//        $this->dataSourceName = $val;
+//    }
+//
+//    function getTargetName()
+//    {
+//        return $this->dataSourceName;
+//    }
 
-    function getTargetName()
-    {
-        return $this->dataSourceName;
-    }
-
-    function addTargetField($field)
+    public function addTargetField($field)
     {
         $this->fieldsRequired[] = $field;
     }
 
-    function setTargetFields($fields)
-    {
-        $this->fieldsRequired = $fields;
-    }
+//    function setTargetFields($fields)
+//    {
+//        $this->fieldsRequired = $fields;
+//    }
 
-    function getFieldOfIndex($ix)
+    public function getFieldOfIndex($ix)
     {
         return $this->fieldsRequired[$ix];
     }
 
-    function addValue($value)
+    public function addValue($value)
     {
         $this->fieldsValues[] = $value;
     }
 
-    function setValue($values)
+    public function setValue($values)
     {
         $this->fieldsValues = $values;
     }
 
-    function getValueOfField($targetField)
+    public function getValueOfField($targetField)
     {
         $counter = 0;
         foreach ($this->fieldsRequired as $field) {
@@ -627,42 +657,42 @@ class DB_Settings
         return null;
     }
 
-    function setStart($st)
+    public function setStart($st)
     {
         $this->start = intval(mb_ereg_replace('[^0-9]', '', $st));
     }
 
-    function getStart()
+    public function getStart()
     {
         return $this->start;
     }
 
-    function getRecordCount()
+    public function getRecordCount()
     {
         return $this->recordCount;
     }
 
-    function setRecordCount($sk)
+    public function setRecordCount($sk)
     {
         $this->recordCount = intval(mb_ereg_replace('[^0-9]', '', $sk));
     }
 
-    function getExtraCriteria()
+    public function getExtraCriteria()
     {
         return $this->extraCriteria;
     }
 
-    function unsetExtraCriteria($index)
+    public function unsetExtraCriteria($index)
     {
         unset($this->extraCriteria[$index]);
     }
 
-    function addExtraCriteria($field, $operator, $value)
+    public function addExtraCriteria($field, $operator, $value)
     {
         $this->extraCriteria[] = array('field' => $field, 'operator' => $operator, 'value' => $value);
     }
 
-    function getCriteriaValue($targetField)
+    public function getCriteriaValue($targetField)
     {
         foreach ($this->getExtraCriteria() as $ar) {
             if ($targetField == $ar["field"]) {
@@ -672,7 +702,7 @@ class DB_Settings
         return null;
     }
 
-    function getCriteriaOperator($targetField)
+    public function getCriteriaOperator($targetField)
     {
         foreach ($this->getExtraCriteria() as $ar) {
             if ($targetField == $ar["field"]) {
@@ -682,22 +712,22 @@ class DB_Settings
         return null;
     }
 
-    function addExtraSortKey($field, $direction)
+    public function addExtraSortKey($field, $direction)
     {
         $this->extraSortKey[] = array('field' => $field, 'direction' => $direction);
     }
 
-    function getExtraSortKey()
+    public function getExtraSortKey()
     {
         return $this->extraSortKey;
     }
 
-    function addForeignValue($field, $value)
+    public function addForeignValue($field, $value)
     {
         $this->foreignFieldAndValue[] = array('field' => $field, 'value' => $value);
     }
 
-    function getForeignKeysValue($targetField)
+    public function getForeignKeysValue($targetField)
     {
         foreach ($this->foreignFieldAndValue as $ar) {
             if ($targetField == $ar["field"]) {
@@ -707,7 +737,7 @@ class DB_Settings
         return null;
     }
 
-    function setGlobalInContext($contextName, $operation, $field, $value)
+    public function setGlobalInContext($contextName, $operation, $field, $value)
     {
         foreach ($this->dataSource as $index => $record) {
             if ($record['name'] == $contextName) {
@@ -724,33 +754,20 @@ class DB_Settings
     }
 
     /* get the information for the 'name'. */
-    function getDataSourceTargetArray($isAssociative = false)
+    public function getDataSourceTargetArray()
     {
         if ($this->dataSource == null) {
             return null;
         }
-        if ($this->targetDataSource == null) {
             foreach ($this->dataSource as $record) {
                 if ($record['name'] == $this->dataSourceName) {
-                    //    $this->targetDataSource = $record;
-                    if ($isAssociative) {
-                        $resultArray = array();
-                        foreach ($record as $key => $value) {
-                            $resultArray[$key] = $value;
-                        }
-                        return $resultArray;
-                    } else {
-                        return $record;
-                    }
+                    return $record;
                 }
             }
-        } else {
-            return $this->targetDataSource;
-        }
         return null;
     }
 
-    function getEntityForRetrieve()
+    public function getEntityForRetrieve()
     {
         $dsrc = $this->getDataSourceTargetArray();
         if (isset($dsrc['view'])) {
@@ -759,7 +776,7 @@ class DB_Settings
         return $dsrc['name'];
     }
 
-    function getEntityForUpdate()
+    public function getEntityForUpdate()
     {
         $dsrc = $this->getDataSourceTargetArray();
         if (isset($dsrc['table'])) {

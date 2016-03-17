@@ -28,7 +28,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $expected = $layoutName;
 
         $this->dbProxySetupForAccess($layoutName, 1);
-        $this->db_proxy->getFromDB($layoutName);
+        $this->db_proxy->readFromDB($layoutName);
         $this->assertEquals($expected, $this->db_proxy->dbClass->queriedEntity());
     }
 
@@ -38,7 +38,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $expected = '-db=TestDB&-lay=person_layout&-lay.response=person_layout&-max=1&-sortfield.1=id&-sortorder.1=ascend&-findall';
 
         $this->dbProxySetupForAccess($layoutName, 1);
-        $this->db_proxy->getFromDB($layoutName);
+        $this->db_proxy->readFromDB($layoutName);
         $this->assertEquals($expected, $this->db_proxy->dbClass->queriedCondition());
     }
 
@@ -130,7 +130,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
             $layoutName = 'person_layout';
 
             $this->dbProxySetupForAccess($layoutName, 1);
-            $this->db_proxy->getFromDB($layoutName);
+            $this->db_proxy->readFromDB($layoutName);
 
             $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
             $method = $this->reflectionClass->getMethod('_adjustSortDirection');
@@ -149,14 +149,14 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $layoutName = 'person_layout';
 
         $this->dbProxySetupForAccess($layoutName, 1);
-        $this->db_proxy->getFromDB($layoutName);
+        $this->db_proxy->readFromDB($layoutName);
         $this->assertFalse($this->db_proxy->dbClass->isNullAcceptable());
     }
 
     public function testQuery1_singleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
-        $result = $this->db_proxy->getFromDB("person_layout");
+        $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
@@ -168,7 +168,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     public function testQuery2_multipleRecord()
     {
         $this->dbProxySetupForAccess("person_layout", 1000000);
-        $result = $this->db_proxy->getFromDB("person_layout");
+        $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
@@ -183,7 +183,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     {
         $this->dbProxySetupForAccess("contact_to", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
-        $newKeyValue = $this->db_proxy->newToDB("contact_to", true);
+        $newKeyValue = $this->db_proxy->createInDB(true);
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
@@ -191,7 +191,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
-        $newKeyValue = $this->db_proxy->newToDB("person_layout", true);
+        $newKeyValue = $this->db_proxy->createInDB(true);
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
@@ -206,7 +206,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->db_proxy->dbSettings->addTargetField("address");
         $this->db_proxy->dbSettings->addValue($addressValue);
         $this->db_proxy->requireUpdatedRecord(true);
-        $result = $this->db_proxy->setToDB("person_layout", true);
+        $result = $this->db_proxy->updateDB("person_layout", true);
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Update record should be exists.");
         $this->assertTrue(count($createdRecord) == 1, "It should be just one record.");
@@ -215,7 +215,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
-        $result = $this->db_proxy->getFromDB("person_layout");
+        $result = $this->db_proxy->readFromDB("person_layout");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");

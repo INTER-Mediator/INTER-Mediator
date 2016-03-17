@@ -17,7 +17,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
 {
     private $recordCount;
 
-    function getFromDB($dataSourceName)
+    function readFromDB()
     {
         $textFormat = strtolower($this->dbSettings->getDbSpecDataType());
         if ($textFormat == "csv") {
@@ -122,7 +122,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    public function countQueryResult($dataSourceName)
+    public function countQueryResult()
     {
         return $this->recordCount;
     }
@@ -218,13 +218,13 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
     }
 
     public
-    function setToDB($dataSourceName)
+    function updateDB()
     {
 
     }
 
     public
-    function deleteFromDB($dataSourceName)
+    function deleteFromDB()
     {
     }
 
@@ -362,7 +362,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement isNullAcceptable() method.
     }
 
-    public function newToDB($dataSourceName, $bypassAuth)
+    public function createInDB($bypassAuth)
     {
         // TODO: Implement newToDB() method.
     }
@@ -372,12 +372,12 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public function copyInDB($dataSourceName)
+    public function copyInDB()
     {
         return false;
     }
 
-    public function getTotalCount($dataSourceName)
+    public function getTotalCount()
     {
         // TODO: Implement getTotalCount() method.
     }

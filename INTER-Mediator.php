@@ -103,7 +103,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     if (isset($g_serverSideCall) && $g_serverSideCall) {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        $dbInstance->processingRequest($options, "NON");
+        $dbInstance->processingRequest("NON");
         $g_dbInstance = $dbInstance;
     } else if (IMUtil::guessFileUploadError()) {
         $fileUploader = new FileUploader();
@@ -132,7 +132,7 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
         $util = new IMUtil();
         if ($util->protectCSRF() === TRUE) {
-            $dbInstance->processingRequest($options);
+            $dbInstance->processingRequest();
             $dbInstance->finishCommunication(false);
         } else {
             $dbInstance->addOutputData('debugMessages', 'Invalid Request Error.');

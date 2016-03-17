@@ -73,9 +73,8 @@ if (count($_POST) > 0) {
             array(),
             2,
             "authuser");
-        $dbInstance->processingRequest(array(), "read");
-//        $dbInstance->finishCommunication(true);
-//        $dbInstance->exportOutputDataAsJSON();
+        $dbInstance->processingRequest("read");
+
         $message .= '<span style="color:black">';
         $message .= 'パスワードがリセットされました。';
         $message .= '</span>';
@@ -86,6 +85,7 @@ if (count($_POST) > 0) {
 header('Content-Type: text/html;charset="UTF-8"');
 ?>
 <!DOCTYPE html>
+<html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <!--    <link type="text/css" rel="stylesheet" href="default.css"/>-->
