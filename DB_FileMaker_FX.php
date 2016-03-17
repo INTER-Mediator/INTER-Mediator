@@ -801,7 +801,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         foreach ($record['relatedset'] as $relatedset) {
                             $j = 0;
                             if (isset($relatedset['record'])) {
-                                foreach ($relatedset['record'] as $relatedrecord) {
+                                $relRecords = $relatedset['record'];
+                                if ($relatedset['@attributes']['count'] == 1) {
+                                    $relRecords = array($relatedset['record']);
+                                }
+                                foreach ($relRecords as $relatedrecord) {
                                     $relatedArray = array('-recid' => $record['@attributes']['record-id']);
                                     if (isset($relatedset['@attributes']) && isset($relatedrecord['@attributes'])) {
                                         $relatedArray += array(
