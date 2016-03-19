@@ -11,6 +11,7 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.4 (in development)
+- Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
 - FileUploader can detect exceeding file size limit and returns valid error messages.
 - [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native 
   Authentication for mobile devices. The affected version is 5.3 only.
