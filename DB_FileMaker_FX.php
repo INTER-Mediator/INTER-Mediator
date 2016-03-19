@@ -395,6 +395,28 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str));
     }
 
+    private function executeScripts($fxphp, $condition)
+    {
+        if ($condition['situation'] == 'pre') {
+            $fxphp->PerformFMScriptPrefind($condition['definition']);
+            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
+                $fxphp->AddDBParam('-script.prefind.param', $condition['parameter']);
+            }
+        } else if ($condition['situation'] == 'presort') {
+            $fxphp->PerformFMScriptPresort($condition['definition']);
+            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
+                $fxphp->AddDBParam('-script.presort.param', $condition['parameter']);
+            }
+        } else if ($condition['situation'] == 'post') {
+            $fxphp->PerformFMScript($condition['definition']);
+            if (isset($condition['parameter']) && !empty($condition['parameter'])) {
+                $fxphp->AddDBParam('-script.param', $condition['parameter']);
+            }
+        }
+
+        return $fxphp;
+    }
+
     public function getFieldInfo($dataSourceName)
     {
         return $this->fieldInfo;
@@ -691,13 +713,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         if (isset($context['script'])) {
             foreach ($context['script'] as $condition) {
                 if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
-                    if ($condition['situation'] == 'pre') {
-                        $this->fx->PerformFMScriptPrefind($condition['definition']);
-                    } else if ($condition['situation'] == 'presort') {
-                        $this->fx->PerformFMScriptPresort($condition['definition']);
-                    } else if ($condition['situation'] == 'post') {
-                        $this->fx->PerformFMScript($condition['definition']);
-                    }
+                    $this->fx = $this->executeScripts($this->fx, $condition);
                 }
             }
         }
@@ -1136,13 +1152,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($tableInfo['script'])) {
                     foreach ($tableInfo['script'] as $condition) {
                         if ($condition['db-operation'] == 'update') {
-                            if ($condition['situation'] == 'pre') {
-                                $this->fx->PerformFMScriptPrefind($condition['definition']);
-                            } else if ($condition['situation'] == 'presort') {
-                                $this->fx->PerformFMScriptPresort($condition['definition']);
-                            } else if ($condition['situation'] == 'post') {
-                                $this->fx->PerformFMScript($condition['definition']);
-                            }
+                            $this->fx = $this->executeScripts($this->fx, $condition);
                         }
                     }
                 }
@@ -1260,13 +1270,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         if (isset($context['script'])) {
             foreach ($context['script'] as $condition) {
                 if ($condition['db-operation'] == 'new' || $condition['db-operation'] == 'create') {
-                    if ($condition['situation'] == 'pre') {
-                        $this->fx->PerformFMScriptPrefind($condition['definition']);
-                    } else if ($condition['situation'] == 'presort') {
-                        $this->fx->PerformFMScriptPresort($condition['definition']);
-                    } else if ($condition['situation'] == 'post') {
-                        $this->fx->PerformFMScript($condition['definition']);
-                    }
+                    $this->fx = $this->executeScripts($this->fx, $condition);
                 }
             }
         }
@@ -1412,13 +1416,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if (isset($context['script'])) {
                     foreach ($context['script'] as $condition) {
                         if ($condition['db-operation'] == 'delete') {
-                            if ($condition['situation'] == 'pre') {
-                                $this->fx->PerformFMScriptPrefind($condition['definition']);
-                            } else if ($condition['situation'] == 'presort') {
-                                $this->fx->PerformFMScriptPresort($condition['definition']);
-                            } else if ($condition['situation'] == 'post') {
-                                $this->fx->PerformFMScript($condition['definition']);
-                            }
+                            $this->fx = $this->executeScripts($this->fx, $condition);
                         }
                     }
                 }

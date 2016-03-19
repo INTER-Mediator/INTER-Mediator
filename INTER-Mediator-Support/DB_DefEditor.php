@@ -291,6 +291,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             'db-operation' => getValueFromArray($rel, 'db-operation'),
                             'situation' => getValueFromArray($rel, 'situation'),
                             'definition' => getValueFromArray($rel, 'definition'),
+                            'parameter' => getValueFromArray($rel, 'parameter'),
                         );
                         $seq++;
                     }
@@ -493,7 +494,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'sort' => array('field', 'direction'),
             'default-values' => array('field', 'value'),
             'validation' => array('field', 'rule', 'message', 'notify'),
-            'script' => array('db-operation', 'situation', 'definition'),
+            'script' => array('db-operation', 'situation', 'definition', 'parameter'),
             'global' => array('db-operation', 'field', 'value'),
             'calculation' => array('field', 'expression'),
             'file-upload' => array('field', 'context', 'container'),
@@ -946,6 +947,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'db-operation' => '= new value =',
                     'situation' => '= new value =',
                     'definition' => '= new value =',
+                    'parameter' => '= new value =',
                 );
                 break;
             case 'global':
