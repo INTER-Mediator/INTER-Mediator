@@ -152,7 +152,8 @@ class GenerateJSCode
         }
 
         $pathToIMRootDir = mb_ereg_replace(
-            "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT']), "", (dirname(__FILE__)));
+            mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
+            "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
