@@ -246,6 +246,7 @@ class MediaAccess
                 if ($contextName != $options['media-context']) {
                     $this->exitAsError(401);
                 }
+                $dbProxyInstance->dbSettings->setDataSourceName($contextName);
                 $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
                 $this->contextRecord = $dbProxyInstance->dbClass->authSupportCheckMediaPrivilege(
                     $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $keyField, $keyValue);
