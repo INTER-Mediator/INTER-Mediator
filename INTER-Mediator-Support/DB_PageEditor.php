@@ -17,8 +17,9 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
 {
     private $recordCount;
 
-    function getFromDB($dataSourceName)
+    function readFromDB()
     {
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getCriteriaValue('target');
         if (substr_count ($filePath, '../') > 2)  {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
@@ -34,18 +35,19 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
         return array(array('content' => $fileContent));
     }
 
-    function countQueryResult($dataSourceName)
+    function countQueryResult()
     {
         return $this->recordCount;
     }
 
-    function getTotalCount($dataSourceName)
+    function getTotalCount()
     {
         return $this->recordCount;
     }
 
-    function setToDB($dataSourceName)
+    function updateDB()
     {
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');
         if (substr_count ($filePath, '../') > 2)  {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
@@ -64,11 +66,11 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    function newToDB($dataSourceName, $bypassAuth)
+    function createInDB($bypassAuth)
     {
     }
 
-    function deleteFromDB($dataSourceName)
+    function deleteFromDB()
     {
     }
 
@@ -207,7 +209,7 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement softDeleteActivate() method.
     }
 
-    public function copyInDB($dataSourceName)
+    public function copyInDB()
     {
         return false;
     }

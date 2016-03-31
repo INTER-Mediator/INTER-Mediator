@@ -10,24 +10,33 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.3 (in development)
+Ver.5.4 (in development)
+- Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
+- FileUploader can detect exceeding file size limit and returns valid error messages.
+- [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native 
+  Authentication for mobile devices. The affected version is 5.3 only.
+- [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
+- [BUG FIX] String array value for single value operator works fine.
+- [BUG FIX] Modify the value of INTERMediatorOnPage.getIMRootPath on Windows Server.
+
+Ver.5.3 (February 21, 2016)
+- Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
+  in the Auth_Support directory.
+- Master/Detail style UI (controlled by 'navi-control' key) support mobile environment ex. JQuery Mobile.
+  The Samples/Sample_Mobile folder includes some demos for mobile device.
 - SQL aggregation can be defined as a read-only context. The aggregation-select,
   aggregation-from, aggregation-group-by key are added.
 - The database update communucations (Create, Update, Delete, Copy) are working in asynchronous mode.
 - MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
   for PHP).
-- Update phpseclib to version 1.0.0.
 - Generic enclosure/repeater mechanism is implemented. See Sample_forDebugging/genericrepeater.html
   or the link "generic enclosure/repeater" in "Debugging" row of the sample portal page.
+- Update phpseclib to version 1.0.0.
 - The "source" key for data source of first parameter of IM_Entry function is introduced. Contexts that
   has same "source" key's value is going to be updated and re-constructed when insert/delete operation
   is happend in one of them.
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
-- Master/Detail style UI (controlled by 'navi-control' key) support mobile environment ex. JQuery Mobile.
-  The Samples/Sample_Mobile folder includes some demos for mobile device.
-- Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
-  in the Auth_Support directory.
 - The credential for authentication can be stored in the sessionStorage.
 - Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
 - Be able to customize a style of the file uploading area when using the file upload component.
