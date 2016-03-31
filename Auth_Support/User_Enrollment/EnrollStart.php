@@ -12,7 +12,7 @@
 class EnrollStart extends DB_UseSharedObjects
     implements Extending_Interface_BeforeCreate, Extending_Interface_AfterCreate
 {
-     public function doBeforeCreateToDB($dataSourceName)
+     public function doBeforeCreateToDB()
     {
         $currentDT = time() + 3600;
         $currentDTFormat = date('YmdHis', $currentDT);
@@ -23,7 +23,7 @@ class EnrollStart extends DB_UseSharedObjects
         $this->dbSettings->addValueWithField("hashedpasswd", "dummydummydummy");
     }
 
-    public function doAfterCreateToDB($dataSourceName, $result)
+    public function doAfterCreateToDB($result)
     {
         $createdRecord = $this->dbClass->updatedRecord();
         $hash = $this->proxyObject->userEnrollmentStart($createdRecord[0]["id"]);

@@ -13,10 +13,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-class YearMonthGen implements Extending_Interface_AfterGet
+class YearMonthGen implements Extending_Interface_AfterRead
 {
-
-    function doAfterGetFromDB($dataSourceName, $result)
+    public function doAfterReadFromDB($result)
     {
         $result = array();
         $year = 2010;
@@ -30,14 +29,6 @@ class YearMonthGen implements Extending_Interface_AfterGet
                 "enddt" => $endDate->format("Y-m-d H:i:s"),
             );
         }
-//        $this->resultCount = count($result);
         return $result;
     }
-
-//    var $resultCount;
-//
-//    function countQueryResult($dataSourceName)
-//    {
-//        return $this->resultCount;
-//    }
 }

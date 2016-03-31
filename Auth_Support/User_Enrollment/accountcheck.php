@@ -19,7 +19,7 @@ if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
     );
     $dbInstance = new DB_Proxy();
     $dbInstance->initialize(array($contextDef), array(), array(), false, "authuser");
-    $dbInstance->processingRequest(array(), "read");
+    $dbInstance->processingRequest("read");
     $result = $dbInstance->getDatabaseResult();
 
     echo count($result);

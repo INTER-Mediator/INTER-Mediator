@@ -3,7 +3,9 @@ machine:
     - docker
   timezone: Asia/Tokyo
   php:
-    version: 5.4.37
+    version: 5.3.3
+  ruby:
+    version: 2.2.3
 
 dependencies:
   override:
@@ -34,4 +36,4 @@ test:
     - vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
     - npm test
     - BUNDLE_GEMFILE=dist-docs/docker/Gemfile bundle
-    - rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/container/container_spec.rb -f doc -c
+    # - rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/container/container_spec.rb -f doc -c

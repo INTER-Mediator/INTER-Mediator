@@ -17,9 +17,9 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 class DB_Extended_PDO extends DB_PDO
 {
-    function getFromDB($dataSourceName)
+    function readFromDB($dataSourceName)
     {
-        $result = parent::getFromDB($dataSourceName);
+        $result = parent::readFromDB($dataSourceName);
         
         if ($dataSourceName === 'everymonth') {
             $result = array();

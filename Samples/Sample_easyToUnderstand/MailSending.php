@@ -13,9 +13,9 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-class MailSending implements Extending_Interface_AfterNew
+class MailSending implements Extending_Interface_AfterCreate
 {
-    function doAfterNewToDB($dataSourceName, $result)
+    public function doAfterCreateToDB($result)
     {
         return $result;
     }

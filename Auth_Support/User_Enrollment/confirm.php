@@ -23,7 +23,6 @@ if (count($_GET) > 0) {
             $password .= substr($seed, $n, 1);
         }
 
-        //$g_serverSideCall = true;
         require_once('../../INTER-Mediator.php');
         $contextDef = array(
             "name" => "authuser",
@@ -49,8 +48,6 @@ if (count($_GET) > 0) {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize(array($contextDef), array(), array(), 2);
         $result = $dbInstance->userEnrollmentActivateUser($_GET['c'], $password);
-//        $dbInstance->finishCommunication(true);
-//        $dbInstance->exportOutputDataAsJSON();
 
         if ($result === false) {
             $ermessage .= '確認しましたが、該当する申し込みがありません。';
@@ -59,9 +56,7 @@ if (count($_GET) > 0) {
             $contextDef["query"][0]["value"] = $result;
             $dbInstance = new DB_Proxy();
             $dbInstance->initialize(array($contextDef), array(), array(), 2, "authuser");
-            $dbInstance->processingRequest(array(), "read");
-//            $dbInstance->finishCommunication(true);
-//            $dbInstance->exportOutputDataAsJSON();
+            $dbInstance->processingRequest("read");
         }
     }
 }
@@ -76,6 +71,5 @@ header('Content-Type: text/html;charset="UTF-8"');
 <h1>登録確認</h1>
 <p style="color:black;font-weight:900"><?php echo $message ?></p>
 <p style="color:red"><?php echo $ermessage;/* echo $errors; */ ?></p>
-</div>
 </body>
 </html>

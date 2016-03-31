@@ -45,8 +45,7 @@ class MediaAccess
              * If the FileMaker's object field is storing a PDF, the $file could be "http://server:16000/...
              * style URL. In case of an image, $file is just the path info as like above.
              */
-            $util = new IMUtil();
-            $file = $util->removeNull($file);
+            $file = IMUtil::removeNull($file);
             if (strpos($file, '../') !== false) {
                 return;
             }
@@ -166,7 +165,7 @@ class MediaAccess
                 $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
 
                 $cookieNameUser = '_im_username';
-                $cookieNamePassword = '_im_credential';
+                $cookieNamePassword = '_im_crypted';
                 $credential = isset($_COOKIE[$cookieNameUser]) ? urlencode($_COOKIE[$cookieNameUser]) : '';
                 if (isset($_COOKIE[$cookieNamePassword])) {
                     $credential .= ':' . urlencode($keyDecrypt->biDecryptedString($_COOKIE[$cookieNamePassword]));
@@ -200,7 +199,7 @@ class MediaAccess
      */
     private function checkAuthentication($dbProxyInstance, $options, $target)
     {
-        $dbProxyInstance->dbSettings->setTargetName($options['media-context']);
+        $dbProxyInstance->dbSettings->setDataSourceName($options['media-context']);
         $context = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
         if (isset($context['authentication'])
             && (isset($context['authentication']['all'])
@@ -211,8 +210,8 @@ class MediaAccess
             $cookieNameUser = "_im_username{$realm}";
             $cookieNameToken = "_im_mediatoken{$realm}";
             if (isset($options['authentication']['realm'])) {
-                $cookieNameUser .= '_' . $options['authentication']['realm'];
-                $cookieNameToken .= '_' . $options['authentication']['realm'];
+                $cookieNameUser .= '_' . str_replace(".", "_", $options['authentication']['realm']);
+                $cookieNameToken .= '_' . str_replace(".", "_", $options['authentication']['realm']);
             }
             if (!$dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken])) {
                 $this->exitAsError(401);
@@ -298,7 +297,8 @@ class MediaAccess
             if ($indexKeying == -1) {
             //    $this->exitAsError(401);
             }
-            $this->contextRecord = $dbProxyInstance->getFromDB($contextName);
+            $dbProxyInstance->dbSettings->setDataSourceName($contextName);
+            $this->contextRecord = $dbProxyInstance->readFromDB();
         }
     }
 
@@ -349,7 +349,9 @@ class MediaAccess
             if ($tmpDir === '') {
                 $tmpDir = sys_get_temp_dir();
             }
-            $temp = 'IM_TEMP_' . base64_encode(randomString(12)) . '.jpg';
+            $temp = 'IM_TEMP_' .
+                str_replace(base64_encode(randomString(12)), DIRECTORY_SEPARATOR, '-') .
+                '.jpg';
             if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
                 $tempPath = $tmpDir . $temp;
             } else {

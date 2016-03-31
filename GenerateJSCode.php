@@ -152,7 +152,8 @@ class GenerateJSCode
         }
 
         $pathToIMRootDir = mb_ereg_replace(
-            "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT']), "", (dirname(__FILE__)));
+            mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
+            "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
@@ -177,29 +178,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.isEmailAsUsername", $isEmailAsUsernae ? "true" : "false");
 
-        $messageClass = null;
-        if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
-            $clientLangArray = explode(',', $_SERVER["HTTP_ACCEPT_LANGUAGE"]);
-            foreach ($clientLangArray as $oneLanguage) {
-                $langCountry = explode(';', $oneLanguage);
-                if (strlen($langCountry[0]) > 0) {
-                    $clientLang = explode('-', $langCountry[0]);
-                    if ($clientLang[0] === 'en') {
-                        break;
-                    }
-                    $messageClass = "MessageStrings_$clientLang[0]";
-                    if (file_exists("$currentDir$messageClass.php")) {
-                        $messageClass = new $messageClass();
-                        break;
-                    }
-                }
-                $messageClass = null;
-            }
-        }
-        if ($messageClass == null) {
-            require_once('MessageStrings.php');
-            $messageClass = new MessageStrings();
-        }
+        $messageClass = IMUtil::getMessageClassInstance();
         $this->generateAssignJS(
             "INTERMediatorOnPage.getMessages",
             "function(){return ", arrayToJS($messageClass->getMessages(), ''), ";}");
@@ -320,7 +299,7 @@ class GenerateJSCode
             if (in_array(sha1($generatedPrivateKey), array(
                 '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
                 '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3
-            ))) {
+            )) && isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] !== '192.168.56.101') {
                 $this->generateDebugMessageJS('Please change the value of $generatedPrivateKey in params.php.');
             }
         }
