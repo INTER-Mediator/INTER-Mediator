@@ -13,7 +13,8 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.4 (in development)
 - Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
 - FileUploader can detect exceeding file size limit and returns valid error messages.
-- [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native 
+- New Sample "Sample_API" is added. This is for explanation of server-side apis.
+- [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native
   Authentication for mobile devices. The affected version is 5.3 only.
 - [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
 - [BUG FIX] String array value for single value operator works fine.
