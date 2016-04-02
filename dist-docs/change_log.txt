@@ -19,6 +19,7 @@ Ver.5.4 (in development)
 - [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
 - [BUG FIX] String array value for single value operator works fine.
 - [BUG FIX] Modify the value of INTERMediatorOnPage.getIMRootPath on Windows Server.
+- [BUG FIX] Update FX.php to fix compatibility with authentication for FileMaker Server.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
