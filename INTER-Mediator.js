@@ -755,9 +755,10 @@ INTERMediator = {
             var newNode, nodeClass, dataAttr, recordCounter, repeatersOneRec, linkedElements, currentWidgetNodes,
                 currentLinkedNodes, shouldDeleteNodes, dbspec, keyField, foreignField, foreignValue, foreignFieldValue,
                 keyValue, keyingValue, k, nodeId, replacedNode, children, wInfo, nameTable, nodeTag, typeAttr,
-                linkInfoArray, nameTableKey, nameNumber, nameAttr, nInfo, curVal, j, curTarget, newlyAddedNodes,
-                encNodeTag, repNodeTag, ix, repeatersOriginal, targetRecordset, targetTotalCount, i,
-                currentContextDef, idValuesForFieldName, indexContext, insertNode, usePortal, countRecord;
+                linkInfoArray, nameTableKey, nameNumber, nameAttr, nInfo, repeatingField, repeatingNumber, curVal, j,
+                curTarget, newlyAddedNodes, encNodeTag, repNodeTag, ix, repeatersOriginal, targetRecordset,
+                targetTotalCount, i, currentContextDef, idValuesForFieldName, indexContext, insertNode,
+                usePortal, countRecord;
 
             encNodeTag = node.tagName;
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -908,7 +909,16 @@ INTERMediator = {
                             var isContext = false;
                             for (j = 0; j < linkInfoArray.length; j++) {
                                 nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
-                                curVal = targetRecordset[ix][nInfo['field']];
+                                if (nInfo.field.indexOf("[") === nInfo.field.length - 3 &&
+                                    nInfo.field.indexOf("]") === nInfo.field.length - 1) {
+                                    // for repeating fields
+                                    repeatingField = nInfo.field.substring(0, nInfo.field.indexOf("["));
+                                    repeatingNumber = nInfo.field.substring(
+                                        nInfo.field.indexOf("[") + 1, nInfo.field.indexOf("]"));
+                                    curVal = targetRecordset[ix][repeatingField][repeatingNumber];
+                                } else {
+                                    curVal = targetRecordset[ix][nInfo.field];
+                                }
                                 if (!INTERMediator.isDBDataPreferable || curVal !== null) {
                                     IMLibCalc.updateCalculationInfo(
                                         contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
