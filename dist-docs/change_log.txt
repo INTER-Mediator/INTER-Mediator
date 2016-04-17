@@ -18,6 +18,7 @@ Ver.5.4 (in development)
 - New Sample "Sample_API" is added. This is for explanation of server-side apis.
 - On the Master-Detail style UI, the scrolled point in Master display can be retrieved when the page
   is backed from the Detail display.
+- Add "CWPKit" in "lib" directory for FileMaker Server to remove a dependency of FX.php in the future.
 - [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native
   Authentication for mobile devices. The affected version is 5.3 only.
 - [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.

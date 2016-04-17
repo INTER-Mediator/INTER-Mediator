@@ -13,6 +13,8 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'CWPKit' . DIRECTORY_SEPARATOR . 'CWPKit.php');
+
 class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 {
     private $fx = null;
@@ -742,18 +744,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->queriedPrimaryKeys = array();
         $keyField = isset($context['key']) ? $context['key'] : $this->getDefaultKey();
         try {
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL,
-                $this->fx->urlScheme . '://' . $this->fx->dataServer . $this->fx->dataPortSuffix . '/fmi/xml/fmresultset.xml');
-            curl_setopt($ch, CURLOPT_USERPWD, $this->dbSettings->getAccessUser() . ':' . $this->dbSettings->getAccessPassword());
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $queryString);
-            curl_setopt($ch, CURLOPT_HEADER, false);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            $xml = curl_exec($ch);
-            curl_close($ch);
-            libxml_use_internal_errors(true);
-            $parsedData = simplexml_load_string($xml);
+            $config = array(
+                'urlScheme' => $this->fx->urlScheme,
+                'dataServer' => $this->fx->dataServer,
+                'dataPort' => $this->fx->dataPort,
+                'DBUser' => $this->dbSettings->getAccessUser(),
+                'DBPassword' => $this->dbSettings->getAccessPassword(),
+            );
+            $cwpkit = new CWPKit($config);
+            $parsedData = $cwpkit->query($queryString);
             if ($parsedData === false) {
                 if ($this->dbSettings->isDBNative()) {
                     $this->dbSettings->setRequireAuthentication(true);
