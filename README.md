@@ -27,13 +27,13 @@ http://msyk.dyndns.org/im-sample.html
 - Tomomitsu Baba
 - Katsunori Eda
 - Naomi Hamaji
-- Miyuki Imaizumi
 - Yukihiko Kobayashi
 - Akinori Mizoguchi
 - Hiromi Morita
 - Yukio Murakami
 - Osamu Noda
 - Kazuaki Osawa
+- Hiroyasu Tanaka
 - Tsutomu Yuasa
 
 ### Driven by INTER-Mediator Directive Committee
@@ -41,7 +41,7 @@ http://msyk.dyndns.org/im-sample.html
 - Atsushi Matsuo
 - Nobuo Hayashi
 - Motofumi Iijima
-- Hiroyasu Tanaka
+- Miyuki Imaizumi
 
 http://inter-mediator.org/
 
