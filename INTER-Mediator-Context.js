@@ -436,6 +436,18 @@ IMLibContext = function (contextName) {
         }
     };
 
+    this.indexingArray = function()   {
+        var ar = [], key, keyArray, counter = 0;
+
+        for (key in this.store) {
+            keyArray = key.split("=");
+            ar[counter] = keyArray[1];
+            counter += 1;
+        }
+
+        return ar;
+    };
+
     this.clearAll = function () {
         this.store = {};
         this.binding = {};

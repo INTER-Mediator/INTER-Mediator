@@ -37,6 +37,7 @@ INTERMediatorOnPage = {
     isEmailAsUsername: false,
     passwordPolicy: null,
     creditIncluding: null,
+    masterScrollPosition: null,
 
     isShowChangePassword: true,
     isSetDefaultStyle: true,
