@@ -563,8 +563,7 @@ INTERMediatorOnPage = {
         if (chgpwButton) {
             var checkPolicyMethod = this.checkPasswordPolicy;
             chgpwButton.onclick = function () {
-                var inputUsername, inputPassword, inputNewPassword, challengeResult, params,
-                    result, messageNode, message;
+                var inputUsername, inputPassword, inputNewPassword, result, messageNode, message;
 
                 messageNode = document.getElementById("_im_login_message");
                 INTERMediatorLib.removeChildNodes(messageNode);
