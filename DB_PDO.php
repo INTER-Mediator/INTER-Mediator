@@ -2438,8 +2438,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     private
     function sqlINSERTCommand() {
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
-            return "INSERT IGNORE INTO";
+            return "INSERT IGNORE INTO ";
         }
-        return "INSERT INTO";
+        return "INSERT INTO ";
     }
 }
