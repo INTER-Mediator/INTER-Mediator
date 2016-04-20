@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <script type="text/javascript" src="crosstable.php"></script>
+    <script type="text/javascript">
+        window.onload = function () {
+            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupport'))) {
+                INTERMediator.construct(true);
+            }
+        };
+        INTERMediatorOnPage.doAfterConstruct = function () {
+            var node = document.getElementById('container');
+            node.style.display = "block"
+        };
+    </script>
+    <style>
+        td {
+            min-width: 6px;
+            min-height: 6px;
+            background-color: darkgray;
+        }
+    </style>
+</head>
+<body>
+<div id="nonsupport">
+    <div style="text-align:center;color:yellow;background-color:black;">
+        If you see this, you must use any supported
+        web browser with Javascript enabled.
+    </div>
+    <div style="text-align:center;color:yellow;background-color:black;">
+        この表示はサポート対象外のWebブラウザーを使っているために表示されてます。
+        対応ブラウザーをJavaScriptを有効にした上でお使い下さい。
+    </div>
+</div>
+<div id="container" style="display: none">
+    <table>
+        <tbody data-im-control="cross-table">
+        <tr>
+            <th></th>
+            <th>
+                <div data-im="item@id"></div>
+                <div data-im="item@name"></div>
+            </th>
+        </tr>
+        <tr>
+            <th>
+                <div data-im="customer@id"></div>
+                <div data-im="customer@name"></div>
+            </th>
+            <td>
+                <div data-im="salessummary@qty"></div>
+                <div data-im="salessummary@total"></div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

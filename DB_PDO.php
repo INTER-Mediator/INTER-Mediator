@@ -108,7 +108,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $currentDTFormat = $this->currentDTString();
-        $sql = "INSERT INTO {$regTable} (clientid,entity,conditions,registereddt) VALUES("
+        $sql = "{$this->sqlINSERTCommand()}{$regTable} (clientid,entity,conditions,registereddt) VALUES("
             . implode(',', array(
                 $this->link->quote($clientId),
                 $this->link->quote($entity),
@@ -127,7 +127,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             // PDO driver doesn't recognize it, does it ?
             foreach ($pkArray as $pk) {
                 $qPk = $this->link->quote($pk);
-                $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES ({$newContextId},{$qPk})";
+                $sql = "{$this->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES ({$newContextId},{$qPk})";
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->exec($sql);
                 if ($result < 1) {
@@ -137,7 +137,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 }
             }
         } else {
-            $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES ";
+            $sql = "{$this->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES ";
             $isFirstRow = true;
             foreach ($pkArray as $pk) {
                 $qPk = $this->link->quote($pk);
@@ -266,7 +266,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $sql = "INSERT INTO {$pksTable} (context_id,pk) VALUES(" . $this->link->quote($row['id']) .
+            $sql = "{$this->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES(" . $this->link->quote($row['id']) .
                 "," . $this->link->quote($pkArray[0]) . ")";
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
@@ -829,7 +829,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if ($queryClause != '') {
             $queryClause = "WHERE {$queryClause}";
         }
-        $sql = "UPDATE {$tableName} SET {$setClause} {$queryClause}";
+        $sql = "{$this->sqlUPDATECommand()}{$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
         $this->queriedEntity = $tableName;
 
@@ -970,7 +970,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $setClause = (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
                 '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
         }
-        $sql = "INSERT INTO {$tableName} {$setClause}";
+        $sql = "{$this->sqlINSERTCommand()}{$tableName} {$setClause}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -1281,7 +1281,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
         }
         //======
-        $sql = "INSERT INTO {$tableName} ({$fieldList}) SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
+        $sql = "{$this->sqlINSERTCommand()}{$tableName} ({$fieldList}) SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if (!$result) {
@@ -1323,7 +1323,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
         $currentDTFormat = $this->currentDTString();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            $sql = "UPDATE {$hashTable} SET hash=" . $this->link->quote($challenge)
+            $sql = "{$this->sqlUPDATECommand()}{$hashTable} SET hash=" . $this->link->quote($challenge)
                 . ",expired=" . $this->link->quote($currentDTFormat)
                 . " WHERE id={$row['id']}";
             $result = $this->link->query($sql);
@@ -1334,7 +1334,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->logger->setDebugMessage("[authSupportStoreChallenge] {$sql}");
             return true;
         }
-        $sql = "INSERT INTO {$hashTable} (user_id, clienthost, hash, expired) "
+        $sql = "{$this->sqlINSERTCommand()}{$hashTable} (user_id, clienthost, hash, expired) "
             . "VALUES ({$uid},{$this->link->quote($clientId)},"
             . "{$this->link->quote($challenge)},{$this->link->quote($currentDTFormat)})";
         $result = $this->link->query($sql);
@@ -1514,11 +1514,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         if ($user_id > 0) {
             $returnValue = false;
-            $sql = "UPDATE {$userTable} SET " . implode(",", $updates)
+            $sql = "{$this->sqlUPDATECommand()}{$userTable} SET " . implode(",", $updates)
                 . " WHERE id=" . $user_id;
         } else {
             $returnValue = true;
-            $sql = "INSERT INTO {$userTable} (" . implode(",", $keys) . ") "
+            $sql = "{$this->sqlINSERTCommand()}{$userTable} (" . implode(",", $keys) . ") "
                 . "VALUES (" . implode(",", $values) . ")";
         }
         $this->logger->setDebugMessage($sql);
@@ -1586,7 +1586,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if (!$this->setupConnection()) { //Establish the connection
                 return false;
             }
-            $sql = "INSERT INTO {$userTable} (username, hashedpasswd) "
+            $sql = "{$this->sqlINSERTCommand()}{$userTable} (username, hashedpasswd) "
                 . "VALUES ({$this->link->quote($username)}, {$this->link->quote($hashedpassword)})";
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
@@ -1628,7 +1628,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         $setClause .= ",hashedpasswd=" . $this->link->quote($hashedpassword);
                     }
                 }
-                $sql = "UPDATE {$userTable} SET {$setClause} WHERE id=" . $user_id;
+                $sql = "{$this->sqlUPDATECommand()}{$userTable} SET {$setClause} WHERE id=" . $user_id;
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
                 if ($result === false) {
@@ -1640,7 +1640,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     return false;
                 }
             } else {
-                $sql = "INSERT INTO {$userTable} (username, hashedpasswd,limitdt) VALUES "
+                $sql = "{$this->sqlINSERTCommand()}{$userTable} (username, hashedpasswd,limitdt) VALUES "
                     . "({$this->link->quote($username)},"
                     . " {$this->link->quote($hashedpassword)}, "
                     . " {$this->link->quote($currentDTFormat)})";
@@ -1673,7 +1673,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "UPDATE {$userTable} SET hashedpasswd=" . $this->link->quote($hashednewpassword)
+        $sql = "{$this->sqlUPDATECommand()}{$userTable} SET hashedpasswd=" . $this->link->quote($hashednewpassword)
             . " WHERE username=" . $this->link->quote($signedUser);
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
@@ -2015,7 +2015,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $currentDTFormat = $this->currentDTString();
-        $sql = "INSERT INTO {$hashTable} (hash,expired,clienthost,user_id) VALUES("
+        $sql = "{$this->sqlINSERTCommand()}{$hashTable} (hash,expired,clienthost,user_id) VALUES("
             . implode(',', array($this->link->quote($hash), $this->link->quote($currentDTFormat),
                 $this->link->quote($clienthost), $this->link->quote($userid))) . ')';
         $this->logger->setDebugMessage($sql);
@@ -2076,7 +2076,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $currentDTFormat = $this->currentDTString();
-        $sql = "INSERT INTO {$hashTable} (hash,expired,user_id) VALUES(" . implode(',', array(
+        $sql = "{$this->sqlINSERTCommand()}{$hashTable} (hash,expired,user_id) VALUES(" . implode(',', array(
                 $this->link->quote($hash),
                 $this->link->quote($currentDTFormat),
                 $this->link->quote($userid))) . ')';
@@ -2113,7 +2113,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if ($userID < 1) {
                 return false;
             }
-            $sql = "UPDATE {$userTable} SET hashedpasswd=" . $this->link->quote($password)
+            $sql = "{$this->sqlUPDATECommand()}{$userTable} SET hashedpasswd=" . $this->link->quote($password)
                 . " WHERE id=" . $this->link->quote($userID);
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
@@ -2426,5 +2426,20 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     function isSupportAggregation()
     {
         return true;
+    }
+
+    private
+    function sqlUPDATECommand() {
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
+            return "UPDATE IGNORE ";
+        }
+        return "UPDATE ";
+    }
+    private
+    function sqlINSERTCommand() {
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
+            return "INSERT IGNORE INTO ";
+        }
+        return "INSERT INTO ";
     }
 }

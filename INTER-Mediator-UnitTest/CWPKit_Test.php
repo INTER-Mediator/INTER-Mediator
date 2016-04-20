@@ -4,17 +4,17 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATO
 
 class CWPKit_Test extends PHPUnit_Framework_TestCase
 {
-  public function setUp()
-  {
-      $config = array(
-          'urlScheme' => 'http',
-          'dataServer' => '192.168.56.1',
-          'dataPort' => '80',
-          'DBUser' => 'web',
-          'DBPassword' => 'password',
-      );
-      $this->cwpkit = new CWPKit($config);
-  }
+    public function setUp()
+    {
+        $config = array(
+            'urlScheme' => 'http',
+            'dataServer' => '192.168.56.1',
+            'dataPort' => '80',
+            'DBUser' => 'web',
+            'DBPassword' => 'password',
+        );
+        $this->cwpkit = new CWPKit($config);
+    }
 
     public function test_query()
     {
@@ -22,6 +22,7 @@ class CWPKit_Test extends PHPUnit_Framework_TestCase
         $xml = $this->cwpkit->query($queryString);
 
         $expteced = '1.0';
+        var_dump($xml);
         $result = (string)$xml->attributes()->version;
         $this->assertEquals($result, $expteced);
 
