@@ -61,7 +61,7 @@ class GenerateJSCode
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
-            "passwordPolicy", "documentRootPrefix", "dbClass",
+            "passwordPolicy", "documentRootPrefix", "dbClass", "nonSupportMessageId",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -73,6 +73,7 @@ class GenerateJSCode
         $oAuthRedirect = $params["oAuthRedirect"];
         $passwordPolicy = $params["passwordPolicy"];
         $dbClass = $params["dbClass"];
+        $nonSupportMessageId = $params["nonSupportMessageId"];
         $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
 
         /*
@@ -207,6 +208,12 @@ class GenerateJSCode
             "INTERMediatorOnPage.clientNotificationIdentifier",
             "function(){return ", arrayToJS($clientId, ''), ";}");
 
+        if ($nonSupportMessageId!= "") {
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.nonSupportMessageId",
+                "{$q}{$nonSupportMessageId}{$q}");
+        }
+        
         $pusherParams = null;
         if (isset($pusherParameters)) {
             $pusherParams = $pusherParameters;
@@ -259,8 +266,6 @@ class GenerateJSCode
             "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthProvider) ? "true" : "false");
         $authObj = new OAuthAuth();
         if ($authObj->isActive) {
-
-
             $this->generateAssignJS("INTERMediatorOnPage.oAuthClientID",
                 $q, $oAuthClientID, $q);
             $this->generateAssignJS("INTERMediatorOnPage.oAuthBaseURL",

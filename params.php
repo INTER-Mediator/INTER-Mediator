@@ -102,6 +102,13 @@ $browserCompatibility = array(
     //'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
     'Opera' => '1+',
 );
+
+/*
+ * The id attribute for the Non support browser message.
+ * The default value is "nonsupportmessage."
+ */
+//$nonSupportMessageId = "nonsupport";
+
 /*
  * The list of User Agents, it's a wonderful site!
  * http://www.openspc2.org/userAgent/
