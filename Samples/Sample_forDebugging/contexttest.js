@@ -7,12 +7,12 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-window.onload = function () {
-    INTERMediator.construct(true);
+//window.onload = function () {
+//    INTERMediator.construct(true);
     INTERMediatorOnPage.doAfterConstruct = function() {
         IMLibMouseEventDispatch.setTargetExecute("personlist@id@data-x", function(value, target){
             INTERMediator.additionalCondition = {persondetail:{field:'id', operator:'=', value: value}};
             INTERMediator.construct(IMLibContextPool.contextFromName("persondetail"));
         });
     };
-};
+//};

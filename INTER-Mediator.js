@@ -284,6 +284,11 @@ INTERMediator = {
         var timerTask;
         INTERMediatorOnPage.showProgress();
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
+            if (INTERMediatorOnPage.isFinishToConstruct)    {
+                return;
+            }
+            INTERMediatorOnPage.isFinishToConstruct = true;
+
             timerTask = function () {
                 INTERMediator.constructMain(true);
             };
@@ -438,6 +443,7 @@ INTERMediator = {
         if (INTERMediatorOnPage.doAfterConstruct) {
             INTERMediatorOnPage.doAfterConstruct();
         }
+        INTERMediatorOnPage.isFinishToConstruct = false;
 
         INTERMediator.flushMessage(); // Show messages
 

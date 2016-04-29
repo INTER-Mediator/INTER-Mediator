@@ -21,11 +21,11 @@
 
     <script type="text/javascript" src="simplelist_FMS.php"></script>
     <script type="text/javascript">
-        window.onload = function () {
-            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupport'))) {
-                INTERMediator.construct(true);
-            }
-        }
+//        window.onload = function () {
+//            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupport'))) {
+//                INTERMediator.construct(true);
+//            }
+//        }
 
         INTERMediatorOnPage.doAfterConstruct = function () {
             var node = document.getElementById('container');
@@ -34,7 +34,7 @@
     </script>
 </head>
 <body>
-<div id="nonsupport">
+<div id="nonsupportmessage">
     <div style="text-align:center;color:yellow">
         If you see this, you must use any supported
         web browser with Javascript enabled.

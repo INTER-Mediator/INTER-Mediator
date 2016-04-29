@@ -7,7 +7,7 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-window.onload = function () {
+//window.onload = function () {
     var param = location.search.split("&");
     for (var i = 0; i < param.length; i++) {
         if (param[i].match(/id=/)) {
@@ -17,5 +17,5 @@ window.onload = function () {
             ]};
         }
     }
-    INTERMediator.construct(true);
-};
+//    INTERMediator.construct(true);
+//};
