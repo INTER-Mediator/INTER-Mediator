@@ -597,7 +597,7 @@ INTERMediator_DBAdapter = {
                         succesProcCapt(result);
                     };
                 })(),
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
@@ -904,7 +904,7 @@ INTERMediator_DBAdapter = {
                 1017,
                 1015,
                 successProc,
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
@@ -1024,7 +1024,7 @@ INTERMediator_DBAdapter = {
                 1017,
                 1015,
                 successProc,
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
@@ -1099,7 +1099,7 @@ INTERMediator_DBAdapter = {
                 1018,
                 1016,
                 successProc,
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
@@ -1228,7 +1228,7 @@ INTERMediator_DBAdapter = {
                 1017,
                 1015,
                 successProc,
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
