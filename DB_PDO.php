@@ -2036,6 +2036,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
      *
      * Using 'issuedhash'
      */
+    public
     function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
@@ -2066,6 +2067,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return false;
     }
 
+    public
     function authSupportUserEnrollmentStart($userid, $hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
@@ -2089,11 +2091,11 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         return true;
     }
 
-    function authSupportUserEnrollmentActivateUser($hash, $password)
+    public
+    function authSupportUserEnrollmentEnrollingUser($hash)
     {
         $hashTable = $this->dbSettings->getHashTable();
-        $userTable = $this->dbSettings->getUserTable();
-        if ($hashTable == null || $userTable == null) {
+        if ($hashTable == null) {
             return false;
         }
         if (!$this->setupConnection()) { //Establish the connection
@@ -2113,17 +2115,31 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if ($userID < 1) {
                 return false;
             }
-            $sql = "{$this->sqlUPDATECommand()}{$userTable} SET hashedpasswd=" . $this->link->quote($password)
-                . " WHERE id=" . $this->link->quote($userID);
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Update:' . $sql);
-                return false;
-            }
             return $userID;
         }
         return false;
+    }
+
+    public
+    function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
+    {
+        $userTable = $this->dbSettings->getUserTable();
+        if ($userTable == null) {
+            return false;
+        }
+        if (!$this->setupConnection()) { //Establish the connection
+            return false;
+        }
+        $sql = "{$this->sqlUPDATECommand()}{$userTable} SET hashedpasswd=" . $this->link->quote($password)
+            . (($rawPWField !== false) ? "," . $rawPWField . "=" . $this->link->quote($rawPW) : "")
+            . " WHERE id=" . $this->link->quote($userID);
+        $this->logger->setDebugMessage($sql);
+        $result = $this->link->query($sql);
+        if ($result === false) {
+            $this->errorMessageStore('Update:' . $sql);
+            return false;
+        }
+        return $userID;
     }
 
     public
@@ -2315,10 +2331,10 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     function quotedFieldName($fieldName)
     {
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
-            if (strpos($fieldName, ".")!== false)   {
+            if (strpos($fieldName, ".") !== false) {
                 $components = explode(".", $fieldName);
                 $quotedName = array();
-                foreach($components as $item)   {
+                foreach ($components as $item) {
                     $quotedName[] = "`{$item}`";
                 }
                 return implode(".", $quotedName);
@@ -2429,14 +2445,17 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     }
 
     private
-    function sqlUPDATECommand() {
+    function sqlUPDATECommand()
+    {
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
             return "UPDATE IGNORE ";
         }
         return "UPDATE ";
     }
+
     private
-    function sqlINSERTCommand() {
+    function sqlINSERTCommand()
+    {
         if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
             return "INSERT IGNORE INTO ";
         }

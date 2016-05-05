@@ -98,9 +98,15 @@ INTERMediatorLib.addEvent(window, "load", function () {
     var errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId);
     if (errorNode) {
         if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
+            if (INTERMediatorOnPage.doBeforeConstruct)  {
+                INTERMediatorOnPage.doBeforeConstruct();
+            }
             INTERMediator.construct(true);
         }
     } else {
+        if (INTERMediatorOnPage.doBeforeConstruct)  {
+            INTERMediatorOnPage.doBeforeConstruct();
+        }
         INTERMediator.construct(true);
     }
     // INTERMediatorOnPage.isFinishToConstruct = true;

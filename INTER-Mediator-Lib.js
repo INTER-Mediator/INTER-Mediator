@@ -949,16 +949,20 @@ var INTERMediatorLib = {
     },
 
     removeChildNodes: function (node) {
-        while (node.childNodes.length > 0) {
-            node.removeChild(node.childNodes[0]);
+        if (node) {
+            while (node.childNodes.length > 0) {
+                node.removeChild(node.childNodes[0]);
+            }
         }
     },
 
     clearErrorMessage: function (node) {
         var errorMsgs, j;
-        errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');
-        for (j = 0; j < errorMsgs.length; j++) {
-            errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
+        if (node) {
+            errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');
+            for (j = 0; j < errorMsgs.length; j++) {
+                errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
+            }
         }
     },
 

@@ -9,7 +9,7 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
-    require_once('../../INTER-Mediator.php');
+    require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
     $contextDef = array(
         'name' => 'authuser',
         'key' => 'id',
@@ -18,7 +18,13 @@ if (isset($_GET['m']) && strlen($_GET['m']) > 0) {
         ),
     );
     $dbInstance = new DB_Proxy();
-    $dbInstance->initialize(array($contextDef), array(), array(), false, "authuser");
+    $dbInstance->initialize(
+        array($contextDef), 
+        array(), 
+        array("db-class" => "PDO" /* or "FileMaker_FX" */), 
+        false, 
+        "authuser"
+    );
     $dbInstance->processingRequest("read");
     $result = $dbInstance->getDatabaseResult();
 
