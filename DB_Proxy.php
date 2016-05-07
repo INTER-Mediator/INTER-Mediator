@@ -729,7 +729,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function processingRequest($access = null, $bypassAuth = false)
     {
         $this->logger->setDebugMessage("[processingRequest]", 2);
-$options = $this->dbSettings->getAuthentication();
+        $options = $this->dbSettings->getAuthentication();
 
         $this->outputOfProcessing = array();
         $messageClass = IMUtil::getMessageClassInstance();
@@ -1290,11 +1290,15 @@ $options = $this->dbSettings->getAuthentication();
         return $hash;
     }
 
-    function userEnrollmentActivateUser($challenge, $password)
+    function userEnrollmentActivateUser($challenge, $password, $rawPWField = false)
     {
         $userInfo = null;
-        $result = $this->authDbClass->authSupportUserEnrollmentActivateUser(
-            $challenge, $this->convertHashedPassword($password));
+        $userID = $this->authDbClass->authSupportUserEnrollmentEnrollingUser($challenge);
+        if ($userID < 1)    {
+            return false;
+        }
+        $result = $this->dbClass->authSupportUserEnrollmentActivateUser(
+            $userID, $this->convertHashedPassword($password), $rawPWField, $password);
 //        if ($userID !== false) {
 //            $hashednewpassword = $this->convertHashedPassword($password);
 //            $userInfo = authSupportUserEnrollmentCheckHash($userID, $hashednewpassword);

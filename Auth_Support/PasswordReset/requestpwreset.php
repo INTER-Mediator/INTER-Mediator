@@ -19,7 +19,7 @@ if (count($_POST) > 0) {
     } else if (preg_match($pattern, $_POST['ad1']) !== 1) {
         $message .= 'メールアドレスの形式が正しくありません。';
     } else {
-        require_once('../../INTER-Mediator.php');
+        require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize(
             array(),
@@ -28,7 +28,7 @@ if (count($_POST) > 0) {
                     'email-as-username' => true,
                 ),
             ),
-            array(),
+            array("db-class" => "PDO" /* or "FileMaker_FX" */),
             2);
         $result = $dbInstance->resetPasswordSequenceStart($_POST['ad1']);
 
@@ -68,7 +68,7 @@ if (count($_POST) > 0) {
                     ),
                 ),
                 array(),
-                array(),
+                array("db-class" => "PDO" /* or "FileMaker_FX" */),
                 2,
                 "authuser");
             $dbInstance->processingRequest("read");

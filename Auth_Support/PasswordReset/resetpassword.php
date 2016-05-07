@@ -20,7 +20,7 @@ if (count($_GET) > 0) {
 if (count($_POST) > 0) {
     $cred = $_POST['cred'];
 
-    require_once('../../INTER-Mediator.php');
+    require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
     $dbInstance = new DB_Proxy();
     $dbInstance->initialize(
         array(),
@@ -29,7 +29,7 @@ if (count($_POST) > 0) {
                 'email-as-username' => true,
             ),
         ),
-        array(),
+        array("db-class" => "PDO" /* or "FileMaker_FX" */),
         2);
     $result = $dbInstance->resetPasswordSequenceReturnBack(
         null, $_POST['mail'], $_POST['cred'], $_POST['hashedpw']);
@@ -70,7 +70,7 @@ if (count($_POST) > 0) {
                 ),
             ),
             array(),
-            array(),
+            array("db-class" => "PDO" /* or "FileMaker_FX" */),
             2,
             "authuser");
         $dbInstance->processingRequest("read");
