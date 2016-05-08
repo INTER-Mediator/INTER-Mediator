@@ -493,7 +493,7 @@ INTERMediator = {
                 }
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
-            IMLibLocalContext.bindingDescendant(bodyNode);
+            IMLibLocalContext.bindingDescendant(document.documentElement);
             IMLibCalc.updateCalculationFields();
             IMLibPageNavigation.navigationSetup();
 

@@ -85,7 +85,7 @@ class DataConverter_MarkdownString extends DataConverter_HTMLString
                 if (!$inTable) {
                     $result[] = "<table class='_im_markdown_table'>";
                 }
-                $result[] = "<tr class='_im_markdown_td'>";
+                $result[] = "<tr class='_im_markdown_tr'>";
                 foreach (explode("|", mb_substr($aLine, 1, $sLen)) as $aCell) {
                     $result[] = "<td class='_im_markdown_td'>" . $aCell . "</td>";
                 }

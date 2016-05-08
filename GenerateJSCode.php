@@ -61,7 +61,8 @@ class GenerateJSCode
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
-            "passwordPolicy", "documentRootPrefix", "dbClass", "nonSupportMessageId",
+            "passwordPolicy", "documentRootPrefix", "dbClass",
+            "nonSupportMessageId", "valuesForLocalContext",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -75,6 +76,7 @@ class GenerateJSCode
         $dbClass = $params["dbClass"];
         $nonSupportMessageId = $params["nonSupportMessageId"];
         $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
+        $valuesForLocalContext = $params["valuesForLocalContext"];
 
         /*
          * Read the JS programs regarding by the developing or deployed.
@@ -320,6 +322,9 @@ class GenerateJSCode
         if (isset($options['credit-including'])) {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.creditIncluding", $q, $options['credit-including'], $q);
+        }
+        if (isset($valuesForLocalContext)) {
+            $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", arrayToJS($valuesForLocalContext));
         }
     }
 

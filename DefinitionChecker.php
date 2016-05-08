@@ -219,7 +219,6 @@ class DefinitionChecker
             'paging' => 'boolean',
             'key' => 'string',
             'sequence' => 'string',
-            'dimension' => array("*"=>"string"),
             'relation' => array(
                 '*' => array(
                     'foreign-key' => 'string',

@@ -186,7 +186,7 @@ function valueForJSInsert($str)
  * @param string prefix strings for the prefix for key
  * @return string JavaScript source
  */
-function arrayToJS($ar, $prefix)
+function arrayToJS($ar, $prefix = "")
 {
     if (is_array($ar)) {
         $items = array();

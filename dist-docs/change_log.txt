@@ -17,6 +17,8 @@ Ver.5.4 (in development)
   require to the another id value, you can set it into params.php as the value "$nonSupportMessageId".
 - Creating Cross Table. It contains 3 contexts for colomn, row and value cells.
   See the sample Samples/Practices/crosstable.html.
+- The variable "$valuesForLocalContext" in params.php supplies initial values for local context.
+  The value of this variable has to be an associated array with key and value.
 - Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
 - FileUploader can detect exceeding file size limit and returns valid error messages.
 - New Sample "Sample_API" is added. This is for explanation of server-side apis.

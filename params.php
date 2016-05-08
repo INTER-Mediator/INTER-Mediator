@@ -180,3 +180,8 @@ $pusherParameters = array(
 // $oAuthClientID = '';
 // $oAuthClientSecret = '';
 // $oAuthRedirect = 'http://localhost:7001/Auth_Support/OAuthCatcher.php';
+
+$valuesForLocalContext = array(
+    "pagetitle" => "INTER-Mediator Samples",
+    "copyright" => "INTER-Mediator Directive Committee",
+);
