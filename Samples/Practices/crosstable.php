@@ -36,7 +36,6 @@ IM_Entry(
             'view' => 'saleslog',
             'records' => 100000,
             'key' => 'id',
-            'dimension' => array('item','customer',),
             'relation' => array(
                 array('foreign-key' => 'item_id', 'join-field' => 'id', 'operator' => '=',),
                 array('foreign-key' => 'customer_id', 'join-field' => 'id', 'operator' => '=',),
