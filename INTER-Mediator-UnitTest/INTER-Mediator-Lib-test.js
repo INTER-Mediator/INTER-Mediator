@@ -13,7 +13,7 @@
  *     Don't stop the process started by above command.
  * - Open any browser and connect to http://localhost:1111
  * - Click "Capture browser" button on the browser page
- * - Execute command "buster-telinkst"   <-- Repeat it!
+ * - Execute command "buster-test"   <-- Repeat it!
  */
 
 var assert = buster.referee.assert;
