@@ -18,31 +18,27 @@
     <title>INTER-Mediator - Definition File Editor</title>
     <script src="defedit.php"></script>
     <script type="text/javascript">
-        window.onload = function () {
-            var nodeUnsupport = document.getElementById('nonsupportmessage');
-            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
-                var params = INTERMediatorOnPage.getURLParametersAsArray();
-                var contextsArray = ['contexts', 'relation', 'query', 'sort', 'default-values', 'validation',
-                    'script', 'global', 'file-upload', 'send-mail', 'options', 'aliases', 'browser-compatibility', 'calculation',
-                    'formatter', 'dbsettings', 'external-db', 'debug'];
-                for (var i = 0; i < contextsArray.length; i++) {
-                    INTERMediator.addCondition(contextsArray[i], {field: 'target', value: params.target});
-                    INTERMediator.additionalFieldValueOnNewRecord[contextsArray[i]]
-                            = {field: 'target', value: params.target};
-                    INTERMediator.additionalFieldValueOnUpdate[contextsArray[i]]
-                            = {field: 'target', value: params.target};
-                    INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
-                            = {field: 'target', value: params.target};
-                }
-                document.getElementById('deffile').appendChild(document.createTextNode(params.target));
-                INTERMediator.ignoreOptimisticLocking = true;
-                INTERMediator.construct(true);
+        INTERMediatorOnPage.doBeforeConstruct = function () {
+            var params = INTERMediatorOnPage.getURLParametersAsArray();
+            var contextsArray = ['contexts', 'relation', 'query', 'sort', 'default-values', 'validation',
+                'script', 'global', 'file-upload', 'send-mail', 'options', 'aliases', 'browser-compatibility', 'calculation',
+                'formatter', 'dbsettings', 'external-db', 'debug', 'local-context'];
+            for (var i = 0; i < contextsArray.length; i++) {
+                INTERMediator.addCondition(contextsArray[i], {field: 'target', value: params.target});
+                INTERMediator.additionalFieldValueOnNewRecord[contextsArray[i]]
+                        = {field: 'target', value: params.target};
+                INTERMediator.additionalFieldValueOnUpdate[contextsArray[i]]
+                        = {field: 'target', value: params.target};
+                INTERMediator.additionalFieldValueOnDelete[contextsArray[i]]
+                        = {field: 'target', value: params.target};
             }
-        }
+            document.getElementById('deffile').appendChild(document.createTextNode(params.target));
+            //INTERMediator.ignoreOptimisticLocking = true;
+        };
         INTERMediatorOnPage.doAfterConstruct = function () {
             var node = document.getElementById('container');
             node.style.display = "block"
-        }
+        };
         function setDisplayLevel(level) {
             var i, value, nodes, rootNode;
             value = "none";
@@ -778,6 +774,22 @@
             <td><input type="text" data-im="options@pusher-key"/></td>
             <th>secret</th>
             <td><input type="text" data-im="options@pusher-secret"/></td>
+        </tr>
+        <tr class="advanced">
+            <td></td>
+            <th colspan="9" class="title">Local Context</th>
+        </tr>
+        <tr class="advanced">
+            <td colspan="9">
+                <table>
+                    <tr>
+                        <th>key</th>
+                        <td><input type="text" data-im="local-context@key"/></td>
+                        <th>value</th>
+                        <td><input type="text" data-im="local-context@value"/></td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
 

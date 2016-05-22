@@ -323,7 +323,17 @@ class GenerateJSCode
             $this->generateAssignJS(
                 "INTERMediatorOnPage.creditIncluding", $q, $options['credit-including'], $q);
         }
-        if (isset($valuesForLocalContext)) {
+
+        // Initial values for local context
+        if (! isset($valuesForLocalContext)) {
+            $valuesForLocalContext = array();
+        }
+        if ($options["local-context"]) {
+            foreach($options["local-context"] as $item) {
+                $valuesForLocalContext[$item["key"]] = $item["value"];
+            }
+        }
+        if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
             $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", arrayToJS($valuesForLocalContext));
         }
     }

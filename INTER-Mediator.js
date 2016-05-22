@@ -876,30 +876,13 @@ INTERMediator = {
         /** --------------------------------------------------------------------
          * Set the value to node and context.
          */
-// <<<<<<< HEAD
         function setupLinkedNode(repeatersOneRec, linkedElements, contextObj, targetRecordset, ix) {
             var currentWidgetNodes, currentLinkedNodes, dbspec, nInfo, currentContextDef,
                 j, keyField, usePortal = false, foreignField, foreignValue, foreignFieldValue, keyValue, keyingValue,
                 k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
                 idValuesForFieldName = {}, shouldDeleteNodes = [],
                 nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget;
-// =======
-//
-//         function expandRepeaters(contextObj, node, targetRecords) {
-//             var newNode, nodeClass, dataAttr, recordCounter, repeatersOneRec, linkedElements, currentWidgetNodes,
-//                 currentLinkedNodes, shouldDeleteNodes, dbspec, keyField, foreignField, foreignValue, foreignFieldValue,
-//                 keyValue, keyingValue, k, nodeId, replacedNode, children, wInfo, nameTable, nodeTag, typeAttr,
-//                 linkInfoArray, nameTableKey, nameNumber, nameAttr, nInfo, repeatingField, repeatingNumber, curVal, j,
-//                 curTarget, newlyAddedNodes, encNodeTag, repNodeTag, ix, repeatersOriginal, targetRecordset,
-//                 targetTotalCount, i, currentContextDef, idValuesForFieldName, indexContext, insertNode,
-//                 usePortal, countRecord;
-//
-//             encNodeTag = node.tagName;
-//             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
-//
-//             idValuesForFieldName = {};
-//             repeatersOriginal = contextObj.original;
-// >>>>>>> INTER-Mediator/master
+            
             currentContextDef = contextObj.getContextDef();
             try {
                 currentWidgetNodes = linkedElements.widgetNode;
@@ -1102,57 +1085,10 @@ INTERMediator = {
         /** --------------------------------------------------------------------
          * Expanding an repeater.
          */
-
-//<<<<<<< HEAD
         function expandRepeaters(contextObj, node, targetRecords) {
             var newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
                 repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
                 insertNode, countRecord, setupResult, linkedElements;
-// =======
-//                             var isContext = false;
-//                             for (j = 0; j < linkInfoArray.length; j++) {
-//                                 nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
-//                                 if (nInfo.field.indexOf("[") === nInfo.field.length - 3 &&
-//                                     nInfo.field.indexOf("]") === nInfo.field.length - 1) {
-//                                     // for repeating fields
-//                                     repeatingField = nInfo.field.substring(0, nInfo.field.indexOf("["));
-//                                     repeatingNumber = nInfo.field.substring(
-//                                         nInfo.field.indexOf("[") + 1, nInfo.field.indexOf("]"));
-//                                     curVal = targetRecordset[ix][repeatingField][repeatingNumber];
-//                                 } else {
-//                                     curVal = targetRecordset[ix][nInfo.field];
-//                                 }
-//                                 if (!INTERMediator.isDBDataPreferable || curVal !== null) {
-//                                     IMLibCalc.updateCalculationInfo(
-//                                         contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
-//                                 }
-//                                 if (nInfo['table'] == currentContextDef['name']) {
-//                                     isContext = true;
-//                                     curTarget = nInfo['target'];
-//                                     //    objectReference[nInfo['field']] = nodeId;
-//
-//                                     // Set data to the element.
-//                                     if (curVal === null) {
-//                                         if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
-//                                             postSetFields.push({'id': nodeId, 'value': curVal});
-//                                         }
-//                                     } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
-//                                         if (curVal && curVal.length > 0) {
-//                                             if (IMLibElement.setValueToIMNode(
-//                                                     currentLinkedNodes[k], curTarget, curVal[0])) {
-//                                                 postSetFields.push({'id': nodeId, 'value': curVal[0]});
-//                                             }
-//                                         }
-//                                     } else {
-//                                         if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
-//                                             postSetFields.push({'id': nodeId, 'value': curVal});
-//                                         }
-//                                     }
-//                                     contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue);
-//                                     idValuesForFieldName[nInfo['field']] = nodeId;
-//                                 }
-//                             }
-// >>>>>>> INTER-Mediator/master
 
             encNodeTag = node.tagName;
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -2420,21 +2356,17 @@ INTERMediator = {
                 spNode.appendChild(document.createTextNode(versionStrng));
             }
         }
-    }
-
-    ,
+    },
 
     getLocalProperty: function (localKey, defaultValue) {
         var value;
         value = IMLibLocalContext.getValue(localKey);
         return value === null ? defaultValue : value;
-    }
-    ,
+    },
 
     setLocalProperty: function (localKey, value) {
         IMLibLocalContext.setValue(localKey, value, true);
-    }
-    ,
+    },
 
     addCondition: function (contextName, condition, notMatching) {
         var value, i, hasIdentical;
@@ -2465,8 +2397,7 @@ INTERMediator = {
             INTERMediator.additionalCondition = value;
         }
         IMLibLocalContext.archive();
-    }
-    ,
+    },
 
     clearCondition: function (contextName) {
         var value = INTERMediator.additionalCondition;
@@ -2478,8 +2409,7 @@ INTERMediator = {
             INTERMediator.additionalCondition = {};
             IMLibLocalContext.archive();
         }
-    }
-    ,
+    },
 
     addSortKey: function (contextName, sortKey) {
         var value = INTERMediator.additionalSortKey;
@@ -2490,8 +2420,7 @@ INTERMediator = {
         }
         INTERMediator.additionalSortKey = value;
         IMLibLocalContext.archive();
-    }
-    ,
+    },
 
     clearSortKey: function (contextName) {
         var value = INTERMediator.additionalSortKey;

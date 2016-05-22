@@ -416,6 +416,18 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     }
                 }
                 break;
+            case 'local-context':
+                if (isset($globalOptions['local-context'])) {
+                    foreach ($globalOptions['local-context'] as $rel) {
+                        $result[] = array(
+                            'id' => $seq,
+                            'key' => getValueFromArray($rel, 'key'),
+                            'value' => getValueFromArray($rel, 'value'),
+                        );
+                        $seq++;
+                    }
+                }
+                break;
             case 'dbsettings':
                 $result[] = array(
                     'id' => $seq,
@@ -506,6 +518,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'aliases' => array('alias', 'original'),
             'browser-compatibility' => array('browserdef'),
             'formatter' => array('field', 'converter-class', 'parameter'),
+            'local-context' => array('key', 'value'),
         );
 
         $keysShouldInteger = array(
@@ -772,6 +785,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 break;
             case 'aliases':
             case 'formatter':
+            case 'local-context':
                 $recordID = $contextID % 10000;
                 foreach ($allKeysOptions[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
@@ -1007,6 +1021,15 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'parameter' => '= new value =',
                 );
                 break;
+            case 'local-context':
+                if (!isset($globalOptions['local-context'])) {
+                    $globalOptions['local-context'] = array();
+                }
+                $globalOptions['local-context'][] = array(
+                    'key' => '= new value =',
+                    'value' => '= new value =',
+                );
+                break;
             case 'dbsettings':
                 break;
             case 'external-db':
@@ -1107,6 +1130,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 break;
             case 'aliases':
             case 'formatter':
+            case 'local-context':
                 $recordID = $contextID % 10000;
                 unset($globalOptions[$dataSourceName][$recordID]);
                 if (count($globalOptions[$dataSourceName]) < 1) {
@@ -1209,7 +1233,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     }
 
     public
-    function getFieldInfo()
+    function getFieldInfo($dataSourceName)
     {
         // TODO: Implement getFieldInfo() method.
     }
@@ -1327,8 +1351,13 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement authSupportUserEnrollmentStart() method.
     }
 
-    public function authSupportUserEnrollmentActivateUser($hash, $password)
+    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
     {
         // TODO: Implement authSupportUserEnrollmentActivateUser() method.
+    }
+
+    public function authSupportUserEnrollmentEnrollingUser($hash)
+    {
+        // TODO: Implement authSupportUserEnrollmentEnrollingUser() method.
     }
 }
