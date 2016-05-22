@@ -503,13 +503,21 @@ var INTERMediatorLib = {
         };
     },
 
-    getCalcNodeInfoArray: function (nodeInfo) {
-        var comps, tableName, fieldName, targetName;
+    getCalcNodeInfoArray: function (idValue) {
+        var comps, tableName, fieldName, targetName, node, attribute;
 
-        if (!nodeInfo) {
+        if (!idValue) {
             return null;
         }
-        comps = nodeInfo.split(INTERMediator.separator);
+        node = document.getElementById(idValue);
+        if (!node) {
+            return null;
+        }
+        attribute = node.getAttribute("data-im");
+        if (!attribute) {
+            return null;
+        }
+        comps = attribute.split(INTERMediator.separator);
         tableName = '';
         fieldName = '';
         targetName = '';
@@ -521,7 +529,7 @@ var INTERMediatorLib = {
             fieldName = comps[0];
             targetName = comps[1];
         } else {
-            fieldName = nodeInfo;
+            fieldName = attribute;
         }
         return {
             'table': tableName,

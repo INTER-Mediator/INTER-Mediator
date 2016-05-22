@@ -77,6 +77,8 @@ INTERMediator = {
     isTablet: false,
     isMobile: false,
 
+    crosTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
+
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.
      startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
      */
@@ -323,6 +325,7 @@ INTERMediator = {
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
+        INTERMediator.crosTableStage = 0;
         appendingNodesAtLast = [];
         IMLibEventResponder.setup();
         INTERMediatorOnPage.retrieveAuthInfo();
@@ -792,24 +795,29 @@ INTERMediator = {
                 while (node.childNodes.length > 0) {
                     node.removeChild(node.childNodes[0]);
                 }
+
                 // Create the first row
+                INTERMediator.crosTableStage = 1;
                 lineNode = document.createElement("TR");
                 targetRepeater = ctComponentNodes[0].cloneNode(true);
                 lineNode.appendChild(targetRepeater);
                 node.appendChild(lineNode);
+
                 // Append the column context in the first row
                 targetRepeater = ctComponentNodes[1].cloneNode(true);
-                colContext = enclosureProcessing(lineNode, [targetRepeater],
-                    currentRecord, parentObjectInfo, currentContextObj);
+                colContext = enclosureProcessing(lineNode, [targetRepeater], null, parentObjectInfo, currentContextObj);
                 colArray = colContext.indexingArray();
+
                 // Create second and following rows, and the first columns are appended row context
+                INTERMediator.crosTableStage = 2;
                 targetRepeater = ctComponentNodes[2].cloneNode(true);
                 lineNode = document.createElement("TR");
                 lineNode.appendChild(targetRepeater);
-                rowContext = enclosureProcessing(node, [lineNode],
-                    currentRecord, parentObjectInfo, currentContextObj);
+                rowContext = enclosureProcessing(node, [lineNode], null, parentObjectInfo, currentContextObj);
                 rowArray = rowContext.indexingArray();
+
                 // Create all cross point cell
+                INTERMediator.crosTableStage = 3;
                 targetRepeater = ctComponentNodes[3].cloneNode(true);
                 nodeForKeyValues = {};
                 trNodes = node.getElementsByTagName("TR");
@@ -825,7 +833,7 @@ INTERMediator = {
                     }
                 }
                 setIdValue(node);
-                enclosureProcessing(node, [targetRepeater], currentRecord, parentObjectInfo, currentContextObj,
+                enclosureProcessing(node, [targetRepeater], null, parentObjectInfo, currentContextObj,
                     function (contextObj, targetRecords) {
                         var labelKeyColumn, dataKeyColumn, labelKeyRow, dataKeyRow, currentContextDef, ix,
                             linkedElements, targetNode;
@@ -871,7 +879,6 @@ INTERMediator = {
                 }
             }
         }
-
 
         /** --------------------------------------------------------------------
          * Set the value to node and context.
