@@ -77,7 +77,7 @@ INTERMediator = {
     isTablet: false,
     isMobile: false,
 
-    crosTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
+    crossTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
 
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.
      startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
@@ -325,7 +325,7 @@ INTERMediator = {
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
-        INTERMediator.crosTableStage = 0;
+        INTERMediator.crossTableStage = 0;
         appendingNodesAtLast = [];
         IMLibEventResponder.setup();
         INTERMediatorOnPage.retrieveAuthInfo();
@@ -797,7 +797,7 @@ INTERMediator = {
                 }
 
                 // Create the first row
-                INTERMediator.crosTableStage = 1;
+                INTERMediator.crossTableStage = 1;
                 lineNode = document.createElement("TR");
                 targetRepeater = ctComponentNodes[0].cloneNode(true);
                 lineNode.appendChild(targetRepeater);
@@ -809,7 +809,7 @@ INTERMediator = {
                 colArray = colContext.indexingArray();
 
                 // Create second and following rows, and the first columns are appended row context
-                INTERMediator.crosTableStage = 2;
+                INTERMediator.crossTableStage = 2;
                 targetRepeater = ctComponentNodes[2].cloneNode(true);
                 lineNode = document.createElement("TR");
                 lineNode.appendChild(targetRepeater);
@@ -817,7 +817,7 @@ INTERMediator = {
                 rowArray = rowContext.indexingArray();
 
                 // Create all cross point cell
-                INTERMediator.crosTableStage = 3;
+                INTERMediator.crossTableStage = 3;
                 targetRepeater = ctComponentNodes[3].cloneNode(true);
                 nodeForKeyValues = {};
                 trNodes = node.getElementsByTagName("TR");

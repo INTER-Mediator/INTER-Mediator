@@ -254,7 +254,7 @@ var IMLibCalc = {
                 } else {
                     targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
                 }
-                switch (INTERMediator.crosTableStage) {
+                switch (INTERMediator.crossTableStage) {
                     case 3:
                         repeaterTop = targetNode;
                         while (repeaterTop.tagName != "TD" && repeaterTop.tagName != "TH") {
