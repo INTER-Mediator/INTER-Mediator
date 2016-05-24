@@ -42,7 +42,7 @@ var IMLibUI = {
      */
     valueChange: function (idValue, validationOnly) {
         var changedObj, objType, i, newValue, criteria, linkInfo, nodeInfo, contextInfo,
-            keyingComp, keyingField, keyingValue, targetField, targetContext, completeFunction;
+            keyingComp, keyingField, keyingValue, targetField, targetContext, targetNode, targetSpec;
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
             INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
@@ -69,6 +69,16 @@ var IMLibUI = {
         }
         nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);  // Suppose to be the first definition.
         contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
+        if (! contextInfo) { // In case of local context
+            targetNode = document.getElementById(idValue);
+            targetSpec = targetNode.getAttribute("data-im");
+            if (targetSpec && targetSpec.split(INTERMediator.separator)[0] == IMLibLocalContext.contextName)   {
+                IMLibLocalContext.updateFromNodeValue(idValue);
+                IMLibCalc.recalculation();
+                return true;
+            }
+            return false;
+        }
 
         if (!IMLibUI.validation(changedObj)) {  // Validation error.
             changedObj.focus();
