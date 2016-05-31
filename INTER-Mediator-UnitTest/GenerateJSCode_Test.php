@@ -3,6 +3,7 @@
  * GenerateJSCode_Test file
  */
 require_once(dirname(__FILE__) . '/../GenerateJSCode.php');
+require_once(dirname(__FILE__) . '/../IMUtil.php');
 
 class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
 {
