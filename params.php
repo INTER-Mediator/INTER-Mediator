@@ -186,3 +186,21 @@ $pusherParameters = array(
 //    "pagetitle" => "INTER-Mediator Samples",
 //    "copyright" => "INTER-Mediator Directive Committee",
 //);
+
+/* Customize the X-Frame-Options header
+ *
+ * Possible values are "SAMEORIGIN", "DENY", "ALLOW-FROM <uri>" or ""
+ * For "" string, the X-Frame-Options header won't be included in headers.
+ * If you don't specify the $xFrameOptions variable, the header will be included
+ * with value "SAMEORIGIN".
+ */
+//$xFrameOptions = "SAMEORIGIN";
+
+/* Customize the Content-Security-Policy header
+ *
+ * The Content-Security-Policy header contains with the value of variable $contentSecurityPolicy.
+ * If this variable isn't specified or "", the Content-Security-Policy header doesn't contains.
+ * See below about Content-Security-Policy header.
+ * https://developer.mozilla.org/ja/docs/Web/Security/CSP/Using_Content_Security_Policy
+ */
+//$contentSecurityPolicy = "";
