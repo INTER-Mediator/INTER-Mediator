@@ -16,6 +16,8 @@ var IMLibUI = {
     mobileSelectionColor: "#BBBBBB",
     mobileNaviBackButtonId: null,
 
+    changeValueLock: {},
+
     keyDown: function (evt) {
         var keyCode = (window.event) ? evt.which : evt.keyCode;
         if (keyCode == 16) {
@@ -61,6 +63,17 @@ var IMLibUI = {
         if (changedObj.readOnly) {  // for Internet Explorer
             return true;
         }
+
+        // Locking.
+        if (!validationOnly && IMLibUI.changeValueLock[idValue])   {
+            setTimeout((function(){
+                var idCapt = idValue;
+                var voCapt = validationOnly;
+                return function() {IMLibUI.valueChange(idCapt, voCapt);}
+            })(), 100);
+            return true;
+        }
+        IMLibUI.changeValueLock[idValue] = true;
 
         linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
         // for js-widget support
@@ -180,11 +193,13 @@ var IMLibUI = {
                                 }
                                 IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
                                 INTERMediator.flushMessage();
+                                IMLibUI.changeValueLock[idValueCapt2] = false;
                             };
                         })(),
                         function () {
                             INTERMediatorOnPage.hideProgress();
                             INTERMediator.setErrorMessage("Error in valueChange method.", "EXCEPTION-2");
+                            IMLibUI.changeValueLock = {};
                         }
                     );
                 }
@@ -237,6 +252,7 @@ var IMLibUI = {
                                     alert(INTERMediatorLib.getInsertedString(
                                         INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]));
                                     INTERMediatorOnPage.hideProgress();
+                                    IMLibUI.changeValueLock = {};
                                     return;
                                 }
                             } else {
@@ -246,12 +262,14 @@ var IMLibUI = {
                                     alert(INTERMediatorLib.getInsertedString(
                                         INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]));
                                     INTERMediatorOnPage.hideProgress();
+                                    IMLibUI.changeValueLock = {};
                                     return;
                                 }
                                 if (result.resultCount > 1) {
                                     response = confirm(INTERMediatorOnPage.getMessages()[1024]);
                                     if (!response) {
                                         INTERMediatorOnPage.hideProgress();
+                                        IMLibUI.changeValueLock = {};
                                         return;
                                     }
                                 }
@@ -292,6 +310,7 @@ var IMLibUI = {
                                     }, 0);
 
                                     INTERMediatorOnPage.hideProgress();
+                                    IMLibUI.changeValueLock = {};
                                     return false;
                                 }
                                 INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
@@ -339,11 +358,13 @@ var IMLibUI = {
                                             }
                                             IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
                                             INTERMediator.flushMessage();
+                                            IMLibUI.changeValueLock[idValueCapt2] = false;
                                         };
                                     })(),
                                     function () {
                                         INTERMediatorOnPage.hideProgress();
                                         INTERMediator.setErrorMessage("Error in valueChange method.", "EXCEPTION-2");
+                                        IMLibUI.changeValueLock = {};
                                     }
                                 );
                             }
@@ -352,6 +373,7 @@ var IMLibUI = {
                     function () {
                         INTERMediatorOnPage.hideProgress();
                         INTERMediator.setErrorMessage("Error in valueChange method.", "EXCEPTION-1");
+                        IMLibUI.changeValueLock = {};
                     }
                 );
             }

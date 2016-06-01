@@ -186,3 +186,29 @@ $pusherParameters = array(
 //    "pagetitle" => "INTER-Mediator Samples",
 //    "copyright" => "INTER-Mediator Directive Committee",
 //);
+
+/* Customize the X-Frame-Options header
+ *
+ * Possible values are "SAMEORIGIN", "DENY", "ALLOW-FROM <uri>" or ""
+ * For "" string, the X-Frame-Options header won't be included in headers.
+ * If you don't specify the $xFrameOptions variable, the header will be included
+ * with value "SAMEORIGIN".
+ */
+//$xFrameOptions = "SAMEORIGIN";
+
+/* Customize the Content-Security-Policy header
+ *
+ * The Content-Security-Policy header contains with the value of variable $contentSecurityPolicy.
+ * If this variable isn't specified or "", the Content-Security-Policy header doesn't contains.
+ * See below about Content-Security-Policy header.
+ * https://developer.mozilla.org/ja/docs/Web/Security/CSP/Using_Content_Security_Policy
+ */
+//$contentSecurityPolicy = "";
+
+/* Customize the path generation in uploading file
+ *
+ * The value "assjis" and "asucs4" are supported. This is not convert path string from key
+ * field and value, but the string encoding is convert to sjis or ucs-4 and back to utf-8.
+ * As the default, the string is going to be encoded with the urlencode function.
+ */
+$uploadFilePathMode = "";

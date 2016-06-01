@@ -27,6 +27,10 @@ Ver.5.4 (in development)
 - On the Master-Detail style UI, the scrolled point in Master display can be retrieved when the page
   is backed from the Detail display.
 - Add "CWPKit" in "lib" directory for FileMaker Server to remove a dependency of FX.php in the future.
+- Customizing X-Frame-Options and Content-Security-Policy headers in the params.php file.
+- Customizing the file path format of uploaded file with params.php file.
+- The IMLibUI.valueChange method is locked with the id attribute value to prevent the error when multiple
+  updating processes run simultaneously.
 - [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native
   Authentication for mobile devices. The affected version is 5.3 only.
 - [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
