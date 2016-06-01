@@ -27,6 +27,26 @@ class FileUploader
 
     */
 
+    private function justfyPathComponent($str, $mode = "default")    {
+        $jStr = $str;
+        switch($mode)   {
+            case "assjis":
+                $jStr = mb_convert_encoding($jStr, "SJIS", "UTF-8");
+                $jStr = mb_convert_encoding($jStr, "UTF-8", "SJIS");
+                $jStr = str_replace(DIRECTORY_SEPARATOR, '_', str_replace('.', '_', $jStr));
+                break;
+            case "asucs4":
+                $jStr = mb_convert_encoding($jStr, "UCS-4", "UTF-8");
+                $jStr = mb_convert_encoding($jStr, "UTF-8", "UCS-4");
+                $jStr = str_replace(DIRECTORY_SEPARATOR, '_', str_replace('.', '_', $jStr));
+                break;
+            default:
+                $jStr = str_replace('.', '_', urlencode($jStr));
+                break;
+        }
+        return $jStr;
+}
+
     public function processingAsError($datasource, $options, $dbspec, $debug)
     {
         $dbProxyInstance = new DB_Proxy();
@@ -144,10 +164,15 @@ class FileUploader
                 $fileRoot .= '/';
             }
 
-            $dirPath = str_replace('.', '_', urlencode($_POST["_im_contextname"])) . '/'
-                . str_replace('.', '_', urlencode($_POST["_im_keyfield"])) . "="
-                . str_replace('.', '_', urlencode($_POST["_im_keyvalue"])) . '/'
-                . str_replace('.', '_', urlencode($_POST["_im_field"]));
+            $uploadFilePathMode = null;
+            $params = IMUtil::getFromParamsPHPFile(array("uploadFilePathMode",), true);
+            $uploadFilePathMode = $params["uploadFilePathMode"];
+
+            $dirPath =
+                $this->justfyPathComponent($_POST["_im_contextname"], $uploadFilePathMode) . DIRECTORY_SEPARATOR
+                . $this->justfyPathComponent($_POST["_im_keyfield"], $uploadFilePathMode) . "="
+                . $this->justfyPathComponent($_POST["_im_keyvalue"], $uploadFilePathMode) . DIRECTORY_SEPARATOR
+                . $this->justfyPathComponent($_POST["_im_field"], $uploadFilePathMode);
             $rand4Digits = rand(1000, 9999);
             $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
                 . $rand4Digits . '.' . $filePathInfo['extension'];

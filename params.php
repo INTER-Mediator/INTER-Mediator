@@ -204,3 +204,11 @@ $pusherParameters = array(
  * https://developer.mozilla.org/ja/docs/Web/Security/CSP/Using_Content_Security_Policy
  */
 //$contentSecurityPolicy = "";
+
+/* Customize the path generation in uploading file
+ *
+ * The value "assjis" and "asucs4" are supported. This is not convert path string from key
+ * field and value, but the string encoding is convert to sjis or ucs-4 and back to utf-8.
+ * As the default, the string is going to be encoded with the urlencode function.
+ */
+$uploadFilePathMode = "";
