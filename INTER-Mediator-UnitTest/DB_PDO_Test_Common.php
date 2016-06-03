@@ -38,7 +38,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    public function testAggregation()   {
+    public function testAggregation()
+    {
         $this->dbProxySetupForAggregation();
         $result = $this->db_proxy->readFromDB("summary");
         $recordCount = $this->db_proxy->countQueryResult("summary");
@@ -283,9 +284,12 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        $this->assertTrue($result[1]["id"] == 2, $testName);
-        $this->assertTrue($result[1]["name"] == "Someone", $testName);
-        $this->assertTrue($result[1]["address"] == 'Tokyo, Japan', $testName);
+        foreach ($result as $record) {
+            if ($record["id"] == 2) {
+                $this->assertTrue($record["name"] == "Someone", $testName);
+                $this->assertTrue($record["address"] == 'Tokyo, Japan', $testName);
+            }
+        }
     }
 
     public function testAuthByInvalidUsder()
