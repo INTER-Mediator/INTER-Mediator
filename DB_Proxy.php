@@ -38,8 +38,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     /**
      * @var
      */
-    private $paramAuthUser;
+    public $paramAuthUser = null;
 
+    public $paramResponse = null;
+    public $paramCryptResponse = null;
+    public $clientId;
     /**
      * @var
      */
@@ -723,6 +726,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if (isset($options['smtp'])) {
             $this->dbSettings->setSmtpConfiguration($options['smtp']);
         }
+
+        $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
+        $this->paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
+        $this->paramCryptResponse = isset($_POST['cresponse']) ? $_POST['cresponse'] : "";
+        $this->clientId = isset($_POST['clientid']) ? $_POST['clientid'] :
+            (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
     }
 
     /*
@@ -774,31 +783,26 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $access = is_null($access) ? $_POST['access'] : $access;
         $access = (($access == "select") || ($access == "load")) ? "read" : $access;
-        $clientId = isset($_POST['clientid']) ? $_POST['clientid'] :
-            (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
-        $this->paramAuthUser = isset($_POST['authuser']) ? $_POST['authuser'] : "";
-        $paramResponse = isset($_POST['response']) ? $_POST['response'] : "";
-        $paramCryptResponse = isset($_POST['cresponse']) ? $_POST['cresponse'] : "";
 
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);
         $this->dbSettings->setDBNative(false);
-        if (isset($options['authentication'])
+        if (!is_null($options)
             || $access == 'challenge' || $access == 'changepassword'
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
             $this->dbSettings->setRequireAuthorization(true);
             $this->dbSettings->setDBNative(false);
-            if (isset($options['authentication']['user'])
-                && $options['authentication']['user'][0] == 'database_native'
+            if (isset($options['user'])
+                && $options['user'][0] == 'database_native'
             ) {
                 $this->dbSettings->setDBNative(true);
             }
         }
 
         if (!$bypassAuth && $this->dbSettings->getRequireAuthorization()) { // Authentication required
-            if (strlen($this->paramAuthUser) == 0 || strlen($paramResponse) == 0) {
+            if (strlen($this->paramAuthUser) == 0 || strlen($this->paramResponse) == 0) {
                 // No username or password
                 $access = "do nothing";
                 $this->dbSettings->setRequireAuthentication(true);
@@ -806,9 +810,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             // User and Password are suppried but...
             if ($access != 'challenge') { // Not accessing getting a challenge.
                 if ($this->dbSettings->isDBNative()) {
-                    list($password, $challenge) = $this->decrypting($paramCryptResponse);
+                    list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
                     if ($password !== false) {
-                        if (!$this->checkChallenge($challenge, $clientId)) {
+                        if (!$this->checkChallenge($challenge, $this->clientId)) {
                             $access = "do nothing";
                             $this->dbSettings->setRequireAuthentication(true);
                         } else {
@@ -854,14 +858,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($this->paramAuthUser);
 
                     $authSucceed = false;
-                    if ($this->checkAuthorization($signedUser, $paramResponse, $clientId)) {
+                    if ($this->checkAuthorization($signedUser, $this->paramResponse, $this->clientId)) {
                         $this->logger->setDebugMessage("IM-built-in Authentication succeed.");
                         $authSucceed = true;
                     } else {
                         $ldap = new LDAPAuth();
                         $ldap->setLogger($this->logger);
                         if ($ldap->isActive) {
-                            list($password, $challenge) = $this->decrypting($paramCryptResponse);
+                            list($password, $challenge) = $this->decrypting($this->paramCryptResponse);
                             if ($ldap->bindCheck($signedUser, $password)) {
                                 $this->logger->setDebugMessage("LDAP Authentication succeed.");
                                 $authSucceed = true;
@@ -872,7 +876,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
                     if (!$authSucceed) {
                         $this->logger->setDebugMessage(
-                            "Authentication doesn't meet valid.{$signedUser}/{$paramResponse}/{$clientId}");
+                            "Authentication doesn't meet valid.{$signedUser}/{$this->paramResponse}/{$this->clientId}");
                         // Not Authenticated!
                         $access = "do nothing";
                         $this->dbSettings->setRequireAuthentication(true);
@@ -1167,6 +1171,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $signedUser = $this->dbClass->authSupportUnifyUsernameAndEmail($username);
         $uid = $this->dbClass->authSupportGetUserIdFromUsername($signedUser);
+        $this->logger->setDebugMessage("[checkAuthorization]uid={$uid}", 2);
         if ($uid < 0) {
             return $returnValue;
         }

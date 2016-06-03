@@ -71,7 +71,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->db_proxy->initialize(
             array(
                 array(
-                    'records' => 1,
+                    'records' => 1000,
                     'paging' => true,
                     'name' => 'person',
                     'key' => 'id',
