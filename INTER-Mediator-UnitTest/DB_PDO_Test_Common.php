@@ -270,8 +270,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
-        $checkResult = $this->db_proxy->checkAuthorization($username, $calcuratedHash, $clientId);
-        $this->assertTrue($checkResult, $testName);
 
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
@@ -284,7 +282,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        foreach ($result as $record) {
+        foreach ($result as $index=>$record) {
             if ($record["id"] == 2) {
                 $this->assertTrue($record["name"] == "Someone", $testName);
                 $this->assertTrue($record["address"] == 'Tokyo, Japan', $testName);
@@ -307,8 +305,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
-        $checkResult = $this->db_proxy->checkAuthorization($username, $calcuratedHash, $clientId);
-        $this->assertTrue($checkResult, $testName);
 
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");
