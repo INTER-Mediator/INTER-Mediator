@@ -39,6 +39,7 @@ Ver.5.4 (in development)
 - [BUG FIX] Update FX.php to fix compatibility with authentication for FileMaker Server.
 - [BUG FIX] Enrolment methods had a bug in case of FileMaker Server with issuedhash for SQLite.
 - [BUG FIX] When the text field bond to local context didn't update calculated property.
+- [BUG FIX] Authentication prevented in case of just specify on the second parameter of IM_Entry.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php

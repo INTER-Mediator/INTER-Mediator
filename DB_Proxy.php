@@ -783,15 +783,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->dbSettings->setRequireAuthentication(false);
         $this->dbSettings->setRequireAuthorization(false);
         $this->dbSettings->setDBNative(false);
-        if (isset($options['authentication'])
+        if (!is_null($options)
             || $access == 'challenge' || $access == 'changepassword'
             || (isset($tableInfo['authentication'])
                 && (isset($tableInfo['authentication']['all']) || isset($tableInfo['authentication'][$access])))
         ) {
             $this->dbSettings->setRequireAuthorization(true);
             $this->dbSettings->setDBNative(false);
-            if (isset($options['authentication']['user'])
-                && $options['authentication']['user'][0] == 'database_native'
+            if (isset($options['user'])
+                && $options['user'][0] == 'database_native'
             ) {
                 $this->dbSettings->setDBNative(true);
             }
