@@ -65,7 +65,7 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
         $this->db_proxy = new DB_Proxy(true);
         $this->db_proxy->initialize(array(
             array(
-                'records' => 1,
+                'records' => 1000,
                 'paging' => true,
                 'name' => 'person',
                 'key' => 'id',
@@ -77,7 +77,7 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             array(
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
-                    'group' => array('group2'), // Itemize permitted groups
+                    'group' => array('group2'), // gropu2 contain user4 and user5
                     'privilege' => array(), // Itemize permitted privileges
                     'user-table' => 'authuser', // Default value
                     'group-table' => 'authgroup',
