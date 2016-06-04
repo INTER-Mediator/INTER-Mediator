@@ -172,9 +172,12 @@ class GenerateJSCode
             $pathToMySelf = filter_var($_SERVER['SCRIPT_NAME']);
         }
 
-        $pathToIMRootDir = mb_ereg_replace(
-            mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
-            "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
+        $pathToIMRootDir = '';
+        if (function_exists('mb_ereg_replace')) {
+            $pathToIMRootDir = mb_ereg_replace(
+                mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
+                "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
+        }
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
@@ -346,9 +349,9 @@ class GenerateJSCode
         if (! isset($valuesForLocalContext)) {
             $valuesForLocalContext = array();
         }
-        if ($options["local-context"]) {
-            foreach($options["local-context"] as $item) {
-                $valuesForLocalContext[$item["key"]] = $item["value"];
+        if (isset($options['local-context'])) {
+            foreach($options['local-context'] as $item) {
+                $valuesForLocalContext[$item['key']] = $item['value'];
             }
         }
         if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
