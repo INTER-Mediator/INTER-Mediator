@@ -17,29 +17,11 @@ class GenerateJSCode
 {
     public function __construct()
     {
-        $xFrameOptions = null;
-        $contentSecurityPolicy = null;
-        $params = IMUtil::getFromParamsPHPFile(array("xFrameOptions", "contentSecurityPolicy",), true);
-        $xFrameOptions = $params["xFrameOptions"];
-        $contentSecurityPolicy = $params["contentSecurityPolicy"];
-
         header('Content-Type: text/javascript;charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
         header('Expires: 0');
-        header('X-XSS-Protection: 1; mode=block');
-
-        if (is_null($xFrameOptions)) {
-            $xFrameOptions = "SAMEORIGIN";
-        }
-        if ($xFrameOptions != "") {
-            header("X-Frame-Options: {$xFrameOptions}");
-        }
-        if (is_null($contentSecurityPolicy)) {
-            $contentSecurityPolicy = "";
-        }
-        if ($contentSecurityPolicy != "") {
-            header("Content-Security-Policy: {$contentSecurityPolicy}");
-        }
+        $util = new IMUtil();
+        $util->outputSecurityHeaders();
     }
 
     public function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
