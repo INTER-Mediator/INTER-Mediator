@@ -32,7 +32,7 @@ IMParts_Catalog["jquery_fileupload"] = {
         node = document.createElement("I");
         node.setAttribute("class", "glyphicon glyphicon-plus");
         pNode.appendChild(node);
-        node = document.createElement("SAPN");
+        node = document.createElement("SPAN");
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3209]));
         pNode.appendChild(node);
         node = document.createElement("INPUT");
@@ -49,12 +49,12 @@ IMParts_Catalog["jquery_fileupload"] = {
         container.appendChild(node);
         pNode = node;
 
-        node = document.createElement("SAPN");
+        node = document.createElement("SPAN");
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3210]));
         node.style.color = "gray";
         pNode.appendChild(node);
         pNode.appendChild(document.createElement("BR"));
-        node = document.createElement("SAPN");
+        node = document.createElement("SPAN");
         node.setAttribute("id", nodeId + "-filename");
         node.style.width = "100%";
         pNode.appendChild(node);
@@ -73,7 +73,7 @@ IMParts_Catalog["jquery_fileupload"] = {
         node = document.createElement("I");
         node.setAttribute("class", "glyphicon");
         pNode.appendChild(node);
-        node = document.createElement("SAPN");
+        node = document.createElement("SPAN");
         node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[3211]));
         pNode.appendChild(node);
 
