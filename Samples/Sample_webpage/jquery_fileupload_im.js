@@ -159,10 +159,12 @@ IMParts_Catalog["jquery_fileupload"] = {
                     done:(function () {
                         var cName = cInfo.context.contextName;
                         return function (e, data) {
-                            INTERMediator_DBAdapter.uploadFileAfterSucceed(
+                            var result = INTERMediator_DBAdapter.uploadFileAfterSucceed(
                                 data.jqXHR, function () {}, function () {}, true);
                             data.jqXHR.abort();
-                            INTERMediator.construct(IMLibContextPool.contextFromName(cName));
+                            if (result) {
+                                INTERMediator.construct(IMLibContextPool.contextFromName(cName));
+                            }
                         };
                     })(),
                     fail: function (e, data) {

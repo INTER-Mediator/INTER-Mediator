@@ -415,7 +415,7 @@ INTERMediator_DBAdapter = {
     uploadFileAfterSucceed: function (myRequest, doItOnFinish, exceptionProc, isErrorDialog) {
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, changePasswordResult = null,
-            mediatoken = null, appPath, authParams, accessURL, jsonObject, i;
+            mediatoken = null, appPath, authParams, accessURL, jsonObject, i, returnValue = true;
         try {
             //console.log(myRequest.responseText);
             jsonObject = JSON.parse(myRequest.responseText);
@@ -425,7 +425,7 @@ INTERMediator_DBAdapter = {
                     INTERMediatorOnPage.getMessages()[1032], ["", ""]));
             INTERMediator.flushMessage();
             exceptionProc();
-            return;
+            return false;
         }
         resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
         dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
@@ -441,6 +441,7 @@ INTERMediator_DBAdapter = {
             } else {
                 INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
             }
+            returnValue = false;
         }
         for (i = 0; i < jsonObject.debugMessages.length; i++) {
             INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
@@ -464,6 +465,7 @@ INTERMediator_DBAdapter = {
         INTERMediatorOnPage.authCount = 0;
         INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
         doItOnFinish(dbresult);
+        return returnValue;
     },
 
     /*
