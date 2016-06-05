@@ -95,30 +95,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function __construct($testmode = false)
     {
         if (!$testmode) {
-            $xFrameOptions = null;
-            $contentSecurityPolicy = null;
-            $params = IMUtil::getFromParamsPHPFile(array("xFrameOptions", "contentSecurityPolicy",), true);
-            $xFrameOptions = $params["xFrameOptions"];
-            $contentSecurityPolicy = $params["contentSecurityPolicy"];
-
             header('Content-Type: text/javascript;charset="UTF-8"');
             header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
             header('Expires: 0');
-            header('X-XSS-Protection: 1; mode=block');
             header('X-Content-Type-Options: nosniff');
-
-            if (is_null($xFrameOptions)) {
-                $xFrameOptions = "SAMEORIGIN";
-            }
-            if ($xFrameOptions != "") {
-                header("X-Frame-Options: {$xFrameOptions}");
-            }
-            if (is_null($contentSecurityPolicy)) {
-                $contentSecurityPolicy = "";
-            }
-            if ($contentSecurityPolicy != "") {
-                header("Content-Security-Policy: {$contentSecurityPolicy}");
-            }
+            $util = new IMUtil();
+            $util->outputSecurityHeaders();
         }
     }
 

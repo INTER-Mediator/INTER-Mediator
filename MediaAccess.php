@@ -54,12 +54,6 @@ class MediaAccess
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
             }
 
-            $xFrameOptions = null;
-            $contentSecurityPolicy = null;
-            $params = IMUtil::getFromParamsPHPFile(array("xFrameOptions", "contentSecurityPolicy",), true);
-            $xFrameOptions = $params["xFrameOptions"];
-            $contentSecurityPolicy = $params["contentSecurityPolicy"];
-
             $content = false;
             $dq = '"';
             if (!$isURL) { // File path.
@@ -75,19 +69,8 @@ class MediaAccess
                 header("Content-Type: " . $this->getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
-                header('X-XSS-Protection: 1; mode=block');
-                if (is_null($xFrameOptions)) {
-                    $xFrameOptions = "SAMEORIGIN";
-                }
-                if ($xFrameOptions != "") {
-                    header("X-Frame-Options: {$xFrameOptions}");
-                }
-                if (is_null($contentSecurityPolicy)) {
-                    $contentSecurityPolicy = "";
-                }
-                if ($contentSecurityPolicy != "") {
-                    header("Content-Security-Policy: {$contentSecurityPolicy}");
-                }
+                $util = new IMUtil();
+                $util->outputSecurityHeaders();
 
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
@@ -113,19 +96,8 @@ class MediaAccess
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}"
                     . str_replace("+", "%20", urlencode($fileName)) . $dq);
-                header('X-XSS-Protection: 1; mode=block');
-                if (is_null($xFrameOptions)) {
-                    $xFrameOptions = "SAMEORIGIN";
-                }
-                if ($xFrameOptions != "") {
-                    header("X-Frame-Options: {$xFrameOptions}");
-                }
-                if (is_null($contentSecurityPolicy)) {
-                    $contentSecurityPolicy = "";
-                }
-                if ($contentSecurityPolicy != "") {
-                    header("Content-Security-Policy: {$contentSecurityPolicy}");
-                }
+                $util = new IMUtil();
+                $util->outputSecurityHeaders();
 
                 $this->outputImage($content);
             } else if (stripos($target, 'class://') === 0) { // class
@@ -422,24 +394,8 @@ class MediaAccess
                         imagejpeg($content);
                         $size = ob_get_length();
                         header('Content-Length: ' . $size);
-                        header('X-XSS-Protection: 1; mode=block');
-                        $xFrameOptions = null;
-                        $contentSecurityPolicy = null;
-                        $params = IMUtil::getFromParamsPHPFile(array("xFrameOptions", "contentSecurityPolicy",), true);
-                        $xFrameOptions = $params["xFrameOptions"];
-                        $contentSecurityPolicy = $params["contentSecurityPolicy"];
-                        if (is_null($xFrameOptions)) {
-                            $xFrameOptions = "SAMEORIGIN";
-                        }
-                        if ($xFrameOptions != "") {
-                            header("X-Frame-Options: {$xFrameOptions}");
-                        }
-                        if (is_null($contentSecurityPolicy)) {
-                            $contentSecurityPolicy = "";
-                        }
-                        if ($contentSecurityPolicy != "") {
-                            header("Content-Security-Policy: {$contentSecurityPolicy}");
-                        }
+                        $util = new IMUtil();
+                        $util->outputSecurityHeaders();
 
                         ob_end_flush();
                     }

@@ -17,29 +17,11 @@ class GenerateJSCode
 {
     public function __construct()
     {
-        $xFrameOptions = null;
-        $contentSecurityPolicy = null;
-        $params = IMUtil::getFromParamsPHPFile(array("xFrameOptions", "contentSecurityPolicy",), true);
-        $xFrameOptions = $params["xFrameOptions"];
-        $contentSecurityPolicy = $params["contentSecurityPolicy"];
-
         header('Content-Type: text/javascript;charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
         header('Expires: 0');
-        header('X-XSS-Protection: 1; mode=block');
-
-        if (is_null($xFrameOptions)) {
-            $xFrameOptions = "SAMEORIGIN";
-        }
-        if ($xFrameOptions != "") {
-            header("X-Frame-Options: {$xFrameOptions}");
-        }
-        if (is_null($contentSecurityPolicy)) {
-            $contentSecurityPolicy = "";
-        }
-        if ($contentSecurityPolicy != "") {
-            header("Content-Security-Policy: {$contentSecurityPolicy}");
-        }
+        $util = new IMUtil();
+        $util->outputSecurityHeaders();
     }
 
     public function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
@@ -172,9 +154,12 @@ class GenerateJSCode
             $pathToMySelf = filter_var($_SERVER['SCRIPT_NAME']);
         }
 
-        $pathToIMRootDir = mb_ereg_replace(
-            mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
-            "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
+        $pathToIMRootDir = '';
+        if (function_exists('mb_ereg_replace')) {
+            $pathToIMRootDir = mb_ereg_replace(
+                mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
+                "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
+        }
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
@@ -346,9 +331,9 @@ class GenerateJSCode
         if (! isset($valuesForLocalContext)) {
             $valuesForLocalContext = array();
         }
-        if ($options["local-context"]) {
-            foreach($options["local-context"] as $item) {
-                $valuesForLocalContext[$item["key"]] = $item["value"];
+        if (isset($options['local-context'])) {
+            foreach($options['local-context'] as $item) {
+                $valuesForLocalContext[$item['key']] = $item['value'];
             }
         }
         if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
