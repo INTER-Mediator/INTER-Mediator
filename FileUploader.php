@@ -59,7 +59,7 @@ class FileUploader
         } else {
             foreach ($_FILES as $fn => $fileInfo) {
                 if (isset($fileInfo["error"])) {
-                    switch ($fileInfo["error"]) {
+                    switch (is_array($fileInfo["error"]) ? $fileInfo["error"][0] : $fileInfo["error"]) {
                         case UPLOAD_ERR_OK:
                             break;
                         case UPLOAD_ERR_NO_FILE:
@@ -156,9 +156,28 @@ class FileUploader
         }
         foreach ($_FILES as $fn => $fileInfo) {
         }
-        $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfo['name'])));
+        if (is_array($fileInfo['name']))    {   // JQuery File Upload Style
+            $fileInfoName = $fileInfo['name'][0];
+            $fileInfoTemp = $fileInfo['tmp_name'][0];
+        } else {
+            $fileInfoName = $fileInfo['name'];
+            $fileInfoTemp = $fileInfo['tmp_name'];
+        }
+        $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
 
-        if ($useContainer === FALSE) {
+        if ($useContainer) {
+            // for uploading to FileMaker's container field
+            $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
+            $tmpDir = ini_get('upload_tmp_dir');
+            if ($tmpDir === '') {
+                $tmpDir = sys_get_temp_dir();
+            }
+            if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
+                $filePath = $tmpDir . $fileName;
+            } else {
+                $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
+            }
+        } else {
             $fileRoot = $options['media-root-dir'];
             if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
                 $fileRoot .= '/';
@@ -196,20 +215,10 @@ class FileUploader
                 }
             }
         }
-        if ($useContainer === TRUE) {
-            // for uploading to FileMaker's container field
-            $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
-            $tmpDir = ini_get('upload_tmp_dir');
-            if ($tmpDir === '') {
-                $tmpDir = sys_get_temp_dir();
-            }
-            if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
-                $filePath = $tmpDir . $fileName;
-            } else {
-                $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
-            }
-        }
-        $result = move_uploaded_file(IMUtil::removeNull($fileInfo['tmp_name']), $filePath);
+        $result = move_uploaded_file(IMUtil::removeNull($fileInfoTemp), $filePath);
+        file_put_contents("/tmp/1", var_export($filePath, true));
+        file_put_contents("/tmp/1", var_export($fileInfoTemp, true), FILE_APPEND);
+        file_put_contents("/tmp/1", var_export($result, true), FILE_APPEND);
         if (!$result) {
             if (!is_null($url)) {
                 header('Location: ' . $url);

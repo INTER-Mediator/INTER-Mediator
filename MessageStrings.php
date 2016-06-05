@@ -21,13 +21,15 @@ class MessageStrings
         return $this->messages;
     }
 
-    public function getMessageAs($num, $appending)
+    public function getMessageAs($num, $appending = null)
     {
         $msg = $this->messages[$num];
         $index = 1;
-        foreach ($appending as $keyword) {
-            $msg = str_replace("@{$index}@", $keyword, $msg);
-            $index++;
+        if (! is_null($appending)) {
+            foreach ($appending as $keyword) {
+                $msg = str_replace("@{$index}@", $keyword, $msg);
+                $index++;
+            }
         }
         return $msg;
     }
@@ -124,5 +126,8 @@ class MessageStrings
         3206 => "Can't write to disk or file system.",
         3207 => "Extension module prevents to upload.",
         3208 => "Unknown error in file uploading.",
+        3209 => "Select File...",
+        3210 => "Selected File: ",
+        3211 => "Upload",
     );
 }

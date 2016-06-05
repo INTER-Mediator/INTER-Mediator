@@ -59,10 +59,19 @@ class IMUtil
             return true;
         }
         foreach ($_FILES as $fn => $fileInfo) {
-            if (isset($fileInfo["error"]) && $fileInfo["error"] != UPLOAD_ERR_OK) {
-                return true;
+            if (isset($fileInfo["error"]))  {
+                $errInfo = $fileInfo["error"];
+                if (is_array($errInfo)) {   // JQuery File Upload Style
+                    foreach($errInfo as $index => $errCode) {
+                        if ($errCode != UPLOAD_ERR_OK) {
+                            return true;
+                        }
+                    }
+                } else if ($fileInfo["error"] != UPLOAD_ERR_OK) {
+                    return true;
+                }
             }
-        }
+         }
         return false;
     }
 
