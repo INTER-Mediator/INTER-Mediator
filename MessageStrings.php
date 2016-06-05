@@ -21,13 +21,15 @@ class MessageStrings
         return $this->messages;
     }
 
-    public function getMessageAs($num, $appending)
+    public function getMessageAs($num, $appending = null)
     {
         $msg = $this->messages[$num];
         $index = 1;
-        foreach ($appending as $keyword) {
-            $msg = str_replace("@{$index}@", $keyword, $msg);
-            $index++;
+        if (! is_null($appending)) {
+            foreach ($appending as $keyword) {
+                $msg = str_replace("@{$index}@", $keyword, $msg);
+                $index++;
+            }
         }
         return $msg;
     }
@@ -117,12 +119,15 @@ class MessageStrings
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
         3201 => "Exceeded post size limit. Check the post_max_size in php.ini file.",
-        3202 => "No file wasn't uploaded.",
+        3202 => "No file wasn't uploaded. Possibly, exceeded file size limit.",
         3203 => "Exceeded file size limit. Check the upload_max_filesize in php.ini file.",
         3204 => "Partially uploaded.",
         3205 => "Temporary directory doesn't exist.",
         3206 => "Can't write to disk or file system.",
         3207 => "Extension module prevents to upload.",
         3208 => "Unknown error in file uploading.",
+        3209 => "Select File...",
+        3210 => "Selected File: ",
+        3211 => "Upload",
     );
 }
