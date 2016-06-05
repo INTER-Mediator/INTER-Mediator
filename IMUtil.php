@@ -195,4 +195,27 @@ class IMUtil
 
         return FALSE;
     }
+
+    public function outputSecurityHeaders($params = NULL)
+    {
+        if (is_null($params)) {
+            $params = IMUtil::getFromParamsPHPFile(array('xFrameOptions', 'contentSecurityPolicy'), true);
+        }
+        $xFrameOptions = str_replace("\r", '', str_replace("\n", '', $params['xFrameOptions']));
+        $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', $params['contentSecurityPolicy']));
+
+        if (is_null($xFrameOptions) || empty($xFrameOptions)) {
+            $xFrameOptions = 'SAMEORIGIN';
+        }
+        if ($xFrameOptions !== '') {
+            header("X-Frame-Options: {$xFrameOptions}");
+        }
+        if (is_null($contentSecurityPolicy) || empty($contentSecurityPolicy)) {
+            $contentSecurityPolicy = '';
+        }
+        if ($contentSecurityPolicy !== '') {
+            header("Content-Security-Policy: {$contentSecurityPolicy}");
+        }
+        header('X-XSS-Protection: 1; mode=block');
+    }
 }
