@@ -78,14 +78,15 @@ IMParts_Catalog["jquery_fileupload"] = {
         pNode.appendChild(node);
 
         node = document.createElement("DIV");
-        node.setAttribute("id", nodeId + "-progress");
         node.style.marginTop = "6px";
         node.setAttribute("class", "progress");
         container.appendChild(node);
         pNode = node;
 
         node = document.createElement("DIV");
-        node.setAttribute("class", "bar");
+        node.setAttribute("id", nodeId + "-progress");
+        node.style.height = "18px";
+        node.style.background = "green";
         node.style.width = "0";
         pNode.appendChild(node);
 
@@ -172,7 +173,7 @@ IMParts_Catalog["jquery_fileupload"] = {
                         var idValue = targetId;
                         return function (e, data) {
                             var progress = parseInt(data.loaded / data.total * 100, 10);
-                            $('#' + idValue + '-progress .bar').css('width', progress + '%');
+                            $('#' + idValue + '-progress').css('width', progress + '%');
                         };
                     })()
                 });

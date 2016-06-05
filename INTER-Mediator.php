@@ -105,9 +105,6 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
         $dbInstance->processingRequest("NON");
         $g_dbInstance = $dbInstance;
-    } else if (IMUtil::guessFileUploadError()) {
-        $fileUploader = new FileUploader();
-        $fileUploader->processingAsError($datasource, $options, $dbspecification, $debug);
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();
@@ -123,7 +120,11 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
     ) {
         $fileUploader = new FileUploader();
-        $fileUploader->processing($datasource, $options, $dbspecification, $debug);
+        if (IMUtil::guessFileUploadError()) {
+            $fileUploader->processingAsError($datasource, $options, $dbspecification, $debug);
+        } else {
+            $fileUploader->processing($datasource, $options, $dbspecification, $debug);
+        }
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);

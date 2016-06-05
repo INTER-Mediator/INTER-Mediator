@@ -147,7 +147,8 @@ class FileUploader
             if (!is_null($url)) {
                 header('Location: ' . $url);
             } else {
-                $dbProxyInstance->logger->setErrorMessage("No file wasn't uploaded.");
+                $messages = IMUtil::getMessageClassInstance();
+                $dbProxyInstance->logger->setErrorMessage($messages->getMessageAs(3202));
                 $dbProxyInstance->processingRequest("noop");
                 $dbProxyInstance->finishCommunication();
                 $dbProxyInstance->exportOutputDataAsJSON();
@@ -216,9 +217,6 @@ class FileUploader
             }
         }
         $result = move_uploaded_file(IMUtil::removeNull($fileInfoTemp), $filePath);
-        file_put_contents("/tmp/1", var_export($filePath, true));
-        file_put_contents("/tmp/1", var_export($fileInfoTemp, true), FILE_APPEND);
-        file_put_contents("/tmp/1", var_export($result, true), FILE_APPEND);
         if (!$result) {
             if (!is_null($url)) {
                 header('Location: ' . $url);

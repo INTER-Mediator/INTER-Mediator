@@ -119,7 +119,7 @@ class MessageStrings
         3101 => 'Drag Here.',
         3102 => 'Dragged File: ',
         3201 => "Exceeded post size limit. Check the post_max_size in php.ini file.",
-        3202 => "No file wasn't uploaded.",
+        3202 => "No file wasn't uploaded. Possibly, exceeded file size limit.",
         3203 => "Exceeded file size limit. Check the upload_max_filesize in php.ini file.",
         3204 => "Partially uploaded.",
         3205 => "Temporary directory doesn't exist.",
