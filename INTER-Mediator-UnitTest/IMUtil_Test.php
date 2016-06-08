@@ -83,4 +83,64 @@ class IMUtil_Test extends PHPUnit_Framework_TestCase {
             $this->assertFalse($result);
         }
     }
+
+    /**
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
+    public function test_outputSecurityHeaders()
+    {
+        $params = array();
+
+        if (function_exists('xdebug_get_headers')) {
+            ob_start();
+            $this->util->outputSecurityHeaders();
+            $headers = xdebug_get_headers();
+            header_remove();
+            ob_clean();
+            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+            $this->assertNotContains('Content-Security-Policy: ', $headers);
+            $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
+
+            $params["xFrameOptions"] = '';
+            $params["contentSecurityPolicy"] = '';
+            ob_start();
+            $this->util->outputSecurityHeaders($params);
+            $headers = xdebug_get_headers();
+            header_remove();
+            ob_clean();
+            $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
+            $this->assertNotContains('Content-Security-Policy:', $headers);
+
+            $params["xFrameOptions"] = 'DENY';
+            $params["contentSecurityPolicy"] = '';
+            ob_start();
+            $this->util->outputSecurityHeaders($params);
+            $headers = xdebug_get_headers();
+            header_remove();
+            ob_clean();
+            $this->assertContains('X-Frame-Options: DENY', $headers);
+            $this->assertNotContains('Content-Security-Policy:', $headers);
+
+            $params["xFrameOptions"] = 'ALLOW-FROM http://inter-mediator.com/';
+            $params["contentSecurityPolicy"] = 'frame-ancestors https://inter-mediator.com http://inter-mediator.info';
+            ob_start();
+            $this->util->outputSecurityHeaders($params);
+            $headers = xdebug_get_headers();
+            header_remove();
+            ob_clean();
+            $this->assertContains('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers);
+            $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
+
+            $params["xFrameOptions"] = "ALLOW-FROM\n http://inter-mediator.com/";
+            $params["contentSecurityPolicy"] = "frame-ancestors\n https://inter-mediator.com http://inter-mediator.info";
+            ob_start();
+            $this->util->outputSecurityHeaders($params);
+            $headers = xdebug_get_headers();
+            header_remove();
+            ob_clean();
+            $this->assertContains('X-Frame-Options: ALLOW-FROM http://inter-mediator.com/', $headers);
+            $this->assertContains('Content-Security-Policy: frame-ancestors https://inter-mediator.com http://inter-mediator.info', $headers);
+        }
+    }
 }

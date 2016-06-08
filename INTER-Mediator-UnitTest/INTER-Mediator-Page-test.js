@@ -1,4 +1,7 @@
 var assert = buster.referee.assert;
+INTERMediatorOnPage.getIMRootPath = function() {
+    return "/INTER-Mediator";
+};
 
 buster.testCase("INTERMediatorOnPage.getMessages() Test", {
     "should return null": function () {

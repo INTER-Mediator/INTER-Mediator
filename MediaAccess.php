@@ -69,8 +69,9 @@ class MediaAccess
                 header("Content-Type: " . $this->getMimeType($fileName));
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}" . urlencode($fileName) . $dq);
-                header('X-XSS-Protection: 1; mode=block');
-                header('X-Frame-Options: SAMEORIGIN');
+                $util = new IMUtil();
+                $util->outputSecurityHeaders();
+
                 $this->outputImage($content);
             } else if (stripos($target, 'http://') === 0 || stripos($target, 'https://') === 0) { // http or https
                 if (intval(get_cfg_var('allow_url_fopen')) === 1) {
@@ -95,8 +96,9 @@ class MediaAccess
                 header("Content-Length: " . strlen($content));
                 header("Content-Disposition: {$this->disposition}; filename={$dq}"
                     . str_replace("+", "%20", urlencode($fileName)) . $dq);
-                header('X-XSS-Protection: 1; mode=block');
-                header('X-Frame-Options: SAMEORIGIN');
+                $util = new IMUtil();
+                $util->outputSecurityHeaders();
+
                 $this->outputImage($content);
             } else if (stripos($target, 'class://') === 0) { // class
                 $noscheme = substr($target, 8);
@@ -392,8 +394,9 @@ class MediaAccess
                         imagejpeg($content);
                         $size = ob_get_length();
                         header('Content-Length: ' . $size);
-                        header('X-XSS-Protection: 1; mode=block');
-                        header('X-Frame-Options: SAMEORIGIN');
+                        $util = new IMUtil();
+                        $util->outputSecurityHeaders();
+
                         ob_end_flush();
                     }
                     imagedestroy($image);

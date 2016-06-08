@@ -165,9 +165,16 @@ class DefinitionChecker
         $prohibitKeywordsForOption = array(
         'separator' => 'string',
         'formatter' => array(
-            '*' => array('field' => 'string',
+            '*' => array(
+                'field' => 'string',
                 'converter-class' => 'string',
                 'parameter' => 'string|boolean',
+            ),
+        ),
+        'local-context' => array(
+            '*' => array(
+                'key' => 'string',
+                'value' => 'string|boolean|integer',
             ),
         ),
         'aliases' => array(
