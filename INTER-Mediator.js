@@ -388,7 +388,9 @@ INTERMediator = {
                 }
 
                 for (i = 0; i < postSetFields.length; i++) {
-                    document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
+                    if (postSetFields[i]['id'] && document.getElementById(postSetFields[i]['id'])) {
+                        document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
+                    }
                 }
                 IMLibCalc.updateCalculationFields();
                 //IMLibPageNavigation.navigationSetup();
