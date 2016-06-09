@@ -40,7 +40,7 @@ class DB_FMS_FX_Test extends DB_FMS_Test_Common
         $this->db_proxy = new DB_Proxy(true);
         $this->db_proxy->initialize(array(
                 array(
-                'records' => 1,
+                'records' => 1000,
                 'paging' => true,
                 'name' => 'person',
                 'key' => 'id',

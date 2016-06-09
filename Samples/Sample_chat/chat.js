@@ -7,9 +7,9 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-window.onload = function () {
-    INTERMediator.construct(true);
-};
+// window.onload = function () {
+//     INTERMediator.construct(true);
+// };
 
 var doAfter = false;
 // The flag to prevent executing the INTERMediatorOnPage.doAfterConstruct method more than once.

@@ -11,13 +11,36 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.4 (in development)
+- You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
+  generating, describe "INTERMediatorOnPage.doBeforeConstruct = function(){..};" on any valid place.
+  The node having the id attribute "nonsupportmessage" will disappear after page generating. If you
+  require to the another id value, you can set it into params.php as the value "$nonSupportMessageId".
+- Creating Cross Table. It contains 3 contexts for colomn, row and value cells.
+  See the sample Samples/Practices/crosstable.html.
+- The second "option" parameter of IM_Entry function can have the key "local-context" as the array of
+  "key" and "value" keyed elements. These affect as the initial values of relevant local context value.
+- The variable "$valuesForLocalContext" in params.php supplies initial values for local context.
+  The value of this variable has to be an associated array with key and value.
 - Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
 - FileUploader can detect exceeding file size limit and returns valid error messages.
-- [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native 
+- New Sample "Sample_API" is added. This is for explanation of server-side apis.
+- On the Master-Detail style UI, the scrolled point in Master display can be retrieved when the page
+  is backed from the Detail display.
+- Add "CWPKit" in "lib" directory for FileMaker Server to remove a dependency of FX.php in the future.
+- Customizing X-Frame-Options and Content-Security-Policy headers in the params.php file.
+- Customizing the file path format of uploaded file with params.php file.
+- The IMLibUI.valueChange method is locked with the id attribute value to prevent the error when multiple
+  updating processes run simultaneously.
+- Supporting jQuery File Upload. Check the file Samples/Sample_website/fileupload_jQuery_MySQL.html.
+- [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native
   Authentication for mobile devices. The affected version is 5.3 only.
 - [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
 - [BUG FIX] String array value for single value operator works fine.
 - [BUG FIX] Modify the value of INTERMediatorOnPage.getIMRootPath on Windows Server.
+- [BUG FIX] Update FX.php to fix compatibility with authentication for FileMaker Server.
+- [BUG FIX] Enrolment methods had a bug in case of FileMaker Server with issuedhash for SQLite.
+- [BUG FIX] When the text field bond to local context didn't update calculated property.
+- [BUG FIX] Authentication prevented in case of just specify on the second parameter of IM_Entry.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php

@@ -23,15 +23,12 @@ if (count($_GET) > 0) {
             $password .= substr($seed, $n, 1);
         }
 
-        require_once('../../INTER-Mediator.php');
+        require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
         $contextDef = array(
             "name" => "authuser",
             "view" => "authuser",
             "table" => "dummydummy",
             "records" => 1,
-            "query" => array(
-                array("field" => "id", "operator" => "=", "value" => ""),
-            ),
             'send-mail' => array(
                 'read' => array(
                     'to' => 'email',
@@ -46,7 +43,12 @@ if (count($_GET) > 0) {
             )
         );
         $dbInstance = new DB_Proxy();
-        $dbInstance->initialize(array($contextDef), array(), array(), 2);
+        $dbInstance->initialize(
+            array($contextDef),
+            array(),
+            array("db-class" => "PDO" /* or "FileMaker_FX" */),
+            2
+        );
         $result = $dbInstance->userEnrollmentActivateUser($_GET['c'], $password);
 
         if ($result === false) {
@@ -55,7 +57,14 @@ if (count($_GET) > 0) {
             $message .= 'アカウントを発行し、そのご案内をメールでお送りしました。';
             $contextDef["query"][0]["value"] = $result;
             $dbInstance = new DB_Proxy();
-            $dbInstance->initialize(array($contextDef), array(), array(), 2, "authuser");
+            $dbInstance->initialize(
+                array($contextDef),
+                array(),
+                array("db-class" => "PDO" /* or "FileMaker_FX" */),
+                2,
+                "authuser"
+            );
+            $dbInstance->dbSettings->addExtraCriteria("id", "=", $result);
             $dbInstance->processingRequest("read");
         }
     }

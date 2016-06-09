@@ -20,8 +20,8 @@ class GenerateJSCode
         header('Content-Type: text/javascript;charset="UTF-8"');
         header('Cache-Control: no-store,no-cache,must-revalidate,post-check=0,pre-check=0');
         header('Expires: 0');
-        header('X-XSS-Protection: 1; mode=block');
-        header('X-Frame-Options: SAMEORIGIN');
+        $util = new IMUtil();
+        $util->outputSecurityHeaders();
     }
 
     public function generateAssignJS($variable, $value1, $value2 = '', $value3 = '', $value4 = '', $value5 = '')
@@ -62,6 +62,7 @@ class GenerateJSCode
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
             "passwordPolicy", "documentRootPrefix", "dbClass",
+            "nonSupportMessageId", "valuesForLocalContext",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -73,7 +74,9 @@ class GenerateJSCode
         $oAuthRedirect = $params["oAuthRedirect"];
         $passwordPolicy = $params["passwordPolicy"];
         $dbClass = $params["dbClass"];
+        $nonSupportMessageId = $params["nonSupportMessageId"];
         $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
+        $valuesForLocalContext = $params["valuesForLocalContext"];
 
         /*
          * Read the JS programs regarding by the developing or deployed.
@@ -151,9 +154,12 @@ class GenerateJSCode
             $pathToMySelf = filter_var($_SERVER['SCRIPT_NAME']);
         }
 
-        $pathToIMRootDir = mb_ereg_replace(
-            mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
-            "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
+        $pathToIMRootDir = '';
+        if (function_exists('mb_ereg_replace')) {
+            $pathToIMRootDir = mb_ereg_replace(
+                mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
+                "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
+        }
 
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
@@ -207,6 +213,12 @@ class GenerateJSCode
             "INTERMediatorOnPage.clientNotificationIdentifier",
             "function(){return ", arrayToJS($clientId, ''), ";}");
 
+        if ($nonSupportMessageId!= "") {
+            $this->generateAssignJS(
+                "INTERMediatorOnPage.nonSupportMessageId",
+                "{$q}{$nonSupportMessageId}{$q}");
+        }
+        
         $pusherParams = null;
         if (isset($pusherParameters)) {
             $pusherParams = $pusherParameters;
@@ -259,8 +271,6 @@ class GenerateJSCode
             "INTERMediatorOnPage.isOAuthAvailable", isset($oAuthProvider) ? "true" : "false");
         $authObj = new OAuthAuth();
         if ($authObj->isActive) {
-
-
             $this->generateAssignJS("INTERMediatorOnPage.oAuthClientID",
                 $q, $oAuthClientID, $q);
             $this->generateAssignJS("INTERMediatorOnPage.oAuthBaseURL",
@@ -315,6 +325,19 @@ class GenerateJSCode
         if (isset($options['credit-including'])) {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.creditIncluding", $q, $options['credit-including'], $q);
+        }
+
+        // Initial values for local context
+        if (! isset($valuesForLocalContext)) {
+            $valuesForLocalContext = array();
+        }
+        if (isset($options['local-context'])) {
+            foreach($options['local-context'] as $item) {
+                $valuesForLocalContext[$item['key']] = $item['value'];
+            }
+        }
+        if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
+            $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", arrayToJS($valuesForLocalContext));
         }
     }
 

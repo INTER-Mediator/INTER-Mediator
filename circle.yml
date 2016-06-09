@@ -6,7 +6,6 @@ machine:
     version: 5.3.3
   ruby:
     version: 2.2.3
-
 dependencies:
   override:
     - docker info

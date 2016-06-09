@@ -7,7 +7,7 @@
     <title>INTER-Mediator - Sample - Asset List/FileMaker Server</title>
     <script src="contexts_FMS.php"></script>
     <script>
-        window.onload = function(){
+//        window.onload = function(){
             var param = location.search.split('&');
             for (var i = 0; i < param.length; i++) {
                 if (param[i].match(/id=/)) {
@@ -15,8 +15,8 @@
                     INTERMediator.additionalCondition["assetdetail"] = {field:'asset_id', operator:'=', value:values[1]};
                 }
             }
-            INTERMediator.construct();
-        }
+//            INTERMediator.construct();
+//        }
         function setBackDate(id)    {
             INTERMediator_DBAdapter.db_update({
                 name:"rentback",

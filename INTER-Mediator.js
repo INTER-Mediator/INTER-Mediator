@@ -77,6 +77,8 @@ INTERMediator = {
     isTablet: false,
     isMobile: false,
 
+    crossTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
+
     /* These following properties moved to the setter/getter architecture, and defined out side of this object.
      startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
      */
@@ -284,6 +286,11 @@ INTERMediator = {
         var timerTask;
         INTERMediatorOnPage.showProgress();
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
+            if (INTERMediatorOnPage.isFinishToConstruct)    {
+                return;
+            }
+            INTERMediatorOnPage.isFinishToConstruct = true;
+
             timerTask = function () {
                 INTERMediator.constructMain(true);
             };
@@ -318,6 +325,7 @@ INTERMediator = {
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
+        INTERMediator.crossTableStage = 0;
         appendingNodesAtLast = [];
         IMLibEventResponder.setup();
         INTERMediatorOnPage.retrieveAuthInfo();
@@ -380,7 +388,9 @@ INTERMediator = {
                 }
 
                 for (i = 0; i < postSetFields.length; i++) {
-                    document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
+                    if (postSetFields[i]['id'] && document.getElementById(postSetFields[i]['id'])) {
+                        document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
+                    }
                 }
                 IMLibCalc.updateCalculationFields();
                 //IMLibPageNavigation.navigationSetup();
@@ -438,6 +448,7 @@ INTERMediator = {
         if (INTERMediatorOnPage.doAfterConstruct) {
             INTERMediatorOnPage.doAfterConstruct();
         }
+        INTERMediatorOnPage.isFinishToConstruct = false;
 
         INTERMediator.flushMessage(); // Show messages
 
@@ -487,7 +498,7 @@ INTERMediator = {
                 }
                 document.getElementById(postSetFields[i]['id']).value = postSetFields[i]['value'];
             }
-            IMLibLocalContext.bindingDescendant(bodyNode);
+            IMLibLocalContext.bindingDescendant(document.documentElement);
             IMLibCalc.updateCalculationFields();
             IMLibPageNavigation.navigationSetup();
 
@@ -646,192 +657,275 @@ INTERMediator = {
          */
 
         function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
-            var linkedNodes, encNodeTag, repeatersOriginal, repeaters, linkDefs, voteResult, currentContextDef,
-                fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
-                keyValue, selectedNode, calcDef, calcFields, contextObj;
-
+            var repNodeTag, repeatersOriginal;
+            var imControl = node.getAttribute("data-im-control");
             currentLevel++;
-
-            encNodeTag = node.tagName;
-            repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
-            repeatersOriginal = collectRepeatersOriginal(node, repNodeTag); // Collecting repeaters to this array.
-            repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
-            linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
-            linkDefs = collectLinkDefinitions(linkedNodes);
-            voteResult = tableVoting(linkDefs);
-            currentContextDef = voteResult.targettable;
-            INTERMediator.currentEncNumber++;
-
-            if (!node.getAttribute('id')) {
-                node.setAttribute('id', nextIdValue());
+            if (imControl && imControl.match(/cross-table/)) {   // Cross Table
+                expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
+            } else {    // Enclosure Processing as usual.
+                repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(node.tagName);
+                repeatersOriginal = collectRepeatersOriginal(node, repNodeTag); // Collecting repeaters to this array.
+                enclosureProcessing(node, repeatersOriginal, currentRecord, parentObjectInfo, currentContextObj);
             }
+            currentLevel--;
 
-            if (!currentContextDef) {
-                for (i = 0; i < repeatersOriginal.length; i++) {
-                    newNode = node.appendChild(repeatersOriginal[i]);
+            /** --------------------------------------------------------------------
+             * Expanding enclosure as usual (means not 'cross tabole').
+             */
+            function enclosureProcessing(enclosureNode,
+                                         repeatersOriginal,
+                                         currentRecord,
+                                         parentObjectInfo,
+                                         currentContextObj,
+                                         customExpandRepeater) {
+                var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef,
+                    fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
+                    keyValue, selectedNode, calcDef, calcFields, contextObj = null;
 
-                    // for compatibility with Firefox
-                    if (repeatersOriginal[i].getAttribute("selected") !== null) {
-                        selectedNode = newNode;
-                    }
-                    if (selectedNode !== undefined) {
-                        selectedNode.selected = true;
-                    }
+                // encNodeTag = enclosureNode.tagName;
+                // repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
+                // repeatersOriginal = collectRepeatersOriginal(enclosureNode, repNodeTag); // Collecting repeaters to this array.
+                repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
+                linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
+                linkDefs = collectLinkDefinitions(linkedNodes);
+                voteResult = tableVoting(linkDefs);
+                currentContextDef = voteResult.targettable;
+                INTERMediator.currentEncNumber++;
 
-                    seekEnclosureNode(newNode, null, node, currentContextObj);
-                }
-            } else {
-                contextObj = new IMLibContext(currentContextDef['name']);
-                contextObj.enclosureNode = node;
-                contextObj.repeaterNodes = repeaters;
-                contextObj.original = repeatersOriginal;
-                contextObj.parentContext = currentContextObj;
-                contextObj.sequencing = true;
-
-                fieldList = []; // Create field list for database fetch.
-                calcDef = currentContextDef['calculation'];
-                calcFields = [];
-                for (ix in calcDef) {
-                    calcFields.push(calcDef[ix]["field"]);
-                }
-                for (i = 0; i < voteResult.fieldlist.length; i++) {
-                    if (!calcFields[voteResult.fieldlist[i]]) {
-                        calcFields.push(voteResult.fieldlist[i]);
-                    }
+                if (!enclosureNode.getAttribute('id')) {
+                    enclosureNode.setAttribute('id', nextIdValue());
                 }
 
-                if (currentRecord) {
-                    try {
-                        relationDef = currentContextDef['relation'];
-                        contextObj.setOriginal(repeatersOriginal);
-                        if (relationDef) {
-                            for (index in relationDef) {
-                                if (Boolean(relationDef[index].portal) === true) {
-                                    currentContextDef["portal"] = true;
-                                }
-                                joinField = relationDef[index]['join-field'];
-                                contextObj.addForeignValue(joinField, currentRecord[joinField]);
-                                for (fieldName in parentObjectInfo) {
-                                    if (fieldName == relationDef[index]['join-field']) {
-                                        contextObj.addDependingObject(parentObjectInfo[fieldName]);
-                                        contextObj.dependingParentObjectInfo =
-                                            JSON.parse(JSON.stringify(parentObjectInfo));
+                if (!currentContextDef) {
+                    for (i = 0; i < repeatersOriginal.length; i++) {
+                        newNode = enclosureNode.appendChild(repeatersOriginal[i]);
+
+                        // for compatibility with Firefox
+                        if (repeatersOriginal[i].getAttribute("selected") !== null) {
+                            selectedNode = newNode;
+                        }
+                        if (selectedNode !== undefined) {
+                            selectedNode.selected = true;
+                        }
+
+                        seekEnclosureNode(newNode, null, enclosureNode, currentContextObj);
+                    }
+                } else {
+                    contextObj = new IMLibContext(currentContextDef['name']);
+                    contextObj.enclosureNode = enclosureNode;
+                    contextObj.repeaterNodes = repeaters;
+                    contextObj.original = repeatersOriginal;
+                    contextObj.parentContext = currentContextObj;
+                    contextObj.sequencing = true;
+
+                    fieldList = []; // Create field list for database fetch.
+                    calcDef = currentContextDef['calculation'];
+                    calcFields = [];
+                    for (ix in calcDef) {
+                        calcFields.push(calcDef[ix]["field"]);
+                    }
+                    for (i = 0; i < voteResult.fieldlist.length; i++) {
+                        if (!calcFields[voteResult.fieldlist[i]]) {
+                            calcFields.push(voteResult.fieldlist[i]);
+                        }
+                        fieldList.push(voteResult.fieldlist[i]);
+                    }
+                    if (currentRecord) {
+                        try {
+                            relationDef = currentContextDef['relation'];
+                            contextObj.setOriginal(repeatersOriginal);
+                            if (relationDef) {
+                                for (index in relationDef) {
+                                    if (Boolean(relationDef[index].portal) === true) {
+                                        currentContextDef["portal"] = true;
+                                    }
+                                    joinField = relationDef[index]['join-field'];
+                                    contextObj.addForeignValue(joinField, currentRecord[joinField]);
+                                    for (fieldName in parentObjectInfo) {
+                                        if (fieldName == relationDef[index]['join-field']) {
+                                            contextObj.addDependingObject(parentObjectInfo[fieldName]);
+                                            contextObj.dependingParentObjectInfo =
+                                                JSON.parse(JSON.stringify(parentObjectInfo));
+                                        }
                                     }
                                 }
                             }
-                        }
-                    } catch (ex) {
-                        if (ex == "_im_requath_request_") {
-                            throw ex;
-                        } else {
-                            INTERMediator.setErrorMessage(ex, "EXCEPTION-25");
-                        }
-                    }
-                }
-
-                if (Boolean(currentContextDef.portal) === true) {
-                    currentContextDef["currentrecord"] = currentRecord;
-                    keyValue = currentRecord["-recid"];
-                }
-                targetRecords = retrieveDataForEnclosure(currentContextDef, fieldList, contextObj.foreignValue);
-                contextObj.registeredId = targetRecords.registeredId;
-                contextObj.nullAcceptable = targetRecords.nullAcceptable;
-                isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false);
-                expandRepeaters(contextObj, node, targetRecords);
-                setupInsertButton(currentContextDef, keyValue, node, contextObj.foreignValue);
-                setupBackNaviButton(contextObj, node);
-                callbackForEnclosure(currentContextDef, node);
-                contextObj.sequencing = false;
-
-            }
-            currentLevel--;
-        }
-
-        /** --------------------------------------------------------------------
-         * Expanding an repeater.
-         */
-
-        function expandRepeaters(contextObj, node, targetRecords) {
-            var newNode, nodeClass, dataAttr, recordCounter, repeatersOneRec, linkedElements, currentWidgetNodes,
-                currentLinkedNodes, shouldDeleteNodes, dbspec, keyField, foreignField, foreignValue, foreignFieldValue,
-                keyValue, keyingValue, k, nodeId, replacedNode, children, wInfo, nameTable, nodeTag, typeAttr,
-                linkInfoArray, nameTableKey, nameNumber, nameAttr, nInfo, curVal, j, curTarget, newlyAddedNodes,
-                encNodeTag, repNodeTag, ix, repeatersOriginal, targetRecordset, targetTotalCount, i,
-                currentContextDef, idValuesForFieldName, indexContext, insertNode, usePortal, countRecord;
-
-            encNodeTag = node.tagName;
-            repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
-
-            idValuesForFieldName = {};
-            repeatersOriginal = contextObj.original;
-            currentContextDef = contextObj.getContextDef();
-            targetRecordset = targetRecords.recordset;
-            targetTotalCount = targetRecords.totalCount;
-
-            repeatersOneRec = cloneEveryNodes(repeatersOriginal);
-            for (i = 0; i < repeatersOneRec.length; i++) {
-                newNode = repeatersOneRec[i];
-                dataAttr = newNode.getAttribute("data-im-control");
-                if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) {
-                    if (!insertNode) {
-                        node.appendChild(newNode);
-                    }
-                }
-            }
-
-            if (targetRecords.count === 0) {
-                for (i = 0; i < repeatersOriginal.length; i++) {
-                    newNode = repeatersOriginal[i].cloneNode(true);
-                    nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
-                    dataAttr = newNode.getAttribute("data-im-control");
-                    if ((nodeClass && nodeClass.indexOf(INTERMediator.noRecordClassName) > -1)
-                        || (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1)) {
-                        node.appendChild(newNode);
-                        setIdValue(newNode);
-                    }
-                }
-            }
-
-            recordCounter = 0;
-            usePortal = false;
-            countRecord = targetRecordset ? targetRecordset.length : 0;
-            for (ix = 0; ix < countRecord; ix++) { // for each record
-                try {
-                    recordCounter++;
-                    repeatersOneRec = cloneEveryNodes(repeatersOriginal);
-                    linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
-                    currentWidgetNodes = linkedElements.widgetNode;
-                    currentLinkedNodes = linkedElements.linkedNode;
-                    shouldDeleteNodes = [];
-                    for (i = 0; i < repeatersOneRec.length; i++) {
-                        setIdValue(repeatersOneRec[i]);
-                        shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
-                    }
-
-                    dbspec = INTERMediatorOnPage.getDBSpecification();
-                    if (dbspec["db-class"] !== null && dbspec["db-class"] == "FileMaker_FX") {
-                        keyField = currentContextDef["key"] ? currentContextDef["key"] : "-recid";
-                    } else {
-                        keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
-                    }
-
-                    if (currentContextDef["relation"]) {
-                        for (i = 0; i < Object.keys(currentContextDef["relation"]).length; i++) {
-                            if (currentContextDef["relation"][i]["portal"] &&
-                                Number(currentContextDef["relation"][i]["portal"]) === 1) {
-                                usePortal = true;
+                        } catch (ex) {
+                            if (ex == "_im_requath_request_") {
+                                throw ex;
+                            } else {
+                                INTERMediator.setErrorMessage(ex, "EXCEPTION-25");
                             }
                         }
                     }
-                    if (usePortal === true) {
-                        keyField = "-recid";
-                        foreignField = currentContextDef['name'] + "::-recid";
-                        foreignValue = targetRecordset[ix][foreignField];
-                        foreignFieldValue = foreignField + "=" + foreignValue;
-                    } else {
-                        foreignFieldValue = "=";
-                        foreignValue = null;
+
+                    if (Boolean(currentContextDef.portal) === true) {
+                        currentContextDef["currentrecord"] = currentRecord;
+                        keyValue = currentRecord["-recid"];
                     }
+                    targetRecords = retrieveDataForEnclosure(currentContextDef, fieldList, contextObj.foreignValue);
+                    if (customExpandRepeater == undefined) {
+                        contextObj.registeredId = targetRecords.registeredId;
+                        contextObj.nullAcceptable = targetRecords.nullAcceptable;
+                        isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false);
+                        expandRepeaters(contextObj, enclosureNode, targetRecords);
+                        setupInsertButton(currentContextDef, keyValue, enclosureNode, contextObj.foreignValue);
+                        setupBackNaviButton(contextObj, enclosureNode);
+                        callbackForEnclosure(currentContextDef, enclosureNode);
+                    } else {
+                        customExpandRepeater(contextObj, targetRecords);
+                    }
+                    contextObj.sequencing = false;
+                }
+                return contextObj;
+            }
+
+            /** --------------------------------------------------------------------
+             * expanding enclosure for cross table
+             */
+            function expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
+                var i, j, colArray, rowArray, nodeForKeyValues, record, targetRepeater, lineNode, colContext,
+                    rowContext, appendingNode, trNodes, setupResult;
+
+                // Collecting 4 parts of cross table.
+                var ctComponentNodes = crossTableComponents(node);
+                if (ctComponentNodes.length != 4) {
+                    throw "Exception-xx: Cross Table Components aren't prepared.";
+                }
+
+                // Remove all nodes under the TBODY tagged node.
+                while (node.childNodes.length > 0) {
+                    node.removeChild(node.childNodes[0]);
+                }
+
+                // Create the first row
+                INTERMediator.crossTableStage = 1;
+                lineNode = document.createElement("TR");
+                targetRepeater = ctComponentNodes[0].cloneNode(true);
+                lineNode.appendChild(targetRepeater);
+                node.appendChild(lineNode);
+
+                // Append the column context in the first row
+                targetRepeater = ctComponentNodes[1].cloneNode(true);
+                colContext = enclosureProcessing(lineNode, [targetRepeater], null, parentObjectInfo, currentContextObj);
+                colArray = colContext.indexingArray();
+
+                // Create second and following rows, and the first columns are appended row context
+                INTERMediator.crossTableStage = 2;
+                targetRepeater = ctComponentNodes[2].cloneNode(true);
+                lineNode = document.createElement("TR");
+                lineNode.appendChild(targetRepeater);
+                rowContext = enclosureProcessing(node, [lineNode], null, parentObjectInfo, currentContextObj);
+                rowArray = rowContext.indexingArray();
+
+                // Create all cross point cell
+                INTERMediator.crossTableStage = 3;
+                targetRepeater = ctComponentNodes[3].cloneNode(true);
+                nodeForKeyValues = {};
+                trNodes = node.getElementsByTagName("TR");
+                for (i = 1; i < trNodes.length; i += 1) {
+                    for (j = 0; j < colArray.length; j += 1) {
+                        appendingNode = targetRepeater.cloneNode(true);
+                        trNodes[i].appendChild(appendingNode);
+                        setIdValue(appendingNode);
+                        if (!nodeForKeyValues[colArray[j]]) {
+                            nodeForKeyValues[colArray[j]] = {};
+                        }
+                        nodeForKeyValues[colArray[j]][rowArray[i - 1]] = appendingNode;
+                    }
+                }
+                setIdValue(node);
+                enclosureProcessing(node, [targetRepeater], null, parentObjectInfo, currentContextObj,
+                    function (contextObj, targetRecords) {
+                        var labelKeyColumn, dataKeyColumn, labelKeyRow, dataKeyRow, currentContextDef, ix,
+                            linkedElements, targetNode;
+                        currentContextDef = contextObj.getContextDef();
+                        // labelKeyColumn = currentContextDef["relation"][0]["join-field"];
+                        // labelKeyRow = currentContextDef["relation"][1]["join-field"];
+                        dataKeyColumn = currentContextDef["relation"][0]["foreign-key"];
+                        dataKeyRow = currentContextDef["relation"][1]["foreign-key"];
+                        for (ix = 0; ix < targetRecords.recordset.length; ix++) { // for each record
+                            record = targetRecords.recordset[ix];
+                            if (nodeForKeyValues[record[dataKeyColumn]]
+                                && nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]) {
+                                targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]];
+                                if (targetNode) {
+                                    linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes([targetNode], false);
+                                    setupResult = setupLinkedNode([targetNode], linkedElements, contextObj, targetRecords.recordset, ix);
+                                }
+                            }
+                        }
+
+                    });
+            } // The end of function expandCrossTableEnclosure().
+
+            // Detect cross table components in a tbody enclosure.
+            function crossTableComponents(node) {
+                var components = [], count = 0;
+                repeatCTComponents(node.childNodes);
+                return components;
+
+                function repeatCTComponents(nodes) {
+                    var childNodes, i;
+                    for (i = 0; i < nodes.length; i++) {
+                        if (nodes[i].nodeType == 1 && (nodes[i].tagName == "TH" || nodes[i].tagName == "TD")) {
+                            components[count] = nodes[i];
+                            count += 1;
+                        } else {
+                            childNodes = nodes[i].childNodes;
+                            if (childNodes) {
+                                repeatCTComponents(childNodes);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /** --------------------------------------------------------------------
+         * Set the value to node and context.
+         */
+        function setupLinkedNode(repeatersOneRec, linkedElements, contextObj, targetRecordset, ix) {
+            var currentWidgetNodes, currentLinkedNodes, dbspec, nInfo, currentContextDef,
+                j, keyField, usePortal = false, foreignField, foreignValue, foreignFieldValue, keyValue, keyingValue,
+                k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
+                idValuesForFieldName = {}, shouldDeleteNodes = [],
+                nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget;
+            
+            currentContextDef = contextObj.getContextDef();
+            try {
+                currentWidgetNodes = linkedElements.widgetNode;
+                currentLinkedNodes = linkedElements.linkedNode;
+                for (i = 0; i < repeatersOneRec.length; i++) {
+                    setIdValue(repeatersOneRec[i]);
+                    shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
+                }
+
+                dbspec = INTERMediatorOnPage.getDBSpecification();
+                if (dbspec["db-class"] !== null && dbspec["db-class"] == "FileMaker_FX") {
+                    keyField = currentContextDef["key"] ? currentContextDef["key"] : "-recid";
+                } else {
+                    keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
+                }
+
+                if (currentContextDef["relation"]) {
+                    for (i = 0; i < Object.keys(currentContextDef["relation"]).length; i++) {
+                        if (currentContextDef["relation"][i]["portal"] &&
+                            Number(currentContextDef["relation"][i]["portal"]) === 1) {
+                            usePortal = true;
+                        }
+                    }
+                }
+                if (usePortal === true) {
+                    keyField = "-recid";
+                    foreignField = currentContextDef['name'] + "::-recid";
+                    foreignValue = targetRecordset[ix][foreignField];
+                    foreignFieldValue = foreignField + "=" + foreignValue;
+                } else {
+                    foreignFieldValue = "=";
+                    foreignValue = null;
+                }
+                if (targetRecordset[ix] && targetRecordset[ix][keyField]) {
                     keyValue = targetRecordset[ix][keyField];
                     if (keyField && !keyValue) {
                         //INTERMediator.setErrorMessage("The value of the key field is null.",
@@ -865,148 +959,202 @@ INTERMediator = {
                             }
                         }
                     }
+                }
+            } catch (ex) {
+                if (ex == "_im_requath_request_") {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex, "EXCEPTION-101");
+                }
+            }
+
+            nameTable = {};
+            for (k = 0; k < currentLinkedNodes.length; k++) {
+                try {
+                    nodeTag = currentLinkedNodes[k].tagName;
+                    nodeId = currentLinkedNodes[k].getAttribute('id');
+                    if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
+                        nodeId = currentLinkedNodes[k]._im_getComponentId();
+                        // INTERMediator.widgetElementIds.push(nodeId);
+                    }
+                    // get the tag name of the element
+                    typeAttr = currentLinkedNodes[k].getAttribute('type');
+                    // type attribute
+                    linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k]);
+                    // info array for it  set the name attribute of radio button
+                    // should be different for each group
+                    if (typeAttr == 'radio') { // set the value to radio button
+                        nameTableKey = linkInfoArray.join('|');
+                        if (!nameTable[nameTableKey]) {
+                            nameTable[nameTableKey] = nameAttrCounter;
+                            nameAttrCounter++;
+                        }
+                        nameNumber = nameTable[nameTableKey];
+                        nameAttr = currentLinkedNodes[k].getAttribute('name');
+                        if (nameAttr) {
+                            currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + nameNumber);
+                        } else {
+                            currentLinkedNodes[k].setAttribute('name', 'IM-R-' + nameNumber);
+                        }
+                    }
+                    for (j = 0; j < linkInfoArray.length; j++) {
+                        nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
+                        curVal = targetRecordset[ix][nInfo['field']];
+                        if (!INTERMediator.isDBDataPreferable || curVal !== null) {
+                            IMLibCalc.updateCalculationInfo(
+                                contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
+                        }
+                        if (nInfo['table'] == currentContextDef['name']) {
+                            isContext = true;
+                            curTarget = nInfo['target'];
+                            //    objectReference[nInfo['field']] = nodeId;
+
+                            // Set data to the element.
+                            if (curVal === null) {
+                                if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
+                                    postSetFields.push({'id': nodeId, 'value': curVal});
+                                }
+                            } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
+                                if (curVal && curVal.length > 0) {
+                                    if (IMLibElement.setValueToIMNode(
+                                            currentLinkedNodes[k], curTarget, curVal[0])) {
+                                        postSetFields.push({'id': nodeId, 'value': curVal[0]});
+                                    }
+                                }
+                            } else {
+                                if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
+                                    postSetFields.push({'id': nodeId, 'value': curVal});
+                                }
+                            }
+                            contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue);
+                            idValuesForFieldName[nInfo['field']] = nodeId;
+                        }
+                    }
+
+                    if (isContext && !isInsidePostOnly &&
+                        (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
+                        //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
+                        var changeFunction = function (a) {
+                            var id = a;
+                            return function () {
+                                IMLibUI.valueChange(id);
+                            };
+                        };
+                        eventListenerPostAdding.push({
+                            'id': nodeId,
+                            'event': 'change',
+                            'todo': changeFunction(nodeId)
+                        });
+                        if (nodeTag != 'SELECT') {
+                            eventListenerPostAdding.push({
+                                'id': nodeId,
+                                'event': 'keydown',
+                                'todo': IMLibUI.keyDown
+                            });
+                            eventListenerPostAdding.push({
+                                'id': nodeId,
+                                'event': 'keyup',
+                                'todo': IMLibUI.keyUp
+                            });
+                        }
+                    }
+
                 } catch (ex) {
                     if (ex == "_im_requath_request_") {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage(ex, "EXCEPTION-26");
+                        INTERMediator.setErrorMessage(ex, "EXCEPTION-27");
                     }
                 }
+            }
+            if (usePortal === true) {
+                keyField = "-recid";
+                foreignField = currentContextDef['name'] + "::-recid";
+                foreignValue = targetRecordset[ix][foreignField];
+                foreignFieldValue = foreignField + "=" + foreignValue;
+            } else {
+                foreignField = "";
+                foreignValue = "";
+                foreignFieldValue = "=";
+            }
 
-                if (Boolean(currentContextDef.portal) !== true ||
-                    (Boolean(currentContextDef.portal) === true && targetTotalCount > 0)) {
-                    nameTable = {};
-                    for (k = 0; k < currentLinkedNodes.length; k++) {
-                        try {
-                            nodeTag = currentLinkedNodes[k].tagName;
-                            nodeId = currentLinkedNodes[k].getAttribute('id');
-                            if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
-                                nodeId = currentLinkedNodes[k]._im_getComponentId();
-                                // INTERMediator.widgetElementIds.push(nodeId);
-                            }
-                            // get the tag name of the element
-                            typeAttr = currentLinkedNodes[k].getAttribute('type');
-                            // type attribute
-                            linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k]);
-                            // info array for it  set the name attribute of radio button
-                            // should be different for each group
-                            if (typeAttr == 'radio') { // set the value to radio button
-                                nameTableKey = linkInfoArray.join('|');
-                                if (!nameTable[nameTableKey]) {
-                                    nameTable[nameTableKey] = nameAttrCounter;
-                                    nameAttrCounter++;
-                                }
-                                nameNumber = nameTable[nameTableKey];
-                                nameAttr = currentLinkedNodes[k].getAttribute('name');
-                                if (nameAttr) {
-                                    currentLinkedNodes[k].setAttribute('name', nameAttr + '-' + nameNumber);
-                                } else {
-                                    currentLinkedNodes[k].setAttribute('name', 'IM-R-' + nameNumber);
-                                }
-                            }
+            return {
+                "keyField": keyField,
+                "keyValue": keyValue,
+                "foreignField": foreignField,
+                "foreignValue": foreignValue,
+                "foreignFieldValue": foreignFieldValue,
+                "shouldDeleteNodes": shouldDeleteNodes,
+                "isContext": isContext,
+                "idValuesForFieldName": idValuesForFieldName,
+                "keyingValue": keyingValue
+            };
+        }
 
-                            var isContext = false;
-                            for (j = 0; j < linkInfoArray.length; j++) {
-                                nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
-                                curVal = targetRecordset[ix][nInfo['field']];
-                                if (!INTERMediator.isDBDataPreferable || curVal !== null) {
-                                    IMLibCalc.updateCalculationInfo(
-                                        contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
-                                }
-                                if (nInfo['table'] == currentContextDef['name']) {
-                                    isContext = true;
-                                    curTarget = nInfo['target'];
-                                    //    objectReference[nInfo['field']] = nodeId;
+        /** --------------------------------------------------------------------
+         * Expanding an repeater.
+         */
+        function expandRepeaters(contextObj, node, targetRecords) {
+            var newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
+                repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
+                insertNode, countRecord, setupResult, linkedElements;
 
-                                    // Set data to the element.
-                                    if (curVal === null) {
-                                        if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
-                                            postSetFields.push({'id': nodeId, 'value': curVal});
-                                        }
-                                    } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                                        if (curVal && curVal.length > 0) {
-                                            if (IMLibElement.setValueToIMNode(
-                                                    currentLinkedNodes[k], curTarget, curVal[0])) {
-                                                postSetFields.push({'id': nodeId, 'value': curVal[0]});
-                                            }
-                                        }
-                                    } else {
-                                        if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
-                                            postSetFields.push({'id': nodeId, 'value': curVal});
-                                        }
-                                    }
-                                    contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue);
-                                    idValuesForFieldName[nInfo['field']] = nodeId;
-                                }
-                            }
+            encNodeTag = node.tagName;
+            repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
 
-                            if (isContext && !isInsidePostOnly &&
-                                (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
-                                //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
-                                var changeFunction = function (a) {
-                                    var id = a;
-                                    return function () {
-                                        IMLibUI.valueChange(id);
-                                    };
-                                };
-                                eventListenerPostAdding.push({
-                                    'id': nodeId,
-                                    'event': 'change',
-                                    'todo': changeFunction(nodeId)
-                                });
-                                if (nodeTag != 'SELECT') {
-                                    eventListenerPostAdding.push({
-                                        'id': nodeId,
-                                        'event': 'keydown',
-                                        'todo': IMLibUI.keyDown
-                                    });
-                                    eventListenerPostAdding.push({
-                                        'id': nodeId,
-                                        'event': 'keyup',
-                                        'todo': IMLibUI.keyUp
-                                    });
-                                }
-                            }
+            repeatersOriginal = contextObj.original;
+            currentContextDef = contextObj.getContextDef();
+            targetRecordset = targetRecords.recordset;
+            targetTotalCount = targetRecords.totalCount;
 
-                        } catch (ex) {
-                            if (ex == "_im_requath_request_") {
-                                throw ex;
-                            } else {
-                                INTERMediator.setErrorMessage(ex, "EXCEPTION-27");
-                            }
-                        }
+            repeatersOneRec = cloneEveryNodes(repeatersOriginal);
+            for (i = 0; i < repeatersOneRec.length; i++) {
+                newNode = repeatersOneRec[i];
+                dataAttr = newNode.getAttribute("data-im-control");
+                if (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) {
+                    if (!insertNode) {
+                        node.appendChild(newNode);
                     }
                 }
+            }
 
-                if (usePortal === true) {
-                    keyField = "-recid";
-                    foreignField = currentContextDef['name'] + "::-recid";
-                    foreignValue = targetRecordset[ix][foreignField];
-                    foreignFieldValue = foreignField + "=" + foreignValue;
-                } else {
-                    foreignField = "";
-                    foreignValue = "";
-                    foreignFieldValue = "=";
+            if (targetRecords.count === 0) {
+                for (i = 0; i < repeatersOriginal.length; i++) {
+                    newNode = repeatersOriginal[i].cloneNode(true);
+                    nodeClass = INTERMediatorLib.getClassAttributeFromNode(newNode);
+                    dataAttr = newNode.getAttribute("data-im-control");
+                    if ((nodeClass && nodeClass.indexOf(INTERMediator.noRecordClassName) > -1)
+                        || (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1)) {
+                        node.appendChild(newNode);
+                        setIdValue(newNode);
+                    }
                 }
+            }
+
+            countRecord = targetRecordset ? targetRecordset.length : 0;
+            for (ix = 0; ix < countRecord; ix++) { // for each record
+                repeatersOneRec = cloneEveryNodes(repeatersOriginal);
+                linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
+                setupResult = setupLinkedNode(repeatersOneRec, linkedElements, contextObj, targetRecordset, ix);
 
                 setupDeleteButton(
                     encNodeTag,
                     repeatersOneRec,
                     currentContextDef,
-                    keyField,
-                    keyValue,
-                    foreignField,
-                    foreignValue,
-                    shouldDeleteNodes
+                    setupResult.keyField,
+                    setupResult.keyValue,
+                    setupResult.foreignField,
+                    setupResult.foreignValue,
+                    setupResult.shouldDeleteNodes
                 );
                 setupNavigationButton(
                     encNodeTag,
                     repeatersOneRec,
                     currentContextDef,
-                    keyField,
-                    keyValue,
-                    foreignField,
-                    foreignValue
+                    setupResult.keyField,
+                    setupResult.keyValue,
+                    setupResult.foreignField,
+                    setupResult.foreignValue
                 );
                 setupCopyButton(
                     encNodeTag,
@@ -1043,9 +1191,9 @@ INTERMediator = {
                             if (!newNode.id) {  // ######## Is that right with if statement?
                                 setIdValue(newNode);
                             }                   // ##########################################
-                            contextObj.setValue(keyingValue, "_im_repeater", "", newNode.id, "", foreignValue);
-                            idValuesForFieldName[nInfo['field']] = nodeId;
-                            seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj);
+                            contextObj.setValue(setupResult.keyingValue, "_im_repeater", "", newNode.id, "", setupResult.foreignValue);
+                            //setupResult.idValuesForFieldName[nInfo['field']] = nodeId; // #### Is this irrelevant?
+                            seekEnclosureNode(newNode, targetRecordset[ix], setupResult.idValuesForFieldName, contextObj);
                         }
                     }
                     if (ix + 1 != countRecord) {
@@ -1075,7 +1223,48 @@ INTERMediator = {
                     }
                 }
             }
+        }
 
+
+        /* --------------------------------------------------------------------
+
+         */
+        function setIdValue(node) {
+            var i, elementInfo, comp, overwrite = true;
+
+            if (node.getAttribute('id') === null) {
+                node.setAttribute('id', nextIdValue());
+            } else {
+                if (INTERMediator.elementIds.indexOf(node.getAttribute('id')) >= 0) {
+                    elementInfo = INTERMediatorLib.getLinkedElementInfo(node);
+                    for (i = 0; i < elementInfo.length; i++) {
+                        comp = elementInfo[i].split(INTERMediator.separator);
+                        if (comp[2] == "#id") {
+                            overwrite = false;
+                        }
+                    }
+                    if (overwrite) {
+                        node.setAttribute('id', nextIdValue());
+                    }
+                }
+                INTERMediator.elementIds.push(node.getAttribute('id'));
+            }
+            return node;
+        }
+
+        /* --------------------------------------------------------------------
+
+         */
+        function nextIdValue() {
+            INTERMediator.linkedElmCounter++;
+            return currentIdValue();
+        }
+
+        /* --------------------------------------------------------------------
+
+         */
+        function currentIdValue() {
+            return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
         }
 
         /* --------------------------------------------------------------------
@@ -1231,47 +1420,6 @@ INTERMediator = {
         /* --------------------------------------------------------------------
 
          */
-        function setIdValue(node) {
-            var i, elementInfo, comp, overwrite = true;
-
-            if (node.getAttribute('id') === null) {
-                node.setAttribute('id', nextIdValue());
-            } else {
-                if (INTERMediator.elementIds.indexOf(node.getAttribute('id')) >= 0) {
-                    elementInfo = INTERMediatorLib.getLinkedElementInfo(node);
-                    for (i = 0; i < elementInfo.length; i++) {
-                        comp = elementInfo[i].split(INTERMediator.separator);
-                        if (comp[2] == "#id") {
-                            overwrite = false;
-                        }
-                    }
-                    if (overwrite) {
-                        node.setAttribute('id', nextIdValue());
-                    }
-                }
-                INTERMediator.elementIds.push(node.getAttribute('id'));
-            }
-            return node;
-        }
-
-        /* --------------------------------------------------------------------
-
-         */
-        function nextIdValue() {
-            INTERMediator.linkedElmCounter++;
-            return currentIdValue();
-        }
-
-        /* --------------------------------------------------------------------
-
-         */
-        function currentIdValue() {
-            return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
-        }
-
-        /* --------------------------------------------------------------------
-
-         */
         function callbackForRepeaters(currentContextDef, node, newlyAddedNodes) {
             try {
                 if (INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef['name']]) {
@@ -1408,7 +1556,9 @@ INTERMediator = {
                 cloneNode = repeatersOriginal[i].cloneNode(true);
                 repeaters.push(cloneNode);
                 cloneNode.setAttribute('id', nextIdValue());
-                parentOfRep.removeChild(inDocNode);
+                if (parentOfRep) {
+                    parentOfRep.removeChild(inDocNode);
+                }
             }
             return repeaters;
         }
@@ -1518,7 +1668,6 @@ INTERMediator = {
                 INTERMediator.buttonIdNum++;
                 copyJSFunction = function (a, b) {
                     var currentContext = a, currentRecord = b;
-
                     return function () {
                         IMLibUI.copyButton(currentContext, currentRecord);
                     };
@@ -1893,6 +2042,8 @@ INTERMediator = {
                         INTERMediator.additionalCondition = conditions;
                         INTERMediator.constructMain(detailContext);
                         if (isMasterHide) {
+                            INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY};
+                            window.scrollTo(0, 0);
                             masterEnclosure = masterContext.enclosureNode;
                             if (etag == 'TBODY') {
                                 masterEnclosure = masterEnclosure.parentNode;
@@ -2111,6 +2262,11 @@ INTERMediator = {
                         detailContextCL = IMLibContextPool.getDetailContext();
                         INTERMediatorOnPage.naviAfterMoveToMaster(masterContextCL, detailContextCL);
                     }
+                    if (INTERMediatorOnPage.masterScrollPosition) {
+                        window.scrollTo(
+                            INTERMediatorOnPage.masterScrollPosition.x,
+                            INTERMediatorOnPage.masterScrollPosition.y);
+                    }
                 }
             }
         }
@@ -2283,7 +2439,8 @@ INTERMediator = {
             IMLibLocalContext.archive();
         }
     }
-};
+}
+;
 
 /**
  * Compatibility for IE8

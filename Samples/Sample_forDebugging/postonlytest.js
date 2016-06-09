@@ -7,9 +7,9 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-window.onload = function () {
-//    INTERMediatorOnPage.processingBeforePostOnlyContext = function(node) {
-//        return confirm("");
-//    }
-    INTERMediator.construct(true);
-};
+// window.onload = function () {
+// //    INTERMediatorOnPage.processingBeforePostOnlyContext = function(node) {
+// //        return confirm("");
+// //    }
+//     INTERMediator.construct(true);
+// };

@@ -9,7 +9,7 @@
  */
 
 /*
-  This source file should be described statements to execute on the loading time of header's script tag.
+ This source file should be described statements to execute on the loading time of header's script tag.
  */
 
 INTERMediator.propertyIETridentSetup();
@@ -90,8 +90,34 @@ INTERMediatorLib.addEvent(window, "beforeunload", function (e) {
 
 });
 
-INTERMediatorLib.addEvent(window, "unload", function (e) {
+INTERMediatorLib.addEvent(window, "unload", function () {
     INTERMediator_DBAdapter.unregister();
+});
+
+INTERMediatorLib.addEvent(window, "load", function () {
+    var key, errorNode;
+    if (INTERMediatorOnPage.initLocalContext)   {
+        for (key in INTERMediatorOnPage.initLocalContext) {
+            if (INTERMediatorOnPage.initLocalContext.hasOwnProperty(key)){
+                IMLibLocalContext.setValue(key, INTERMediatorOnPage.initLocalContext[key], true);
+            }
+        }
+    }
+    errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId);
+    if (errorNode) {
+        if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
+            if (INTERMediatorOnPage.doBeforeConstruct)  {
+                INTERMediatorOnPage.doBeforeConstruct();
+            }
+            INTERMediator.construct(true);
+        }
+    } else {
+        if (INTERMediatorOnPage.doBeforeConstruct)  {
+            INTERMediatorOnPage.doBeforeConstruct();
+        }
+        INTERMediator.construct(true);
+    }
+    // INTERMediatorOnPage.isFinishToConstruct = true;
 });
 
 // ****** This file should terminate on the new line. INTER-Mediator adds some codes before here. ****

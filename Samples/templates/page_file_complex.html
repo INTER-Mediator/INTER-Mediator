@@ -16,12 +16,6 @@
     <title></title>
     <script type="text/javascript" src="definition_file_full.php"></script>
     <script type="text/javascript">
-        window.onload = function () {
-            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupport'))) {
-                INTERMediator.construct(true);
-            }
-        };
-
         INTERMediatorOnPage.doAfterConstruct = function () {
             var node = document.getElementById('container');
             node.style.display = "block"
@@ -29,7 +23,7 @@
     </script>
 </head>
 <body>
-<div id="nonsupport">
+<div id="nonsupportmessage">
     <div style="text-align:center;color:yellow;background-color:black;">
         If you see this, you must use any supported
         web browser with Javascript enabled.

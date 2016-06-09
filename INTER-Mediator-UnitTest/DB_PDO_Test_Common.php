@@ -38,7 +38,8 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         date_default_timezone_set('Asia/Tokyo');
     }
 
-    public function testAggregation()   {
+    public function testAggregation()
+    {
         $this->dbProxySetupForAggregation();
         $result = $this->db_proxy->readFromDB("summary");
         $recordCount = $this->db_proxy->countQueryResult("summary");
@@ -79,6 +80,10 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("contact", 1000000);
         $this->db_proxy->requireUpdatedRecord(true);
         $newKeyValue = $this->db_proxy->createInDB(true);
+//        $msg = $this->db_proxy->logger->getErrorMessages();
+//        var_dump($msg);
+//        $msg = $this->db_proxy->logger->getDebugMessages();
+//        var_dump($msg);
         $this->assertTrue($newKeyValue > 0, "If a record was created, it returns the new primary key value.");
         $createdRecord = $this->db_proxy->updatedRecord();
         $this->assertTrue($createdRecord != null, "Created record should be exists.");
@@ -248,6 +253,71 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, $calcuratedHash, "TEST"), $testName);
+    }
+
+    public function testAuthByValidUser()
+    {
+        $this->dbProxySetupForAuth();
+
+        $testName = "Simulation of Authentication by Valid User";
+        $username = 'user1';
+        $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
+        $clientId = 'test1234test1234';
+
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->saveChallenge($username, $challenge, $clientId);
+        $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
+        $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
+        $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
+        $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
+
+        $this->db_proxy->dbSettings->setCurrentUser($username);
+        $this->db_proxy->dbSettings->setDataSourceName("person");
+        $this->db_proxy->paramAuthUser = $username;
+        $this->db_proxy->clientId = $clientId;
+        $this->db_proxy->paramResponse = $calcuratedHash;
+
+        $this->db_proxy->processingRequest("read");
+        $result = $this->db_proxy->getDatabaseResult();
+        $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
+
+        //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
+        foreach ($result as $index=>$record) {
+            if ($record["id"] == 2) {
+                $this->assertTrue($record["name"] == "Someone", $testName);
+                $this->assertTrue($record["address"] == 'Tokyo, Japan', $testName);
+            }
+        }
+    }
+
+    public function testAuthByInvalidUsder()
+    {
+        $this->dbProxySetupForAuth();
+
+        $testName = "Simulation of Authentication by Inalid User";
+        $username = 'user2';
+        $password = 'user2';
+        $clientId = 'test1234test1234';
+
+        $challenge = $this->db_proxy->generateChallenge();
+        $this->db_proxy->saveChallenge($username, $challenge, $clientId);
+        $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
+        $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
+        $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
+        $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
+
+        $this->db_proxy->dbSettings->setCurrentUser($username);
+        $this->db_proxy->dbSettings->setDataSourceName("person");
+        $this->db_proxy->paramAuthUser = $username;
+        $this->db_proxy->clientId = $clientId;
+        $this->db_proxy->paramResponse = $calcuratedHash;
+
+        $this->db_proxy->processingRequest("read");
+        $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
+        $this->assertTrue(is_null($this->db_proxy->getDatabaseResultCount()), $testName);
+        $this->assertTrue(is_null($this->db_proxy->getDatabaseTotalCount()), $testName);
+        $this->assertTrue(is_null($this->db_proxy->getDatabaseResult()), $testName);
+        $this->assertTrue($this->db_proxy->dbSettings->getRequireAuthentication(), $testName);
     }
 
     public function testAuthUser6()

@@ -7,12 +7,13 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-window.onload = function () {
-    var nodeUnsupport = document.getElementById('nonsupportmessage');
-    if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
-        INTERMediator.construct(true);
-    }
-};
+
+// window.onload = function () {
+//     var nodeUnsupport = document.getElementById('nonsupportmessage');
+//     if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
+//         INTERMediator.construct(true);
+//     }
+// };
 
 function test() {
     INTERMediator_DBAdapter.db_createRecord({

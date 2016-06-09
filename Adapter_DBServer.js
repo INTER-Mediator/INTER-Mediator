@@ -377,9 +377,7 @@ INTERMediator_DBAdapter = {
     },
 
     uploadFile: function (parameters, uploadingFile, doItOnFinish, exceptionProc) {
-        var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
-            clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
-            mediatoken = null, appPath, authParams, accessURL, jsonObject, i;
+        var myRequest = null, appPath, authParams, accessURL, i;
         //           var result = this.server_access("access=uploadfile" + parameters, 1031, 1032, uploadingFile);
         appPath = INTERMediatorOnPage.getEntryPath();
         authParams = INTERMediator_DBAdapter.generate_authParams();
@@ -401,50 +399,7 @@ INTERMediator_DBAdapter = {
                     case 3:
                         break;
                     case 4:
-                        try {
-                            console.log(myRequest.responseText);
-                            jsonObject = JSON.parse(myRequest.responseText);
-                        } catch (ex) {
-                            INTERMediator.setErrorMessage(ex,
-                                INTERMediatorLib.getInsertedString(
-                                    INTERMediatorOnPage.getMessages()[1032], ["", ""]));
-                            INTERMediator.flushMessage();
-                            exceptionProc();
-                            break;
-                        }
-                        resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
-                        dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
-                        requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
-                        challenge = jsonObject.challenge ? jsonObject.challenge : null;
-                        clientid = jsonObject.clientid ? jsonObject.clientid : null;
-                        newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
-                        changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
-                        mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
-                        for (i = 0; i < jsonObject.errorMessages.length; i++) {
-                            INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
-                        }
-                        for (i = 0; i < jsonObject.debugMessages.length; i++) {
-                            INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
-                        }
-
-                        INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
-                            challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
-                        INTERMediator_DBAdapter.store_challenge(challenge);
-                        if (clientid !== null) {
-                            INTERMediatorOnPage.clientId = clientid;
-                        }
-                        if (mediatoken !== null) {
-                            INTERMediatorOnPage.mediaToken = mediatoken;
-                        }
-                        if (requireAuth) {
-                            INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
-                            INTERMediatorOnPage.clearCredentials();
-                            //throw "_im_requath_request_";
-                            exceptionProc();
-                        }
-                        INTERMediatorOnPage.authCount = 0;
-                        INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
-                        doItOnFinish(dbresult);
+                        INTERMediator_DBAdapter.uploadFileAfterSucceed(myRequest, doItOnFinish, exceptionProc, false);
                         break;
                 }
             };
@@ -455,6 +410,62 @@ INTERMediator_DBAdapter = {
                     INTERMediatorOnPage.getMessages()[1032], [e, myRequest.responseText]));
             exceptionProc();
         }
+    },
+
+    uploadFileAfterSucceed: function (myRequest, doItOnFinish, exceptionProc, isErrorDialog) {
+        var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
+            clientid = null, requireAuth = false, changePasswordResult = null,
+            mediatoken = null, appPath, authParams, accessURL, jsonObject, i, returnValue = true;
+        try {
+            //console.log(myRequest.responseText);
+            jsonObject = JSON.parse(myRequest.responseText);
+        } catch (ex) {
+            INTERMediator.setErrorMessage(ex,
+                INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[1032], ["", ""]));
+            INTERMediator.flushMessage();
+            exceptionProc();
+            return false;
+        }
+        resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
+        dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;
+        requireAuth = jsonObject.requireAuth ? jsonObject.requireAuth : false;
+        challenge = jsonObject.challenge ? jsonObject.challenge : null;
+        clientid = jsonObject.clientid ? jsonObject.clientid : null;
+        newRecordKeyValue = jsonObject.newRecordKeyValue ? jsonObject.newRecordKeyValue : '';
+        changePasswordResult = jsonObject.changePasswordResult ? jsonObject.changePasswordResult : null;
+        mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
+        for (i = 0; i < jsonObject.errorMessages.length; i++) {
+            if (isErrorDialog) {
+                window.alert(jsonObject.errorMessages[i]);
+            } else {
+                INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
+            }
+            returnValue = false;
+        }
+        for (i = 0; i < jsonObject.debugMessages.length; i++) {
+            INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
+        }
+
+        INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
+            challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken);
+        INTERMediator_DBAdapter.store_challenge(challenge);
+        if (clientid !== null) {
+            INTERMediatorOnPage.clientId = clientid;
+        }
+        if (mediatoken !== null) {
+            INTERMediatorOnPage.mediaToken = mediatoken;
+        }
+        if (requireAuth) {
+            INTERMediator.setDebugMessage("Authentication Required, user/password panel should be show.");
+            INTERMediatorOnPage.clearCredentials();
+            //throw "_im_requath_request_";
+            exceptionProc();
+        }
+        INTERMediatorOnPage.authCount = 0;
+        INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
+        doItOnFinish(dbresult);
+        return returnValue;
     },
 
     /*
@@ -597,7 +608,7 @@ INTERMediator_DBAdapter = {
                         succesProcCapt(result);
                     };
                 })(),
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
@@ -904,7 +915,7 @@ INTERMediator_DBAdapter = {
                 1017,
                 1015,
                 successProc,
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
@@ -1024,7 +1035,7 @@ INTERMediator_DBAdapter = {
                 1017,
                 1015,
                 successProc,
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
@@ -1099,7 +1110,7 @@ INTERMediator_DBAdapter = {
                 1018,
                 1016,
                 successProc,
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
@@ -1228,7 +1239,7 @@ INTERMediator_DBAdapter = {
                 1017,
                 1015,
                 successProc,
-                null,
+                failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
                     (function () {
