@@ -40,6 +40,7 @@ INTERMediatorOnPage = {
     masterScrollPosition: null,
     nonSupportMessageId: 'nonsupportmessage',
     isFinishToConstruct: false,
+    isAutoConstruct: true,
 
     isShowChangePassword: true,
     isSetDefaultStyle: true,
