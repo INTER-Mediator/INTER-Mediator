@@ -164,10 +164,11 @@ INTERMediator_DBAdapter = {
                 }
             }
         } catch (e) {
-            INTERMediator.setErrorMessage(e,
-                INTERMediatorLib.getInsertedString(
-                    INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
-
+            if (INTERMediatorOnPage.getIMRootPath() !== "[ERROR]") {
+                INTERMediator.setErrorMessage(e,
+                    INTERMediatorLib.getInsertedString(
+                        INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
+            }
         }
         if (accessURL.indexOf("access=changepassword&newpass=") === 0) {
             return changePasswordResult;
