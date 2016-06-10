@@ -172,7 +172,7 @@ var IMLibElement = {
                             // for IE11
                             curVal = curVal.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
                         } else {
-                        //    curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
                     }
                     textNode = document.createTextNode(curVal);
