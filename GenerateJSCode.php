@@ -159,6 +159,8 @@ class GenerateJSCode
             $pathToIMRootDir = mb_ereg_replace(
                 mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
                 "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
+        } else {
+            $pathToIMRootDir = '[ERROR]';
         }
 
         $this->generateAssignJS(

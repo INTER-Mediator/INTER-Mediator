@@ -34,6 +34,7 @@ Ver.5.4 (in development)
 - The IMLibUI.valueChange method is locked with the id attribute value to prevent the error when multiple
   updating processes run simultaneously.
 - Supporting jQuery File Upload. Check the file Samples/Sample_website/fileupload_jQuery_MySQL.html.
+- Reduce error messages when the mbstring extension is disabled.
 - [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native
   Authentication for mobile devices. The affected version is 5.3 only.
 - [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
