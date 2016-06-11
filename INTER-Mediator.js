@@ -286,7 +286,7 @@ INTERMediator = {
         var timerTask;
         INTERMediatorOnPage.showProgress();
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
-            if (INTERMediatorOnPage.isFinishToConstruct)    {
+            if (INTERMediatorOnPage.isFinishToConstruct) {
                 return;
             }
             INTERMediatorOnPage.isFinishToConstruct = true;
@@ -677,6 +677,7 @@ INTERMediator = {
                                          currentRecord,
                                          parentObjectInfo,
                                          currentContextObj,
+                                         procBeforeRetirieve,
                                          customExpandRepeater) {
                 var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef,
                     fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
@@ -763,7 +764,11 @@ INTERMediator = {
                         currentContextDef["currentrecord"] = currentRecord;
                         keyValue = currentRecord["-recid"];
                     }
+                    if (procBeforeRetirieve) {
+                        procBeforeRetirieve(contextObj);
+                    }
                     targetRecords = retrieveDataForEnclosure(currentContextDef, fieldList, contextObj.foreignValue);
+                    contextObj.storeRecords(targetRecords);
                     if (customExpandRepeater == undefined) {
                         contextObj.registeredId = targetRecords.registeredId;
                         contextObj.nullAcceptable = targetRecords.nullAcceptable;
@@ -836,6 +841,21 @@ INTERMediator = {
                 }
                 setIdValue(node);
                 enclosureProcessing(node, [targetRepeater], null, parentObjectInfo, currentContextObj,
+                    function (context) {
+                        var currentContextDef = context.getContextDef();
+                        INTERMediator.addCondition(currentContextDef.name, {
+                            field: currentContextDef["relation"][0]["foreign-key"],
+                            operator: "IN",
+                            value: colArray,
+                            onetime: true
+                        });
+                        INTERMediator.addCondition(currentContextDef.name, {
+                            field: currentContextDef["relation"][1]["foreign-key"],
+                            operator: "IN",
+                            value: rowArray,
+                            onetime: true
+                        });
+                    },
                     function (contextObj, targetRecords) {
                         var labelKeyColumn, dataKeyColumn, labelKeyRow, dataKeyRow, currentContextDef, ix,
                             linkedElements, targetNode;
@@ -844,14 +864,16 @@ INTERMediator = {
                         // labelKeyRow = currentContextDef["relation"][1]["join-field"];
                         dataKeyColumn = currentContextDef["relation"][0]["foreign-key"];
                         dataKeyRow = currentContextDef["relation"][1]["foreign-key"];
-                        for (ix = 0; ix < targetRecords.recordset.length; ix++) { // for each record
-                            record = targetRecords.recordset[ix];
-                            if (nodeForKeyValues[record[dataKeyColumn]]
-                                && nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]) {
-                                targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]];
-                                if (targetNode) {
-                                    linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes([targetNode], false);
-                                    setupResult = setupLinkedNode([targetNode], linkedElements, contextObj, targetRecords.recordset, ix);
+                        if (targetRecords.recordset) {
+                            for (ix = 0; ix < targetRecords.recordset.length; ix++) { // for each record
+                                record = targetRecords.recordset[ix];
+                                if (nodeForKeyValues[record[dataKeyColumn]]
+                                    && nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]) {
+                                    targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]];
+                                    if (targetNode) {
+                                        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes([targetNode], false);
+                                        setupResult = setupLinkedNode([targetNode], linkedElements, contextObj, targetRecords.recordset, ix);
+                                    }
                                 }
                             }
                         }
@@ -891,7 +913,7 @@ INTERMediator = {
                 k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
                 idValuesForFieldName = {}, shouldDeleteNodes = [],
                 nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget;
-            
+
             currentContextDef = contextObj.getContextDef();
             try {
                 currentWidgetNodes = linkedElements.widgetNode;

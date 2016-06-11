@@ -639,8 +639,8 @@ INTERMediator_DBAdapter = {
 
     db_queryParameters: function (args) {
         var i, index, params, dbspec, counter, extCount, criteriaObject, sortkeyObject,
-            extCountSort, recordLimit = 10000000, conditions, conditionSign,
-            orderFields, key, keyParams, value, fields, operator, orderedKeys;
+            extCountSort, recordLimit = 10000000, conditions, conditionSign, modifyConditions,
+            orderFields, key, keyParams, value, fields, operator, orderedKeys, removeIndice = [];
         if (args.records === null) {
             params = "access=read&name=" + encodeURIComponent(args.name);
         } else {
@@ -723,7 +723,11 @@ INTERMediator_DBAdapter = {
                             }
                             if (criteriaObject[index]["value"] !== undefined) {
                                 params += "&condition" + extCount;
-                                params += "value=" + encodeURIComponent(criteriaObject[index]["value"]);
+                                value = criteriaObject[index]["value"];
+                                if (Array.isArray(value)) {
+                                    value = JSON.stringify(value);
+                                }
+                                params += "value=" + encodeURIComponent(value);
                             }
                             if (criteriaObject[index]["field"] != "__operation__") {
                                 conditions.push(conditionSign);
@@ -734,7 +738,18 @@ INTERMediator_DBAdapter = {
                         extCount++;
                     }
                 }
-
+                if (criteriaObject[index] && criteriaObject[index]["onetime"]) {
+                    removeIndice.push = index;
+                }
+            }
+            if (removeIndice.length > 0) {
+                modifyConditions = [];
+                for (index = 0; index < criteriaObject.length; index++) {
+                    if (!index in removeIndice) {
+                        modifyConditions.push(criteriaObject[index]);
+                    }
+                }
+                INTERMediator.additionalCondition[args['name']] = modifyConditions;
             }
         }
 

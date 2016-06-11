@@ -478,7 +478,8 @@ var INTERMediatorLib = {
                 'table': null,
                 'field': null,
                 'target': null,
-                'tableindex': null
+                'tableindex': null,
+                'crossTable': false
             };
         }
         comps = nodeInfo.split(INTERMediator.separator);
@@ -499,7 +500,8 @@ var INTERMediatorLib = {
             'table': tableName,
             'field': fieldName,
             'target': targetName,
-            'tableindex': "_im_index_" + tableName
+            'tableindex': "_im_index_" + tableName,
+            'crossTable': INTERMediator.crossTableStage == 3
         };
     },
 
