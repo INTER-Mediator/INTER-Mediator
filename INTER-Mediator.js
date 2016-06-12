@@ -286,7 +286,7 @@ INTERMediator = {
         var timerTask;
         INTERMediatorOnPage.showProgress();
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
-            if (INTERMediatorOnPage.isFinishToConstruct)    {
+            if (INTERMediatorOnPage.isFinishToConstruct) {
                 return;
             }
             INTERMediatorOnPage.isFinishToConstruct = true;
@@ -677,6 +677,7 @@ INTERMediator = {
                                          currentRecord,
                                          parentObjectInfo,
                                          currentContextObj,
+                                         procBeforeRetirieve,
                                          customExpandRepeater) {
                 var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef,
                     fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
@@ -763,7 +764,11 @@ INTERMediator = {
                         currentContextDef["currentrecord"] = currentRecord;
                         keyValue = currentRecord["-recid"];
                     }
+                    if (procBeforeRetirieve) {
+                        procBeforeRetirieve(contextObj);
+                    }
                     targetRecords = retrieveDataForEnclosure(currentContextDef, fieldList, contextObj.foreignValue);
+                    contextObj.storeRecords(targetRecords);
                     if (customExpandRepeater == undefined) {
                         contextObj.registeredId = targetRecords.registeredId;
                         contextObj.nullAcceptable = targetRecords.nullAcceptable;
@@ -785,7 +790,8 @@ INTERMediator = {
              */
             function expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
                 var i, j, colArray, rowArray, nodeForKeyValues, record, targetRepeater, lineNode, colContext,
-                    rowContext, appendingNode, trNodes, setupResult;
+                    rowContext, appendingNode, trNodes, setupResult, repeaters, linkedNodes, linkDefs, voteResult,
+                    crossCellContext, labelKeyColumn, labelKeyRow;
 
                 // Collecting 4 parts of cross table.
                 var ctComponentNodes = crossTableComponents(node);
@@ -798,6 +804,14 @@ INTERMediator = {
                     node.removeChild(node.childNodes[0]);
                 }
 
+                // Decide the context for cross point cell
+                repeaters = collectRepeaters([ctComponentNodes[3].cloneNode(true)]);
+                linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
+                linkDefs = collectLinkDefinitions(linkedNodes);
+                crossCellContext = tableVoting(linkDefs).targettable;
+                labelKeyColumn = crossCellContext["relation"][0]["join-field"];
+                labelKeyRow = crossCellContext["relation"][1]["join-field"];
+
                 // Create the first row
                 INTERMediator.crossTableStage = 1;
                 lineNode = document.createElement("TR");
@@ -808,7 +822,7 @@ INTERMediator = {
                 // Append the column context in the first row
                 targetRepeater = ctComponentNodes[1].cloneNode(true);
                 colContext = enclosureProcessing(lineNode, [targetRepeater], null, parentObjectInfo, currentContextObj);
-                colArray = colContext.indexingArray();
+                colArray = colContext.indexingArray(labelKeyColumn);
 
                 // Create second and following rows, and the first columns are appended row context
                 INTERMediator.crossTableStage = 2;
@@ -816,7 +830,7 @@ INTERMediator = {
                 lineNode = document.createElement("TR");
                 lineNode.appendChild(targetRepeater);
                 rowContext = enclosureProcessing(node, [lineNode], null, parentObjectInfo, currentContextObj);
-                rowArray = rowContext.indexingArray();
+                rowArray = rowContext.indexingArray(labelKeyRow);
 
                 // Create all cross point cell
                 INTERMediator.crossTableStage = 3;
@@ -836,22 +850,37 @@ INTERMediator = {
                 }
                 setIdValue(node);
                 enclosureProcessing(node, [targetRepeater], null, parentObjectInfo, currentContextObj,
+                    function (context) {
+                        var currentContextDef = context.getContextDef();
+                        INTERMediator.addCondition(currentContextDef.name, {
+                            field: currentContextDef["relation"][0]["foreign-key"],
+                            operator: "IN",
+                            value: colArray,
+                            onetime: true
+                        });
+                        INTERMediator.addCondition(currentContextDef.name, {
+                            field: currentContextDef["relation"][1]["foreign-key"],
+                            operator: "IN",
+                            value: rowArray,
+                            onetime: true
+                        });
+                    },
                     function (contextObj, targetRecords) {
                         var labelKeyColumn, dataKeyColumn, labelKeyRow, dataKeyRow, currentContextDef, ix,
                             linkedElements, targetNode;
                         currentContextDef = contextObj.getContextDef();
-                        // labelKeyColumn = currentContextDef["relation"][0]["join-field"];
-                        // labelKeyRow = currentContextDef["relation"][1]["join-field"];
                         dataKeyColumn = currentContextDef["relation"][0]["foreign-key"];
                         dataKeyRow = currentContextDef["relation"][1]["foreign-key"];
-                        for (ix = 0; ix < targetRecords.recordset.length; ix++) { // for each record
-                            record = targetRecords.recordset[ix];
-                            if (nodeForKeyValues[record[dataKeyColumn]]
-                                && nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]) {
-                                targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]];
-                                if (targetNode) {
-                                    linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes([targetNode], false);
-                                    setupResult = setupLinkedNode([targetNode], linkedElements, contextObj, targetRecords.recordset, ix);
+                        if (targetRecords.recordset) {
+                            for (ix = 0; ix < targetRecords.recordset.length; ix++) { // for each record
+                                record = targetRecords.recordset[ix];
+                                if (nodeForKeyValues[record[dataKeyColumn]]
+                                    && nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]) {
+                                    targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]];
+                                    if (targetNode) {
+                                        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes([targetNode], false);
+                                        setupResult = setupLinkedNode([targetNode], linkedElements, contextObj, targetRecords.recordset, ix);
+                                    }
                                 }
                             }
                         }
@@ -891,7 +920,7 @@ INTERMediator = {
                 k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
                 idValuesForFieldName = {}, shouldDeleteNodes = [],
                 nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget;
-            
+
             currentContextDef = contextObj.getContextDef();
             try {
                 currentWidgetNodes = linkedElements.widgetNode;

@@ -104,18 +104,24 @@ INTERMediatorLib.addEvent(window, "load", function () {
         }
     }
     errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId);
-    if (errorNode) {
-        if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
-            if (INTERMediatorOnPage.doBeforeConstruct)  {
+    if (INTERMediatorOnPage.isAutoConstruct) {
+        if (errorNode) {
+            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
+                if (INTERMediatorOnPage.doBeforeConstruct) {
+                    INTERMediatorOnPage.doBeforeConstruct();
+                }
+                if (INTERMediatorOnPage.isAutoConstruct) {
+                    INTERMediator.construct(true);
+                }
+            }
+        } else {
+            if (INTERMediatorOnPage.doBeforeConstruct) {
                 INTERMediatorOnPage.doBeforeConstruct();
             }
-            INTERMediator.construct(true);
+            if (INTERMediatorOnPage.isAutoConstruct) {
+                INTERMediator.construct(true);
+            }
         }
-    } else {
-        if (INTERMediatorOnPage.doBeforeConstruct)  {
-            INTERMediatorOnPage.doBeforeConstruct();
-        }
-        INTERMediator.construct(true);
     }
     // INTERMediatorOnPage.isFinishToConstruct = true;
 });

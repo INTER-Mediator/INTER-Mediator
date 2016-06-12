@@ -254,35 +254,32 @@ var IMLibCalc = {
                 } else {
                     targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
                 }
-                switch (INTERMediator.crossTableStage) {
-                    case 3:
-                        repeaterTop = targetNode;
-                        while (repeaterTop.tagName != "TD" && repeaterTop.tagName != "TH") {
-                            repeaterTop = repeaterTop.parentNode;
+                if (nodeId.nodeInfo && nodeId.nodeInfo.crossTable) {
+                    repeaterTop = targetNode;
+                    while (repeaterTop.tagName != "TD" && repeaterTop.tagName != "TH") {
+                        repeaterTop = repeaterTop.parentNode;
+                    }
+                    do {
+                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(targetNode, targetExp);
+                        if (targetIds && targetIds.length > 0) {
+                            break;
                         }
-                        do {
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetNode = INTERMediatorLib.getParentRepeater(
-                                INTERMediatorLib.getParentEnclosure(targetNode));
-                        } while (targetNode);
-                        break;
-                    default:
-                        do {
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetNode = INTERMediatorLib.getParentRepeater(
-                                INTERMediatorLib.getParentEnclosure(targetNode));
-                        } while (targetNode);
-                        break;
+                        targetNode = INTERMediatorLib.getParentRepeater(
+                            INTERMediatorLib.getParentEnclosure(targetNode));
+                    } while (targetNode);
+                } else {
+                    do {
+                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
+                        if (targetIds && targetIds.length > 0) {
+                            break;
+                        }
+                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
+                        if (targetIds && targetIds.length > 0) {
+                            break;
+                        }
+                        targetNode = INTERMediatorLib.getParentRepeater(
+                            INTERMediatorLib.getParentEnclosure(targetNode));
+                    } while (targetNode);
                 }
                 if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
                     calcObject.referes[field] = [];

@@ -436,15 +436,13 @@ IMLibContext = function (contextName) {
         }
     };
 
-    this.indexingArray = function()   {
+    this.indexingArray = function (keyField) {
         var ar = [], key, keyArray, counter = 0;
-
         for (key in this.store) {
             keyArray = key.split("=");
-            ar[counter] = keyArray[1];
+            ar[counter] = this.store[key][keyField];
             counter += 1;
         }
-
         return ar;
     };
 
@@ -676,6 +674,22 @@ IMLibContext = function (contextName) {
         return node;
     };
 
+    this.storeRecords = function (records) {
+        var ix, record, field, keyField, keyValue;
+        var contextDef = contextDef = INTERMediatorLib.getNamedObject(
+            INTERMediatorOnPage.getDataSources(), "name", this.contextName);
+        keyField = contextDef["key"] ? contextDef["key"] : "id";
+        if (records.recordset) {
+            for (ix = 0; ix < records.recordset.length; ix++) {
+                record = records.recordset[ix];
+                for (field in record) {
+                    keyValue = record[keyField] ? record[keyField] : ix;
+                    this.setValue(keyField + "=" + keyValue, field, record[field]);
+                }
+            }
+        }
+    };
+
     // setData____ methods are for storing data both the model and the database.
     //
     this.setDataAtLastRecord = function (key, value) {
@@ -696,8 +710,7 @@ IMLibContext = function (contextName) {
     };
 
     this.setDataWithKey = function (pkValue, key, value) {
-        var targetKey, contextDef, keyAndValue, storeElements;
-        var storekeys = Object.keys(this.store);
+        var targetKey, contextDef, storeElements;
         contextDef = this.getContextDef();
         if (!contextDef) {
             return;

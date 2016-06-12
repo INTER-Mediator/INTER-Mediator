@@ -476,6 +476,16 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                             if (!$this->isPossibleOperator($condition['operator'])) {
                                 throw new Exception("Invalid Operator.");
                             }
+                            if (strtoupper(trim($condition['operator'])) == "IN")   {
+                                $this->logger->setDebugMessage(var_export($condition['value'], true));
+                                $escapedValue = "(";
+                                $isFirst = true;
+                                foreach(json_decode($condition['value']) as $item)   {
+                                    $escapedValue .= (!$isFirst ? "," : "") . $this->link->quote($item);
+                                    $isFirst = false;
+                                }
+                                $escapedValue .= ")";
+                            }
                             $queryClauseArray[$chunkCount][]
                                 = "{$escapedField} {$condition['operator']} {$escapedValue}";
                         } else {
@@ -2187,7 +2197,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     'SOUNDS LIKE', //Compare sounds
                     '*', //Multiplication operator
                     '-', //Change the sign of the argument
-                    'XOR' //Logical XOR
+                    'XOR', //Logical XOR
+                    'IN',
                 )));
 
             //for PostgreSQL
@@ -2232,6 +2243,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     '~', //	ビットのNOT	~ B'10001'	01110
                     '<<', //ビットの左シフト	B'10001' << 3	01000
                     '>>', //ビットの右シフト	B'10001' >> 2	00100
+                    'IN'
                     //[上記に含まれないもの]
                     //幾何データ型、ネットワークアドレス型、JSON演算子、配列演算子、範囲演算子
                 )));
@@ -2247,6 +2259,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     'AND',
                     'IS NULL', //NULL value test
                     'OR',
+                    'IN',
                     '-', '+', '~', 'NOT',
                 )));
 
