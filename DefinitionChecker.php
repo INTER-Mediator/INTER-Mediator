@@ -225,7 +225,6 @@ class DefinitionChecker
             'maxrecords' => 'integer',
             'paging' => 'boolean',
             'key' => 'string',
-            'crosstable-key' => 'string',
             'sequence' => 'string',
             'relation' => array(
                 '*' => array(

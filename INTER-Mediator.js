@@ -790,7 +790,8 @@ INTERMediator = {
              */
             function expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
                 var i, j, colArray, rowArray, nodeForKeyValues, record, targetRepeater, lineNode, colContext,
-                    rowContext, appendingNode, trNodes, setupResult;
+                    rowContext, appendingNode, trNodes, setupResult, repeaters, linkedNodes, linkDefs, voteResult,
+                    crossCellContext, labelKeyColumn, labelKeyRow;
 
                 // Collecting 4 parts of cross table.
                 var ctComponentNodes = crossTableComponents(node);
@@ -803,6 +804,14 @@ INTERMediator = {
                     node.removeChild(node.childNodes[0]);
                 }
 
+                // Decide the context for cross point cell
+                repeaters = collectRepeaters([ctComponentNodes[3].cloneNode(true)]);
+                linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
+                linkDefs = collectLinkDefinitions(linkedNodes);
+                crossCellContext = tableVoting(linkDefs).targettable;
+                labelKeyColumn = crossCellContext["relation"][0]["join-field"];
+                labelKeyRow = crossCellContext["relation"][1]["join-field"];
+
                 // Create the first row
                 INTERMediator.crossTableStage = 1;
                 lineNode = document.createElement("TR");
@@ -813,7 +822,7 @@ INTERMediator = {
                 // Append the column context in the first row
                 targetRepeater = ctComponentNodes[1].cloneNode(true);
                 colContext = enclosureProcessing(lineNode, [targetRepeater], null, parentObjectInfo, currentContextObj);
-                colArray = colContext.indexingArray();
+                colArray = colContext.indexingArray(labelKeyColumn);
 
                 // Create second and following rows, and the first columns are appended row context
                 INTERMediator.crossTableStage = 2;
@@ -821,7 +830,7 @@ INTERMediator = {
                 lineNode = document.createElement("TR");
                 lineNode.appendChild(targetRepeater);
                 rowContext = enclosureProcessing(node, [lineNode], null, parentObjectInfo, currentContextObj);
-                rowArray = rowContext.indexingArray();
+                rowArray = rowContext.indexingArray(labelKeyRow);
 
                 // Create all cross point cell
                 INTERMediator.crossTableStage = 3;
@@ -860,8 +869,6 @@ INTERMediator = {
                         var labelKeyColumn, dataKeyColumn, labelKeyRow, dataKeyRow, currentContextDef, ix,
                             linkedElements, targetNode;
                         currentContextDef = contextObj.getContextDef();
-                        // labelKeyColumn = currentContextDef["relation"][0]["join-field"];
-                        // labelKeyRow = currentContextDef["relation"][1]["join-field"];
                         dataKeyColumn = currentContextDef["relation"][0]["foreign-key"];
                         dataKeyRow = currentContextDef["relation"][1]["foreign-key"];
                         if (targetRecords.recordset) {

@@ -436,21 +436,11 @@ IMLibContext = function (contextName) {
         }
     };
 
-    this.indexingArray = function () {
+    this.indexingArray = function (keyField) {
         var ar = [], key, keyArray, counter = 0;
-        var contextDef = contextDef = INTERMediatorLib.getNamedObject(
-            INTERMediatorOnPage.getDataSources(), "name", this.contextName);
-        var isCrosstable = false;
-        if (contextDef["crosstable-key"]) {
-            isCrosstable = true;
-        }
         for (key in this.store) {
             keyArray = key.split("=");
-            if (!isCrosstable) {
-                ar[counter] = keyArray[1];
-            } else {
-                ar[counter] = this.store[key][contextDef["crosstable-key"]]
-            }
+            ar[counter] = this.store[key][keyField];
             counter += 1;
         }
         return ar;

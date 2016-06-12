@@ -2198,7 +2198,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     '*', //Multiplication operator
                     '-', //Change the sign of the argument
                     'XOR', //Logical XOR
-                    'IN'
+                    'IN',
                 )));
 
             //for PostgreSQL
@@ -2243,6 +2243,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     '~', //	ビットのNOT	~ B'10001'	01110
                     '<<', //ビットの左シフト	B'10001' << 3	01000
                     '>>', //ビットの右シフト	B'10001' >> 2	00100
+                    'IN'
                     //[上記に含まれないもの]
                     //幾何データ型、ネットワークアドレス型、JSON演算子、配列演算子、範囲演算子
                 )));
@@ -2258,6 +2259,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     'AND',
                     'IS NULL', //NULL value test
                     'OR',
+                    'IN',
                     '-', '+', '~', 'NOT',
                 )));
 
