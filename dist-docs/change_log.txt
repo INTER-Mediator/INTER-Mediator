@@ -15,6 +15,8 @@ Ver.5.4 (in development)
   generating, describe "INTERMediatorOnPage.doBeforeConstruct = function(){..};" on any valid place.
   The node having the id attribute "nonsupportmessage" will disappear after page generating. If you
   require to the another id value, you can set it into params.php as the value "$nonSupportMessageId".
+- "IN" operator in SQL db can be accepted with DB_PDO class. The value should be an array of itemized
+  values.
 - If the automatic calling to construct method doesn't requre, descirbe the below in doBeforeConstruct
   or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
 - Creating Cross Table. It contains 3 contexts for colomn, row and value cells.
