@@ -157,12 +157,21 @@ class MediaAccess
                     include($currentDirParam);
                 }
 
-                $rsa = new Crypt_RSA();
+                $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+                $rsa = new $rsaClass;
                 $rsa->setPassword($passPhrase);
-                $rsa->loadKey($generatedPrivateKey);
-                $rsa->setPassword();
-                $privatekey = $rsa->getPrivateKey();
-                $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+                if (IMUtil::phpVersion() < 6) {
+                    $rsa->loadKey($generatedPrivateKey);
+                    $rsa->setPassword();
+                    $privatekey = $rsa->getPrivateKey();
+                    $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+                } else {
+                    $rsa->load($generatedPrivateKey, 'PKCS1');
+                    $rsa->setPassword();
+                    $privatekey = $rsa->getPrivateKey();
+                    $priv = $rsa->_parseKey($privatekey, 'PKCS1');
+                }
+
                 require_once('lib/bi2php/biRSA.php');
                 $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
 
