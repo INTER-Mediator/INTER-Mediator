@@ -55,6 +55,18 @@ INTERMediatorOnPage = {
     additionalExpandingEnclosureFinish: {},
     additionalExpandingRecordFinish: {},
 
+    getEditorPath: null,
+    getEntryPath: null,
+    getIMRootPath: null,
+    getDataSources: null,
+    getOptionsAliases: null,
+    getOptionsTransaction: null,
+    dbClassName: null,
+    browserCompatibility: null,
+    clientNotificationIdentifier: null,
+    metadata: null,
+    isLDAP: null,
+
     clearCredentials: function () {
         "use strict";
         INTERMediatorOnPage.authChallenge = null;

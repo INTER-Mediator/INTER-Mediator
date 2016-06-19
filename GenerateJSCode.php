@@ -176,10 +176,8 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.getDBSpecification", "function(){return ",
-            arrayToJSExcluding($dbspecification, '',
-                array('dsn', 'option', 'database', 'user', 'password', 'server', 'port', 'protocol', 'datatype')), ";}");
+        $this->generateAssignJS("INTERMediatorOnPage.dbClassName","{$q}{$dbClassName}{$q}");
+
         $isEmailAsUsernae = isset($options['authentication'])
             && isset($options['authentication']['email-as-username'])
             && $options['authentication']['email-as-username'] === true;

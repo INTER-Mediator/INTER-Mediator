@@ -493,7 +493,7 @@ INTERMediator_DBAdapter = {
             return;
         }
         params = INTERMediator_DBAdapter.db_queryParameters(args);
-        INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
+        // INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
 // params += "&randkey" + Math.random();    // For ie...
 // IE uses caches as the result in spite of several headers. So URL should be randomly.
 //
@@ -573,7 +573,7 @@ INTERMediator_DBAdapter = {
             return;
         }
         params = INTERMediator_DBAdapter.db_queryParameters(args);
-        INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
+        // INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
         try {
             this.server_access_async(
                 params,
@@ -645,9 +645,8 @@ INTERMediator_DBAdapter = {
         if (args.records === null) {
             params = "access=read&name=" + encodeURIComponent(args.name);
         } else {
-            dbspec = INTERMediatorOnPage.getDBSpecification();
             if (parseInt(args.records, 10) === 0 &&
-                dbspec["db-class"] !== null && dbspec["db-class"] === "FileMaker_FX") {
+                INTERMediatorOnPage.dbClassName === "DB_FileMaker_FX") {
                 params = "access=describe&name=" + encodeURIComponent(args.name);
             } else {
                 params = "access=read&name=" + encodeURIComponent(args.name);
@@ -767,13 +766,12 @@ INTERMediator_DBAdapter = {
                 params += "direction=" + encodeURIComponent(sortkeyObject[index]["direction"]);
                 extCountSort++;
             }
-
         }
 
         orderFields = {};
         for (key in IMLibLocalContext.store) {
             if (IMLibLocalContext.store.hasOwnProperty(key)) {
-                value = new String(IMLibLocalContext.store[key]);
+                value = String(IMLibLocalContext.store[key]);
                 keyParams = key.split(":");
                 if (keyParams && keyParams.length > 1 && keyParams[1].trim() == args['name'] && value.length > 0) {
                     if (keyParams[0].trim() == "condition" && keyParams.length >= 4) {

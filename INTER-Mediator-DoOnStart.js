@@ -81,7 +81,6 @@ if (!INTERMediator.additionalSortKey) {
     INTERMediator.additionalSortKey = {};
 }
 
-
 INTERMediatorLib.addEvent(window, "beforeunload", function (e) {
 //    var confirmationMessage = "";
 
@@ -104,6 +103,11 @@ INTERMediatorLib.addEvent(window, "load", function () {
         }
     }
     errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId);
+
+    if (INTERMediatorOnPage.dbClassName === "DB_FileMaker_FX") {
+        INTERMediator_DBAdapter.eliminateDuplicatedConditions = true;
+    }
+
     if (INTERMediatorOnPage.isAutoConstruct) {
         if (errorNode) {
             if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {

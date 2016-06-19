@@ -7,9 +7,12 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-// window.onload = function () {
-//     INTERMediator.construct(true);
-// };
+
+INTERMediatorOnPage.doBeforeConstruct = function () {
+    //INTERMediator.addCondition("postalcode", {field: "f9", operator: "LIKE", value: "%東%"});
+    //INTERMediator.addCondition("postalcode", {field: "f9", operator: "LIKE", value: "%西%"});
+    //INTERMediator.addCondition("postalcode", {field: "__operation__", operator: "ex"});
+};
 
 INTERMediatorOnPage.doAfterConstruct = function () {
     IMLibKeyEventDispatch.setExecuteByCode('condition', 13, function () {
@@ -43,7 +46,7 @@ function doSearch() {
     IMLibLocalContext.update('condition');
     IMLibLocalContext.update("number");
     var limit = IMLibLocalContext.getValue("pagedSize");
-    if(parseInt(limit) > 0) {
+    if (parseInt(limit) > 0) {
         INTERMediator.pagedSize = limit;
     }
     var c1 = IMLibLocalContext.getValue("condition");
