@@ -930,8 +930,7 @@ INTERMediator = {
                     shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
                 }
 
-                dbspec = INTERMediatorOnPage.getDBSpecification();
-                if (dbspec["db-class"] !== null && dbspec["db-class"] == "FileMaker_FX") {
+                if (INTERMediatorOnPage.dbClassName === "DB_FileMaker_FX") {
                     keyField = currentContextDef["key"] ? currentContextDef["key"] : "-recid";
                 } else {
                     keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
@@ -1910,8 +1909,7 @@ INTERMediator = {
                     );
 
                 } else {
-                    dbspec = INTERMediatorOnPage.getDBSpecification();
-                    if (dbspec["db-class"] != null && dbspec["db-class"] == "FileMaker_FX") {
+                    if (INTERMediatorOnPage.dbClassName === "DB_FileMaker_FX") {
                         keyField = currentContextDef["key"] ? currentContextDef["key"] : "-recid";
                     } else {
                         keyField = currentContextDef["key"] ? currentContextDef["key"] : "id";
@@ -2408,7 +2406,11 @@ INTERMediator = {
 
     addCondition: function (contextName, condition, notMatching) {
         var value, i, hasIdentical;
-        condition['matching'] = !notMatching;
+        if (notMatching != undefined) {
+            condition['matching'] = !notMatching;
+        } else {
+            condition['matching'] = INTERMediator_DBAdapter.eliminateDuplicatedConditions;
+        }
         if (INTERMediator.additionalCondition) {
             value = INTERMediator.additionalCondition;
             if (condition) {

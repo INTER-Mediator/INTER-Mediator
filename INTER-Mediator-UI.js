@@ -210,7 +210,6 @@ var IMLibUI = {
                 keyingField = keyingComp[0];
                 keyingComp.shift();
                 keyingValue = keyingComp.join('=');
-                INTERMediator_DBAdapter.eliminateDuplicatedConditions = true;
                 INTERMediator_DBAdapter.db_query_async(
                     {
                         name: contextInfo['context'].contextName,

@@ -27,6 +27,7 @@ You don't have to deploy the samples if you just want to see this at a glance.
 
 ### Special Thanks to:
 - Tomomitsu Baba
+- Candy
 - Katsunori Eda
 - Naomi Hamaji
 - Yukihiko Kobayashi
@@ -35,7 +36,11 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Yukio Murakami
 - Osamu Noda
 - Kazuaki Osawa
+- Tomoyuki Sugihara
 - Hiroyasu Tanaka
+- Takanori Taniguchi
+- Kozue Uriu
+- Kenji Utsumi
 - Tsutomu Yuasa
 
 ### Driven by INTER-Mediator Directive Committee

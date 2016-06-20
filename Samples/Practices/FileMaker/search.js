@@ -7,8 +7,11 @@
  * Please see the full license for details:
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-window.onload = function () {
-    INTERMediator.construct(true);
+INTERMediatorOnPage.doBeforeConstruct = function () {
+    //INTERMediator.clearCondition("postalcode");
+    //INTERMediator.addCondition("postalcode", {field: "f9", operator: "cn", value: "東"});
+    //INTERMediator.addCondition("postalcode", {field: "f9", operator: "cn", value: "北"});
+    //INTERMediator.addCondition("postalcode", {field: "__operation__", operator: "ex"});
 };
 
 INTERMediatorOnPage.doAfterConstruct = function () {
