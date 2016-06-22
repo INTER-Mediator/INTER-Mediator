@@ -787,13 +787,12 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         $fieldName = $field['@attributes']['name'];
                         $fieldValue = '';
                         if (isset($field['data']) && !is_null($field['data'])) {
-                            $fieldValue = $this->formatter->formatterFromDB(
-                                "{$tableName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
-//                            if ($dataSourceName != $tableName && $fieldValue == $field['data']) {
-//                                // for the compatiblity of ver.4.5 or preivious (DB_FileMaker_FX class only)
-//                                $fieldValue = $this->formatter->formatterFromDB(
-//                                    "{$tableName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
-//                            }
+                            try {
+                                $fieldValue = $this->formatter->formatterFromDB(
+                                    "{$tableName}{$this->dbSettings->getSeparator()}{$fieldName}", $field['data']);
+                            } catch (Exception $e) {
+                                $fieldValue = $field['data'];
+                            }
                             if ($fieldName == $keyField && $keyField != $this->getDefaultKey()) {
                                 $this->queriedPrimaryKeys[] = $field['data'];
                             }
