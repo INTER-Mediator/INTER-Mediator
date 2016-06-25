@@ -13,6 +13,7 @@ dependencies:
 
 database:
   override:
+    - sudo sed -i 's/us-east-1\.ec2\.//g' /etc/apt/sources.list
     - sudo aptitude install php5-sqlite --assume-yes
     - npm install
     - node_modules/.bin/buster-server:
