@@ -17,6 +17,9 @@ Ver.5.4 (in development)
   require to the another id value, you can set it into params.php as the value "$nonSupportMessageId".
 - "IN" operator in SQL db can be accepted with DB_PDO class. The value should be an array of itemized
   values.
+- Improve setting search criteria when using FileMaker Server to use the same fields for multiple 
+  values in the same "and" or "or" search criteria. (Use "-findquery" command internnally, but compound 
+  find requests using both "and" and "or" search criteria is still not supported.)
 - If the automatic calling to construct method doesn't requre, descirbe the below in doBeforeConstruct
   or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
 - Creating Cross Table. It contains 3 contexts for colomn, row and value cells.
@@ -37,8 +40,6 @@ Ver.5.4 (in development)
   updating processes run simultaneously.
 - Supporting jQuery File Upload. Check the file Samples/Sample_website/fileupload_jQuery_MySQL.html.
 - Reduce error messages when the mbstring extension is disabled.
-- If the database is FileMaker Server, INTERMediator_DBAdapter.eliminateDuplicatedConditions is true,
-  otherwise the value is false.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
   So when the 3rd parameter is nothing, the matching follows the value of
   INTERMediator_DBAdapter.eliminateDuplicatedConditions.
