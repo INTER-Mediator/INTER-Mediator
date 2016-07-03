@@ -16,9 +16,20 @@ var IMLib = {
     tab_char: '\t',
     singleQuote_char: '\'',
     doubleQuote_char: '"',
-    
-    zerolength_str: function(){
+    backSlash_char: IMLib.backSlash_char,
+
+    get zerolength_str() {
         return '';
+    },
+    set zerolength_str(value) {
+        // do nothing
+    },
+
+    get crlf_str() {
+        return '\r\n';
+    },
+    set crlf_str(value) {
+        // do nothing
     }
 };
 
