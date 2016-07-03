@@ -33,7 +33,7 @@ var INTERMediator_DBAdapter = {
                 if (INTERMediatorOnPage.authCryptedPassword && INTERMediatorOnPage.authChallenge) {
                     authParams += '&cresponse=' + encodeURIComponent(
                             INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword +
-                                "\n" + INTERMediatorOnPage.authChallenge));
+                                IMLib.nl_char + INTERMediatorOnPage.authChallenge));
                     if (INTERMediator_DBAdapter.debugMessage) {
                         INTERMediator.setDebugMessage('generate_authParams/authCryptedPassword=' +
                             INTERMediatorOnPage.authCryptedPassword);
@@ -98,9 +98,9 @@ var INTERMediator_DBAdapter = {
             }
             INTERMediator.setDebugMessage('myRequest.responseText=' + responseTextTrancated);
             INTERMediator.setDebugMessage('Return: resultCount=' + resultCount +
-                ', dbresult=' + INTERMediatorLib.objectToString(dbresult) + "\n" +
+                ', dbresult=' + INTERMediatorLib.objectToString(dbresult) + IMLib.nl_char +
                 'Return: requireAuth=' + requireAuth +
-                ', challenge=' + challenge + ', clientid=' + clientid + "\n" +
+                ', challenge=' + challenge + ', clientid=' + clientid + IMLib.nl_char +
                 'Return: newRecordKeyValue=' + newRecordKeyValue +
                 ', changePasswordResult=' + changePasswordResult + ', mediatoken=' + mediatoken
             );

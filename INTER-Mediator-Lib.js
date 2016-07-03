@@ -10,6 +10,18 @@
 
 //"use strict"
 
+var IMLib = {
+    nl_char: '\n',
+    cr_char: '\r',
+    tab_char: '\t',
+    singleQuote_char: '\'',
+    doubleQuote_char: '"',
+    
+    zerolength_str: function(){
+        return '';
+    }
+};
+
 var INTERMediatorLib = {
 
     ignoreEnclosureRepeaterClassName: '_im_ignore_enc_rep',

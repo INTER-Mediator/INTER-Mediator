@@ -935,7 +935,7 @@ var INTERMediatorOnPage = {
 
     getNodeIdsHavingTargetFromRepeater: function (fromNode, imDefinition) {
         "use strict";
-        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, "");
+        return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, IMLib.zerolength_str());
     },
 
     getNodeIdsHavingTargetFromEnclosure: function (fromNode, imDefinition) {
