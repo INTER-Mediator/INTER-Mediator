@@ -10,6 +10,9 @@ require_once(dirname(__FILE__) . '/../DB_Formatters.php');
 require_once(dirname(__FILE__) . '/../DB_Proxy.php');
 require_once(dirname(__FILE__) . '/../DB_Logger.php');
 require_once(dirname(__FILE__) . '/../DB_FileMaker_FX.php');
+require_once(dirname(__FILE__) . '/../IMUtil.php');
+require_once(dirname(__FILE__) . '/../LDAPAuth.php');
+require_once(dirname(__FILE__) . '/../MessageStrings.php');
 
 class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 {
@@ -330,7 +333,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     {
         $this->dbProxySetupForAuth();
 
-        $testName = "Simulation of Authentication by Valid User";
+        $testName = 'Simulation of Authentication by Valid User';
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
         $clientId = 'test1234test1234';
@@ -341,23 +344,25 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
-        $checkResult = $this->db_proxy->checkAuthorization($username, $calcuratedHash, $clientId);
-        $this->assertTrue($checkResult, $testName);
 
         $this->db_proxy->dbSettings->setCurrentUser($username);
-        $this->db_proxy->dbSettings->setDataSourceName("person");
+        $this->db_proxy->dbSettings->setDataSourceName('person');
         $this->db_proxy->paramAuthUser = $username;
         $this->db_proxy->clientId = $clientId;
         $this->db_proxy->paramResponse = $calcuratedHash;
 
-        $this->db_proxy->processingRequest("read");
+        $this->db_proxy->processingRequest('read');
         $result = $this->db_proxy->getDatabaseResult();
         $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        $this->assertTrue($result[1]["id"] == 2, $testName);
-        $this->assertTrue($result[1]["name"] == "Someone", $testName);
-        $this->assertTrue($result[1]["address"] == 'Tokyo, Japan', $testName);
+        foreach ($result as $index => $record) {
+            if ($record['id'] == 2) {
+                $this->assertTrue($result[1]['id'] == 2, $testName);
+                $this->assertTrue($result[1]['name'] == 'Someone', $testName);
+                $this->assertTrue($result[1]['address'] == 'Tokyo, Japan', $testName);
+            }
+        }
     }
 
     public function testAuthByInvalidUsder()
@@ -375,8 +380,6 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
         $calcuratedHash = hash_hmac('sha256', $hashedvalue, $challenge);
-        $checkResult = $this->db_proxy->checkAuthorization($username, $calcuratedHash, $clientId);
-        $this->assertTrue($checkResult, $testName);
 
         $this->db_proxy->dbSettings->setCurrentUser($username);
         $this->db_proxy->dbSettings->setDataSourceName("person");

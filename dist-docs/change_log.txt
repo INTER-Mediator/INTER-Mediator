@@ -25,6 +25,9 @@ Ver.5.4 (in development)
   "key" and "value" keyed elements. These affect as the initial values of relevant local context value.
 - The variable "$valuesForLocalContext" in params.php supplies initial values for local context.
   The value of this variable has to be an associated array with key and value.
+- Improve setting search criteria when using FileMaker Server to use the same fields for multiple 
+  values in the same "and" or "or" search criteria. (Use "-findquery" command internnally, but compound 
+  find requests using both "and" and "or" search criteria is still not supported.)
 - Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
 - FileUploader can detect exceeding file size limit and returns valid error messages.
 - New Sample "Sample_API" is added. This is for explanation of server-side apis.
@@ -37,8 +40,7 @@ Ver.5.4 (in development)
   updating processes run simultaneously.
 - Supporting jQuery File Upload. Check the file Samples/Sample_website/fileupload_jQuery_MySQL.html.
 - Reduce error messages when the mbstring extension is disabled.
-- If the database is FileMaker Server, INTERMediator_DBAdapter.eliminateDuplicatedConditions is true,
-  otherwise the value is false.
+- Add .eslintrc.js.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
   So when the 3rd parameter is nothing, the matching follows the value of
   INTERMediator_DBAdapter.eliminateDuplicatedConditions.
@@ -53,6 +55,8 @@ Ver.5.4 (in development)
 - [BUG FIX] Authentication prevented in case of just specify on the second parameter of IM_Entry.
 - [BUG FIX] Fix DB_FileMaker_FX class not to throw an exception when failed to convert a value 
   using DataConverter classes.
+- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server and a 
+  count of related records on the portal object is 1 (Thanks to Kiyonori Ito).
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php

@@ -547,6 +547,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->dbSettings->setDataSourceName($context['name']);
         }
 
+        $searchConditions = array();
+        $neqConditions = array();
+        $queryValues = array();
+        $qNum = 1;
         $childRecordId = null;
         $childRecordIdValue = null;
         if ($this->dbSettings->getExtraCriteria()) {
@@ -570,6 +574,33 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     }
 
                     $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
+                    if (isset($condition['operator']) && $condition['operator'] === 'eq') {
+                        $searchConditions[] = array($condition['field'], '=' . $condition['value']);
+                    } else if (isset($condition['operator']) && $condition['operator'] === 'cn') {
+                        $searchConditions[] = array($condition['field'], '*' . $condition['value'] . '*');
+                    } else if (isset($condition['operator']) && $condition['operator'] === 'bw') {
+                        $searchConditions[] = array($condition['field'], $condition['value'] . '*');
+                    } else if (isset($condition['operator']) && $condition['operator'] === 'ew') {
+                        $searchConditions[] = array($condition['field'], '*' . $condition['value']);
+                    } else if (isset($condition['operator']) && $condition['operator'] === 'gt') {
+                        $searchConditions[] = array($condition['field'], '>' . $condition['value']);
+                    } else if (isset($condition['operator']) && $condition['operator'] === 'gte') {
+                        $searchConditions[] = array($condition['field'], '>=' . $condition['value']);
+                    } else if (isset($condition['operator']) && $condition['operator'] === 'lt') {
+                        $searchConditions[] = array($condition['field'], '<' . $condition['value']);
+                    } else if (isset($condition['operator']) && $condition['operator'] === 'lte') {
+                        $searchConditions[] = array($condition['field'], '<=' . $condition['value']);
+                    } else {
+                        $searchConditions[] = array($condition['field'], $condition['value']);
+                    }
+                    $queryValues[] = 'q' . $qNum;
+                    $qNum++;
+                    if (isset($condition['operator']) && $condition['operator'] === 'neq') {
+                        $neqConditions[] = TRUE;
+                    } else {
+                        $neqConditions[] = FALSE;
+                    }
+
                     $hasFindParams = true;
                     if ($condition['field'] == $this->getDefaultKey()) {
                         $this->fx->FMSkipRecords(0);
@@ -730,11 +761,78 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $queryString .= '&-max=' . $this->fx->groupSize . $skipRequest;
         $fxUtility = new RetrieveFM7Data($this->fx);
         $currentSort = $fxUtility->CreateCurrentSort();
-        $currentSearch = $fxUtility->CreateCurrentSearch();
-        if ($hasFindParams) {
-            $queryString .= $currentSort . $currentSearch . '&-find';
+        if ($searchConditions === array()) {
+            $currentSearch = $fxUtility->CreateCurrentSearch();
+            if ($hasFindParams) {
+                $queryString .= $currentSort . $currentSearch . '&-find';
+            } else {
+                $queryString .= $currentSort . $currentSearch . '&-findall';
+            }
         } else {
-            $queryString .= $currentSort . $currentSearch . '&-findall';
+            $currentSearch = '';
+            $queryValue = '';
+            $qNum = 1;
+            if ($useOrOperation === TRUE) {
+                foreach ($queryValues as $value) {
+                    if ($queryValue === '') {
+                        if ($neqConditions[$qNum - 1] === FALSE) {
+                            $queryValue .= '(' . $value . ')';
+                        } else {
+                            $queryValue .= '!(' . $value . ')';
+                        }
+                    } else {
+                        if ($neqConditions[$qNum - 1] === FALSE) {
+                            $queryValue .= ';(' . $value . ')';
+                        } else {
+                            $queryValue .= ';!(' . $value . ')';
+                        }
+                    }
+                    $qNum++;
+                }
+                $qNum = 1;
+                foreach ($searchConditions as $searchCondition) {
+                    $currentSearch .= '&-q' . $qNum . '=' . urlencode($searchCondition[0])
+                        . '&-q' . $qNum . '.value=' . urlencode($searchCondition[1]);
+                    $qNum++;
+                }
+            } else {
+                $newConditions = array();
+                foreach ($searchConditions as $searchCondition) {
+                    if (array_key_exists($searchCondition[0], $newConditions)) {
+                        $newConditions = array_merge($newConditions, array($searchCondition[0] => $newConditions[$searchCondition[0]] . ' ' . $searchCondition[1]));
+                    } else {
+                        $newConditions = array_merge($newConditions, array($searchCondition[0] => $searchCondition[1]));
+                    }
+                }
+
+                $queryValues = array();
+                foreach ($newConditions as $fieldName => $fieldValue) {
+                    $currentSearch .= '&-q' . $qNum . '=' . $fieldName
+                        . '&-q' . $qNum . '.value=' . $fieldValue;
+                    $queryValues[] = 'q' . $qNum;
+                    $qNum++;
+                }
+
+                $qNum = 1;
+                foreach ($queryValues as $value) {
+                    if ($queryValue === '') {
+                        if ($neqConditions[$qNum - 1] === FALSE) {
+                            $queryValue .= $value;
+                        } else {
+                            $queryValue .= '!' . $value;
+                        }
+                    } else {
+                        if ($neqConditions[$qNum - 1] === FALSE) {
+                            $queryValue .= ',' . $value;
+                        } else {
+                            $queryValue .= ',!' . $value;
+                        }
+                    }
+                    $qNum++;
+                }
+                $queryValue = '(' . $queryValue . ')';
+            }
+            $queryString .= $currentSort . '&-query=' . $queryValue . $currentSearch . '&-findquery';
         }
 
         $this->queriedEntity = $this->fx->layout;
