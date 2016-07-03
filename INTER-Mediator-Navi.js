@@ -45,7 +45,7 @@ IMLibPageNavigation = {
                 start = Number(INTERMediator.startFrom);
                 pageSize = Number(INTERMediator.pagedSize);
                 allCount = Number(INTERMediator.pagedAllCount);
-                disableClass = " IM_NAV_disabled";
+                disableClass = ' IM_NAV_disabled';
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
@@ -53,11 +53,11 @@ IMLibPageNavigation = {
                         INTERMediatorOnPage.getMessages()[1] : navLabel[4]) +
                     (allCount === 0 ? 0 : start + 1) +
                     ((Math.min(start + pageSize, allCount) - start > 1) ?
-                        (((navLabel === null || navLabel[5] === null) ? "-" : navLabel[5]) +
-                        Math.min(start + pageSize, allCount)) : "") +
-                    ((navLabel === null || navLabel[6] === null) ? " / " : navLabel[6]) + (allCount) +
-                    ((navLabel === null || navLabel[7] === null) ? "" : navLabel[7])));
-                node.setAttribute("class", "IM_NAV_info");
+                        (((navLabel === null || navLabel[5] === null) ? '-' : navLabel[5]) +
+                        Math.min(start + pageSize, allCount)) : '') +
+                    ((navLabel === null || navLabel[6] === null) ? ' / ' : navLabel[6]) + (allCount) +
+                    ((navLabel === null || navLabel[7] === null) ? '' : navLabel[7])));
+                node.setAttribute('class', 'IM_NAV_info');
             }
 
             if ((navLabel === null || navLabel[0] !== false) && INTERMediator.pagination === true) {
@@ -65,7 +65,7 @@ IMLibPageNavigation = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[0] === null) ? '<<' : navLabel[0]));
-                node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ""));
+                node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ''));
                 INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator_DBAdapter.unregister();
                     INTERMediator.startFrom = 0;
@@ -76,7 +76,7 @@ IMLibPageNavigation = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[1] === null) ? '<' : navLabel[1]));
-                node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ""));
+                node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ''));
                 prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
                 INTERMediatorLib.addEvent(node, 'click', function () {
                     INTERMediator_DBAdapter.unregister();
@@ -88,7 +88,7 @@ IMLibPageNavigation = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[2] === null) ? '>' : navLabel[2]));
-                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
+                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ''));
                 nextPageCount =
                     (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
                 INTERMediatorLib.addEvent(node, 'click', function () {
@@ -101,7 +101,7 @@ IMLibPageNavigation = {
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[3] === null) ? '>>' : navLabel[3]));
-                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
+                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ''));
                 if (allCount % pageSize === 0) {
                     endPageCount = allCount - (allCount % pageSize) - pageSize;
                 } else {
@@ -114,18 +114,18 @@ IMLibPageNavigation = {
                 });
 
                 // Get from http://agilmente.com/blog/2013/08/04/inter-mediator_pagenation_1/
-                node = document.createElement("SPAN");
+                node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[10]));
-                c_node = document.createElement("INPUT");
-                c_node.setAttribute("class", 'IM_NAV_JUMP');
-                c_node.setAttribute("type", 'text');
-                c_node.setAttribute("value", Math.ceil(INTERMediator.startFrom / pageSize + 1));
+                c_node = document.createElement('INPUT');
+                c_node.setAttribute('class', 'IM_NAV_JUMP');
+                c_node.setAttribute('type', 'text');
+                c_node.setAttribute('value', Math.ceil(INTERMediator.startFrom / pageSize + 1));
                 node.appendChild(c_node);
                 node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[11]));
                 INTERMediatorLib.addEvent(
                     c_node,
-                    "change",
+                    'change',
                     function () {
                         if (c_node.value < 1) {
                             c_node.value = 1;
@@ -259,9 +259,9 @@ IMLibPageNavigation = {
         }
         INTERMediatorOnPage.showProgress();
         contextDef = INTERMediatorLib.getNamedObject(
-            INTERMediatorOnPage.getDataSources(), "name", targetName);
+            INTERMediatorOnPage.getDataSources(), 'name', targetName);
         if (contextDef === null) {
-            alert("no targetname :" + targetName);
+            alert('no targetname :' + targetName);
             INTERMediatorOnPage.hideProgress();
             return;
         }
@@ -294,7 +294,7 @@ IMLibPageNavigation = {
 
                 }, null);
         } catch (ex) {
-            if (ex == "_im_requath_request_") {
+            if (ex == '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
@@ -306,7 +306,7 @@ IMLibPageNavigation = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-5");
+                INTERMediator.setErrorMessage(ex, 'EXCEPTION-5');
             }
         }
 
@@ -324,7 +324,7 @@ IMLibPageNavigation = {
             INTERMediator_DBAdapter.db_delete_async(
                 {
                     name: targetName,
-                    conditions: [{field: keyField, operator: "=", value: keyValue}]
+                    conditions: [{field: keyField, operator: '=', value: keyValue}]
                 },
                 function () {
                     INTERMediator.pagedAllCount--;
@@ -342,7 +342,7 @@ IMLibPageNavigation = {
                 null
             );
         } catch (ex) {
-            INTERMediator.setErrorMessage(ex, "EXCEPTION-6");
+            INTERMediator.setErrorMessage(ex, 'EXCEPTION-6');
         }
     },
 
@@ -356,10 +356,10 @@ IMLibPageNavigation = {
             }
         }
         try {
-            if (contextDef["relation"]) {
-                for (index in contextDef["relation"]) {
-                    if (contextDef["relation"][index]["portal"] == true) {
-                        contextDef["portal"] = true;
+            if (contextDef['relation']) {
+                for (index in contextDef['relation']) {
+                    if (contextDef['relation'][index]['portal'] == true) {
+                        contextDef['portal'] = true;
                     }
                 }
             }
@@ -371,7 +371,7 @@ IMLibPageNavigation = {
                 if ((pStart = copyTerm.search(/\s/)) > -1) {
                     copyTerm = copyTerm.substr(0, pStart);
                 }
-                assocContexts = copyTerm.split(",");
+                assocContexts = copyTerm.split(',');
                 for (i = 0; i < assocContexts.length; i++) {
                     def = IMLibContextPool.getContextDef(assocContexts[i]);
                     if (def['relation'][0]['foreign-key']) {
@@ -386,8 +386,8 @@ IMLibPageNavigation = {
             INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.db_copy_async(
                 {
-                    name: contextDef["name"],
-                    conditions: [{field: contextDef["key"], operator: "=", value: keyValue}],
+                    name: contextDef['name'],
+                    conditions: [{field: contextDef['key'], operator: '=', value: keyValue}],
                     associated: assocDef.length > 0 ? assocDef : null
                 },
                 (function () {
@@ -416,7 +416,7 @@ IMLibPageNavigation = {
                 null
             );
         } catch (ex) {
-            INTERMediator.setErrorMessage(ex, "EXCEPTION-43");
+            INTERMediator.setErrorMessage(ex, 'EXCEPTION-43');
         }
     },
 
@@ -459,7 +459,7 @@ IMLibPageNavigation = {
                         try {
                             currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
                         } catch (ex) {
-                            if (ex == "_im_requath_request_") {
+                            if (ex == '_im_requath_request_') {
                                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                                     INTERMediatorOnPage.clearCredentials();
                                     INTERMediatorOnPage.authenticating(
@@ -473,7 +473,7 @@ IMLibPageNavigation = {
                                     return;
                                 }
                             } else {
-                                INTERMediator.setErrorMessage(ex, "EXCEPTION-28");
+                                INTERMediator.setErrorMessage(ex, 'EXCEPTION-28');
                             }
                         }
 
@@ -523,7 +523,7 @@ IMLibPageNavigation = {
                         });
 
                     } catch (ex) {
-                        if (ex == "_im_requath_request_") {
+                        if (ex == '_im_requath_request_') {
                             if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                                 INTERMediatorOnPage.clearCredentials();
                                 INTERMediatorOnPage.authenticating(
@@ -534,7 +534,7 @@ IMLibPageNavigation = {
                                 return;
                             }
                         } else {
-                            INTERMediator.setErrorMessage(ex, "EXCEPTION-29");
+                            INTERMediator.setErrorMessage(ex, 'EXCEPTION-29');
                         }
                     }
                     context.clearModified();

@@ -27,16 +27,16 @@ var IMLibCalc = {
 
         calcDef = currentContext['calculation'];
         for (index in calcDef) {
-            atPos = calcDef[index]["field"].indexOf(INTERMediator.separator);
-            fieldLength = calcDef[index]["field"].length;
-            calcDefField = calcDef[index]["field"].substring(0, atPos >= 0 ? atPos : fieldLength);
-            if (calcDefField == nInfo["field"]) {
+            atPos = calcDef[index]['field'].indexOf(INTERMediator.separator);
+            fieldLength = calcDef[index]['field'].length;
+            calcDefField = calcDef[index]['field'].substring(0, atPos >= 0 ? atPos : fieldLength);
+            if (calcDefField == nInfo['field']) {
                 try {
-                    exp = calcDef[index]["expression"];
-                    field = calcDef[index]["field"];
+                    exp = calcDef[index]['expression'];
+                    field = calcDef[index]['field'];
                     elements = Parser.parse(exp).variables();
                     objectKey = nodeId +
-                        (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : "");
+                        (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : '');
                 } catch (ex) {
                     INTERMediator.setErrorMessage(ex,
                         INTERMediatorLib.getInsertedString(
@@ -55,11 +55,11 @@ var IMLibCalc = {
                             keyingValue, itemIndex, currentRecord[itemIndex], nodeId, nInfo.target, null);
                     }
                     IMLibCalc.calculateRequiredObject[objectKey] = {
-                        "field": field,
-                        "expression": exp,
-                        "nodeInfo": nInfo,
-                        "values": values,
-                        "referes": referes
+                        'field': field,
+                        'expression': exp,
+                        'nodeInfo': nInfo,
+                        'values': values,
+                        'referes': referes
                     };
                 }
             }
@@ -205,7 +205,7 @@ var IMLibCalc = {
                         }
                     }
                     if (newValueAdded) {
-                        //console.log("calc-test", calcObject.expression, calcObject.values);
+                        //console.log('calc-test', calcObject.expression, calcObject.values);
                         updatedValue = Parser.evaluate(
                             calcObject.expression,
                             calcObject.values
@@ -251,7 +251,7 @@ var IMLibCalc = {
                 }
                 if (nodeId.nodeInfo && nodeId.nodeInfo.crossTable) {
                     repeaterTop = targetNode;
-                    while (repeaterTop.tagName != "TD" && repeaterTop.tagName != "TH") {
+                    while (repeaterTop.tagName != 'TD' && repeaterTop.tagName != 'TH') {
                         repeaterTop = repeaterTop.parentNode;
                     }
                     do {
