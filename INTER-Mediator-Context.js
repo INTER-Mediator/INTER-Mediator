@@ -95,7 +95,7 @@ var IMLibContextPool = {
         }
         nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
 
-        targetName = target === "" ? "_im_no_target" : target;
+        targetName = target === '' ? '_im_no_target' : target;
         if (this.poolingContexts === null) {
             return null;
         }
@@ -121,7 +121,7 @@ var IMLibContextPool = {
         if (!contextDef) {
             return null;
         }
-        var keyField = contextDef.key ? contextDef.key : "id";
+        var keyField = contextDef.key ? contextDef.key : 'id';
         return contextInfo.record.substr(keyField.length + 1);
     },
 
@@ -180,7 +180,7 @@ var IMLibContextPool = {
         if (!cName) {
             return false;
         }
-        //parentKeyField = "id";
+        //parentKeyField = 'id';
         for (i = 0; i < this.poolingContexts.length; i++) {
             if (this.poolingContexts[i].contextName == cName &&
                 this.poolingContexts[i].foreignValue[parentKeyField] == fValue) {
@@ -319,7 +319,7 @@ var IMLibContextPool = {
                 contextView = contextDef.view ? contextDef.view : contextDef.name;
                 if (contextView == entityName) {
                     keyField = contextDef.key;
-                    recKey = keyField + "=" + info.pkvalue;
+                    recKey = keyField + '=' + info.pkvalue;
                     this.poolingContexts[i].setValue(recKey, info.field[0], info.value[0]);
 
                     var bindingInfo = this.poolingContexts[i].binding[recKey][info.field[0]];
@@ -439,7 +439,7 @@ var IMLibContext = function (contextName) {
     this.indexingArray = function (keyField) {
         var ar = [], key, keyArray, counter = 0;
         for (key in this.store) {
-            keyArray = key.split("=");
+            keyArray = key.split('=');
             ar[counter] = this.store[key][keyField];
             counter += 1;
         }
@@ -537,7 +537,7 @@ var IMLibContext = function (contextName) {
     this.getContextDef = function () {
         var contextDef;
         contextDef = INTERMediatorLib.getNamedObject(
-            INTERMediatorOnPage.getDataSources(), "name", this.contextName);
+            INTERMediatorOnPage.getDataSources(), 'name', this.contextName);
         return contextDef;
     };
 
@@ -625,8 +625,8 @@ var IMLibContext = function (contextName) {
             }
         }
         if (isDebug === true) {
-            console.log("#lower=" + lower + ",upper=" + upper + ",index=" + index +
-                ",contextValue=" + contextValue + ",checkingValue=" + checkingValue);
+            console.log('#lower=' + lower + ',upper=' + upper + ',index=' + index +
+                ',contextValue=' + contextValue + ',checkingValue=' + checkingValue);
         }
         return index;
     };
@@ -677,14 +677,14 @@ var IMLibContext = function (contextName) {
     this.storeRecords = function (records) {
         var ix, record, field, keyField, keyValue;
         var contextDef = contextDef = INTERMediatorLib.getNamedObject(
-            INTERMediatorOnPage.getDataSources(), "name", this.contextName);
-        keyField = contextDef["key"] ? contextDef["key"] : "id";
+            INTERMediatorOnPage.getDataSources(), 'name', this.contextName);
+        keyField = contextDef['key'] ? contextDef['key'] : 'id';
         if (records.recordset) {
             for (ix = 0; ix < records.recordset.length; ix++) {
                 record = records.recordset[ix];
                 for (field in record) {
                     keyValue = record[keyField] ? record[keyField] : ix;
-                    this.setValue(keyField + "=" + keyValue, field, record[field]);
+                    this.setValue(keyField + '=' + keyValue, field, record[field]);
                 }
             }
         }
@@ -698,7 +698,7 @@ var IMLibContext = function (contextName) {
         if (storekeys.length > 0) {
             lastKey = storekeys[storekeys.length - 1];
             this.setValue(lastKey, key, value);
-            keyAndValue = lastKey.split("=");
+            keyAndValue = lastKey.split('=');
             INTERMediator_DBAdapter.db_update({
                 name: this.contextName,
                 conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
@@ -715,7 +715,7 @@ var IMLibContext = function (contextName) {
         if (!contextDef) {
             return;
         }
-        targetKey = contextDef.key + "=" + pkValue;
+        targetKey = contextDef.key + '=' + pkValue;
         storeElements = this.store[targetKey];
         if (storeElements) {
             this.setValue(targetKey, key, value);
@@ -769,10 +769,10 @@ var IMLibContext = function (contextName) {
                     if (this.contextInfo[nodeId] === undefined) {
                         this.contextInfo[nodeId] = {};
                     }
-                    this.contextInfo[nodeId][target == "" ? "_im_no_target" : target] =
+                    this.contextInfo[nodeId][target == '' ? '_im_no_target' : target] =
                     {context: this, record: recKey, field: key};
                     if (portal) {
-                        this.contextInfo[nodeId][target == "" ? "_im_no_target" : target].portal = portal;
+                        this.contextInfo[nodeId][target == '' ? '_im_no_target' : target].portal = portal;
                     }
                 } else {
                     IMLibContextPool.synchronize(this, recKey, key, value, target, portal);
@@ -811,7 +811,7 @@ var IMLibContext = function (contextName) {
 
     this.getContextInfo = function (nodeId, target) {
         try {
-            var info = this.contextInfo[nodeId][target == "" ? "_im_no_target" : target];
+            var info = this.contextInfo[nodeId][target == '' ? '_im_no_target' : target];
             return info === undefined ? null : info;
         } catch (ex) {
             return null;
@@ -820,7 +820,7 @@ var IMLibContext = function (contextName) {
 
     this.getContextValue = function (nodeId, target) {
         try {
-            var info = this.contextInfo[nodeId][target == "" ? "_im_no_target" : target];
+            var info = this.contextInfo[nodeId][target == '' ? '_im_no_target' : target];
             var value = info.context.getValue(info.record, info.field);
             return value === undefined ? null : value;
         } catch (ex) {
@@ -849,7 +849,7 @@ var IMLibContext = function (contextName) {
             removingNodeIds = [];
         contextDef = this.getContextDef();
         keyField = contextDef.key;
-        keying = keyField + "=" + pkvalue;
+        keying = keyField + '=' + pkvalue;
         bindingInfo = this.binding[keying];
         if (bindingInfo) {
             repeaterNodes = bindingInfo['_im_repeater'];
@@ -894,7 +894,7 @@ var IMLibContext = function (contextName) {
 
         result = true;
         if (checkResult.length != 0) {
-            opePosition = checkResult.indexOf("D");
+            opePosition = checkResult.indexOf('D');
             if (opePosition > -1) {
                 leftHand = checkResult.slice(0, opePosition);
                 rightHand = opePosition.slice(opePosition + 1);
@@ -906,7 +906,7 @@ var IMLibContext = function (contextName) {
                     result = leftResult || rightResult;
                 }
             } else {
-                opePosition = checkResult.indexOf("EX");
+                opePosition = checkResult.indexOf('EX');
                 if (opePosition > -1) {
                     leftHand = checkResult.slice(0, opePosition);
                     rightHand = opePosition.slice(opePosition + 1);
@@ -937,7 +937,7 @@ var IMLibContext = function (contextName) {
                         if (contextDef.relation[i]['join-field'] == fieldName) {
                             result &= (checkCondition({
                                 field: contextDef.relation[i]['foreign-key'],
-                                operator: "=",
+                                operator: '=',
                                 value: this.foreignValue[fieldName]
                             }, value));
                         }
@@ -952,7 +952,7 @@ var IMLibContext = function (contextName) {
             var realValue;
 
             if (conditionDef.field == '__operation__') {
-                return conditionDef.operator == 'ex' ? "EX" : "D";
+                return conditionDef.operator == 'ex' ? 'EX' : 'D';
             }
 
             realValue = oneRecord[conditionDef.field];
@@ -960,23 +960,23 @@ var IMLibContext = function (contextName) {
                 return false;
             }
             switch (conditionDef.operator) {
-            case "=":
-            case "eq":
+            case '=':
+            case 'eq':
                 return realValue == conditionDef.value;
-            case ">":
-            case "gt":
+            case '>':
+            case 'gt':
                 return realValue > conditionDef.value;
-            case "<":
-            case "lt":
+            case '<':
+            case 'lt':
                 return realValue < conditionDef.value;
-            case ">=":
-            case "gte":
+            case '>=':
+            case 'gte':
                 return realValue >= conditionDef.value;
-            case "<=":
-            case "lte":
+            case '<=':
+            case 'lte':
                 return realValue <= conditionDef.value;
-            case "!=":
-            case "neq":
+            case '!=':
+            case 'neq':
                 return realValue != conditionDef.value;
             default:
                 return false;
@@ -1001,7 +1001,7 @@ var IMLibContext = function (contextName) {
 
 
 var IMLibLocalContext = {
-    contextName: "_",
+    contextName: '_',
     store: {},
     binding: {},
 
@@ -1023,7 +1023,7 @@ var IMLibLocalContext = {
                 if (refIds) {
                     for (i = 0; i < refIds.length; i++) {
                         node = document.getElementById(refIds[i]);
-                        IMLibElement.setValueToIMNode(node, "", value, true);
+                        IMLibElement.setValueToIMNode(node, '', value, true);
                     }
                 }
             }
@@ -1047,11 +1047,11 @@ var IMLibLocalContext = {
             this.store._im_startFrom = INTERMediator.startFrom;
             this.store._im_pagedSize = INTERMediator.pagedSize;
             /*
-             IE8 issue: "" string is modified as "null" on JSON stringify.
+             IE8 issue: '' string is modified as 'null' on JSON stringify.
              http://blogs.msdn.com/b/jscript/archive/2009/06/23/serializing-the-value-of-empty-dom-elements-using-native-json-in-ie8.aspx
              */
             jsonString = JSON.stringify(this.store, function (k, v) {
-                return v === "" ? "" : v;
+                return v === '' ? '' : v;
             });
         } else {
             jsonString = JSON.stringify(this.store);
@@ -1063,7 +1063,7 @@ var IMLibLocalContext = {
                 searchLen = location.search ? location.search.length : 0;
                 hashLen = location.hash ? location.hash.length : 0;
                 trailLen = searchLen + hashLen;
-                key = "_im_localcontext" + document.URL.toString();
+                key = '_im_localcontext' + document.URL.toString();
                 key = (trailLen > 0) ? key.slice(0, -trailLen) : key;
                 sessionStorage.setItem(key, jsonString);
             } catch (ex) {
@@ -1072,12 +1072,12 @@ var IMLibLocalContext = {
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
         }
-        //console.log("##Archive:", key);
-        //console.log("##Archive:", this.store);
+        //console.log('##Archive:', key);
+        //console.log('##Archive:', this.store);
     },
 
     unarchive: function () {
-        var localContext = "", searchLen, hashLen, key, trailLen;
+        var localContext = '', searchLen, hashLen, key, trailLen;
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
@@ -1085,7 +1085,7 @@ var IMLibLocalContext = {
                 searchLen = location.search ? location.search.length : 0;
                 hashLen = location.hash ? location.hash.length : 0;
                 trailLen = searchLen + hashLen;
-                key = "_im_localcontext" + document.URL.toString();
+                key = '_im_localcontext' + document.URL.toString();
                 key = (trailLen > 0) ? key.slice(0, -trailLen) : key;
                 localContext = sessionStorage.getItem(key);
             } catch (ex) {
@@ -1096,8 +1096,8 @@ var IMLibLocalContext = {
         }
         if (localContext && localContext.length > 0) {
             this.store = JSON.parse(localContext);
-            //console.log("##Unarchive:", key);
-            //console.log("##Unarchive:", this.store);
+            //console.log('##Unarchive:', key);
+            //console.log('##Unarchive:', this.store);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
                     INTERMediator.additionalCondition = this.store._im_additionalCondition;
@@ -1148,12 +1148,12 @@ var IMLibLocalContext = {
                     }
                 }
 
-                params = nodeInfo.field.split(":");
+                params = nodeInfo.field.split(':');
                 switch (params[0]) {
-                case "addorder":
+                case 'addorder':
                     IMLibMouseEventDispatch.setExecute(idValue, IMLibUI.eventAddOrderHandler);
                     break;
-                case "update":
+                case 'update':
                     IMLibMouseEventDispatch.setExecute(idValue, (function () {
                         var contextName = params[1];
                         return function () {
@@ -1161,7 +1161,7 @@ var IMLibLocalContext = {
                         };
                     })());
                     break;
-                case "condition":
+                case 'condition':
                     IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
                         var contextName = params[1];
                         return function () {
@@ -1171,7 +1171,7 @@ var IMLibLocalContext = {
                         };
                     })());
                     break;
-                case "limitnumber":
+                case 'limitnumber':
                     IMLibChangeEventDispatch.setExecute(idValue, (function () {
                         var contextName = params[1];
                         return function () {
@@ -1223,7 +1223,7 @@ var IMLibLocalContext = {
     updateFromStore: function (idValue) {
         var node, nodeValue, linkInfos, nodeInfo, i, target, comp;
         node = document.getElementById(idValue);
-        target = node.getAttribute("data-im");
+        target = node.getAttribute('data-im');
         comp = target.split(INTERMediator.separator);
         if (comp[1]) {
             nodeValue = IMLibLocalContext.store[comp[1]];
@@ -1246,7 +1246,7 @@ var IMLibLocalContext = {
                 idValue = nodeIds[index];
                 targetNode = document.getElementById(idValue);
                 if (targetNode &&
-                    ( targetNode.tagName == "INPUT" || targetNode.tagName == "TEXTAREA" || targetNode.tagName == "SELECT")) {
+                    ( targetNode.tagName == 'INPUT' || targetNode.tagName == 'TEXTAREA' || targetNode.tagName == 'SELECT')) {
                     if (isStore === true) {
                         IMLibLocalContext.updateFromStore(idValue);
                     } else {
@@ -1274,10 +1274,10 @@ var IMLibLocalContext = {
                         }
                     }
                 } catch (ex) {
-                    if (ex == "_im_requath_request_") {
+                    if (ex == '_im_requath_request_') {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage(ex, "EXCEPTION-31");
+                        INTERMediator.setErrorMessage(ex, 'EXCEPTION-31');
                     }
                 }
             }
