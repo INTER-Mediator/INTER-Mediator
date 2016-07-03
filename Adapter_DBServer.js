@@ -12,7 +12,7 @@
  Database Access Object for Server-based Database
  ==================================================*/
 
-//"use strict"
+//'use strict';
 
 var INTERMediator_DBAdapter = {
 

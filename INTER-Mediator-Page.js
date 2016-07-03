@@ -8,7 +8,7 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//"use strict"
+//'use strict';
 
 var INTERMediatorOnPage = {
     authCountLimit: 4,
@@ -66,7 +66,7 @@ var INTERMediatorOnPage = {
     isLDAP: null,
 
     clearCredentials: function () {
-        "use strict";
+        'use strict';
         INTERMediatorOnPage.authChallenge = null;
         INTERMediatorOnPage.authHashedPassword = null;
         INTERMediatorOnPage.authCryptedPassword = null;
@@ -76,12 +76,12 @@ var INTERMediatorOnPage = {
      Here is defined to prevent the warning of static check.
      */
     getMessages: function () {
-        "use strict";
+        'use strict';
         return null;
     },
 
     getURLParametersAsArray: function () {
-        "use strict";
+        'use strict';
         var i, params, eqPos, result, key, value;
         result = {};
         params = location.search.substring(1).split('&');
@@ -97,7 +97,7 @@ var INTERMediatorOnPage = {
     },
 
     getContextInfo: function (contextName) {
-        "use strict";
+        'use strict';
         var dataSources, index;
         dataSources = INTERMediatorOnPage.getDataSources();
         for (index in dataSources) {
@@ -109,7 +109,7 @@ var INTERMediatorOnPage = {
     },
 
     isComplementAuthData: function () {
-        "use strict";
+        'use strict';
         return INTERMediatorOnPage.authUser !== null && INTERMediatorOnPage.authUser.length > 0 &&
             INTERMediatorOnPage.authHashedPassword !== null && INTERMediatorOnPage.authHashedPassword.length > 0 &&
             INTERMediatorOnPage.authUserSalt !== null && INTERMediatorOnPage.authUserSalt.length > 0 &&
@@ -117,7 +117,7 @@ var INTERMediatorOnPage = {
     },
 
     retrieveAuthInfo: function () {
-        "use strict";
+        'use strict';
         if (INTERMediatorOnPage.requireAuthentication) {
             if (INTERMediatorOnPage.isOnceAtStarting) {
                 switch (INTERMediatorOnPage.authStoring) {
@@ -160,7 +160,7 @@ var INTERMediatorOnPage = {
     },
 
     logout: function () {
-        "use strict";
+        'use strict';
         INTERMediatorOnPage.authUser = '';
         INTERMediatorOnPage.authHashedPassword = '';
         INTERMediatorOnPage.authCryptedPassword = '';
@@ -217,7 +217,7 @@ var INTERMediatorOnPage = {
     },
 
     removeCredencialsFromCookieOrStorage: function () {
-        "use strict";
+        'use strict';
         switch (INTERMediatorOnPage.authStoring) {
         case 'cookie':
         case 'cookie-domainwide':
@@ -236,7 +236,7 @@ var INTERMediatorOnPage = {
     },
 
     storeCredentialsToCookieOrStorage: function () {
-        "use strict";
+        'use strict';
         switch (INTERMediatorOnPage.authStoring) {
         case 'cookie':
             if (INTERMediatorOnPage.authUser) {
@@ -287,7 +287,7 @@ var INTERMediatorOnPage = {
     loginPanelHTML: null,
 
     authenticating: function (doAfterAuth, doTest) {
-        "use strict";
+        'use strict';
         var bodyNode, backBox, frontPanel, labelWidth, userLabel, userSpan, userBox, msgNumber,
             passwordLabel, passwordSpan, passwordBox, breakLine, chgpwButton, authButton, panelTitle,
             newPasswordLabel, newPasswordSpan, newPasswordBox, newPasswordMessage, realmBox, keyCode,
@@ -639,7 +639,7 @@ var INTERMediatorOnPage = {
     },
 
     authenticationError: function () {
-        "use strict";
+        'use strict';
         var bodyNode, backBox, frontPanel;
 
         INTERMediatorOnPage.hideProgress();
@@ -683,7 +683,7 @@ var INTERMediatorOnPage = {
      * @returns {boolean}
      */
     INTERMediatorCheckBrowser: function (deleteNode) {
-        "use strict";
+        'use strict';
         var positiveList, matchAgent, matchOS, versionStr, agent, os, judge = false, specifiedVersion,
             versionNum, agentPos = -1, dotPos, bodyNode, elm, childElm, grandChildElm, i;
 
@@ -812,7 +812,7 @@ var INTERMediatorOnPage = {
      Seek nodes from the repeater of 'fromNode' parameter.
      */
     getNodeIdFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
-        "use strict";
+        'use strict';
         var repeaterNode;
         if (justFromNode) {
             repeaterNode = fromNode;
@@ -849,7 +849,7 @@ var INTERMediatorOnPage = {
     },
 
     getNodeIdFromIMDefinitionOnEnclosure: function (imDefinition, fromNode) {
-        "use strict";
+        'use strict';
         var repeaterNode;
         repeaterNode = INTERMediatorLib.getParentEnclosure(fromNode);
         return seekNode(repeaterNode, imDefinition);
@@ -882,7 +882,7 @@ var INTERMediatorOnPage = {
     },
 
     getNodeIdsFromIMDefinition: function (imDefinition, fromNode, justFromNode) {
-        "use strict";
+        'use strict';
         var enclosureNode, nodeIds, i;
 
         if (justFromNode === true) {
@@ -929,23 +929,23 @@ var INTERMediatorOnPage = {
     },
 
     getNodeIdsHavingTargetFromNode: function (fromNode, imDefinition) {
-        "use strict";
+        'use strict';
         return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, true);
     },
 
     getNodeIdsHavingTargetFromRepeater: function (fromNode, imDefinition) {
-        "use strict";
+        'use strict';
         return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, IMLib.zerolength_str());
     },
 
     getNodeIdsHavingTargetFromEnclosure: function (fromNode, imDefinition) {
-        "use strict";
+        'use strict';
         return INTERMediatorOnPage.getNodeIdsFromIMDefinition(imDefinition, fromNode, false);
     },
 
     /* Cookies support */
     getKeyWithRealm: function (str) {
-        "use strict";
+        'use strict';
         if (INTERMediatorOnPage.realm.length > 0) {
             return str + '_' + INTERMediatorOnPage.realm;
         }
@@ -953,7 +953,7 @@ var INTERMediatorOnPage = {
     },
 
     getCookie: function (key) {
-        "use strict";
+        'use strict';
         var s, i, targetKey;
         s = document.cookie.split('; ');
         targetKey = this.getKeyWithRealm(key);
@@ -965,25 +965,25 @@ var INTERMediatorOnPage = {
         return '';
     },
     removeCookie: function (key) {
-        "use strict";
+        'use strict';
         document.cookie = this.getKeyWithRealm(key) + '=; path=/; max-age=0; expires=Thu, 1-Jan-1900 00:00:00 GMT;';
         document.cookie = this.getKeyWithRealm(key) + '=; max-age=0;  expires=Thu, 1-Jan-1900 00:00:00 GMT;';
     },
 
     setCookie: function (key, val) {
-        "use strict";
+        'use strict';
         this.setCookieWorker(this.getKeyWithRealm(key), val, false, INTERMediatorOnPage.authExpired);
     },
 
     setCookieDomainWide: function (key, val, noRealm) {
-        "use strict";
+        'use strict';
         var realKey;
         realKey = (noRealm === true) ? key : this.getKeyWithRealm(key);
         this.setCookieWorker(realKey, val, true, INTERMediatorOnPage.authExpired);
     },
 
     setCookieWorker: function (key, val, isDomain, expired) {
-        "use strict";
+        'use strict';
         var cookieString;
         var d = new Date();
         d.setTime(d.getTime() + expired * 1000);
@@ -998,7 +998,7 @@ var INTERMediatorOnPage = {
     },
 
     hideProgress: function () {
-        "use strict";
+        'use strict';
         var frontPanel;
         frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
@@ -1007,7 +1007,7 @@ var INTERMediatorOnPage = {
     },
 
     showProgress: function () {
-        "use strict";
+        'use strict';
         var rootPath, headNode, bodyNode, frontPanel, linkElement, imageProgress, imageIM;
 
         frontPanel = document.getElementById('_im_progress');
