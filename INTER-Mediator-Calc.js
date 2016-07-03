@@ -22,7 +22,7 @@ var IMLibCalc = {
      */
 
     updateCalculationInfo: function (contextObj, keyingValue, currentContext, nodeId, nInfo, currentRecord) {
-        var calcDef, exp, field, elements, i, index, objectKey, calcFieldInfo, itemIndex, values, referes,
+        var calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
             calcDefField, atPos, fieldLength;
 
         calcDef = currentContext['calculation'];
@@ -121,8 +121,6 @@ var IMLibCalc = {
                         calcObject.values[field] = valueSeries;
                     }
                     IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
-                } else {
-
                 }
             }
         } while (leafNodes.length > 0);
@@ -217,9 +215,6 @@ var IMLibCalc = {
                         updatedNodeIds.push(idValue);
                         updateNodeValues.push(updatedValue);
                     }
-                }
-                else {
-
                 }
             }
         } while (leafNodes.length > 0);
