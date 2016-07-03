@@ -13,7 +13,7 @@ var IMLibUI = {
     isShiftKeyDown: false,
     isControlKeyDown: false,
 
-    mobileSelectionColor: "#BBBBBB",
+    mobileSelectionColor: '#BBBBBB',
     mobileNaviBackButtonId: null,
 
     changeValueLock: {},
@@ -47,7 +47,7 @@ var IMLibUI = {
             keyingComp, keyingField, keyingValue, targetField, targetContext, targetNode, targetSpec;
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
-            INTERMediator.setDebugMessage("Canceled to update the value with shift+control keys.");
+            INTERMediator.setDebugMessage('Canceled to update the value with shift+control keys.');
             INTERMediator.flushMessage();
             IMLibUI.isShiftKeyDown = false;
             IMLibUI.isControlKeyDown = false;
@@ -86,7 +86,7 @@ var IMLibUI = {
         contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);
         if (!contextInfo) { // In case of local context
             targetNode = document.getElementById(idValue);
-            targetSpec = targetNode.getAttribute("data-im");
+            targetSpec = targetNode.getAttribute('data-im');
             if (targetSpec && targetSpec.split(INTERMediator.separator)[0] == IMLibLocalContext.contextName) {
                 IMLibLocalContext.updateFromNodeValue(idValue);
                 IMLibCalc.recalculation();
@@ -105,7 +105,7 @@ var IMLibUI = {
                         originalObj.value = originalContextInfo.context.getValue(
                             originalContextInfo.record, originalContextInfo.field);
                     }
-                    originalObj.removeAttribute("data-im-validation-notification");
+                    originalObj.removeAttribute('data-im-validation-notification');
                 };
             })(), 0);
             return false;
@@ -114,8 +114,8 @@ var IMLibUI = {
             return true;
         }
 
-        objType = changedObj.getAttribute("type");
-        if (objType === "radio" && !changedObj.checked) {
+        objType = changedObj.getAttribute('type');
+        if (objType === 'radio' && !changedObj.checked) {
             INTERMediatorOnPage.hideProgress();
             return true;
         }
@@ -125,7 +125,7 @@ var IMLibUI = {
         }
         newValue = IMLibElement.getValueFromIMNode(changedObj);
         if (contextInfo.context.isValueUndefined(contextInfo.record, contextInfo.field, contextInfo.portal)) {
-            INTERMediator.setErrorMessage("Error in updating.",
+            INTERMediator.setErrorMessage('Error in updating.',
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1040],
                     [contextInfo.context.contextName, contextInfo.field]));
@@ -141,15 +141,15 @@ var IMLibUI = {
         INTERMediatorOnPage.showProgress();
         try {
             if (!changedObj) {
-                throw "false_exit";
+                throw 'false_exit';
             }
             //linkInfo = INTERMediatorLib.getLinkedElementInfo(changedObj);
             //nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
             if (nodeInfo.table == IMLibLocalContext.contextName) {
-                throw "false_exit";
+                throw 'false_exit';
             }
             idValue = changedObj.getAttribute('id');
-            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);   // suppose to target = ""
+            contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nodeInfo.target);   // suppose to target = ''
 
             if (INTERMediator.ignoreOptimisticLocking) {
                 IMLibContextPool.updateContext(idValue, nodeInfo.target);
@@ -169,7 +169,7 @@ var IMLibUI = {
                             ],
                             dataset: [
                                 {
-                                    field: contextInfo.field + (contextInfo.portal ? ("." + contextInfo.portal) : ""),
+                                    field: contextInfo.field + (contextInfo.portal ? ('.' + contextInfo.portal) : ''),
                                     value: newValue
                                 }
                             ]
@@ -189,8 +189,8 @@ var IMLibUI = {
                                         INTERMediator.constructMain(updateRequiredContext[i]);
                                         associatedNode = updateRequiredContext[i].enclosureNode;
                                         if (INTERMediatorLib.isPopupMenu(associatedNode)) {
-                                            currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
-                                            IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
+                                            currentValue = contextInfo.context.getContextValue(associatedNode.id, '');
+                                            IMLibElement.setValueToIMNode(associatedNode, '', currentValue, false);
                                         }
                                     }
                                 }
@@ -201,7 +201,7 @@ var IMLibUI = {
                         })(),
                         function () {
                             INTERMediatorOnPage.hideProgress();
-                            INTERMediator.setErrorMessage("Error in valueChange method.", "EXCEPTION-2");
+                            INTERMediator.setErrorMessage('Error in valueChange method.', 'EXCEPTION-2');
                             IMLibUI.changeValueLock = {};
                         }
                     );
@@ -238,7 +238,7 @@ var IMLibUI = {
                                 isCheckResult, portalKey, portalIndex, currentFieldVal;
                             if (contextInfoCapt.portal) {
                                 isCheckResult = false;
-                                portalKey = contextInfo.context.contextName + "::-recid";
+                                portalKey = contextInfo.context.contextName + '::-recid';
                                 if (result.dbresult && result.dbresult[0]) {
                                     for (portalIndex in result.dbresult[0]) {
                                         var portalRecord = result.dbresult[0][portalIndex];
@@ -280,9 +280,9 @@ var IMLibUI = {
                                 contextInfoCapt.record, targetFieldCapt, contextInfoCapt.portal);
 
                             switch (changedObjeCapt.tagName) {
-                            case "INPUT":
-                                switch (changedObjeCapt.getAttribute("type")) {
-                                case "checkbox":
+                            case 'INPUT':
+                                switch (changedObjeCapt.getAttribute('type')) {
+                                case 'checkbox':
                                     if (initialvalue == changedObjeCapt.value) {
                                         isOthersModified = false;
                                     } else if (!parseInt(currentFieldVal)) {
@@ -333,7 +333,7 @@ var IMLibUI = {
                                         ],
                                         dataset: [
                                             {
-                                                field: contextInfo.field + (contextInfo.portal ? ("." + contextInfo.portal) : ""),
+                                                field: contextInfo.field + (contextInfo.portal ? ('.' + contextInfo.portal) : ''),
                                                 value: newValue
                                             }
                                         ]
@@ -353,8 +353,8 @@ var IMLibUI = {
                                                     INTERMediator.constructMain(updateRequiredContext[i]);
                                                     associatedNode = updateRequiredContext[i].enclosureNode;
                                                     if (INTERMediatorLib.isPopupMenu(associatedNode)) {
-                                                        currentValue = contextInfo.context.getContextValue(associatedNode.id, "");
-                                                        IMLibElement.setValueToIMNode(associatedNode, "", currentValue, false);
+                                                        currentValue = contextInfo.context.getContextValue(associatedNode.id, '');
+                                                        IMLibElement.setValueToIMNode(associatedNode, '', currentValue, false);
                                                     }
                                                 }
                                             }
@@ -365,7 +365,7 @@ var IMLibUI = {
                                     })(),
                                     function () {
                                         INTERMediatorOnPage.hideProgress();
-                                        INTERMediator.setErrorMessage("Error in valueChange method.", "EXCEPTION-2");
+                                        INTERMediator.setErrorMessage('Error in valueChange method.', 'EXCEPTION-2');
                                         IMLibUI.changeValueLock = {};
                                     }
                                 );
@@ -374,7 +374,7 @@ var IMLibUI = {
                     })(),
                     function () {
                         INTERMediatorOnPage.hideProgress();
-                        INTERMediator.setErrorMessage("Error in valueChange method.", "EXCEPTION-1");
+                        INTERMediator.setErrorMessage('Error in valueChange method.', 'EXCEPTION-1');
                         IMLibUI.changeValueLock = {};
                     }
                 );
@@ -405,7 +405,7 @@ var IMLibUI = {
                 matched = linkInfo[0].match(/([^@]+)/);
                 if (matched[1] !== IMLibLocalContext.contextName) {
                     context = INTERMediatorLib.getNamedObject(
-                        INTERMediatorOnPage.getDataSources(), "name", matched[1]);
+                        INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
                     if (context != null && context.validation != null) {
                         for (i = 0; i < linkInfo.length; i++) {
                             matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
@@ -414,32 +414,32 @@ var IMLibUI = {
                                     didValidate = true;
                                     result = Parser.evaluate(
                                         context.validation[index].rule,
-                                        {"value": changedObj.value, "target": changedObj});
+                                        {'value': changedObj.value, 'target': changedObj});
                                     if (!result) {
                                         switch (context.validation[index].notify) {
-                                        case "inline":
+                                        case 'inline':
                                             INTERMediatorLib.clearErrorMessage(changedObj);
                                             messageNode = INTERMediatorLib.createErrorMessageNode(
-                                                "SPAN", context.validation[index].message);
+                                                'SPAN', context.validation[index].message);
                                             changedObj.parentNode.insertBefore(
                                                 messageNode, changedObj.nextSibling);
                                             messageNodes.push(messageNode);
                                             break;
-                                        case "end-of-sibling":
+                                        case 'end-of-sibling':
                                             INTERMediatorLib.clearErrorMessage(changedObj);
                                             messageNode = INTERMediatorLib.createErrorMessageNode(
-                                                "DIV", context.validation[index].message);
+                                                'DIV', context.validation[index].message);
                                             changedObj.parentNode.appendChild(messageNode);
                                             messageNodes.push(messageNode);
                                             break;
                                         default:
-                                            if (changedObj.getAttribute("data-im-validation-notification") !== "alert") {
+                                            if (changedObj.getAttribute('data-im-validation-notification') !== 'alert') {
                                                 alert(context.validation[index].message);
-                                                changedObj.setAttribute("data-im-validation-notification", "alert");
+                                                changedObj.setAttribute('data-im-validation-notification', 'alert');
                                             }
                                             break;
                                         }
-                                        contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, "");
+                                        contextInfo = IMLibContextPool.getContextInfoFromId(changedObj, '');
                                         if (contextInfo) {                                        // Just supporting NON-target info.
                                             changedObj.value = contextInfo.context.getValue(
                                                 contextInfo.record, contextInfo.field);
@@ -453,8 +453,8 @@ var IMLibUI = {
                                         return result;
                                     } else {
                                         switch (context.validation[index].notify) {
-                                        case "inline":
-                                        case "end-of-sibling":
+                                        case 'inline':
+                                        case 'end-of-sibling':
                                             INTERMediatorLib.clearErrorMessage(changedObj);
                                             break;
                                         }
@@ -472,10 +472,10 @@ var IMLibUI = {
             }
             return result;
         } catch (ex) {
-            if (ex === "_im_requath_request_") {
+            if (ex === '_im_requath_request_') {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-32: on the validation process.");
+                INTERMediator.setErrorMessage(ex, 'EXCEPTION-32: on the validation process.');
             }
             return false;
         }
@@ -492,10 +492,10 @@ var IMLibUI = {
             }
         }
         try {
-            if (contextDef["relation"]) {
-                for (index in contextDef["relation"]) {
-                    if (contextDef["relation"][index]["portal"] == true) {
-                        contextDef["portal"] = true;
+            if (contextDef['relation']) {
+                for (index in contextDef['relation']) {
+                    if (contextDef['relation'][index]['portal'] == true) {
+                        contextDef['portal'] = true;
                     }
                 }
             }
@@ -507,7 +507,7 @@ var IMLibUI = {
                 if ((pStart = copyTerm.search(/\s/)) > -1) {
                     copyTerm = copyTerm.substr(0, pStart);
                 }
-                assocContexts = copyTerm.split(",");
+                assocContexts = copyTerm.split(',');
                 for (i = 0; i < assocContexts.length; i++) {
                     def = IMLibContextPool.getContextDef(assocContexts[i]);
                     if (def['relation'][0]['foreign-key']) {
@@ -523,8 +523,8 @@ var IMLibUI = {
             INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.db_copy_async(
                 {
-                    name: contextDef["name"],
-                    conditions: [{field: contextDef["key"], operator: "=", value: keyValue}],
+                    name: contextDef['name'],
+                    conditions: [{field: contextDef['key'], operator: '=', value: keyValue}],
                     associated: assocDef.length > 0 ? assocDef : null
                 },
                 (function () {
@@ -559,7 +559,7 @@ var IMLibUI = {
                 null
             );
         } catch (ex) {
-            INTERMediator.setErrorMessage(ex, "EXCEPTION-43");
+            INTERMediator.setErrorMessage(ex, 'EXCEPTION-43');
         }
     },
 
@@ -577,16 +577,16 @@ var IMLibUI = {
             INTERMediatorOnPage.retrieveAuthInfo();
 
             currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
-            relationDef = currentContext["relation"];
+            relationDef = currentContext['relation'];
             if (relationDef) {
                 for (index in relationDef) {
-                    if (relationDef.hasOwnProperty(index) && relationDef[index]["portal"] == true) {
-                        currentContext["portal"] = true;
+                    if (relationDef.hasOwnProperty(index) && relationDef[index]['portal'] == true) {
+                        currentContext['portal'] = true;
                     }
                 }
             }
             successProc = function () {
-                if (currentContext["relation"] == true) {
+                if (currentContext['relation'] == true) {
                     INTERMediator.pagedAllCount--;
                     if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
                         INTERMediator.startFrom = INTERMediator.startFrom - INTERMediator.pagedSize;
@@ -600,17 +600,17 @@ var IMLibUI = {
                     IMLibPageNavigation.navigationSetup();
                 }
             };
-            if (foreignField != "" && currentContext["portal"] == true) {
+            if (foreignField != '' && currentContext['portal'] == true) {
                 INTERMediator_DBAdapter.db_update_async({
                     name: targetName,
                     conditions: [
-                        {field: keyField, operator: "=", value: keyValue}
+                        {field: keyField, operator: '=', value: keyValue}
                     ],
                     dataset: [
                         {
-                            field: "-delete.related",
-                            operator: "=",
-                            value: foreignField.replace("\:\:-recid", "") + "." + foreignValue
+                            field: '-delete.related',
+                            operator: '=',
+                            value: foreignField.replace('\:\:-recid', '') + '.' + foreignValue
                         }
                     ]
                 }, successProc, null);
@@ -624,7 +624,7 @@ var IMLibUI = {
             }
 
         } catch (ex) {
-            if (ex == "_im_requath_request_") {
+            if (ex == '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                     INTERMediatorOnPage.clearCredentials();
                     INTERMediatorOnPage.authenticating(
@@ -636,7 +636,7 @@ var IMLibUI = {
                     return;
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-3");
+                INTERMediator.setErrorMessage(ex, 'EXCEPTION-3');
             }
         }
         for (i = 0; i < removeNodes.length; i++) {
@@ -666,8 +666,8 @@ var IMLibUI = {
             for (index in currentContext['relation']) {
                 if (currentContext['relation'].hasOwnProperty(index)) {
                     recordSet.push({
-                        field: currentContext['relation'][index]["foreign-key"],
-                        value: foreignValues[currentContext['relation'][index]["join-field"]]
+                        field: currentContext['relation'][index]['foreign-key'],
+                        value: foreignValues[currentContext['relation'][index]['join-field']]
                     });
                 }
             }
@@ -675,27 +675,27 @@ var IMLibUI = {
         //try {
         INTERMediatorOnPage.retrieveAuthInfo();
 
-        relationDef = currentContext["relation"];
+        relationDef = currentContext['relation'];
         if (relationDef) {
             for (index in relationDef) {
-                if (relationDef.hasOwnProperty(index) && relationDef[index]["portal"] == true) {
-                    currentContext["portal"] = true;
+                if (relationDef.hasOwnProperty(index) && relationDef[index]['portal'] == true) {
+                    currentContext['portal'] = true;
                 }
             }
         }
-        if (currentContext["portal"] == true) {
+        if (currentContext['portal'] == true) {
             relatedRecordSet = [];
-            for (index in currentContext["default-values"]) {
-                if (currentContext["default-values"].hasOwnProperty(index)) {
+            for (index in currentContext['default-values']) {
+                if (currentContext['default-values'].hasOwnProperty(index)) {
                     relatedRecordSet.push({
-                        field: targetName + "::" + currentContext["default-values"][index]["field"] + ".0",
-                        value: currentContext["default-values"][index]["value"]
+                        field: targetName + '::' + currentContext['default-values'][index]['field'] + '.0',
+                        value: currentContext['default-values'][index]['value']
                     });
                 }
             }
 
             if (relatedRecordSet.length == 0) {
-                targetPortalValue = "";
+                targetPortalValue = '';
 
                 targetRecord = INTERMediator_DBAdapter.db_query(
                     {
@@ -703,23 +703,23 @@ var IMLibUI = {
                         records: 1,
                         conditions: [
                             {
-                                field: currentContext["key"] ? currentContext["key"] : "-recid",
-                                operator: "=",
+                                field: currentContext['key'] ? currentContext['key'] : '-recid',
+                                operator: '=',
                                 value: keyValue
                             }
                         ]
                     }
                 );
-                for (portalField in targetRecord["recordset"][0][0]) {
-                    if (portalField.indexOf(targetName + "::") > -1 && portalField !== targetName + "::-recid") {
+                for (portalField in targetRecord['recordset'][0][0]) {
+                    if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::-recid') {
                         existRelated = true;
                         targetPortalField = portalField;
-                        if (portalField == targetName + "::" + recordSet[0]['field']) {
+                        if (portalField == targetName + '::' + recordSet[0]['field']) {
                             targetPortalValue = recordSet[0]['value'];
                             break;
                         }
-                        if (portalField != targetName + "::id"
-                            && portalField != targetName + "::" + recordSet[0]['field']) {
+                        if (portalField != targetName + '::id'
+                            && portalField != targetName + '::' + recordSet[0]['field']) {
                             break;
                         }
                     }
@@ -732,36 +732,36 @@ var IMLibUI = {
                             records: 0,
                             conditions: [
                                 {
-                                    field: currentContext["key"] ? currentContext["key"] : "-recid",
-                                    operator: "=",
+                                    field: currentContext['key'] ? currentContext['key'] : '-recid',
+                                    operator: '=',
                                     value: keyValue
                                 }
                             ]
                         }
                     );
-                    for (portalField in targetRecord["recordset"]) {
-                        if (portalField.indexOf(targetName + "::") > -1 && portalField !== targetName + "::-recid") {
+                    for (portalField in targetRecord['recordset']) {
+                        if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::-recid') {
                             targetPortalField = portalField;
-                            if (portalField == targetName + "::" + recordSet[0]['field']) {
+                            if (portalField == targetName + '::' + recordSet[0]['field']) {
                                 targetPortalValue = recordSet[0]['value'];
                                 break;
                             }
-                            if (portalField != targetName + "::id"
-                                && portalField != targetName + "::" + recordSet[0]['field']) {
+                            if (portalField != targetName + '::id'
+                                && portalField != targetName + '::' + recordSet[0]['field']) {
                                 break;
                             }
                         }
                     }
                 }
-                relatedRecordSet.push({field: targetPortalField + ".0", value: targetPortalValue});
+                relatedRecordSet.push({field: targetPortalField + '.0', value: targetPortalValue});
             }
 
             INTERMediator_DBAdapter.db_update({
                 name: targetName,
                 conditions: [
                     {
-                        field: currentContext["key"] ? currentContext["key"] : "-recid",
-                        operator: "=",
+                        field: currentContext['key'] ? currentContext['key'] : '-recid',
+                        operator: '=',
                         value: keyValue
                     }
                 ],
@@ -774,8 +774,8 @@ var IMLibUI = {
                     records: 1,
                     conditions: [
                         {
-                            field: currentContext["key"] ? currentContext["key"] : "-recid",
-                            operator: "=",
+                            field: currentContext['key'] ? currentContext['key'] : '-recid',
+                            operator: '=',
                             value: keyValue
                         }
                     ]
@@ -784,14 +784,14 @@ var IMLibUI = {
 
             newRecord = {};
             maxRecId = -1;
-            for (portalRowNum in targetRecord["recordset"][0]) {
+            for (portalRowNum in targetRecord['recordset'][0]) {
                 if (portalRowNum == Number(portalRowNum)
-                    && targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"]) {
-                    recId = parseInt(targetRecord["recordset"][0][portalRowNum][targetName + "::-recid"], 10);
+                    && targetRecord['recordset'][0][portalRowNum][targetName + '::-recid']) {
+                    recId = parseInt(targetRecord['recordset'][0][portalRowNum][targetName + '::-recid'], 10);
                     if (recId > maxRecId) {
                         maxRecId = recId;
                         newRecord.recordset = [];
-                        newRecord.recordset.push(targetRecord["recordset"][0][portalRowNum]);
+                        newRecord.recordset.push(targetRecord['recordset'][0][portalRowNum]);
                     }
                 }
             }
@@ -808,15 +808,15 @@ var IMLibUI = {
                         var keyField, newRecordId, associatedContext, conditions, createdRecord,
                             i, sameOriginContexts;
                         newRecordId = result.newRecordKeyValue;
-                        keyField = currentContextCapt["key"] ? currentContextCapt["key"] : "-recid";
+                        keyField = currentContextCapt['key'] ? currentContextCapt['key'] : '-recid';
                         associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt);
                         if (associatedContext) {
                             associatedContext.foreignValue = foreignValuesCapt;
-                            if (currentContextCapt["portal"] == true && existRelatedCapt == false) {
+                            if (currentContextCapt['portal'] == true && existRelatedCapt == false) {
                                 conditions = INTERMediator.additionalCondition;
                                 conditions[targetName] = {
                                     field: keyField,
-                                    operator: "=",
+                                    operator: '=',
                                     value: keyValueCapt
                                 };
                                 INTERMediator.additionalCondition = conditions;
@@ -836,7 +836,7 @@ var IMLibUI = {
                     };
                 })(),
                 function () {
-                    INTERMediator.setErrorMessage("Insert Error", "EXCEPTION-4");
+                    INTERMediator.setErrorMessage('Insert Error', 'EXCEPTION-4');
                 }
             );
 
@@ -902,8 +902,8 @@ var IMLibUI = {
                             validationInfo = contextInfo.validation[index];
                             if (validationInfo && validationInfo.field == comp[1]) {
                                 switch (validationInfo.notify) {
-                                case "inline":
-                                case "end-of-sibling":
+                                case 'inline':
+                                case 'end-of-sibling':
                                     INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
                                     break;
                                 }
@@ -915,22 +915,22 @@ var IMLibUI = {
                                 if (validationInfo) {
                                     result = Parser.evaluate(
                                         validationInfo.rule,
-                                        {"value": linkedNodes[i].value, "target": linkedNodes[i]}
+                                        {'value': linkedNodes[i].value, 'target': linkedNodes[i]}
                                     );
                                     if (!result) {
                                         hasInvalid = true;
                                         switch (validationInfo.notify) {
-                                        case "inline":
+                                        case 'inline':
                                             INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
                                             messageNode = INTERMediatorLib.createErrorMessageNode(
-                                                "SPAN", validationInfo.message);
+                                                'SPAN', validationInfo.message);
                                             linkedNodes[i].parentNode.insertBefore(
                                                 messageNode, linkedNodes[i].nextSibling);
                                             break;
-                                        case "end-of-sibling":
+                                        case 'end-of-sibling':
                                             INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
                                             messageNode = INTERMediatorLib.createErrorMessageNode(
-                                                "DIV", validationInfo.message);
+                                                'DIV', validationInfo.message);
                                             linkedNodes[i].parentNode.appendChild(messageNode);
                                             break;
                                         default:
@@ -1055,24 +1055,24 @@ var IMLibUI = {
     eventAddOrderHandler: function (e) {    // e is mouse event
         var targetKey, targetSplit, key, itemSplit, extValue;
         if (e.target) {
-            targetKey = e.target.getAttribute("data-im");
+            targetKey = e.target.getAttribute('data-im');
         } else {
-            targetKey = e.srcElement.getAttribute("data-im");
+            targetKey = e.srcElement.getAttribute('data-im');
         }
-        targetSplit = targetKey.split(":");
-        if (targetSplit[0] != "_@addorder" || targetSplit.length < 3) {
+        targetSplit = targetKey.split(':');
+        if (targetSplit[0] != '_@addorder' || targetSplit.length < 3) {
             return;
         }
         for (key in IMLibLocalContext.store) {
-            itemSplit = key.split(":");
-            if (itemSplit.length > 3 && itemSplit[0] == "valueofaddorder" && itemSplit[1] == targetSplit[1]) {
+            itemSplit = key.split(':');
+            if (itemSplit.length > 3 && itemSplit[0] == 'valueofaddorder' && itemSplit[1] == targetSplit[1]) {
                 extValue = IMLibLocalContext.getValue(key);
                 if (extValue) {
                     IMLibLocalContext.store[key]++;
                 }
             }
         }
-        IMLibLocalContext.setValue("valueof" + targetKey.substring(2), 1);
+        IMLibLocalContext.setValue('valueof' + targetKey.substring(2), 1);
         IMLibUI.eventUpdateHandler(targetSplit[1]);
     }
 };

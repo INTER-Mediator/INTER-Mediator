@@ -26,18 +26,18 @@ var IMLibElement = {
 
         nodeTag = element.tagName;
 
-        if (clearField === true && curTarget == "") {
+        if (clearField === true && curTarget == '') {
             switch (nodeTag) {
-            case "INPUT":
-                switch (element.getAttribute("type")) {
-                case "text":
-                    element.value = "";
+            case 'INPUT':
+                switch (element.getAttribute('type')) {
+                case 'text':
+                    element.value = '';
                     break;
                 default:
                     break;
                 }
                 break;
-            case "SELECT":
+            case 'SELECT':
                 break;
             default:
                 while (element.childNodes.length > 0) {
@@ -51,13 +51,13 @@ var IMLibElement = {
             if (curTarget.charAt(0) == '#') { // Appending
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                     }
                     element.innerHTML += curVal;
                 } else if (curTarget == 'textNode' || curTarget == 'script') {
                     textNode = document.createTextNode(curVal);
-                    if (nodeTag == "TEXTAREA") {
+                    if (nodeTag == 'TEXTAREA') {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     element.appendChild(textNode);
@@ -66,8 +66,8 @@ var IMLibElement = {
                     element.style[styleName] = curVal;
                 } else {
                     currentValue = element.getAttribute(curTarget);
-                    if (curVal.indexOf("/fmi/xml/cnt/") === 0 && currentValue.indexOf("?media=") === -1) {
-                        curVal = INTERMediatorOnPage.getEntryPath() + "?media=" + curVal;
+                    if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
+                        curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
                     }
                     element.setAttribute(curTarget, currentValue + curVal);
                 }
@@ -75,47 +75,47 @@ var IMLibElement = {
             else if (curTarget.charAt(0) == '$') { // Replacing
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                     }
-                    element.innerHTML = element.innerHTML.replace("$", curVal);
+                    element.innerHTML = element.innerHTML.replace('$', curVal);
                 } else if (curTarget == 'textNode' || curTarget == 'script') {
-                    if (nodeTag == "TEXTAREA") {
+                    if (nodeTag == 'TEXTAREA') {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
-                    element.innerHTML = element.innerHTML.replace("$", curVal);
+                    element.innerHTML = element.innerHTML.replace('$', curVal);
                 } else if (curTarget.indexOf('style.') == 0) {
                     styleName = curTarget.substring(6, curTarget.length);
                     element.style[styleName] = curVal;
                 } else {
                     currentValue = element.getAttribute(curTarget);
                     curVal = String(curVal);
-                    if (curVal.indexOf("/fmi/xml/cnt/") === 0 && currentValue.indexOf("?media=") === -1) {
-                        curVal = INTERMediatorOnPage.getEntryPath() + "?media=" + curVal;
+                    if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
+                        curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
                     }
-                    element.setAttribute(curTarget, currentValue.replace("$", curVal));
+                    element.setAttribute(curTarget, currentValue.replace('$', curVal));
                 }
             } else { // Setting
                 if (INTERMediatorLib.isWidgetElement(element)) {
                     element._im_setValue(curVal);
                 } else if (curTarget == 'innerHTML') { // Setting
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                     }
                     element.innerHTML = curVal;
                 } else if (curTarget == 'textNode') {
-                    if (nodeTag == "TEXTAREA") {
+                    if (nodeTag == 'TEXTAREA') {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     textNode = document.createTextNode(curVal);
                     element.appendChild(textNode);
                 } else if (curTarget == 'script') {
                     textNode = document.createTextNode(curVal);
-                    if (nodeTag == "SCRIPT") {
+                    if (nodeTag == 'SCRIPT') {
                         element.appendChild(textNode);
                     } else {
-                        scriptNode = document.createElement("script");
-                        scriptNode.type = "text/javascript";
+                        scriptNode = document.createElement('script');
+                        scriptNode.type = 'text/javascript';
                         scriptNode.appendChild(textNode);
                         element.appendChild(scriptNode);
                     }
@@ -129,7 +129,7 @@ var IMLibElement = {
         } else { // if the 'target' is not specified.
             if (INTERMediatorLib.isWidgetElement(element)) {
                 element._im_setValue(curVal);
-            } else if (nodeTag == "INPUT") {
+            } else if (nodeTag == 'INPUT') {
                 typeAttr = element.getAttribute('type');
                 if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                     valueAttr = element.value;
@@ -158,17 +158,17 @@ var IMLibElement = {
                 } else { // this node must be text field
                     element.value = curVal;
                 }
-            } else if (nodeTag == "SELECT") {
+            } else if (nodeTag == 'SELECT') {
                 needPostValueSet = true;
                 element.value = curVal;
             } else { // include option tag node
                 if (INTERMediator.defaultTargetInnerHTML) {
-                    if (INTERMediator.isIE && nodeTag == "TEXTAREA") {
+                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
                     }
                     element.innerHTML = curVal;
                 } else {
-                    if (nodeTag == "TEXTAREA") {
+                    if (nodeTag == 'TEXTAREA') {
                         if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
                             // for IE11
                             curVal = curVal.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
@@ -181,8 +181,8 @@ var IMLibElement = {
                 }
             }
         }
-        if (nodeTag === "INPUT" || nodeTag === "SELECT" || nodeTag === "TEXTAREA") {
-            INTERMediatorLib.addEvent(element, "blur", function (e) {
+        if (nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') {
+            INTERMediatorLib.addEvent(element, 'blur', function (e) {
                 var idValue = element.id;
                 return (function () {
                     if (!IMLibUI.valueChange(idValue, true)) {
@@ -201,14 +201,14 @@ var IMLibElement = {
             nodeTag = element.tagName;
             typeAttr = element.getAttribute('type');
         } else {
-            return "";
+            return '';
         }
         if (INTERMediatorLib.isWidgetElement(element)
             || (INTERMediatorLib.isWidgetElement(element.parentNode))) {
             newValue = element._im_getValue();
-        } else if (nodeTag == "INPUT") {
+        } else if (nodeTag == 'INPUT') {
             if (typeAttr == 'checkbox') {
-                if (INTERMediatorOnPage.dbClassName === "DB_FileMaker_FX") {
+                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
                     mergedValues = [];
                     targetNodes = element.parentNode.getElementsByTagName('INPUT');
                     for (k = 0; k < targetNodes.length; k++) {
@@ -230,9 +230,9 @@ var IMLibElement = {
             } else { //text, password
                 newValue = element.value;
             }
-        } else if (nodeTag == "SELECT") {
+        } else if (nodeTag == 'SELECT') {
             newValue = element.value;
-        } else if (nodeTag == "TEXTAREA") {
+        } else if (nodeTag == 'TEXTAREA') {
             newValue = element.value;
         } else {
             newValue = element.innerHTML;
