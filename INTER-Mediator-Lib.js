@@ -8,7 +8,7 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//"use strict"
+//'use strict';
 
 var IMLib = {
     nl_char: '\n',

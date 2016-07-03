@@ -13,7 +13,7 @@
  * @type {{instanciate: Function, ids: Array, finish: Function}}
  */
 
-//"use strict"
+//'use strict';
 
 var IMParts_Catalog = {};
 /*********
