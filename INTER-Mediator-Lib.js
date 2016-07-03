@@ -67,7 +67,7 @@ var INTERMediatorLib = {
     },
 
     generatePasswordHash: function (password) {
-        var numToHex, salt, saltHex, code, lowCode, highCode;
+        var numToHex, salt, saltHex, code, lowCode, highCode, i;
         numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
         salt = "";
         saltHex = "";
@@ -320,34 +320,34 @@ var INTERMediatorLib = {
                 (repeaterTag === 'LI' && enclosureTag === 'UL')) {
                 return true;
             }
-                enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
-                enclosureDataAttr = enclosure.getAttribute("data-im-control");
-                if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
-                    (enclosureDataAttr && enclosureDataAttr.indexOf("enclosure") >= 0)) {
-                    repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
-                    repeaterDataAttr = repeater.getAttribute("data-im-control");
-                    if ((repeaterClass
-                        && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
-                        || (repeaterDataAttr
-                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0 )
-                        || (repeaterDataAttr
-                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0 )
-                        || (repeaterDataAttr
-                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0 )
-                        || (repeaterDataAttr
-                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0 )
-                        || (repeaterDataAttr
-                        && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0 )
-                    ) {
+            enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
+            enclosureDataAttr = enclosure.getAttribute("data-im-control");
+            if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
+                (enclosureDataAttr && enclosureDataAttr.indexOf("enclosure") >= 0)) {
+                repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
+                repeaterDataAttr = repeater.getAttribute("data-im-control");
+                if ((repeaterClass
+                    && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0 )
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0 )
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0 )
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0 )
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0 )
+                ) {
+                    return true;
+                } else if (repeaterTag === 'INPUT') {
+                    repeaterType = repeater.getAttribute('type');
+                    if (repeaterType &&
+                        ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
                         return true;
-                    } else if (repeaterTag === 'INPUT') {
-                        repeaterType = repeater.getAttribute('type');
-                        if (repeaterType &&
-                            ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
-                            return true;
-                        }
                     }
                 }
+            }
             return false;
         }
     },
@@ -579,10 +579,10 @@ var INTERMediatorLib = {
     },
 
     removeEvent: function (serialId) {
-        if (eventInfos[serialId].node.removeEventListener) {
-            eventInfos[serialId].node.removeEventListener(eventInfos[serialId].evt, eventInfos[serialId].func, false);
-        } else if (eventInfos[serialId].node.detachEvent) {
-            eventInfos[serialId].node.detachEvent('on' + eventInfos[serialId].evt, eventInfos[serialId].func);
+        if (this.eventInfos[serialId].node.removeEventListener) {
+            this.eventInfos[serialId].node.removeEventListener(this.eventInfos[serialId].evt, this.eventInfos[serialId].func, false);
+        } else if (this.eventInfos[serialId].node.detachEvent) {
+            this.eventInfos[serialId].node.detachEvent('on' + this.eventInfos[serialId].evt, this.eventInfos[serialId].func);
         }
     },
 
@@ -776,7 +776,6 @@ var INTERMediatorLib = {
     },
 
     getNodePath: function (node) {
-        var path = '';
         if (node.tagName === null) {
             return '';
         } else {

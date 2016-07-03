@@ -12,8 +12,8 @@ require_once('../INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-        //    'paging' => true,
-        //    'records' => 10,
+            'paging' => true,
+            'records' => 10,
             'name' => 'authuser',
             'view' => 'authuser',
             'table' => 'authuser',

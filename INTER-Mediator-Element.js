@@ -10,7 +10,7 @@
 
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
-        var styleName, statement, currentValue, scriptNode, typeAttr, valueAttr, textNode,
+        var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
             needPostValueSet = false, nodeTag, curValues, i;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
@@ -28,21 +28,22 @@ var IMLibElement = {
 
         if (clearField === true && curTarget == "") {
             switch (nodeTag) {
-                case "INPUT":
-                    switch (element.getAttribute("type")) {
-                        case "text":
-                            element.value = "";
-                            break;
-                        default:
-                            break;
-                    }
-                case "SELECT":
+            case "INPUT":
+                switch (element.getAttribute("type")) {
+                case "text":
+                    element.value = "";
                     break;
                 default:
-                    while (element.childNodes.length > 0) {
-                        element.removeChild(element.childNodes[0]);
-                    }
                     break;
+                }
+                break;
+            case "SELECT":
+                break;
+            default:
+                while (element.childNodes.length > 0) {
+                    element.removeChild(element.childNodes[0]);
+                }
+                break;
             }
         }
 
@@ -183,7 +184,7 @@ var IMLibElement = {
         if (nodeTag === "INPUT" || nodeTag === "SELECT" || nodeTag === "TEXTAREA") {
             INTERMediatorLib.addEvent(element, "blur", function (e) {
                 var idValue = element.id;
-                return (function() {
+                return (function () {
                     if (!IMLibUI.valueChange(idValue, true)) {
                         element.focus();
                     }
@@ -194,7 +195,7 @@ var IMLibElement = {
     },
 
     getValueFromIMNode: function (element) {
-        var nodeTag, typeAttr, newValue, dbspec, mergedValues, targetNodes, k, valueAttr;
+        var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr;
 
         if (element) {
             nodeTag = element.tagName;
@@ -280,8 +281,7 @@ var IMLibElement = {
                 }
                 try {
                     removeNode.parentNode.removeChild(removeNode);
-                } catch
-                    (ex) {
+                } catch (ex) {
                     // Avoid an error for Safari
                 }
             }

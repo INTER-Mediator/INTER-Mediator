@@ -8,7 +8,7 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-IMLibContextPool = {
+var IMLibContextPool = {
     poolingContexts: null,
 
     clearAll: function () {
@@ -176,7 +176,7 @@ IMLibContextPool = {
     },
 
     getContextsFromNameAndForeignValue: function (cName, fValue, parentKeyField) {
-        var i, j, result = [], parentKeyField;
+        var i, result = [], parentKeyField;
         if (!cName) {
             return false;
         }
@@ -393,7 +393,7 @@ IMLibContextPool = {
     }
 };
 
-IMLibContext = function (contextName) {
+var IMLibContext = function (contextName) {
     this.contextName = contextName;
     this.tableName = null;
     this.viewName = null;
@@ -551,7 +551,7 @@ IMLibContext = function (contextName) {
             if (INTERMediator && INTERMediator.additionalSortKey[this.contextName]) {
                 for (i = 0; i < INTERMediator.additionalSortKey[this.contextName].length; i++) {
                     oneSortKey = INTERMediator.additionalSortKey[this.contextName][i];
-                    if (!oneSortKey.field in fields) {
+                    if (!(oneSortKey.field in fields)) {
                         fields.push(oneSortKey.field);
                         directions.push(oneSortKey.direction);
                     }
@@ -561,7 +561,7 @@ IMLibContext = function (contextName) {
             if (condtextDef && condtextDef.sort) {
                 for (i = 0; i < condtextDef.sort.length; i++) {
                     oneSortKey = condtextDef.sort[i];
-                    if (!oneSortKey.field in fields) {
+                    if (!(oneSortKey.field in fields)) {
                         fields.push(oneSortKey.field);
                         directions.push(oneSortKey.direction);
                     }
@@ -649,13 +649,13 @@ IMLibContext = function (contextName) {
     };
 
     this.getRepeaterEndNode = function (index) {
-        var nodeId, field, repeaters = [], repeater, node, i, sibling, enclosure, children;
+        var nodeId, field, repeaters = [], repeater, node, i, enclosure, children;
 
         var recKey = this.recordOrder[index];
         for (field in this.binding[recKey]) {
             nodeId = this.binding[recKey][field].nodeId;
             repeater = INTERMediatorLib.getParentRepeater(document.getElementById(nodeId));
-            if (!repeater in repeaters) {
+            if (!(repeater in repeaters)) {
                 repeaters.push(repeater);
             }
         }
@@ -960,32 +960,26 @@ IMLibContext = function (contextName) {
                 return false;
             }
             switch (conditionDef.operator) {
-                case "=":
-                case "eq":
-                    return realValue == conditionDef.value;
-                    break;
-                case ">":
-                case "gt":
-                    return realValue > conditionDef.value;
-                    break;
-                case "<":
-                case "lt":
-                    return realValue < conditionDef.value;
-                    break;
-                case ">=":
-                case "gte":
-                    return realValue >= conditionDef.value;
-                    break;
-                case "<=":
-                case "lte":
-                    return realValue <= conditionDef.value;
-                    break;
-                case "!=":
-                case "neq":
-                    return realValue != conditionDef.value;
-                    break;
-                default:
-                    return false;
+            case "=":
+            case "eq":
+                return realValue == conditionDef.value;
+            case ">":
+            case "gt":
+                return realValue > conditionDef.value;
+            case "<":
+            case "lt":
+                return realValue < conditionDef.value;
+            case ">=":
+            case "gte":
+                return realValue >= conditionDef.value;
+            case "<=":
+            case "lte":
+                return realValue <= conditionDef.value;
+            case "!=":
+            case "neq":
+                return realValue != conditionDef.value;
+            default:
+                return false;
             }
         }
     };
@@ -1006,7 +1000,7 @@ IMLibContext = function (contextName) {
 };
 
 
-IMLibLocalContext = {
+var IMLibLocalContext = {
     contextName: "_",
     store: {},
     binding: {},
@@ -1156,40 +1150,40 @@ IMLibLocalContext = {
 
                 params = nodeInfo.field.split(":");
                 switch (params[0]) {
-                    case "addorder":
-                        IMLibMouseEventDispatch.setExecute(idValue, IMLibUI.eventAddOrderHandler);
-                        break;
-                    case "update":
-                        IMLibMouseEventDispatch.setExecute(idValue, (function () {
-                            var contextName = params[1];
-                            return function () {
-                                IMLibUI.eventUpdateHandler(contextName);
-                            };
-                        })());
-                        break;
-                    case "condition":
-                        IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
-                            var contextName = params[1];
-                            return function () {
-                                INTERMediator.startFrom = 0;
-                                IMLibUI.eventUpdateHandler(contextName);
-                                IMLibPageNavigation.navigationSetup();
-                            };
-                        })());
-                        break;
-                    case "limitnumber":
-                        IMLibChangeEventDispatch.setExecute(idValue, (function () {
-                            var contextName = params[1];
-                            return function () {
-                                INTERMediator.pagedSize = document.getElementById(idValue).value;
-                                IMLibUI.eventUpdateHandler(contextName);
-                                IMLibPageNavigation.navigationSetup();
-                            };
-                        })());
-                        break;
-                    default:
-                        IMLibChangeEventDispatch.setExecute(idValue, IMLibLocalContext.update);
-                        break;
+                case "addorder":
+                    IMLibMouseEventDispatch.setExecute(idValue, IMLibUI.eventAddOrderHandler);
+                    break;
+                case "update":
+                    IMLibMouseEventDispatch.setExecute(idValue, (function () {
+                        var contextName = params[1];
+                        return function () {
+                            IMLibUI.eventUpdateHandler(contextName);
+                        };
+                    })());
+                    break;
+                case "condition":
+                    IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
+                        var contextName = params[1];
+                        return function () {
+                            INTERMediator.startFrom = 0;
+                            IMLibUI.eventUpdateHandler(contextName);
+                            IMLibPageNavigation.navigationSetup();
+                        };
+                    })());
+                    break;
+                case "limitnumber":
+                    IMLibChangeEventDispatch.setExecute(idValue, (function () {
+                        var contextName = params[1];
+                        return function () {
+                            INTERMediator.pagedSize = document.getElementById(idValue).value;
+                            IMLibUI.eventUpdateHandler(contextName);
+                            IMLibPageNavigation.navigationSetup();
+                        };
+                    })());
+                    break;
+                default:
+                    IMLibChangeEventDispatch.setExecute(idValue, IMLibLocalContext.update);
+                    break;
                 }
 
                 value = this.store[nodeInfo.field];

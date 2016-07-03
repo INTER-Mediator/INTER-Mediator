@@ -145,7 +145,7 @@ IMParts_Catalog["fileupload"] = {
                 }
             }, true);
             cancelButtonWrapper.addEventListener("click", function(c) {
-                    this.parentNode.style.display = "none";
+                this.parentNode.style.display = "none";
             });
             divNode.appendChild(cancelButtonWrapper);
             formNode.appendChild(buttonNode);
@@ -176,15 +176,13 @@ IMParts_Catalog["fileupload"] = {
             var targetNode = newNode;
             if (this.html5DDSuported) {
                 //    targetNode.innerHTML = str;
-            } else {
-
             }
         };
     },
     ids: [],
     formFromId: {},
     finish: function () {
-        var shaObj, hmacValue, targetNode, i, tagetIdLocal, targetNode, isProgressingLocal, serialIdLocal, uploadIdLocal;
+        var shaObj, hmacValue, targetNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
 
         if (this.html5DDSuported) {
             for (i = 0; i < this.ids.length; i++) {
@@ -294,7 +292,7 @@ IMParts_Catalog["fileupload"] = {
             }
 
         } else {
-            for (var i = 0; i < this.ids.length; i++) {
+            for (i = 0; i < this.ids.length; i++) {
                 targetNode = document.getElementById(this.ids[i]);
                 if (targetNode) {
                     var updateInfo = IMLibContextPool.getContextInfoFromId(this.ids[i], "");

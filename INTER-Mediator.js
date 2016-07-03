@@ -10,8 +10,7 @@
 
 //"use strict"
 
-var INTERMediator;
-INTERMediator = {
+var INTERMediator = {
     /*
      Properties
      */
@@ -321,7 +320,7 @@ INTERMediator = {
 
      */
     constructMain: function (updateRequiredContext, recordset) {
-        var i, theNode, currentLevel = 0, postSetFields = [],
+        var i, theNode, postSetFields = [],
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
@@ -659,7 +658,7 @@ INTERMediator = {
         function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
             var repNodeTag, repeatersOriginal;
             var imControl = node.getAttribute("data-im-control");
-            currentLevel++;
+
             if (imControl && imControl.match(/cross-table/)) {   // Cross Table
                 expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
             } else {    // Enclosure Processing as usual.
@@ -667,7 +666,6 @@ INTERMediator = {
                 repeatersOriginal = collectRepeatersOriginal(node, repNodeTag); // Collecting repeaters to this array.
                 enclosureProcessing(node, repeatersOriginal, currentRecord, parentObjectInfo, currentContextObj);
             }
-            currentLevel--;
 
             /** --------------------------------------------------------------------
              * Expanding enclosure as usual (means not 'cross tabole').
@@ -680,7 +678,7 @@ INTERMediator = {
                                          procBeforeRetirieve,
                                          customExpandRepeater) {
                 var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef,
-                    fieldList, repNodeTag, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
+                    fieldList, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
                     keyValue, selectedNode, calcDef, calcFields, contextObj = null;
 
                 // encNodeTag = enclosureNode.tagName;
@@ -790,7 +788,7 @@ INTERMediator = {
              */
             function expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
                 var i, j, colArray, rowArray, nodeForKeyValues, record, targetRepeater, lineNode, colContext,
-                    rowContext, appendingNode, trNodes, setupResult, repeaters, linkedNodes, linkDefs, voteResult,
+                    rowContext, appendingNode, trNodes, repeaters, linkedNodes, linkDefs,
                     crossCellContext, labelKeyColumn, labelKeyRow;
 
                 // Collecting 4 parts of cross table.
@@ -866,8 +864,8 @@ INTERMediator = {
                         });
                     },
                     function (contextObj, targetRecords) {
-                        var labelKeyColumn, dataKeyColumn, labelKeyRow, dataKeyRow, currentContextDef, ix,
-                            linkedElements, targetNode;
+                        var dataKeyColumn, dataKeyRow, currentContextDef, ix,
+                            linkedElements, targetNode, setupResult;
                         currentContextDef = contextObj.getContextDef();
                         dataKeyColumn = currentContextDef["relation"][0]["foreign-key"];
                         dataKeyRow = currentContextDef["relation"][1]["foreign-key"];
@@ -1706,20 +1704,20 @@ INTERMediator = {
                     'todo': copyJSFunction(currentContext, currentRecord[currentContextDef['key']])
                 });
                 switch (encNodeTag) {
-                    case "TBODY":
-                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName("TD");
-                        tdNode = tdNodes[tdNodes.length - 1];
-                        tdNode.appendChild(buttonNode);
-                        break;
-                    case "SELECT":
-                        break;
-                    default:
-                        if (repeaters[0] && repeaters[0].childNodes) {
-                            repeaters[repeaters.length - 1].appendChild(buttonNode);
-                        } else {
-                            repeaters.push(buttonNode);
-                        }
-                        break;
+                case "TBODY":
+                    tdNodes = repeaters[repeaters.length - 1].getElementsByTagName("TD");
+                    tdNode = tdNodes[tdNodes.length - 1];
+                    tdNode.appendChild(buttonNode);
+                    break;
+                case "SELECT":
+                    break;
+                default:
+                    if (repeaters[0] && repeaters[0].childNodes) {
+                        repeaters[repeaters.length - 1].appendChild(buttonNode);
+                    } else {
+                        repeaters.push(buttonNode);
+                    }
+                    break;
                 }
             }
         }
@@ -1729,7 +1727,7 @@ INTERMediator = {
          */
         function setupDeleteButton(encNodeTag, repeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue, shouldDeleteNodes) {
             // Handling Delete buttons
-            var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName, index;
+            var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName;
             if (!currentContextDef['repeat-control']
                 || !currentContextDef['repeat-control'].match(/delete/i)) {
                 return;
@@ -1774,21 +1772,21 @@ INTERMediator = {
                         currentContextDef['repeat-control'].match(/confirm-delete/i))
                 });
                 switch (encNodeTag) {
-                    case "TBODY":
-                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName("TD");
-                        tdNode = tdNodes[tdNodes.length - 1];
-                        tdNode.appendChild(buttonNode);
-                        break;
-                    case "SELECT":
-                        // OPTION tag can't contain any other tags.
-                        break;
-                    default:
-                        if (repeaters[0] && repeaters[0].childNodes) {
-                            repeaters[repeaters.length - 1].appendChild(buttonNode);
-                        } else {
-                            repeaters.push(buttonNode);
-                        }
-                        break;
+                case "TBODY":
+                    tdNodes = repeaters[repeaters.length - 1].getElementsByTagName("TD");
+                    tdNode = tdNodes[tdNodes.length - 1];
+                    tdNode.appendChild(buttonNode);
+                    break;
+                case "SELECT":
+                    // OPTION tag can't contain any other tags.
+                    break;
+                default:
+                    if (repeaters[0] && repeaters[0].childNodes) {
+                        repeaters[repeaters.length - 1].appendChild(buttonNode);
+                    } else {
+                        repeaters.push(buttonNode);
+                    }
+                    break;
                 }
             } else {
                 IMLibPageNavigation.deleteInsertOnNavi.push({
@@ -1806,7 +1804,7 @@ INTERMediator = {
          */
         function setupInsertButton(currentContextDef, keyValue, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
-                firstLevelNodes, targetNodeTag, existingButtons, keyField, dbspec, thisId, encNodeTag,
+                firstLevelNodes, targetNodeTag, existingButtons, keyField, thisId, encNodeTag,
                 buttonName, setTop;
 
             encNodeTag = node.tagName;
@@ -1824,77 +1822,77 @@ INTERMediator = {
                     INTERMediator.buttonIdNum++;
                     shouldRemove = [];
                     switch (encNodeTag) {
-                        case 'TBODY':
-                            setTop = false;
-                            targetNodeTag = "TFOOT";
+                    case 'TBODY':
+                        setTop = false;
+                        targetNodeTag = "TFOOT";
+                        if (currentContextDef['repeat-control'].match(/top/i)) {
+                            targetNodeTag = "THEAD";
+                            setTop = true;
+                        }
+                        enclosedNode = node.parentNode;
+                        firstLevelNodes = enclosedNode.childNodes;
+                        footNode = null;
+                        for (i = 0; i < firstLevelNodes.length; i++) {
+                            if (firstLevelNodes[i].tagName === targetNodeTag) {
+                                footNode = firstLevelNodes[i];
+                                break;
+                            }
+                        }
+                        if (footNode === null) {
+                            footNode = document.createElement(targetNodeTag);
+                            enclosedNode.appendChild(footNode);
+                        }
+                        existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert');
+                        if (existingButtons.length == 0) {
+                            trNode = document.createElement('TR');
+                            INTERMediatorLib.setClassAttributeToNode(trNode, "IM_Insert_TR");
+                            tdNode = document.createElement('TD');
+                            INTERMediatorLib.setClassAttributeToNode(tdNode, "IM_Insert_TD");
+                            setIdValue(trNode);
+                            if (setTop && footNode.childNodes) {
+                                footNode.insertBefore(trNode, footNode.childNodes[0]);
+                            } else {
+                                footNode.appendChild(trNode);
+                            }
+                            trNode.appendChild(tdNode);
+                            tdNode.appendChild(buttonNode);
+                            shouldRemove = [trNode.getAttribute('id')];
+                        }
+                        break;
+                    case 'UL':
+                    case 'OL':
+                        liNode = document.createElement('LI');
+                        existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert');
+                        if (existingButtons.length == 0) {
+                            liNode.appendChild(buttonNode);
                             if (currentContextDef['repeat-control'].match(/top/i)) {
-                                targetNodeTag = "THEAD";
-                                setTop = true;
+                                node.insertBefore(liNode, node.firstChild);
+                            } else {
+                                node.appendChild(liNode);
                             }
-                            enclosedNode = node.parentNode;
-                            firstLevelNodes = enclosedNode.childNodes;
-                            footNode = null;
-                            for (i = 0; i < firstLevelNodes.length; i++) {
-                                if (firstLevelNodes[i].tagName === targetNodeTag) {
-                                    footNode = firstLevelNodes[i];
-                                    break;
-                                }
+                        }
+                        break;
+                    case 'SELECT':
+                        // Select enclosure can't include Insert button.
+                        break;
+                    default:
+                        divNode = document.createElement("DIV");
+                        existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
+                        if (existingButtons.length == 0) {
+                            divNode.appendChild(buttonNode);
+                            if (currentContextDef['repeat-control'].match(/top/i)) {
+                                node.insertBefore(divNode, node.firstChild);
+                            } else {
+                                node.appendChild(divNode);
                             }
-                            if (footNode === null) {
-                                footNode = document.createElement(targetNodeTag);
-                                enclosedNode.appendChild(footNode);
-                            }
-                            existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert');
-                            if (existingButtons.length == 0) {
-                                trNode = document.createElement('TR');
-                                INTERMediatorLib.setClassAttributeToNode(trNode, "IM_Insert_TR");
-                                tdNode = document.createElement('TD');
-                                INTERMediatorLib.setClassAttributeToNode(tdNode, "IM_Insert_TD");
-                                setIdValue(trNode);
-                                if (setTop && footNode.childNodes) {
-                                    footNode.insertBefore(trNode, footNode.childNodes[0]);
-                                } else {
-                                    footNode.appendChild(trNode);
-                                }
-                                trNode.appendChild(tdNode);
-                                tdNode.appendChild(buttonNode);
-                                shouldRemove = [trNode.getAttribute('id')];
-                            }
-                            break;
-                        case 'UL':
-                        case 'OL':
-                            liNode = document.createElement('LI');
-                            existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert');
-                            if (existingButtons.length == 0) {
-                                liNode.appendChild(buttonNode);
-                                if (currentContextDef['repeat-control'].match(/top/i)) {
-                                    node.insertBefore(liNode, node.firstChild);
-                                } else {
-                                    node.appendChild(liNode);
-                                }
-                            }
-                            break;
-                        case 'SELECT':
-                            // Select enclosure can't include Insert button.
-                            break;
-                        default:
-                            divNode = document.createElement("DIV");
-                            existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
-                            if (existingButtons.length == 0) {
-                                divNode.appendChild(buttonNode);
-                                if (currentContextDef['repeat-control'].match(/top/i)) {
-                                    node.insertBefore(divNode, node.firstChild);
-                                } else {
-                                    node.appendChild(divNode);
-                                }
-                            }
-                            break;
+                        }
+                        break;
                     }
                     insertJSFunction = function (a, b, c, d, e) {
                         var contextName = a, relationValue = b, nodeId = c, removeNodes = d, confirming = e;
                         return function () {
                             IMLibUI.insertButton(contextName, keyValue, relationValue, nodeId, removeNodes, confirming);
-                        }
+                        };
                     };
 
                     INTERMediatorLib.addEvent(
@@ -1929,7 +1927,7 @@ INTERMediator = {
          */
         function setupNavigationButton(encNodeTag, repeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
             // Handling Detail buttons
-            var buttonNode, thisId, navigateJSFunction, tdNodes, tdNode, firstInNode, contextDef,
+            var buttonNode, thisId, tdNodes, tdNode, firstInNode, contextDef,
                 isHide, masterContext, detailContext, showingNode, isHidePageNavi, buttonName, i,
                 isTouchRepeater, moveToDetailFunc;
 
@@ -1979,7 +1977,7 @@ INTERMediator = {
                             return function () {
                                 IMLibEventResponder.touchEventCancel = false;
                                 targetNode.style.backgroundColor = IMLibUI.mobileSelectionColor;
-                            }
+                            };
                         })()
                     });
                     eventListenerPostAdding.push({
@@ -1994,7 +1992,7 @@ INTERMediator = {
                                     IMLibEventResponder.touchEventCancel = false;
                                     moveToDetailFunc();
                                 }
-                            }
+                            };
                         })()
                     });
                     eventListenerPostAdding.push({
@@ -2003,7 +2001,7 @@ INTERMediator = {
                         'todo': (function () {
                             return function () {
                                 IMLibEventResponder.touchEventCancel = true;
-                            }
+                            };
                         })()
                     });
                     eventListenerPostAdding.push({
@@ -2012,7 +2010,7 @@ INTERMediator = {
                         'todo': (function () {
                             return function () {
                                 IMLibEventResponder.touchEventCancel = true;
-                            }
+                            };
                         })()
                     });
                 }
@@ -2024,26 +2022,26 @@ INTERMediator = {
                 });
 
                 switch (encNodeTag) {
-                    case 'TBODY':
-                        tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
-                        tdNode = tdNodes[0];
-                        firstInNode = tdNode.childNodes[0];
-                        if (firstInNode) {
-                            tdNode.insertBefore(buttonNode, firstInNode);
-                        } else {
-                            tdNode.appendChild(buttonNode);
-                        }
-                        break;
-                    case 'SELECT':
-                        break;
-                    default:
-                        firstInNode = repeaters[repeaters.length - 1].childNodes[0];
-                        if (firstInNode) {
-                            repeaters[repeaters.length - 1].insertBefore(buttonNode, firstInNode);
-                        } else {
-                            repeaters[repeaters.length - 1].appendChild(buttonNode);
-                        }
-                        break;
+                case 'TBODY':
+                    tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
+                    tdNode = tdNodes[0];
+                    firstInNode = tdNode.childNodes[0];
+                    if (firstInNode) {
+                        tdNode.insertBefore(buttonNode, firstInNode);
+                    } else {
+                        tdNode.appendChild(buttonNode);
+                    }
+                    break;
+                case 'SELECT':
+                    break;
+                default:
+                    firstInNode = repeaters[repeaters.length - 1].childNodes[0];
+                    if (firstInNode) {
+                        repeaters[repeaters.length - 1].insertBefore(buttonNode, firstInNode);
+                    } else {
+                        repeaters[repeaters.length - 1].appendChild(buttonNode);
+                    }
+                    break;
                 }
             }
 
@@ -2151,18 +2149,18 @@ INTERMediator = {
                         }
                     } else {   // If the page doesn't use JQuery Mobile
                         switch (node.tagName) {
-                            case 'TBODY':
-                                tbodyTargetNode(node, isTop, aNode);
-                                break;
-                            case 'UL':
-                            case 'OL':
-                                genericTargetNode(node, isTop, "LI", aNode);
-                                break;
-                            case 'SELECT':
-                                break;
-                            default:
-                                genericTargetNode(node, isTop, "DIV", aNode);
-                                break;
+                        case 'TBODY':
+                            tbodyTargetNode(node, isTop, aNode);
+                            break;
+                        case 'UL':
+                        case 'OL':
+                            genericTargetNode(node, isTop, "LI", aNode);
+                            break;
+                        case 'SELECT':
+                            break;
+                        default:
+                            genericTargetNode(node, isTop, "DIV", aNode);
+                            break;
                         }
                     }
                     INTERMediatorLib.addEvent(
@@ -2174,18 +2172,18 @@ INTERMediator = {
             } else {
                 buttonNode = createBackButton("BUTTON", currentContextDef);
                 switch (node.tagName) {
-                    case 'TBODY':
-                        tbodyTargetNode(node, isTop, buttonNode);
-                        break;
-                    case 'UL':
-                    case 'OL':
-                        genericTargetNode(node, isTop, "LI", buttonNode);
-                        break;
-                    case 'SELECT':
-                        break;
-                    default:
-                        genericTargetNode(node, isTop, "DIV", buttonNode);
-                        break;
+                case 'TBODY':
+                    tbodyTargetNode(node, isTop, buttonNode);
+                    break;
+                case 'UL':
+                case 'OL':
+                    genericTargetNode(node, isTop, "LI", buttonNode);
+                    break;
+                case 'SELECT':
+                    break;
+                default:
+                    genericTargetNode(node, isTop, "DIV", buttonNode);
+                    break;
                 }
                 INTERMediatorLib.addEvent(
                     buttonNode,
@@ -2256,7 +2254,7 @@ INTERMediator = {
             }
 
             function moveToMaster(a, b, c, d) {
-                var masterContextCL = a, detailContextCL = b, pageNaviShow = c, masterUpdate = d, node, i;
+                var masterContextCL = a, detailContextCL = b, pageNaviShow = c, masterUpdate = d, node;
                 return function () {
                     var showingNode;
                     if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
@@ -2294,7 +2292,7 @@ INTERMediator = {
                             INTERMediatorOnPage.masterScrollPosition.x,
                             INTERMediatorOnPage.masterScrollPosition.y);
                     }
-                }
+                };
             }
         }
 
@@ -2470,8 +2468,7 @@ INTERMediator = {
             IMLibLocalContext.archive();
         }
     }
-}
-;
+};
 
 /**
  * Compatibility for IE8
@@ -2488,7 +2485,7 @@ if (!Object.keys) {
             }
         }
         return results;
-    }
+    };
 }
 
 if (!Array.indexOf) {
@@ -2509,5 +2506,5 @@ if (!Array.indexOf) {
 if (typeof String.prototype.trim !== 'function') {
     String.prototype.trim = function () {
         return this.replace(/^\s+|\s+$/g, '');
-    }
+    };
 }

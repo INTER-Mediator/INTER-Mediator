@@ -10,9 +10,7 @@
 
 //"use strict"
 
-var INTERMediatorOnPage;
-
-INTERMediatorOnPage = {
+var INTERMediatorOnPage = {
     authCountLimit: 4,
     authCount: 0,
     authUser: "",
@@ -123,33 +121,33 @@ INTERMediatorOnPage = {
         if (INTERMediatorOnPage.requireAuthentication) {
             if (INTERMediatorOnPage.isOnceAtStarting) {
                 switch (INTERMediatorOnPage.authStoring) {
-                    case "cookie":
-                    case "cookie-domainwide":
-                        INTERMediatorOnPage.authUser =
-                            INTERMediatorOnPage.getCookie("_im_username");
-                        INTERMediatorOnPage.authHashedPassword =
-                            INTERMediatorOnPage.getCookie("_im_credential");
-                        INTERMediatorOnPage.mediaToken =
-                            INTERMediatorOnPage.getCookie("_im_mediatoken");
-                        INTERMediatorOnPage.authCryptedPassword =
-                            INTERMediatorOnPage.getCookie("_im_crypted");
-                        break;
-                    case "session-storage":
-                        INTERMediatorOnPage.authUser =
-                            INTERMediatorOnPage.getSessionStorageWithFallDown("_im_username");
-                        INTERMediatorOnPage.authHashedPassword =
-                            INTERMediatorOnPage.getSessionStorageWithFallDown("_im_credential");
-                        INTERMediatorOnPage.mediaToken =
-                            INTERMediatorOnPage.getSessionStorageWithFallDown("_im_mediatoken");
-                        INTERMediatorOnPage.authCryptedPassword =
-                            INTERMediatorOnPage.getSessionStorageWithFallDown("_im_crypted");
-                        break;
-                    default:
-                        INTERMediatorOnPage.removeCookie("_im_username");
-                        INTERMediatorOnPage.removeCookie("_im_credential");
-                        INTERMediatorOnPage.removeCookie("_im_mediatoken");
-                        INTERMediatorOnPage.removeCookie("_im_crypted");
-                        break;
+                case "cookie":
+                case "cookie-domainwide":
+                    INTERMediatorOnPage.authUser =
+                        INTERMediatorOnPage.getCookie("_im_username");
+                    INTERMediatorOnPage.authHashedPassword =
+                        INTERMediatorOnPage.getCookie("_im_credential");
+                    INTERMediatorOnPage.mediaToken =
+                        INTERMediatorOnPage.getCookie("_im_mediatoken");
+                    INTERMediatorOnPage.authCryptedPassword =
+                        INTERMediatorOnPage.getCookie("_im_crypted");
+                    break;
+                case "session-storage":
+                    INTERMediatorOnPage.authUser =
+                        INTERMediatorOnPage.getSessionStorageWithFallDown("_im_username");
+                    INTERMediatorOnPage.authHashedPassword =
+                        INTERMediatorOnPage.getSessionStorageWithFallDown("_im_credential");
+                    INTERMediatorOnPage.mediaToken =
+                        INTERMediatorOnPage.getSessionStorageWithFallDown("_im_mediatoken");
+                    INTERMediatorOnPage.authCryptedPassword =
+                        INTERMediatorOnPage.getSessionStorageWithFallDown("_im_crypted");
+                    break;
+                default:
+                    INTERMediatorOnPage.removeCookie("_im_username");
+                    INTERMediatorOnPage.removeCookie("_im_credential");
+                    INTERMediatorOnPage.removeCookie("_im_mediatoken");
+                    INTERMediatorOnPage.removeCookie("_im_crypted");
+                    break;
                 }
                 INTERMediatorOnPage.isOnceAtStarting = false;
             }
@@ -221,67 +219,67 @@ INTERMediatorOnPage = {
     removeCredencialsFromCookieOrStorage: function () {
         "use strict";
         switch (INTERMediatorOnPage.authStoring) {
-            case "cookie":
-            case "cookie-domainwide":
-                INTERMediatorOnPage.removeCookie("_im_username");
-                INTERMediatorOnPage.removeCookie("_im_credential");
-                INTERMediatorOnPage.removeCookie("_im_mediatoken");
-                INTERMediatorOnPage.removeCookie("_im_crypted");
-                break;
-            case "session-storage":
-                INTERMediatorOnPage.removeFromSessionStorageWithFallDown("_im_username");
-                INTERMediatorOnPage.removeFromSessionStorageWithFallDown("_im_credential");
-                INTERMediatorOnPage.removeFromSessionStorageWithFallDown("_im_mediatoken");
-                INTERMediatorOnPage.removeFromSessionStorageWithFallDown("_im_crypted");
-                break;
+        case "cookie":
+        case "cookie-domainwide":
+            INTERMediatorOnPage.removeCookie("_im_username");
+            INTERMediatorOnPage.removeCookie("_im_credential");
+            INTERMediatorOnPage.removeCookie("_im_mediatoken");
+            INTERMediatorOnPage.removeCookie("_im_crypted");
+            break;
+        case "session-storage":
+            INTERMediatorOnPage.removeFromSessionStorageWithFallDown("_im_username");
+            INTERMediatorOnPage.removeFromSessionStorageWithFallDown("_im_credential");
+            INTERMediatorOnPage.removeFromSessionStorageWithFallDown("_im_mediatoken");
+            INTERMediatorOnPage.removeFromSessionStorageWithFallDown("_im_crypted");
+            break;
         }
     },
 
     storeCredentialsToCookieOrStorage: function () {
         "use strict";
         switch (INTERMediatorOnPage.authStoring) {
-            case "cookie":
-                if (INTERMediatorOnPage.authUser) {
-                    INTERMediatorOnPage.setCookie("_im_username", INTERMediatorOnPage.authUser);
-                }
-                if (INTERMediatorOnPage.authHashedPassword) {
-                    INTERMediatorOnPage.setCookie("_im_credential", INTERMediatorOnPage.authHashedPassword);
-                }
-                if (INTERMediatorOnPage.mediaToken) {
-                    INTERMediatorOnPage.setCookie("_im_mediatoken", INTERMediatorOnPage.mediaToken);
-                }
-                if (INTERMediatorOnPage.authCryptedPassword) {
-                    INTERMediatorOnPage.setCookie("_im_crypted", INTERMediatorOnPage.authCryptedPassword);
-                }
-                break;
-            case "cookie-domainwide":
-                if (INTERMediatorOnPage.authUser) {
-                    INTERMediatorOnPage.setCookieDomainWide("_im_username", INTERMediatorOnPage.authUser);
-                }
-                if (INTERMediatorOnPage.authHashedPassword) {
-                    INTERMediatorOnPage.setCookieDomainWide("_im_credential", INTERMediatorOnPage.authHashedPassword);
-                }
-                if (INTERMediatorOnPage.mediaToken) {
-                    INTERMediatorOnPage.setCookieDomainWide("_im_mediatoken", INTERMediatorOnPage.mediaToken);
-                }
-                if (INTERMediatorOnPage.authCryptedPassword) {
-                    INTERMediatorOnPage.setCookieDomainWide("_im_crypted", INTERMediatorOnPage.authCryptedPassword);
-                }
-                break;
-            case "session-storage":
-                if (INTERMediatorOnPage.authUser) {
-                    INTERMediatorOnPage.storeSessionStorageWithFallDown("_im_username", INTERMediatorOnPage.authUser);
-                }
-                if (INTERMediatorOnPage.authHashedPassword) {
-                    INTERMediatorOnPage.storeSessionStorageWithFallDown("_im_credential", INTERMediatorOnPage.authHashedPassword);
-                }
-                if (INTERMediatorOnPage.mediaToken) {
-                    INTERMediatorOnPage.storeSessionStorageWithFallDown("_im_mediatoken", INTERMediatorOnPage.mediaToken);
-                }
-                if (INTERMediatorOnPage.authCryptedPassword) {
-                    INTERMediatorOnPage.storeSessionStorageWithFallDown("_im_crypted", INTERMediatorOnPage.authCryptedPassword);
-                }
-                break;
+        case "cookie":
+            if (INTERMediatorOnPage.authUser) {
+                INTERMediatorOnPage.setCookie("_im_username", INTERMediatorOnPage.authUser);
+            }
+            if (INTERMediatorOnPage.authHashedPassword) {
+                INTERMediatorOnPage.setCookie("_im_credential", INTERMediatorOnPage.authHashedPassword);
+            }
+            if (INTERMediatorOnPage.mediaToken) {
+                INTERMediatorOnPage.setCookie("_im_mediatoken", INTERMediatorOnPage.mediaToken);
+            }
+            if (INTERMediatorOnPage.authCryptedPassword) {
+                INTERMediatorOnPage.setCookie("_im_crypted", INTERMediatorOnPage.authCryptedPassword);
+            }
+            break;
+        case "cookie-domainwide":
+            if (INTERMediatorOnPage.authUser) {
+                INTERMediatorOnPage.setCookieDomainWide("_im_username", INTERMediatorOnPage.authUser);
+            }
+            if (INTERMediatorOnPage.authHashedPassword) {
+                INTERMediatorOnPage.setCookieDomainWide("_im_credential", INTERMediatorOnPage.authHashedPassword);
+            }
+            if (INTERMediatorOnPage.mediaToken) {
+                INTERMediatorOnPage.setCookieDomainWide("_im_mediatoken", INTERMediatorOnPage.mediaToken);
+            }
+            if (INTERMediatorOnPage.authCryptedPassword) {
+                INTERMediatorOnPage.setCookieDomainWide("_im_crypted", INTERMediatorOnPage.authCryptedPassword);
+            }
+            break;
+        case "session-storage":
+            if (INTERMediatorOnPage.authUser) {
+                INTERMediatorOnPage.storeSessionStorageWithFallDown("_im_username", INTERMediatorOnPage.authUser);
+            }
+            if (INTERMediatorOnPage.authHashedPassword) {
+                INTERMediatorOnPage.storeSessionStorageWithFallDown("_im_credential", INTERMediatorOnPage.authHashedPassword);
+            }
+            if (INTERMediatorOnPage.mediaToken) {
+                INTERMediatorOnPage.storeSessionStorageWithFallDown("_im_mediatoken", INTERMediatorOnPage.mediaToken);
+            }
+            if (INTERMediatorOnPage.authCryptedPassword) {
+                INTERMediatorOnPage.storeSessionStorageWithFallDown("_im_crypted", INTERMediatorOnPage.authCryptedPassword);
+            }
+            break;
         }
     },
 
@@ -303,51 +301,51 @@ INTERMediatorOnPage = {
             terms = policyString.split(/[\s,]/);
             for (i = 0; i < terms.length; i++) {
                 switch (terms[i].toUpperCase()) {
-                    case "USEALPHABET":
-                        if (!newPassword.match(/[A-Za-z]/)) {
+                case "USEALPHABET":
+                    if (!newPassword.match(/[A-Za-z]/)) {
+                        policyCheck = false;
+                        message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2015));
+                    }
+                    break;
+                case "USENUMBER":
+                    if (!newPassword.match(/[0-9]/)) {
+                        policyCheck = false;
+                        message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2016));
+                    }
+                    break;
+                case "USEUPPER":
+                    if (!newPassword.match(/[A-Z]/)) {
+                        policyCheck = false;
+                        message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2017));
+                    }
+                    break;
+                case "USELOWER":
+                    if (!newPassword.match(/[a-z]/)) {
+                        policyCheck = false;
+                        message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2018));
+                    }
+                    break;
+                case "USEPUNCTUATION":
+                    if (!newPassword.match(/[^A-Za-z0-9]/)) {
+                        policyCheck = false;
+                        message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2019));
+                    }
+                    break;
+                case "NOTUSERNAME":
+                    if (newPassword == userName) {
+                        policyCheck = false;
+                        message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2020));
+                    }
+                    break;
+                default:
+                    if (terms[i].toUpperCase().indexOf("LENGTH") === 0) {
+                        minLen = terms[i].match(/[0-9]+/)[0];
+                        if (newPassword.length < minLen) {
                             policyCheck = false;
-                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2015));
+                            message.push(
+                                INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]));
                         }
-                        break;
-                    case "USENUMBER":
-                        if (!newPassword.match(/[0-9]/)) {
-                            policyCheck = false;
-                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2016));
-                        }
-                        break;
-                    case "USEUPPER":
-                        if (!newPassword.match(/[A-Z]/)) {
-                            policyCheck = false;
-                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2017));
-                        }
-                        break;
-                    case "USELOWER":
-                        if (!newPassword.match(/[a-z]/)) {
-                            policyCheck = false;
-                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2018));
-                        }
-                        break;
-                    case "USEPUNCTUATION":
-                        if (!newPassword.match(/[^A-Za-z0-9]/)) {
-                            policyCheck = false;
-                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2019));
-                        }
-                        break;
-                    case "NOTUSERNAME":
-                        if (newPassword == userName) {
-                            policyCheck = false;
-                            message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2020));
-                        }
-                        break;
-                    default:
-                        if (terms[i].toUpperCase().indexOf("LENGTH") === 0) {
-                            minLen = terms[i].match(/[0-9]+/)[0];
-                            if (newPassword.length < minLen) {
-                                policyCheck = false;
-                                message.push(
-                                    INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]));
-                            }
-                        }
+                    }
                 }
             }
             return message;
