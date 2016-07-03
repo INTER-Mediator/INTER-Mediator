@@ -93,7 +93,7 @@ var INTERMediator = {
         if (INTERMediator.debugMode >= level) {
             INTERMediator.debugMessages.push(message);
             if (typeof console != 'undefined') {
-                console.log("INTER-Mediator[DEBUG:%s]: %s", new Date(), message);
+                console.log('INTER-Mediator[DEBUG:%s]: %s', new Date(), message);
             }
         }
     },
@@ -109,13 +109,13 @@ var INTERMediator = {
         if ((typeof ex == 'string' || ex instanceof String)) {
             INTERMediator.errorMessages.push(ex + moreMessage);
             if (typeof console != 'undefined') {
-                console.error("INTER-Mediator[ERROR]: %s", ex + moreMessage);
+                console.error('INTER-Mediator[ERROR]: %s', ex + moreMessage);
             }
         } else {
             if (ex.message) {
                 INTERMediator.errorMessages.push(ex.message + moreMessage);
                 if (typeof console != 'undefined') {
-                    console.error("INTER-Mediator[ERROR]: %s", ex.message + moreMessage);
+                    console.error('INTER-Mediator[ERROR]: %s', ex.message + moreMessage);
                 }
             }
             if (ex.stack && typeof console != 'undefined') {
@@ -148,7 +148,7 @@ var INTERMediator = {
                 '============ERROR MESSAGE on ' + new Date() + '============'));
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.errorMessages.length; i++) {
-                lines = INTERMediator.errorMessages[i].split("\n");
+                lines = INTERMediator.errorMessages[i].split(IMLib.nl_char);
                 for (j = 0; j < lines.length; j++) {
                     if (j > 0) {
                         debugNode.appendChild(document.createElement('br'));
@@ -198,7 +198,7 @@ var INTERMediator = {
             }
             debugNode.appendChild(document.createElement('hr'));
             for (i = 0; i < INTERMediator.debugMessages.length; i++) {
-                lines = INTERMediator.debugMessages[i].split("\n");
+                lines = INTERMediator.debugMessages[i].split(IMLib.nl_char);
                 for (j = 0; j < lines.length; j++) {
                     if (j > 0) {
                         debugNode.appendChild(document.createElement('br'));
@@ -913,7 +913,7 @@ var INTERMediator = {
          * Set the value to node and context.
          */
         function setupLinkedNode(repeatersOneRec, linkedElements, contextObj, targetRecordset, ix) {
-            var currentWidgetNodes, currentLinkedNodes, dbspec, nInfo, currentContextDef,
+            var currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef,
                 j, keyField, usePortal = false, foreignField, foreignValue, foreignFieldValue, keyValue, keyingValue,
                 k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
                 idValuesForFieldName = {}, shouldDeleteNodes = [],

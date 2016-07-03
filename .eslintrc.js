@@ -26,6 +26,7 @@ module.exports = {
         "INTERMediatorLib": false,
         "INTERMediator_DBAdapter": false,
         "INTERMediatorOnPage": false,
+        "IMLib": false,
         "IMLibNodeGraph": false,
         "IMLibElement": false,
         "IMLibContextPool": false,

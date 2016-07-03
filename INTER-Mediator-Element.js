@@ -133,7 +133,7 @@ var IMLibElement = {
                 typeAttr = element.getAttribute('type');
                 if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                     valueAttr = element.value;
-                    curValues = curVal.toString().split("\n");
+                    curValues = curVal.toString().split(IMLib.nl_char);
                     if (typeAttr == 'checkbox' && curValues.length > 1) {
                         for (i = 0; i < curValues.length; i++) {
                             if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
@@ -171,7 +171,7 @@ var IMLibElement = {
                     if (nodeTag == 'TEXTAREA') {
                         if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
                             // for IE11
-                            curVal = curVal.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+                            curVal = curVal.replace(/\r\n/g, IMLib.nl_char).replace(/\r/g, IMLib.nl_char);
                         } else {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
@@ -216,7 +216,7 @@ var IMLibElement = {
                             mergedValues.push(targetNodes[k].getAttribute('value'));
                         }
                     }
-                    newValue = mergedValues.join("\n");
+                    newValue = mergedValues.join(IMLib.nl_char);
                 } else {
                     valueAttr = element.getAttribute('value');
                     if (element.checked) {

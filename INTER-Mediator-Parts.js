@@ -357,7 +357,7 @@ IMParts_Catalog['fileupload'] = {
                         inputNode.setAttribute('name', 'cresponse');
                         inputNode.setAttribute('value',
                             INTERMediatorOnPage.publickey.biEncryptedString(
-                                INTERMediatorOnPage.authCryptedPassword + "\n" +
+                                INTERMediatorOnPage.authCryptedPassword + IMLib.nl_char +
                                 INTERMediatorOnPage.authChallenge));
                         formNode.appendChild(inputNode);
                     }

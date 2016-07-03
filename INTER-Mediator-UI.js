@@ -934,7 +934,7 @@ var IMLibUI = {
                                             linkedNodes[i].parentNode.appendChild(messageNode);
                                             break;
                                         default:
-                                            alertmessage += validationInfo.message + "\n";
+                                            alertmessage += validationInfo.message + IMLib.nl_char;
                                         }
                                         if (INTERMediatorOnPage.doAfterValidationFailure != null) {
                                             INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i]);
@@ -982,7 +982,7 @@ var IMLibUI = {
                     }
                     fieldData.push({
                         field: comp[1],
-                        value: mergedValues.join("\n") + "\n"
+                        value: mergedValues.join(IMLib.nl_char) + IMLib.nl_char
                     });
                 }
             }
