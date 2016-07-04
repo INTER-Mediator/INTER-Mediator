@@ -16,7 +16,7 @@ var IMLib = {
     tab_char: '\t',
     singleQuote_char: '\'',
     doubleQuote_char: '"',
-    backSlash_char: IMLib.backSlash_char,
+    backSlash_char: '\\',
 
     get zerolength_str() {
         return '';
