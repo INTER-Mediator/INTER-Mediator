@@ -461,8 +461,10 @@ class OME
             $headerField .= "From: {$this->fromField}\n";
         if ($this->ccField != '')
             $headerField .= "Cc: {$this->ccField}\n";
-        if ($this->bccField != '')
-            $headerField .= "Bcc: {$this->bccField}\n";
+        if ($this->smtpInfo === null) {
+            if ($this->bccField != '')
+                $headerField .= "Bcc: {$this->bccField}\n";
+        }
         if ($this->isSetCurrentDateToHead) {
             $formatString = 'r'; //"D, d M Y H:i:s O (T)";
             $headerField .= "Date: " . date($formatString) . "\n";
@@ -492,17 +494,34 @@ class OME
                     $this->header_base64_encode($headerField, True));
             }
         } else {
+            if ($this->toField != '')
+                $headerField .= $this->unifyCRLF("To: {$this->toField}\n");
+            $headerField .= 'Subject: '
+                . $this->unifyCRLF(rtrim($this->header_base64_encode($this->subject, true)))
+                . "\n";
             if ($this->senderAddress != null) {
-                $this->smtpInfo["from"] = $this->senderAddress;
+                $this->smtpInfo['from'] = $this->senderAddress;
             }
             $smtp = new QdSmtp($this->smtpInfo);
-            $resultMail = $smtp->mail(
-                $this->unifyCRLF(rtrim($this->header_base64_encode($this->toField, False))),
-                $this->unifyCRLF(rtrim($this->header_base64_encode($this->subject, true))),
-                $this->unifyCRLF($bodyString),
-                $this->unifyCRLF($this->header_base64_encode($headerField, True))
-            );
-
+            $recipients = array();
+            $headerValues = array($this->toField, $this->ccField, $this->bccField);
+            foreach ($headerValues as $headerValue) {
+                $temp = array();
+                $value = explode(',', $this->unifyCRLF(rtrim($headerValue, False)));
+                foreach ($value as $valueItem) {
+                    $divided = $this->divideMailAddress($valueItem);
+                    $array = array($divided['address']);
+                    $temp = array_merge($temp, $array);
+                }
+                if ($temp !== array() && $temp !== array('')) {
+                    $recipients = array_merge($recipients , $temp);
+                }
+            }
+            $recipients = array_unique($recipients);
+            $smtp->to($recipients);
+            $smtp->data($this->unifyCRLF($this->header_base64_encode($headerField, True))
+                . $this->unifyCRLF($bodyString));
+            $resultMail = $smtp->send();
         }
         return $resultMail;
     }
