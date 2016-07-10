@@ -17,16 +17,20 @@ IMParts_Catalog["codemirror"] = {
         parentNode.appendChild(newNode);
         this.ids.push(newId);
 
-        parentNode._im_getComponentId = function () {
+        parentNode._im_getComponentId = (function () {
             var theId = newId;
-            return theId;
-        };
+            return function () {
+                return theId;
+            }
+        })();
 
-        var self = this;
-        parentNode._im_setValue = function (str) {
+        parentNode._im_setValue = (function () {
+            var self = IMParts_Catalog["codemirror"];
             var theId = newId;
-            self.initialValues[theId] = str;
-        };
+            return function (str) {
+                self.initialValues[theId] = str;
+            }
+        })();
     },
 
     ids: [],
