@@ -41,6 +41,8 @@ Ver.5.4 (in development)
 - Supporting jQuery File Upload. Check the file Samples/Sample_website/fileupload_jQuery_MySQL.html.
 - Reduce error messages when the mbstring extension is disabled.
 - Add .eslintrc.js.
+- Update sample_schema_mysql.txt, dbupdate.sh, recipe.rb and sample_spec.rb for the INTER-Mediator-Server
+  virtual machine.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
   being shown inappropriately.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
