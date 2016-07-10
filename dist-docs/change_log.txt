@@ -19,7 +19,7 @@ Ver.5.4 (in development)
   values.
 - If the automatic calling to construct method doesn't requre, descirbe the below in doBeforeConstruct
   or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
-- Creating Cross Table. It contains 3 contexts for colomn, row and value cells.
+- Creating Cross Table for PDO. It contains 3 contexts for colomn, row and value cells.
   See the sample Samples/Practices/crosstable.html.
 - The second "option" parameter of IM_Entry function can have the key "local-context" as the array of
   "key" and "value" keyed elements. These affect as the initial values of relevant local context value.

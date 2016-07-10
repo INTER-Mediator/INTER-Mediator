@@ -269,7 +269,8 @@ class DefinitionChecker
                 '*' => array(
                     'db-operation' => 'string(load|read|update|new|create|delete)',
                     'situation' => 'string(pre|presort|post)',
-                    'definition' => 'string'
+                    'definition' => 'string',
+                    'parameter' => 'string',
                 )
             ),
             'global' => array(
