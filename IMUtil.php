@@ -15,6 +15,31 @@
  */
 class IMUtil
 {
+    public static function currentDTString($addSeconds = 0)
+    {
+//        $currentDT = new DateTime();
+//        $timeValue = $currentDT->format("U");
+//        $currentDTStr = $this->link->quote($currentDT->format('Y-m-d H:i:s'));
+
+        // For 5.2
+        $timeValue = time();
+        $currentDTStr = date('Y-m-d H:i:s', $timeValue - $addSeconds);
+        // End of for 5.2
+        return $currentDTStr;
+    }
+
+    public static function secondsFromNow($dtStr)
+    {
+//        $currentDT = new DateTime();
+//        $anotherDT = new DateTime($dtStr);
+//        $timeValue = $currentDT->format("U") - $anotherDT->format("U");
+
+        // For 5.2
+        $timeValue = time() - strtotime($dtStr);
+        // End of for 5.2
+        return $timeValue;
+    }
+    
     public static function removeNull($str)
     {
         return str_replace("\x00", '', $str);
