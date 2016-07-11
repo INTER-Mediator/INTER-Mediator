@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Ubuntu Server 14.04.3, CentOS 6.6 and CentOS 7
+# Recipe file of Itamae for Alpine Linux 3.4, Ubuntu Server 14.04, CentOS 6.6 and CentOS 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on OS X usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -6,7 +6,9 @@
 #   - Change directory to "vm-for-trial" directory on the host of VM
 #   - Run "rake spec" on the host of VM
 
-if node[:platform] == 'ubuntu' && node[:platform_version].to_f < 14
+if node[:platform] == 'alpine'
+  WEBROOT = "/var/www/localhost/htdocs"
+elsif node[:platform] == 'ubuntu' && node[:platform_version].to_f < 14
   WEBROOT = "/var/www"
 else
   WEBROOT = "/var/www/html"
@@ -22,14 +24,48 @@ APACHEOPTCONF="/etc/apache2/sites-enabled/inter-mediator-server.conf"
 SMBCONF = "/etc/samba/smb.conf"
 
 
-if node[:platform] == 'redhat' && node[:platform_version].to_f < 6
-  #file '/etc/resolv.conf' do
-  #  content 'nameserver 192.168.1.1'
-  #end
+if node[:platform] == 'alpine'
+  execute 'ip addr add 192.168.56.101/24 dev eth1' do
+    command 'ip addr add 192.168.56.101/24 dev eth1'
+  end
+  file '/etc/network/interfaces' do
+    content <<-EOF
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+	hostname inter-mediator-server
+
+auto eth1
+iface eth1 inet static
+	address 192.168.56.101
+	netmask 255.255.255.0
+EOF
+  end  
+  file '/etc/apk/repositories' do
+    content <<-EOF
+#/media/cdrom/apks
+http://dl-4.alpinelinux.org/alpine/v3.4/main
+#http://dl-4.alpinelinux.org/alpine/v3.4/community
+#http://dl-4.alpinelinux.org/alpine/edge/main
+#http://dl-4.alpinelinux.org/alpine/edge/community
+http://dl-4.alpinelinux.org/alpine/edge/testing
+EOF
+  end  
+  package 'shadow' do
+    action :install
+  end
 end
 
-user "developer" do
-  password "$6$inter-mediator$kEUWd5ZQNPEfNF7CPzRMDoHhmz67rgJTmDbUsJ3AL35vV3c5sGk9ml2kLRj.2z5BkygH7SS2E549qTB2FYs6S/"
+if node[:platform] == 'alpine'
+  execute 'yes im4135dev | sudo passwd developer' do
+    command 'yes im4135dev | sudo passwd developer'
+  end
+else
+  user "developer" do
+    password "$6$inter-mediator$kEUWd5ZQNPEfNF7CPzRMDoHhmz67rgJTmDbUsJ3AL35vV3c5sGk9ml2kLRj.2z5BkygH7SS2E549qTB2FYs6S/"
+  end
 end
 
 if node[:platform] == 'ubuntu'
@@ -41,8 +77,14 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-execute 'groupadd im-developer' do
-  command 'groupadd im-developer'
+if node[:platform] == 'alpine'
+  execute 'addgroup im-developer' do
+    command 'addgroup im-developer'
+  end
+else
+  execute 'groupadd im-developer' do
+    command 'groupadd im-developer'
+  end
 end
 
 execute 'usermod -a -G im-developer developer' do
@@ -81,15 +123,12 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'apache2' do
     action :install
   end
   service 'apache2' do
     action [ :enable, :start ]
-  end
-  execute 'usermod -a -G im-developer www-data' do
-    command 'usermod -a -G im-developer www-data'
   end
 elsif node[:platform] == 'redhat'
   package 'httpd' do
@@ -98,12 +137,18 @@ elsif node[:platform] == 'redhat'
   service 'httpd' do
     action [ :enable, :start ]
   end
+end
+if node[:platform] == 'alpine' || node[:platform] == 'redhat'
   execute 'usermod -a -G im-developer apache' do
     command 'usermod -a -G im-developer apache'
   end
+elsif node[:platform] == 'ubuntu'
+  execute 'usermod -a -G im-developer www-data' do
+    command 'usermod -a -G im-developer www-data'
+  end
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'postgresql' do
     action :install
   end
@@ -121,15 +166,67 @@ elsif node[:platform] == 'redhat'
     end
   end
 end
-service 'postgresql' do
-  action [ :enable, :start ]
+if node[:platform] == 'alpine'
+  execute 'yes im4135dev | sudo passwd postgres' do
+    command 'yes im4135dev | sudo passwd postgres'
+  end
+  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  end
+  service 'postgresql' do
+    action [ :enable, :start ]
+  end
+else
+  service 'postgresql' do
+    action [ :enable, :start ]
+  end
+  user 'postgres' do
+    password '$6$inter-mediator$kEUWd5ZQNPEfNF7CPzRMDoHhmz67rgJTmDbUsJ3AL35vV3c5sGk9ml2kLRj.2z5BkygH7SS2E549qTB2FYs6S/'
+  end
 end
 
-user 'postgres' do
-  password '$6$inter-mediator$kEUWd5ZQNPEfNF7CPzRMDoHhmz67rgJTmDbUsJ3AL35vV3c5sGk9ml2kLRj.2z5BkygH7SS2E549qTB2FYs6S/'
-end
+if node[:platform] == 'alpine'
+  package 'mariadb-client' do
+    action :install
+  end
+  package 'mariadb' do
+    action :install
+  end
+  file '/etc/mysql/my.cnf' do
+    content <<-EOF
+[mysqld]
+datadir=/var/lib/mysql
+socket=/run/mysqld/mysqld.sock
+user=mysql
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+character-set-server=utf8mb4
+skip-character-set-client-handshake
 
-if node[:platform] == 'ubuntu'
+[mysqld_safe]
+log-error=/var/log/mysqld.log
+pid-file=/var/run/mysqld/mysqld.pid
+
+[client]
+default-character-set=utf8mb4
+
+[mysqldump]
+default-character-set=utf8mb4
+
+[mysql]
+default-character-set=utf8mb4
+EOF
+  end
+  execute '/etc/init.d/mariadb setup' do
+    command '/etc/init.d/mariadb setup'
+  end
+  service 'mariadb' do
+    action [ :enable, :start ]
+  end
+  execute 'mysqladmin -u root password "im4135dev"' do
+    command 'mysqladmin -u root password "im4135dev"'
+  end
+elsif node[:platform] == 'ubuntu'
   package 'mysql-server' do
     action :install
   end
@@ -431,7 +528,7 @@ execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-
   command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   execute "rm -f \"#{WEBROOT}/index.html\"" do
     command "rm -f \"#{WEBROOT}/index.html\""
   end
@@ -449,13 +546,18 @@ file "#{WEBROOT}/.htaccess" do
   content 'AddType "text/html; charset=UTF-8" .html'
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine'
+  MYSQLSOCKPATH = "/run/mysqld/mysqld.sock"
+elsif node[:platform] == 'ubuntu'
+  MYSQLSOCKPATH = "/var/run/mysqld/mysqld.sock"
+end
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   file "#{WEBROOT}/params.php" do
     content <<-EOF
 <?php
 $dbUser = 'web';
 $dbPassword = 'password';
-$dbDSN = 'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';
+$dbDSN = 'mysql:unix_socket=#{MYSQLSOCKPATH};dbname=test_db;charset=utf8mb4';
 $dbOption = array();
 $browserCompatibility = array(
     'Chrome' => '1+',
@@ -524,6 +626,36 @@ $dbPort = '80';
 $dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
 $dbProtocol = 'HTTP';
+$passPhrase = '';
+$generatedPrivateKey = <<<EOL
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEAyTFuj/i52z0pXsoa6HNTUFcmWBcaG5DodB5ac6WAKBxn4G/j
+knKwIBjRluCjIcRdFk6m91ChSOoDvW3p3rk2UFMIfq9e6ojhsWO3AFrHXOVHt+P/
+QWnI2KUtUmxO0jw9hbqK/Hl4IbWc8aGnxP/uGOmLJnLSP3wEtahXXaVSJrGTPZuk
+pbzarqzS3waraUYP+b2aMGLL/BbPnc7xCF13TtkVdcVdjyQtofn7hM3Kd8fOFFOg
+ix+JYOrf5jMG0aTs9NxwcHXb6DMwt/L30s+eIMI/81/sthT5TD7kEMUudz+yomnM
+G6C+bFYgykcFlYwEeUD//5naitc3ZNYXEpyzWwIDAQABAoIBAQCWmpwqxYNKrBPl
+0uAllP6Oq04WruRqMiTvlzEaVI8Ed48CoH73x0Y0IJ/zkyBKTJVp92Jgy0iQLiyy
+hi6E/Ju9sQow2tHwOprHkN8SMuH9ldwDuXX/31HramnswwqVsWZUTnlv2PWmNi7P
+abUOcI4os9nn5BeiUhGsceFERlaigwFJ1eWI7M+XfIh9YfLx8ERaZYi9g6MDNZ1k
+TEirV/rGbts4K62IJ+UGiW5UYW4qfPvOdmsOKcr0IMmM4hu5/ZlGg/xDXrLRCQzj
+Pt0+dJ1UZyb5PuhlUyjqF0vBBr/hLQhkAUPLE1CyXCgbDWrXEJkoT7DVILskZHo0
+1+DmgbsxAoGBAPp8upw+vsY2yzxZep0GtXqqXQOVQ8f+XPeDK9kE5TgNPofCr8+3
+cqerbwGPBRJueYnYNANNc0aVgNnX+rkUYEJMlrkeEqPPpNvEzOd/l067EprGgA5s
+HZkMLJsxLTrJEuj5NczMtsJia6ufWD8l4XTvB6WKNSDCf4/sdZCFF0JVAoGBAM2e
++YU7AsC70q9BxPR4sc0vLk8kEY9eKuP7PCb991qpIxD/VFpRWy9znO7t9+EQKsJ1
+U1HdU/YTSuSTmg9z+a7s4En1tI+ryUHmwv8run9r11lx7yuXgJhx6mg5Lc6BaFIN
+QsbQIm/7HL0p5ugPfDiObPIxQUgR1s+Xl7HnkK7vAoGAaHzjMw4Rcomk2bXRqfME
+fPjX+Aipz6FRkoYLImoiW/FaZjNWN2Wk1EB0+8d3LCsdU9z2RXJnZcgziavIkK/p
+P37HWM0spVyWvn4no2Hb8iGjLyEiheGfrxoe+VXYMi9yTfC2+oliq0927o53t0/L
+7oVPQUSXyOSZZaYTnIeIHkkCgYBYr+f5ohE25gwiUWDM/T3bPS1hLzJvvvMK8DLq
+soG81dTtIOPWLN8CoYAfwf43UczPoOE2Hxt2uK2F13AMmD4qR7sZy2N80GB3Dzwt
+6UOAcBgrWSwKhkcN+ZxcJcVvG3vOYC/cJquj1xB3OpqAnyU6E5xD/iClICSh10Wz
+kyhhewKBgC1bAmPbOHoaNecuHTSO+pe5s29KagojaWMFsH1+Zs5HiVBmLmO9UdG9
+UeplZBKmxW3+wQ5gVWIguqisfvi9/m07Z/3+uwCLSryHU6Kgg7Md9ezU9Obx+jxp
+cmyuR8KhUNJ6zf23TUgQE6Dt1EAHB+uPIkWiH1Yv1BFghe4M4Ijk
+-----END RSA PRIVATE KEY-----
+EOL;
 $webServerName = array('');
 EOF
   end
@@ -788,7 +920,12 @@ elsif node[:platform] == 'redhat'
     mode '664'
   end
 end
-
+  
+if node[:platform] == 'alpine'
+  package 'bash' do
+    action :install
+  end
+end
 execute "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\"" do
   command "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\""
 end
@@ -1252,5 +1389,11 @@ if node[:platform] == 'ubuntu'
   end
   execute 'npm install -g chromedriver' do
     command 'npm install -g chromedriver'
+  end
+end
+
+if node[:platform] == 'alpine'
+  execute 'poweroff' do
+    command 'poweroff'
   end
 end
