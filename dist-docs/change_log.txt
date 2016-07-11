@@ -19,7 +19,7 @@ Ver.5.4 (in development)
   values.
 - If the automatic calling to construct method doesn't requre, descirbe the below in doBeforeConstruct
   or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
-- Creating Cross Table. It contains 3 contexts for colomn, row and value cells.
+- Creating Cross Table for PDO. It contains 3 contexts for colomn, row and value cells.
   See the sample Samples/Practices/crosstable.html.
 - The second "option" parameter of IM_Entry function can have the key "local-context" as the array of
   "key" and "value" keyed elements. These affect as the initial values of relevant local context value.
@@ -41,6 +41,10 @@ Ver.5.4 (in development)
 - Supporting jQuery File Upload. Check the file Samples/Sample_website/fileupload_jQuery_MySQL.html.
 - Reduce error messages when the mbstring extension is disabled.
 - Add .eslintrc.js.
+- Update sample_schema_mysql.txt, dbupdate.sh, recipe.rb and sample_spec.rb for the INTER-Mediator-Server
+  virtual machine.
+- [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
+  being shown inappropriately.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
   So when the 3rd parameter is nothing, the matching follows the value of
   INTERMediator_DBAdapter.eliminateDuplicatedConditions.

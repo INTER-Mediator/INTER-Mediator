@@ -5,6 +5,11 @@
 #
 
 WEBROOT="/var/www/html"
+WWWUSERNAME="www-data"
+if [ -e "/etc/alpine-release" ]; then
+    WEBROOT="/var/www/localhost/htdocs"
+    WWWUSERNAME="apache"
+fi
 IMROOT="${WEBROOT}/INTER-Mediator"
 IMDISTDOC="${IMROOT}/dist-docs"
 SQLITEDIR="/var/db/im"
@@ -31,7 +36,7 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
         echo "${VMPASSWORD}" | sudo -S rm "${SQLITEDB}"
     fi
     echo "${VMPASSWORD}" | sudo -S sqlite3 "${SQLITEDB}" < "${IMDISTDOC}/sample_schema_sqlite.txt"
-    echo "${VMPASSWORD}" | sudo -S chown -R www-data:im-developer "${SQLITEDIR}"
+    echo "${VMPASSWORD}" | sudo -S chown -R "${WWWUSERNAME}":im-developer "${SQLITEDIR}"
     echo "${VMPASSWORD}" | sudo -S chmod 775 "${SQLITEDIR}"
     echo "${VMPASSWORD}" | sudo -S chmod 664 "${SQLITEDB}"
 
