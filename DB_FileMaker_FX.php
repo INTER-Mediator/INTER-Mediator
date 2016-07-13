@@ -761,7 +761,15 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $queryString .= '&-max=' . $this->fx->groupSize . $skipRequest;
         $fxUtility = new RetrieveFM7Data($this->fx);
         $currentSort = $fxUtility->CreateCurrentSort();
-        if ($searchConditions === array()) {
+        $config = array(
+            'urlScheme' => $this->fx->urlScheme,
+            'dataServer' => $this->fx->dataServer,
+            'dataPort' => $this->fx->dataPort,
+            'DBUser' => $this->dbSettings->getAccessUser(),
+            'DBPassword' => $this->dbSettings->getAccessPassword(),
+        );
+        $cwpkit = new CWPKit($config);
+        if ($searchConditions === array() || (int)$cwpkit->getServerVersion() < 12) {
             $currentSearch = $fxUtility->CreateCurrentSearch();
             if ($hasFindParams) {
                 $queryString .= $currentSort . $currentSearch . '&-find';
@@ -842,14 +850,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->queriedPrimaryKeys = array();
         $keyField = isset($context['key']) ? $context['key'] : $this->getDefaultKey();
         try {
-            $config = array(
-                'urlScheme' => $this->fx->urlScheme,
-                'dataServer' => $this->fx->dataServer,
-                'dataPort' => $this->fx->dataPort,
-                'DBUser' => $this->dbSettings->getAccessUser(),
-                'DBPassword' => $this->dbSettings->getAccessPassword(),
-            );
-            $cwpkit = new CWPKit($config);
             $parsedData = $cwpkit->query($queryString);
             if ($parsedData === false) {
                 if ($this->dbSettings->isDBNative()) {
