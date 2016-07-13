@@ -9,7 +9,7 @@
  *   INTER-Mediator is supplied under MIT License.
  */  -->
 <?php
-$imRoot = '/var/www/html/INTER-Mediator';
+$imRoot = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'INTER-Mediator';
 
 $currentDirParam = $imRoot . DIRECTORY_SEPARATOR . 'params.php';
 $parentDirParam = dirname($imRoot) . DIRECTORY_SEPARATOR . 'params.php';

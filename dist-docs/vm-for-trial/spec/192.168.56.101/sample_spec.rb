@@ -177,6 +177,21 @@ describe package('acl'), :if => os[:family] == 'alpine' || os[:family] == 'ubunt
   it { should be_installed }
 end
 
+describe package('php5'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-apache2'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-json'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-curl'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-pdo'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
