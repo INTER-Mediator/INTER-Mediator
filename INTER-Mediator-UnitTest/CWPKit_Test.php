@@ -21,14 +21,21 @@ class CWPKit_Test extends PHPUnit_Framework_TestCase
         $queryString = '-db=TestDB&-lay=person_layout&-findall&-max=1';
         $xml = $this->cwpkit->query($queryString);
 
-        $expteced = '1.0';
-        var_dump($xml);
+        $expected = '1.0';
         $result = (string)$xml->attributes()->version;
-        $this->assertEquals($result, $expteced);
+        $this->assertEquals($result, $expected);
 
-        $expteced = 3;
+        $expected = 3;
         $result = (int)$xml->resultset->attributes()->count;
-        $this->assertEquals($result, $expteced);
+        $this->assertEquals($result, $expected);
+    }
+
+    public function test_getServerVersion()
+    {
+        $expected = '11.0.4.400';
+        $xml = $this->cwpkit->getServerVersion();
+        $result = $xml->product->attributes()->version;
+        $this->assertEquals($result, $expected);
     }
 
 }

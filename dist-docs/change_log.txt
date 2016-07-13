@@ -25,9 +25,9 @@ Ver.5.4 (in development)
   "key" and "value" keyed elements. These affect as the initial values of relevant local context value.
 - The variable "$valuesForLocalContext" in params.php supplies initial values for local context.
   The value of this variable has to be an associated array with key and value.
-- Improve setting search criteria when using FileMaker Server to use the same fields for multiple 
-  values in the same "and" or "or" search criteria. (Use "-findquery" command internnally, but compound 
-  find requests using both "and" and "or" search criteria is still not supported.)
+- Improve setting search criteria when using FileMaker Server 12 or later to use the same fields for
+  multiple values in the same "and" or "or" search criteria. (Use "-findquery" command internnally,
+  but compound find requests using both "and" and "or" search criteria is still not supported.)
 - Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
 - FileUploader can detect exceeding file size limit and returns valid error messages.
 - New Sample "Sample_API" is added. This is for explanation of server-side apis.
