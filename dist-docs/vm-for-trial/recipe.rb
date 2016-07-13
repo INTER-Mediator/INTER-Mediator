@@ -326,6 +326,22 @@ package 'acl' do
 end
 
 if node[:platform] == 'ubuntu'
+  package 'php5' do
+    action :install
+  end
+  package 'php5-apache2' do
+    action :install
+  end
+  package 'php5-json' do
+    action :install
+  end
+  package 'php5-curl' do
+    action :install
+  end
+  package 'php5-pdo' do
+    action :install
+  end
+elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
     action :install
   end
