@@ -13,7 +13,7 @@
  * @type {{instanciate: Function, ids: Array, finish: Function}}
  */
 
-//"use strict"
+//'use strict';
 
 var IMParts_Catalog = {};
 /*********
@@ -21,19 +21,19 @@ var IMParts_Catalog = {};
  * File Uploader
  * @type {{html5DDSuported: boolean, instanciate: Function, ids: Array, finish: Function}}
  */
-IMParts_Catalog["fileupload"] = {
+IMParts_Catalog['fileupload'] = {
     html5DDSuported: false,
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
     forceOldStyleForm: false,
-    uploadButtonLabel: "送信",
-    uploadCancelButtonLabel: "キャンセル",
-    uploadId: "sign" + Math.random(),
+    uploadButtonLabel: '送信',
+    uploadCancelButtonLabel: 'キャンセル',
+    uploadId: 'sign' + Math.random(),
 
     instanciate: function (parentNode) {
         var inputNode, formNode, buttonNode, hasTapEvent;
         var newId = parentNode.getAttribute('id') + '-e';
         var newNode = document.createElement('DIV');
-        IMLibLocalContext.setValue("uploadFileSelect", "false");
+        IMLibLocalContext.setValue('uploadFileSelect', 'false');
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
         this.ids.push(newId);
@@ -48,40 +48,40 @@ IMParts_Catalog["fileupload"] = {
                 this.html5DDSuported = false;
             }
         }
-        hasTapEvent = ("ontouchstart" in window);
+        hasTapEvent = ('ontouchstart' in window);
         if (hasTapEvent) {
             this.html5DDSuported = false;
         }
-        var autoReload = (parentNode.getAttribute("data-im-widget-reload") !== null)
-            ? parentNode.getAttribute("data-im-widget-reload") : false;
-        newNode.setAttribute("data-im-widget-reload", autoReload);
+        var autoReload = (parentNode.getAttribute('data-im-widget-reload') !== null)
+            ? parentNode.getAttribute('data-im-widget-reload') : false;
+        newNode.setAttribute('data-im-widget-reload', autoReload);
         if (this.html5DDSuported) {
-            newNode.dropzone = "copy";
-            var widgetStyle = (parentNode.getAttribute("data-im-widget-style") === "false") ? false : true;
+            newNode.dropzone = 'copy';
+            var widgetStyle = (parentNode.getAttribute('data-im-widget-style') === 'false') ? false : true;
             if (widgetStyle) {
-                newNode.style.width = "200px";
-                newNode.style.height = "100px";
-                newNode.style.paddingTop = "20px";
-                newNode.style.backgroundColor = "#AAAAAA";
-                newNode.style.border = "3px dotted #808080";
-                newNode.style.textAlign = "center";
-                newNode.style.fontSize = "75%";
+                newNode.style.width = '200px';
+                newNode.style.height = '100px';
+                newNode.style.paddingTop = '20px';
+                newNode.style.backgroundColor = '#AAAAAA';
+                newNode.style.border = '3px dotted #808080';
+                newNode.style.textAlign = 'center';
+                newNode.style.fontSize = '75%';
                 var eachLine = INTERMediatorOnPage.getMessages()[3101].split(/\n/);
                 for (var i = 0; i < eachLine.length; i++) {
                     if (i > 0) {
-                        newNode.appendChild(document.createElement("BR"));
+                        newNode.appendChild(document.createElement('BR'));
                     }
                     newNode.appendChild(document.createTextNode(eachLine[i]));
                 }
             }
         } else {
             formNode = document.createElement('FORM');
-            formNode.className = "_im_fileupload_form";
+            formNode.className = '_im_fileupload_form';
             formNode.setAttribute('method', 'post');
-            formNode.setAttribute('action', INTERMediatorOnPage.getEntryPath() + "?access=uploadfile");
+            formNode.setAttribute('action', INTERMediatorOnPage.getEntryPath() + '?access=uploadfile');
             formNode.setAttribute('enctype', 'multipart/form-data');
             var divNode = document.createElement('DIV');
-            divNode.className = "_im_fileupload_form_wrapper form-wrapper";
+            divNode.className = '_im_fileupload_form_wrapper form-wrapper';
             divNode.appendChild(formNode);
             newNode.appendChild(divNode);
 
@@ -118,40 +118,40 @@ IMParts_Catalog["fileupload"] = {
             inputNode.setAttribute('accept', '*/*');
             inputNode.setAttribute('name', '_im_uploadfile');
             inputNode.className = '_im_uploadfile';
-            inputNode.addEventListener("change",function(){
+            inputNode.addEventListener('change',function(){
                 if (this.files[0].size > 0) {
-                    this.nextSibling.removeAttribute("disabled");
+                    this.nextSibling.removeAttribute('disabled');
                 }
             }, false);
             formNode.appendChild(inputNode);
 
             var cancelButtonWrapper, cancelButton;
-            cancelButtonWrapper = document.createElement("DIV");
-            cancelButtonWrapper.className = "_im_fileupload_cancel_button_wrapper";
-            cancelButton = document.createElement("BUTTON");
-            cancelButton.className = "_im_fileupload_cancel_button";
+            cancelButtonWrapper = document.createElement('DIV');
+            cancelButtonWrapper.className = '_im_fileupload_cancel_button_wrapper';
+            cancelButton = document.createElement('BUTTON');
+            cancelButton.className = '_im_fileupload_cancel_button';
             cancelButton.appendChild(document.createTextNode(this.uploadCancelButtonLabel));
             cancelButtonWrapper.appendChild(cancelButton);
 
             buttonNode = document.createElement('BUTTON');
-            buttonNode.className = "_im_fileupload_button";
+            buttonNode.className = '_im_fileupload_button';
             buttonNode.setAttribute('type', 'submit');
-            buttonNode.setAttribute("disabled", "");
+            buttonNode.setAttribute('disabled', '');
             buttonNode.appendChild(document.createTextNode(this.uploadButtonLabel));
-            newNode.addEventListener("click", function (event) {
-                if (this.children[0].style.display === "none" || this.children[0].style.display === "") {
-                    this.children[0].style.display = "flex";
-                    this.children[0].style.display = "-webkit-flex";
+            newNode.addEventListener('click', function (event) {
+                if (this.children[0].style.display === 'none' || this.children[0].style.display === '') {
+                    this.children[0].style.display = 'flex';
+                    this.children[0].style.display = '-webkit-flex';
                 }
             }, true);
-            cancelButtonWrapper.addEventListener("click", function(c) {
-                    this.parentNode.style.display = "none";
+            cancelButtonWrapper.addEventListener('click', function(c) {
+                this.parentNode.style.display = 'none';
             });
             divNode.appendChild(cancelButtonWrapper);
             formNode.appendChild(buttonNode);
             this.formFromId[newId] = formNode;
         }
-        if (parentNode.getAttribute("data-im-widget-inner") === "true") {
+        if (parentNode.getAttribute('data-im-widget-inner') === 'true') {
             var children = parentNode.children;
             for (var c = children.length - 1; c >= 0; c--) {
                 newNode.appendChild(children[c]);
@@ -176,33 +176,31 @@ IMParts_Catalog["fileupload"] = {
             var targetNode = newNode;
             if (this.html5DDSuported) {
                 //    targetNode.innerHTML = str;
-            } else {
-
             }
         };
     },
     ids: [],
     formFromId: {},
     finish: function () {
-        var shaObj, hmacValue, targetNode, i, tagetIdLocal, targetNode, isProgressingLocal, serialIdLocal, uploadIdLocal;
+        var shaObj, hmacValue, targetNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
 
         if (this.html5DDSuported) {
             for (i = 0; i < this.ids.length; i++) {
                 tagetIdLocal = this.ids[i];
                 targetNode = document.getElementById(tagetIdLocal);
                 if (targetNode) {
-                    INTERMediatorLib.addEvent(targetNode, "dragleave", function (event) {
+                    INTERMediatorLib.addEvent(targetNode, 'dragleave', function (event) {
                         event.preventDefault();
-                        event.target.style.backgroundColor = "#AAAAAA";
+                        event.target.style.backgroundColor = '#AAAAAA';
                     });
-                    INTERMediatorLib.addEvent(targetNode, "dragover", function (event) {
+                    INTERMediatorLib.addEvent(targetNode, 'dragover', function (event) {
                         event.preventDefault();
-                        event.target.style.backgroundColor = "#AADDFF";
+                        event.target.style.backgroundColor = '#AADDFF';
                     });
                     isProgressingLocal = this.progressSupported;
                     serialIdLocal = this.ids.length;
                     uploadIdLocal = this.uploadId;
-                    INTERMediatorLib.addEvent(targetNode, "drop", (function () {
+                    INTERMediatorLib.addEvent(targetNode, 'drop', (function () {
                         var iframeId = i;
                         var isProgressing = isProgressingLocal;
                         var serialId = serialIdLocal;
@@ -220,36 +218,36 @@ IMParts_Catalog["fileupload"] = {
                                 infoFrame.setAttribute('border', '0');
                                 infoFrame.setAttribute('scrolling', 'no');
                                 infoFrame.setAttribute('scrollbar', 'no');
-                                infoFrame.style.width = "100%";
-                                infoFrame.style.height = "24px";
+                                infoFrame.style.width = '100%';
+                                infoFrame.style.height = '24px';
                                 eventTarget.appendChild(infoFrame);
                             }
                             for (var i = 0; i < event.dataTransfer.files.length; i++) {
                                 file = event.dataTransfer.files[i];
-                                fileNameNode = document.createElement("DIV");
+                                fileNameNode = document.createElement('DIV');
                                 fileNameNode.appendChild(document.createTextNode(
                                     INTERMediatorOnPage.getMessages()[3102] + file.name));
-                                fileNameNode.style.marginTop = "20px";
-                                fileNameNode.style.backgroundColor = "#FFFFFF";
-                                fileNameNode.style.textAlign = "center";
+                                fileNameNode.style.marginTop = '20px';
+                                fileNameNode.style.backgroundColor = '#FFFFFF';
+                                fileNameNode.style.textAlign = 'center';
                                 event.target.appendChild(fileNameNode);
                             }
-                            var updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), "");
+                            var updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), '');
                             if (isProgressing) {
-                                infoFrame.style.display = "block";
+                                infoFrame.style.display = 'block';
                                 setTimeout(function () {
                                     infoFrame.setAttribute('src',
                                         'upload_frame.php?up_id=' + uploadId + iframeId);
                                 });
                             }
                             INTERMediator_DBAdapter.uploadFile(
-                                "&_im_contextname=" + encodeURIComponent(updateInfo.context.contextName) +
-                                    "&_im_field=" + encodeURIComponent(updateInfo.field) +
-                                    "&_im_keyfield=" + encodeURIComponent(updateInfo.record.split("=")[0]) +
-                                    "&_im_keyvalue=" + encodeURIComponent(updateInfo.record.split("=")[1]) +
-                                    "&_im_contextnewrecord=" + encodeURIComponent("uploadfile") +
+                                '&_im_contextname=' + encodeURIComponent(updateInfo.context.contextName) +
+                                    '&_im_field=' + encodeURIComponent(updateInfo.field) +
+                                    '&_im_keyfield=' + encodeURIComponent(updateInfo.record.split('=')[0]) +
+                                    '&_im_keyvalue=' + encodeURIComponent(updateInfo.record.split('=')[1]) +
+                                    '&_im_contextnewrecord=' + encodeURIComponent('uploadfile') +
                                     (isProgressing ?
-                                    ("&APC_UPLOAD_PROGRESS=" + encodeURIComponent(uploadId + iframeId)) : ""),
+                                    ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : ''),
                                 {
                                     fileName: file.name,
                                     content: file
@@ -265,13 +263,13 @@ IMParts_Catalog["fileupload"] = {
                                                 break;
                                             }
                                         }
-                                        fvalue = IMLibContextPool.getKeyFieldValueFromId(tagetId, "");
+                                        fvalue = IMLibContextPool.getKeyFieldValueFromId(tagetId, '');
                                         contextObjects = IMLibContextPool.getContextsFromNameAndForeignValue(
                                             relatedContextName, fvalue, context.key);
                                     } else {
                                         contextObjects = IMLibContextPool.getContextFromName(updateInfo.context.contextName);
                                     }
-                                    contextInfo = IMLibContextPool.getContextInfoFromId(tagetId, "");
+                                    contextInfo = IMLibContextPool.getContextInfoFromId(tagetId, '');
                                     contextInfo.context.setValue(contextInfo.record, contextInfo.field, dbresult);
                                     if (contextObjects) {
                                         for (i = 0; i < contextObjects.length; i++) {
@@ -280,13 +278,13 @@ IMParts_Catalog["fileupload"] = {
                                         }
                                     }
                                     INTERMediator.flushMessage();
-                                    if (targetNode.getAttribute("data-im-widget-reload") === "true") {
+                                    if (targetNode.getAttribute('data-im-widget-reload') === 'true') {
                                         INTERMediator.construct();
                                     }
-                                    event.target.style.backgroundColor = "#AAAAAA";
+                                    event.target.style.backgroundColor = '#AAAAAA';
                                 },
                                 function () {
-                                    event.target.style.backgroundColor = "#AAAAAA";
+                                    event.target.style.backgroundColor = '#AAAAAA';
                                 });
                         };
                     })());
@@ -294,10 +292,10 @@ IMParts_Catalog["fileupload"] = {
             }
 
         } else {
-            for (var i = 0; i < this.ids.length; i++) {
+            for (i = 0; i < this.ids.length; i++) {
                 targetNode = document.getElementById(this.ids[i]);
                 if (targetNode) {
-                    var updateInfo = IMLibContextPool.getContextInfoFromId(this.ids[i], "");
+                    var updateInfo = IMLibContextPool.getContextInfoFromId(this.ids[i], '');
                     //= INTERMediator.updateRequiredObject[IMParts_im_fileupload.ids[i]];
                     var formNode = targetNode.getElementsByTagName('FORM')[0];
                     var inputNode = document.createElement('INPUT');
@@ -315,13 +313,13 @@ IMParts_Catalog["fileupload"] = {
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_keyfield');
-                    inputNode.setAttribute('value', updateInfo.record.split("=")[0]);
+                    inputNode.setAttribute('value', updateInfo.record.split('=')[0]);
                     formNode.appendChild(inputNode);
 
                     inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_keyvalue');
-                    inputNode.setAttribute('value', updateInfo.record.split("=")[1]);
+                    inputNode.setAttribute('value', updateInfo.record.split('=')[1]);
                     formNode.appendChild(inputNode);
 
                     inputNode = document.createElement('INPUT');
@@ -338,28 +336,28 @@ IMParts_Catalog["fileupload"] = {
                         inputNode.value = INTERMediatorOnPage.authUser;
                     }
                     formNode.appendChild(inputNode);
-                    inputNode = document.createElement("INPUT");
-                    inputNode.setAttribute("type", "hidden");
-                    inputNode.setAttribute("name", "response");
+                    inputNode = document.createElement('INPUT');
+                    inputNode.setAttribute('type', 'hidden');
+                    inputNode.setAttribute('name', 'response');
                     if (INTERMediatorOnPage.authUser.length > 0) {
                         if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
-                            shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, "ASCII");
+                            shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, 'ASCII');
                             hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
-                                "ASCII", "SHA-256", "HEX");
+                                'ASCII', 'SHA-256', 'HEX');
                             inputNode.value = hmacValue;
                         } else {
-                            inputNode.value = "dummy";
+                            inputNode.value = 'dummy';
                         }
                     }
                     formNode.appendChild(inputNode);
 
                     if (INTERMediatorOnPage.authUser.length > 0) {
-                        inputNode = document.createElement("INPUT");
-                        inputNode.setAttribute("type", "hidden");
-                        inputNode.setAttribute("name", "cresponse");
-                        inputNode.setAttribute("value",
+                        inputNode = document.createElement('INPUT');
+                        inputNode.setAttribute('type', 'hidden');
+                        inputNode.setAttribute('name', 'cresponse');
+                        inputNode.setAttribute('value',
                             INTERMediatorOnPage.publickey.biEncryptedString(
-                                INTERMediatorOnPage.authCryptedPassword + "\n" +
+                                INTERMediatorOnPage.authCryptedPassword + IMLib.nl_char +
                                 INTERMediatorOnPage.authChallenge));
                         formNode.appendChild(inputNode);
                     }
@@ -374,16 +372,16 @@ IMParts_Catalog["fileupload"] = {
                         inputNode.setAttribute('scrollbar', 'no');
                         formNode.appendChild(inputNode);
 
-                        INTERMediatorLib.addEvent(formNode, "submit", (function () {
+                        INTERMediatorLib.addEvent(formNode, 'submit', (function () {
                             var iframeId = i;
                             return function (event) {
 
                                 var iframeNode = document.getElementById('upload_frame' + iframeId);
-                                iframeNode.style.display = "block";
+                                iframeNode.style.display = 'block';
                                 setTimeout(function () {
-                                    var infoURL = selfURL() + "?uploadprocess=" +
+                                    var infoURL = selfURL() + '?uploadprocess=' +
                                         this.uploadId + iframeId;
-                                    iframeNode.setAttribute("src", infoURL);
+                                    iframeNode.setAttribute('src', infoURL);
                                 });
                                 return true;
                             };
@@ -396,9 +394,9 @@ IMParts_Catalog["fileupload"] = {
         this.formFromId = {};
 
         function selfURL() {
-            var nodes = document.getElementsByTagName("SCRIPT");
+            var nodes = document.getElementsByTagName('SCRIPT');
             for (var i = 0; i < nodes.length; i++) {
-                var srcAttr = nodes[i].getAttribute("src");
+                var srcAttr = nodes[i].getAttribute('src');
                 if (srcAttr.match(/\.php/)) {
                     return srcAttr;
                 }

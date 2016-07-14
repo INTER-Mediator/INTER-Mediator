@@ -7,21 +7,36 @@ if ENV['CIRCLECI']
   end
 end
 
+if os[:family] == 'alpine'
+  WEBROOT = "/var/www/localhost/htdocs"
+else
+  WEBROOT = "/var/www/html"
+end
+
 #describe package('ruby'), :if => os[:virtualization][:system] == 'docker' do
 #  it { should be_installed }
 #end
 
-describe package('apache2'), :if => os[:family] == 'ubuntu' do
+describe package('apache2'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 describe package('httpd'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
+describe package('openssh'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('openssh-server'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
+describe package('mariadb-client'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('mariadb'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('mysql-server'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_installed }
 end
@@ -29,14 +44,14 @@ describe package('mariadb-server'), :if => os[:family] == 'redhat' && os[:releas
   it { should be_installed }
 end
 
-describe package('postgresql'), :if => os[:family] == 'ubuntu' do
+describe package('postgresql'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 describe package('postgresql-server'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe service('apache2'), :if => os[:family] == 'ubuntu' do
+describe service('apache2'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
   it { should be_enabled }
   it { should be_running }
 end
@@ -56,11 +71,11 @@ end
 describe service('ssh'), :if => os[:family] == 'ubuntu' do
   it { should be_enabled }
 end
-describe service('sshd'), :if => os[:family] == 'redhat' do
+describe service('sshd'), :if => os[:family] == 'alpine' || os[:family] == 'redhat' do
   it { should be_enabled }
 end
 
-describe service('sshd'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe service('sshd'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_running }
 end
 
@@ -70,14 +85,14 @@ end
 describe service('mysqld'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   it { should be_enabled }
 end
-describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+describe service('mariadb'), :if => os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f >= 7) do
   it { should be_enabled }
 end
 
 describe service('mysqld'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_running }
 end
-describe service('mariadb'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+describe service('mariadb'), :if => os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f >= 7) do
   it { should be_running }
 end
 
@@ -88,7 +103,7 @@ end
 describe service('postgres'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_running }
 end
-describe service('postgresql'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+describe service('postgresql'), :if =>  os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f >= 7) do
   it { should be_running }
 end
 
@@ -105,7 +120,7 @@ describe user('www-data'), :if => os[:family] == 'ubuntu' do
   it { should exist }
   it { should belong_to_group 'im-developer' }
 end
-describe user('apache'), :if => os[:family] == 'redhat' do
+describe user('apache'), :if => os[:family] == 'alpine' || os[:family] == 'redhat' do
   it { should exist }
   it { should belong_to_group 'im-developer' }
 end
@@ -114,6 +129,16 @@ describe user('postgres') do
   it { should exist }
 end
 
+describe file('/etc/mysql/my.cnf'), :if => os[:family] == 'alpine' do
+  it { should be_file }
+  its(:content) { should match /[mysqld]/ }
+  its(:content) { should match /socket=\/run\/mysqld\/mysqld.sock/ }
+  its(:content) { should match /character-set-server=utf8mb4/ }
+  its(:content) { should match /skip-character-set-client-handshake/ }
+  its(:content) { should match /[client]/ }
+  its(:content) { should match /[mysqldump]/ }
+  its(:content) { should match /[mysql]/ }
+end
 describe file('/etc/mysql/conf.d/im.cnf'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   its(:content) { should match /[mysqld]/ }
@@ -144,11 +169,11 @@ describe file('/etc/my.cnf.d/im.cnf'), :if => os[:family] == 'redhat' && os[:rel
   its(:content) { should match /[mysql]/ }
 end
 
-describe package('sqlite'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('sqlite'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('acl'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('acl'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
@@ -224,7 +249,7 @@ describe package('php5-intl'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
-describe package('git'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('git'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
 
@@ -253,7 +278,7 @@ describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >
 end
 
 describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
-  it { should be_installed.by('npm').with_version('2.1.3') }
+  it { should be_installed.by('npm').with_version('2.1.7') }
 end
 
 describe package('libfontconfig1'), :if => os[:family] == 'ubuntu' do
@@ -295,96 +320,99 @@ describe file('/etc/apache2/sites-enabled/inter-mediator-server.conf'), :if => o
   its(:content) { should match /#Header add Content-Security-Policy "default-src 'self'"/ }
 end
 
-describe file('/var/www/html/INTER-Mediator') do
+describe file(WEBROOT + '/INTER-Mediator') do
   it { should be_directory }
 end
 
-describe command('git --git-dir=/var/www/html/INTER-Mediator/.git status | grep -o "Changes not staged for commit:"') do
+describe command('git --git-dir=' + WEBROOT + '/INTER-Mediator/.git status | grep -o "Changes not staged for commit:"') do
   its(:stdout) { should match // }
 end
 
-describe file('/var/www/html/index_original.html'), :if => os[:family] == 'ubuntu' do
+describe file(WEBROOT + '/index_original.html'), :if => os[:family] == 'ubuntu' do
   it { should_not be_file }
 end
 
-describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support') do
+describe file(WEBROOT + '/INTER-Mediator/INTER-Mediator-Support') do
   it { should be_directory }
 end
 
-describe file('/var/www/html/INTER-Mediator/INTER-Mediator-UnitTest') do
+describe file(WEBROOT + '/INTER-Mediator/INTER-Mediator-UnitTest') do
   it { should be_directory }
 end
 
-describe file('/var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.php') do
+describe file(WEBROOT + '/INTER-Mediator/INTER-Mediator-UnitTest/DB_PDO-SQLite_Test.php') do
   it { should be_file }
   its(:content) { should match /sqlite:\/var\/db\/im\/sample.sq3/ }
 end
 
-describe file('/var/www/html/index.html') do
+describe file(WEBROOT + '/index.html') do
   it { should_not be_file }
 end
 
-describe file('/var/www/html/index.php') do
+describe file(WEBROOT + '/index.php') do
   it { should be_symlink }
 end
 
-describe file('/var/www/html/INTER-Mediator/dist-docs/vm-for-trial/index.html') do
+describe file(WEBROOT + '/INTER-Mediator/dist-docs/vm-for-trial/index.html') do
   it { should be_file }
   its(:content) { should match /<meta http-equiv="refresh" content="0; URL=http:\/\/192.168.56.101\/INTER-Mediator\/dist-docs\/vm-for-trial\/index.php">/ }
 end
 
-describe command('diff -c /var/www/html/index.php /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/index.php') do
+describe command('diff -c ' + WEBROOT + '/index.php ' + WEBROOT + '/INTER-Mediator/dist-docs/vm-for-trial/index.php') do
   its(:stdout) { should match // }
 end
 
-describe file('/var/www/html/.htaccess') do
+describe file(WEBROOT + '/.htaccess') do
   it { should be_file }
   its(:content) { should match /AddType "text\/html; charset=UTF-8" .html/ }
 end
 
-describe file('/var/www/html/params.php') do
+describe file(WEBROOT + '/params.php') do
   it { should be_file }
   its(:content) { should match /\$dbUser = 'web';/ }
   its(:content) { should match /\$dbOption = array\(\);/ }
   its(:content) { should match /\$dbServer = '192.168.56.1';/ }
   its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
 end
-describe file('/var/www/html/params.php'), :if => os[:family] == 'ubuntu' do
+describe file(WEBROOT + '/params.php'), :if => os[:family] == 'alpine' do
+  its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
+end
+describe file(WEBROOT + '/params.php'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
 end
-describe file('/var/www/html/params.php'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
+describe file(WEBROOT + '/params.php'), :if => os[:family] == 'redhat' && os[:release].to_f < 7 do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/lib\/mysql\/mysql.sock;dbname=test_db;charset=utf8';/ }
 end
-describe file('/var/www/html/params.php'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
+describe file(WEBROOT + '/params.php'), :if => os[:family] == 'redhat' && os[:release].to_f >= 7 do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/lib\/mysql\/mysql.sock;dbname=test_db;charset=utf8mb4';/ }
 end
 
-describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/defedit.php') do
+describe file(WEBROOT + '/INTER-Mediator/INTER-Mediator-Support/defedit.php') do
   it { should be_file }
 end
 
-describe file('/var/www/html/INTER-Mediator/INTER-Mediator-Support/pageedit.php') do
+describe file(WEBROOT + '/INTER-Mediator/INTER-Mediator-Support/pageedit.php') do
   it { should be_file }
 end
 
-describe file('/var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh') do
+describe file(WEBROOT + '/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh') do
   it { should be_file }
   it { should be_mode 664 }
 end
 
-describe command('date -d "`cat /var/www/html/INTER-Mediator/dist-docs/readme.txt  | grep TestDB | cut -d"(" -f2 | cut -d")" -f1 | cut -d":" -f2`" +"%Y-%m-%d" | grep -o `git --git-dir=/var/www/html/INTER-Mediator/.git log -1 --date=short --pretty=format:"%cd" -- -p dist-docs/TestDB.fmp12` | wc -l') do
+describe command('date -d "`cat ' + WEBROOT + '/INTER-Mediator/dist-docs/readme.txt  | grep TestDB | cut -d"(" -f2 | cut -d")" -f1 | cut -d":" -f2`" +"%Y-%m-%d" | grep -o `git --git-dir=' + WEBROOT + '/INTER-Mediator/.git log -1 --date=short --pretty=format:"%cd" -- -p dist-docs/TestDB.fmp12` | wc -l') do
   its(:stdout) { should match /1/ }
 end
 
 range = 1..40
 range.each{|num|
-  describe file('/var/www/html/def' + "%02d" % num + '.php') do
+  describe file(WEBROOT + '/def' + "%02d" % num + '.php') do
     it { should be_file }
     it { should be_mode 664 }
     its(:content) { should match /require_once\('INTER-Mediator\/INTER-Mediator.php'\);/ }
   end
 
-  describe file('/var/www/html/page' + "%02d" % num + '.html') do
+  describe file(WEBROOT + '/page' + "%02d" % num + '.html') do
     it { should be_file }
     it { should be_mode 664 }
     its(:content) { should match /<!DOCTYPE html>/ }
@@ -434,12 +462,12 @@ describe command('sqlite3 /var/db/im/sample.sq3 ".tables"') do
   its(:stdout) { should match /cor_way_kind/ }
 end
 
-describe command('getfacl /var/www/html'), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe command('getfacl ' + WEBROOT), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   its(:stdout) { should match /^group:im-developer:rwx$/ }
   its(:stdout) { should match /^default:group:im-developer:rwx$/ }
 end
 
-describe file('/var/www/html') do
+describe file(WEBROOT) do
   it { should be_directory }
   it { should be_mode 775 }
   it { should be_owned_by 'developer' }
@@ -464,7 +492,11 @@ end
 describe file('/etc/samba/smb.conf') do
   it { should be_file }
   its(:content) { should match /hosts allow = 192.168.56. 127./ }
-  its(:content) { should match /path = \/var\/www\/html/ }
+  if os[:family] == 'alpine'
+    its(:content) { should match /path = \/var\/www\/localhost\/htdocs/ }
+  else
+    its(:content) { should match /path = \/var\/www\/html/ }
+  end
   its(:content) { should match /guest ok = no/ }
   its(:content) { should match /browseable = yes/ }
   its(:content) { should match /read only = no/ }

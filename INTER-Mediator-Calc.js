@@ -22,21 +22,21 @@ var IMLibCalc = {
      */
 
     updateCalculationInfo: function (contextObj, keyingValue, currentContext, nodeId, nInfo, currentRecord) {
-        var calcDef, exp, field, elements, i, index, objectKey, calcFieldInfo, itemIndex, values, referes,
+        var calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
             calcDefField, atPos, fieldLength;
 
         calcDef = currentContext['calculation'];
         for (index in calcDef) {
-            atPos = calcDef[index]["field"].indexOf(INTERMediator.separator);
-            fieldLength = calcDef[index]["field"].length;
-            calcDefField = calcDef[index]["field"].substring(0, atPos >= 0 ? atPos : fieldLength);
-            if (calcDefField == nInfo["field"]) {
+            atPos = calcDef[index]['field'].indexOf(INTERMediator.separator);
+            fieldLength = calcDef[index]['field'].length;
+            calcDefField = calcDef[index]['field'].substring(0, atPos >= 0 ? atPos : fieldLength);
+            if (calcDefField == nInfo['field']) {
                 try {
-                    exp = calcDef[index]["expression"];
-                    field = calcDef[index]["field"];
+                    exp = calcDef[index]['expression'];
+                    field = calcDef[index]['field'];
                     elements = Parser.parse(exp).variables();
                     objectKey = nodeId +
-                        (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : "");
+                        (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : '');
                 } catch (ex) {
                     INTERMediator.setErrorMessage(ex,
                         INTERMediatorLib.getInsertedString(
@@ -55,11 +55,11 @@ var IMLibCalc = {
                             keyingValue, itemIndex, currentRecord[itemIndex], nodeId, nInfo.target, null);
                     }
                     IMLibCalc.calculateRequiredObject[objectKey] = {
-                        "field": field,
-                        "expression": exp,
-                        "nodeInfo": nInfo,
-                        "values": values,
-                        "referes": referes
+                        'field': field,
+                        'expression': exp,
+                        'nodeInfo': nInfo,
+                        'values': values,
+                        'referes': referes
                     };
                 }
             }
@@ -121,8 +121,6 @@ var IMLibCalc = {
                         calcObject.values[field] = valueSeries;
                     }
                     IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
-                } else {
-
                 }
             }
         } while (leafNodes.length > 0);
@@ -207,7 +205,7 @@ var IMLibCalc = {
                         }
                     }
                     if (newValueAdded) {
-                        //console.log("calc-test", calcObject.expression, calcObject.values);
+                        //console.log('calc-test', calcObject.expression, calcObject.values);
                         updatedValue = Parser.evaluate(
                             calcObject.expression,
                             calcObject.values
@@ -217,9 +215,6 @@ var IMLibCalc = {
                         updatedNodeIds.push(idValue);
                         updateNodeValues.push(updatedValue);
                     }
-                }
-                else {
-
                 }
             }
         } while (leafNodes.length > 0);
@@ -254,35 +249,32 @@ var IMLibCalc = {
                 } else {
                     targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
                 }
-                switch (INTERMediator.crossTableStage) {
-                    case 3:
-                        repeaterTop = targetNode;
-                        while (repeaterTop.tagName != "TD" && repeaterTop.tagName != "TH") {
-                            repeaterTop = repeaterTop.parentNode;
+                if (nodeId.nodeInfo && nodeId.nodeInfo.crossTable) {
+                    repeaterTop = targetNode;
+                    while (repeaterTop.tagName != 'TD' && repeaterTop.tagName != 'TH') {
+                        repeaterTop = repeaterTop.parentNode;
+                    }
+                    do {
+                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(targetNode, targetExp);
+                        if (targetIds && targetIds.length > 0) {
+                            break;
                         }
-                        do {
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromNode(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetNode = INTERMediatorLib.getParentRepeater(
-                                INTERMediatorLib.getParentEnclosure(targetNode));
-                        } while (targetNode);
-                        break;
-                    default:
-                        do {
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetNode = INTERMediatorLib.getParentRepeater(
-                                INTERMediatorLib.getParentEnclosure(targetNode));
-                        } while (targetNode);
-                        break;
+                        targetNode = INTERMediatorLib.getParentRepeater(
+                            INTERMediatorLib.getParentEnclosure(targetNode));
+                    } while (targetNode);
+                } else {
+                    do {
+                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
+                        if (targetIds && targetIds.length > 0) {
+                            break;
+                        }
+                        targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
+                        if (targetIds && targetIds.length > 0) {
+                            break;
+                        }
+                        targetNode = INTERMediatorLib.getParentRepeater(
+                            INTERMediatorLib.getParentEnclosure(targetNode));
+                    } while (targetNode);
                 }
                 if (INTERMediatorLib.is_array(targetIds) && targetIds.length > 0) {
                     calcObject.referes[field] = [];

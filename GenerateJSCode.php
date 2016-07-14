@@ -159,6 +159,8 @@ class GenerateJSCode
             $pathToIMRootDir = mb_ereg_replace(
                 mb_ereg_replace("\\x5c", "/", "^{$documentRootPrefix}" . filter_var($_SERVER['DOCUMENT_ROOT'])),
                 "", mb_ereg_replace("\\x5c", "/", dirname(__FILE__)));
+        } else {
+            $pathToIMRootDir = '[ERROR]';
         }
 
         $this->generateAssignJS(
@@ -174,10 +176,8 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
-        $this->generateAssignJS(
-            "INTERMediatorOnPage.getDBSpecification", "function(){return ",
-            arrayToJSExcluding($dbspecification, '',
-                array('dsn', 'option', 'database', 'user', 'password', 'server', 'port', 'protocol', 'datatype')), ";}");
+        $this->generateAssignJS("INTERMediatorOnPage.dbClassName","{$q}{$dbClassName}{$q}");
+
         $isEmailAsUsernae = isset($options['authentication'])
             && isset($options['authentication']['email-as-username'])
             && $options['authentication']['email-as-username'] === true;

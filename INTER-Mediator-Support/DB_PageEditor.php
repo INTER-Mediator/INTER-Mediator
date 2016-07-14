@@ -32,7 +32,7 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
             return null;
         }
         $this->recordCount = 1;
-        return array(array('content' => $fileContent));
+        return array(array('id' => 1, 'content' => $fileContent));
     }
 
     function countQueryResult()

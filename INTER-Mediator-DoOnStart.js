@@ -25,42 +25,42 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
 } else {
     Object.defineProperty(INTERMediator, 'startFrom', {
         get: function () {
-            return INTERMediator.getLocalProperty("_im_startFrom", 0);
+            return INTERMediator.getLocalProperty('_im_startFrom', 0);
         },
         set: function (value) {
-            INTERMediator.setLocalProperty("_im_startFrom", value);
+            INTERMediator.setLocalProperty('_im_startFrom', value);
         }
     });
     Object.defineProperty(INTERMediator, 'pagedSize', {
         get: function () {
-            return INTERMediator.getLocalProperty("_im_pagedSize", 0);
+            return INTERMediator.getLocalProperty('_im_pagedSize', 0);
         },
         set: function (value) {
-            INTERMediator.setLocalProperty("_im_pagedSize", value);
+            INTERMediator.setLocalProperty('_im_pagedSize', value);
         }
     });
     Object.defineProperty(INTERMediator, 'pagination', {
         get: function () {
-            return INTERMediator.getLocalProperty("_im_pagination", 0);
+            return INTERMediator.getLocalProperty('_im_pagination', 0);
         },
         set: function (value) {
-            INTERMediator.setLocalProperty("_im_pagination", value);
+            INTERMediator.setLocalProperty('_im_pagination', value);
         }
     });
     Object.defineProperty(INTERMediator, 'additionalCondition', {
         get: function () {
-            return INTERMediator.getLocalProperty("_im_additionalCondition", {});
+            return INTERMediator.getLocalProperty('_im_additionalCondition', {});
         },
         set: function (value) {
-            INTERMediator.setLocalProperty("_im_additionalCondition", value);
+            INTERMediator.setLocalProperty('_im_additionalCondition', value);
         }
     });
     Object.defineProperty(INTERMediator, 'additionalSortKey', {
         get: function () {
-            return INTERMediator.getLocalProperty("_im_additionalSortKey", {});
+            return INTERMediator.getLocalProperty('_im_additionalSortKey', {});
         },
         set: function (value) {
-            INTERMediator.setLocalProperty("_im_additionalSortKey", value);
+            INTERMediator.setLocalProperty('_im_additionalSortKey', value);
         }
     });
     Object.defineProperty(IMLibCalc, 'regexpForSeparator', {
@@ -68,7 +68,7 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
             if (INTERMediator) {
                 return new RegExp(INTERMediator.separator);
             }
-            return new RegExp("@");
+            return new RegExp('@');
         }
     });
 }
@@ -81,20 +81,19 @@ if (!INTERMediator.additionalSortKey) {
     INTERMediator.additionalSortKey = {};
 }
 
-
-INTERMediatorLib.addEvent(window, "beforeunload", function (e) {
-//    var confirmationMessage = "";
+INTERMediatorLib.addEvent(window, 'beforeunload', function (e) {
+//    var confirmationMessage = '';
 
 //    (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
 //    return confirmationMessage;                                //Webkit, Safari, Chrome etc.
 
 });
 
-INTERMediatorLib.addEvent(window, "unload", function () {
+INTERMediatorLib.addEvent(window, 'unload', function () {
     INTERMediator_DBAdapter.unregister();
 });
 
-INTERMediatorLib.addEvent(window, "load", function () {
+INTERMediatorLib.addEvent(window, 'load', function () {
     var key, errorNode;
     if (INTERMediatorOnPage.initLocalContext)   {
         for (key in INTERMediatorOnPage.initLocalContext) {
@@ -104,18 +103,29 @@ INTERMediatorLib.addEvent(window, "load", function () {
         }
     }
     errorNode = document.getElementById(INTERMediatorOnPage.nonSupportMessageId);
-    if (errorNode) {
-        if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
-            if (INTERMediatorOnPage.doBeforeConstruct)  {
+
+    //if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+    //    INTERMediator_DBAdapter.eliminateDuplicatedConditions = true;
+    //}
+
+    if (INTERMediatorOnPage.isAutoConstruct) {
+        if (errorNode) {
+            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
+                if (INTERMediatorOnPage.doBeforeConstruct) {
+                    INTERMediatorOnPage.doBeforeConstruct();
+                }
+                if (INTERMediatorOnPage.isAutoConstruct) {
+                    INTERMediator.construct(true);
+                }
+            }
+        } else {
+            if (INTERMediatorOnPage.doBeforeConstruct) {
                 INTERMediatorOnPage.doBeforeConstruct();
             }
-            INTERMediator.construct(true);
+            if (INTERMediatorOnPage.isAutoConstruct) {
+                INTERMediator.construct(true);
+            }
         }
-    } else {
-        if (INTERMediatorOnPage.doBeforeConstruct)  {
-            INTERMediatorOnPage.doBeforeConstruct();
-        }
-        INTERMediator.construct(true);
     }
     // INTERMediatorOnPage.isFinishToConstruct = true;
 });

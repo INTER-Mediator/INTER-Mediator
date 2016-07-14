@@ -12,7 +12,7 @@
 // Database Access
 //=================================
 
-//"use strict"
+//'use strict';
 
 var INTERMediator_DBAdapter_Template = {
     /*

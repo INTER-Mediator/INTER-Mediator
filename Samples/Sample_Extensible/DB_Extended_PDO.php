@@ -17,10 +17,10 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 class DB_Extended_PDO extends DB_PDO
 {
-    function readFromDB($dataSourceName)
+    function readFromDB()
     {
-        $result = parent::readFromDB($dataSourceName);
-        
+        $result = parent::readFromDB();
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         if ($dataSourceName === 'everymonth') {
             $result = array();
             $year = 2010;
