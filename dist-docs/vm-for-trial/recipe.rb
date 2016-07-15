@@ -325,7 +325,7 @@ package 'acl' do
   action :install
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine'
   package 'php5' do
     action :install
   end
