@@ -265,6 +265,7 @@ class DefinitionChecker
             ),
             'post-repeater' => 'string',
             'post-enclosure' => 'string',
+            'post-query-stored' => 'string',
             'script' => array(
                 '*' => array(
                     'db-operation' => 'string(load|read|update|new|create|delete)',

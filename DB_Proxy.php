@@ -946,6 +946,12 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if ($this->logger->getDebugLevel() !== false) {
             $fInfo = $this->getFieldInfo($this->dbSettings->getDataSourceName());
             if ($fInfo != null) {
+                $ds = $this->dbSettings->getDataSourceTargetArray();
+                if (isset($ds["calculation"])) {
+                    foreach ($ds["calculation"] as $def) {
+                        $fInfo[] = $def["field"];
+                    }
+                }
                 foreach ($this->dbSettings->getFieldsRequired() as $fieldName) {
                     if (!$this->dbClass->isContainingFieldName($fieldName, $fInfo)) {
                         $this->logger->setErrorMessage($messageClass->getMessageAs(1033, array($fieldName)));
@@ -995,29 +1001,33 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
     }
 
-    public function getDatabaseResult() {
-        if (isset($this->outputOfProcessing['dbresult']))   {
+    public function getDatabaseResult()
+    {
+        if (isset($this->outputOfProcessing['dbresult'])) {
             return $this->outputOfProcessing['dbresult'];
         }
         return null;
     }
 
-    public function getDatabaseResultCount() {
-        if (isset($this->outputOfProcessing['resultCount']))   {
+    public function getDatabaseResultCount()
+    {
+        if (isset($this->outputOfProcessing['resultCount'])) {
             return $this->outputOfProcessing['resultCount'];
         }
         return null;
     }
 
-    public function getDatabaseTotalCount() {
-        if (isset($this->outputOfProcessing['totalCount']))   {
+    public function getDatabaseTotalCount()
+    {
+        if (isset($this->outputOfProcessing['totalCount'])) {
             return $this->outputOfProcessing['totalCount'];
         }
         return null;
     }
 
-    public function getDatabaseNewRecordKey() {
-        if (isset($this->outputOfProcessing['newRecordKeyValue']))   {
+    public function getDatabaseNewRecordKey()
+    {
+        if (isset($this->outputOfProcessing['newRecordKeyValue'])) {
             return $this->outputOfProcessing['newRecordKeyValue'];
         }
         return null;
@@ -1299,7 +1309,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $userInfo = null;
         $userID = $this->authDbClass->authSupportUserEnrollmentEnrollingUser($challenge);
-        if ($userID < 1)    {
+        if ($userID < 1) {
             return false;
         }
         $result = $this->dbClass->authSupportUserEnrollmentActivateUser(
