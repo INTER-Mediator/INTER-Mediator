@@ -477,7 +477,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                                 throw new Exception("Invalid Operator.");
                             }
                             if (strtoupper(trim($condition['operator'])) == "IN") {
-                                $this->logger->setDebugMessage(var_export($condition['value'], true));
                                 $escapedValue = "(";
                                 $isFirst = true;
                                 foreach (json_decode($condition['value']) as $item) {

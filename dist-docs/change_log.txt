@@ -10,7 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.4 (in development)
+Ver.5.5 (in development)
+
+Ver.5.4 (in release candidate)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
   generating, describe "INTERMediatorOnPage.doBeforeConstruct = function(){..};" on any valid place.
   The node having the id attribute "nonsupportmessage" will disappear after page generating. If you
@@ -21,6 +23,9 @@ Ver.5.4 (in development)
   or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
 - Creating Cross Table for PDO. It contains 3 contexts for colomn, row and value cells.
   See the sample Samples/Practices/crosstable.html.
+- The "post-query-stored" key in context of the definition file is introduced. It will be specified
+  a method name, ant the method has to be define in the INTERMediatorOnPage object with one variable
+  for referring context object. It will be called after query and stored values in context.
 - The second "option" parameter of IM_Entry function can have the key "local-context" as the array of
   "key" and "value" keyed elements. These affect as the initial values of relevant local context value.
 - The variable "$valuesForLocalContext" in params.php supplies initial values for local context.
@@ -61,6 +66,8 @@ Ver.5.4 (in development)
   using DataConverter classes.
 - [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server and a 
   count of related records on the portal object is 1 (Thanks to Kiyonori Ito).
+- [BUG FIX] Fix to be accumulated cross table conditions on a page.
+- [BUG FIX] Calculated property's fields weren't handled as existing fields and show errors.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
