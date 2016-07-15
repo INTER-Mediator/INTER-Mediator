@@ -952,7 +952,7 @@ var INTERMediator = {
                     foreignFieldValue = '=';
                     foreignValue = null;
                 }
-                if (targetRecordset[ix] && targetRecordset[ix][keyField]) {
+                if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
                     keyValue = targetRecordset[ix][keyField];
                     if (keyField && !keyValue) {
                         //INTERMediator.setErrorMessage('The value of the key field is null.',
