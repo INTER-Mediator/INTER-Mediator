@@ -748,6 +748,7 @@ var INTERMediator_DBAdapter = {
                     }
                 }
                 INTERMediator.additionalCondition[args['name']] = modifyConditions;
+                IMLibLocalContext.archive();
             }
         }
 

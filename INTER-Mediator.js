@@ -767,6 +767,7 @@ var INTERMediator = {
                     }
                     targetRecords = retrieveDataForEnclosure(currentContextDef, fieldList, contextObj.foreignValue);
                     contextObj.storeRecords(targetRecords);
+                    callbackForAfterQueryStored(currentContextDef, contextObj);
                     if (customExpandRepeater == undefined) {
                         contextObj.registeredId = targetRecords.registeredId;
                         contextObj.nullAcceptable = targetRecords.nullAcceptable;
@@ -1533,6 +1534,27 @@ var INTERMediator = {
                 } else {
                     INTERMediator.setErrorMessage(ex,
                         'EXCEPTION-22: hint: post-enclosure of ' + currentContextDef.name);
+                }
+            }
+        }
+
+        /* --------------------------------------------------------------------
+
+         */
+        function callbackForAfterQueryStored(currentContextDef, context) {
+            try {
+                if (currentContextDef['post-query-stored']) {
+                    INTERMediatorOnPage[currentContextDef['post-query-stored']](context);
+                    INTERMediator.setDebugMessage(
+                        "Call the post query stored method 'INTERMediatorOnPage." + currentContextDef['post-enclosure']
+                        + "' with the context: " + currentContextDef['name'], 2);
+                }
+            } catch (ex) {
+                if (ex == '_im_requath_request_') {
+                    throw ex;
+                } else {
+                    INTERMediator.setErrorMessage(ex,
+                        'EXCEPTION-41: hint: post-query-stored of ' + currentContextDef.name);
                 }
             }
         }
