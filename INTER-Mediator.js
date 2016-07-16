@@ -656,8 +656,14 @@ var INTERMediator = {
          */
 
         function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
-            var repNodeTag, repeatersOriginal;
+            var recId, repNodeTag, repeatersOriginal;
             var imControl = node.getAttribute('data-im-control');
+
+            if (currentContextObj && currentContextObj.contextName && currentRecord[currentContextObj.contextName]) {
+                // for FileMaker portal access mode
+                recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid'];
+                currentRecord = currentRecord[currentContextObj.contextName][recId];
+            }
 
             if (imControl && imControl.match(/cross-table/)) {   // Cross Table
                 expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
@@ -1298,7 +1304,7 @@ var INTERMediator = {
 
          */
         function retrieveDataForEnclosure(currentContextDef, fieldList, relationValue) {
-            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition,
+            var ix, keyField, targetRecords, counter, oneRecord, isMatch, index, fieldName, condition, portal, recId,
                 recordNumber, useLimit, optionalCondition = [], pagingValue, recordsValue, i, recordset = [];
 
             if (Boolean(currentContextDef.cache) === true) {
@@ -1415,9 +1421,10 @@ var INTERMediator = {
 
                     targetRecords = {};
                     if (Boolean(currentContextDef.portal) === true) {
-                        for (i = 0; i < Object.keys(currentContextDef['currentrecord']).length; i++) {
-                            if (currentContextDef['currentrecord'][i]) {
-                                recordset.push(currentContextDef['currentrecord'][i]);
+                        portal = currentContextDef['currentrecord'][0][currentContextDef['name']];
+                        for (recId in portal) {
+                            if (portal.hasOwnProperty(recId) && isFinite(recId)) {
+                                recordset.push(portal[recId]);
                             }
                         }
                         targetRecords.recordset = recordset;

@@ -277,7 +277,7 @@ var IMLibContextPool = {
 
         // Private functions
         function getContextAndKeyFromId(repeaterIdValue) {
-            var i, field, j, keying;
+            var i, field, j, keying, foreignKey;
 
             for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
                 for (keying in IMLibContextPool.poolingContexts[i].binding) {
@@ -290,6 +290,19 @@ var IMLibContextPool = {
                                         return ({context: IMLibContextPool.poolingContexts[i], key: keying});
                                     }
                                 }
+
+                                /* 
+                                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+                                    // [WIP] for FileMaker portal access mode
+                                    for (foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
+                                        for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey].length; j++) {
+                                            if (repeaterIdValue == IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey][j].id) {
+                                                return ({context: IMLibContextPool.poolingContexts[i], key: '-recid=' + foreignKey});
+                                            }
+                                        }
+                                    }
+                                }
+                                */
                             }
                         }
                     }
@@ -785,7 +798,8 @@ var IMLibContext = function (contextName) {
         var value;
         try {
             if (portal) {
-                value = this.store[recKey][key][portal];
+                // value = this.store[recKey][key][portal];
+                value = this.store[recKey][key];
             } else {
                 value = this.store[recKey][key];
             }
@@ -799,7 +813,8 @@ var IMLibContext = function (contextName) {
         var value;
         try {
             if (portal) {
-                value = this.store[recKey][key][portal];
+                // value = this.store[recKey][key][portal];
+                value = this.store[recKey][key];
             } else {
                 value = this.store[recKey][key];
             }

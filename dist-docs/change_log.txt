@@ -10,8 +10,6 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.5 (in development)
-
 Ver.5.4 (in release candidate)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
   generating, describe "INTERMediatorOnPage.doBeforeConstruct = function(){..};" on any valid place.
@@ -64,8 +62,8 @@ Ver.5.4 (in release candidate)
 - [BUG FIX] Authentication prevented in case of just specify on the second parameter of IM_Entry.
 - [BUG FIX] Fix DB_FileMaker_FX class not to throw an exception when failed to convert a value 
   using DataConverter classes.
-- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server and a 
-  count of related records on the portal object is 1 (Thanks to Kiyonori Ito).
+- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server in some
+  cases (Thanks to Kiyonori Ito).
 - [BUG FIX] Fix to be accumulated cross table conditions on a page.
 - [BUG FIX] Calculated property's fields weren't handled as existing fields and show errors.
 - [BUG FIX] In case of the keyed value is just 0, the id attribute wasn't assigned to each element.
