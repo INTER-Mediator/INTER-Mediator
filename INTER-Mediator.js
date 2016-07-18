@@ -1428,7 +1428,9 @@ var INTERMediator = {
 
                     targetRecords = {};
                     if (Boolean(currentContextDef.portal) === true) {
-                        if(currentContextDef['currentrecord'][0].hasOwnProperty(currentContextDef['name'])) {
+                        if (currentContextDef['currentrecord']
+                            && currentContextDef['currentrecord'][0]
+                            && currentContextDef['currentrecord'][0].hasOwnProperty(currentContextDef['name'])) {
                             portal = currentContextDef['currentrecord'][0][currentContextDef['name']];
                             for (recId in portal) {
                                 if (portal.hasOwnProperty(recId) && isFinite(recId)) {
