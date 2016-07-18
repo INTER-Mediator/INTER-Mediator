@@ -1059,7 +1059,8 @@ var INTERMediator = {
                                     postSetFields.push({'id': nodeId, 'value': curVal});
                                 }
                             }
-                            contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue);
+                            contextObj.setValue(
+                                keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue, usePortal);
                             idValuesForFieldName[nInfo['field']] = nodeId;
                         }
                     }
