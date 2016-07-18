@@ -232,7 +232,7 @@ var IMLibContextPool = {
     },
 
     removeRecordFromPool: function (repeaterIdValue) {
-        var i, j, field, nodeIds = [], targetKeying, targetKeyingObj, idValue, delNodes,
+        var i, j, field, nodeIds = [], targetKeying, targetKeyingObj, parentKeying, relatedId, idValue, delNodes,
             contextAndKey, sameOriginContexts;
 
         contextAndKey = getContextAndKeyFromId(repeaterIdValue);
@@ -253,6 +253,18 @@ var IMLibContextPool = {
                             nodeIds.push(targetKeyingObj[field][j].id);
                         }
                     }
+                }
+            }
+
+            if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+                // for FileMaker portal access mode
+                parentKeying = Object.keys(contextAndKey.context.binding)[0];
+                relatedId = targetKeying.split('=')[1];
+                if (sameOriginContexts[i].binding[parentKeying] &&
+                    sameOriginContexts[i].binding[parentKeying]['_im_repeater'] &&
+                    sameOriginContexts[i].binding[parentKeying]['_im_repeater'][relatedId] &&
+                    sameOriginContexts[i].binding[parentKeying]['_im_repeater'][relatedId][0]) {
+                    nodeIds.push(sameOriginContexts[i].binding[parentKeying]['_im_repeater'][relatedId][0].id);
                 }
             }
         }
@@ -277,7 +289,7 @@ var IMLibContextPool = {
 
         // Private functions
         function getContextAndKeyFromId(repeaterIdValue) {
-            var i, field, j, keying;
+            var i, field, j, keying, foreignKey;
 
             for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
                 for (keying in IMLibContextPool.poolingContexts[i].binding) {
@@ -288,6 +300,17 @@ var IMLibContextPool = {
                                 for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field].length; j++) {
                                     if (repeaterIdValue == IMLibContextPool.poolingContexts[i].binding[keying][field][j].id) {
                                         return ({context: IMLibContextPool.poolingContexts[i], key: keying});
+                                    }
+                                }
+
+                                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+                                    // for FileMaker portal access mode
+                                    for (foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
+                                        for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey].length; j++) {
+                                            if (repeaterIdValue == IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey][j].id) {
+                                                return ({context: IMLibContextPool.poolingContexts[i], key: '-recid=' + foreignKey});
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -785,7 +808,8 @@ var IMLibContext = function (contextName) {
         var value;
         try {
             if (portal) {
-                value = this.store[recKey][key][portal];
+                // value = this.store[recKey][key][portal];
+                value = this.store[recKey][key];
             } else {
                 value = this.store[recKey][key];
             }
@@ -799,7 +823,8 @@ var IMLibContext = function (contextName) {
         var value;
         try {
             if (portal) {
-                value = this.store[recKey][key][portal];
+                // value = this.store[recKey][key][portal];
+                value = this.store[recKey][key];
             } else {
                 value = this.store[recKey][key];
             }

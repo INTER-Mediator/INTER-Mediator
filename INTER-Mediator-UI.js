@@ -234,18 +234,19 @@ var IMLibUI = {
                         var nodeInfoCapt = nodeInfo;
                         var idValueCapt = idValue;
                         return function (result) {
-                            var response, initialvalue, newValue, isOthersModified,
+                            var portalRecord, response, initialvalue, newValue, isOthersModified,
                                 isCheckResult, portalKey, portalIndex, currentFieldVal;
                             if (contextInfoCapt.portal) {
                                 isCheckResult = false;
                                 portalKey = contextInfo.context.contextName + '::-recid';
                                 if (result.dbresult && result.dbresult[0]) {
                                     for (portalIndex in result.dbresult[0]) {
-                                        var portalRecord = result.dbresult[0][portalIndex];
-                                        if (portalRecord[portalKey] &&
-                                            portalRecord[targetFieldCapt] !== undefined &&
-                                            portalRecord[portalKey] == contextInfo.portal) {
-                                            currentFieldVal = portalRecord[targetFieldCapt];
+                                        portalRecord = result.dbresult[0][portalIndex][contextInfo.context.contextName];
+                                        if (portalRecord && portalRecord[contextInfo.portal] &&
+                                            portalRecord[contextInfo.portal][portalKey] &&
+                                            portalRecord[contextInfo.portal][targetFieldCapt] !== undefined &&
+                                            portalRecord[contextInfo.portal][portalKey] == contextInfo.portal) {
+                                            currentFieldVal = portalRecord[contextInfo.portal][targetFieldCapt];
                                             isCheckResult = true;
                                         }
                                     }

@@ -911,19 +911,18 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             $record['relatedset'] = array($record['relatedset']);
                         }
                         foreach ($record['relatedset'] as $relatedset) {
-                            $j = 0;
                             if (isset($relatedset['record'])) {
                                 $relRecords = $relatedset['record'];
                                 if ($relatedset['@attributes']['count'] == 1) {
                                     $relRecords = array($relatedset['record']);
                                 }
                                 foreach ($relRecords as $relatedrecord) {
-                                    $relatedArray = array('-recid' => $record['@attributes']['record-id']);
                                     if (isset($relatedset['@attributes']) && isset($relatedrecord['@attributes'])) {
-                                        $relatedArray += array(
-                                            $relatedset['@attributes']['table'] . '::-recid'
-                                            => $relatedrecord['@attributes']['record-id']
-                                        );
+                                        $tableOccurrence = $relatedset['@attributes']['table'];
+                                        $recId = $relatedrecord['@attributes']['record-id'];
+                                        if (!isset($relatedArray[$tableOccurrence])) {
+                                            $relatedArray[$tableOccurrence] = array();
+                                        }
                                     }
                                     $multiFields = true;
                                     if (isset($relatedrecord['field'])) {
@@ -940,20 +939,22 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                                     $relatedfield['data']
                                                 );
                                             }
-                                            $relatedArray += array(
+                                            $tableOccurrence = explode('::', $relatedFieldName)[0];
+                                            if (!isset($relatedArray[$tableOccurrence][$recId])) {
+                                                $relatedArray[$tableOccurrence][$recId] = array(
+                                                    '-recid' => $record['@attributes']['record-id'],
+                                                    $tableOccurrence . '::-recid' => $recId
+                                                );
+                                            }
+                                            $relatedArray[$tableOccurrence][$recId] += array(
                                                 $relatedFieldName => $relatedFieldValue
                                             );
                                             if ($multiFields === false) {
                                                 break;
                                             }
                                         }
-                                        if (isset($relatedsetArray[$j]) && !is_null($relatedsetArray[$j])) {
-                                            $relatedsetArray[$j] += $relatedArray;
-                                        } else {
-                                            $relatedsetArray[$j] = $relatedArray;
-                                        }
+                                        $relatedsetArray = array($relatedArray);
                                     }
-                                    $j++;
                                 }
                             }
                         }
