@@ -1060,7 +1060,7 @@ var INTERMediator = {
                                 }
                             }
                             contextObj.setValue(
-                                keyingValue, nInfo['field'], curVal, nodeId, curTarget, foreignValue, usePortal);
+                                keyingValue, nInfo['field'], curVal, nodeId, curTarget, usePortal);
                             idValuesForFieldName[nInfo['field']] = nodeId;
                         }
                     }
