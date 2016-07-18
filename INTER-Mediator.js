@@ -1225,7 +1225,13 @@ var INTERMediator = {
                             if (!newNode.id) {  // ######## Is that right with if statement?
                                 setIdValue(newNode);
                             }                   // ##########################################
-                            contextObj.setValue(setupResult.keyingValue, '_im_repeater', '', newNode.id, '', setupResult.foreignValue);
+                            contextObj.setValue(
+                                setupResult.keyingValue,
+                                '_im_repeater',
+                                '',
+                                newNode.id,
+                                '',
+                                currentContextDef.portal);
                             //setupResult.idValuesForFieldName[nInfo['field']] = nodeId; // #### Is this irrelevant?
                             seekEnclosureNode(newNode, targetRecordset[ix], setupResult.idValuesForFieldName, contextObj);
                         }
