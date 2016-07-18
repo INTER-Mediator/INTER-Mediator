@@ -545,8 +545,7 @@ var IMLibUI = {
                             }
                             INTERMediator_DBAdapter.unregister();
                             INTERMediator.constructMain(contextObjCapt);
-                            sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(
-                                contextObjCapt.viewName);
+                            sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(contextObjCapt);
                             for (i = 0; i < sameOriginContexts.length; i++) {
                                 INTERMediator.constructMain(sameOriginContexts[i], null);
                             }
@@ -565,7 +564,7 @@ var IMLibUI = {
     },
 
     deleteButton: function (targetName, keyField, keyValue, foreignField, foreignValue, removeNodes, isConfirm) {
-        var i, index, currentContext, relationDef, dialogMessage, successProc;
+        var i, index, currentContext, relationDef, dialogMessage, successProc, countDelNodes, isPortal = false;
 
         if (isConfirm) {
             dialogMessage = INTERMediatorOnPage.getMessages()[1025];
@@ -583,45 +582,89 @@ var IMLibUI = {
                 for (index in relationDef) {
                     if (relationDef.hasOwnProperty(index) && relationDef[index]['portal'] == true) {
                         currentContext['portal'] = true;
+                        isPortal = true;
                     }
                 }
             }
-            successProc = function () {
-                if (currentContext['relation'] == true) {
-                    INTERMediator.pagedAllCount--;
-                    if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
-                        INTERMediator.startFrom = INTERMediator.startFrom - INTERMediator.pagedSize;
-                        if (INTERMediator.startFrom < 0) {
-                            INTERMediator.startFrom = 0;
+            successProc = (function () {
+                var removeNodesCapt = removeNodes;
+                var currentContextCapt = currentContext;
+                return function () {
+                    if (currentContextCapt['relation'] == true) {
+                        INTERMediator.pagedAllCount--;
+                        if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
+                            INTERMediator.startFrom = INTERMediator.startFrom - INTERMediator.pagedSize;
+                            if (INTERMediator.startFrom < 0) {
+                                INTERMediator.startFrom = 0;
+                            }
                         }
-                    }
-                    if (INTERMediator.pagedAllCount >= INTERMediator.pagedSize) {
-                        INTERMediator.construct();
+                        if (INTERMediator.pagedAllCount >= INTERMediator.pagedSize) {
+                            INTERMediator.construct();
+                        }
                     }
                     IMLibPageNavigation.navigationSetup();
-                }
-            };
+
+                    for (i = 0; i < removeNodesCapt.length; i++) {
+                        IMLibContextPool.removeRecordFromPool(removeNodesCapt[i]);
+                    }
+                    IMLibCalc.recalculation();
+                    INTERMediatorOnPage.hideProgress();
+                    INTERMediator.flushMessage();
+                };
+            })();
             if (foreignField != '' && currentContext['portal'] == true) {
                 INTERMediator_DBAdapter.db_update_async({
-                    name: targetName,
-                    conditions: [
-                        {field: keyField, operator: '=', value: keyValue}
-                    ],
-                    dataset: [
-                        {
-                            field: '-delete.related',
-                            operator: '=',
-                            value: foreignField.replace('\:\:-recid', '') + '.' + foreignValue
-                        }
-                    ]
-                }, successProc, null);
+                        name: targetName,
+                        conditions: [
+                            {field: keyField, operator: '=', value: keyValue}
+                        ],
+                        dataset: [
+                            {
+                                field: '-delete.related',
+                                operator: '=',
+                                value: foreignField.replace('\:\:-recid', '') + '.' + foreignValue
+                            }
+                        ]
+                    },
+                    function () {
+                        INTERMediator.constructMain();
+                    },
+                    null);
             } else {
                 INTERMediator_DBAdapter.db_delete_async({
-                    name: targetName,
-                    conditions: [
-                        {field: keyField, operator: '=', value: keyValue}
-                    ]
-                }, successProc, null);
+                        name: targetName,
+                        conditions: [
+                            {field: keyField, operator: '=', value: keyValue}
+                        ]
+                    },
+                    (function () {
+                        var removeNodesCapt = removeNodes;
+                        var currentContextCapt = currentContext;
+                        return function () {
+                            if (currentContextCapt['relation'] == true) {
+                                INTERMediator.pagedAllCount--;
+                                if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
+                                    INTERMediator.startFrom = INTERMediator.startFrom - INTERMediator.pagedSize;
+                                    if (INTERMediator.startFrom < 0) {
+                                        INTERMediator.startFrom = 0;
+                                    }
+                                }
+                                if (INTERMediator.pagedAllCount >= INTERMediator.pagedSize) {
+                                    INTERMediator.construct();
+                                }
+                            }
+                            IMLibPageNavigation.navigationSetup();
+
+                            for (i = 0; i < removeNodesCapt.length; i++) {
+                                IMLibContextPool.removeRecordFromPool(removeNodesCapt[i]);
+                            }
+                            IMLibCalc.recalculation();
+                            INTERMediatorOnPage.hideProgress();
+                            INTERMediator.flushMessage();
+                        };
+                    })(),
+                    null
+                );
             }
 
         } catch (ex) {
@@ -640,19 +683,12 @@ var IMLibUI = {
                 INTERMediator.setErrorMessage(ex, 'EXCEPTION-3');
             }
         }
-        for (i = 0; i < removeNodes.length; i++) {
-            IMLibContextPool.removeRecordFromPool(removeNodes[i]);
-        }
-
-        IMLibCalc.recalculation();
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
     },
 
-    insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
+    insertButton: function (currentObj, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
         var currentContext, recordSet, index, relationDef, targetRecord, portalField,
             targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet,
-            newRecord, portalRowNum, recId, maxRecId, finishFunction;
+            newRecord, portalRowNum, recId, maxRecId, finishFunction, targetName;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
@@ -660,7 +696,8 @@ var IMLibUI = {
             }
         }
         INTERMediatorOnPage.showProgress();
-        currentContext = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', targetName);
+        targetName = currentObj.contextName;
+        currentContext = currentObj.getContextDef();
         recordSet = [];
         relatedRecordSet = [];
         if (foreignValues != null) {
@@ -768,80 +805,45 @@ var IMLibUI = {
                 ],
                 dataset: relatedRecordSet
             });
+            INTERMediator.constructMain();
+            /*
+             targetRecord = INTERMediator_DBAdapter.db_query(
+             {
+             name: targetName,
+             records: 1,
+             conditions: [
+             {
+             field: currentContext['key'] ? currentContext['key'] : '-recid',
+             operator: '=',
+             value: keyValue
+             }
+             ]
+             }
+             );
 
-            targetRecord = INTERMediator_DBAdapter.db_query(
-                {
-                    name: targetName,
-                    records: 1,
-                    conditions: [
-                        {
-                            field: currentContext['key'] ? currentContext['key'] : '-recid',
-                            operator: '=',
-                            value: keyValue
-                        }
-                    ]
-                }
-            );
-
-            newRecord = {};
-            maxRecId = -1;
-            for (portalRowNum in targetRecord['recordset'][0]) {
-                if (portalRowNum == Number(portalRowNum)
-                    && targetRecord['recordset'][0][portalRowNum][targetName + '::-recid']) {
-                    recId = parseInt(targetRecord['recordset'][0][portalRowNum][targetName + '::-recid'], 10);
-                    if (recId > maxRecId) {
-                        maxRecId = recId;
-                        newRecord.recordset = [];
-                        newRecord.recordset.push(targetRecord['recordset'][0][portalRowNum]);
-                    }
-                }
-            }
-            finishFunction = generateAfterInsertRecordFunc(
-                targetName, currentContext, updateNodes, foreignValues, existRelated);
-            targetRecord.newRecordKeyValue = maxRecId;
-            targetRecord.dbresult = targetRecord.recordset;
-            finishFunction(targetRecord);
+             newRecord = {};
+             maxRecId = -1;
+             for (portalRowNum in targetRecord['recordset'][0]) {
+             if (portalRowNum == Number(portalRowNum)
+             && targetRecord['recordset'][0][portalRowNum][targetName + '::-recid']) {
+             recId = parseInt(targetRecord['recordset'][0][portalRowNum][targetName + '::-recid'], 10);
+             if (recId > maxRecId) {
+             maxRecId = recId;
+             newRecord.recordset = [];
+             newRecord.recordset.push(targetRecord['recordset'][0][portalRowNum]);
+             }
+             }
+             }
+             finishFunction = generateAfterInsertRecordFunc(
+             targetName, currentContext, updateNodes, foreignValues, existRelated);
+             targetRecord.newRecordKeyValue = maxRecId;
+             targetRecord.dbresult = null;
+             finishFunction(targetRecord);
+             */
         } else {
             INTERMediator_DBAdapter.db_createRecord_async(
                 {name: targetName, dataset: recordSet},
                 generateAfterInsertRecordFunc(targetName, currentContext, updateNodes, foreignValues, existRelated),
-                // (function () {
-                //     var currentContextCapt = currentContext;
-                //     var updateNodesCapt = updateNodes;
-                //     var foreignValuesCapt = foreignValues;
-                //     var existRelatedCapt = existRelated;
-                //     var keyValueCapt = keyValue;
-                //     return function (result) {
-                //         var keyField, newRecordId, associatedContext, conditions, createdRecord,
-                //             i, sameOriginContexts;
-                //         newRecordId = result.newRecordKeyValue;
-                //         keyField = currentContextCapt['key'] ? currentContextCapt['key'] : '-recid';
-                //         associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt);
-                //         if (associatedContext) {
-                //             associatedContext.foreignValue = foreignValuesCapt;
-                //             if (currentContextCapt['portal'] == true && existRelatedCapt == false) {
-                //                 conditions = INTERMediator.additionalCondition;
-                //                 conditions[targetName] = {
-                //                     field: keyField,
-                //                     operator: '=',
-                //                     value: keyValueCapt
-                //                 };
-                //                 INTERMediator.additionalCondition = conditions;
-                //             }
-                //             createdRecord = [{}];
-                //             createdRecord[0][keyField] = newRecordId;
-                //             INTERMediator.constructMain(associatedContext, result.dbresult);
-                //             sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(
-                //                 associatedContext.viewName);
-                //             for (i = 0; i < sameOriginContexts.length; i++) {
-                //                 INTERMediator.constructMain(sameOriginContexts[i], null);
-                //             }
-                //         }
-                //         IMLibCalc.recalculation();
-                //         INTERMediatorOnPage.hideProgress();
-                //         INTERMediator.flushMessage();
-                //     };
-                // })(),
                 function () {
                     INTERMediator.setErrorMessage('Insert Error', 'EXCEPTION-4');
                 }
@@ -876,8 +878,7 @@ var IMLibUI = {
                     createdRecord = [{}];
                     createdRecord[0][keyField] = newRecordId;
                     INTERMediator.constructMain(associatedContext, result.dbresult);
-                    sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(
-                        associatedContext.viewName);
+                    sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(associatedContext);
                     for (i = 0; i < sameOriginContexts.length; i++) {
                         INTERMediator.constructMain(sameOriginContexts[i], null);
                     }

@@ -779,7 +779,7 @@ var INTERMediator = {
                         contextObj.nullAcceptable = targetRecords.nullAcceptable;
                         isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false);
                         expandRepeaters(contextObj, enclosureNode, targetRecords);
-                        setupInsertButton(currentContextDef, keyValue, enclosureNode, contextObj.foreignValue);
+                        setupInsertButton(contextObj, keyValue, enclosureNode, contextObj.foreignValue);
                         setupBackNaviButton(contextObj, enclosureNode);
                         callbackForEnclosure(currentContextDef, enclosureNode);
                     } else {
@@ -1842,12 +1842,13 @@ var INTERMediator = {
         /* --------------------------------------------------------------------
 
          */
-        function setupInsertButton(currentContextDef, keyValue, node, relationValue) {
+        function setupInsertButton(currentContext, keyValue, node, relationValue) {
             var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
                 firstLevelNodes, targetNodeTag, existingButtons, keyField, thisId, encNodeTag,
-                buttonName, setTop;
+                buttonName, setTop, currentContextDef;
 
             encNodeTag = node.tagName;
+            currentContextDef = currentContext.getContextDef();
             if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
                 if (relationValue.length > 0 || !currentContextDef['paging'] || currentContextDef['paging'] === false) {
                     buttonNode = document.createElement('BUTTON');
@@ -1931,7 +1932,14 @@ var INTERMediator = {
                     insertJSFunction = function (a, b, c, d, e) {
                         var contextName = a, relationValue = b, nodeId = c, removeNodes = d, confirming = e;
                         return function () {
-                            IMLibUI.insertButton(contextName, keyValue, relationValue, nodeId, removeNodes, confirming);
+                            IMLibUI.insertButton(
+                                currentContext,
+                                keyValue,
+                                relationValue,
+                                nodeId,
+                                removeNodes,
+                                confirming
+                            );
                         };
                     };
 
