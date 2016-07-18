@@ -1428,13 +1428,15 @@ var INTERMediator = {
 
                     targetRecords = {};
                     if (Boolean(currentContextDef.portal) === true) {
-                        portal = currentContextDef['currentrecord'][0][currentContextDef['name']];
-                        for (recId in portal) {
-                            if (portal.hasOwnProperty(recId) && isFinite(recId)) {
-                                recordset.push(portal[recId]);
+                        if(currentContextDef['currentrecord'][0][currentContextDef['name']]) {
+                            portal = currentContextDef['currentrecord'][0][currentContextDef['name']];
+                            for (recId in portal) {
+                                if (portal.hasOwnProperty(recId) && isFinite(recId)) {
+                                    recordset.push(portal[recId]);
+                                }
                             }
+                            targetRecords.recordset = recordset;
                         }
-                        targetRecords.recordset = recordset;
                     } else {
                         targetRecords = INTERMediator_DBAdapter.db_query({
                             'name': currentContextDef['name'],
