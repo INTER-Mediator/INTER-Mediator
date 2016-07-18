@@ -233,14 +233,14 @@ var IMLibContextPool = {
 
     removeRecordFromPool: function (repeaterIdValue) {
         var i, j, field, nodeIds = [], targetKeying, targetKeyingObj, parentKeying, relatedId, idValue, delNodes,
-            contextAndKey, sameOriginContexts;
+            contextAndKey, sameOriginContexts, countDeleteNodes;
 
         contextAndKey = getContextAndKeyFromId(repeaterIdValue);
         if (contextAndKey == null) {
             return;
         }
-        sameOriginContexts = this.getContextsWithSameOrigin(contextAndKey.context.sourceName);
-        sameOriginContexts.push(contextAndKey.context);
+        sameOriginContexts = this.getContextsWithSameOrigin(contextAndKey.context);
+        //sameOriginContexts.push(contextAndKey.context);
         targetKeying = contextAndKey.key;
         //targetKeyingObj = contextAndKey.context.binding[targetKeying];
 
@@ -281,11 +281,14 @@ var IMLibContextPool = {
             delete sameOriginContexts[i].binding[targetKeying];
             delete sameOriginContexts[i].store[targetKeying];
         }
+        countDeleteNodes = delNodes.length;
         IMLibElement.deleteNodes(delNodes);
 
         this.poolingContexts = this.poolingContexts.filter(function (context) {
             return nodeIds.indexOf(context.enclosureNode.id) < 0;
         });
+
+        return countDeleteNodes;
 
         // Private functions
         function getContextAndKeyFromId(repeaterIdValue) {
@@ -308,7 +311,10 @@ var IMLibContextPool = {
                                     for (foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
                                         for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey].length; j++) {
                                             if (repeaterIdValue == IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey][j].id) {
-                                                return ({context: IMLibContextPool.poolingContexts[i], key: '-recid=' + foreignKey});
+                                                return ({
+                                                    context: IMLibContextPool.poolingContexts[i],
+                                                    key: '-recid=' + foreignKey
+                                                });
                                             }
                                         }
                                     }
@@ -322,12 +328,23 @@ var IMLibContextPool = {
         }
     },
 
-    getContextsWithSameOrigin: function (vName) {
-        var i, contexts = [];
+    getContextsWithSameOrigin: function (originalContext) {
+        var i, contexts = [], contextDef, isPortal = false;
 
+        contextDef = IMLibContextPool.getContextDef(originalContext.contextName);
+        if (contextDef && contextDef['relation']) {
+            for (i in contextDef['relation']) {
+                if (contextDef['relation'].hasOwnProperty(i) && contextDef['relation'][i]['portal']) {
+                    isPortal = true;
+                    break;
+                }
+            }
+        }
         for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
-            if (IMLibContextPool.poolingContexts[i].sourceName == vName) {
-                contexts.push(IMLibContextPool.poolingContexts[i]);
+            if (IMLibContextPool.poolingContexts[i].sourceName == originalContext.sourceName) {
+                if (!isPortal || originalContext.parentContext != IMLibContextPool.poolingContexts[i]) {
+                    contexts.push(IMLibContextPool.poolingContexts[i]);
+                }
             }
         }
         return contexts;
@@ -413,6 +430,57 @@ var IMLibContextPool = {
 
     getContextDef: function (contextName) {
         return INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', contextName);
+    },
+
+    getContextFromNodeId: function(nodeId)  {
+        var i, context, contextDef, rKey, fKey, pKey, isPortal, bindInfo;
+        if (!this.poolingContexts) {
+            return null;
+        }
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            context = this.poolingContexts[i];
+            contextDef = context.getContextDef();
+            isPortal = false;
+            if (contextDef['relation']) {
+                for (rKey in contextDef['relation'])   {
+                    if (contextDef['relation'][rKey][portal])   {
+                        isPortal = true;
+                    }
+                }
+            }
+            for (rKey in context.binding)   {
+                for (fKey in context.binding[rKey])   {
+                    if (isPortal)   {
+                        for (pKey in context.binding[rKey][fKey])   {
+                            bindInfo = context.binding[rKey][fKey][pKey];
+                            if (bindInfo.nodeId == nodeId)  {
+                                return context;
+                            }
+                        }
+                    } else {
+                        bindInfo = context.binding[rKey][fKey];
+                        if (bindInfo.nodeId == nodeId)  {
+                            return context;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    },
+
+    getContextFromEnclosureNode: function(enclosureNode)  {
+        var i, context;
+        if (!this.poolingContexts) {
+            return null;
+        }
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            context = this.poolingContexts[i];
+            if (context.enclosureNode == enclosureNode) {
+                return context;
+            }
+        }
+        return null;
     }
 };
 
@@ -476,6 +544,10 @@ var IMLibContext = function (contextName) {
 
     this.setContextName = function (name) {
         this.contextName = name;
+    };
+
+    this.getContextDef = function () {
+        return INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', this.contextName);
     };
 
     this.setTableName = function (name) {
