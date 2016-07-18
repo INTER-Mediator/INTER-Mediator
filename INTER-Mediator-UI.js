@@ -652,7 +652,7 @@ var IMLibUI = {
     insertButton: function (targetName, keyValue, foreignValues, updateNodes, removeNodes, isConfirm) {
         var currentContext, recordSet, index, relationDef, targetRecord, portalField,
             targetPortalField, targetPortalValue, existRelated = false, relatedRecordSet,
-            newRecord, portalRowNum, recId, maxRecId;
+            newRecord, portalRowNum, recId, maxRecId, finishFunction;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
@@ -796,7 +796,11 @@ var IMLibUI = {
                     }
                 }
             }
-            generateAfterInsertRecordFunc(targetName, currentContext, updateNodes, foreignValues, existRelated)();
+            finishFunction = generateAfterInsertRecordFunc(
+                targetName, currentContext, updateNodes, foreignValues, existRelated);
+            targetRecord.newRecordKeyValue = maxRecId;
+            targetRecord.dbresult = targetRecord.recordset;
+            finishFunction(targetRecord);
         } else {
             INTERMediator_DBAdapter.db_createRecord_async(
                 {name: targetName, dataset: recordSet},
