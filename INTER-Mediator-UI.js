@@ -796,51 +796,92 @@ var IMLibUI = {
                     }
                 }
             }
+            generateAfterInsertRecordFunc(targetName, currentContext, updateNodes, foreignValues, existRelated)();
         } else {
             INTERMediator_DBAdapter.db_createRecord_async(
                 {name: targetName, dataset: recordSet},
-                (function () {
-                    var currentContextCapt = currentContext;
-                    var updateNodesCapt = updateNodes;
-                    var foreignValuesCapt = foreignValues;
-                    var existRelatedCapt = existRelated;
-                    var keyValueCapt = keyValue;
-                    return function (result) {
-                        var keyField, newRecordId, associatedContext, conditions, createdRecord,
-                            i, sameOriginContexts;
-                        newRecordId = result.newRecordKeyValue;
-                        keyField = currentContextCapt['key'] ? currentContextCapt['key'] : '-recid';
-                        associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt);
-                        if (associatedContext) {
-                            associatedContext.foreignValue = foreignValuesCapt;
-                            if (currentContextCapt['portal'] == true && existRelatedCapt == false) {
-                                conditions = INTERMediator.additionalCondition;
-                                conditions[targetName] = {
-                                    field: keyField,
-                                    operator: '=',
-                                    value: keyValueCapt
-                                };
-                                INTERMediator.additionalCondition = conditions;
-                            }
-                            createdRecord = [{}];
-                            createdRecord[0][keyField] = newRecordId;
-                            INTERMediator.constructMain(associatedContext, result.dbresult);
-                            sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(
-                                associatedContext.viewName);
-                            for (i = 0; i < sameOriginContexts.length; i++) {
-                                INTERMediator.constructMain(sameOriginContexts[i], null);
-                            }
-                        }
-                        IMLibCalc.recalculation();
-                        INTERMediatorOnPage.hideProgress();
-                        INTERMediator.flushMessage();
-                    };
-                })(),
+                generateAfterInsertRecordFunc(targetName, currentContext, updateNodes, foreignValues, existRelated),
+                // (function () {
+                //     var currentContextCapt = currentContext;
+                //     var updateNodesCapt = updateNodes;
+                //     var foreignValuesCapt = foreignValues;
+                //     var existRelatedCapt = existRelated;
+                //     var keyValueCapt = keyValue;
+                //     return function (result) {
+                //         var keyField, newRecordId, associatedContext, conditions, createdRecord,
+                //             i, sameOriginContexts;
+                //         newRecordId = result.newRecordKeyValue;
+                //         keyField = currentContextCapt['key'] ? currentContextCapt['key'] : '-recid';
+                //         associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt);
+                //         if (associatedContext) {
+                //             associatedContext.foreignValue = foreignValuesCapt;
+                //             if (currentContextCapt['portal'] == true && existRelatedCapt == false) {
+                //                 conditions = INTERMediator.additionalCondition;
+                //                 conditions[targetName] = {
+                //                     field: keyField,
+                //                     operator: '=',
+                //                     value: keyValueCapt
+                //                 };
+                //                 INTERMediator.additionalCondition = conditions;
+                //             }
+                //             createdRecord = [{}];
+                //             createdRecord[0][keyField] = newRecordId;
+                //             INTERMediator.constructMain(associatedContext, result.dbresult);
+                //             sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(
+                //                 associatedContext.viewName);
+                //             for (i = 0; i < sameOriginContexts.length; i++) {
+                //                 INTERMediator.constructMain(sameOriginContexts[i], null);
+                //             }
+                //         }
+                //         IMLibCalc.recalculation();
+                //         INTERMediatorOnPage.hideProgress();
+                //         INTERMediator.flushMessage();
+                //     };
+                // })(),
                 function () {
                     INTERMediator.setErrorMessage('Insert Error', 'EXCEPTION-4');
                 }
             );
 
+        }
+
+        function generateAfterInsertRecordFunc(targetName, currentContext, updateNodes, foreignValues, existRelated) {
+            var targetNameCapt = targetName;
+            var currentContextCapt = currentContext;
+            var updateNodesCapt = updateNodes;
+            var foreignValuesCapt = foreignValues;
+            var existRelatedCapt = existRelated;
+            var keyValueCapt = keyValue;
+            return function (result) {
+                var keyField, newRecordId, associatedContext, conditions, createdRecord,
+                    i, sameOriginContexts;
+                newRecordId = result.newRecordKeyValue;
+                keyField = currentContextCapt['key'] ? currentContextCapt['key'] : '-recid';
+                associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt);
+                if (associatedContext) {
+                    associatedContext.foreignValue = foreignValuesCapt;
+                    if (currentContextCapt['portal'] == true && existRelatedCapt == false) {
+                        conditions = INTERMediator.additionalCondition;
+                        conditions[targetNameCapt] = {
+                            field: keyField,
+                            operator: '=',
+                            value: keyValueCapt
+                        };
+                        INTERMediator.additionalCondition = conditions;
+                    }
+                    createdRecord = [{}];
+                    createdRecord[0][keyField] = newRecordId;
+                    INTERMediator.constructMain(associatedContext, result.dbresult);
+                    sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(
+                        associatedContext.viewName);
+                    for (i = 0; i < sameOriginContexts.length; i++) {
+                        INTERMediator.constructMain(sameOriginContexts[i], null);
+                    }
+                }
+                IMLibCalc.recalculation();
+                INTERMediatorOnPage.hideProgress();
+                INTERMediator.flushMessage();
+            };
         }
     },
 
