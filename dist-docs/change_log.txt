@@ -64,6 +64,8 @@ Ver.5.4 (in release candidate)
   using DataConverter classes.
 - [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server in some
   cases (Thanks to Kiyonori Ito).
+- [BUG FIX] Fix showing portal records when using portal access mode for FileMaker Server after
+  deleting a related record. The affected version is 5.3 only.
 - [BUG FIX] Fix to be accumulated cross table conditions on a page.
 - [BUG FIX] Calculated property's fields weren't handled as existing fields and show errors.
 - [BUG FIX] In case of the keyed value is just 0, the id attribute wasn't assigned to each element.
