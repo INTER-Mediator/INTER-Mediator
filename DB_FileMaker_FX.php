@@ -939,7 +939,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                                     $relatedfield['data']
                                                 );
                                             }
-                                            $tableOccurrence = explode('::', $relatedFieldName)[0];
+                                            $fullyQualifiedFieldName = explode('::', $relatedFieldName);
+                                            $tableOccurrence = $fullyQualifiedFieldName[0];
                                             if (!isset($relatedArray[$tableOccurrence][$recId])) {
                                                 $relatedArray[$tableOccurrence][$recId] = array(
                                                     '-recid' => $record['@attributes']['record-id'],
