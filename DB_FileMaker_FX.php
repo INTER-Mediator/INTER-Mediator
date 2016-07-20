@@ -910,6 +910,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         if (isset($record['relatedset']['record'])) {
                             $record['relatedset'] = array($record['relatedset']);
                         }
+                        $relatedArray = array();
                         foreach ($record['relatedset'] as $relatedset) {
                             if (isset($relatedset['record'])) {
                                 $relRecords = $relatedset['record'];
@@ -941,10 +942,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                             }
                                             $tableOccurrence = explode('::', $relatedFieldName)[0];
                                             if (!isset($relatedArray[$tableOccurrence][$recId])) {
-                                                $relatedArray[$tableOccurrence][$recId] = array(
-                                                    '-recid' => $record['@attributes']['record-id'],
-                                                    $tableOccurrence . '::-recid' => $recId
-                                                );
+//                                                $relatedArray[$tableOccurrence][$recId] = array(
+//                                                    '-recid' => $record['@attributes']['record-id'],
+//                                                    $tableOccurrence . '::-recid' => $recId
+//                                                );
+                                                $relatedArray[$tableOccurrence][$recId] = array('-recid' => $recId);
                                             }
                                             $relatedArray[$tableOccurrence][$recId] += array(
                                                 $relatedFieldName => $relatedFieldValue

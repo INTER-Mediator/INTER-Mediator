@@ -18,7 +18,7 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-            'records' => 1,
+            'records' => 2,
             'paging' => true,
             'name' => 'person_layout',
             'repeat-control' => 'confirm-delete confirm-insert',
@@ -67,5 +67,5 @@ IM_Entry(
         ),
     ),
     array('db-class' => 'FileMaker_FX'),
-    false
+    2
 );
