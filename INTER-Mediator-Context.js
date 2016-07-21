@@ -586,10 +586,11 @@ var IMLibContext = function (contextName) {
                         var nodeInfoCapt = nodeInfo;
                         var idValueCapt = idValue;
                         return function (result) {
-                            var initialvalue, newValue, isOthersModified, currentFieldVal;
+                            var dbresult = {}, initialvalue, newValue, isOthersModified, currentFieldVal;
                             if (targetContextCapt.isPortal) {
+                                dbresult['-recid=' + keyingValue] = result.dbresult[0];
                                 recordset = targetContextCapt.getPortalRecordsetImpl(
-                                    result.dbresult,
+                                    dbresult,
                                     targetContextCapt.potalContainingRecordKV,
                                     targetContextCapt.contextName);
                             } else {
@@ -605,8 +606,18 @@ var IMLibContext = function (contextName) {
                                     return;
                                 }
                             }
-                            currentFieldVal = recordset[0][targetFieldCapt];
-                            initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt);
+                            if (targetContextCapt.isPortal) {
+                                for (var i = 0; i < recordset.length; i++) {
+                                    if (recordset[i]['-recid'] === contextInfo['record'].split('=')[1]) {
+                                        currentFieldVal = recordset[i][targetFieldCapt];
+                                        break;
+                                    }
+                                }
+                                initialvalue = targetContextCapt.getValue(Object.keys(parentContext.store)[0], targetFieldCapt, '-recid=' + recordset[i]['-recid']);
+                            } else {
+                                currentFieldVal = recordset[0][targetFieldCapt];
+                                initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt);
+                            }
                             isOthersModified = (initialvalue != currentFieldVal);
                             if (changedObjectCapt.tagName == 'INPUT' &&
                                 changedObjectCapt.getAttribute('type') == 'checkbox') {
@@ -631,20 +642,37 @@ var IMLibContext = function (contextName) {
                             if (newValue != null) {
                                 var criteria = contextInfo.record.split('=');
                                 INTERMediatorOnPage.retrieveAuthInfo();
-                                INTERMediator_DBAdapter.db_update_async(
-                                    {
-                                        name: contextInfo.context.contextName,
-                                        conditions: [{field: criteria[0], operator: '=', value: criteria[1]}],
-                                        dataset: [
-                                            {
-                                                field: contextInfo.field + (contextInfo.portal ? ('.' + contextInfo.portal) : ''),
-                                                value: newValue
-                                            }
-                                        ]
-                                    },
-                                    succeedProc,
-                                    errorProc
-                                );
+                                if (targetContextCapt.isPortal) {
+                                    INTERMediator_DBAdapter.db_update_async(
+                                        {
+                                            name: parentContext.contextName,
+                                            conditions: [{field: '-recid', operator: '=', value: Object.keys(parentContext.store)[0].split('=')[1]}],
+                                            dataset: [
+                                                {
+                                                    field: contextInfo.field + (criteria[1] ? ('.' + criteria[1]) : ''),
+                                                    value: newValue
+                                                }
+                                            ]
+                                        },
+                                        succeedProc,
+                                        errorProc
+                                    );
+                                } else {
+                                    INTERMediator_DBAdapter.db_update_async(
+                                        {
+                                            name: contextInfo.context.contextName,
+                                            conditions: [{field: criteria[0], operator: '=', value: criteria[1]}],
+                                            dataset: [
+                                                {
+                                                    field: contextInfo.field,
+                                                    value: newValue
+                                                }
+                                            ]
+                                        },
+                                        succeedProc,
+                                        errorProc
+                                    );
+                                }
                             }
                         };
                     })(),
@@ -707,9 +735,9 @@ var IMLibContext = function (contextName) {
             count = 0;
             recordset = [];
             if (store[index] &&
-                store[index]["0"] &&
-                store[index]["0"][this.contextName]) {
-                result = store[index]["0"][contextName];
+                store[index]['0'] &&
+                store[index]['0'][this.contextName]) {
+                result = store[index]['0'][contextName];
                 for (recId in result) {
                     if (result.hasOwnProperty(recId) && isFinite(recId)) {
                         recordset.push(result[recId]);
@@ -1180,8 +1208,7 @@ var IMLibContext = function (contextName) {
             var value;
             try {
                 if (portal) {
-                    // value = this.store[recKey][key][portal];
-                    value = this.store[recKey][key];
+                    value = this.store[portal][key];
                 } else {
                     value = this.store[recKey][key];
                 }
@@ -1192,11 +1219,12 @@ var IMLibContext = function (contextName) {
         };
 
         this.isValueUndefined = function (recKey, key, portal) {
-            var value;
+            var value, tableOccurence, relatedRecId;
             try {
                 if (portal) {
-                    // value = this.store[recKey][key][portal];
-                    value = this.store[recKey][key];
+                    tableOccurence = key.split('::')[0];
+                    relatedRecId = portal.split('=')[1];
+                    value = this.store[recKey][0][tableOccurence][relatedRecId][key];
                 } else {
                     value = this.store[recKey][key];
                 }

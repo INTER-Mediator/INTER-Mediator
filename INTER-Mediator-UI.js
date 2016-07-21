@@ -43,7 +43,7 @@ var IMLibUI = {
      if validation is succeed or not.
      */
     valueChange: function (idValue, validationOnly) {
-        var changedObj, objType, i, newValue, criteria, linkInfo, nodeInfo, contextInfo, parentContext,
+        var changedObj, objType, i, newValue, result, linkInfo, nodeInfo, contextInfo, parentContext,
             keyingComp, keyingField, keyingValue, targetField, targetContext, targetNode, targetSpec;
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
@@ -124,7 +124,13 @@ var IMLibUI = {
             return false;
         }
         newValue = IMLibElement.getValueFromIMNode(changedObj);
-        if (contextInfo.context.isValueUndefined(contextInfo.record, contextInfo.field, contextInfo.portal)) {
+        parentContext = contextInfo.context.parentContext;
+        if (parentContext) {
+            result = parentContext.isValueUndefined(Object.keys(parentContext.store)[0], contextInfo.field, contextInfo.record)
+        } else {
+            result = contextInfo.context.isValueUndefined(contextInfo.record, contextInfo.field, false)
+        }
+        if (result) {
             INTERMediator.setErrorMessage('Error in updating.',
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1040],
@@ -408,7 +414,10 @@ var IMLibUI = {
                         ]
                     },
                     function () {
-                        INTERMediator.constructMain();
+                        IMLibElement.deleteNodes(removeNodes);
+                        IMLibCalc.recalculation();
+                        INTERMediatorOnPage.hideProgress();
+                        INTERMediator.flushMessage();
                     },
                     null);
             } else {
@@ -577,12 +586,12 @@ var IMLibUI = {
             }
 
             INTERMediator_DBAdapter.db_update({
-                name: targetName,
+                name: currentObj.parentContext.contextName,
                 conditions: [
                     {
                         field: currentContext['key'] ? currentContext['key'] : '-recid',
                         operator: '=',
-                        value: keyValue
+                        value: foreignValues.id
                     }
                 ],
                 dataset: relatedRecordSet
