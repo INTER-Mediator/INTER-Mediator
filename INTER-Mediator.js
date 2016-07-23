@@ -1088,6 +1088,7 @@ var INTERMediator = {
                 repeatersOneRec = cloneEveryNodes(repeatersOriginal);
                 linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
                 keyField = contextObj.getKeyField();
+                shouldDeleteNodes = [];
                 for (i = 0; i < repeatersOneRec.length; i++) {
                     setIdValue(repeatersOneRec[i]);
                     shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
