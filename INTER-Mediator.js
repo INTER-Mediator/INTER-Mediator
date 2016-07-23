@@ -881,31 +881,18 @@ var INTERMediator = {
         /** --------------------------------------------------------------------
          * Set the value to node and context.
          */
-        function setupLinkedNode(repeatersOneRec, linkedElements, contextObj, targetRecordset, ix) {
-            var currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef,
-                j, keyField, usePortal = false, foreignField, foreignValue, foreignFieldValue, keyValue, keyingValue,
-                k, nodeId, curVal, replacedNode, typeAttr, children, wInfo, nameTable,
-                idValuesForFieldName = {}, shouldDeleteNodes = [],
+        function setupLinkedNode(repeatersOneRec, linkedElements, contextObj, targetRecordset, ix, keyingValue) {
+            var currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, keyValue, k, nodeId,
+                curVal, replacedNode, typeAttr, children, wInfo, nameTable,
+                idValuesForFieldName = {},
                 nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget;
 
             currentContextDef = contextObj.getContextDef();
             try {
                 currentWidgetNodes = linkedElements.widgetNode;
                 currentLinkedNodes = linkedElements.linkedNode;
-                for (i = 0; i < repeatersOneRec.length; i++) {
-                    setIdValue(repeatersOneRec[i]);
-                    shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
-                }
                 keyField = contextObj.getKeyField();
                 if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
-                    keyValue = targetRecordset[ix][keyField];
-                    if (keyField && !keyValue) {
-                        //INTERMediator.setErrorMessage('The value of the key field is null.',
-                        //    'This No.['+ix+'] record will should be ignored.');
-                        keyValue = ix;
-                    }
-                    keyingValue = keyField + '=' + keyValue;
-
                     for (k = 0; k < currentLinkedNodes.length; k++) {
                         // for each linked element
                         nodeId = currentLinkedNodes[k].getAttribute('id');
@@ -1050,15 +1037,8 @@ var INTERMediator = {
             // }
 
             return {
-                'keyField': keyField,
-                'keyValue': keyValue,
-                // 'foreignField': foreignField,
-                // 'foreignValue': foreignValue,
-                // 'foreignFieldValue': foreignFieldValue,
-                'shouldDeleteNodes': shouldDeleteNodes,
                 'isContext': isContext,
-                'idValuesForFieldName': idValuesForFieldName,
-                'keyingValue': keyingValue
+                'idValuesForFieldName': idValuesForFieldName
             };
         }
 
@@ -1068,7 +1048,8 @@ var INTERMediator = {
         function expandRepeaters(contextObj, node, targetRecords) {
             var newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
                 repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
-                insertNode, countRecord, setupResult, linkedElements;
+                insertNode, countRecord, setupResult, linkedElements, keyingValue, keyField, keyValue,
+                shouldDeleteNodes=[];
 
             encNodeTag = node.tagName;
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -1106,23 +1087,36 @@ var INTERMediator = {
             for (ix = 0; ix < countRecord; ix++) { // for each record
                 repeatersOneRec = cloneEveryNodes(repeatersOriginal);
                 linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
-                setupResult = setupLinkedNode(repeatersOneRec, linkedElements, contextObj, targetRecordset, ix);
+                keyField = contextObj.getKeyField();
+                for (i = 0; i < repeatersOneRec.length; i++) {
+                    setIdValue(repeatersOneRec[i]);
+                    shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
+                }
+                if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
+                    keyValue = targetRecordset[ix][keyField];
+                    if (keyField && !keyValue) {
+                        //INTERMediator.setErrorMessage('The value of the key field is null.',
+                        //    'This No.['+ix+'] record will should be ignored.');
+                        keyValue = ix;
+                    }
+                    keyingValue = keyField + '=' + keyValue;
+                }
+                setupResult = setupLinkedNode(
+                    repeatersOneRec, linkedElements, contextObj, targetRecordset, ix, keyingValue);
                 setupDeleteButton(
                     encNodeTag,
                     repeatersOneRec,
                     contextObj,
-                    setupResult.keyField,
-                    setupResult.keyValue,
-                    setupResult.shouldDeleteNodes
+                    keyField,
+                    keyValue,
+                    shouldDeleteNodes
                 );
                 setupNavigationButton(
                     encNodeTag,
                     repeatersOneRec,
                     currentContextDef,
-                    setupResult.keyField,
-                    setupResult.keyValue,
-                    setupResult.foreignField,
-                    setupResult.foreignValue
+                    keyField,
+                    keyValue
                 );
                 setupCopyButton(
                     encNodeTag,
@@ -1160,7 +1154,7 @@ var INTERMediator = {
                                 setIdValue(newNode);
                             }                   // ##########################################
                             contextObj.setValue(
-                                setupResult.keyingValue, '_im_repeater', '', newNode.id, '', currentContextDef.portal);
+                                keyingValue, '_im_repeater', '', newNode.id, '', currentContextDef.portal);
                             //setupResult.idValuesForFieldName[nInfo['field']] = nodeId; // #### Is this irrelevant?
                             seekEnclosureNode(newNode, targetRecordset[ix], setupResult.idValuesForFieldName, contextObj);
                         }
