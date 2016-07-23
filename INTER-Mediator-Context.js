@@ -1189,13 +1189,15 @@ var IMLibContext = function (contextName) {
                 }
                 if (key != undefined && key != null) {
                     if (portal) {
-                        this.store[recKey][key][portal] = value;
+                        //this.store[recKey][key][portal] = value;
+                        this.store[recKey][key] = value;
                     } else {
                         this.store[recKey][key] = value;
                     }
                     if (nodeId) {
                         if (portal) {
-                            this.binding[recKey][key][portal].push({id: nodeId, target: target});
+                            //this.binding[recKey][key][portal].push({id: nodeId, target: target});
+                            this.binding[recKey][key].push({id: nodeId, target: target});
                         } else {
                             this.binding[recKey][key].push({id: nodeId, target: target});
                         }
