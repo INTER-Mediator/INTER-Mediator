@@ -182,11 +182,12 @@ var IMLibElement = {
             }
         }
         if (nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') {
-            INTERMediatorLib.addEvent(element, 'blur', function (e) {
+            INTERMediatorLib.addEvent(element, 'blur', function () {
                 var idValue = element.id;
-                return (function () {
+                return (function (event) {
                     if (!IMLibUI.valueChange(idValue, true)) {
-                        element.focus();
+                        // element.focus();
+                        event.target.focus();
                     }
                 })();
             });

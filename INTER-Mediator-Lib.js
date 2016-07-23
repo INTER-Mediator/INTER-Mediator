@@ -221,7 +221,7 @@ var INTERMediatorLib = {
     isLinkedElement: function (node) {
         var classInfo, matched, attr;
 
-        if (node != null) {
+        if (node != null && node.getAttribute) {
             attr = node.getAttribute('data-im');
             if (attr) {
                 return true;
@@ -267,7 +267,7 @@ var INTERMediatorLib = {
             }
         } else {
             parentNode = node.parentNode;
-            if (!parentNode && INTERMediatorLib.getLinkedElementInfo(parentNode)) {
+            if (!parentNode && INTERMediatorLib.getLinkedElementInfoImpl(parentNode)) {
                 attr = parentNode.getAttribute('data-im-widget');
                 if (attr) {
                     return true;
@@ -382,6 +382,17 @@ var INTERMediatorLib = {
      */
 
     getLinkedElementInfo: function (node) {
+        var result = INTERMediatorLib.getLinkedElementInfoImpl(node)
+        if (result !== false)   {
+            return result;
+        }
+        if (INTERMediatorLib.isWidgetElement(node.parentNode)) {
+            return INTERMediatorLib.getLinkedElementInfo(node.parentNode);
+        }
+        return false;
+    },
+
+    getLinkedElementInfoImpl: function (node) {
         var defs = [], eachDefs, reg, i, attr, matched;
         if (INTERMediatorLib.isLinkedElement(node)) {
             attr = node.getAttribute('data-im');
