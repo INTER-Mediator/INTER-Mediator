@@ -622,8 +622,18 @@ var IMLibContext = function (contextName) {
                                     return;
                                 }
                             }
-                            currentFieldVal = recordset[0][targetFieldCapt];
-                            initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt);
+                            if (targetContextCapt.isPortal) {
+                                for (var i = 0; i < recordset.length; i++) {
+                                    if (recordset[i]['-recid'] === contextInfo['record'].split('=')[1]) {
+                                        currentFieldVal = recordset[i][targetFieldCapt];
+                                        break;
+                                    }
+                                }
+                                initialvalue = targetContextCapt.getValue(Object.keys(parentContext.store)[0], targetFieldCapt, '-recid=' + recordset[i]['-recid']);
+                            } else {
+                                currentFieldVal = recordset[0][targetFieldCapt];
+                                initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt);
+                            }
                             isOthersModified = (initialvalue != currentFieldVal);
                             if (changedObjectCapt.tagName == 'INPUT' &&
                                 changedObjectCapt.getAttribute('type') == 'checkbox') {
@@ -733,7 +743,7 @@ var IMLibContext = function (contextName) {
         };
 
         this.getPortalRecordsetImpl = function (store, contextName) {
-            var result, count, recId, recordset = {};
+            var result, count, recId, recordset;
             count = 0;
             recordset = [];
             if (store[0] && store[0][contextName]) {
@@ -1208,8 +1218,7 @@ var IMLibContext = function (contextName) {
             var value;
             try {
                 if (portal) {
-                    // value = this.store[recKey][key][portal];
-                    value = this.store[recKey][key];
+                    value = this.store[portal][key];
                 } else {
                     value = this.store[recKey][key];
                 }
@@ -1223,11 +1232,12 @@ var IMLibContext = function (contextName) {
         };
 
         this.isValueUndefined = function (recKey, key, portal) {
-            var value;
+            var value, tableOccurence, relatedRecId;
             try {
                 if (portal) {
-                    // value = this.store[recKey][key][portal];
-                    value = this.store[recKey][key];
+                    tableOccurence = key.split('::')[0];
+                    relatedRecId = portal.split('=')[1];
+                    value = this.store[recKey][0][tableOccurence][relatedRecId][key];
                 } else {
                     value = this.store[recKey][key];
                 }
