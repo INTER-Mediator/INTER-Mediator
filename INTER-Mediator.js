@@ -41,6 +41,7 @@ var INTERMediator = {
     currentEncNumber: 0,
     isIE: false,
     isTrident: false,
+    isEdge: false,
     ieVersion: -1,
     titleAsLinkInfo: true,
     classAsLinkInfo: true,
@@ -214,29 +215,33 @@ var INTERMediator = {
 
     // Detect Internet Explorer and its version.
     propertyIETridentSetup: function () {
-        var ua, msiePos, c, i;
+        var ua, position, c, i;
         ua = navigator.userAgent;
-        msiePos = ua.toLocaleUpperCase().indexOf('MSIE');
-        if (msiePos >= 0) {
+        position = ua.toLocaleUpperCase().indexOf('MSIE');
+        if (position >= 0) {
             INTERMediator.isIE = true;
-            for (i = msiePos + 4; i < ua.length; i++) {
+            for (i = position + 4; i < ua.length; i++) {
                 c = ua.charAt(i);
                 if (!(c == ' ' || c == '.' || (c >= '0' && c <= '9'))) {
-                    INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(msiePos + 4, i));
+                    INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 4, i));
                     break;
                 }
             }
         }
-        msiePos = ua.indexOf('; Trident/');
-        if (msiePos >= 0) {
+        position = ua.indexOf('; Trident/');
+        if (position >= 0) {
             INTERMediator.isTrident = true;
             for (i = msiePos + 10; i < ua.length; i++) {
                 c = ua.charAt(i);
                 if (!(c == ' ' || c == '.' || (c >= '0' && c <= '9'))) {
-                    INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(msiePos + 10, i)) + 4;
+                    INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 10, i)) + 4;
                     break;
                 }
             }
+        }
+        position = ua.toLocaleUpperCase().indexOf(' Edge/');
+        if (position >= 0) {
+             INTERMediator.isEdge = true;
         }
     },
 
@@ -992,17 +997,26 @@ var INTERMediator = {
                     if (isContext && !isInsidePostOnly &&
                         (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                         //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
-                        var changeFunction = function (a) {
-                            var id = a;
+                        var changeFunction = function (id, evt) {
                             return function () {
-                                IMLibUI.valueChange(id);
+                                if (evt === 'change' ||
+                                    (evt === 'input' && document.getElementById(id).textContent === '')) {
+                                    IMLibUI.valueChange(id);
+                                }
                             };
                         };
                         eventListenerPostAdding.push({
                             'id': nodeId,
                             'event': 'change',
-                            'todo': changeFunction(nodeId)
+                            'todo': changeFunction(nodeId, 'change')
                         });
+                        if (INTERMediator.isTrident || INTERMediator.isEdge) {
+                            eventListenerPostAdding.push({
+                                'id': nodeId,
+                                'event': 'input',
+                                'todo': changeFunction(nodeId, 'input')
+                            });
+                        }
                         if (nodeTag != 'SELECT') {
                             eventListenerPostAdding.push({
                                 'id': nodeId,
