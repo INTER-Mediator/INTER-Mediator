@@ -62,8 +62,10 @@ Ver.5.4 (in release candidate)
 - [BUG FIX] Authentication prevented in case of just specify on the second parameter of IM_Entry.
 - [BUG FIX] Fix DB_FileMaker_FX class not to throw an exception when failed to convert a value 
   using DataConverter classes.
-- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server in some
-  cases (Thanks to Kiyonori Ito).
+- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server and a
+  count of related records on the portal object is 1 (Thanks to Kiyonori Ito).
+- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server and
+  there are multiple portal objects on a layout.
 - [BUG FIX] Fix showing portal records when using portal access mode for FileMaker Server after
   deleting a related record. The affected version is 5.3 only.
 - [BUG FIX] Fix to be accumulated cross table conditions on a page.
