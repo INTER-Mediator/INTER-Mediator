@@ -692,7 +692,7 @@ var IMLibContext = function (contextName) {
                         () {
                         INTERMediatorOnPage.hideProgress();
                         INTERMediator.setErrorMessage('Error in valueChange method.', 'EXCEPTION-1');
-                        IMLibUI.changeValueLock = {};
+                        IMLibUI.clearLockInfo();
                     }
                 );
             }
