@@ -168,9 +168,10 @@ var INTERMediator = {
                 debugNode.style.backgroundColor = '#DDDDDD';
                 clearButton = document.createElement('button');
                 clearButton.setAttribute('title', 'clear');
-                INTERMediatorLib.addEvent(clearButton, 'click', function () {
+                INTERMediatorLib.addEvent(clearButton, 'click', function (e) {
                     target = document.getElementById('_im_debug_panel_4873643897897');
                     target.parentNode.removeChild(target);
+                    e.preventDefault();
                 });
                 tNode = document.createTextNode('clear');
                 clearButton.appendChild(tNode);
@@ -881,10 +882,9 @@ var INTERMediator = {
         /** --------------------------------------------------------------------
          * Set the value to node and context.
          */
-        function setupLinkedNode(repeatersOneRec, linkedElements, contextObj, targetRecordset, ix, keyingValue) {
-            var currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, keyValue, k, nodeId,
-                curVal, replacedNode, typeAttr, children, wInfo, nameTable,
-                idValuesForFieldName = {},
+        function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
+            var currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, k, nodeId,
+                curVal, replacedNode, typeAttr, children, wInfo, nameTable, idValuesForFieldName = {},
                 nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget;
 
             currentContextDef = contextObj.getContextDef();
@@ -1025,21 +1025,7 @@ var INTERMediator = {
                     }
                 }
             }
-            // if (usePortal === true) {
-            //     keyField = '-recid';
-            //     foreignField = currentContextDef['name'] + '::-recid';
-            //     foreignValue = targetRecordset[ix][foreignField];
-            //     foreignFieldValue = foreignField + '=' + foreignValue;
-            // } else {
-            //     foreignField = '';
-            //     foreignValue = '';
-            //     foreignFieldValue = '=';
-            // }
-
-            return {
-                'isContext': isContext,
-                'idValuesForFieldName': idValuesForFieldName
-            };
+            return idValuesForFieldName;
         }
 
         /** --------------------------------------------------------------------
@@ -1049,7 +1035,7 @@ var INTERMediator = {
             var newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
                 repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
                 insertNode, countRecord, setupResult, linkedElements, keyingValue, keyField, keyValue,
-                shouldDeleteNodes=[];
+                idValuesForFieldName;
 
             encNodeTag = node.tagName;
             repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
@@ -1090,41 +1076,20 @@ var INTERMediator = {
                 keyField = contextObj.getKeyField();
                 for (i = 0; i < repeatersOneRec.length; i++) {
                     setIdValue(repeatersOneRec[i]);
-                    shouldDeleteNodes.push(repeatersOneRec[i].getAttribute('id'));
                 }
                 if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
                     keyValue = targetRecordset[ix][keyField];
                     if (keyField && !keyValue) {
-                        //INTERMediator.setErrorMessage('The value of the key field is null.',
-                        //    'This No.['+ix+'] record will should be ignored.');
+                        INTERMediator.setErrorMessage('The value of the key field is null.',
+                            'This No.[' + ix + '] record should be ignored.');
                         keyValue = ix;
                     }
                     keyingValue = keyField + '=' + keyValue;
                 }
-                setupResult = setupLinkedNode(
-                    repeatersOneRec, linkedElements, contextObj, targetRecordset, ix, keyingValue);
-                setupDeleteButton(
-                    encNodeTag,
-                    repeatersOneRec,
-                    contextObj,
-                    keyField,
-                    keyValue,
-                    shouldDeleteNodes
-                );
-                setupNavigationButton(
-                    encNodeTag,
-                    repeatersOneRec,
-                    currentContextDef,
-                    keyField,
-                    keyValue
-                );
-                setupCopyButton(
-                    encNodeTag,
-                    repNodeTag,
-                    repeatersOneRec,
-                    contextObj,
-                    targetRecordset[ix]
-                );
+                idValuesForFieldName = setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue);
+                setupDeleteButton(encNodeTag, repeatersOneRec, contextObj, keyField, keyValue);
+                setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue);
+                setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix]);
 
                 if (Boolean(currentContextDef.portal) !== true ||
                     (Boolean(currentContextDef.portal) === true && targetTotalCount > 0)) {
@@ -1150,13 +1115,11 @@ var INTERMediator = {
                                 insertNode.parentNode.insertBefore(newNode, insertNode);
                             }
                             newlyAddedNodes.push(newNode);
-                            if (!newNode.id) {  // ######## Is that right with if statement?
+                            if (!newNode.id) {
                                 setIdValue(newNode);
-                            }                   // ##########################################
-                            contextObj.setValue(
-                                keyingValue, '_im_repeater', '', newNode.id, '', currentContextDef.portal);
-                            //setupResult.idValuesForFieldName[nInfo['field']] = nodeId; // #### Is this irrelevant?
-                            seekEnclosureNode(newNode, targetRecordset[ix], setupResult.idValuesForFieldName, contextObj);
+                            }
+                            contextObj.setValue(keyingValue, '_im_repeater', '', newNode.id, '', currentContextDef.portal);
+                            seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj);
                         }
                     }
                     if (ix + 1 != countRecord) {
@@ -1631,7 +1594,7 @@ var INTERMediator = {
         /* --------------------------------------------------------------------
 
          */
-        function setupDeleteButton(encNodeTag, repeaters, currentContext, keyField, keyValue, shouldDeleteNodes) {
+        function setupDeleteButton(encNodeTag, repeaters, currentContext, keyField, keyValue) {
             // Handling Delete buttons
             var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName, currentContextDef;
 
@@ -1654,16 +1617,10 @@ var INTERMediator = {
                 thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
                 buttonNode.setAttribute('id', thisId);
                 INTERMediator.buttonIdNum++;
-                deleteJSFunction = function (a, b, c, d, e) {
-                    var currentContext = a, keyField = b, keyValue = c, removeNodes = d, confirming = e;
+                deleteJSFunction = function (a, b, c, d) {
+                    var currentContext = a, keyField = b, keyValue = c, confirming = d;
                     return function () {
-                        IMLibUI.deleteButton(
-                            currentContext,
-                            keyField,
-                            keyValue,
-                            removeNodes,
-                            confirming
-                        );
+                        IMLibUI.deleteButton(currentContext, keyField, keyValue, confirming);
                     };
                 };
                 eventListenerPostAdding.push({
@@ -1673,7 +1630,6 @@ var INTERMediator = {
                         currentContext,
                         keyField,
                         keyValue,
-                        shouldDeleteNodes,
                         currentContextDef['repeat-control'].match(/confirm-delete/i))
                 });
                 switch (encNodeTag) {
@@ -1802,7 +1758,6 @@ var INTERMediator = {
                                 keyValue,
                                 relationValue,
                                 nodeId,
-                                removeNodes,
                                 confirming
                             );
                         };

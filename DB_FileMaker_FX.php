@@ -855,7 +855,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if ($this->dbSettings->isDBNative()) {
                     $this->dbSettings->setRequireAuthentication(true);
                 }
-                $errorMessage = 'Failed loading XML' . "\n";
+                $errorMessage = 'Failed loading XML, check your setting about FileMaker Server.' . "\n";
                 foreach (libxml_get_errors() as $error) {
                     $errorMessage .= $error->message;
                 }
