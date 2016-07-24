@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -934,19 +933,22 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                             }
                                             $relatedFieldName = $relatedfield['@attributes']['name'];
                                             $relatedFieldValue = '';
-                                            if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
-                                                $relatedFieldValue = $this->formatter->formatterFromDB(
-                                                    "{$tableName}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
-                                                    $relatedfield['data']
-                                                );
-                                            }
                                             $fullyQualifiedFieldName = explode('::', $relatedFieldName);
                                             $tableOccurrence = $fullyQualifiedFieldName[0];
+                                            if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
+                                                if (strpos($relatedFieldName, '::') !== false) {
+                                                    $relatedFieldValue = $this->formatter->formatterFromDB(
+                                                        "{$tableOccurrence}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
+                                                        $relatedfield['data']
+                                                    );
+                                                } else {
+                                                    $relatedFieldValue = $this->formatter->formatterFromDB(
+                                                        "{$tableName}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
+                                                        $relatedfield['data']
+                                                    );
+                                                }
+                                            }
                                             if (!isset($relatedArray[$tableOccurrence][$recId])) {
-//                                                $relatedArray[$tableOccurrence][$recId] = array(
-//                                                    '-recid' => $record['@attributes']['record-id'],
-//                                                    $tableOccurrence . '::-recid' => $recId
-//                                                );
                                                 $relatedArray[$tableOccurrence][$recId] = array('-recid' => $recId);
                                             }
                                             $relatedArray[$tableOccurrence][$recId] += array(
