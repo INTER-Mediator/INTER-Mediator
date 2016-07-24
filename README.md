@@ -10,7 +10,7 @@ and these are bond to database, showing values moreover automatically update wit
 If you want to implement more complex logic, you can write programs both client and server sides.
 
 All information can be available at:
-- http://inter-mediator.com/
+- https://inter-mediator.com/
 - http://inter-mediator.info/
 
 Sample pages within this repository are published at below,
@@ -24,6 +24,7 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Kiyonori Ito
 - Kentaro Suzuki
 - Nobuo Hayashi
+- Kazuaki Osawa
 
 ### Special Thanks to:
 - Tomomitsu Baba
@@ -35,7 +36,6 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Hiromi Morita
 - Yukio Murakami
 - Osamu Noda
-- Kazuaki Osawa
 - Tomoyuki Sugihara
 - Hiroyasu Tanaka
 - Takanori Taniguchi

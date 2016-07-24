@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -855,7 +854,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 if ($this->dbSettings->isDBNative()) {
                     $this->dbSettings->setRequireAuthentication(true);
                 }
-                $errorMessage = 'Failed loading XML' . "\n";
+                $errorMessage = 'Failed loading XML, check your setting about FileMaker Server.' . "\n";
                 foreach (libxml_get_errors() as $error) {
                     $errorMessage .= $error->message;
                 }
@@ -910,20 +909,20 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         if (isset($record['relatedset']['record'])) {
                             $record['relatedset'] = array($record['relatedset']);
                         }
+                        $relatedArray = array();
                         foreach ($record['relatedset'] as $relatedset) {
-                            $j = 0;
                             if (isset($relatedset['record'])) {
                                 $relRecords = $relatedset['record'];
                                 if ($relatedset['@attributes']['count'] == 1) {
                                     $relRecords = array($relatedset['record']);
                                 }
                                 foreach ($relRecords as $relatedrecord) {
-                                    $relatedArray = array('-recid' => $record['@attributes']['record-id']);
                                     if (isset($relatedset['@attributes']) && isset($relatedrecord['@attributes'])) {
-                                        $relatedArray += array(
-                                            $relatedset['@attributes']['table'] . '::-recid'
-                                            => $relatedrecord['@attributes']['record-id']
-                                        );
+                                        $tableOccurrence = $relatedset['@attributes']['table'];
+                                        $recId = $relatedrecord['@attributes']['record-id'];
+                                        if (!isset($relatedArray[$tableOccurrence])) {
+                                            $relatedArray[$tableOccurrence] = array();
+                                        }
                                     }
                                     $multiFields = true;
                                     if (isset($relatedrecord['field'])) {
@@ -934,26 +933,33 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                             }
                                             $relatedFieldName = $relatedfield['@attributes']['name'];
                                             $relatedFieldValue = '';
+                                            $fullyQualifiedFieldName = explode('::', $relatedFieldName);
+                                            $tableOccurrence = $fullyQualifiedFieldName[0];
                                             if (isset($relatedfield['data']) && !is_null($relatedfield['data'])) {
-                                                $relatedFieldValue = $this->formatter->formatterFromDB(
-                                                    "{$tableName}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
-                                                    $relatedfield['data']
-                                                );
+                                                if (strpos($relatedFieldName, '::') !== false) {
+                                                    $relatedFieldValue = $this->formatter->formatterFromDB(
+                                                        "{$tableOccurrence}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
+                                                        $relatedfield['data']
+                                                    );
+                                                } else {
+                                                    $relatedFieldValue = $this->formatter->formatterFromDB(
+                                                        "{$tableName}{$this->dbSettings->getSeparator()}{$relatedFieldName}",
+                                                        $relatedfield['data']
+                                                    );
+                                                }
                                             }
-                                            $relatedArray += array(
+                                            if (!isset($relatedArray[$tableOccurrence][$recId])) {
+                                                $relatedArray[$tableOccurrence][$recId] = array('-recid' => $recId);
+                                            }
+                                            $relatedArray[$tableOccurrence][$recId] += array(
                                                 $relatedFieldName => $relatedFieldValue
                                             );
                                             if ($multiFields === false) {
                                                 break;
                                             }
                                         }
-                                        if (isset($relatedsetArray[$j]) && !is_null($relatedsetArray[$j])) {
-                                            $relatedsetArray[$j] += $relatedArray;
-                                        } else {
-                                            $relatedsetArray[$j] = $relatedArray;
-                                        }
+                                        $relatedsetArray = array($relatedArray);
                                     }
-                                    $j++;
                                 }
                             }
                         }
