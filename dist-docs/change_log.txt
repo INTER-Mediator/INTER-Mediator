@@ -71,6 +71,8 @@ Ver.5.4 (in release candidate)
 - [BUG FIX] Fix to be accumulated cross table conditions on a page.
 - [BUG FIX] Calculated property's fields weren't handled as existing fields and show errors.
 - [BUG FIX] In case of the keyed value is just 0, the id attribute wasn't assigned to each element.
+- [BUG FIX] Fix clearing and saving data in a textarea element of the first related field when 
+  using Microsoft Edge or Internet Explorer.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
