@@ -44,9 +44,9 @@ array (
   'database' => 'TestDB',
   'user' => 'web',
   'password' => 'password',
-  'server' => '10.0.1.21',
+  'server' => '127.0.0.1',
   'port' => '80',
   'protocol' => 'http',
   'datatype' => 'fmpro12',
 ),
-2);
+false);
