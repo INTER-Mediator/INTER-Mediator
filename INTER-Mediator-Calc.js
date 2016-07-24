@@ -111,8 +111,10 @@ var IMLibCalc = {
                                     valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
                                 } else {
                                     contextInfo = IMLibContextPool.getContextInfoFromId(idValue, nInfo.target);
-                                    record = contextInfo.context.getContextRecord(idValue);
-                                    valueSeries.push(record[field]);
+                                    if (contextInfo && contextInfo.context) {
+                                        record = contextInfo.context.getContextRecord(idValue);
+                                        valueSeries.push(record[field]);
+                                    }
                                 }
                             } else {
                                 valueSeries.push(valuesArray[field][ix]);
