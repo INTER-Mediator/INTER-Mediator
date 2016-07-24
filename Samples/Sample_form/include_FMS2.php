@@ -18,7 +18,7 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-            'records' => 2,
+            'records' => 1,
             'paging' => true,
             'name' => 'person_layout',
             'repeat-control' => 'confirm-delete confirm-insert',
