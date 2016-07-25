@@ -1094,7 +1094,7 @@ var INTERMediator = {
                 }
                 if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
                     keyValue = targetRecordset[ix][keyField];
-                    if (keyField && !keyValue) {
+                    if (keyField && !keyValue && keyValue !== 0) {
                         INTERMediator.setErrorMessage('The value of the key field is null.',
                             'This No.[' + ix + '] record should be ignored.');
                         keyValue = ix;
