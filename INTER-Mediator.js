@@ -852,7 +852,7 @@ var INTERMediator = {
                                     targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]];
                                     if (targetNode) {
                                         linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes([targetNode], false);
-                                        setupResult = setupLinkedNode([targetNode], linkedElements, contextObj, targetRecords.recordset, ix);
+                                        setupResult = setupLinkedNode(linkedElements, contextObj, targetRecords.recordset, ix);
                                     }
                                 }
                             }
@@ -1258,7 +1258,7 @@ var INTERMediator = {
                             name: currentContextDef['name'],
                             records: null,
                             paging: null,
-                            fields: fieldList,
+                            fields: null,
                             parentkeyvalue: null,
                             conditions: null,
                             useoffset: false
