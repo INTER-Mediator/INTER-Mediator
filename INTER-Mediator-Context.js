@@ -552,10 +552,10 @@ var IMLibContext = function (contextName) {
                             errorProc
                         );
                     } else {
-                        criteria = contextInfoCapt.record.split('=');
+                        criteria = contextInfo.record.split('=');
                         INTERMediator_DBAdapter.db_update_async(
                             {
-                                name: targetContextCapt.contextName,
+                                name: contextInfo.context.contextName,
                                 conditions: [{field: criteria[0], operator: '=', value: criteria[1]}],
                                 dataset: [{field: contextInfo.field, value: newValue}]
                             },
