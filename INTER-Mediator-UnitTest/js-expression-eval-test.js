@@ -17,6 +17,32 @@ buster.testCase("Parser.evaluate Test", {
     }
 });
 
+buster.testCase("Choice function Test", {
+    "should be equal to": function () {
+        assert.equals(Parser.evaluate("choice(x, a1, a2, a3)", {x: 0, a1: 'zero', a2: 1, a3: 2}), 'zero');
+        assert.equals(Parser.evaluate("choice(x, a1, a2, a3)", {x: 1, a1: 'zero', a2: 1, a3: 2}), 1);
+        assert.equals(Parser.evaluate("choice(x, a1, a2, a3)", {x: 2, a1: 'zero', a2: 1, a3: 2}), 2);
+        assert.equals(Parser.evaluate("choice(x, a1, a2, a3)", {x: 3, a1: 'zero', a2: 1, a3: 2}), undefined);
+        assert.equals(Parser.evaluate("choice(x, a1, a2, a3)", {x: 4, a1: 'zero', a2: 1, a3: 2}), undefined);
+        assert.equals(Parser.evaluate("choice(x, a1, a2, a3)", {x: -1, a1: 'zero', a2: 1, a3: 2}), undefined);
+        assert.equals(Parser.evaluate("choice(x, a1, a2, a3)", {x: null, a1: 'zero', a2: 1, a3: 2}), null);
+        assert.equals(Parser.evaluate("choice(x, a1, a2, a3)", {x: undefined, a1: 'zero', a2: 1, a3: 2}), undefined);
+    }
+});
+
+buster.testCase("String operation Test", {
+    "should be equal to": function () {
+        assert.equals(0 + 0, 0);
+        assert.equals('' + 0, "0");
+        assert.equals(0 + '', "0");
+        assert.equals('' + '', '');
+        assert.equals(Parser.evaluate("x + y", {x: 0, y: 0}), 0);
+        assert.equals(Parser.evaluate("x + y", {x: '', y: 0}), "0");
+        assert.equals(Parser.evaluate("x + y", {x: 0, y: ''}), "0");
+        assert.equals(Parser.evaluate("x + y", {x: '', y: ''}), '');
+    }
+});
+
 buster.testCase("Operators Test", {
     "should be equal to": function () {
         assert.equals(Parser.evaluate("a = b ", {a: 100, b: 100}), true);
@@ -39,8 +65,8 @@ buster.testCase("Operators Test", {
 buster.testCase("Operators Test2", {
     "should be equal to": function () {
         assert.equals(Parser.evaluate("a + b ", {a: 'abc', b: 'def'}), 'abcdef');
-        assert.equals(Parser.evaluate("a ⊕ b ", {a: 123, b:456}), '123456');
-        assert.equals(Parser.evaluate("a ⊕ b ", {a: '123', b:'456'}), '123456');
+        assert.equals(Parser.evaluate("a ⊕ b ", {a: 123, b: 456}), '123456');
+        assert.equals(Parser.evaluate("a ⊕ b ", {a: '123', b: '456'}), '123456');
         assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'def'}), 'abc');
         assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'xyz'}), 'abcdef');
         assert.equals(Parser.evaluate("a - b ", {a: 'abcdef', b: 'dbfx'}), 'abcdef');
@@ -146,7 +172,7 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
         assert.equals(result, 8.3);
     },
     "Sum function and array variable.4": function () {
-        var result = Parser.evaluate("sum(p)", {p: ["1,111,111","1,111,111","1,111,111"]});
+        var result = Parser.evaluate("sum(p)", {p: ["1,111,111", "1,111,111", "1,111,111"]});
         assert.equals(result, 3333333);
     },
     "If function and array variable.2": function () {
