@@ -46,7 +46,7 @@ Ver.5.4 (in release candidate)
 - Add .eslintrc.js.
 - Update sample_schema_mysql.txt, dbupdate.sh, recipe.rb and sample_spec.rb for the INTER-Mediator-Server
   virtual machine.
-- The 'choice' function is introduced into expression.
+- The 'choice', 'condition' and 'accumulate' functions are introduced into expression.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
   being shown inappropriately.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
