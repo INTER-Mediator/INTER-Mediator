@@ -30,6 +30,52 @@ buster.testCase("Choice function Test", {
     }
 });
 
+buster.testCase("Condition function Test", {
+    "should be equal to": function () {
+        assert.equals(Parser.evaluate(
+            "condition(z<x1, a1, z<x2, a2, z<x3, a3)",
+            {z: -5, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), 120);
+        assert.equals(Parser.evaluate(
+            "condition(z<x1, a1, z<x2, a2, z<x3, a3)",
+            {z: 5, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), 130);
+        assert.equals(Parser.evaluate(
+            "condition(z<x1, a1, z<x2, a2, z<x3, a3)",
+            {z: 15, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), 140);
+        assert.equals(Parser.evaluate(
+            "condition(z<x1, a1, z<x2, a2, z<x3, a3)",
+            {z: 25, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), undefined);
+        assert.equals(Parser.evaluate(
+            "condition(z<x1, a1, z<x2, a2, z<x3)",
+            {z: 5, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), 130);
+        assert.equals(Parser.evaluate(
+            "condition(z<x1, a1, z<x2, a2, z<x3)",
+            {z: 15, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), undefined);
+    }
+});
+
+buster.testCase("Accumulate function Test", {
+    "should be equal to": function () {
+        assert.equals(Parser.evaluate(
+            "accumulate(z<x1, a1, z<x2, a2, z<x3, a3)",
+            {z: -5, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), '120\n130\n140\n');
+        assert.equals(Parser.evaluate(
+            "accumulate(z<x1, a1, z<x2, a2, z<x3, a3)",
+            {z: 5, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), '130\n140\n');
+        assert.equals(Parser.evaluate(
+            "accumulate(z<x1, a1, z<x2, a2, z<x3, a3)",
+            {z: 15, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), '140\n');
+        assert.equals(Parser.evaluate(
+            "accumulate(z<x1, a1, z<x2, a2, z<x3, a3)",
+            {z: 25, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), '');
+        assert.equals(Parser.evaluate(
+            "accumulate(z<x1, a1, z<x2, a2, z<x3)",
+            {z: 5, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), '130\n');
+        assert.equals(Parser.evaluate(
+            "accumulate(z<x1, a1, z<x2, a2, z<x3)",
+            {z: 15, x1: 0, a1: 120, x2: 10, a2: 130, x3:20, a3: 140}), '');
+    }
+});
+
 buster.testCase("String operation Test", {
     "should be equal to": function () {
         assert.equals(0 + 0, 0);
