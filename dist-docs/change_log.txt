@@ -76,6 +76,7 @@ Ver.5.4 (in release candidate)
   using Microsoft Edge or Internet Explorer.
 - [BUG FIX] Fix DB_FileMaker_FX class for DataConverter_FMDateTime class to handle the fields on
   the portal objects with portal access mode correctly.
+- [BUG FIX] The 'button-names' keyed values didn't affect to buttons on pagenation bar.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
