@@ -16,7 +16,8 @@ IMLibPageNavigation = {
 
     navigationSetup: function () {
         var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
-            prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction, onNaviCopyFunction;
+            prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction,
+            onNaviCopyFunction, contextName, contextDef, buttonLabel;
 
         navigation = document.getElementById('IM_NAVIGATOR');
         if (navigation !== null) {
@@ -147,10 +148,14 @@ IMLibPageNavigation = {
                     case 'INSERT':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
-                        node.appendChild(
-                            document.createTextNode(
-                                INTERMediatorOnPage.getMessages()[3] + ': ' +
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['name']));
+                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                        contextDef = IMLibContextPool.getContextDef(contextName);
+                        if (contextDef['button-names'] && contextDef['button-names']['insert']) {
+                            buttonLabel = contextDef['button-names']['insert'];
+                        } else {
+                            buttonLabel = INTERMediatorOnPage.getMessages()[3] + ': ' + contextName;
+                        }
+                        node.appendChild(document.createTextNode(buttonLabel));
                         node.setAttribute('class', 'IM_NAV_button');
                         onNaviInsertFunction = function (a, b, c) {
                             var contextName = a, keyValue = b, confirming = c;
@@ -167,13 +172,17 @@ IMLibPageNavigation = {
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false)
                         );
                         break;
-                    case 'DELETE':
+                    case　'DELETE':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
-                        node.appendChild(
-                            document.createTextNode(
-                                INTERMediatorOnPage.getMessages()[4] + ': ' +
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['name']));
+                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                        contextDef = IMLibContextPool.getContextDef(contextName);
+                        if (contextDef['button-names'] && contextDef['button-names']['delete']) {
+                            buttonLabel = contextDef['button-names']['delete'];
+                        } else {
+                            buttonLabel = INTERMediatorOnPage.getMessages()[4] + ': ' + contextName;
+                        }
+                        node.appendChild(document.createTextNode(buttonLabel));
                         node.setAttribute('class', 'IM_NAV_button');
                         onNaviDeleteFunction = function (a, b, c, d) {
                             var contextName = a, keyName = b, keyValue = c, confirming = d;
@@ -190,13 +199,17 @@ IMLibPageNavigation = {
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['value'],
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false));
                         break;
-                    case 'COPY':
+                    case　'COPY':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
-                        node.appendChild(
-                            document.createTextNode(
-                                INTERMediatorOnPage.getMessages()[15] + ': ' +
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['contextDef']['name']));
+                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                        contextDef = IMLibContextPool.getContextDef(contextName);
+                        if (contextDef['button-names'] && contextDef['button-names']['copy']) {
+                            buttonLabel = contextDef['button-names']['copy'];
+                        } else {
+                            buttonLabel = INTERMediatorOnPage.getMessages()[15] + ': ' + contextName;
+                        }
+                        node.appendChild(document.createTextNode(buttonLabel));
                         node.setAttribute('class', 'IM_NAV_button');
                         onNaviCopyFunction = function (a, b) {
                             var contextDef = a, record = b;
