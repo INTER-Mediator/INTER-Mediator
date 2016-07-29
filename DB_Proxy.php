@@ -230,6 +230,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 if (isset($currentDataSource['send-mail']['edit'])
                     || isset($currentDataSource['send-mail']['update'])
                     || $this->dbSettings->notifyServer
+                    || ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterUpdateToDB"))
                 ) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
@@ -308,7 +309,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             if ($this->dbClass !== null) {
                 if (isset($currentDataSource['send-mail']['new']) ||
                     isset($currentDataSource['send-mail']['create']) ||
-                    $this->dbSettings->notifyServer
+                    $this->dbSettings->notifyServer ||
+                    ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCreateToDB"))
                 ) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
