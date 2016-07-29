@@ -983,6 +983,10 @@ var INTERMediator = {
                                     if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal[0])) {
                                         postSetFields.push({'id': nodeId, 'value': curVal[0]});
                                     }
+                                } else {
+                                    if (currentLinkedNodes[k].tagName === 'SELECT') {
+                                        postSetFields.push({'id': nodeId, 'value': ''});
+                                    }
                                 }
                             } else {
                                 if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
