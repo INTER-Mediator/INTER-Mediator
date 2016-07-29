@@ -19,7 +19,7 @@ Ver.5.4 (in release candidate)
   values.
 - If the automatic calling to construct method doesn't requre, descirbe the below in doBeforeConstruct
   or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
-- Creating Cross Table for PDO. It contains 3 contexts for colomn, row and value cells.
+- Creating Cross Table for PDO. It contains 3 contexts for column, row and value cells.
   See the sample Samples/Practices/crosstable.html.
 - The "post-query-stored" key in context of the definition file is introduced. It will be specified
   a method name, ant the method has to be define in the INTERMediatorOnPage object with one variable
