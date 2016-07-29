@@ -497,7 +497,9 @@ var INTERMediator = {
                     document.getElementById(postSetFields[i]['id']).tagName == 'SELECT') {
                     // for compatibility with Firefox when the value of select tag is empty.
                     emptyElement = document.createElement('option');
+                    emptyElement.setAttribute('id', nextIdValue());
                     emptyElement.setAttribute('value', '');
+                    emptyElement.setAttribute('data-im-element', 'auto-generated');
                     document.getElementById(postSetFields[i]['id']).insertBefore(
                         emptyElement, document.getElementById(postSetFields[i]['id']).firstChild);
                 }
@@ -890,7 +892,8 @@ var INTERMediator = {
         function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
             var currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, k, nodeId,
                 curVal, replacedNode, typeAttr, children, wInfo, nameTable, idValuesForFieldName = {},
-                nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget;
+                nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget,
+                delNodes = [];
 
             currentContextDef = contextObj.getContextDef();
             try {
@@ -1005,7 +1008,20 @@ var INTERMediator = {
                             return function () {
                                 if (evt === 'change' ||
                                     (evt === 'input' && document.getElementById(id).textContent === '')) {
-                                    IMLibUI.valueChange(id);
+                                    if (IMLibUI.valueChange(id)) {
+                                        if (document.getElementById(id).tagName == 'SELECT') {
+                                            children = document.getElementById(id).childNodes;
+                                            for (i = 0; i < children.length; i++) {
+                                                if (children[i].nodeType === 1) {
+                                                    if (children[i].tagName === 'OPTION' &&
+                                                        children[i].getAttribute('data-im-element') === 'auto-generated') {
+                                                        delNodes.push(children[i].getAttribute('id'));
+                                                        IMLibElement.deleteNodes(delNodes);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             };
                         };
