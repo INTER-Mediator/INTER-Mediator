@@ -150,7 +150,7 @@ IMLibPageNavigation = {
                         navigation.appendChild(node);
                         contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
                         contextDef = IMLibContextPool.getContextDef(contextName);
-                        if (contextDef['button-names'] && contextDef['button-names']['insert']) {
+                        if (contextDef && contextDef['button-names'] && contextDef['button-names']['insert']) {
                             buttonLabel = contextDef['button-names']['insert'];
                         } else {
                             buttonLabel = INTERMediatorOnPage.getMessages()[3] + ': ' + contextName;
@@ -177,7 +177,7 @@ IMLibPageNavigation = {
                         navigation.appendChild(node);
                         contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
                         contextDef = IMLibContextPool.getContextDef(contextName);
-                        if (contextDef['button-names'] && contextDef['button-names']['delete']) {
+                        if (contextDef && contextDef['button-names'] && contextDef['button-names']['delete']) {
                             buttonLabel = contextDef['button-names']['delete'];
                         } else {
                             buttonLabel = INTERMediatorOnPage.getMessages()[4] + ': ' + contextName;
@@ -204,7 +204,7 @@ IMLibPageNavigation = {
                         navigation.appendChild(node);
                         contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
                         contextDef = IMLibContextPool.getContextDef(contextName);
-                        if (contextDef['button-names'] && contextDef['button-names']['copy']) {
+                        if (contextDef && contextDef['button-names'] && contextDef['button-names']['copy']) {
                             buttonLabel = contextDef['button-names']['copy'];
                         } else {
                             buttonLabel = INTERMediatorOnPage.getMessages()[15] + ': ' + contextName;
