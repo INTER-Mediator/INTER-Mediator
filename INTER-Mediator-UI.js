@@ -38,19 +38,19 @@ var IMLibUI = {
         }
     },
 
-    lockUIElement: function(idValue)  {
+    lockUIElement: function (idValue) {
         IMLibUI.changeValueLock[idValue] = true;
     },
 
-    isLockUIElement: function(idValue)  {
+    isLockUIElement: function (idValue) {
         return IMLibUI.changeValueLock[idValue] === true;
     },
 
-    unlockUIElement: function(idValue)  {
+    unlockUIElement: function (idValue) {
         IMLibUI.changeValueLock[idValue] = false;
     },
 
-    clearLockInfo: function(idValue)  {
+    clearLockInfo: function (idValue) {
         IMLibUI.changeValueLock = {};
     },
     /*
@@ -652,7 +652,7 @@ var IMLibUI = {
     clickPostOnlyButton: function (node) {
         var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
         var mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage;
-        var linkedNodes, namedNodes, index, hasInvalid;
+        var linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes;
         var targetNode = node.parentNode;
         while (!INTERMediatorLib.isEnclosure(targetNode, true)) {
             targetNode = targetNode.parentNode;
@@ -667,14 +667,16 @@ var IMLibUI = {
             }
         }
 
-        linkedNodes = []; // Collecting linked elements to this array.
+        contextNodes = [];
+        linkedNodes = [];
         namedNodes = [];
         for (i = 0; i < targetNode.childNodes.length; i++) {
-            seekLinkedElement(targetNode.childNodes[i]);
+            seekLinkedElementInThisContext(targetNode.childNodes[i]);
+            seekLinkedElementInAllChildren(targetNode.childNodes[i]);
         }
         contextCount = {};
-        for (i = 0; i < linkedNodes.length; i++) {
-            elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
+        for (i = 0; i < contextNodes.length; i++) {
+            elementInfo = INTERMediatorLib.getLinkedElementInfo(contextNodes[i]);
             for (j = 0; j < elementInfo.length; j++) {
                 comp = elementInfo[j].split(INTERMediator.separator);
                 if (!contextCount[comp[j]]) {
@@ -775,7 +777,11 @@ var IMLibUI = {
                 comp = elementInfo[j].split(INTERMediator.separator);
                 if (comp[0] == selectedContext) {
                     mergedValues = [];
-                    inputNodes = namedNodes[i].getElementsByTagName('INPUT');
+                    if (namedNodes[i].tagName == 'INPUT') {
+                        inputNodes = [namedNodes[i]];
+                    } else {
+                        inputNodes = namedNodes[i].getElementsByTagName('INPUT');
+                    }
                     for (k = 0; k < inputNodes.length; k++) {
                         typeAttr = inputNodes[k].getAttribute('type');
                         if (typeAttr == 'radio' || typeAttr == 'checkbox') {
@@ -786,10 +792,21 @@ var IMLibUI = {
                             mergedValues.push(inputNodes[k].value);
                         }
                     }
-                    fieldData.push({
-                        field: comp[1],
-                        value: mergedValues.join(IMLib.nl_char) + IMLib.nl_char
-                    });
+                    if (mergedValues.length > 0) {
+                        isMerged = false;
+                        for (index = 0; index < fieldData.length; index++) {
+                            if (fieldData[index]['field'] == comp[1]) {
+                                fieldData[index]['value'] += mergedValues.join(IMLib.nl_char) + IMLib.nl_char;
+                                isMerged = true;
+                            }
+                        }
+                        if (!isMerged) {
+                            fieldData.push({
+                                field: comp[1],
+                                value: mergedValues.join(IMLib.nl_char) + IMLib.nl_char
+                            });
+                        }
+                    }
                 }
             }
         }
@@ -833,19 +850,38 @@ var IMLibUI = {
                 }
             }, null);
 
-        function seekLinkedElement(node) {
+        function seekLinkedElementInThisContext(node) {    // Just seek out side of inner enclosure
             var children, i;
             if (node.nodeType === 1) {
                 if (INTERMediatorLib.isLinkedElement(node)) {
+                    contextNodes.push(node);
+                } else if (INTERMediatorLib.isWidgetElement(node)) {
+                    contextNodes.push(node);
+                } else {
+                    if (INTERMediatorLib.isEnclosure(node)) {
+                        return;
+                    }
+                    children = node.childNodes;
+                    for (i = 0; i < children.length; i++) {
+                        seekLinkedElementInThisContext(children[i]);
+                    }
+                }
+            }
+        }
+
+        function seekLinkedElementInAllChildren(node) {   // Traverse inside of enclosure
+            var children, i;
+            if (node.nodeType === 1) {
+                if (INTERMediatorLib.isNamedElement(node)) {
+                    namedNodes.push(node);
+                } else if (INTERMediatorLib.isLinkedElement(node)) {
                     linkedNodes.push(node);
                 } else if (INTERMediatorLib.isWidgetElement(node)) {
                     linkedNodes.push(node);
-                } else if (INTERMediatorLib.isNamedElement(node)) {
-                    namedNodes.push(node);
                 } else {
                     children = node.childNodes;
                     for (i = 0; i < children.length; i++) {
-                        seekLinkedElement(children[i]);
+                        seekLinkedElementInAllChildren(children[i]);
                     }
                 }
             }
