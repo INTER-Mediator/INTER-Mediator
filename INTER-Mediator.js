@@ -997,7 +997,10 @@ var INTERMediator = {
                                 }
                             }
                             contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
-                            idValuesForFieldName[nInfo['field']] = nodeId;
+                            if (idValuesForFieldName[nInfo['field']] === undefined) {
+                                idValuesForFieldName[nInfo['field']] = [];
+                            }
+                            idValuesForFieldName[nInfo['field']].push(nodeId);
                         }
                     }
 
