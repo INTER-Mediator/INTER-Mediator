@@ -808,7 +808,7 @@ var IMLibContext = function (contextName) {
         };
 
         this.setRelationWithParent = function (currentRecord, parentObjectInfo, parentContext) {
-            var relationDef, index, joinField, fieldName;
+            var relationDef, index, joinField, fieldName, i;
 
             this.parentContext = parentContext;
 
@@ -825,7 +825,9 @@ var IMLibContext = function (contextName) {
                             this.addForeignValue(joinField, currentRecord[joinField]);
                             for (fieldName in parentObjectInfo) {
                                 if (fieldName == relationDef[index]['join-field']) {
-                                    this.addDependingObject(parentObjectInfo[fieldName]);
+                                    for (i = 0; i < parentObjectInfo[fieldName].length; i++) {
+                                        this.addDependingObject(parentObjectInfo[fieldName][i]);
+                                    }
                                     this.dependingParentObjectInfo =
                                         JSON.parse(JSON.stringify(parentObjectInfo));
                                 }
