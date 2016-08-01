@@ -47,6 +47,10 @@ Ver.5.4 (in release candidate)
 - Update sample_schema_mysql.txt, dbupdate.sh, recipe.rb and sample_spec.rb for the INTER-Mediator-Server
   virtual machine.
 - The 'choice', 'condition', 'accumulate' and 'lastindexof' functions are introduced into expression.
+- On Post-Only mode, nodes with the same data-im-group attribute are corrected as the value in one field.
+- The ignorePost method is introduced in DB_Proxy class for ignoring the $_POST values in adviser class.
+- In the context with 'aggregation-*' value, if the 'paging' is true, the pagination works fine. You should
+  use this carefully because pagination requires to count total records and it could be a perforance issue.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
   being shown inappropriately.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
@@ -78,6 +82,9 @@ Ver.5.4 (in release candidate)
   the portal objects with portal access mode correctly.
 - [BUG FIX] The 'button-names' keyed values didn't affect to buttons on pagenation bar.
 - [BUG FIX] Fix displaying when the value of SELECT element is empty.
+- [BUG FIX] On the update and create operation, the recordset modified by adviser definition class doesn't
+  affect to the mail.
+- [BUG FIX] Improve updating the display of nodes which depends on the value of radio buttons.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
