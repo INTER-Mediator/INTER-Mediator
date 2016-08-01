@@ -590,16 +590,21 @@ var IMLibUI = {
                 relatedRecordSet.push({field: targetPortalField + '.0', value: targetPortalValue});
             }
 
-            INTERMediator_DBAdapter.db_update({
-                name: currentObj.parentContext.contextName,
-                conditions: [{
-                    field: currentContext['key'] ? currentContext['key'] : '-recid',
-                    operator: '=',
-                    value: foreignValues.id
-                }],
-                dataset: relatedRecordSet
-            });
-            INTERMediator.constructMain();
+            if (currentContext.relation && currentContext.relation[0] &&
+                currentContext.relation[0]['join-field']) {
+                INTERMediator_DBAdapter.db_update({
+                    name: currentObj.parentContext.contextName,
+                    conditions: [{
+                        field: currentContext.relation[0]['join-field'],
+                        operator: '=',
+                        value: foreignValues.id
+                    }],
+                    dataset: relatedRecordSet
+                });
+                INTERMediator.constructMain();
+            } else {
+                INTERMediator.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4');
+            }
         } else {
             INTERMediator_DBAdapter.db_createRecord_async(
                 {name: targetName, dataset: recordSet},
