@@ -112,10 +112,15 @@ else
     rm  "${buildPath}/temp.js"
 fi
 
+# Copy "DB_Support" directory.
+echo "PROCESSING: ${originalPath}/DB_Support"
+cp -prf "${originalPath}/DB_Support" "${buildPath}"
+
 # Copy "lib" path php contents.
 echo "PROCESSING: ${originalPath}/lib"
 mkdir -p "${buildPath}/lib/bi2php"
 cp -p "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
+cp -prf "${originalPath}/lib/CWPKit" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/FX" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/phpseclib" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/mailsend" "${buildPath}/lib"
