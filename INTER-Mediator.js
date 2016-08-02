@@ -666,7 +666,10 @@ var INTERMediator = {
         function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
             var recId, repNodeTag, repeatersOriginal;
             var imControl = node.getAttribute('data-im-control');
-            if (currentContextObj && currentContextObj.contextName && currentRecord[currentContextObj.contextName] &&
+            if (currentContextObj &&
+                currentContextObj.contextName &&
+                currentRecord &&
+                currentRecord[currentContextObj.contextName] &&
                 currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid']) {
                 // for FileMaker portal access mode
                 recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid'];
