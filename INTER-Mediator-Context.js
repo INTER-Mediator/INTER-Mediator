@@ -1207,7 +1207,7 @@ var IMLibContext = function (contextName) {
                         this.contextInfo[nodeId] = {};
                     }
                     this.contextInfo[nodeId][target == '' ? '_im_no_target' : target] =
-                        {context: this, record: recKey, field: key};
+                    {context: this, record: recKey, field: key};
                     if (portal) {
                         this.contextInfo[nodeId][target == '' ? '_im_no_target' : target].portal = portal;
                     }
@@ -1226,7 +1226,7 @@ var IMLibContext = function (contextName) {
             } else {
                 value = this.store[recKey][key];
             }
-            if(Array.isArray(value))    {
+            if (Array.isArray(value)) {
                 value = value.join();
             }
             return value === undefined ? null : value;
@@ -1439,8 +1439,7 @@ var IMLibContext = function (contextName) {
      * Initialize this object
      */
     this.setTable(this);
-}
-;
+};
 
 
 var IMLibLocalContext = {
