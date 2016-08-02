@@ -729,7 +729,8 @@ var INTERMediator = {
                         return elm;
                     });
                     contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
-                    if (Boolean(currentContextDef.portal) === true) {
+                    if (currentContextDef.relation && currentContextDef.relation[0] &&
+                        Boolean(currentContextDef.relation[0].portal) === true) {
                         currentContextDef['currentrecord'] = currentRecord;
                         keyValue = currentRecord['-recid'];
                     }
