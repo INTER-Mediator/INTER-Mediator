@@ -7,16 +7,17 @@
     <title>INTER-Mediator - Sample - Asset List/SQLite</title>
     <script src="contexts_SQLite.php"></script>
     <script>
-//        window.onload = function(){
-            var param = location.search.split('&');
-            for (var i = 0; i < param.length; i++) {
-                if (param[i].match(/id=/)) {
-                    var values = param[i].split('=');
-                    INTERMediator.additionalCondition["assetdetail"] = {field:'asset_id', operator:'=', value:values[1]};
-                }
+        INTERMediatorOnPage.doBeforeConstruct = function () {
+            INTERMediator.clearCondition("assetdetail");
+            var param = INTERMediatorOnPage.getURLParametersAsArray();
+            if (param["id"]) {
+                INTERMediator.addCondition("assetdetail", {
+                    field: 'asset_id',
+                    operator: '=',
+                    value: param["id"]
+                });
             }
-//            INTERMediator.construct();
-//        }
+        };
         function setBackDate(id)    {
             INTERMediator_DBAdapter.db_update({
                 name:"rentback",
