@@ -666,7 +666,10 @@ var INTERMediator = {
         function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
             var recId, repNodeTag, repeatersOriginal;
             var imControl = node.getAttribute('data-im-control');
-            if (currentContextObj && currentContextObj.contextName && currentRecord[currentContextObj.contextName] &&
+            if (currentContextObj &&
+                currentContextObj.contextName &&
+                currentRecord &&
+                currentRecord[currentContextObj.contextName] &&
                 currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid']) {
                 // for FileMaker portal access mode
                 recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid'];
@@ -729,7 +732,8 @@ var INTERMediator = {
                         return elm;
                     });
                     contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
-                    if (Boolean(currentContextDef.portal) === true) {
+                    if (currentContextDef.relation && currentContextDef.relation[0] &&
+                        Boolean(currentContextDef.relation[0].portal) === true) {
                         currentContextDef['currentrecord'] = currentRecord;
                         keyValue = currentRecord['-recid'];
                     }
@@ -1003,7 +1007,7 @@ var INTERMediator = {
                                 }
                             }
                             contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
-                            console.log("setValue(", keyingValue, nInfo['field'], curVal, nodeId, curTarget);
+                            //console.log("setValue(", keyingValue, nInfo['field'], curVal, nodeId, curTarget);
                             if (idValuesForFieldName[nInfo['field']] === undefined) {
                                 idValuesForFieldName[nInfo['field']] = [];
                             }

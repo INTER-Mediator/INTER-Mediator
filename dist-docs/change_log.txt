@@ -51,6 +51,7 @@ Ver.5.4 (in release candidate)
 - The ignorePost method is introduced in DB_Proxy class for ignoring the $_POST values in adviser class.
 - In the context with 'aggregation-*' value, if the 'paging' is true, the pagination works fine. You should
   use this carefully because pagination requires to count total records and it could be a perforance issue.
+- Update TestDB.fmp12 and TestDB_clone.fmp12 to modify the Serial Number setting of 'asset_id' field.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
   being shown inappropriately.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
