@@ -73,7 +73,7 @@ IM_Entry(
             'table' => 'rent',
             'key' => 'rent_id',
             'query' => array(
-                array('field' => 'backdate', 'operator' => 'IS NULL'),
+                array('field' => 'backdate', 'operator' => '=', 'value' => ''),
             ),
         ),
         array(
@@ -91,6 +91,7 @@ IM_Entry(
         'formatter' => array(
             array('field' => 'asset@purchase', 'converter-class' => 'FMDateTime', 'parameter'=>'%y/%m/%d'),
             array('field' => 'asset@discard', 'converter-class' => 'FMDateTime'),
+            array('field' => 'rent@rentdate', 'converter-class' => 'FMDateTime', 'parameter'=>'%y/%m/%d'),
         ),
     ),
     array(
