@@ -242,7 +242,7 @@ var INTERMediator = {
         }
         position = ua.toLocaleUpperCase().indexOf(' Edge/');
         if (position >= 0) {
-             INTERMediator.isEdge = true;
+            INTERMediator.isEdge = true;
         }
     },
 
@@ -268,9 +268,9 @@ var INTERMediator = {
 
     initialize: function () {
         INTERMediatorOnPage.removeCookie('_im_localcontext');
-//      INTERMediatorOnPage.removeCookie('_im_username');
-//      INTERMediatorOnPage.removeCookie('_im_credential');
-//      INTERMediatorOnPage.removeCookie('_im_mediatoken');
+        //INTERMediatorOnPage.removeCookie('_im_username');
+        //INTERMediatorOnPage.removeCookie('_im_credential');
+        //INTERMediatorOnPage.removeCookie('_im_mediatoken');
 
         INTERMediator.additionalCondition = {};
         INTERMediator.additionalSortKey = {};
@@ -666,8 +666,11 @@ var INTERMediator = {
         function expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj) {
             var recId, repNodeTag, repeatersOriginal;
             var imControl = node.getAttribute('data-im-control');
-
-            if (currentContextObj && currentContextObj.contextName && currentRecord[currentContextObj.contextName]) {
+            if (currentContextObj &&
+                currentContextObj.contextName &&
+                currentRecord &&
+                currentRecord[currentContextObj.contextName] &&
+                currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid']) {
                 // for FileMaker portal access mode
                 recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid'];
                 currentRecord = currentRecord[currentContextObj.contextName][recId];
@@ -680,7 +683,6 @@ var INTERMediator = {
                 repeatersOriginal = collectRepeatersOriginal(node, repNodeTag); // Collecting repeaters to this array.
                 enclosureProcessing(node, repeatersOriginal, currentRecord, parentObjectInfo, currentContextObj);
             }
-
             /** --------------------------------------------------------------------
              * Expanding enclosure as usual (means not 'cross tabole').
              */
@@ -691,13 +693,9 @@ var INTERMediator = {
                                          currentContextObj,
                                          procBeforeRetrieve,
                                          customExpandRepeater) {
-                var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef,
-                    fieldList, joinField, relationDef, index, fieldName, i, ix, targetRecords, newNode,
-                    keyValue, selectedNode, calcDef, calcFields, contextObj = null;
+                var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
+                    newNode, keyValue, selectedNode, calcDef, calcFields, contextObj = null;
 
-                // encNodeTag = enclosureNode.tagName;
-                // repNodeTag = INTERMediatorLib.repeaterTagFromEncTag(encNodeTag);
-                // repeatersOriginal = collectRepeatersOriginal(enclosureNode, repNodeTag); // Collecting repeaters to this array.
                 repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
                 linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
                 linkDefs = collectLinkDefinitions(linkedNodes);
@@ -734,7 +732,8 @@ var INTERMediator = {
                         return elm;
                     });
                     contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
-                    if (Boolean(currentContextDef.portal) === true) {
+                    if (currentContextDef.relation && currentContextDef.relation[0] &&
+                        Boolean(currentContextDef.relation[0].portal) === true) {
                         currentContextDef['currentrecord'] = currentRecord;
                         keyValue = currentRecord['-recid'];
                     }
@@ -796,7 +795,8 @@ var INTERMediator = {
 
                 // Append the column context in the first row
                 targetRepeater = ctComponentNodes[1].cloneNode(true);
-                colContext = enclosureProcessing(lineNode, [targetRepeater], null, parentObjectInfo, currentContextObj);
+                colContext = enclosureProcessing(
+                    lineNode, [targetRepeater], null, parentObjectInfo, currentContextObj);
                 colArray = colContext.indexingArray(labelKeyColumn);
 
                 // Create second and following rows, and the first columns are appended row context
@@ -804,7 +804,8 @@ var INTERMediator = {
                 targetRepeater = ctComponentNodes[2].cloneNode(true);
                 lineNode = document.createElement('TR');
                 lineNode.appendChild(targetRepeater);
-                rowContext = enclosureProcessing(node, [lineNode], null, parentObjectInfo, currentContextObj);
+                rowContext = enclosureProcessing(
+                    node, [lineNode], null, parentObjectInfo, currentContextObj);
                 rowArray = rowContext.indexingArray(labelKeyRow);
 
                 // Create all cross point cell
@@ -824,7 +825,8 @@ var INTERMediator = {
                     }
                 }
                 setIdValue(node);
-                enclosureProcessing(node, [targetRepeater], null, parentObjectInfo, currentContextObj,
+                enclosureProcessing(
+                    node, [targetRepeater], null, parentObjectInfo, currentContextObj,
                     function (context) {
                         var currentContextDef = context.getContextDef();
                         INTERMediator.addCondition(currentContextDef.name, {
@@ -842,8 +844,9 @@ var INTERMediator = {
                     },
                     function (contextObj, targetRecords) {
                         var dataKeyColumn, dataKeyRow, currentContextDef, ix,
-                            linkedElements, targetNode, setupResult;
+                            linkedElements, targetNode, setupResult, keyField, keyValue, keyingValue;
                         currentContextDef = contextObj.getContextDef();
+                        keyField = contextObj.getKeyField();
                         dataKeyColumn = currentContextDef['relation'][0]['foreign-key'];
                         dataKeyRow = currentContextDef['relation'][1]['foreign-key'];
                         if (targetRecords.recordset) {
@@ -853,17 +856,24 @@ var INTERMediator = {
                                     && nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]]) {
                                     targetNode = nodeForKeyValues[record[dataKeyColumn]][record[dataKeyRow]];
                                     if (targetNode) {
-                                        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes([targetNode], false);
-                                        setupResult = setupLinkedNode(linkedElements, contextObj, targetRecords.recordset, ix);
+                                        linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(
+                                            [targetNode], false);
+                                        keyValue = record[keyField];
+                                        if (keyField && !keyValue && keyValue !== 0) {
+                                            keyValue = ix;
+                                        }
+                                        keyingValue = keyField + '=' + keyValue;
                                     }
+                                    setupResult = setupLinkedNode(
+                                        linkedElements, contextObj, targetRecords.recordset, ix, keyingValue);
                                 }
                             }
                         }
-
-                    });
+                    }
+                );
             } // The end of function expandCrossTableEnclosure().
 
-            // Detect cross table components in a tbody enclosure.
+// Detect cross table components in a tbody enclosure.
             function crossTableComponents(node) {
                 var components = [], count = 0;
                 repeatCTComponents(node.childNodes);
@@ -997,6 +1007,7 @@ var INTERMediator = {
                                 }
                             }
                             contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
+                            //console.log("setValue(", keyingValue, nInfo['field'], curVal, nodeId, curTarget);
                             if (idValuesForFieldName[nInfo['field']] === undefined) {
                                 idValuesForFieldName[nInfo['field']] = [];
                             }
@@ -1111,7 +1122,6 @@ var INTERMediator = {
                 repeatersOneRec = cloneEveryNodes(repeatersOriginal);
                 linkedElements = INTERMediatorLib.seekLinkedAndWidgetNodes(repeatersOneRec, true);
                 keyField = contextObj.getKeyField();
-                shouldDeleteNodes = [];
                 for (i = 0; i < repeatersOneRec.length; i++) {
                     setIdValue(repeatersOneRec[i]);
                 }

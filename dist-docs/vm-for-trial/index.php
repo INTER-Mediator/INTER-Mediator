@@ -631,7 +631,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <h3>VMに関する情報</h3>
 <ul>
-    <li>OS：Ubuntu Server 14.04.4</li>
+    <li>OS：Ubuntu Server 14.04.5</li>
     <li>インストール言語：Japanese/ja_JP.UTF-8</li>
     <li>キーボード：Japanese</li>
     <li>タイムゾーン：Asia/Tokyo</li>

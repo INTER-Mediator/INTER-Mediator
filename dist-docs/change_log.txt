@@ -48,6 +48,10 @@ Ver.5.4 (in release candidate)
   virtual machine.
 - The 'choice', 'condition', 'accumulate' and 'lastindexof' functions are introduced into expression.
 - On Post-Only mode, nodes with the same data-im-group attribute are corrected as the value in one field.
+- The ignorePost method is introduced in DB_Proxy class for ignoring the $_POST values in adviser class.
+- In the context with 'aggregation-*' value, if the 'paging' is true, the pagination works fine. You should
+  use this carefully because pagination requires to count total records and it could be a perforance issue.
+- Update TestDB.fmp12 and TestDB_clone.fmp12 to modify the Serial Number setting of 'asset_id' field.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
   being shown inappropriately.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
@@ -82,6 +86,7 @@ Ver.5.4 (in release candidate)
 - [BUG FIX] On the update and create operation, the recordset modified by adviser definition class doesn't
   affect to the mail.
 - [BUG FIX] Improve updating the display of nodes which depends on the value of radio buttons.
+- [BUG FIX] Sample_Asset's detail pages didn't show right record.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php

@@ -653,27 +653,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $viewOrTableName = $isAggregate ? $this->dbSettings->getAggregationFrom()
             : $this->quotedFieldName(isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
 
-        if (!$isAggregate) {
-            // Count all records matched with the condtions
-            $sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause}";
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-                return array();
-            }
-            $this->mainTableCount = $result->fetchColumn(0);
-
-            // Count all records
-            $sql = "SELECT count(*) FROM {$viewOrTableName}";
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-                return array();
-            }
-            $this->mainTableTotalCount = $result->fetchColumn(0);
-        }
         // Create SQL
         $limitParam = 100000000;
         if (isset($tableInfo['maxrecords'])) {
@@ -694,8 +673,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
         }
 
+        $isPaging = (isset($tableInfo['paging']) and $tableInfo['paging'] === true);
         $skipParam = 0;
-        if (isset($tableInfo['paging']) and $tableInfo['paging'] === true) {
+        if ($isPaging) {
             $skipParam = $this->dbSettings->getStart();
         }
         $fields = $isAggregate ? $this->dbSettings->getAggregationSelect()
@@ -703,12 +683,41 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 implode(',', array_unique($this->dbSettings->getFieldsRequired())) : "*");
         $groupBy = ($isAggregate && $this->dbSettings->getAggregationGroupBy())
             ? ("GROUP BY " . $this->dbSettings->getAggregationGroupBy()) : "";
-        $offset = $isAggregate ? '' : "OFFSET {$skipParam}";
+        $offset = "OFFSET {$skipParam}";
+
+        if ($isAggregate && !$isPaging) {
+            $offset = '';
+        } else {
+            // Count all records matched with the condtions
+            $sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause} {$groupBy}";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+                return array();
+            }
+            $this->mainTableCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
+
+            if ($queryClause === '') {
+                $this->mainTableTotalCount = $this->mainTableCount;
+            } else {
+                // Count all records
+                $sql = "SELECT count(*) FROM {$viewOrTableName} {$groupBy}";
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->query($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Select:' . $sql);
+                    return array();
+                }
+                $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
+            }
+        }
+
         $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} {$sortClause} "
             . " LIMIT {$limitParam} {$offset}";
         $this->logger->setDebugMessage($sql);
         $this->queriedEntity = $viewOrTableName;
-        $this->queriedCondition = "{$queryClause} {$sortClause} LIMIT {$limitParam} OFFSET {$skipParam}";
+        $this->queriedCondition = "{$queryClause} {$sortClause} LIMIT {$limitParam} {$offset}";
 
         // Query
         $result = $this->link->query($sql);
@@ -735,7 +744,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
             $isFirstRow = false;
         }
-        if ($isAggregate) {
+        if ($isAggregate && !$isPaging) {
             $this->mainTableCount = count($sqlResult);
             $this->mainTableTotalCount = count($sqlResult);
         }
