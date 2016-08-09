@@ -77,8 +77,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function isExistRequiredTable()
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
         if ($regTable == null) {
             $this->errorMessageStore("The table doesn't specified.");
             return false;
@@ -100,8 +99,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function register($clientId, $entity, $condition, $pkArray)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -158,8 +157,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function unregister($clientId, $tableKeys)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -223,8 +222,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function matchInRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -249,8 +248,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function appendIntoRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -279,8 +278,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function removeFromRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -652,7 +651,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $isAggregate = ($this->dbSettings->getAggregationSelect() != null);
 
         $viewOrTableName = $isAggregate ? $this->dbSettings->getAggregationFrom()
-            : (isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
+            : $this->quotedFieldName(isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
 
         if (!$isAggregate) {
             // Count all records matched with the condtions
@@ -794,7 +793,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     function updateDB()
     {
         $this->fieldInfo = null;
-        $tableName = $this->dbSettings->getEntityForUpdate();
+        $tableName = $this->quotedFieldName($this->dbSettings->getEntityForUpdate());
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
@@ -852,7 +851,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
 
         if ($this->isRequiredUpdated) {
-            $sql = "SELECT * FROM {$this->dbSettings->getEntityForRetrieve()} {$queryClause}";
+            $targetTable = $this->quotedFieldName($this->dbSettings->getEntityForRetrieve());
+            $sql = "SELECT * FROM {$targetTable} {$queryClause}";
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
             if ($result === false) {
@@ -905,8 +905,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $tableName = $this->dbSettings->getEntityForUpdate();
-        $viewName = $this->dbSettings->getEntityForRetrieve();
+        $tableName = $this->quotedFieldName($this->dbSettings->getEntityForUpdate());
+        $viewName = $this->quotedFieldName($this->dbSettings->getEntityForRetrieve());
 
         if (!$bypassAuth && isset($tableInfo['authentication'])) {
             $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
@@ -1044,7 +1044,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $tableName = $this->dbSettings->getEntityForUpdate();
+        $tableName = $this->quotedFieldName($this->dbSettings->getEntityForUpdate());
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection

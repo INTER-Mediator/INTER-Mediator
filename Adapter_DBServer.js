@@ -242,6 +242,7 @@ var INTERMediator_DBAdapter = {
                     registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
 
                     if (jsonObject.errorMessages.length > 0) {
+                        INTERMediator.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
                         throw 'Communication Error';
                     }
 
