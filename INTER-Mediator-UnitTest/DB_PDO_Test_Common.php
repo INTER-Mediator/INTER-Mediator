@@ -127,12 +127,18 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person", 1000000);
         $result = $this->db_proxy->readFromDB("person");
         $recordCount = $this->db_proxy->countQueryResult("person");
+
+        echo "===ckeckpoint1===";
+        var_export($this->db_proxy->logger->getErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessages());
+
         $parentId = $result[rand(0, $recordCount - 1)]["id"];
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $parentId);
         $this->db_proxy->copyInDB("person");
 
-//        var_export($this->db_proxy->logger->getErrorMessages());
-//        var_export($this->db_proxy->logger->getDebugMessages());
+        echo "===ckeckpoint2===";
+        var_export($this->db_proxy->logger->getErrorMessages());
+        var_export($this->db_proxy->logger->getDebugMessages());
 
         $this->dbProxySetupForAccess("person", 1000000, "contact");
         $result = $this->db_proxy->readFromDB("person");
