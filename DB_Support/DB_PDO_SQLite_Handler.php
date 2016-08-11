@@ -28,8 +28,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "INSERT INTO ";
     }
 
-    public
-    function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
+    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
     {
         $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
 
@@ -59,11 +58,11 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             if ($tableInfo['key'] === $row['name'] || !is_null($row['dflt_value'])) {
 
             } else if ($assocField === $row['name']) {
-                $fieldArray[] = $this->dbClassObj->quotedFieldName($row['name']);
+                $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
             } else {
-                $fieldArray[] = $this->dbClassObj->quotedFieldName($row['name']);
-                $listArray[] = $this->dbClassObj->quotedFieldName($row['name']);
+                $fieldArray[] = $this->quotedEntityName($row['name']);
+                $listArray[] = $this->quotedEntityName($row['name']);
             }
         }
         $fieldList = implode(',', $fieldArray);
@@ -79,8 +78,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return $this->dbClassObj->link->lastInsertId($tableName);
     }
 
-    public
-    function isPossibleOperator($operator)
+    public function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
                 '||',
@@ -97,10 +95,23 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             )));
     }
 
-    public
-    function isPossibleOrderSpecifier($specifier)
+    public function isPossibleOrderSpecifier($specifier)
     {
         return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
     }
 
+    public function quotedEntityName($entityName)
+    {
+        $q = '"';
+        if (strpos($entityName, ".") !== false) {
+            $components = explode(".", $entityName);
+            $quotedName = array();
+            foreach ($components as $item) {
+                $quotedName[] = $q . str_replace($q, $q . $q, $item) . $q;
+            }
+            return implode(".", $quotedName);
+        }
+        return $q . str_replace($q, $q . $q, $entityName) . $q;
+
+    }
 }

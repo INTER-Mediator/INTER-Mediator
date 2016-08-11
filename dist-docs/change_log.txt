@@ -154,6 +154,7 @@ Ver.5.3 (February 21, 2016)
 - The 'body-fields' keyed value can contain the stirng constant with start @.
   The value "@123,name" replaces @@1@@ to "123" and @@2@@ to the value of name field.
 - data-im-control attribute's value 'header', 'footer', 'separator' are supported.
+- In SQL statement, the table or view name in from clause is quoted by appropritate character
 - The 'realname' field is added to sample schemas for MySQL/PostgreSQL/SQLite.
 - Update TestDB.fmp12, TestDB_clone.fmp12 and TestDB.fp7 to add 'realname' field and 'limitdt' field
   to 'authuser' table.

@@ -44,11 +44,11 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             if ($tableInfo['key'] === $row['Field'] || !is_null($row['Default'])) {
 
             } else if ($assocField === $row['Field']) {
-                $fieldArray[] = $this->dbClassObj->quotedFieldName($row['Field']);
+                $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
             } else {
-                $fieldArray[] = $this->dbClassObj->quotedFieldName($row['Field']);
-                $listArray[] = $this->dbClassObj->quotedFieldName($row['Field']);
+                $fieldArray[] = $this->quotedEntityName($row['Field']);
+                $listArray[] = $this->quotedEntityName($row['Field']);
             }
         }
         $fieldList = implode(',', $fieldArray);
@@ -114,6 +114,20 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     public function isPossibleOrderSpecifier($specifier)
     {
         return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
+    }
+
+    public function quotedEntityName($entityName)
+    {
+        if (strpos($entityName, ".") !== false) {
+            $components = explode(".", $entityName);
+            $quotedName = array();
+            foreach ($components as $item) {
+                $quotedName[] = "`{$item}`";
+            }
+            return implode(".", $quotedName);
+        }
+        return "`{$entityName}`";
+
     }
 
 }

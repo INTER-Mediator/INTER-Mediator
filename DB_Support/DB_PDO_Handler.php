@@ -45,4 +45,6 @@ abstract class DB_PDO_Handler
     public abstract function sqlINSERTCommand();
 
     public abstract function copyRecords($tableInfo, $queryClause, $assocField, $assocValue);
+
+    public abstract function quotedEntityName($entityName);
 }

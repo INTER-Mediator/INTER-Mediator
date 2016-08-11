@@ -77,7 +77,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function isExistRequiredTable()
     {
-        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
+        $regTable = $this->quotedEntityName($this->dbSettings->registerTableName);
         if ($regTable == null) {
             $this->errorMessageStore("The table doesn't specified.");
             return false;
@@ -99,8 +99,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function register($clientId, $entity, $condition, $pkArray)
     {
-        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
-        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
+        $regTable = $this->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -157,8 +157,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function unregister($clientId, $tableKeys)
     {
-        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
-        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
+        $regTable = $this->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -222,8 +222,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function matchInRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
-        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
+        $regTable = $this->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -248,8 +248,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function appendIntoRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
-        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
+        $regTable = $this->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -278,8 +278,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function removeFromRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->quotedFieldName($this->dbSettings->registerTableName);
-        $pksTable = $this->quotedFieldName($this->dbSettings->registerPKTableName);
+        $regTable = $this->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -420,7 +420,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         $outsideOp = ' AND ';
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    $escapedField = $this->quotedFieldName($condition['field']);
+                    $escapedField = $this->quotedEntityName($condition['field']);
                     if (isset($condition['value']) && $condition['value'] != null) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
@@ -467,7 +467,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         $outsideOp = ' AND ';
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    $escapedField = $this->quotedFieldName($condition['field']);
+                    $escapedField = $this->quotedEntityName($condition['field']);
                     if (isset($condition['value']) && $condition['value'] != null) {
                         $condition = $this->normalizedCondition($condition);
                         $escapedValue = $this->link->quote($condition['value']);
@@ -510,7 +510,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             foreach ($tableInfo['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
                     if ($relDef['join-field'] == $foreignDef['field']) {
-                        $escapedField = $this->quotedFieldName($relDef['foreign-key']);
+                        $escapedField = $this->quotedEntityName($relDef['foreign-key']);
                         $escapedValue = $this->link->quote($foreignDef['value']);
                         $op = isset($relDef['operator']) ? $relDef['operator'] : '=';
                         if (!$this->handler->isPossibleOperator($op)) {
@@ -563,7 +563,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
         }
         if (!is_null($this->softDeleteField) && !is_null($this->softDeleteValue)) {
-            $dfEsc = $this->quotedFieldName($this->softDeleteField);
+            $dfEsc = $this->quotedEntityName($this->softDeleteField);
             $dvEsc = $this->link->quote($this->softDeleteValue);
             if (strlen($queryClause) > 0) {
                 $queryClause = "($queryClause) AND ($dfEsc <> $dvEsc OR $dfEsc IS NULL)";
@@ -585,7 +585,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $sortClause = array();
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
-                $escapedField = $this->quotedFieldName($condition['field']);
+                $escapedField = $this->quotedEntityName($condition['field']);
                 if (isset($condition['direction'])) {
                     if (!$this->handler->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
@@ -601,7 +601,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 if (isset($condition['direction']) && !$this->handler->isPossibleOrderSpecifier($condition['direction'])) {
                     throw new Exception("Invalid Sort Specifier.");
                 }
-                $escapedField = $this->quotedFieldName($condition['field']);
+                $escapedField = $this->quotedEntityName($condition['field']);
                 $sortClause[] = "{$escapedField} {$condition['direction']}";
             }
         }
@@ -651,7 +651,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $isAggregate = ($this->dbSettings->getAggregationSelect() != null);
 
         $viewOrTableName = $isAggregate ? $this->dbSettings->getAggregationFrom()
-            : $this->quotedFieldName(isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
+            : $this->quotedEntityName(isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
 
         // Create SQL
         $limitParam = 100000000;
@@ -802,7 +802,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     function updateDB()
     {
         $this->fieldInfo = null;
-        $tableName = $this->quotedFieldName($this->dbSettings->getEntityForUpdate());
+        $tableName = $this->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
@@ -860,7 +860,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
 
         if ($this->isRequiredUpdated) {
-            $targetTable = $this->quotedFieldName($this->dbSettings->getEntityForRetrieve());
+            $targetTable = $this->quotedEntityName($this->dbSettings->getEntityForRetrieve());
             $sql = "SELECT * FROM {$targetTable} {$queryClause}";
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
@@ -914,8 +914,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $tableName = $this->quotedFieldName($this->dbSettings->getEntityForUpdate());
-        $viewName = $this->quotedFieldName($this->dbSettings->getEntityForRetrieve());
+        $tableName = $this->quotedEntityName($this->dbSettings->getEntityForUpdate());
+        $viewName = $this->quotedEntityName($this->dbSettings->getEntityForRetrieve());
 
         if (!$bypassAuth && isset($tableInfo['authentication'])) {
             $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
@@ -1053,7 +1053,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $tableName = $this->quotedFieldName($this->dbSettings->getEntityForUpdate());
+        $tableName = $this->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
@@ -1141,7 +1141,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if ($assocArray) {
             foreach ($assocArray as $assocInfo) {
                 $assocContextDef = $this->dbSettings->getDataSourceDefinition($assocInfo['name']);
-                $queryClause = $this->quotedFieldName($assocInfo["field"]) . "=" .
+                $queryClause = $this->quotedEntityName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
                 $this->handler->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue);
             }
@@ -2109,7 +2109,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore("Can't open db connection.");
             return false;
         }
-        $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->quotedFieldName($table);
+        $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->quotedEntityName($table);
         if (count($conditions) > 0) {
             $sql .= " WHERE ";
             $first = true;
@@ -2117,7 +2117,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 if (!$first) {
                     $sql .= " AND ";
                 }
-                $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
+                $sql .= $this->quotedEntityName($field) . "=" . $this->link->quote($value);
                 $first = false;
             }
         }
@@ -2149,7 +2149,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore("Can't open db connection.");
             return false;
         }
-        $sql = "{$this->handler->sqlDELETECommand()}FROM " . $this->quotedFieldName($table);
+        $sql = "{$this->handler->sqlDELETECommand()}FROM " . $this->quotedEntityName($table);
         if (count($conditions) > 0) {
             $sql .= " WHERE ";
             $first = true;
@@ -2157,7 +2157,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 if (!$first) {
                     $sql .= " AND ";
                 }
-                $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
+                $sql .= $this->quotedEntityName($field) . "=" . $this->link->quote($value);
                 $first = false;
             }
         }
