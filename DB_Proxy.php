@@ -494,9 +494,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         return null;
     }
 
-    public function ignoringPost()   {
+    public function ignoringPost()
+    {
         $this->ignorePost = true;
-}
+    }
+
     /**
      * @param $datasource
      * @param $options

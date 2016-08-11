@@ -46,6 +46,14 @@ var IMLibUI = {
         return IMLibUI.changeValueLock[idValue] === true;
     },
 
+    hasLockUIElement: function () {
+        var key, judge = false;
+        for(key in IMLibUI.changeValueLock) {
+            judge |= IMLibUI.changeValueLock[key];
+        }
+        return judge;
+    },
+
     unlockUIElement: function (idValue) {
         IMLibUI.changeValueLock[idValue] = false;
     },
