@@ -40,12 +40,47 @@ class CWPKit
     public function getServerVersion()
     {
         $data = $this->query('-dbnames');
-        $version = $data->product->attributes()->version;
-        
-        if (isset($version[1])) {
-            return $version[1];
+        $version = (string) $data->product->attributes()->version;
+
+        return $version;
+    }
+
+    public function _removeDuplicatedQuery($queryString)
+    {
+        $conditions = array();
+        $query = explode('&', $queryString);
+        foreach ($query as $condition) {
+            $val = explode('=', $condition);
+            if (!isset($conditions[$val[0]])) {
+                $conditions[$val[0]] = isset($val[1]) ? $val[1] : '';
+            }
+        }
+
+        $queryString = '';
+        $i = 0;
+        foreach ($conditions as $key => $val) {
+            if ($i > 0 && $queryString !== '&') {
+                $queryString .= '&';
+            }
+            $queryString .= $key . '=' . $val;
+            if ($queryString === '='){
+                $queryString = '&';
+            }
+            $i++;
+        }
+
+        return $queryString;
+    }
+
+    public function _checkDuplicatedFXCondition($queryString, $field, $value)
+    {
+        $query = $this->_removeDuplicatedQuery(
+            $queryString . '&' . $field . '=' . $value
+        );
+        if ($queryString === $query) {
+            return FALSE;
         } else {
-            return '';
+            return TRUE;
         }
     }
 }

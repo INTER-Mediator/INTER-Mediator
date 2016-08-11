@@ -19,13 +19,14 @@
                 });
             }
         };
-        function setBackDate(id)    {
+        function setBackDate(id) {
             INTERMediator_DBAdapter.db_update({
                 name:"rentback",
                 conditions:[
                     {field:'asset_id', operator:'=', value:id},
-                    {field:'backdate', operator:'IS NULL'}],
-                dataset:[{field:'backdate', value:'2013-06-29'}]
+                    {field:'backdate', operator:'=', value:''}
+                ],
+                dataset:[{field:'backdate', value:'06/29/2013'}]
             });
             INTERMediator.construct();
         }
