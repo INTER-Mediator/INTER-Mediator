@@ -768,7 +768,19 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             'DBPassword' => $this->dbSettings->getAccessPassword(),
         );
         $cwpkit = new CWPKit($config);
+
+        $compoundFind = TRUE;
         if ($searchConditions === array() || (int)$cwpkit->getServerVersion() < 12) {
+            $compoundFind = FALSE;
+        } else {
+            foreach ($searchConditions as $searchCondition) {
+                if (isset($searchCondition[0]) && $searchCondition[0] === '-recid') {
+                    $compoundFind = FALSE;
+                }
+            }
+        }
+
+        if ($compoundFind === FALSE) {
             $currentSearch = $fxUtility->CreateCurrentSearch();
             if ($hasFindParams) {
                 $queryString = $cwpkit->_removeDuplicatedQuery(
