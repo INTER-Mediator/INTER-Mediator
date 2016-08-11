@@ -26,7 +26,7 @@ USE test_db;
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Define user to use this database. The user name and password should be replaced.
 
-# If the user doesn't exist, create it.
+# If the user does not exist, create it.
 GRANT USAGE ON *.* TO 'web'@'localhost';
 DROP USER 'web'@'localhost';
 # MySQL 5.7.8 or later, supporting the following statement.
@@ -72,13 +72,20 @@ CREATE TABLE authuser (
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
+CREATE INDEX authuser_username
+  ON authuser (username);
+CREATE INDEX authuser_email
+  ON authuser (email);
+CREATE INDEX authuser_limitdt
+  ON authuser (limitdt);
+
 INSERT authuser SET id=1,username='user1',hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354';
 INSERT authuser SET id=2,username='user2',hashedpasswd='5115aba773983066bcf4a8655ddac8525c1d3c6354455354';
 INSERT authuser SET id=3,username='user3',hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354';
 INSERT authuser SET id=4,username='user4',hashedpasswd='8c1b394577d0191417e8d962c5f6e3ca15068f8254455354';
 INSERT authuser SET id=5,username='user5',hashedpasswd='ee403ef2642f2e63dca12af72856620e6a24102d54455354';
 
-# The user1 has the password 'user1'. It's salted with the string 'TEXT'.
+# The user1 has the password 'user1'. It is salted with the string 'TEXT'.
 # All users have the password the same as user name. All are salted with 'TEXT'
 # The following command lines are used to generate above hashed-hexed-password.
 #
@@ -112,6 +119,13 @@ CREATE TABLE authcor (
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
+CREATE INDEX authcor_user_id
+  ON authcor (user_id);
+CREATE INDEX authcor_group_id
+  ON authcor (group_id);
+CREATE INDEX authcor_dest_group_id
+  ON authcor (dest_group_id);
+
 INSERT authcor SET user_id=1,dest_group_id=1;
 INSERT authcor SET user_id=2,dest_group_id=1;
 INSERT authcor SET user_id=3,dest_group_id=1;
@@ -132,3 +146,11 @@ CREATE TABLE issuedhash (
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
+CREATE INDEX issuedhash_user_id
+  ON issuedhash (user_id);
+CREATE INDEX issuedhash_expired
+  ON issuedhash (expired);
+CREATE INDEX issuedhash_clienthost
+  ON issuedhash (clienthost);
+CREATE INDEX issuedhash_user_id_clienthost
+  ON issuedhash (user_id, clienthost);
