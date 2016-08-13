@@ -903,7 +903,7 @@ var INTERMediator = {
             var currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, k, nodeId,
                 curVal, replacedNode, typeAttr, children, wInfo, nameTable, idValuesForFieldName = {},
                 nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget,
-                delNodes = [];
+                delNodes = [], targetFirstChar;
 
             currentContextDef = contextObj.getContextDef();
             try {
@@ -1015,7 +1015,8 @@ var INTERMediator = {
                         }
                     }
 
-                    if (isContext && !isInsidePostOnly &&
+                    targetFirstChar = curTarget.charAt(0);
+                    if (isContext && !isInsidePostOnly && targetFirstChar != '#' && targetFirstChar != '$' &&
                         (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                         //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
                         var changeFunction = function (id, evt) {
