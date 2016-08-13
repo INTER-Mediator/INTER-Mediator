@@ -25,7 +25,7 @@ abstract class DB_UseSharedObjects
     {
         if ( $obj === null )    {
             $this->setSettings(new DB_Settings());
-            $this->setLogger(new DB_Logger());
+            $this->setLogger(DB_Logger::getInstance());
             $this->setFormatter(new DB_Formatters());
         } else {
             $this->setSettings($obj->dbSettings);
