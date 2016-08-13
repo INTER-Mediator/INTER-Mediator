@@ -51,6 +51,10 @@ Ver.5.4 (in release candidate)
 - The ignorePost method is introduced in DB_Proxy class for ignoring the $_POST values in adviser class.
 - In the context with 'aggregation-*' value, if the 'paging' is true, the pagination works fine. You should
   use this carefully because pagination requires to count total records and it could be a perforance issue.
+- Update sample SQL files. These are added indices for authentication.
+- When the received json data is wrong, the server_access_async method calls the function for failing
+  in the parameter.
+- DB_Logger class works as Signleton. The messages within advice definition classes can be returned.
 - Update TestDB.fmp12 and TestDB_clone.fmp12 to modify the Serial Number setting of 'asset_id' field.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
   being shown inappropriately.
@@ -153,6 +157,7 @@ Ver.5.3 (February 21, 2016)
 - The 'body-fields' keyed value can contain the stirng constant with start @.
   The value "@123,name" replaces @@1@@ to "123" and @@2@@ to the value of name field.
 - data-im-control attribute's value 'header', 'footer', 'separator' are supported.
+- In SQL statement, the table or view name in from clause is quoted by appropritate character
 - The 'realname' field is added to sample schemas for MySQL/PostgreSQL/SQLite.
 - Update TestDB.fmp12, TestDB_clone.fmp12 and TestDB.fp7 to add 'realname' field and 'limitdt' field
   to 'authuser' table.

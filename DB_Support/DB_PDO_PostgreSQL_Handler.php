@@ -66,11 +66,11 @@ test_db       | im_sample    | person     | memo        |
             if ($tableInfo['key'] === $row['column_name'] || !is_null($row['column_default'])) {
 
             } else if ($assocField === $row['column_name']) {
-                $fieldArray[] = $this->dbClassObj->quotedFieldName($row['column_name']);
+                $fieldArray[] = $this->quotedEntityName($row['column_name']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
             } else {
-                $fieldArray[] = $this->dbClassObj->quotedFieldName($row['column_name']);
-                $listArray[] = $this->dbClassObj->quotedFieldName($row['column_name']);
+                $fieldArray[] = $this->quotedEntityName($row['column_name']);
+                $listArray[] = $this->quotedEntityName($row['column_name']);
             }
         }
         $fieldList = implode(',', $fieldArray);
@@ -140,4 +140,18 @@ test_db       | im_sample    | person     | memo        |
         return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
     }
 
+    public function quotedEntityName($entityName)
+    {
+        $q = '"';
+        if (strpos($entityName, ".") !== false) {
+            $components = explode(".", $entityName);
+            $quotedName = array();
+            foreach ($components as $item) {
+                $quotedName[] = $q . str_replace($q, $q . $q, $item) . $q;
+            }
+            return implode(".", $quotedName);
+        }
+        return $q . str_replace($q, $q . $q, $entityName) . $q;
+
+    }
 }

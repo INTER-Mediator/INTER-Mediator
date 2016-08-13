@@ -11,7 +11,7 @@
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i;
+            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -71,8 +71,8 @@ var IMLibElement = {
                     }
                     element.setAttribute(curTarget, currentValue + curVal);
                 }
-            }
-            else if (curTarget.charAt(0) == '$') { // Replacing
+                isReplaceOrAppned = true;
+            } else if (curTarget.charAt(0) == '$') { // Replacing
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
                     if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
@@ -95,6 +95,7 @@ var IMLibElement = {
                     }
                     element.setAttribute(curTarget, currentValue.replace('$', curVal));
                 }
+                isReplaceOrAppned = true;
             } else { // Setting
                 if (INTERMediatorLib.isWidgetElement(element)) {
                     element._im_setValue(curVal);
@@ -181,7 +182,7 @@ var IMLibElement = {
                 }
             }
         }
-        if (nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') {
+        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') && !isReplaceOrAppned) {
             var idValue = element.id;
             var elementCapt = element;
             INTERMediatorLib.addEvent(element, 'blur', function (event) {

@@ -242,6 +242,8 @@ var INTERMediator_DBAdapter = {
                     registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
 
                     if (jsonObject.errorMessages.length > 0) {
+                        INTERMediator.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
+                        failedProc();
                         throw 'Communication Error';
                     }
 
@@ -1118,25 +1120,25 @@ var INTERMediator_DBAdapter = {
         var params = INTERMediator_DBAdapter.db_createParameters(args);
         if (params) {
             INTERMediatorOnPage.retrieveAuthInfo();
-            INTERMediator_DBAdapter.server_access_async(
-                params,
-                1018,
-                1016,
-                successProc,
-                failedProc,
-                INTERMediator_DBAdapter.createExceptionFunc(
+                INTERMediator_DBAdapter.server_access_async(
+                    params,
+                    1018,
                     1016,
-                    (function () {
-                        var argsCapt = args;
-                        var succesProcCapt = successProc;
-                        var failedProcCapt = failedProc;
-                        return function () {
-                            INTERMediator_DBAdapter.db_createRecord_async(
-                                argsCapt, succesProcCapt, failedProcCapt);
-                        };
-                    })()
-                )
-            );
+                    successProc,
+                    failedProc,
+                    INTERMediator_DBAdapter.createExceptionFunc(
+                        1016,
+                        (function () {
+                            var argsCapt = args;
+                            var succesProcCapt = successProc;
+                            var failedProcCapt = failedProc;
+                            return function () {
+                                INTERMediator_DBAdapter.db_createRecord_async(
+                                    argsCapt, succesProcCapt, failedProcCapt);
+                            };
+                        })()
+                    )
+                );
         }
     },
 

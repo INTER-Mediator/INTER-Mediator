@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,13 +13,26 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class DB_Logger
 {
     /* Debug and Messages */
     private $debugLevel = false;
     private $errorMessage = array();
     private $debugMessage = array();
+
+    private static $instance = null;
+
+    public static function getInstance()
+    {
+        if (!self::$instance) {
+            self::$instance = new DB_Logger();
+        }
+        return self::$instance;
+    }
+
+    private function __construct()
+    {
+    }
 
     public function setDebugMessage($str, $level = 1)
     {

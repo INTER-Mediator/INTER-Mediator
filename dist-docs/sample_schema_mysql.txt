@@ -422,6 +422,13 @@ CREATE TABLE authuser (
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
+CREATE INDEX authuser_username
+  ON authuser (username);
+CREATE INDEX authuser_email
+  ON authuser (email);
+CREATE INDEX authuser_limitdt
+  ON authuser (limitdt);
+
 INSERT authuser SET id=1,username='user1',hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354';
 INSERT authuser SET id=2,username='user2',hashedpasswd='5115aba773983066bcf4a8655ddac8525c1d3c6354455354';
 INSERT authuser SET id=3,username='user3',hashedpasswd='d1a7981108a73e9fbd570e23ecca87c2c5cb967554455354';
@@ -462,6 +469,13 @@ CREATE TABLE authcor (
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
+CREATE INDEX authcor_user_id
+  ON authcor (user_id);
+CREATE INDEX authcor_group_id
+  ON authcor (group_id);
+CREATE INDEX authcor_dest_group_id
+  ON authcor (dest_group_id);
+
 INSERT authcor SET user_id=1,dest_group_id=1;
 INSERT authcor SET user_id=2,dest_group_id=1;
 INSERT authcor SET user_id=3,dest_group_id=1;
@@ -481,6 +495,15 @@ CREATE TABLE issuedhash (
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
+
+CREATE INDEX issuedhash_user_id
+  ON issuedhash (user_id);
+CREATE INDEX issuedhash_expired
+  ON issuedhash (expired);
+CREATE INDEX issuedhash_clienthost
+  ON issuedhash (clienthost);
+CREATE INDEX issuedhash_user_id_clienthost
+  ON issuedhash (user_id, clienthost);
 
 CREATE TABLE testtable (
     id INT AUTO_INCREMENT,
