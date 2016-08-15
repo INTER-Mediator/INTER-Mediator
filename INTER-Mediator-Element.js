@@ -172,7 +172,7 @@ var IMLibElement = {
                     }
                     element.innerHTML = curVal;
                 } else {
-                    if (nodeTag == 'TEXTAREA') {
+                    if (nodeTag == 'TEXTAREA' && curVal.length > 0) {
                         if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
                             // for IE11
                             curVal = curVal.replace(/\r\n/g, IMLib.nl_char).replace(/\r/g, IMLib.nl_char);
