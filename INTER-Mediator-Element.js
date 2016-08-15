@@ -49,29 +49,32 @@ var IMLibElement = {
 
         if (curTarget != null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
-                curTarget = curTarget.substring(1);
-                if (curTarget == 'innerHTML') {
-                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                if (element.getAttribute('data-im-element') !== 'processed') {
+                    curTarget = curTarget.substring(1);
+                    if (curTarget == 'innerHTML') {
+                        if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                        }
+                        element.innerHTML += curVal;
+                    } else if (curTarget == 'textNode' || curTarget == 'script') {
+                        textNode = document.createTextNode(curVal);
+                        if (nodeTag == 'TEXTAREA') {
+                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                        }
+                        element.appendChild(textNode);
+                    } else if (curTarget.indexOf('style.') == 0) {
+                        styleName = curTarget.substring(6, curTarget.length);
+                        element.style[styleName] = curVal;
+                    } else {
+                        currentValue = element.getAttribute(curTarget);
+                        if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
+                            curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
+                        }
+                        element.setAttribute(curTarget, currentValue + curVal);
                     }
-                    element.innerHTML += curVal;
-                } else if (curTarget == 'textNode' || curTarget == 'script') {
-                    textNode = document.createTextNode(curVal);
-                    if (nodeTag == 'TEXTAREA') {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-                    }
-                    element.appendChild(textNode);
-                } else if (curTarget.indexOf('style.') == 0) {
-                    styleName = curTarget.substring(6, curTarget.length);
-                    element.style[styleName] = curVal;
-                } else {
-                    currentValue = element.getAttribute(curTarget);
-                    if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
-                        curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
-                    }
-                    element.setAttribute(curTarget, currentValue + curVal);
+                    isReplaceOrAppned = true;
+                    element.setAttribute('data-im-element', 'processed');
                 }
-                isReplaceOrAppned = true;
             } else if (curTarget.charAt(0) == '$') { // Replacing
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
