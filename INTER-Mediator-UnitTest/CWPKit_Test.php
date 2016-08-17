@@ -32,10 +32,32 @@ class CWPKit_Test extends PHPUnit_Framework_TestCase
 
     public function test_getServerVersion()
     {
-        $expected = '11.0.4.400';
-        $xml = $this->cwpkit->getServerVersion();
-        $result = $xml->product->attributes()->version;
+        $expected = '15.0.1.137';
+        $result = $this->cwpkit->getServerVersion();
         $this->assertEquals($result, $expected);
+    }
+
+    public function test__removeDuplicatedQuery()
+    {
+        $expected = '-db=TestDB&-lay=person_layout&-find=&name=1&name.op=eq';
+        $queryString = '-db=TestDB&-lay=person_layout&-find=&name=1&name.op=eq&name=2&name.op=eq';
+        $result = $this->cwpkit->_removeDuplicatedQuery($queryString);
+        $this->assertEquals($result, $expected);
+    }
+
+    public function test__checkDuplicatedFXCondition()
+    {
+        $queryString = '-db=TestDB&-lay=person_layout&-find=&name=1&name.op=eq';
+        $field = 'name';
+        $value = '1';
+        $result = $this->cwpkit->_checkDuplicatedFXCondition($queryString, $field, $value);
+        $this->assertFalse($result);
+
+        $queryString = '-db=TestDB&-lay=person_layout&-find=&name=1&name.op=eq';
+        $field = 'class';
+        $value = '1';
+        $result = $this->cwpkit->_checkDuplicatedFXCondition($queryString, $field, $value);
+        $this->assertTrue($result);
     }
 
 }

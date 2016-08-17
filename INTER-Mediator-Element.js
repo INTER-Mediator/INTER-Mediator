@@ -11,7 +11,7 @@
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i;
+            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -41,6 +41,10 @@ var IMLibElement = {
                 break;
             default:
                 while (element.childNodes.length > 0) {
+                    if (element.parentNode.getAttribute('data-im-element') === 'processed') {
+                        // for data-im-widget
+                        return false;
+                    }
                     element.removeChild(element.childNodes[0]);
                 }
                 break;
@@ -49,30 +53,32 @@ var IMLibElement = {
 
         if (curTarget != null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
-                curTarget = curTarget.substring(1);
-                if (curTarget == 'innerHTML') {
-                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                if (element.getAttribute('data-im-element') !== 'processed') {
+                    curTarget = curTarget.substring(1);
+                    if (curTarget == 'innerHTML') {
+                        if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                        }
+                        element.innerHTML += curVal;
+                    } else if (curTarget == 'textNode' || curTarget == 'script') {
+                        textNode = document.createTextNode(curVal);
+                        if (nodeTag == 'TEXTAREA') {
+                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                        }
+                        element.appendChild(textNode);
+                    } else if (curTarget.indexOf('style.') == 0) {
+                        styleName = curTarget.substring(6, curTarget.length);
+                        element.style[styleName] = curVal;
+                    } else {
+                        currentValue = element.getAttribute(curTarget);
+                        if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
+                            curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
+                        }
+                        element.setAttribute(curTarget, currentValue + curVal);
                     }
-                    element.innerHTML += curVal;
-                } else if (curTarget == 'textNode' || curTarget == 'script') {
-                    textNode = document.createTextNode(curVal);
-                    if (nodeTag == 'TEXTAREA') {
-                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-                    }
-                    element.appendChild(textNode);
-                } else if (curTarget.indexOf('style.') == 0) {
-                    styleName = curTarget.substring(6, curTarget.length);
-                    element.style[styleName] = curVal;
-                } else {
-                    currentValue = element.getAttribute(curTarget);
-                    if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
-                        curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
-                    }
-                    element.setAttribute(curTarget, currentValue + curVal);
+                    isReplaceOrAppned = true;
                 }
-            }
-            else if (curTarget.charAt(0) == '$') { // Replacing
+            } else if (curTarget.charAt(0) == '$') { // Replacing
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
                     if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
@@ -95,6 +101,7 @@ var IMLibElement = {
                     }
                     element.setAttribute(curTarget, currentValue.replace('$', curVal));
                 }
+                isReplaceOrAppned = true;
             } else { // Setting
                 if (INTERMediatorLib.isWidgetElement(element)) {
                     element._im_setValue(curVal);
@@ -168,7 +175,7 @@ var IMLibElement = {
                     }
                     element.innerHTML = curVal;
                 } else {
-                    if (nodeTag == 'TEXTAREA') {
+                    if (nodeTag == 'TEXTAREA' && curVal.length > 0) {
                         if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
                             // for IE11
                             curVal = curVal.replace(/\r\n/g, IMLib.nl_char).replace(/\r/g, IMLib.nl_char);
@@ -181,17 +188,16 @@ var IMLibElement = {
                 }
             }
         }
-        if (nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') {
-            INTERMediatorLib.addEvent(element, 'blur', function () {
-                var idValue = element.id;
-                return (function (event) {
-                    if (!IMLibUI.valueChange(idValue, true)) {
-                        // element.focus();
-                        event.target.focus();
-                    }
-                })();
+        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') && !isReplaceOrAppned) {
+            var idValue = element.id;
+            var elementCapt = element;
+            INTERMediatorLib.addEvent(element, 'blur', function (event) {
+                if (!IMLibUI.valueChange(idValue, true)) {
+                    elementCapt.focus();
+                }
             });
         }
+        element.setAttribute('data-im-element', 'processed');
         return needPostValueSet;
     },
 

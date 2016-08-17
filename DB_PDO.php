@@ -77,8 +77,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function isExistRequiredTable()
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
         if ($regTable == null) {
             $this->errorMessageStore("The table doesn't specified.");
             return false;
@@ -100,8 +99,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function register($clientId, $entity, $condition, $pkArray)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -158,8 +157,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function unregister($clientId, $tableKeys)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -223,8 +222,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function matchInRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -249,8 +248,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function appendIntoRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -279,8 +278,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
 
     public function removeFromRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
+        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
@@ -421,7 +420,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         $outsideOp = ' AND ';
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    $escapedField = $this->quotedFieldName($condition['field']);
+                    $escapedField = $this->handler->quotedEntityName($condition['field']);
                     if (isset($condition['value']) && $condition['value'] != null) {
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
@@ -468,7 +467,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         $outsideOp = ' AND ';
                     }
                 } else if (!$this->dbSettings->getPrimaryKeyOnly() || $condition['field'] == $primaryKey) {
-                    $escapedField = $this->quotedFieldName($condition['field']);
+                    $escapedField = $this->handler->quotedEntityName($condition['field']);
                     if (isset($condition['value']) && $condition['value'] != null) {
                         $condition = $this->normalizedCondition($condition);
                         $escapedValue = $this->link->quote($condition['value']);
@@ -511,7 +510,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             foreach ($tableInfo['relation'] as $relDef) {
                 foreach ($this->dbSettings->getForeignFieldAndValue() as $foreignDef) {
                     if ($relDef['join-field'] == $foreignDef['field']) {
-                        $escapedField = $this->quotedFieldName($relDef['foreign-key']);
+                        $escapedField = $this->handler->quotedEntityName($relDef['foreign-key']);
                         $escapedValue = $this->link->quote($foreignDef['value']);
                         $op = isset($relDef['operator']) ? $relDef['operator'] : '=';
                         if (!$this->handler->isPossibleOperator($op)) {
@@ -564,7 +563,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
         }
         if (!is_null($this->softDeleteField) && !is_null($this->softDeleteValue)) {
-            $dfEsc = $this->quotedFieldName($this->softDeleteField);
+            $dfEsc = $this->handler->quotedEntityName($this->softDeleteField);
             $dvEsc = $this->link->quote($this->softDeleteValue);
             if (strlen($queryClause) > 0) {
                 $queryClause = "($queryClause) AND ($dfEsc <> $dvEsc OR $dfEsc IS NULL)";
@@ -586,7 +585,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $sortClause = array();
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
-                $escapedField = $this->quotedFieldName($condition['field']);
+                $escapedField = $this->handler->quotedEntityName($condition['field']);
                 if (isset($condition['direction'])) {
                     if (!$this->handler->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
@@ -602,7 +601,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 if (isset($condition['direction']) && !$this->handler->isPossibleOrderSpecifier($condition['direction'])) {
                     throw new Exception("Invalid Sort Specifier.");
                 }
-                $escapedField = $this->quotedFieldName($condition['field']);
+                $escapedField = $this->handler->quotedEntityName($condition['field']);
                 $sortClause[] = "{$escapedField} {$condition['direction']}";
             }
         }
@@ -652,29 +651,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $isAggregate = ($this->dbSettings->getAggregationSelect() != null);
 
         $viewOrTableName = $isAggregate ? $this->dbSettings->getAggregationFrom()
-            : (isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
+            : $this->handler->quotedEntityName(isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
 
-        if (!$isAggregate) {
-            // Count all records matched with the condtions
-            $sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause}";
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-                return array();
-            }
-            $this->mainTableCount = $result->fetchColumn(0);
-
-            // Count all records
-            $sql = "SELECT count(*) FROM {$viewOrTableName}";
-            $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
-            if ($result === false) {
-                $this->errorMessageStore('Select:' . $sql);
-                return array();
-            }
-            $this->mainTableTotalCount = $result->fetchColumn(0);
-        }
         // Create SQL
         $limitParam = 100000000;
         if (isset($tableInfo['maxrecords'])) {
@@ -695,8 +673,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
         }
 
+        $isPaging = (isset($tableInfo['paging']) and $tableInfo['paging'] === true);
         $skipParam = 0;
-        if (isset($tableInfo['paging']) and $tableInfo['paging'] === true) {
+        if ($isPaging) {
             $skipParam = $this->dbSettings->getStart();
         }
         $fields = $isAggregate ? $this->dbSettings->getAggregationSelect()
@@ -704,12 +683,41 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 implode(',', array_unique($this->dbSettings->getFieldsRequired())) : "*");
         $groupBy = ($isAggregate && $this->dbSettings->getAggregationGroupBy())
             ? ("GROUP BY " . $this->dbSettings->getAggregationGroupBy()) : "";
-        $offset = $isAggregate ? '' : "OFFSET {$skipParam}";
+        $offset = "OFFSET {$skipParam}";
+
+        if ($isAggregate && !$isPaging) {
+            $offset = '';
+        } else {
+            // Count all records matched with the condtions
+            $sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause} {$groupBy}";
+            $this->logger->setDebugMessage($sql);
+            $result = $this->link->query($sql);
+            if ($result === false) {
+                $this->errorMessageStore('Select:' . $sql);
+                return array();
+            }
+            $this->mainTableCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
+
+            if ($queryClause === '') {
+                $this->mainTableTotalCount = $this->mainTableCount;
+            } else {
+                // Count all records
+                $sql = "SELECT count(*) FROM {$viewOrTableName} {$groupBy}";
+                $this->logger->setDebugMessage($sql);
+                $result = $this->link->query($sql);
+                if ($result === false) {
+                    $this->errorMessageStore('Select:' . $sql);
+                    return array();
+                }
+                $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
+            }
+        }
+
         $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} {$sortClause} "
             . " LIMIT {$limitParam} {$offset}";
         $this->logger->setDebugMessage($sql);
         $this->queriedEntity = $viewOrTableName;
-        $this->queriedCondition = "{$queryClause} {$sortClause} LIMIT {$limitParam} OFFSET {$skipParam}";
+        $this->queriedCondition = "{$queryClause} {$sortClause} LIMIT {$limitParam} {$offset}";
 
         // Query
         $result = $this->link->query($sql);
@@ -736,7 +744,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
             $isFirstRow = false;
         }
-        if ($isAggregate) {
+        if ($isAggregate && !$isPaging) {
             $this->mainTableCount = count($sqlResult);
             $this->mainTableTotalCount = count($sqlResult);
         }
@@ -794,7 +802,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     function updateDB()
     {
         $this->fieldInfo = null;
-        $tableName = $this->dbSettings->getEntityForUpdate();
+        $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
@@ -852,7 +860,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
 
         if ($this->isRequiredUpdated) {
-            $sql = "SELECT * FROM {$this->dbSettings->getEntityForRetrieve()} {$queryClause}";
+            $targetTable = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
+            $sql = "SELECT * FROM {$targetTable} {$queryClause}";
             $result = $this->link->query($sql);
             $this->logger->setDebugMessage($sql);
             if ($result === false) {
@@ -905,8 +914,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $tableName = $this->dbSettings->getEntityForUpdate();
-        $viewName = $this->dbSettings->getEntityForRetrieve();
+        $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
+        $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
 
         if (!$bypassAuth && isset($tableInfo['authentication'])) {
             $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
@@ -1044,7 +1053,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $tableName = $this->dbSettings->getEntityForUpdate();
+        $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
@@ -1132,7 +1141,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if ($assocArray) {
             foreach ($assocArray as $assocInfo) {
                 $assocContextDef = $this->dbSettings->getDataSourceDefinition($assocInfo['name']);
-                $queryClause = $this->quotedFieldName($assocInfo["field"]) . "=" .
+                $queryClause = $this->handler->quotedEntityName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
                 $this->handler->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue);
             }
@@ -1260,6 +1269,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportCheckMediaToken] {$sql}");
+
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
             $seconds = IMUtil::secondsFromNow($row['expired']);
@@ -1299,6 +1310,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportRetrieveChallenge] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
             $recordId = $row['id'];
@@ -1309,6 +1321,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     $this->errorMessageStore('Delete:' . $sql);
                     return false;
                 }
+                $this->logger->setDebugMessage("[authSupportRetrieveChallenge] {$sql}");
             }
             $seconds = IMUtil::secondsFromNow($row['expired']);
             if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
@@ -1336,7 +1349,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $currentDTStr = $this->link->quote(IMUtil::currentDTString($this->dbSettings->getExpiringSeconds()));
         $sql = "delete from {$hashTable} where expired < {$currentDTStr}";
-        $this->logger->setDebugMessage($sql);
+        $this->logger->setDebugMessage("[authSupportRemoveOutdatedChallenges] {$sql}");
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
@@ -1381,12 +1394,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $sql = "{$this->handler->sqlINSERTCommand()}{$userTable} (" . implode(",", $keys) . ") "
                 . "VALUES (" . implode(",", $values) . ")";
         }
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
-            $this->errorMessageStore('authSupportOAuthUserHandling:' . $sql);
+            $this->errorMessageStore('[authSupportOAuthUserHandling] ' . $sql);
             return $returnValue;
         }
+        $this->logger->setDebugMessage("[authSupportOAuthUserHandling] {$sql}");
         return $returnValue;
     }
 
@@ -1409,12 +1422,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}hashedpasswd FROM {$userTable} WHERE username=" . $this->link->quote($signedUser);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportRetrieveHashedPassword] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $limitSeconds = $this->dbSettings->getLDAPExpiringSeconds();
             if (isset($row['limitdt']) && !is_null($row['limitdt'])
@@ -1448,12 +1461,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
             $sql = "{$this->handler->sqlINSERTCommand()}{$userTable} (username, hashedpasswd) "
                 . "VALUES ({$this->link->quote($username)}, {$this->link->quote($hashedpassword)})";
-            $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if ($result === false) {
                 $this->errorMessageStore('Insert:' . $sql);
                 return false;
             }
+            $this->logger->setDebugMessage("[authSupportCreateUser] {$sql}");
         } else {
             $user_id = -1;
             $timeUp = false;
@@ -1463,12 +1476,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             }
 
             $sql = "{$this->handler->sqlSELECTCommand()}* FROM {$userTable} WHERE username=" . $this->link->quote($username);
-            $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
                 return false;
             }
+            $this->logger->setDebugMessage("[authSupportCreateUser] {$sql}");
             foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 if (isset($row['limitdt']) && !is_null($row['limitdt'])) {
                     if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
@@ -1489,8 +1502,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     }
                 }
                 $sql = "{$this->handler->sqlUPDATECommand()}{$userTable} SET {$setClause} WHERE id=" . $user_id;
-                $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
+                $this->logger->setDebugMessage("[authSupportCreateUser] {$sql}");
                 if ($result === false) {
                     $this->errorMessageStore('Update:' . $sql);
                     return false;
@@ -1504,12 +1517,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                     . "({$this->link->quote($username)},"
                     . " {$this->link->quote($hashedpassword)}, "
                     . " {$this->link->quote($currentDTFormat)})";
-                $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
                 if ($result === false) {
                     $this->errorMessageStore('Insert:' . $sql);
                     return false;
                 }
+                $this->logger->setDebugMessage("[authSupportCreateUser] {$sql}");
             }
         }
         return true;
@@ -1535,12 +1548,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $sql = "{$this->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd=" . $this->link->quote($hashednewpassword)
             . " WHERE username=" . $this->link->quote($signedUser);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Update:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportChangePassword] {$sql}");
         return true;
     }
 
@@ -1574,12 +1587,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}* FROM {$userTable} WHERE username=" . $this->link->quote($username);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[privateGetUserIdFromUsername] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if ($isCheckLimit && isset($row['limitdt']) && !is_null($row['limitdt'])) {
                 if (time() - strtotime($row['limitdt']) > $this->dbSettings->getLDAPExpiringSeconds()) {
@@ -1609,12 +1622,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}groupname FROM {$groupTable} WHERE id=" . $this->link->quote($groupid);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportGetGroupNameFromGroupId] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row['groupname'];
         }
@@ -1706,7 +1719,6 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $sql = "{$this->handler->sqlSELECTCommand()}* FROM {$corrTable} WHERE group_id = " . $this->link->quote($groupid);
             //    $this->belongGroups[] = $groupid;
         }
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->logger->setDebugMessage('Select:' . $sql);
@@ -1715,6 +1727,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if ($result->columnCount() === 0) {
             return false;
         }
+        $this->logger->setDebugMessage("[resolveGroup] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if (!in_array($row['dest_group_id'], $this->belongGroups)) {
                 $this->belongGroups[] = $row['dest_group_id'];
@@ -1740,12 +1753,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $sql = "{$this->handler->sqlSELECTCommand()}groupname FROM {$tableName} WHERE {$userField}="
             . $this->link->quote($user) . " AND {$keyField}=" . $this->link->quote($keyValue);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportCheckMediaPrivilege] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return true;
         }
@@ -1771,12 +1784,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}id FROM {$userTable} WHERE email=" . $this->link->quote($email);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportGetUserIdFromEmail] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row['id'];
         }
@@ -1802,12 +1815,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}username FROM {$userTable} WHERE id=" . $this->link->quote($userid);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportGetUsernameFromUserId] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             return $row['username'];
         }
@@ -1834,12 +1847,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $sql = "{$this->handler->sqlSELECTCommand()}username,email FROM {$userTable} WHERE username=" .
             $this->link->quote($username) . " or email=" . $this->link->quote($username);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportUnifyUsernameAndEmail] {$sql}");
         $usernameCandidate = '';
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             if ($row['username'] == $username) {
@@ -1878,12 +1891,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $sql = "{$this->handler->sqlINSERTCommand()}{$hashTable} (hash,expired,clienthost,user_id) VALUES("
             . implode(',', array($this->link->quote($hash), $this->link->quote($currentDTFormat),
                 $this->link->quote($clienthost), $this->link->quote($userid))) . ')';
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Insert:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportStoreIssuedHashForResetPassword] {$sql}");
         return true;
     }
 
@@ -1909,12 +1922,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $sql = "{$this->handler->sqlSELECTCommand()}hash,expired FROM {$hashTable} WHERE"
             . " user_id=" . $this->link->quote($userid)
             . " AND clienthost=" . $this->link->quote($randdata);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportCheckIssuedHashForResetPassword] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $hashValue = $row['hash'];
             if (IMUtil::secondsFromNow($row['expired']) > 3600) {
@@ -1942,12 +1955,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $this->link->quote($hash),
                 $this->link->quote($currentDTFormat),
                 $this->link->quote($userid))) . ')';
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportUserEnrollmentStart] {$sql}");
         return true;
     }
 
@@ -1964,12 +1977,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $currentDTFormat = IMUtil::currentDTString(3600);
         $sql = "{$this->handler->sqlSELECTCommand()}user_id FROM {$hashTable} WHERE hash = " . $this->link->quote($hash) .
             " AND clienthost IS NULL AND expired > " . $this->link->quote($currentDTFormat);
-        $this->logger->setDebugMessage($sql);
         $resultHash = $this->link->query($sql);
         if ($resultHash === false) {
             $this->errorMessageStore('Select:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportUserEnrollmentEnrollingUser] {$sql}");
         foreach ($resultHash->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $userID = $row['user_id'];
             if ($userID < 1) {
@@ -1993,12 +2006,12 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         $sql = "{$this->handler->sqlUPDATECommand()}{$userTable} SET hashedpasswd=" . $this->link->quote($password)
             . (($rawPWField !== false) ? "," . $rawPWField . "=" . $this->link->quote($rawPW) : "")
             . " WHERE id=" . $this->link->quote($userID);
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             $this->errorMessageStore('Update:' . $sql);
             return false;
         }
+        $this->logger->setDebugMessage("[authSupportUserEnrollmentActivateUser] {$sql}");
         return $userID;
     }
 
@@ -2096,7 +2109,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore("Can't open db connection.");
             return false;
         }
-        $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->quotedFieldName($table);
+        $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->handler->quotedEntityName($table);
         if (count($conditions) > 0) {
             $sql .= " WHERE ";
             $first = true;
@@ -2104,16 +2117,16 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 if (!$first) {
                     $sql .= " AND ";
                 }
-                $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
+                $sql .= $this->handler->quotedEntityName($field) . "=" . $this->link->quote($value);
                 $first = false;
             }
         }
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
         if ($result === false) {
             var_dump($this->link->errorInfo());
             return false;
         }
+        $this->logger->setDebugMessage("[queryForTest] {$sql}");
         $recordSet = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $oneRecord = array();
@@ -2136,7 +2149,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $this->errorMessageStore("Can't open db connection.");
             return false;
         }
-        $sql = "{$this->handler->sqlDELETECommand()}FROM " . $this->quotedFieldName($table);
+        $sql = "{$this->handler->sqlDELETECommand()}FROM " . $this->handler->quotedEntityName($table);
         if (count($conditions) > 0) {
             $sql .= " WHERE ";
             $first = true;
@@ -2144,16 +2157,16 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 if (!$first) {
                     $sql .= " AND ";
                 }
-                $sql .= $this->quotedFieldName($field) . "=" . $this->link->quote($value);
+                $sql .= $this->handler->quotedEntityName($field) . "=" . $this->link->quote($value);
                 $first = false;
             }
         }
-        $this->logger->setDebugMessage($sql);
         $result = $this->link->exec($sql);
         if ($result === false) {
             var_dump($this->link->errorInfo());
             return false;
         }
+        $this->logger->setDebugMessage("[deleteForTest] {$sql}");
         return true;
     }
 

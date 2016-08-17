@@ -1017,6 +1017,7 @@ var INTERMediatorOnPage = {
             bodyNode = document.getElementsByTagName('BODY')[0];
             frontPanel = document.createElement('div');
             frontPanel.setAttribute('id', '_im_progress');
+            frontPanel.style.position = 'fixed';
             linkElement = document.createElement('link');
             linkElement.setAttribute('href', rootPath + '/themes/default/css/style.css');
             linkElement.setAttribute('rel', 'stylesheet');

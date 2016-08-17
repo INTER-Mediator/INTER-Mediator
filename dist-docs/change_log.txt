@@ -19,7 +19,7 @@ Ver.5.4 (in release candidate)
   values.
 - If the automatic calling to construct method doesn't requre, descirbe the below in doBeforeConstruct
   or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
-- Creating Cross Table for PDO. It contains 3 contexts for colomn, row and value cells.
+- Creating Cross Table for PDO. It contains 3 contexts for column, row and value cells.
   See the sample Samples/Practices/crosstable.html.
 - The "post-query-stored" key in context of the definition file is introduced. It will be specified
   a method name, ant the method has to be define in the INTERMediatorOnPage object with one variable
@@ -46,6 +46,16 @@ Ver.5.4 (in release candidate)
 - Add .eslintrc.js.
 - Update sample_schema_mysql.txt, dbupdate.sh, recipe.rb and sample_spec.rb for the INTER-Mediator-Server
   virtual machine.
+- The 'choice', 'condition', 'accumulate' and 'lastindexof' functions are introduced into expression.
+- On Post-Only mode, nodes with the same data-im-group attribute are corrected as the value in one field.
+- The ignorePost method is introduced in DB_Proxy class for ignoring the $_POST values in adviser class.
+- In the context with 'aggregation-*' value, if the 'paging' is true, the pagination works fine. You should
+  use this carefully because pagination requires to count total records and it could be a perforance issue.
+- Update sample SQL files. These are added indices for authentication.
+- When the received json data is wrong, the server_access_async method calls the function for failing
+  in the parameter.
+- DB_Logger class works as Signleton. The messages within advice definition classes can be returned.
+- Update TestDB.fmp12 and TestDB_clone.fmp12 to modify the Serial Number setting of 'asset_id' field.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
   being shown inappropriately.
 - [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
@@ -75,6 +85,12 @@ Ver.5.4 (in release candidate)
   using Microsoft Edge or Internet Explorer.
 - [BUG FIX] Fix DB_FileMaker_FX class for DataConverter_FMDateTime class to handle the fields on
   the portal objects with portal access mode correctly.
+- [BUG FIX] The 'button-names' keyed values didn't affect to buttons on pagenation bar.
+- [BUG FIX] Fix displaying when the value of SELECT element is empty.
+- [BUG FIX] On the update and create operation, the recordset modified by adviser definition class doesn't
+  affect to the mail.
+- [BUG FIX] Improve updating the display of nodes which depends on the value of radio buttons.
+- [BUG FIX] Sample_Asset's detail pages didn't show right record.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
@@ -141,6 +157,7 @@ Ver.5.3 (February 21, 2016)
 - The 'body-fields' keyed value can contain the stirng constant with start @.
   The value "@123,name" replaces @@1@@ to "123" and @@2@@ to the value of name field.
 - data-im-control attribute's value 'header', 'footer', 'separator' are supported.
+- In SQL statement, the table or view name in from clause is quoted by appropritate character
 - The 'realname' field is added to sample schemas for MySQL/PostgreSQL/SQLite.
 - Update TestDB.fmp12, TestDB_clone.fmp12 and TestDB.fp7 to add 'realname' field and 'limitdt' field
   to 'authuser' table.

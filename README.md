@@ -35,6 +35,7 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Akinori Mizoguchi
 - Hiromi Morita
 - Yukio Murakami
+- Shin Ninagawa
 - Osamu Noda
 - Tomoyuki Sugihara
 - Hiroyasu Tanaka

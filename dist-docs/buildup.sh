@@ -8,7 +8,7 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="5.4-RC1"
+version="5.4-RC3"
 
 # The jar file of YUI can be donwloaded from below.
 # http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7
@@ -112,10 +112,15 @@ else
     rm  "${buildPath}/temp.js"
 fi
 
+# Copy "DB_Support" directory.
+echo "PROCESSING: ${originalPath}/DB_Support"
+cp -prf "${originalPath}/DB_Support" "${buildPath}"
+
 # Copy "lib" path php contents.
 echo "PROCESSING: ${originalPath}/lib"
 mkdir -p "${buildPath}/lib/bi2php"
 cp -p "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
+cp -prf "${originalPath}/lib/CWPKit" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/FX" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/phpseclib" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/mailsend" "${buildPath}/lib"
