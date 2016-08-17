@@ -232,7 +232,7 @@ var INTERMediator = {
         position = ua.indexOf('; Trident/');
         if (position >= 0) {
             INTERMediator.isTrident = true;
-            for (i = msiePos + 10; i < ua.length; i++) {
+            for (i = position + 10; i < ua.length; i++) {
                 c = ua.charAt(i);
                 if (!(c == ' ' || c == '.' || (c >= '0' && c <= '9'))) {
                     INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 10, i)) + 4;
