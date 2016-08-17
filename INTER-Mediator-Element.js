@@ -41,6 +41,10 @@ var IMLibElement = {
                 break;
             default:
                 while (element.childNodes.length > 0) {
+                    if (element.parentNode.getAttribute('data-im-element') === 'processed') {
+                        // for data-im-widget
+                        return false;
+                    }
                     element.removeChild(element.childNodes[0]);
                 }
                 break;
@@ -73,7 +77,6 @@ var IMLibElement = {
                         element.setAttribute(curTarget, currentValue + curVal);
                     }
                     isReplaceOrAppned = true;
-                    element.setAttribute('data-im-element', 'processed');
                 }
             } else if (curTarget.charAt(0) == '$') { // Replacing
                 curTarget = curTarget.substring(1);
@@ -194,6 +197,7 @@ var IMLibElement = {
                 }
             });
         }
+        element.setAttribute('data-im-element', 'processed');
         return needPostValueSet;
     },
 
