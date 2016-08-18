@@ -192,7 +192,7 @@ var IMLibElement = {
             var idValue = element.id;
             var elementCapt = element;
             INTERMediatorLib.addEvent(element, 'blur', function (event) {
-                if (!IMLibUI.valueChange(idValue, true)) {
+                if (!IMLibUI.valueChange(idValue, true) && this.id === idValue) {
                     elementCapt.focus();
                 }
             });
