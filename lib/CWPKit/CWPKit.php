@@ -39,8 +39,11 @@ class CWPKit
 
     public function getServerVersion()
     {
+        $version = '';
         $data = $this->query('-dbnames');
-        $version = (string) $data->product->attributes()->version;
+        if ($data !== FALSE) {
+            $version = (string) $data->product->attributes()->version;
+        }
 
         return $version;
     }
