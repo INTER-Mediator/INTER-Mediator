@@ -41,7 +41,8 @@ var IMLibElement = {
                 break;
             default:
                 while (element.childNodes.length > 0) {
-                    if (element.parentNode.getAttribute('data-im-element') === 'processed') {
+                    if (element.parentNode.getAttribute('data-im-element') === 'processed' ||
+                        INTERMediatorLib.isWidgetElement(element.parentNode)) {
                         // for data-im-widget
                         return false;
                     }
