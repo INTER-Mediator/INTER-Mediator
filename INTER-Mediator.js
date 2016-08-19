@@ -240,9 +240,16 @@ var INTERMediator = {
                 }
             }
         }
-        position = ua.toLocaleUpperCase().indexOf(' Edge/');
+        position = ua.indexOf(' Edge/');
         if (position >= 0) {
             INTERMediator.isEdge = true;
+            for (i = position + 6; i < ua.length; i++) {
+                c = ua.charAt(i);
+                if (!(c == ' ' || c == '.' || (c >= '0' && c <= '9')) || i === ua.length - 1) {
+                    INTERMediator.ieVersion = INTERMediatorLib.toNumber(ua.substring(position + 6, i));
+                    break;
+                }
+            }
         }
     },
 
