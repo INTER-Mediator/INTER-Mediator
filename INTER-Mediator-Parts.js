@@ -37,7 +37,7 @@ IMParts_Catalog['fileupload'] = {
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
         this.ids.push(newId);
-        if (this.forceOldStyleForm) {
+        if (this.forceOldStyleForm || (INTERMediator.isEdge && INTERMediator.ieVersion < 14)) {
             this.html5DDSuported = false;
         } else {
             this.html5DDSuported = true;
