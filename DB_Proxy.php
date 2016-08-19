@@ -319,7 +319,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $this->dbClass->requireUpdatedRecord(true);
                 }
                 $resultOfCreate = $this->dbClass->createInDB($bypassAuth);
-                $result = $this->dbClass->updateRecord();
+                $result = $this->dbClass->updatedRecord();
             }
 //            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
 //                $this->logger->setDebugMessage("The method 'doAfterNewToDB' of the class '{$className}' is calling.", 2);
