@@ -139,9 +139,11 @@ IMParts_Catalog['fileupload'] = {
             buttonNode.setAttribute('disabled', '');
             buttonNode.appendChild(document.createTextNode(this.uploadButtonLabel));
             newNode.addEventListener('click', function (event) {
-                if (this.children[0].style.display === 'none' || this.children[0].style.display === '') {
-                    this.children[0].style.display = 'flex';
-                    this.children[0].style.display = '-webkit-flex';
+                if (this.children.length > 0) {
+                    if (this.children[0].style.display === 'none' || this.children[0].style.display === '') {
+                        this.children[0].style.display = 'flex';
+                        this.children[0].style.display = '-webkit-flex';
+                    }
                 }
             }, true);
             cancelButtonWrapper.addEventListener('click', function(c) {
