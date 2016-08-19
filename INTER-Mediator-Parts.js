@@ -182,7 +182,7 @@ IMParts_Catalog['fileupload'] = {
     ids: [],
     formFromId: {},
     finish: function () {
-        var shaObj, hmacValue, targetNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
+        var shaObj, hmacValue, targetNode, formNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
 
         if (this.html5DDSuported) {
             for (i = 0; i < this.ids.length; i++) {
@@ -294,10 +294,10 @@ IMParts_Catalog['fileupload'] = {
         } else {
             for (i = 0; i < this.ids.length; i++) {
                 targetNode = document.getElementById(this.ids[i]);
-                if (targetNode) {
+                formNode = targetNode.getElementsByTagName('FORM')[0];
+                if (targetNode && formNode) {
                     var updateInfo = IMLibContextPool.getContextInfoFromId(this.ids[i], '');
                     //= INTERMediator.updateRequiredObject[IMParts_im_fileupload.ids[i]];
-                    var formNode = targetNode.getElementsByTagName('FORM')[0];
                     var inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_contextname');
