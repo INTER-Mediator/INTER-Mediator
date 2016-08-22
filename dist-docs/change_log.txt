@@ -94,6 +94,8 @@ Ver.5.4 (in release candidate)
   affect to the mail.
 - [BUG FIX] Improve updating the display of nodes which depends on the value of radio buttons.
 - [BUG FIX] Sample_Asset's detail pages didn't show right record.
+- [BUG FIX] Fix uploading when using old version of Microsoft Edge which can't upload with drag and drop.
+- [BUG FIX] Fix setting INTERMediator.isEdge property.
 
 Ver.5.3 (February 21, 2016)
 - Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
