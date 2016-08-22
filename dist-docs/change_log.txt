@@ -10,6 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.5.5 (in development)
+- Tests for sample web pages by Selenium Web Driver are introduced.
+
 Ver.5.4 (in release candidate)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
   generating, describe "INTERMediatorOnPage.doBeforeConstruct = function(){..};" on any valid place.
