@@ -268,7 +268,7 @@ class FileUploader
         }
 
         if ($useContainer === FALSE) {
-            $dbProxyInstance->dbSettings->setValue(array($filePath));
+            $dbProxyInstance->dbSettings->setValue(array($filePartialPath));
         } else {
             $dbProxyInstance->dbSettings->setValue(array($fileName . "\n" . base64_encode(file_get_contents($filePath))));
         }

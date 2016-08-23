@@ -58,6 +58,8 @@ Ver.5.4 (in release candidate)
 - When the received json data is wrong, the server_access_async method calls the function for failing
   in the parameter.
 - DB_Logger class works as Signleton. The messages within advice definition classes can be returned.
+- In the FileUploader.php, file path to be stored in fielad was absolute one if no related table to store
+  them. So it's not appropriate, all file paths are relative so far.
 - Update TestDB.fmp12 and TestDB_clone.fmp12 to modify the Serial Number setting of 'asset_id' field.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
   being shown inappropriately.
