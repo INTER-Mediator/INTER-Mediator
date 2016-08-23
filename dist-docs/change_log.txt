@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.4 (in release candidate)
+Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
   generating, describe "INTERMediatorOnPage.doBeforeConstruct = function(){..};" on any valid place.
   The node having the id attribute "nonsupportmessage" will disappear after page generating. If you
