@@ -18,7 +18,7 @@ and anyone can see sample pages working with database.
 You don't have to deploy the samples if you just want to see this at a glance.
 - http://msyk.dyndns.org/im-sample.html
 
-### Contributors:
+## Contributors:
 - Masayuki Nii
 - Atsushi Matsuo
 - Kiyonori Ito
@@ -26,7 +26,7 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Nobuo Hayashi
 - Kazuaki Osawa
 
-### Special Thanks to:
+## Special Thanks to:
 - Tomomitsu Baba
 - Candy
 - Katsunori Eda
@@ -44,7 +44,7 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Kenji Utsumi
 - Tsutomu Yuasa
 
-### Driven by INTER-Mediator Directive Committee
+## Driven by INTER-Mediator Directive Committee
 - Masayuki Nii
 - Atsushi Matsuo
 - Nobuo Hayashi
@@ -53,6 +53,14 @@ You don't have to deploy the samples if you just want to see this at a glance.
 
 The information about INTER-Mediator Directive Committee is below:
 - http://inter-mediator.org/
+
+## Documentations
+
++ [Manual](http://inter-mediator.info/)
+	+ [Virtual Machine for Test and Evaluation / Japanese](http://inter-mediator.info/ja/for-novices/vm.html)
+	+ [Refernce of Definition File / Japanese](http://inter-mediator.info/ja/for-developers/index.html)
++ [change_log](https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/change_log.txt)
++ [In a future (Direction of Developement)](https://github.com/INTER-Mediator/INTER-Mediator/wiki/Direction-of-INTER-Mediator-Development)
 
 ## Contributing
 
