@@ -131,6 +131,13 @@ public class IMAppTestSupport {
         }
     }
 
+    protected void imCheckShowingErrorInfo() {
+        WebElement errorPanel = this.driver.findElement(By.id("_im_error_panel_4873643897897"));
+        if (errorPanel) {
+            Assert.assertTrue("Error messages are shown on page.", false);
+        }
+    }
+
     protected void imClickNavigationButton(String buttonLabel) {
         List<WebElement> naviElements = this.driver.findElements(By.className("IM_NAV_button"));
         for (WebElement element : naviElements) {
