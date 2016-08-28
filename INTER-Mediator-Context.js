@@ -634,7 +634,7 @@ var IMLibContext = function (contextName) {
                             currentFieldVal = recordset[0][targetFieldCapt];
                             initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt);
                         }
-                        isOthersModified = (initialvalue != currentFieldVal);
+                        isOthersModified = checkSameValue(initialvalue, currentFieldVal);
                         if (changedObjectCapt.tagName == 'INPUT' &&
                             changedObjectCapt.getAttribute('type') == 'checkbox') {
                             if (initialvalue == changedObjectCapt.value) {
@@ -696,8 +696,19 @@ var IMLibContext = function (contextName) {
                 }
             );
         }
-    };
 
+        var handleAsNullValue = ["0000-00-00", "0000-00-00 00:00:00"];
+
+        function checkSameValue(initialvalue, currentFieldVal)  {
+            if (handleAsNullValue.indexOf(initialvalue))   {
+                initialvalue = "";
+            }
+            if (handleAsNullValue.indexOf(currentFieldVal))   {
+                currentFieldVal = "";
+            }
+            return initialvalue != currentFieldVal;
+        }
+    };
 
     this.getKeyField = function () {
         var keyField;
