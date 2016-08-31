@@ -59,7 +59,7 @@ var INTERMediator = {
     errorMessages: [],
     debugMessages: [],
 
-    partialConstructing: false,
+    partialConstructing: true,
     linkedElmCounter: 0,
     pusherObject: null,
     buttonIdNum: 0,
@@ -361,13 +361,14 @@ var INTERMediator = {
         try {
             if (updateRequiredContext === true || updateRequiredContext === undefined) {
                 IMLibPageNavigation.deleteInsertOnNavi = [];
-                this.partialConstructing = false;
+                INTERMediator.partialConstructing = false;
                 INTERMediator.buttonIdNum = 1;
                 IMLibContextPool.clearAll();
                 pageConstruct();
+                INTERMediator.partialConstructing = true;
             } else {
                 IMLibPageNavigation.deleteInsertOnNavi = [];
-                this.partialConstructing = true;
+                INTERMediator.partialConstructing = true;
                 isInsidePostOnly = false;
                 postSetFields = [];
 

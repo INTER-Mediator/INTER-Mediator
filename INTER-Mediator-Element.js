@@ -54,7 +54,7 @@ var IMLibElement = {
 
         if (curTarget != null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
-                if (element.getAttribute('data-im-element') !== 'processed') {
+                //if (element.getAttribute('data-im-element') !== 'processed') {
                     curTarget = curTarget.substring(1);
                     if (curTarget == 'innerHTML') {
                         if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
@@ -78,7 +78,7 @@ var IMLibElement = {
                         element.setAttribute(curTarget, currentValue + curVal);
                     }
                     isReplaceOrAppned = true;
-                }
+                //}
             } else if (curTarget.charAt(0) == '$') { // Replacing
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {

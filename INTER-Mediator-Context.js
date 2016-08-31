@@ -1233,7 +1233,9 @@ var IMLibContext = function (contextName) {
                         this.contextInfo[nodeId][target == '' ? '_im_no_target' : target].portal = portal;
                     }
                 } else {
-                    IMLibContextPool.synchronize(this, recKey, key, value, target, portal);
+                    if (INTERMediator.partialConstructing) {
+                        IMLibContextPool.synchronize(this, recKey, key, value, target, portal);
+                    }
                 }
             }
         }
