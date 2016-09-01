@@ -11,13 +11,14 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.5 (in development)
-- Tests for sample web pages by Selenium Web Driver are introduced.
+- Support PHP 7.
 - In SQL Database, NULL value of date or datetime type fields are falling down zero components data,
   such as 0000-00-00 00:00:00. So the zeros data handles the same as a blank.
-- [BUG FIX] The field which applied a data converter class in FMS's portal, the converter didn't
-  apply to the value in updating the field value.
+- Tests for sample web pages by Selenium Web Driver are introduced.
 - [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
   attribute, the field value wasn't shown in the node.
+- [BUG FIX] The field which applied a data converter class in FMS's portal, the converter didn't
+  apply to the value in updating the field value.
 
 Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
