@@ -133,7 +133,7 @@ public class IMAppTestSupport {
 
     protected void imCheckShowingErrorInfo() {
         WebElement errorPanel = this.driver.findElement(By.id("_im_error_panel_4873643897897"));
-        if (errorPanel) {
+        if (errorPanel != null) {
             Assert.assertTrue("Error messages are shown on page.", false);
         }
     }
