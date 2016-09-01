@@ -1267,7 +1267,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $counter++;
                     $convVal = $this->stringReturnOnly((is_array($value)) ? implode("\n", $value) : $value);
                     $convVal = $this->formatter->formatterToDB(
-                        "{$tableSourceName}{$this->dbSettings->getSeparator()}{$originalfield}", $convVal);
+                        $this->getFieldForFormatter($tableSourceName, $originalfield), $convVal);
                     if ($cwpkit->_checkDuplicatedFXCondition($fxUtility->CreateCurrentSearch(), $field, $convVal) === TRUE) {
                         $this->fx->AddDBParam($field, $convVal);
                     }
@@ -1579,9 +1579,32 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    function copyInDB()
+    public function copyInDB()
     {
         $this->errorMessage[] = "Copy operation is not implemented so far.";
+    }
+
+    private function getFieldForFormatter($entity, $field)
+    {
+        if (strpos($field, "::") === false) {
+            return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
+        }
+        $fieldComp = explode("::", $field);
+        $ds = $this->dbSettings->getDataSource();
+        foreach ($ds as $contextDef) {
+            if ($contextDef["name"] == $fieldComp[0] ||
+                ($contextDef["table"] && $contextDef["table"] == $fieldComp[0])
+            ) {
+                if ($contextDef["relation"] &&
+                    $contextDef["relation"][0] &&
+                    $contextDef["relation"][0]["portal"] &&
+                    $contextDef["relation"][0]["portal"] = true
+                ) {
+                    return "{$fieldComp[0]}{$this->dbSettings->getSeparator()}{$field}";
+                }
+            }
+        }
+        return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
     }
 
     public function authSupportStoreChallenge($uid, $challenge, $clientId)
@@ -2144,7 +2167,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $this->setupFXforDB_Alt($userTable, 1);
             $this->fxAlt->SetRecordID($recId);
             $this->fxAlt->AddDBParam('hashedpasswd', $password);
-            if ($rawPWField!== false)   {
+            if ($rawPWField !== false) {
                 $this->fxAlt->AddDBParam($rawPWField, $rawPW);
             }
             $result = $this->fxAlt->DoFxAction('update', TRUE, TRUE, 'full');

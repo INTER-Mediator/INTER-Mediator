@@ -41,7 +41,8 @@ var IMLibElement = {
                 break;
             default:
                 while (element.childNodes.length > 0) {
-                    if (element.parentNode.getAttribute('data-im-element') === 'processed') {
+                    if (element.parentNode.getAttribute('data-im-element') === 'processed' ||
+                        INTERMediatorLib.isWidgetElement(element.parentNode)) {
                         // for data-im-widget
                         return false;
                     }
@@ -53,7 +54,7 @@ var IMLibElement = {
 
         if (curTarget != null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
-                if (element.getAttribute('data-im-element') !== 'processed') {
+                //if (element.getAttribute('data-im-element') !== 'processed') {
                     curTarget = curTarget.substring(1);
                     if (curTarget == 'innerHTML') {
                         if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
@@ -77,7 +78,7 @@ var IMLibElement = {
                         element.setAttribute(curTarget, currentValue + curVal);
                     }
                     isReplaceOrAppned = true;
-                }
+                //}
             } else if (curTarget.charAt(0) == '$') { // Replacing
                 curTarget = curTarget.substring(1);
                 if (curTarget == 'innerHTML') {
@@ -192,7 +193,7 @@ var IMLibElement = {
             var idValue = element.id;
             var elementCapt = element;
             INTERMediatorLib.addEvent(element, 'blur', function (event) {
-                if (!IMLibUI.valueChange(idValue, true)) {
+                if (!IMLibUI.valueChange(idValue, true) && this.id === idValue) {
                     elementCapt.focus();
                 }
             });

@@ -634,7 +634,7 @@ var IMLibContext = function (contextName) {
                             currentFieldVal = recordset[0][targetFieldCapt];
                             initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt);
                         }
-                        isOthersModified = (initialvalue != currentFieldVal);
+                        isOthersModified = checkSameValue(initialvalue, currentFieldVal);
                         if (changedObjectCapt.tagName == 'INPUT' &&
                             changedObjectCapt.getAttribute('type') == 'checkbox') {
                             if (initialvalue == changedObjectCapt.value) {
@@ -696,8 +696,19 @@ var IMLibContext = function (contextName) {
                 }
             );
         }
-    };
 
+        var handleAsNullValue = ["0000-00-00", "0000-00-00 00:00:00"];
+
+        function checkSameValue(initialvalue, currentFieldVal)  {
+            if (handleAsNullValue.indexOf(initialvalue))   {
+                initialvalue = "";
+            }
+            if (handleAsNullValue.indexOf(currentFieldVal))   {
+                currentFieldVal = "";
+            }
+            return initialvalue != currentFieldVal;
+        }
+    };
 
     this.getKeyField = function () {
         var keyField;
@@ -743,15 +754,24 @@ var IMLibContext = function (contextName) {
     };
 
     this.getPortalRecordsetImpl = function (store, contextName) {
-        var result, count, recId, recordset;
-        count = 0;
+        var result, recId, recordset, key, contextDef;
         recordset = [];
-        if (store[0] && store[0][contextName]) {
-            result = store[0][contextName];
-            for (recId in result) {
-                if (result.hasOwnProperty(recId) && isFinite(recId)) {
-                    recordset.push(result[recId]);
-                    count++;
+        if (store[0]) {
+            if (!store[0][contextName]) {
+                for (key in store[0]) {
+                    contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', key);
+                    if (contextName === contextDef.view && !store[0][contextName]) {
+                        contextName = key;
+                        break;
+                    }
+                }
+            }
+            if (store[0][contextName]) {
+                result = store[0][contextName];
+                for (recId in result) {
+                    if (result.hasOwnProperty(recId) && isFinite(recId)) {
+                        recordset.push(result[recId]);
+                    }
                 }
             }
         }
@@ -1163,6 +1183,7 @@ var IMLibContext = function (contextName) {
     this.setValue = function (recKey, key, value, nodeId, target, portal) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
         if (portal) {
+            /* eslint no-console: ["error", {allow: ["error"]}] */
             console.error('Using the portal parameter in IMLibContext.setValue');
         }
         if (recKey != undefined && recKey != null) {
@@ -1212,7 +1233,9 @@ var IMLibContext = function (contextName) {
                         this.contextInfo[nodeId][target == '' ? '_im_no_target' : target].portal = portal;
                     }
                 } else {
-                    IMLibContextPool.synchronize(this, recKey, key, value, target, portal);
+                    if (INTERMediator.partialConstructing) {
+                        IMLibContextPool.synchronize(this, recKey, key, value, target, portal);
+                    }
                 }
             }
         }

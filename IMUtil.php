@@ -40,6 +40,104 @@ class IMUtil
         return $timeValue;
     }
     
+    public static function phpVersion()
+    {
+        $vString = explode('.', phpversion());
+        $vNum = 0;
+        if (isset($vString[0])) {
+            $vNum += intval($vString[0]);
+        }
+        if (isset($vString[1])) {
+            $vNum += intval($vString[1]) / 10;
+        }
+        if (isset($vString[2])) {
+            $vNum += intval($vString[2]) / 100;
+        }
+        return $vNum;
+    }
+
+    public static function pathToINTERMediator()
+    {
+        return dirname(__FILE__);
+    }
+
+    public static function combinePathComponents($ar)
+    {
+        $path = "";
+        foreach ($ar as $item) {
+            $isSepTerminate = (substr($path, -1) == DIRECTORY_SEPARATOR);
+            $isSepStart = (substr($item, 0, 1) == DIRECTORY_SEPARATOR);
+            if (($isSepTerminate && !$isSepStart) || (!$isSepTerminate && $isSepStart)) {
+                $path .= $item;
+            } elseif ($isSepTerminate && $isSepStart) {
+                $path .= substr($item, 1);
+            } else {
+                $path .= DIRECTORY_SEPARATOR . $item;
+            }
+        }
+        return $path;
+    }
+
+    public static function includeLibClasses($classes)
+    {
+        $pathComp = array(self::pathToINTERMediator(), "lib");
+        foreach ($classes as $aClass) {
+            $classComp = array();
+            foreach (explode("\\", $aClass) as $cComp) {
+                if ($cComp == 'phpseclib') {
+                    $classComp[] = 'phpseclib_v' . (IMUtil::phpVersion() < 6 ? "1" : "2");
+                } else {
+                    $classComp[] = $cComp;
+                }
+            }
+            $fpath = IMUtil::combinePathComponents(array_merge($pathComp, $classComp)) . ".php";
+            if (file_exists($fpath)) {
+                require_once($fpath);
+            }
+        }
+    }
+
+    public static function phpSecLibClass($aClass)
+    {
+        $comp = explode("\\", $aClass);
+        if (count($comp) >= 2) {
+            if (IMUtil::phpVersion() < 6) {
+                return $comp[count($comp) - 2] . "_" . $comp[count($comp) - 1];
+            } else {
+                return $aClass;
+            }
+        }
+        return "Invalid_Class_Specification";
+    }
+    
+    public static function phpSecLibRequiredClasses()   {
+        if (IMUtil::phpVersion() < 6)   {
+            return array(
+                'phpseclib\Crypt\RSA',
+                'phpseclib\Crypt\Hash',
+                'phpseclib\Math\BigInteger',
+            );
+        } else {
+            return array(
+                'phpseclib\Crypt\RSA',
+                'phpseclib\Crypt\RSA\MSBLOB',
+                'phpseclib\Crypt\RSA\OpenSSH',
+                'phpseclib\Crypt\RSA\PKCS',
+                'phpseclib\Crypt\RSA\PKCS1',
+                'phpseclib\Crypt\RSA\PKCS8',
+                'phpseclib\Crypt\RSA\PuTTY',
+                'phpseclib\Crypt\RSA\Raw',
+                'phpseclib\Crypt\RSA\XML',
+                'phpseclib\Crypt\Hash',
+                'phpseclib\Math\BigInteger',
+                'ParagonIE\ConstantTime\EncoderInterface',
+                'ParagonIE\ConstantTime\Base64',
+                'ParagonIE\ConstantTime\Binary',
+                'ParagonIE\ConstantTime\Hex',
+            );
+        }
+    }
+
     public static function removeNull($str)
     {
         return str_replace("\x00", '', $str);
@@ -71,23 +169,23 @@ class IMUtil
         return $messageClass;
     }
 
-    // Thanks for http://q.hatena.ne.jp/1193396523
+// Thanks for http://q.hatena.ne.jp/1193396523
     public static function guessFileUploadError()
     {
         $postMaxSize = self::return_bytes(ini_get('post_max_size'));
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST'
-        //    && count($_POST) == 0
+            //    && count($_POST) == 0
             && $_SERVER['HTTP_CONTENT_LENGTH'] > $postMaxSize
             && strpos($_SERVER['HTTP_CONTENT_TYPE'], 'multipart/form-data') === 0
         ) {
             return true;
         }
         foreach ($_FILES as $fn => $fileInfo) {
-            if (isset($fileInfo["error"]))  {
+            if (isset($fileInfo["error"])) {
                 $errInfo = $fileInfo["error"];
                 if (is_array($errInfo)) {   // JQuery File Upload Style
-                    foreach($errInfo as $index => $errCode) {
+                    foreach ($errInfo as $index => $errCode) {
                         if ($errCode != UPLOAD_ERR_OK) {
                             return true;
                         }
@@ -96,11 +194,11 @@ class IMUtil
                     return true;
                 }
             }
-         }
+        }
         return false;
     }
 
-    // Example in http://php.net/manual/ja/function.ini-get.php.
+// Example in http://php.net/manual/ja/function.ini-get.php.
     public static function return_bytes($val)
     {
         $val = trim($val);

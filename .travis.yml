@@ -18,7 +18,6 @@ php:
 matrix:
   allow_failures:
     - os: osx
-    - php: 7.0
 
 before_script:
   - export DISPLAY=:99.0

@@ -44,14 +44,14 @@ IM_Entry(array(
                 ),
             ),
         'repeat-control' => 'insert delete copy',
-        'query' =>
-            array(
-                array(
-                    'field' => 'datetime',
-                    'value' => '2005-01-01 00:00:00',
-                    'operator' => '>',
-                ),
-            ),
+//        'query' =>
+//            array(
+//                array(
+//                    'field' => 'datetime',
+//                    'value' => '2005-01-01 00:00:00',
+//                    'operator' => '>',
+//                ),
+//            ),
         'default-values' =>
             array(
                 array(

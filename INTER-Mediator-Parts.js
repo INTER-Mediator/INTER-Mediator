@@ -37,7 +37,7 @@ IMParts_Catalog['fileupload'] = {
         INTERMediatorLib.setClassAttributeToNode(newNode, '_im_fileupload');
         newNode.setAttribute('id', newId);
         this.ids.push(newId);
-        if (this.forceOldStyleForm) {
+        if (this.forceOldStyleForm || (INTERMediator.isEdge && INTERMediator.ieVersion < 14)) {
             this.html5DDSuported = false;
         } else {
             this.html5DDSuported = true;
@@ -139,9 +139,11 @@ IMParts_Catalog['fileupload'] = {
             buttonNode.setAttribute('disabled', '');
             buttonNode.appendChild(document.createTextNode(this.uploadButtonLabel));
             newNode.addEventListener('click', function (event) {
-                if (this.children[0].style.display === 'none' || this.children[0].style.display === '') {
-                    this.children[0].style.display = 'flex';
-                    this.children[0].style.display = '-webkit-flex';
+                if (this.children.length > 0) {
+                    if (this.children[0].style.display === 'none' || this.children[0].style.display === '') {
+                        this.children[0].style.display = 'flex';
+                        this.children[0].style.display = '-webkit-flex';
+                    }
                 }
             }, true);
             cancelButtonWrapper.addEventListener('click', function(c) {
@@ -182,7 +184,7 @@ IMParts_Catalog['fileupload'] = {
     ids: [],
     formFromId: {},
     finish: function () {
-        var shaObj, hmacValue, targetNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
+        var shaObj, hmacValue, targetNode, formNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
 
         if (this.html5DDSuported) {
             for (i = 0; i < this.ids.length; i++) {
@@ -294,10 +296,10 @@ IMParts_Catalog['fileupload'] = {
         } else {
             for (i = 0; i < this.ids.length; i++) {
                 targetNode = document.getElementById(this.ids[i]);
-                if (targetNode) {
+                formNode = targetNode.getElementsByTagName('FORM')[0];
+                if (targetNode && formNode) {
                     var updateInfo = IMLibContextPool.getContextInfoFromId(this.ids[i], '');
                     //= INTERMediator.updateRequiredObject[IMParts_im_fileupload.ids[i]];
-                    var formNode = targetNode.getElementsByTagName('FORM')[0];
                     var inputNode = document.createElement('INPUT');
                     inputNode.setAttribute('type', 'hidden');
                     inputNode.setAttribute('name', '_im_contextname');

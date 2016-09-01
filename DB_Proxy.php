@@ -318,7 +318,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 ) {
                     $this->dbClass->requireUpdatedRecord(true);
                 }
-                $result = $this->dbClass->createInDB($bypassAuth);
+                $resultOfCreate = $this->dbClass->createInDB($bypassAuth);
+                $result = $this->dbClass->updatedRecord();
             }
 //            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterNewToDB")) {
 //                $this->logger->setDebugMessage("The method 'doAfterNewToDB' of the class '{$className}' is calling.", 2);
@@ -326,7 +327,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 //            }
             if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCreateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
-                $result = $this->userExpanded->doAfterCreateToDB($this->dbClass->updatedRecord());
+                $result = $this->userExpanded->doAfterCreateToDB($result);
             }
             if ($this->dbSettings->notifyServer && $this->clientPusherAvailable) {
                 try {
@@ -366,7 +367,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->logger->setErrorMessage("Exception: {$e->getMessage()}");
             return false;
         }
-        return $result;
+        return $resultOfCreate;
 
     }
 
