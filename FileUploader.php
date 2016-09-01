@@ -383,7 +383,6 @@ class FileUploader
                 }
             }
         }
-
         return NULL;
     }
 

@@ -23,18 +23,9 @@ require_once('DB_Settings.php');
 require_once('DB_UseSharedObjects.php');
 require_once('DB_AuthCommon.php');
 require_once('DB_Proxy.php');
+require_once('IMUtil.php');
 
-$currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
-
-if (!class_exists('Crypt_RSA')) {
-    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Crypt' . DIRECTORY_SEPARATOR . 'RSA.php');
-}
-if (!class_exists('Crypt_Hash')) {
-    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Crypt' . DIRECTORY_SEPARATOR . 'Hash.php');
-}
-if (!class_exists('Math_BigInteger')) {
-    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Math' . DIRECTORY_SEPARATOR . 'BigInteger.php');
-}
+IMUtil::includeLibClasses(IMUtil::phpSecLibRequiredClasses());
 
 $currentDirParam = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'params.php';
 $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
@@ -150,13 +141,19 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
  */
 function loadClass($className)
 {
-    if (strpos($className, 'PHPUnit_') === false && $className !== 'PHP_Invoker' &&
-        strpos($className, 'PHPExcel_') === false &&
-        (include_once $className . '.php') === false
+    if (strpos($className, 'PHPUnit_') === false &&
+        $className !== 'PHP_Invoker' &&
+        strpos($className, 'PHPExcel_') === false
     ) {
-        $errorGenerator = new GenerateJSCode();
-        if (strpos($className, "MessageStrings_") !== 0) {
-            $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
+        $result = include_once $className . '.php';
+        if (!$result) {
+        
+        }
+        if (!$result) {
+            $errorGenerator = new GenerateJSCode();
+            if (strpos($className, "MessageStrings_") !== 0) {
+                $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
+            }
         }
     }
 
