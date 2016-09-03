@@ -12,6 +12,8 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.5.5 (in development)
 - Support PHP 7.
+- Add "Constant-Time Encoding" in "lib" directory for supporting PHP 7.
+  <https://github.com/paragonie/constant_time_encoding>
 - In SQL Database, NULL value of date or datetime type fields are falling down zero components data,
   such as 0000-00-00 00:00:00. So the zeros data handles the same as a blank.
 - Tests for sample web pages by Selenium Web Driver are introduced.
