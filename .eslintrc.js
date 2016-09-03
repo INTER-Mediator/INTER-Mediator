@@ -40,7 +40,7 @@ module.exports = {
         "IMLibEventResponder": false,
         "IMLibPageNavigation": false,
         "IMParts_Catalog": false,
-        "INTERMediatorQueue": false,
+        "IMLibQueue": false,
         "IMLibUI": false,
         "Parser": false,
         "Pusher": false,
