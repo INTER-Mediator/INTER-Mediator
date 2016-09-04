@@ -17,6 +17,7 @@ Ver.5.5 (in development)
 - In SQL Database, NULL value of date or datetime type fields are falling down zero components data,
   such as 0000-00-00 00:00:00. So the zeros data handles the same as a blank.
 - Tests for sample web pages by Selenium Web Driver are introduced.
+- Update sample_schema_mysql.txt, recipe.rb and sample_spec.rb for the INTER-Mediator-Server VM.
 - [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
   attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba).
 - [BUG FIX] The field which applied a data converter class in FMS's portal, the converter didn't

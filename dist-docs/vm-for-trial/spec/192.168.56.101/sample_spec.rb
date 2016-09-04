@@ -75,7 +75,10 @@ describe service('sshd'), :if => os[:family] == 'alpine' || os[:family] == 'redh
   it { should be_enabled }
 end
 
-describe service('sshd'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe service('ssh'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_running }
+end
+describe service('sshd'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f < 16) || os[:family] == 'redhat' do
   it { should be_running }
 end
 
@@ -89,7 +92,10 @@ describe service('mariadb'), :if => os[:family] == 'alpine' || (os[:family] == '
   it { should be_enabled }
 end
 
-describe service('mysqld'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
+describe service('mysqld'), :if => (os[:family] == 'ubuntu' && os[:release].to_f < 16) || (os[:family] == 'redhat' && os[:release].to_f < 7) do
+  it { should be_running }
+end
+describe service('mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_running }
 end
 describe service('mariadb'), :if => os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f >= 7) do
@@ -100,10 +106,10 @@ describe service('postgresql') do
   it { should be_enabled }
 end
 
-describe service('postgres'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f < 7) do
+describe service('postgres'), :if => (os[:family] == 'ubuntu' && os[:release].to_f < 16) || (os[:family] == 'redhat' && os[:release].to_f < 7) do
   it { should be_running }
 end
-describe service('postgresql'), :if =>  os[:family] == 'alpine' || (os[:family] == 'redhat' && os[:release].to_f >= 7) do
+describe service('postgresql'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f >= 16) || (os[:family] == 'redhat' && os[:release].to_f >= 7) do
   it { should be_running }
 end
 
@@ -169,7 +175,10 @@ describe file('/etc/my.cnf.d/im.cnf'), :if => os[:family] == 'redhat' && os[:rel
   its(:content) { should match /[mysql]/ }
 end
 
-describe package('sqlite'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe package('sqlite'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f < 16) || os[:family] == 'redhat' do
+  it { should be_installed }
+end
+describe package('sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 
@@ -198,6 +207,9 @@ end
 describe package('php'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
+describe package('php7.0-mbstring'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
 describe package('php-mbstring'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
@@ -223,21 +235,30 @@ describe package('php-mysqlnd'), :if => os[:family] == 'redhat' && os[:release].
   it { should be_installed }
 end
 
-describe package('php5-mysql'), :if => os[:family] == 'ubuntu' do
+describe package('php5-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
+  it { should be_installed }
+end
+describe package('php7.0-mysql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 describe package('php-mysql'), :if => os[:family] == 'readhat' do
   it { should be_installed }
 end
 
-describe package('php5-pgsql'), :if => os[:family] == 'ubuntu' do
+describe package('php5-pgsql'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
+  it { should be_installed }
+end
+describe package('php7.0-pgsql'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 describe package('php-pgsql'), :if => os[:family] == 'readhat' do
   it { should be_installed }
 end
 
-describe package('php5-sqlite'), :if => os[:family] == 'ubuntu' do
+describe package('php5-sqlite'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
+  it { should be_installed }
+end
+describe package('php7.0-sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 describe package('php-pdo'), :if => os[:family] == 'redhat' do
@@ -248,19 +269,31 @@ describe package('php-common'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
-describe package('php5-curl'), :if => os[:family] == 'ubuntu' do
+describe package('php5-curl'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
+  it { should be_installed }
+end
+describe package('php7.0-curl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 
-describe package('php5-gd'), :if => os[:family] == 'ubuntu' do
+describe package('php5-gd'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
+  it { should be_installed }
+end
+describe package('php7.0-gd'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 
-describe package('php5-xmlrpc'), :if => os[:family] == 'ubuntu' do
+describe package('php5-xmlrpc'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
+  it { should be_installed }
+end
+describe package('php7.0-xmlrpc'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 
-describe package('php5-intl'), :if => os[:family] == 'ubuntu' do
+describe package('php5-intl'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
+  it { should be_installed }
+end
+describe package('php7.0-intl'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 
@@ -495,7 +528,15 @@ describe file('/home/developer') do
   it { should be_grouped_into 'developer' }
 end
 
-describe file('/etc/php5/apache2/php.ini'), :if => os[:family] == 'ubuntu' do
+describe file('/etc/php5/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
+  it { should be_file }
+  its(:content) { should match /max_execution_time = 120/ }
+  its(:content) { should match /max_input_time = 120/ }
+  its(:content) { should match /memory_limit = 256M/ }
+  its(:content) { should match /post_max_size = 100M/ }
+  its(:content) { should match /upload_max_filesize = 100M/ }
+end
+describe file('/etc/php/7.0/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_file }
   its(:content) { should match /max_execution_time = 120/ }
   its(:content) { should match /max_input_time = 120/ }

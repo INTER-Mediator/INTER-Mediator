@@ -349,6 +349,11 @@ elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
     action :install
   end
+  if node[:platform_version].to_f >= 16
+    package 'php7.0-mbstring' do
+      action :install
+    end
+  end
 elsif node[:platform] == 'redhat'
   package 'php' do
     action :install
@@ -449,7 +454,7 @@ if node[:platform] == 'ubuntu'
       action :install
     end
   else
-    package 'php7.0-sqlite' do
+    package 'php7.0-sqlite3' do
       action :install
     end
   end
