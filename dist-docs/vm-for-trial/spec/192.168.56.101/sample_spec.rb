@@ -213,6 +213,9 @@ end
 describe package('php-mbstring'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
+describe package('php7.0-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
 describe package('php-pear'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
   it { should be_installed }
 end
