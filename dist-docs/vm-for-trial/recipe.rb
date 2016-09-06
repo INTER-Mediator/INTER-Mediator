@@ -59,21 +59,26 @@ EOF
 end
 
 if node[:platform] == 'alpine'
+  execute 'echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers' do
+    command 'echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
+  end
+end
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  file '/etc/sudoers.d/developer' do
+    owner 'root'
+    group 'root'
+    mode '440'
+    content 'developer ALL=(ALL) NOPASSWD:ALL'
+  end
+end
+
+if node[:platform] == 'alpine'
   execute 'yes im4135dev | sudo passwd developer' do
     command 'yes im4135dev | sudo passwd developer'
   end
 else
   user "developer" do
     password "$6$inter-mediator$kEUWd5ZQNPEfNF7CPzRMDoHhmz67rgJTmDbUsJ3AL35vV3c5sGk9ml2kLRj.2z5BkygH7SS2E549qTB2FYs6S/"
-  end
-end
-
-if node[:platform] == 'ubuntu'
-  file '/etc/sudoers.d/developer' do
-    owner 'root'
-    group 'root'
-    mode '440'
-    content 'developer ALL=(ALL) NOPASSWD:ALL'
   end
 end
 
@@ -353,6 +358,9 @@ elsif node[:platform] == 'ubuntu'
     package 'php7.0-mbstring' do
       action :install
     end
+    package 'php7.0-bcmath' do
+      action :install
+    end
   end
 elsif node[:platform] == 'redhat'
   package 'php' do
@@ -592,6 +600,9 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
+execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
+  command "chown -R developer:im-developer \"#{WEBROOT}\""
+end
 execute "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git" do
   command "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git"
 end

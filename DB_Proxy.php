@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -13,6 +12,12 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
+if (((float)phpversion()) >= 7.0 && !defined('CRYPT_RSA_PRIVATE_FORMAT_PKCS1')) {
+    require_once(dirname(__FILE__) . '/lib/phpseclib_v2/Crypt/RSA.php');
+    define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1);
+}
+
 class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
     /**

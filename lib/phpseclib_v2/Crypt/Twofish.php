@@ -369,22 +369,6 @@ class Twofish extends Base
     var $key_length = 16;
 
     /**
-     * Default Constructor.
-     *
-     * @param int $mode
-     * @access public
-     * @throws \InvalidArgumentException if an invalid / unsupported mode is provided
-     */
-    function __construct($mode)
-    {
-        if ($mode == self::MODE_STREAM) {
-            throw new \InvalidArgumentException('Block ciphers cannot be ran in stream mode');
-        }
-
-        parent::__construct($mode);
-    }
-
-    /**
      * Sets the key length.
      *
      * Valid key lengths are 128, 192 or 256 bits
@@ -394,40 +378,18 @@ class Twofish extends Base
      */
     function setKeyLength($length)
     {
-        switch ($length) {
-            case 128:
-            case 192:
-            case 256:
+        switch (true) {
+            case $length <= 128:
+                $this->key_length = 16;
+                break;
+            case $length <= 192:
+                $this->key_length = 24;
                 break;
             default:
-                throw new \LengthException('Key of size ' . strlen($key) . ' not supported by this algorithm. Only keys of sizes 16, 24 or 32 supported');
+                $this->key_length = 32;
         }
 
         parent::setKeyLength($length);
-    }
-
-    /**
-     * Sets the key.
-     *
-     * Rijndael supports five different key lengths
-     *
-     * @see setKeyLength()
-     * @access public
-     * @param string $key
-     * @throws \LengthException if the key length isn't supported
-     */
-    function setKey($key)
-    {
-        switch (strlen($key)) {
-            case 16:
-            case 24:
-            case 32:
-                break;
-            default:
-                throw new \LengthException('Key of size ' . strlen($key) . ' not supported by this algorithm. Only keys of sizes 16, 24 or 32 supported');
-        }
-
-        parent::setKey($key);
     }
 
     /**
@@ -711,7 +673,7 @@ class Twofish extends Base
         // (Currently, for Crypt_Twofish, one generated $lambda_function cost on php5.5@32bit ~140kb unfreeable mem and ~240kb on php5.5@64bit)
         $gen_hi_opt_code = (bool)(count($lambda_functions) < 10);
 
-        // Generation of a uniqe hash for our generated code
+        // Generation of a unique hash for our generated code
         $code_hash = "Crypt_Twofish, {$this->mode}";
         if ($gen_hi_opt_code) {
             $code_hash = str_pad($code_hash, 32) . $this->_hashInlineCryptFunction($this->key);
