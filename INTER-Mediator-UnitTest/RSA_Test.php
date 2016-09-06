@@ -7,19 +7,19 @@
  * To change this template use File | Settings | File Templates.
  */
 
-if (((float)phpversion()) >= 7.0) {
+if ((float)phpversion() >= 7.0) {
     require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
     require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
     require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
     if (!defined('CRYPT_RSA_PRIVATE_FORMAT_PKCS1')) {
-        define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1);
+        define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
     }
     if (!defined('CRYPT_RSA_ENCRYPTION_PKCS1')) {
-        define('CRYPT_RSA_ENCRYPTION_PKCS1', phpseclib\Crypt\RSA::ENCRYPTION_PKCS1);
+        define('CRYPT_RSA_ENCRYPTION_PKCS1', constant('phpseclib\Crypt\RSA::ENCRYPTION_PKCS1'));
     }
 } else {
     require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Crypt/RSA.php');
-    require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');    
 }
 require_once(dirname(__FILE__) . '/../lib/bi2php/biRSA.php');
 
@@ -29,11 +29,8 @@ class RSA_Test extends PHPUnit_Framework_TestCase
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
-        if (((float)phpversion()) >= 7.0) {
-            $this->rsa = new \phpseclib\Crypt\RSA();
-        } else {
-            $this->rsa = new Crypt_RSA();
-        }
+        $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+        $this->rsa = new $rsaClass;
     }
 
     public function testGeneratedKey()

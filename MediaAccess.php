@@ -13,11 +13,6 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-if (((float)phpversion()) >= 7.0 && !defined('CRYPT_RSA_PRIVATE_FORMAT_PKCS1')) {
-    require_once(dirname(__FILE__) . '/lib/phpseclib_v2/Crypt/RSA.php');
-    define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1);
-}
-
 class MediaAccess
 {
     private $contextRecord = null;
@@ -165,16 +160,13 @@ class MediaAccess
                 $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
                 $rsa = new $rsaClass;
                 $rsa->setPassword($passPhrase);
+                $rsa->loadKey($generatedPrivateKey);
+                $rsa->setPassword();
+                $privatekey = $rsa->getPrivateKey();
                 if (IMUtil::phpVersion() < 6) {
-                    $rsa->loadKey($generatedPrivateKey);
-                    $rsa->setPassword();
-                    $privatekey = $rsa->getPrivateKey();
                     $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
                 } else {
-                    $rsa->load($generatedPrivateKey, 'PKCS1');
-                    $rsa->setPassword();
-                    $privatekey = $rsa->getPrivateKey();
-                    $priv = $rsa->_parseKey($privatekey, 'PKCS1');
+                    $priv = $rsa->_parseKey($privatekey, constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
                 }
 
                 require_once('lib/bi2php/biRSA.php');
