@@ -22,6 +22,7 @@ if ((float)phpversion() >= 7.0) {
     require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');    
 }
 require_once(dirname(__FILE__) . '/../lib/bi2php/biRSA.php');
+require_once(dirname(__FILE__) . '/../IMUtil.php');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {
