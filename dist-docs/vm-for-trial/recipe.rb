@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.4, Ubuntu Server 14.04, CentOS 6.6 and CentOS 7
+# Recipe file of Itamae for Alpine Linux 3.4, Ubuntu Server 14.04, Ubuntu Server 16.04, CentOS 6.6 and CentOS 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on OS X usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -46,15 +46,29 @@ EOF
   file '/etc/apk/repositories' do
     content <<-EOF
 #/media/cdrom/apks
-http://dl-4.alpinelinux.org/alpine/v3.4/main
-#http://dl-4.alpinelinux.org/alpine/v3.4/community
-#http://dl-4.alpinelinux.org/alpine/edge/main
-#http://dl-4.alpinelinux.org/alpine/edge/community
-http://dl-4.alpinelinux.org/alpine/edge/testing
+http://dl-5.alpinelinux.org/alpine/v3.4/main
+http://dl-5.alpinelinux.org/alpine/v3.4/community
+http://dl-5.alpinelinux.org/alpine/edge/main
+http://dl-5.alpinelinux.org/alpine/edge/community
+http://dl-5.alpinelinux.org/alpine/edge/testing
 EOF
   end  
   package 'shadow' do
     action :install
+  end
+end
+
+if node[:platform] == 'alpine'
+  execute 'echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers' do
+    command 'echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
+  end
+end
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  file '/etc/sudoers.d/developer' do
+    owner 'root'
+    group 'root'
+    mode '440'
+    content 'developer ALL=(ALL) NOPASSWD:ALL'
   end
 end
 
@@ -65,15 +79,6 @@ if node[:platform] == 'alpine'
 else
   user "developer" do
     password "$6$inter-mediator$kEUWd5ZQNPEfNF7CPzRMDoHhmz67rgJTmDbUsJ3AL35vV3c5sGk9ml2kLRj.2z5BkygH7SS2E549qTB2FYs6S/"
-  end
-end
-
-if node[:platform] == 'ubuntu'
-  file '/etc/sudoers.d/developer' do
-    owner 'root'
-    group 'root'
-    mode '440'
-    content 'developer ALL=(ALL) NOPASSWD:ALL'
   end
 end
 
@@ -98,17 +103,15 @@ if node[:platform] == 'ubuntu'
     end
   end
 
-  execute 'apt-get clean' do
-    command 'apt-get clean'
+  if node[:platform_version].to_f < 16
+    execute 'apt update' do
+      command 'apt update'
+    end
   end
-
-  execute 'apt-get update' do
-    command 'apt-get update'
-  end
-
+  
   if node[:virtualization][:system] != 'docker'
-    execute 'aptitude full-upgrade' do
-      command 'aptitude full-upgrade --assume-yes'
+    execute 'apt upgrade' do
+      command 'apt upgrade --assume-yes'
     end
   end
 elsif node[:platform] == 'redhat'
@@ -317,8 +320,14 @@ EOF
   end
 end
 
-package 'sqlite' do
-  action :install
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+  package 'sqlite3' do
+    action :install
+  end
+else
+  package 'sqlite' do
+    action :install
+  end
 end
 
 package 'acl' do
@@ -344,6 +353,14 @@ if node[:platform] == 'alpine'
 elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
     action :install
+  end
+  if node[:platform_version].to_f >= 16
+    package 'php7.0-mbstring' do
+      action :install
+    end
+    package 'php7.0-bcmath' do
+      action :install
+    end
   end
 elsif node[:platform] == 'redhat'
   package 'php' do
@@ -408,8 +425,14 @@ elsif node[:platform] == 'redhat'
 end
 
 if node[:platform] == 'ubuntu'
-  package 'php5-mysql' do
-    action :install
+  if node[:platform_version].to_f < 16
+    package 'php5-mysql' do
+      action :install
+    end
+  else
+    package 'php7.0-mysql' do
+      action :install
+    end
   end
 elsif node[:platform] == 'redhat'
   package 'php-mysql' do
@@ -418,8 +441,14 @@ elsif node[:platform] == 'redhat'
 end
 
 if node[:platform] == 'ubuntu'
-  package 'php5-pgsql' do
-    action :install
+  if node[:platform_version].to_f < 16
+    package 'php5-pgsql' do
+      action :install
+    end
+  else
+    package 'php7.0-pgsql' do
+      action :install
+    end
   end
 elsif node[:platform] == 'redhat'
   package 'php-pgsql' do
@@ -428,8 +457,14 @@ elsif node[:platform] == 'redhat'
 end
 
 if node[:platform] == 'ubuntu'
-  package 'php5-sqlite' do
-    action :install
+  if node[:platform_version].to_f < 16
+    package 'php5-sqlite' do
+      action :install
+    end
+  else
+    package 'php7.0-sqlite3' do
+      action :install
+    end
   end
 elsif node[:platform] == 'redhat'
   package 'php-pdo' do
@@ -438,17 +473,32 @@ elsif node[:platform] == 'redhat'
 end
 
 if node[:platform] == 'ubuntu'
-  package 'php5-curl' do
-    action :install
-  end
-  package 'php5-gd' do
-    action :install
-  end
-  package 'php5-xmlrpc' do
-    action :install
-  end
-  package 'php5-intl' do
-    action :install
+  if node[:platform_version].to_f < 16
+    package 'php5-curl' do
+      action :install
+    end
+    package 'php5-gd' do
+      action :install
+    end
+    package 'php5-xmlrpc' do
+      action :install
+    end
+    package 'php5-intl' do
+      action :install
+    end
+  else
+    package 'php7.0-curl' do
+      action :install
+    end
+    package 'php7.0-gd' do
+      action :install
+    end
+    package 'php7.0-xmlrpc' do
+      action :install
+    end
+    package 'php7.0-intl' do
+      action :install
+    end
   end
 end
 
@@ -550,6 +600,9 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
+execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
+  command "chown -R developer:im-developer \"#{WEBROOT}\""
+end
 execute "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git" do
   command "cd \"#{IMSUPPORT}\" && git clone https://github.com/codemirror/CodeMirror.git"
 end
@@ -994,8 +1047,14 @@ execute 'chown -R developer:developer /home/developer' do
 end
 
 if node[:platform] == 'ubuntu'
-  execute 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini' do
-    command 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini'
+  if node[:platform_version].to_f < 16
+    execute 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini' do
+      command 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini'
+    end
+  else
+    execute 'cat /etc/php/7.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.0/apache2/php.ini.tmp && mv /etc/php/7.0/apache2/php.ini.tmp /etc/php/7.0/apache2/php.ini' do
+      command 'cat /etc/php/7.0/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php/7.0/apache2/php.ini.tmp && mv /etc/php/7.0/apache2/php.ini.tmp /etc/php/7.0/apache2/php.ini'
+    end
   end
 end
 
@@ -1385,17 +1444,32 @@ if node[:platform] == 'ubuntu'
   package 'xbase-clients' do
     action :install
   end
-  package 'ruby2.0' do
-    action :install
-  end
-  package 'ruby2.0-dev' do
-    action :install
-  end
-  execute 'gem2.0 install rspec --no-ri --no-rdoc' do
-    command 'gem2.0 install rspec --no-ri --no-rdoc'
-  end
-  execute 'gem2.0 install selenium-webdriver --no-ri --no-rdoc' do
-    command 'gem2.0 install selenium-webdriver --no-ri --no-rdoc'
+  if node[:platform_version].to_f < 16
+    package 'ruby2.0' do
+      action :install
+    end
+    package 'ruby2.0-dev' do
+      action :install
+    end
+    execute 'gem2.0 install rspec --no-ri --no-rdoc' do
+      command 'gem2.0 install rspec --no-ri --no-rdoc'
+    end
+    execute 'gem2.0 install selenium-webdriver --no-ri --no-rdoc' do
+      command 'gem2.0 install selenium-webdriver --no-ri --no-rdoc'
+    end
+  else
+    package 'ruby2.3' do
+      action :install
+    end
+    package 'ruby2.3-dev' do
+      action :install
+    end
+    execute 'gem2.3 install rspec --no-ri --no-rdoc' do
+      command 'gem2.3 install rspec --no-ri --no-rdoc'
+    end
+    execute 'gem2.3 install selenium-webdriver --no-ri --no-rdoc' do
+      command 'gem2.3 install selenium-webdriver --no-ri --no-rdoc'
+    end
   end
   package 'firefox' do
     action :install

@@ -6,9 +6,23 @@
  * Time: 13:27
  * To change this template use File | Settings | File Templates.
  */
-require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Crypt/RSA.php');
-require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');
+
+if ((float)phpversion() >= 7.0) {
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
+    if (!defined('CRYPT_RSA_PRIVATE_FORMAT_PKCS1')) {
+        define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
+    }
+    if (!defined('CRYPT_RSA_ENCRYPTION_PKCS1')) {
+        define('CRYPT_RSA_ENCRYPTION_PKCS1', constant('phpseclib\Crypt\RSA::ENCRYPTION_PKCS1'));
+    }
+} else {
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Crypt/RSA.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');    
+}
 require_once(dirname(__FILE__) . '/../lib/bi2php/biRSA.php');
+require_once(dirname(__FILE__) . '/../IMUtil.php');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {
@@ -16,13 +30,15 @@ class RSA_Test extends PHPUnit_Framework_TestCase
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
+        $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+        $this->rsa = new $rsaClass;
     }
 
     public function testGeneratedKey()
     {
         $publickey = null;
         $privatekey = null;
-        $rsa = new Crypt_RSA();
+        $rsa = $this->rsa;
         extract($rsa->createKey(512)); /* 128, 256 didn't work, 512, 1024 work, 2048 didn't finish in 5 min. */
         $rsa->loadKey($publickey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
 //        echo "privatekey=",$privatekey,"\n";
@@ -58,7 +74,7 @@ HF8TtKANZd1EWQ/agZ65H2/NdL8H6zCgmKpYFTqFGwlYrnWrsbD1UxcCAwEAAQ==
 EOL;
 
 
-        $rsa = new Crypt_RSA();
+        $rsa = $this->rsa;
         $rsa->loadKey($publickey);
         $str = "123";
         $enc = $rsa->encrypt($str);
@@ -96,7 +112,7 @@ EOL;
 //        }
 //        $data = $temp;
 
-        $rsa = new Crypt_RSA();
+        $rsa = $this->rsa;
         $rsa->loadKey($generatedKey);
         $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
         $dec = $rsa->decrypt(pack("H*", $data));
@@ -134,7 +150,7 @@ v9nNeZFIhPbhCTjCdY/NlcIHOZqUQulTu1DpDZ7zFO1Fs4aEDnBvp9i8yJquxhOQ
 dBazzmZ3S/t2b6NtqClmn/1BgjgnKYURBn888UzbX6lqCNG3/mI=
 -----END RSA PRIVATE KEY-----
 EOL;
-        $rsa = new Crypt_RSA();
+        $rsa = $this->rsa;
         $rsa->loadKey($generatedKey);
         $privatekey = $rsa->getPrivateKey();
         $keyComp = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
@@ -187,7 +203,7 @@ EOL;
             '6b9cff5bd8c3f2c8ba90b00ab93263182ad3ed7ad0d460cc02529826c6048091' .
             '1c712d6e212ced1a7f5fc18a1574fdceb101f28d13cd106e8d04a24de9ab3570' .
             '77fee33e168b584a1cbf6ea27de9e88a89e1616b18897cd7288d2a02c62434a7';
-        $rsa = new Crypt_RSA();
+        $rsa = $this->rsa;
         $rsa->loadKey($generatedKey);
         $keyComp = $rsa->_parseKey($rsa->getPrivateKey(), CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
         $keyDecrypt = new biRSAKeyPair('0', $keyComp['privateExponent']->toHex(), $keyComp['modulus']->toHex());

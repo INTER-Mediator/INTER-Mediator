@@ -260,22 +260,6 @@ class RC2 extends Base
     );
 
     /**
-     * Default Constructor.
-     *
-     * @param int $mode
-     * @access public
-     * @throws \InvalidArgumentException if an invalid / unsupported mode is provided
-     */
-    function __construct($mode)
-    {
-        if ($mode == self::MODE_STREAM) {
-            throw new \InvalidArgumentException('Block ciphers cannot be ran in stream mode');
-        }
-
-        parent::__construct($mode);
-    }
-
-    /**
      * Test for engine validity
      *
      * This is mainly just a wrapper to set things up for \phpseclib\Crypt\Base::isValidEngine()
@@ -308,15 +292,19 @@ class RC2 extends Base
      *
      * @access public
      * @param int $length in bits
-     * @throws \LengthException if the key length isn't supported
      */
     function setKeyLength($length)
     {
-        if ($length < 8 || $length > 1024) {
-            throw new \LengthException('Key size of ' . $length . ' bits is not supported by this algorithm. Only keys between 1 and 1024 bits, inclusive, are supported');
+        if ($length < 8) {
+            $this->default_key_length = 8;
+        } elseif ($length > 1024) {
+            $this->default_key_length = 128;
+        } else {
+            $this->default_key_length = $length;
         }
+        $this->current_key_length = $this->default_key_length;
 
-        $this->default_key_length = $this->current_key_length = $length;
+        parent::setKeyLength($length);
     }
 
     /**
@@ -345,20 +333,16 @@ class RC2 extends Base
      * @access public
      * @param string $key
      * @param int $t1 optional Effective key length in bits.
-     * @throws \LengthException if the key length isn't supported
      */
-    function setKey($key, $t1 = false)
+    function setKey($key, $t1 = 0)
     {
         $this->orig_key = $key;
 
-        if ($t1 === false) {
+        if ($t1 <= 0) {
             $t1 = $this->default_key_length;
+        } elseif ($t1 > 1024) {
+            $t1 = 1024;
         }
-
-        if ($t1 < 1 || $t1 > 1024) {
-            throw new \LengthException('Key size of ' . $length . ' bits is not supported by this algorithm. Only keys between 1 and 1024 bits, inclusive, are supported');
-        }
-
         $this->current_key_length = $t1;
         // Key byte count should be 1..128.
         $key = strlen($key) ? substr($key, 0, 128) : "\x00";
@@ -581,7 +565,7 @@ class RC2 extends Base
         // (Currently, for Crypt_RC2, one generated $lambda_function cost on php5.5@32bit ~60kb unfreeable mem and ~100kb on php5.5@64bit)
         $gen_hi_opt_code = (bool)(count($lambda_functions) < 10);
 
-        // Generation of a uniqe hash for our generated code
+        // Generation of a unique hash for our generated code
         $code_hash = "Crypt_RC2, {$this->mode}";
         if ($gen_hi_opt_code) {
             $code_hash = str_pad($code_hash, 32) . $this->_hashInlineCryptFunction($this->key);
