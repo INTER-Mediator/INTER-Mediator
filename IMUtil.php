@@ -331,10 +331,12 @@ class IMUtil
     public function outputSecurityHeaders($params = NULL)
     {
         if (is_null($params)) {
-            $params = IMUtil::getFromParamsPHPFile(array('xFrameOptions', 'contentSecurityPolicy'), true);
+            $params = IMUtil::getFromParamsPHPFile(
+                array('xFrameOptions', 'contentSecurityPolicy','accessControlAllowOrigin'), true);
         }
         $xFrameOptions = str_replace("\r", '', str_replace("\n", '', $params['xFrameOptions']));
         $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', $params['contentSecurityPolicy']));
+        $accessControlAllowOrigin = str_replace("\r", '', str_replace("\n", '', $params['accessControlAllowOrigin']));
 
         if (is_null($xFrameOptions) || empty($xFrameOptions)) {
             $xFrameOptions = 'SAMEORIGIN';
@@ -347,6 +349,9 @@ class IMUtil
         }
         if ($contentSecurityPolicy !== '') {
             header("Content-Security-Policy: {$contentSecurityPolicy}");
+        }
+        if ($accessControlAllowOrigin !== '') {
+            header("Access-Control-Allow-Origin: {$accessControlAllowOrigin}");
         }
         header('X-XSS-Protection: 1; mode=block');
     }
