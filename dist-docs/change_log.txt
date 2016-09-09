@@ -25,6 +25,9 @@ Ver.5.5 (in development)
   attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba).
 - [BUG FIX] The field which applied a data converter class in FMS's portal, the converter didn't
   apply to the value in updating the field value.
+- [BUG FIX] On the update and create operation, the recordset modified by adviser definition class doesn't
+  affect to the mail...déjà vu ? or didn't finish yet?
+
 
 Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
