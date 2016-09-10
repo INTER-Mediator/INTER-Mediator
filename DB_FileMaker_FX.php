@@ -829,7 +829,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $queryString .= $currentSort . $currentSearch . '&-findall';
             }
         } else {
-            $currentSearch = $this->executeScriptsforLoading($context['script']);
+            $currentSearch = '';
+            if (isset($context['script'])) {
+                $currentSearch = $this->executeScriptsforLoading($context['script']);
+            }
             $queryValue = '';
             $qNum = 1;
             if ($useOrOperation === TRUE) {
