@@ -758,6 +758,23 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $skipRequest = '&-skip=' . $this->fx->currentSkip;
         }
         $queryString .= '&-max=' . $this->fx->groupSize . $skipRequest;
+        if (isset($context['script'])) {
+            foreach ($context['script'] as $condition) {
+                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
+                    switch ($condition['situation']) {
+                        case "post":
+                            $queryString .= '&-script=' . $condition['definition'];
+                            break;
+                        case "pre":
+                            $queryString .= '&-script.prefind=' . $condition['definition'];
+                            break;
+                        case "presort":
+                            $queryString .= '&-script.presort=' . $condition['definition'];
+                            break;
+                    }
+                }
+            }
+        }
         $fxUtility = new RetrieveFM7Data($this->fx);
         $currentSort = $fxUtility->CreateCurrentSort();
         $config = array(

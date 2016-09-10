@@ -21,6 +21,7 @@ Ver.5.5 (in development)
 - The Access-Control-Allow-Origin header can be appended with variable $accessControlAllowOrigin
   in params.php file.
 - Update sample_schema_mysql.txt, recipe.rb and sample_spec.rb for the INTER-Mediator-Server VM.
+- The setValue method of IMLibContext class returns affected node's id attribute values.
 - [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
   attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba).
 - [BUG FIX] The field which applied a data converter class in FMS's portal, the converter didn't
@@ -28,6 +29,8 @@ Ver.5.5 (in development)
 - [BUG FIX] On the update and create operation, the recordset modified by adviser definition class doesn't
   affect to the mail...déjà vu ? or didn't finish yet?
 
+- [BUG FIX] FileMaker_FX class couldn't apply the "script" keyed value for "read" operation
+  in a context definition.
 
 Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
