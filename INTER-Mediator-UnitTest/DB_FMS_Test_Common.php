@@ -345,6 +345,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
         $result = $this->db_proxy->readFromDB("person_layout");
+        $this->assertTrue($result !== FALSE, "Found record should be exists.");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
