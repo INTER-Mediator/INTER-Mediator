@@ -12,6 +12,7 @@ class DataConverter_Number_Test extends PHPUnit_Framework_TestCase
         $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
         setlocale (LC_ALL, 'ja_JP', 'ja');
         $this->dataconverter = new DataConverter_Number();
+        $this->dataconverter2 = new DataConverter_Number(TRUE);
 //
 //        $locInfo = localeconv();
 //        $this->thSepMark = $locInfo['mon_thousands_sep'];
@@ -42,5 +43,13 @@ class DataConverter_Number_Test extends PHPUnit_Framework_TestCase
         $expected = '1,000,000';
         $string = '1000000.0';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '0';
+        $string = '';
+        $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
+
+        $expected = '';
+        $string = '';
+        $this->assertEquals($expected, $this->dataconverter2->converterFromDBtoUser($string));
     }
 }
