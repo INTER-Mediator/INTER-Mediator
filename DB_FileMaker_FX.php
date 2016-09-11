@@ -397,7 +397,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     }
 
     private function setSearchConditionsForCompoundFound($field, $value, $operator = NULL) {
-        if ($operator === NULL) {
+        if ($operator === NULL || $operator === 'neq') {
             return array($field, $value);
         } else if ($operator === 'eq') {
             return array($field, '=' . $value);
@@ -614,10 +614,22 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                 throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
                             $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
+                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                                $condition['field'], $condition['value'], $condition['operator']);
                         } else {
                             $this->fx->AddDBParam($condition['field'], $condition['value']);
+                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                                $condition['field'], $condition['value']);
                         }
                         $hasFindParams = true;
+
+                        $queryValues[] = 'q' . $qNum;
+                        $qNum++;
+                        if (isset($condition['operator']) && $condition['operator'] === 'neq') {
+                            $neqConditions[] = TRUE;
+                        } else {
+                            $neqConditions[] = FALSE;
+                        }
                     }
                 }
             }
@@ -689,7 +701,17 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                 throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                             }
                             $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
+                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                                $foreignField, $formattedValue, $foreignOperator);
                             $hasFindParams = true;
+
+                            $queryValues[] = 'q' . $qNum;
+                            $qNum++;
+                            if (isset($foreignOperator) && $foreignOperator === 'neq') {
+                                $neqConditions[] = TRUE;
+                            } else {
+                                $neqConditions[] = FALSE;
+                            }
                         }
                     }
                 }
@@ -713,8 +735,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
                     $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-                    $this->fx->AddDBParam($authInfoField, $signedUser, "eq");
+                    $this->fx->AddDBParam($authInfoField, $signedUser, 'eq');
+                    $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                        $authInfoField, $signedUser, 'eq');
                     $hasFindParams = true;
+
+                    $queryValues[] = 'q' . $qNum;
+                    $qNum++;
+                    $neqConditions[] = FALSE;
                 }
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
@@ -724,8 +752,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if ($useOrOperation) {
                         throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
-                    $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
+                    $this->fx->AddDBParam($authInfoField, $belongGroups[0], 'eq');
+                    $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                        $authInfoField, $belongGroups[0], 'eq');
                     $hasFindParams = true;
+
+                    $queryValues[] = 'q' . $qNum;
+                    $qNum++;
+                    $neqConditions[] = FALSE;
                 }
 //            } else {
 //                if ($this->dbSettings->isDBNative()) {
@@ -750,8 +784,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             if ($useOrOperation) {
                 throw new Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
             }
-            $this->fx->AddDBParam($this->softDeleteField, $this->softDeleteValue, "neq");
+            $this->fx->AddDBParam($this->softDeleteField, $this->softDeleteValue, 'neq');
+            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                $this->softDeleteField, $this->softDeleteValue, 'eq');
             $hasFindParams = true;
+
+            $queryValues[] = 'q' . $qNum;
+            $qNum++;
+            $neqConditions[] = FALSE;
         }
 
         if (isset($context['sort'])) {
@@ -832,6 +872,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         } else {
             foreach ($searchConditions as $searchCondition) {
                 if (isset($searchCondition[0]) && $searchCondition[0] === '-recid') {
+                    $compoundFind = FALSE;
+                }
+            }
+            foreach ($neqConditions as $key => $value) {
+                if ($value === TRUE) {
                     $compoundFind = FALSE;
                 }
             }
