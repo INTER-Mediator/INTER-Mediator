@@ -399,32 +399,36 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     private function executeScriptsforLoading($scriptContext)
     {
         $queryString = '';
-        foreach ($scriptContext as $condition) {
-            switch ($condition['situation']) {
-                case 'post':
-                    if (isset($condition['definition']) && !empty($condition['definition'])) {
-                        $queryString .= '&-script=' . $condition['definition'];
-                        if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                            $queryString .= '&-script.param=' . $condition['parameter'];
-                        }
+        if (is_array($scriptContext)) {
+            foreach ($scriptContext as $condition) {
+                if (isset($condition['situation']) &&
+                    isset($condition['definition']) && !empty($condition['definition'])) {
+                    $scriptName = str_replace('&', '', $condition['definition']);
+                    $parameter = '';
+                    if (isset($condition['parameter']) && !empty($condition['parameter'])) {
+                        $parameter = str_replace('&', '', $condition['parameter']);
                     }
-                    break;
-                case 'pre':
-                    if (isset($condition['definition']) && !empty($condition['definition'])) {
-                        $queryString .= '&-script.prefind=' . $condition['definition'];
-                        if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                            $queryString .= '&-script.prefind.param=' . $condition['parameter'];
-                        }
+                    switch ($condition['situation']) {
+                        case 'post':
+                            $queryString .= '&-script=' . $scriptName;
+                            if ($parameter !== '') {
+                                $queryString .= '&-script.param=' . $parameter;
+                            }
+                            break;
+                        case 'pre':
+                            $queryString .= '&-script.prefind=' . $scriptName;
+                            if ($parameter !== '') {
+                                $queryString .= '&-script.prefind.param=' . $parameter;
+                            }
+                            break;
+                        case 'presort':
+                            $queryString .= '&-script.presort=' . $scriptName;
+                            if ($parameter !== '') {
+                                $queryString .= '&-script.presort.param=' . $parameter;
+                            }
+                            break;
                     }
-                    break;
-                case 'presort':
-                    if (isset($condition['definition']) && !empty($condition['definition'])) {
-                        $queryString .= '&-script.presort=' . $condition['definition'];
-                        if (isset($condition['parameter']) && !empty($condition['parameter'])) {
-                            $queryString .= '&-script.presort.param=' . $condition['parameter'];
-                        }
-                    }
-                    break;
+                }
             }
         }
 
@@ -825,7 +829,10 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 $queryString .= $currentSort . $currentSearch . '&-findall';
             }
         } else {
-            $currentSearch = $this->executeScriptsforLoading($context['script']);
+            $currentSearch = '';
+            if (isset($context['script'])) {
+                $currentSearch = $this->executeScriptsforLoading($context['script']);
+            }
             $queryValue = '';
             $qNum = 1;
             if ($useOrOperation === TRUE) {
