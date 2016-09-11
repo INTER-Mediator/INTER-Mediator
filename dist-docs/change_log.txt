@@ -33,6 +33,8 @@ Ver.5.5 (in development)
 - [BUG FIX] FileMaker_FX class couldn't apply the "script" and "query" keyed value for "load" 
   (or "read") operation in a context definition when setting search criteria. The affected version
   is 5.4 only.
+- [BUG FIX] Fix handling 'neq' operator of search criteria when using FileMaker Server (Disable
+  compound found requests internally when using 'neq' operator). The affected version is 5.4 only.
 
 Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page

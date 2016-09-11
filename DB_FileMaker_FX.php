@@ -397,7 +397,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
     }
 
     private function setSearchConditionsForCompoundFound($field, $value, $operator = NULL) {
-        if ($operator === NULL) {
+        if ($operator === NULL || $operator === 'neq') {
             return array($field, $value);
         } else if ($operator === 'eq') {
             return array($field, '=' . $value);
@@ -872,6 +872,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         } else {
             foreach ($searchConditions as $searchCondition) {
                 if (isset($searchCondition[0]) && $searchCondition[0] === '-recid') {
+                    $compoundFind = FALSE;
+                }
+            }
+            foreach ($neqConditions as $key => $value) {
+                if ($value === TRUE) {
                     $compoundFind = FALSE;
                 }
             }
