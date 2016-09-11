@@ -45,6 +45,132 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->db_proxy->dbClass->queriedCondition());
     }
 
+    public function testExecuteScriptsforLoading()
+    {
+        if ((float)phpversion() >= 5.3) {
+            $layoutName = 'person_layout';
+            $this->dbProxySetupForAccess($layoutName, 1);
+            $this->db_proxy->readFromDB($layoutName);
+            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
+            $method->setAccessible(true);
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'post',
+                )
+            );
+            $expected = '';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'definition' => 'testscript',
+                )
+            );
+            $expected = '';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'post',
+                    'definition' => 'testscript',
+                )
+            );
+            $expected = '&-script=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'read',
+                    'situation' => 'post',
+                    'definition' => 'test&script',
+                    'parameter' => '',
+                )
+            );
+            $expected = '&-script=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'post',
+                    'definition' => 'test&script',
+                    'parameter' => '1',
+                )
+            );
+            $expected = '&-script=testscript&-script.param=1';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'pre',
+                    'definition' => 'testscript',
+                )
+            );
+            $expected = '&-script.prefind=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'read',
+                    'situation' => 'pre',
+                    'definition' => 'testscript',
+                    'parameter' => '',
+                )
+            );
+            $expected = '&-script.prefind=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'pre',
+                    'definition' => 'testscript',
+                    'parameter' => '1&',
+                )
+            );
+            $expected = '&-script.prefind=testscript&-script.prefind.param=1';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'presort',
+                    'definition' => 'testscript',
+                )
+            );
+            $expected = '&-script.presort=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'read',
+                    'situation' => 'presort',
+                    'definition' => 'testscript',
+                    'parameter' => '',
+                )
+            );
+            $expected = '&-script.presort=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'presort',
+                    'definition' => 'testscript',
+                    'parameter' => '1',
+                )
+            );
+            $expected = '&-script.presort=testscript&-script.presort.param=1';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+        }
+    }
+
     public function testIsPossibleOperator()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -161,7 +287,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
 
     public function testAdjustSortDirection()
     {
-        if (((float)phpversion()) >= 5.3) {
+        if ((float)phpversion() >= 5.3) {
             $layoutName = 'person_layout';
 
             $this->dbProxySetupForAccess($layoutName, 1);
@@ -341,6 +467,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
         $result = $this->db_proxy->readFromDB("person_layout");
+        $this->assertTrue($result !== FALSE, "Found record should be exists.");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");
