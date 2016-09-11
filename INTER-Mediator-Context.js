@@ -26,7 +26,7 @@ var IMLibContextPool = {
     excludingNode: null,
 
     synchronize: function (context, recKey, key, value, target, portal) {
-        var i, j, viewName, refNode, targetNodes, result = false, calcKey;
+        var i, j, viewName, refNode, targetNodes, result = [], calcKey;
         viewName = context.viewName;
         if (this.poolingContexts == null) {
             return null;
@@ -47,6 +47,7 @@ var IMLibContextPool = {
                         refNode = document.getElementById(targetNodes[j].id);
                         if (refNode) {
                             IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
+                            result.push(targetNodes[j].id);
                         }
                     }
                 }
@@ -69,6 +70,7 @@ var IMLibContextPool = {
                         }
                         if (refNode && !(calcKey in IMLibCalc.calculateRequiredObject)) {
                             IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
+                            result.push(targetNodes[j].id);
                             //console.log(refNode, targetNodes[j].target, value);
                         }
                     }
@@ -1192,6 +1194,7 @@ var IMLibContext = function (contextName) {
 
     this.setValue = function (recKey, key, value, nodeId, target, portal) {
         //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
+        var updatedNodeIds = null;
         if (portal) {
             /* eslint no-console: ["error", {allow: ["error"]}] */
             console.error('Using the portal parameter in IMLibContext.setValue');
@@ -1244,11 +1247,12 @@ var IMLibContext = function (contextName) {
                     }
                 } else {
                     if (INTERMediator.partialConstructing) {
-                        IMLibContextPool.synchronize(this, recKey, key, value, target, portal);
+                        updatedNodeIds = IMLibContextPool.synchronize(this, recKey, key, value, target, portal);
                     }
                 }
             }
         }
+        return updatedNodeIds;
     };
 
     this.getValue = function (recKey, key, portal) {
