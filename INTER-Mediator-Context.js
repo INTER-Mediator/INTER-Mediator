@@ -1144,7 +1144,17 @@ var IMLibContext = function (contextName) {
         }
     };
 
-// setData____ methods are for storing data both the model and the database.
+    this.getDataAtLastRecord = function (key) {
+        var lastKey;
+        var storekeys = Object.keys(this.store);
+        if (storekeys.length > 0) {
+            lastKey = storekeys[storekeys.length - 1];
+            return this.getValue(lastKey, key, value);
+        }
+        return undefined;
+    };
+
+    // setData____ methods are for storing data both the model and the database.
 //
     this.setDataAtLastRecord = function (key, value) {
         var lastKey, keyAndValue;
