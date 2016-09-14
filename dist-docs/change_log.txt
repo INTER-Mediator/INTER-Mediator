@@ -33,6 +33,9 @@ Ver.5.5 (in development)
 - [BUG FIX] FileMaker_FX class couldn't apply the "script" keyed value for "load" (or "read") 
   operation in a context definition when setting search criteria and using "-findquery" command
   internnally. The affected version is 5.4 only.
+- [BUG FIX] Fix in expression parsing.
+- [BUG FIX] The id attribute value of "Detail" buttons on master/detail context is wrong
+  spelling (_im_buttom_master_id). This id value is changed as correct one (_im_button_master_id.)
 
 Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
