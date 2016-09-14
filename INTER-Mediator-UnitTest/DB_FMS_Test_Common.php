@@ -350,6 +350,53 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals(3654, $totalCount);
     }
 
+    public function testQuery_findPostalCodeWithLimit()
+    {
+        $limit = 5;
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals($limit, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1000000', $result[0]['f3']);
+    }
+
+    public function testQuery_findPostalCodeWithQueryKey()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw')))));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(15, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1670032', $result[0]['f3']);
+
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw'), array('field' => 'f9', 'value' => '天沼', 'operator' => 'neq')))));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(14, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1670021', $result[0]['f3']);
+    }
+
+    public function testQuery_findPostalCodeWithQueryKeyAndSearchCriteria()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '022', 'operator' => 'ew')))));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $this->db_proxy->dbSettings->addExtraCriteria('f9', 'cn', '井草');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(1, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1670022', $result[0]['f3']);
+    }
+
     public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndLimit()
     {
         $limit = 5;
