@@ -30,6 +30,12 @@ Ver.5.5 (in development)
   apply to the value in updating the field value.
 - [BUG FIX] On the update and create operation, the recordset modified by adviser definition class 
   doesn't affect to the mail...déjà vu ? or didn't finish yet? The affected version is 5.4 only.
+- [BUG FIX] FileMaker_FX class couldn't apply the "script" keyed value for "load" (or "read") 
+  operation in a context definition when setting search criteria and using "-findquery" command
+  internnally. The affected version is 5.4 only.
+- [BUG FIX] Fix in expression parsing.
+- [BUG FIX] The id attribute value of "Detail" buttons on master/detail context is wrong
+  spelling (_im_buttom_master_id). This id value is changed as correct one (_im_button_master_id.)
 - [BUG FIX] FileMaker_FX class couldn't apply the "script" and "query" keyed value for "load" 
   (or "read") operation in a context definition when setting search criteria. The affected version
   is 5.4 only.
