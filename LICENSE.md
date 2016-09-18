@@ -1,6 +1,6 @@
 INTER-Mediator is supplied under MIT License.
 
-Please see the full license for details:
+Please see the full license for details:<br>
 https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
 ---
