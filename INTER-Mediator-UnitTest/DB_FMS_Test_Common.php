@@ -45,6 +45,132 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $this->db_proxy->dbClass->queriedCondition());
     }
 
+    public function testExecuteScriptsforLoading()
+    {
+        if ((float)phpversion() >= 5.3) {
+            $layoutName = 'person_layout';
+            $this->dbProxySetupForAccess($layoutName, 1);
+            $this->db_proxy->readFromDB($layoutName);
+            $this->reflectionClass = new ReflectionClass('DB_FileMaker_FX');
+            $method = $this->reflectionClass->getMethod('executeScriptsforLoading');
+            $method->setAccessible(true);
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'post',
+                )
+            );
+            $expected = '';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'definition' => 'testscript',
+                )
+            );
+            $expected = '';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'post',
+                    'definition' => 'testscript',
+                )
+            );
+            $expected = '&-script=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'read',
+                    'situation' => 'post',
+                    'definition' => 'test&script',
+                    'parameter' => '',
+                )
+            );
+            $expected = '&-script=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'post',
+                    'definition' => 'test&script',
+                    'parameter' => '1',
+                )
+            );
+            $expected = '&-script=testscript&-script.param=1';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'pre',
+                    'definition' => 'testscript',
+                )
+            );
+            $expected = '&-script.prefind=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'read',
+                    'situation' => 'pre',
+                    'definition' => 'testscript',
+                    'parameter' => '',
+                )
+            );
+            $expected = '&-script.prefind=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'pre',
+                    'definition' => 'testscript',
+                    'parameter' => '1&',
+                )
+            );
+            $expected = '&-script.prefind=testscript&-script.prefind.param=1';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'presort',
+                    'definition' => 'testscript',
+                )
+            );
+            $expected = '&-script.presort=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'read',
+                    'situation' => 'presort',
+                    'definition' => 'testscript',
+                    'parameter' => '',
+                )
+            );
+            $expected = '&-script.presort=testscript';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+
+            $scriptContext = array('script' => 
+                array(
+                    'db-operation' => 'load',
+                    'situation' => 'presort',
+                    'definition' => 'testscript',
+                    'parameter' => '1',
+                )
+            );
+            $expected = '&-script.presort=testscript&-script.presort.param=1';
+            $this->assertEquals($expected, $method->invokeArgs($this->db_proxy->dbClass, array($scriptContext)));
+        }
+    }
+
     public function testIsPossibleOperator()
     {
         $this->dbProxySetupForAccess("person_layout", 1);
@@ -125,11 +251,43 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $condition['operator'] = '*match*';
         $expected['operator'] = 'cn';
         $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition = array(
+            'operator' => '=',
+            'value' => 'test',
+        );
+        $expected = array(
+            'field' => '',
+            'operator' => 'eq',
+            'value' => 'test',
+        );
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition = array(
+            'field' => 'f2',
+            'operator' => '=',
+        );
+        $expected = array(
+            'field' => 'f2',
+            'operator' => 'eq',
+            'value' => '',
+        );
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
+
+        $condition = array(
+            'operator' => '',
+        );
+        $expected = array(
+            'field' => '',
+            'value' => '',
+            'operator' => '',
+        );
+        $this->assertEquals($expected, $this->db_proxy->dbClass->normalizedCondition($condition));
     }
 
     public function testAdjustSortDirection()
     {
-        if (((float)phpversion()) >= 5.3) {
+        if ((float)phpversion() >= 5.3) {
             $layoutName = 'person_layout';
 
             $this->dbProxySetupForAccess($layoutName, 1);
@@ -182,6 +340,143 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         //        var_export($this->db_proxy->logger->getDebugMessage());
     }
 
+    public function testQuery_findPostalCodeWithSimpleSearchCriteria()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(15, count($result));
+        $this->assertEquals(3654, $totalCount);
+    }
+
+    public function testQuery_findPostalCodeWithLimit()
+    {
+        $limit = 5;
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals($limit, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1000000', $result[0]['f3']);
+    }
+
+    public function testQuery_findPostalCodeWithQueryKey()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw')))));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(15, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1670032', $result[0]['f3']);
+
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '167', 'operator' => 'bw'), array('field' => 'f9', 'value' => '天沼', 'operator' => 'neq')))));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(14, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1670021', $result[0]['f3']);
+    }
+
+    public function testQuery_findPostalCodeWithQueryKeyAndSearchCriteria()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'query' => array(array('field' => 'f3', 'value' => '022', 'operator' => 'ew')))));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $this->db_proxy->dbSettings->addExtraCriteria('f9', 'cn', '井草');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(1, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1670022', $result[0]['f3']);
+    }
+
+    public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndLimit()
+    {
+        $limit = 5;
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->setDataSource(array(array('records' => 1000000, 'name' => 'postalcode', 'key' => 'id', 'records' => $limit)));
+        $this->db_proxy->dbSettings->addExtraSortKey('id', 'asc');
+        $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals($limit, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1670032', $result[0]['f3']);
+    }
+
+    public function testQuery_findPostalCodeWithSimpleSearchCriteriaAndSorting()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria('f3', 'cn', '167');
+        $this->db_proxy->dbSettings->addExtraSortKey('f3', 'desc');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(15, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1670032', $result[0]['f3']);
+    }
+
+    public function testQuery_findPostalCodeWithAndSearchCriteria()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria('f3', 'bw', '167');
+        $this->db_proxy->dbSettings->addExtraCriteria('f9', 'cn', '荻窪');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(2, count($result));
+        $this->assertEquals(3654, $totalCount);
+    }
+
+    public function testQuery_findPostalCodeWithOrSearchCriteria()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria('f3', 'bw', '167');
+        $this->db_proxy->dbSettings->addExtraCriteria('f9', 'ew', '荻窪');
+        $this->db_proxy->dbSettings->addExtraCriteria('__operation__', 'ex', '');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(15, count($result));
+        $this->assertEquals(3654, $totalCount);
+    }
+
+    public function testQuery_findPostalCodeWithSearchCriteriaByRecId()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1);
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(1, count($result));
+        $this->assertEquals(3654, $totalCount);
+
+        $recId = $result[0]['-recid'];
+
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria('-recid', 'eq', $recId);
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(1, count($result));
+        $this->assertEquals(3654, $totalCount);
+        $this->assertEquals('1000000', $result[0]['f3']);
+    }
+
+    public function testQuery_findPostalCodeWithOrSearchCriteriaWithSameField()
+    {
+        $this->dbProxySetupForAccess('postalcode', 1000000);
+        $this->db_proxy->dbSettings->addExtraCriteria('f3', 'bw', '167');
+        $this->db_proxy->dbSettings->addExtraCriteria('f3', 'ew', '32');
+        $this->db_proxy->dbSettings->addExtraCriteria('__operation__', 'ex', '');
+        $result = $this->db_proxy->readFromDB('postalcode');
+        $totalCount = $this->db_proxy->getTotalCount('postalcode');
+        $this->assertEquals(93, count($result));
+        $this->assertEquals(3654, $totalCount);
+    }
+
     public function testInsertAndUpdateRecord()
     {
         $this->dbProxySetupForAccess("contact_to", 1000000);
@@ -219,6 +514,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person_layout", 1000000);
         $this->db_proxy->dbSettings->addExtraCriteria("id", "=", $newKeyValue);
         $result = $this->db_proxy->readFromDB("person_layout");
+        $this->assertTrue($result !== FALSE, "Found record should be exists.");
         $recordCount = $this->db_proxy->countQueryResult("person_layout");
         $this->assertTrue(count($result) == 1, "It should be just one record.");
         $this->assertTrue($result[0]["name"] === $nameValue, "Field value is not same as the definition.");

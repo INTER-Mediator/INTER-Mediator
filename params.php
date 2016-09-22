@@ -212,3 +212,9 @@ $pusherParameters = array(
  * As the default, the string is going to be encoded with the urlencode function.
  */
 $uploadFilePathMode = "";
+
+/* Append the Access-Control-Allow-Origin header
+ *
+ * This header will be appended other server url than the origin.
+ */
+//$accessControlAllowOrigin = "https://server.msyk.net";

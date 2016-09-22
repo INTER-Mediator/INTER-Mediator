@@ -8,7 +8,7 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="5.5-dev"
+version="5.5-RC2"
 
 # The jar file of YUI can be donwloaded from below.
 # http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7
@@ -122,7 +122,9 @@ mkdir -p "${buildPath}/lib/bi2php"
 cp -p "${originalPath}/lib/bi2php/biRSA.php" "${buildPath}/lib/bi2php"
 cp -prf "${originalPath}/lib/CWPKit" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/FX" "${buildPath}/lib"
-cp -prf "${originalPath}/lib/phpseclib" "${buildPath}/lib"
+cp -prf "${originalPath}/lib/ParagonIE" "${buildPath}/lib"
+cp -prf "${originalPath}/lib/phpseclib_v1" "${buildPath}/lib"
+cp -prf "${originalPath}/lib/phpseclib_v2" "${buildPath}/lib"
 cp -prf "${originalPath}/lib/mailsend" "${buildPath}/lib"
 
 if [ $choice = 3 ]; then

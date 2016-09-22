@@ -185,6 +185,7 @@ buster.testCase("Functions Test", {
         assert.equals(Parser.evaluate("length(f)", {f: 23.5678}), 7);
         assert.equals(Parser.evaluate("length(f)", {f: true}), 4);
         assert.equals(Parser.evaluate("length(f)", {f: false}), 5);
+        assert.equals(Parser.evaluate("length(f)", {f: "&lt;&amp;&gt;"}), 13); // not 3
     }
 });
 

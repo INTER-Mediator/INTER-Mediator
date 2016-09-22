@@ -54,11 +54,11 @@ You don't have to deploy the samples if you just want to see this at a glance.
 The information about INTER-Mediator Directive Committee is below:
 - http://inter-mediator.org/
 
-## Documentations
+## Documentation
 
 + [Manual](http://inter-mediator.info/)
 	+ [Virtual Machine for Test and Evaluation / Japanese](http://inter-mediator.info/ja/for-novices/vm.html)
-	+ [Refernce of Definition File / Japanese](http://inter-mediator.info/ja/for-developers/index.html)
+	+ [Reference of Definition File / Japanese](http://inter-mediator.info/ja/for-developers/index.html)
 + [change_log](https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/change_log.txt)
 + [In a future (Direction of Developement)](https://github.com/INTER-Mediator/INTER-Mediator/wiki/Direction-of-INTER-Mediator-Development)
 

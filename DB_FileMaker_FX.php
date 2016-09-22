@@ -396,6 +396,67 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str));
     }
 
+    private function setSearchConditionsForCompoundFound($field, $value, $operator = NULL) {
+        if ($operator === NULL || $operator === 'neq') {
+            return array($field, $value);
+        } else if ($operator === 'eq') {
+            return array($field, '=' . $value);
+        } else if ($operator === 'cn') {
+            return array($field, '*' . $value . '*');
+        } else if ($operator === 'bw') {
+            return array($field, $value . '*');
+        } else if ($operator === 'ew') {
+            return array($field, '*' . $value);
+        } else if ($operator === 'gt') {
+            return array($field, '>' . $value);
+        } else if ($operator === 'gte') {
+            return array($field, '>=' . $value);
+        } else if ($operator === 'lt') {
+            return array($field, '<' . $value);
+        } else if ($operator === 'lte') {
+            return array($field, '<=' . $value);
+        }
+    }
+
+    private function executeScriptsforLoading($scriptContext)
+    {
+        $queryString = '';
+        if (is_array($scriptContext)) {
+            foreach ($scriptContext as $condition) {
+                if (isset($condition['situation']) &&
+                    isset($condition['definition']) && !empty($condition['definition'])) {
+                    $scriptName = str_replace('&', '', $condition['definition']);
+                    $parameter = '';
+                    if (isset($condition['parameter']) && !empty($condition['parameter'])) {
+                        $parameter = str_replace('&', '', $condition['parameter']);
+                    }
+                    switch ($condition['situation']) {
+                        case 'post':
+                            $queryString .= '&-script=' . $scriptName;
+                            if ($parameter !== '') {
+                                $queryString .= '&-script.param=' . $parameter;
+                            }
+                            break;
+                        case 'pre':
+                            $queryString .= '&-script.prefind=' . $scriptName;
+                            if ($parameter !== '') {
+                                $queryString .= '&-script.prefind.param=' . $parameter;
+                            }
+                            break;
+                        case 'presort':
+                            $queryString .= '&-script.presort=' . $scriptName;
+                            if ($parameter !== '') {
+                                $queryString .= '&-script.presort.param=' . $parameter;
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+
+        return $queryString;
+    }
+
     private function executeScripts($fxphp, $condition)
     {
         if ($condition['situation'] == 'pre') {
@@ -502,6 +563,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $this->fx->FMSkipRecords(
             (isset($context['paging']) and $context['paging'] === true) ? $this->dbSettings->getStart() : 0);
 
+        $searchConditions = array();
+        $neqConditions = array();
+        $queryValues = array();
+        $qNum = 1;
+
         $hasFindParams = false;
         if (isset($context['query'])) {
             foreach ($context['query'] as $condition) {
@@ -515,10 +581,22 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                             throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
+                        $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                            $condition['field'], $condition['value'], $condition['operator']);
                     } else {
                         $this->fx->AddDBParam($condition['field'], $condition['value']);
+                        $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                            $condition['field'], $condition['value']);
                     }
                     $hasFindParams = true;
+
+                    $queryValues[] = 'q' . $qNum;
+                    $qNum++;
+                    if (isset($condition['operator']) && $condition['operator'] === 'neq') {
+                        $neqConditions[] = TRUE;
+                    } else {
+                        $neqConditions[] = FALSE;
+                    }
                 }
             }
         } elseif ($usePortal && isset($context['view'])) {
@@ -536,20 +614,28 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                 throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
                             $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
+                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                                $condition['field'], $condition['value'], $condition['operator']);
                         } else {
                             $this->fx->AddDBParam($condition['field'], $condition['value']);
+                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                                $condition['field'], $condition['value']);
                         }
                         $hasFindParams = true;
+
+                        $queryValues[] = 'q' . $qNum;
+                        $qNum++;
+                        if (isset($condition['operator']) && $condition['operator'] === 'neq') {
+                            $neqConditions[] = TRUE;
+                        } else {
+                            $neqConditions[] = FALSE;
+                        }
                     }
                 }
             }
             $this->dbSettings->setDataSourceName($context['name']);
         }
 
-        $searchConditions = array();
-        $neqConditions = array();
-        $queryValues = array();
-        $qNum = 1;
         $childRecordId = null;
         $childRecordIdValue = null;
         if ($this->dbSettings->getExtraCriteria()) {
@@ -573,25 +659,8 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     }
 
                     $this->fx->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
-                    if (isset($condition['operator']) && $condition['operator'] === 'eq') {
-                        $searchConditions[] = array($condition['field'], '=' . $condition['value']);
-                    } else if (isset($condition['operator']) && $condition['operator'] === 'cn') {
-                        $searchConditions[] = array($condition['field'], '*' . $condition['value'] . '*');
-                    } else if (isset($condition['operator']) && $condition['operator'] === 'bw') {
-                        $searchConditions[] = array($condition['field'], $condition['value'] . '*');
-                    } else if (isset($condition['operator']) && $condition['operator'] === 'ew') {
-                        $searchConditions[] = array($condition['field'], '*' . $condition['value']);
-                    } else if (isset($condition['operator']) && $condition['operator'] === 'gt') {
-                        $searchConditions[] = array($condition['field'], '>' . $condition['value']);
-                    } else if (isset($condition['operator']) && $condition['operator'] === 'gte') {
-                        $searchConditions[] = array($condition['field'], '>=' . $condition['value']);
-                    } else if (isset($condition['operator']) && $condition['operator'] === 'lt') {
-                        $searchConditions[] = array($condition['field'], '<' . $condition['value']);
-                    } else if (isset($condition['operator']) && $condition['operator'] === 'lte') {
-                        $searchConditions[] = array($condition['field'], '<=' . $condition['value']);
-                    } else {
-                        $searchConditions[] = array($condition['field'], $condition['value']);
-                    }
+                    $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                        $condition['field'], $condition['value'], $condition['operator']);
                     $queryValues[] = 'q' . $qNum;
                     $qNum++;
                     if (isset($condition['operator']) && $condition['operator'] === 'neq') {
@@ -632,7 +701,17 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                                 throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                             }
                             $this->fx->AddDBParam($foreignField, $formattedValue, $foreignOperator);
+                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                                $foreignField, $formattedValue, $foreignOperator);
                             $hasFindParams = true;
+
+                            $queryValues[] = 'q' . $qNum;
+                            $qNum++;
+                            if (isset($foreignOperator) && $foreignOperator === 'neq') {
+                                $neqConditions[] = TRUE;
+                            } else {
+                                $neqConditions[] = FALSE;
+                            }
                         }
                     }
                 }
@@ -656,8 +735,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                         throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
                     $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
-                    $this->fx->AddDBParam($authInfoField, $signedUser, "eq");
+                    $this->fx->AddDBParam($authInfoField, $signedUser, 'eq');
+                    $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                        $authInfoField, $signedUser, 'eq');
                     $hasFindParams = true;
+
+                    $queryValues[] = 'q' . $qNum;
+                    $qNum++;
+                    $neqConditions[] = FALSE;
                 }
             } else if ($authInfoTarget == 'field-group') {
                 $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
@@ -667,8 +752,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     if ($useOrOperation) {
                         throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
                     }
-                    $this->fx->AddDBParam($authInfoField, $belongGroups[0], "eq");
+                    $this->fx->AddDBParam($authInfoField, $belongGroups[0], 'eq');
+                    $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                        $authInfoField, $belongGroups[0], 'eq');
                     $hasFindParams = true;
+
+                    $queryValues[] = 'q' . $qNum;
+                    $qNum++;
+                    $neqConditions[] = FALSE;
                 }
 //            } else {
 //                if ($this->dbSettings->isDBNative()) {
@@ -693,8 +784,14 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             if ($useOrOperation) {
                 throw new Exception("Condition Incompatible.: The soft-delete record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
             }
-            $this->fx->AddDBParam($this->softDeleteField, $this->softDeleteValue, "neq");
+            $this->fx->AddDBParam($this->softDeleteField, $this->softDeleteValue, 'neq');
+            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                $this->softDeleteField, $this->softDeleteValue, 'eq');
             $hasFindParams = true;
+
+            $queryValues[] = 'q' . $qNum;
+            $qNum++;
+            $neqConditions[] = FALSE;
         }
 
         if (isset($context['sort'])) {
@@ -742,13 +839,6 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                 }
             }
         }
-        if (isset($context['script'])) {
-            foreach ($context['script'] as $condition) {
-                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
-                    $this->fx = $this->executeScripts($this->fx, $condition);
-                }
-            }
-        }
 
         $queryString = '-db=' . urlencode($this->fx->database);
         $queryString .= '&-lay=' . urlencode($this->fx->layout);
@@ -758,6 +848,13 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             $skipRequest = '&-skip=' . $this->fx->currentSkip;
         }
         $queryString .= '&-max=' . $this->fx->groupSize . $skipRequest;
+        if (isset($context['script'])) {
+            foreach ($context['script'] as $condition) {
+                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
+                    $queryString .= $this->executeScriptsforLoading($context['script']);
+                }
+            }
+        }
         $fxUtility = new RetrieveFM7Data($this->fx);
         $currentSort = $fxUtility->CreateCurrentSort();
         $config = array(
@@ -778,6 +875,11 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
                     $compoundFind = FALSE;
                 }
             }
+            foreach ($neqConditions as $key => $value) {
+                if ($value === TRUE) {
+                    $compoundFind = FALSE;
+                }
+            }
         }
 
         if ($compoundFind === FALSE) {
@@ -791,6 +893,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
             }
         } else {
             $currentSearch = '';
+            if (isset($context['script'])) {
+                $currentSearch = $this->executeScriptsforLoading($context['script']);
+            }
             $queryValue = '';
             $qNum = 1;
             if ($useOrOperation === TRUE) {

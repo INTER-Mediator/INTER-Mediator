@@ -301,14 +301,12 @@ class GenerateJSCode
             $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
             $rsa = new $rsaClass;
             $rsa->setPassword($passPhrase);
+            $rsa->loadKey($generatedPrivateKey);
+            $rsa->setPassword();
             if (IMUtil::phpVersion() < 6) {
-                $rsa->loadKey($generatedPrivateKey);
-                $rsa->setPassword();
                 $publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);
             } else {
-                $rsa->load($generatedPrivateKey, 'PKCS1');
-                $rsa->setPassword();
-                $publickey = $rsa->getPublicKey('Raw');
+                $publickey = $rsa->getPublicKey(constant('phpseclib\Crypt\RSA::PUBLIC_FORMAT_RAW'));
             }
 
             $this->generateAssignJS(

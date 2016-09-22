@@ -1,5 +1,4 @@
 <?php
-
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -13,6 +12,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 {
     /**
@@ -357,7 +357,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
                 $mailResult = $mailSender->processing(
                     $dataSource,
-                    $result,
+                    $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
                 if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
@@ -1061,12 +1061,17 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             include($currentDirParam);
         }
 
-        $rsa = new Crypt_RSA();
+        $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+        $rsa = new $rsaClass;
         $rsa->setPassword($passPhrase);
         $rsa->loadKey($generatedPrivateKey);
         $rsa->setPassword();
         $privatekey = $rsa->getPrivateKey();
-        $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+        if (IMUtil::phpVersion() < 6) {
+            $priv = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+        } else {
+            $priv = $rsa->_parseKey($privatekey, constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
+        }
         require_once('lib/bi2php/biRSA.php');
         $keyDecrypt = new biRSAKeyPair('0', $priv['privateExponent']->toHex(), $priv['modulus']->toHex());
         $decrypted = $keyDecrypt->biDecryptedString($paramCryptResponse);

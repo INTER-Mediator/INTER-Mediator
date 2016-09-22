@@ -11,7 +11,12 @@ job:
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_MySQLDateTime_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_Number_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_NumberBase_Test.php
+    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/GenerateJSCode_Test.php
+    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/IMUtil_Test.php
+    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/INTERMediator_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MediaAccess_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MessageStrings_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MessageStrings_ja_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/RSA_Test.php;
+    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/defedit_Test.php;
+    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/pageedit_Test.php;

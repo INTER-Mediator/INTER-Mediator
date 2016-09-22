@@ -12,6 +12,12 @@ config["My tests"] = {
         "*.js"
     ],
     tests: [
-        "INTER-Mediator-UnitTest/*-test.js"
+        "INTER-Mediator-UnitTest/INTER-Mediator-Context-test.js",
+        "INTER-Mediator-UnitTest/INTER-Mediator-Element-test.js",
+        "INTER-Mediator-UnitTest/INTER-Mediator-Lib-test.js",
+        "INTER-Mediator-UnitTest/INTER-Mediator-Page-test.js",
+        "INTER-Mediator-UnitTest/RSA_JavaScript-test.js",
+        "INTER-Mediator-UnitTest/js-expression-eval-test.js",
+        "INTER-Mediator-UnitTest/sha1-test.js"
     ]
 };

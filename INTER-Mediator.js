@@ -1888,7 +1888,7 @@ var INTERMediator = {
             buttonNode.setAttribute('id', thisId);
             INTERMediator.buttonIdNum++;
             masterContext = IMLibContextPool.getMasterContext();
-            masterContext.setValue(keyField + '=' + keyValue, '_im_buttom_master_id', thisId, thisId);
+            masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId);
 
             if (isTouchRepeater) {
                 moveToDetailFunc = moveToDetail(encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi);

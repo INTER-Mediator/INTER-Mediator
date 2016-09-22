@@ -143,7 +143,8 @@ function loadClass($className)
 {
     if (strpos($className, 'PHPUnit_') === false &&
         $className !== 'PHP_Invoker' &&
-        strpos($className, 'PHPExcel_') === false
+        strpos($className, 'PHPExcel_') === false &&
+        $className !== 'Composer\Autoload\ClassLoader'
     ) {
         $result = include_once $className . '.php';
         if (!$result) {
