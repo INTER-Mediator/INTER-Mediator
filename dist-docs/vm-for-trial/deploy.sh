@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Ubuntu Server 14.04.3
+# setup shell script for Ubuntu Server 14.04.5
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -44,32 +44,35 @@ echo "set grub-pc/install_devices /dev/sda" | debconf-communicate
 aptitude clean
 aptitude update
 aptitude full-upgrade --assume-yes
-aptitude install apache2 --assume-yes
-aptitude install openssh-server --assume-yes
-aptitude install mysql-server --assume-yes
-aptitude install postgresql --assume-yes
-aptitude install sqlite --assume-yes
-aptitude install acl --assume-yes
-aptitude install libmysqlclient-dev --assume-yes
-aptitude install php5-mysql --assume-yes
-aptitude install php5-pgsql --assume-yes
-aptitude install php5-sqlite --assume-yes
-aptitude install php5-curl --assume-yes
-aptitude install php5-gd --assume-yes
-aptitude install php5-xmlrpc --assume-yes
-aptitude install php5-intl --assume-yes
-aptitude install git --assume-yes
-aptitude install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
-aptitude install nodejs-legacy --assume-yes
-aptitude install npm --assume-yes
-aptitude install libfontconfig1 --assume-yes
-aptitude install phpunit --assume-yes
-aptitude install samba --assume-yes
+apt-get install apache2 --assume-yes
+apt-get install openssh-server --assume-yes
+apt-get install mysql-server --assume-yes
+apt-get install postgresql --assume-yes
+apt-get install sqlite --assume-yes
+apt-get install acl --assume-yes
+apt-get install libmysqlclient-dev --assume-yes
+apt-get install php5-mysql --assume-yes
+apt-get install php5-pgsql --assume-yes
+apt-get install php5-sqlite --assume-yes
+apt-get install php5-curl --assume-yes
+apt-get install php5-gd --assume-yes
+apt-get install php5-xmlrpc --assume-yes
+apt-get install php5-intl --assume-yes
+apt-get install git --assume-yes
+apt-get install nodejs --assume-yes && update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10
+apt-get install nodejs-legacy --assume-yes
+apt-get install npm --assume-yes
+apt-get install libfontconfig1 --assume-yes
+apt-get install phpunit --assume-yes
+apt-get install samba --assume-yes
 
 # for Japanese
-aptitude install language-pack-ja --assume-yes
-aptitude install fbterm --assume-yes
-aptitude install unifont --assume-yes
+apt-get install language-pack-ja --assume-yes
+apt-get install fbterm --assume-yes
+apt-get install unifont --assume-yes
+
+# Switch to the current security-supported stack by running
+apt-get install --assume-yes linux-generic-lts-xenial linux-image-generic-lts-xenial
 
 aptitude clean
 
