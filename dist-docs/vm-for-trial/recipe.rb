@@ -62,8 +62,7 @@ if node[:platform] == 'alpine'
   execute 'echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers' do
     command 'echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
   end
-end
-if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+elsif node[:platform] == 'ubuntu'
   file '/etc/sudoers.d/developer' do
     owner 'root'
     group 'root'
@@ -572,6 +571,14 @@ package 'git' do
 end
 
 if node[:platform] == 'ubuntu'
+  if node[:platform_version].to_i == 14
+    package 'linux-generic-lts-xenial' do
+      action :install
+    end
+    package 'linux-image-generic-lts-xenial' do
+      action :install
+    end
+  end
   execute 'apt-get clean' do
     command 'apt-get clean'
   end

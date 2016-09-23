@@ -362,6 +362,14 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
+describe package('linux-generic-lts-xenial'), :if => os[:family] == 'ubuntu' && os[:release].to_i == 14 do
+  it { should be_installed }
+end
+
+describe package('linux-image-generic-lts-xenial'), :if => os[:family] == 'ubuntu' && os[:release].to_i == 14 do
+  it { should be_installed }
+end
+
 describe file('/etc/apache2/mods-enabled/headers.load'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
 end
