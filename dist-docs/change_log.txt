@@ -41,6 +41,8 @@ Ver.5.5 (in development)
   is 5.4 only.
 - [BUG FIX] Fix handling 'neq' operator of search criteria when using FileMaker Server (Disable
   compound found requests internally when using 'neq' operator). The affected version is 5.4 only.
+- [BUG FIX] DB_FileMaker_FX in RC1 was the script for all operations are added in "read" operation.
+- [BUG FIX] On the MediaAccess class, the authorization for “all” operation didn’t apply.
 
 Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
