@@ -333,10 +333,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $this->dbSettings->getDbSpecUser(),
                 $this->dbSettings->getDbSpecPassword(),
                 is_array($this->dbSettings->getDbSpecOption()) ? $this->dbSettings->getDbSpecOption() : array());
-            if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
-                $this->link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
-            }
             $this->handler = DB_PDO_Handler::generateHandler($this, $this->dbSettings->getDbSpecDSN());
+            $this->handler->optionalOperationInSetup();
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() .
                 ", DSN=" . $this->dbSettings->getDbSpecDSN() .
@@ -803,6 +801,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     {
         $this->fieldInfo = null;
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
+        $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
@@ -831,10 +830,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $value = $fieldValues[$counter];
             $counter++;
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
-            $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
-            $setClause[] = "{$field}=?";
-            $setParameter[] = $convertedValue;
+            if (in_array($field, $fieldInfos) && $convertedValue === "" ) {
+                $setClause[] = "{$field}=NULL";
+            } else {
+                $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
+                $setClause[] = "{$field}=?";
+                $setParameter[] = $convertedValue;
+            }
         }
         if (count($setClause) < 1) {
             $this->logger->setErrorMessage('No data to update.');
@@ -913,6 +916,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
     function createInDB($bypassAuth)
     {
         $this->fieldInfo = null;
+        $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
@@ -948,9 +952,14 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         for ($i = 0; $i < $countFields; $i++) {
             $field = $requiredFields[$i];
             $value = $fieldValues[$i];
-            $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
-            $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
+            if (in_array($field, $fieldInfos) && $value === "" ) {
+                $setValues[] = "NULL";
+            } else {
+                $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
+                $setValues[] = $this->link->quote(
+                    $this->formatter->formatterToDB($filedInForm, $convertedValue));
+            }
             $setColumnNames[] = $field;
         }
         if (isset($tableInfo['default-values'])) {
@@ -960,7 +969,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 if (!in_array($field, $setColumnNames)) {
                     $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
                     $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-                    $setValues[] = $this->link->quote($this->formatter->formatterToDB($filedInForm, $convertedValue));
+                    $setValues[] = $this->link->quote(
+                        $this->formatter->formatterToDB($filedInForm, $convertedValue));
                     $setColumnNames[] = $field;
                 }
             }
@@ -981,13 +991,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
 
         $keyField = isset($tableInfo['key']) ? $tableInfo['key'] : 'id';
-        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /**/
-            $setClause = (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
-                '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
-        } else { // sqlite, pgsql
-            $setClause = (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
-                '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
-        }
+        $setClause = $this->handler->sqlSETClause($setColumnNames, $keyField, $setValues);
         $sql = "{$this->handler->sqlINSERTCommand()}{$tableName} {$setClause}";
         $this->logger->setDebugMessage($sql);
         $result = $this->link->query($sql);
@@ -2044,46 +2048,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 'value' => "%{$condition['value']}%",
             );
         }
-
-        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) {
-            /* for MySQL specific */
-            return $condition;
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
-            /* for PostgreSQL specific */
-            return $condition;
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
-            /* for SQLite specific */
-            return $condition;
-        } else { // others don't define so far
-            return FALSE;
-        }
-    }
-
-    public
-    function quotedFieldName($fieldName)
-    {
-        if (strpos($this->dbSettings->getDbSpecDSN(), 'mysql:') === 0) { /* for MySQL */
-            if (strpos($fieldName, ".") !== false) {
-                $components = explode(".", $fieldName);
-                $quotedName = array();
-                foreach ($components as $item) {
-                    $quotedName[] = "`{$item}`";
-                }
-                return implode(".", $quotedName);
-            }
-            return "`{$fieldName}`";
-
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) { /* for PostgreSQL */
-            $q = '"';
-            return $q . str_replace($q, $q . $q, $fieldName) . $q;
-
-        } else if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) { /* for SQLite */
-            $q = '"';
-            return $q . str_replace($q, $q . $q, $fieldName) . $q;
-
-        } else {
-            return $fieldName;
-        }
+        return $condition;
     }
 
     public

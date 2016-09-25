@@ -205,7 +205,7 @@ class GenerateJSCode
         if (is_null($remoteAddr) || $remoteAddr === FALSE) {
             $remoteAddr = '0.0.0.0';
         }
-        $clientIdSeed = time() + $remoteAddr + mt_rand();
+        $clientIdSeed = time() . $remoteAddr . mt_rand();
         $randomSecret = mt_rand();
         $clientId = hash_hmac('sha256', $clientIdSeed, $randomSecret);
 

@@ -11,7 +11,7 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.5 (in development)
-- Support PHP 7.
+- Support PHP 7 and cheking on 7.1RC2 too.
 - Add "phpseclib_v2" (phpseclib 2.0.3) in "lib" directory for supporting PHP 7.
 - Add "Constant-Time Encoding" in "lib" directory for phpseclib 2.0.
   <https://github.com/paragonie/constant_time_encoding>
@@ -23,6 +23,8 @@ Ver.5.5 (in development)
 - Update sample_schema_mysql.txt, recipe.rb and sample_spec.rb for the INTER-Mediator-Server VM.
 - The getDataAtLastRecord(key) method in IMLibContext class is added.
 - The setValue method of IMLibContext class returns affected node's id attribute values.
+- If nullable and numeric field is updated/created with "" value, write the value as NULL.
+  This behavior requires to set blank in case of updating text field with no string.
 - [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
   attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba). The affected 
   version is 5.4 only.
