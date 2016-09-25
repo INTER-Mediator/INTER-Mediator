@@ -1602,8 +1602,13 @@ var INTERMediator = {
                 return;
             }
             if (currentContextDef['paging'] == true) {
+                buttonName = currentContextDef['name'];
+                if (currentContextDef['button-names'] && currentContextDef['button-names']['copy']) {
+                    buttonName = currentContextDef['button-names']['copy'];
+                }
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'COPY',
+                    name: buttonName,
                     contextDef: currentContextDef,
                     keyValue: currentRecord[currentContextDef['key']]
                 });
@@ -1707,9 +1712,13 @@ var INTERMediator = {
                     break;
                 }
             } else {
+                buttonName = currentContextDef['name'];
+                if (currentContextDef['button-names'] && currentContextDef['button-names']['delete']) {
+                    buttonName = currentContextDef['button-names']['delete'];
+                }
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'DELETE',
-                    name: currentContextDef['name'],
+                    name: buttonName,
                     key: keyField,
                     value: keyValue,
                     confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
@@ -1837,9 +1846,13 @@ var INTERMediator = {
                     } else {
                         keyField = currentContextDef['key'] ? currentContextDef['key'] : 'id';
                     }
+                    buttonName = currentContextDef['name'];
+                    if (currentContextDef['button-names'] && currentContextDef['button-names']['insert']) {
+                        buttonName = currentContextDef['button-names']['insert'];
+                    }
                     IMLibPageNavigation.deleteInsertOnNavi.push({
                         kind: 'INSERT',
-                        name: currentContextDef['name'],
+                        name: buttonName,
                         key: keyField,
                         confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
                     });
