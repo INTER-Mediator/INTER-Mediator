@@ -28,34 +28,79 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return "INSERT INTO ";
     }
 
-    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
+    public function sqlSETClause($setColumnNames, $keyField, $setValues)
     {
-        $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
+        return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
+            '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
+    }
 
-        /*
-         sqlite> PRAGMA table_info(person);
-         cid         name        type        notnull     dflt_value  pk
-         ----------  ----------  ----------  ----------  ----------  ----------
-         0           id          INTEGER     0                       1
-         1           name        TEXT        0                       0
-         2           address     TEXT        0                       0
-         3           mail        TEXT        0                       0
-         4           category    INTEGER     0                       0
-         5           checking    INTEGER     0                       0
-         6           location    INTEGER     0                       0
-         7           memo        TEXT        0                       0
-          */
-        $sql = "PRAGMA table_info({$tableName})";
-        $this->dbClassObj->logger->setDebugMessage($sql);
-        $result = $this->dbClassObj->link->query($sql);
-        if (!$result) {
-            $this->dbClassObj->errorMessageStore('PRAGMA table_info Error:' . $sql);
-            return false;
+    public function getNullableNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldNameForField = 'name';
+        $fieldNameForNullable = 'notnull';
+        $fieldNameForType = 'type';
+        $fieldArray = array();
+        $numericFieldTypes = array('integer', 'real', 'numeric',
+            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2','int8',
+            'double', 'double precision', 'float', 'decimal','boolean','date','datetime',);
+        $matches = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            preg_match("/[a-z ]+/", strtolower($row[$fieldNameForType]), $matches);
+            if (! $row[$fieldNameForNullable] &&
+                in_array($matches[0], $numericFieldTypes)
+            ) {
+                $fieldArray[] = $row[$fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    private $tableInfo = array();
+
+    protected function getTableInfo($tableName)
+    {
+        if (! isset($this->tableInfo[$tableName])) {
+            $sql = "PRAGMA table_info({$tableName})";
+            $this->dbClassObj->logger->setDebugMessage($sql);
+            $result = $this->dbClassObj->link->query($sql);
+            if (!$result) {
+                throw new Exception('INSERT Error:' . $sql);
+            }
+        } else {
+            $result = $this->tableInfo[$tableName];
+        }
+        return $result;
+    }
+    /*
+      sqlite> PRAGMA table_info(person);
+      cid         name        type        notnull     dflt_value  pk
+      ----------  ----------  ----------  ----------  ----------  ----------
+      0           id          INTEGER     0                       1
+      1           name        TEXT        0                       0
+      2           address     TEXT        0                       0
+      3           mail        TEXT        0                       0
+      4           category    INTEGER     0                       0
+      5           checking    INTEGER     0                       0
+      6           location    INTEGER     0                       0
+      7           memo        TEXT        0                       0
+       */
+
+    protected function getFieldLists($tableName, $keyField, $assocField, $assocValue)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
         }
         $fieldArray = array();
         $listArray = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if ($tableInfo['key'] === $row['name'] || !is_null($row['dflt_value'])) {
+            if ($keyField === $row['name'] || !is_null($row['dflt_value'])) {
 
             } else if ($assocField === $row['name']) {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
@@ -65,17 +110,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
                 $listArray[] = $this->quotedEntityName($row['name']);
             }
         }
-        $fieldList = implode(',', $fieldArray);
-        $listList = implode(',', $listArray);
-
-        $sql = "{$this->sqlINSERTCommand()}{$tableName} ({$fieldList}) SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
-        $this->dbClassObj->logger->setDebugMessage($sql);
-        $result = $this->dbClassObj->link->query($sql);
-        if (!$result) {
-            $this->dbClassObj->errorMessageStore('INSERT Error:' . $sql);
-            return false;
-        }
-        return $this->dbClassObj->link->lastInsertId($tableName);
+        return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
     public function isPossibleOperator($operator)
@@ -114,4 +149,9 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return $q . str_replace($q, $q . $q, $entityName) . $q;
 
     }
+
+    public function optionalOperationInSetup()
+    {
+    }
+
 }

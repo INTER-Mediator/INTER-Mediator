@@ -28,21 +28,80 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "INSERT IGNORE INTO ";
     }
 
-    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
+    public function sqlSETClause($setColumnNames, $keyField, $setValues)
     {
-        $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
-        $sql = "SHOW COLUMNS FROM {$tableName}";
-        $this->dbClassObj->logger->setDebugMessage($sql);
-        $result = $this->dbClassObj->link->query($sql);
-        if (!$result) {
-            $this->dbClassObj->errorMessageStore('Show Columns Error:' . $sql);
-            return false;
+        return (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
+            '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
+    }
+
+    public function getNullableNumericFields($tableName)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+        $fieldNameForField = 'Field';
+        $fieldNameForNullable = 'Null';
+        $fieldNameForType = 'Type';
+        $fieldArray = array();
+        $numericFieldTypes = array('int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
+            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
+            'date', 'datetime', 'timestamp', 'time', 'year',);
+        $matches = array();
+        foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            preg_match("/[a-z]+/", strtolower($row[$fieldNameForType]), $matches);
+            if ($row[$fieldNameForNullable] &&
+                in_array($matches[0], $numericFieldTypes)
+            ) {
+                $fieldArray[] = $row[$fieldNameForField];
+            }
+        }
+        return $fieldArray;
+    }
+
+    private $tableInfo = array();
+
+    protected function getTableInfo($tableName)
+    {
+        if (! isset($this->tableInfo[$tableName])) {
+            $sql = "SHOW COLUMNS FROM {$tableName}";
+            $this->dbClassObj->logger->setDebugMessage($sql);
+            $result = $this->dbClassObj->link->query($sql);
+            $this->tableInfo[$tableName] = $result;
+            if (!$result) {
+                throw new Exception('INSERT Error:' . $sql);
+            }
+        } else {
+            $result = $this->tableInfo[$tableName];
+        }
+        return $result;
+     }
+    /*
+      * mysql> show columns from func;
++-------+------------------------------+------+-----+---------+-------+
+| Field | Type                         | Null | Key | Default | Extra |
++-------+------------------------------+------+-----+---------+-------+
+| name  | char(64)                     | NO   | PRI |         |       |
+| ret   | tinyint(1)                   | NO   |     | 0       |       |
+| dl    | char(128)                    | NO   |     |         |       |
+| type  | enum('function','aggregate') | NO   |     | NULL    |       |
++-------+------------------------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+    */
+
+    protected function getFieldLists($tableName, $keyField, $assocField, $assocValue)
+    {
+        try {
+            $result = $this->getTableInfo($tableName);
+        } catch (Exception $ex) {
+            throw $ex;
         }
         $fieldArray = array();
         $listArray = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if ($tableInfo['key'] === $row['Field'] || !is_null($row['Default'])) {
-
+            if ($keyField === $row['Field'] || !is_null($row['Default'])) {
+                // skip key field to asing value.
             } else if ($assocField === $row['Field']) {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
@@ -51,17 +110,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
                 $listArray[] = $this->quotedEntityName($row['Field']);
             }
         }
-        $fieldList = implode(',', $fieldArray);
-        $listList = implode(',', $listArray);
-
-        $sql = "{$this->sqlINSERTCommand()}{$tableName} ({$fieldList}) SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
-        $this->dbClassObj->logger->setDebugMessage($sql);
-        $result = $this->dbClassObj->link->query($sql);
-        if (!$result) {
-            $this->dbClassObj->errorMessageStore('INSERT Error:' . $sql);
-            return false;
-        }
-        return $this->dbClassObj->link->lastInsertId($tableName);
+        return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
     public function isPossibleOperator($operator)
@@ -127,7 +176,10 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             return implode(".", $quotedName);
         }
         return "`{$entityName}`";
-
     }
 
+    public function optionalOperationInSetup()
+    {
+        $this->dbClassObj->link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+    }
 }

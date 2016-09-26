@@ -927,8 +927,8 @@ var INTERMediator_DBAdapter = {
             INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.server_access_async(
                 params,
-                1017,
-                1015,
+                1013,
+                1014,
                 successProc,
                 failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(

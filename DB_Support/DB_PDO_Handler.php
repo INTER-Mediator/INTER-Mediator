@@ -44,7 +44,37 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlINSERTCommand();
 
-    public abstract function copyRecords($tableInfo, $queryClause, $assocField, $assocValue);
+    public abstract function sqlSETClause($setColumnNames, $keyField, $setValues);
+
+    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
+    {
+        $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
+        try {
+            list($fieldList, $listList) = $this->getFieldLists(
+                $tableName, $tableInfo['key'], $assocField, $assocValue);
+            $sql = "{$this->sqlINSERTCommand()}{$tableName} ({$fieldList}) " .
+                "SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
+            $this->dbClassObj->logger->setDebugMessage($sql);
+            $result = $this->dbClassObj->link->query($sql);
+            if (!$result) {
+                throw new Exception('INSERT Error:' . $sql);
+            }
+        } catch (Exception $ex) {
+            $this->dbClassObj->errorMessageStore($ex->getMessage());
+            return false;
+        }
+        $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
+        return $this->dbClassObj->link->lastInsertId($seqObject);
+    }
+
+
+    public abstract function getNullableNumericFields($tableName);
 
     public abstract function quotedEntityName($entityName);
+
+    public abstract function optionalOperationInSetup();
+
+    protected abstract function getTableInfo($tableName);
+
+    protected abstract function getFieldLists($tableName, $keyField, $assocField, $assocValue);
 }

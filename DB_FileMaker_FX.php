@@ -894,7 +894,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         } else {
             $currentSearch = '';
             if (isset($context['script'])) {
-                $currentSearch = $this->executeScriptsforLoading($context['script']);
+                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
+                    $currentSearch = $this->executeScriptsforLoading($context['script']);
+                }
             }
             $queryValue = '';
             $qNum = 1;
