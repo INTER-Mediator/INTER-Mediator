@@ -167,7 +167,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 } else if (isset($currentDataSource['send-mail']['read'])) {
                     $dataSource = $currentDataSource['send-mail']['read'];
                 }
-                $mailResult = $mailSender->processing($dataSource, $result,
+                $mailResult = $mailSender->processing(
+                    $dataSource,
+                    $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
                 if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
@@ -279,7 +281,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
                 $mailResult = $mailSender->processing(
                     $dataSource,
-                    $result,
+                    $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
                 if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");

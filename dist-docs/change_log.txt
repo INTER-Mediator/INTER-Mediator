@@ -25,6 +25,9 @@ Ver.5.5 (in development)
 - The setValue method of IMLibContext class returns affected node's id attribute values.
 - If nullable and numeric field is updated/created with "" value, write the value as NULL.
   This behavior requires to set blank in case of updating text field with no string.
+- The record to merge an e-mail is retrieved from the database class's instance. This means
+  if you want to add/modify fields for e-mail, you can describe codes in advisor classes, but
+  you have to use the setUpdatedRecord method to send values you modified to mail processor.
 - [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
   attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba). The affected 
   version is 5.4 only.
