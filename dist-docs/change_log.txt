@@ -50,6 +50,8 @@ Ver.5.5 (in development)
 - [BUG FIX] On the MediaAccess class, the authorization for “all” operation didn’t apply.
 - [BUG FIX] Fix the "undefined" copy button in pagination control.
 - [BUG FIX] Fix customized button names in pagination control.
+- [BUG FIX] Textarea on Edge showed in single line in spite of the multiple line string. With this
+  fix, IM uses value property of textarea node to set the value.
 
 Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
