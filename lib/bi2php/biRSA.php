@@ -30,7 +30,7 @@ class biRSAKeyPair
     var $d;
     var $m;
 
-    function biRSAKeyPair($encryptionExponent, $decryptionExponent, $modulus)
+    function __construct($encryptionExponent, $decryptionExponent, $modulus)
     {
         $this->e = self::biFromHex($encryptionExponent);
         $this->d = self::biFromHex($decryptionExponent);
