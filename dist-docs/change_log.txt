@@ -10,6 +10,9 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
+Ver.5.6 (in development)
+
+
 Ver.5.5 (October 13, 2016)
 - Support PHP 7 and checking on 7.1.0 Release Candidate 2, too.
 - Add "phpseclib_v2" (phpseclib 2.0.3) in "lib" directory for supporting PHP 7.
