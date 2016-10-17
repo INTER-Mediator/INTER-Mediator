@@ -637,8 +637,8 @@ var INTERMediator = {
                                 var idValue = node.id;
                                 IMLibUI.valueChange(idValue, true);
                             });
-                            if (node.tagName == "INPUT" && node.getAttribute("type") == "radio")    {
-                                if (! radioName[target])    {
+                            if (node.tagName == "INPUT" && node.getAttribute("type") == "radio") {
+                                if (!radioName[target]) {
                                     radioName[target] = "Name-" + nameSerial;
                                     nameSerial++;
                                 }
@@ -1031,7 +1031,7 @@ var INTERMediator = {
                         }
                     }
 
-                    targetFirstChar = curTarget.charAt(0);
+                    targetFirstChar = curTarget ? curTarget.charAt(0) : "";
                     if (isContext && !isInsidePostOnly && targetFirstChar != '#' && targetFirstChar != '$' &&
                         (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                         //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
