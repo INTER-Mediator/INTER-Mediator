@@ -333,7 +333,7 @@ var INTERMediator = {
 
      */
     constructMain: function (updateRequiredContext, recordset) {
-        var i, theNode, postSetFields = [],
+        var i, theNode, postSetFields = [], radioName = {}, nameSerial = 1,
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
@@ -599,7 +599,7 @@ var INTERMediator = {
          Post only mode.
          */
         function setupPostOnlyEnclosure(node) {
-            var nodes, postNodes, radioName = {}, nameSerial = 1;
+            var nodes, postNodes;
             postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post');
             for (i = 0; i < postNodes.length; i++) {
                 if (postNodes[i].tagName === 'BUTTON' ||
