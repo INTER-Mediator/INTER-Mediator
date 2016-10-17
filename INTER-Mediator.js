@@ -599,7 +599,7 @@ var INTERMediator = {
          Post only mode.
          */
         function setupPostOnlyEnclosure(node) {
-            var nodes, postNodes;
+            var nodes, postNodes, radioName = {}, nameSerial = 1;
             postNodes = INTERMediatorLib.getElementsByClassNameOrDataAttr(node, '_im_post');
             for (i = 0; i < postNodes.length; i++) {
                 if (postNodes[i].tagName === 'BUTTON' ||
@@ -624,10 +624,11 @@ var INTERMediator = {
             isInsidePostOnly = false;
             // -------------------------------------------
             function seekEnclosureInPostOnly(node) {
-                var children, wInfo, i;
+                var children, wInfo, i, target;
                 if (node.nodeType === 1) { // Work for an element
                     try {
-                        if (node.getAttribute('data-im')) { // Linked element
+                        target = node.getAttribute('data-im');
+                        if (target) { // Linked element
                             if (!node.id) {
                                 node.id = 'IMPOST-' + INTERMediator.postOnlyNumber;
                                 INTERMediator.postOnlyNumber++;
@@ -636,6 +637,13 @@ var INTERMediator = {
                                 var idValue = node.id;
                                 IMLibUI.valueChange(idValue, true);
                             });
+                            if (node.tagName == "INPUT" && node.getAttribute("type") == "radio")    {
+                                if (! radioName[target])    {
+                                    radioName[target] = "Name-" + nameSerial;
+                                    nameSerial++;
+                                }
+                                node.setAttribute("name", radioName[target]);
+                            }
                         }
 
                         if (INTERMediatorLib.isWidgetElement(node)) {
