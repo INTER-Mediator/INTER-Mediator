@@ -333,7 +333,7 @@ var INTERMediator = {
 
      */
     constructMain: function (updateRequiredContext, recordset) {
-        var i, theNode, postSetFields = [],
+        var i, theNode, postSetFields = [], radioName = {}, nameSerial = 1,
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
@@ -624,10 +624,11 @@ var INTERMediator = {
             isInsidePostOnly = false;
             // -------------------------------------------
             function seekEnclosureInPostOnly(node) {
-                var children, wInfo, i;
+                var children, wInfo, i, target;
                 if (node.nodeType === 1) { // Work for an element
                     try {
-                        if (node.getAttribute('data-im')) { // Linked element
+                        target = node.getAttribute('data-im');
+                        if (target) { // Linked element
                             if (!node.id) {
                                 node.id = 'IMPOST-' + INTERMediator.postOnlyNumber;
                                 INTERMediator.postOnlyNumber++;
@@ -636,6 +637,13 @@ var INTERMediator = {
                                 var idValue = node.id;
                                 IMLibUI.valueChange(idValue, true);
                             });
+                            if (node.tagName == "INPUT" && node.getAttribute("type") == "radio") {
+                                if (!radioName[target]) {
+                                    radioName[target] = "Name-" + nameSerial;
+                                    nameSerial++;
+                                }
+                                node.setAttribute("name", radioName[target]);
+                            }
                         }
 
                         if (INTERMediatorLib.isWidgetElement(node)) {
@@ -1023,7 +1031,7 @@ var INTERMediator = {
                         }
                     }
 
-                    targetFirstChar = curTarget.charAt(0);
+                    targetFirstChar = curTarget ? curTarget.charAt(0) : "";
                     if (isContext && !isInsidePostOnly && targetFirstChar != '#' && targetFirstChar != '$' &&
                         (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA')) {
                         //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
