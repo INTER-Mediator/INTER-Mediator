@@ -13,6 +13,7 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.6 (in development)
 - In the Post Only mode, radio buttons don't require to set the name attribute. The nodes having the
   same data-im attribute automatically set the appropriate name attributes.
+- [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 
 Ver.5.5 (October 13, 2016)
 - Support PHP 7 and checking on 7.1.0 Release Candidate 2, too.
