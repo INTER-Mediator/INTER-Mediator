@@ -365,7 +365,6 @@ var INTERMediator = {
                 INTERMediator.buttonIdNum = 1;
                 IMLibContextPool.clearAll();
                 pageConstruct();
-                INTERMediator.partialConstructing = true;
             } else {
                 IMLibPageNavigation.deleteInsertOnNavi = [];
                 INTERMediator.partialConstructing = true;
@@ -422,11 +421,13 @@ var INTERMediator = {
                                 INTERMediator.constructMain(updateRequiredContext);
                             }
                         );
+                        INTERMediator.partialConstructing = true;
                         return;
                     }
                 }
             } else {
                 INTERMediator.setErrorMessage(ex, 'EXCEPTION-7');
+                INTERMediator.partialConstructing = true;
             }
         }
 
@@ -462,6 +463,7 @@ var INTERMediator = {
             INTERMediatorOnPage.doAfterConstruct();
         }
         INTERMediatorOnPage.isFinishToConstruct = false;
+        INTERMediator.partialConstructing = true;
 
         INTERMediator.flushMessage(); // Show messages
 
