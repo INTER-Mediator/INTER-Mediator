@@ -243,7 +243,9 @@ var INTERMediator_DBAdapter = {
 
                     if (jsonObject.errorMessages.length > 0) {
                         INTERMediator.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
-                        failedProc();
+                        if(failedProc) {
+                            failedProc();
+                        }
                         throw 'Communication Error';
                     }
 

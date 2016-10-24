@@ -15,6 +15,7 @@ var IMLibUI = {
 
     mobileSelectionColor: '#BBBBBB',
     mobileNaviBackButtonId: null,
+    mergedFieldSeparator: "\n",
 
     changeValueLock: {},
 
@@ -48,7 +49,7 @@ var IMLibUI = {
 
     hasLockUIElement: function () {
         var key, judge = false;
-        for(key in IMLibUI.changeValueLock) {
+        for (key in IMLibUI.changeValueLock) {
             judge |= IMLibUI.changeValueLock[key];
         }
         return judge;
@@ -809,14 +810,15 @@ var IMLibUI = {
                         isMerged = false;
                         for (index = 0; index < fieldData.length; index++) {
                             if (fieldData[index]['field'] == comp[1]) {
-                                fieldData[index]['value'] += mergedValues.join(IMLib.nl_char) + IMLib.nl_char;
+                                fieldData[index]['value'] += IMLibUI.mergedFieldSeparator;
+                                fieldData[index]['value'] += mergedValues.join(IMLibUI.mergedFieldSeparator);
                                 isMerged = true;
                             }
                         }
                         if (!isMerged) {
                             fieldData.push({
                                 field: comp[1],
-                                value: mergedValues.join(IMLib.nl_char) + IMLib.nl_char
+                                value: mergedValues.join(IMLibUI.mergedFieldSeparator)
                             });
                         }
                     }
