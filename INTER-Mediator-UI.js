@@ -835,6 +835,9 @@ var IMLibUI = {
         }
 
         contextInfo = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);
+        if (INTERMediatorOnPage.modifyPostOnlyContext) {
+            contextInfo = INTERMediatorOnPage.modifyPostOnlyContext(contextInfo);
+        }
         INTERMediator_DBAdapter.db_createRecord_async(
             {name: selectedContext, dataset: fieldData},
             function (result) {

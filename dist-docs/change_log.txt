@@ -13,9 +13,13 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.6 (in development)
 - In the Post Only mode, radio buttons don't require to set the name attribute. The nodes having the
   same data-im attribute automatically set the appropriate name attributes.
+- New interleave method INTERMediatorOnPage.modifyPostOnlyContext is defined. The parameter is post only
+  context definition and should return a context definition which is modified or not.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
+- [BUG FIX] Customized button names on the pagination control didn't work correctly.
+- [BUG FIX] The INTERMediatorOnPage.doBeforeConstruct method won't be called other than just after page loaded.
 
 Ver.5.5 (October 13, 2016)
 - Support PHP 7 and checking on 7.1.0 Release Candidate 2, too.
