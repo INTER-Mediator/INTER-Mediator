@@ -17,17 +17,17 @@
     <title></title>
     <script type="text/javascript" src="masterdetailsample.php"></script>
     <script>
-        INTERMediatorOnPage.doBeforeConstruct = function () {
-            var params = INTERMediatorOnPage.getURLParametersAsArray();
-            if (params['id']) {
-                INTERMediator.clearCondition();
-                INTERMediator.addCondition(
-                        "postaldetail",
-                        {field: "id", operator: "=", value: params['id']}
-                );
-
-            }
-        };
+//        INTERMediatorOnPage.doBeforeConstruct = function () {
+//            var params = INTERMediatorOnPage.getURLParametersAsArray();
+//            if (params['id']) {
+//                INTERMediator.clearCondition();
+//                INTERMediator.addCondition(
+//                        "postaldetail",
+//                        {field: "id", operator: "=", value: params['id']}
+//                );
+//
+//            }
+//        };
 
         INTERMediatorOnPage.doAfterConstruct = function () {
             justifyBlock();

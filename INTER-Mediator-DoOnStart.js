@@ -111,23 +111,12 @@ INTERMediatorLib.addEvent(window, 'load', function () {
     if (INTERMediatorOnPage.isAutoConstruct) {
         if (errorNode) {
             if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
-                if (INTERMediatorOnPage.doBeforeConstruct) {
-                    INTERMediatorOnPage.doBeforeConstruct();
-                }
-                if (INTERMediatorOnPage.isAutoConstruct) {
-                    INTERMediator.construct(true);
-                }
-            }
-        } else {
-            if (INTERMediatorOnPage.doBeforeConstruct) {
-                INTERMediatorOnPage.doBeforeConstruct();
-            }
-            if (INTERMediatorOnPage.isAutoConstruct) {
                 INTERMediator.construct(true);
             }
+        } else {
+            INTERMediator.construct(true);
         }
     }
-    // INTERMediatorOnPage.isFinishToConstruct = true;
 });
 
 // ****** This file should terminate on the new line. INTER-Mediator adds some codes before here. ****

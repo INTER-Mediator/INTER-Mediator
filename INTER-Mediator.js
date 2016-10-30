@@ -337,6 +337,12 @@ var INTERMediator = {
             eventListenerPostAdding = [], isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, appendingNodesAtLast, parentNode, sybilingNode;
 
+        if (INTERMediatorOnPage.doBeforeConstruct) {
+            INTERMediatorOnPage.doBeforeConstruct();
+        }
+        if (!INTERMediatorOnPage.isAutoConstruct) {
+            return;
+        }
         INTERMediator.crossTableStage = 0;
         appendingNodesAtLast = [];
         IMLibEventResponder.setup();
@@ -370,7 +376,6 @@ var INTERMediator = {
                 INTERMediator.partialConstructing = true;
                 isInsidePostOnly = false;
                 postSetFields = [];
-
                 try {
                     if (!recordset) {
                         updateRequiredContext.removeContext();
@@ -1612,13 +1617,9 @@ var INTERMediator = {
                 return;
             }
             if (currentContextDef['paging'] == true) {
-                buttonName = currentContextDef['name'];
-                if (currentContextDef['button-names'] && currentContextDef['button-names']['copy']) {
-                    buttonName = currentContextDef['button-names']['copy'];
-                }
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'COPY',
-                    name: buttonName,
+                    name: currentContextDef['name'],
                     contextDef: currentContextDef,
                     keyValue: currentRecord[currentContextDef['key']]
                 });
@@ -1722,13 +1723,9 @@ var INTERMediator = {
                     break;
                 }
             } else {
-                buttonName = currentContextDef['name'];
-                if (currentContextDef['button-names'] && currentContextDef['button-names']['delete']) {
-                    buttonName = currentContextDef['button-names']['delete'];
-                }
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'DELETE',
-                    name: buttonName,
+                    name: currentContextDef['name'],
                     key: keyField,
                     value: keyValue,
                     confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
@@ -1856,13 +1853,9 @@ var INTERMediator = {
                     } else {
                         keyField = currentContextDef['key'] ? currentContextDef['key'] : 'id';
                     }
-                    buttonName = currentContextDef['name'];
-                    if (currentContextDef['button-names'] && currentContextDef['button-names']['insert']) {
-                        buttonName = currentContextDef['button-names']['insert'];
-                    }
                     IMLibPageNavigation.deleteInsertOnNavi.push({
                         kind: 'INSERT',
-                        name: buttonName,
+                        name: currentContextDef['name'],
                         key: keyField,
                         confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
                     });
