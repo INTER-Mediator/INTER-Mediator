@@ -11,7 +11,7 @@
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false;
+            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false, imControl;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -25,6 +25,7 @@ var IMLibElement = {
         }
 
         nodeTag = element.tagName;
+        imControl = element.getAttribute('data-im-control');
 
         if (clearField === true && curTarget == '') {
             switch (nodeTag) {
@@ -190,7 +191,9 @@ var IMLibElement = {
                 }
             }
         }
-        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') && !isReplaceOrAppned) {
+        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA')
+            && !isReplaceOrAppned
+            && (!imControl || imControl.indexOf('unbind') > 0 )) {
             var idValue = element.id;
             var elementCapt = element;
             INTERMediatorLib.addEvent(element, 'blur', function (event) {
