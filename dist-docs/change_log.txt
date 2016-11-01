@@ -15,6 +15,8 @@ Ver.5.6 (in development)
   same data-im attribute automatically set the appropriate name attributes.
 - New interleave method INTERMediatorOnPage.modifyPostOnlyContext is defined. The parameter is post only
   context definition and should return a context definition which is modified or not.
+- For preventing to update by editing element's value, data-im-control="unbind" is introduced. This attribute
+  causes just assign the field value to checkbox, but it doesn't happen to update with clicking it.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
