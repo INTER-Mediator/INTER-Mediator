@@ -186,19 +186,22 @@ describe package('acl'), :if => os[:family] == 'alpine' || os[:family] == 'ubunt
   it { should be_installed }
 end
 
-describe package('php5'), :if => os[:family] == 'alpine' do
+describe package('php7'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-apache2'), :if => os[:family] == 'alpine' do
+describe package('php7-apache2'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-json'), :if => os[:family] == 'alpine' do
+describe package('php7-json'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-curl'), :if => os[:family] == 'alpine' do
+describe package('php7-curl'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-pdo'), :if => os[:family] == 'alpine' do
+describe package('php7-pdo'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php7-phar'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
