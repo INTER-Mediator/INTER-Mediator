@@ -22,6 +22,7 @@ Ver.5.6 (in development)
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
 - [BUG FIX] Customized button names on the pagination control didn't work correctly.
 - [BUG FIX] The INTERMediatorOnPage.doBeforeConstruct method won't be called other than just after page loaded.
+- [BUG FIX] The DB_Null class's setupConnection() method returned false, but it prevent to following processing.
 
 Ver.5.5 (October 13, 2016)
 - Support PHP 7 and checking on 7.1.0 Release Candidate 2, too.
