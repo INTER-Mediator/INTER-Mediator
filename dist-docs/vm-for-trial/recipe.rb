@@ -85,14 +85,16 @@ if node[:platform] == 'alpine'
   execute 'addgroup im-developer' do
     command 'addgroup im-developer'
   end
+  #execute 'usermod -a -G im-developer developer' do
+  #  command 'usermod -a -G im-developer developer'
+  #end
 else
   execute 'groupadd im-developer' do
     command 'groupadd im-developer'
   end
-end
-
-execute 'usermod -a -G im-developer developer' do
-  command 'usermod -a -G im-developer developer'
+  execute 'usermod -a -G im-developer developer' do
+    command 'usermod -a -G im-developer developer'
+  end
 end
 
 if node[:platform] == 'ubuntu'
@@ -140,7 +142,11 @@ elsif node[:platform] == 'redhat'
     action [ :enable, :start ]
   end
 end
-if node[:platform] == 'alpine' || node[:platform] == 'redhat'
+if node[:platform] == 'alpine'
+  #execute 'usermod -a -G im-developer apache' do
+  #  command 'usermod -a -G im-developer apache'
+  #end
+elsif node[:platform] == 'redhat'
   execute 'usermod -a -G im-developer apache' do
     command 'usermod -a -G im-developer apache'
   end
@@ -172,12 +178,12 @@ if node[:platform] == 'alpine'
   execute 'yes im4135dev | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
   end
-  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
-    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
-  end
-  service 'postgresql' do
-    action [ :enable, :start ]
-  end
+  #execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+  #  command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  #end
+  #service 'postgresql' do
+  #  action [ :enable, :start ]
+  #end
 else
   service 'postgresql' do
     action [ :enable, :start ]
@@ -334,19 +340,22 @@ package 'acl' do
 end
 
 if node[:platform] == 'alpine'
-  package 'php5' do
+  package 'php7' do
     action :install
   end
-  package 'php5-apache2' do
+  package 'php7-apache2' do
     action :install
   end
-  package 'php5-json' do
+  package 'php7-json' do
     action :install
   end
-  package 'php5-curl' do
+  package 'php7-curl' do
     action :install
   end
-  package 'php5-pdo' do
+  package 'php7-pdo' do
+    action :install
+  end
+  package 'php7-phar' do
     action :install
   end
 elsif node[:platform] == 'ubuntu'
