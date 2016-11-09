@@ -55,7 +55,7 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
 
     public function setupConnection()
     {
-        return null;
+        return true;
     }
 
     public static function defaultKey()
