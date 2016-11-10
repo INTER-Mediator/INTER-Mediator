@@ -65,7 +65,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
     protected function getTableInfo($tableName)
     {
         if (! isset($this->tableInfo[$tableName])) {
-            $sql = "SHOW COLUMNS FROM {$tableName}";
+            $sql = "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
             $this->tableInfo[$tableName] = $result;

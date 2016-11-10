@@ -2006,10 +2006,9 @@ var INTERMediator = {
                         }
                         contextDef = detailContext.getContextDef();
                         contextName = contextDef.name;
-                        conditions = INTERMediator.additionalCondition;
-                        conditions[contextName] = {field: f, operator: '=', value: v};
-                        INTERMediator.additionalCondition = conditions;
+                        INTERMediator.addCondition(contextName, {field: f, operator: '=', value: v});
                         INTERMediator.constructMain(detailContext);
+                        INTERMediator.clearCondition(contextName);
                         if (isMasterHide) {
                             INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY};
                             window.scrollTo(0, 0);
@@ -2391,9 +2390,9 @@ var INTERMediator = {
             delete value[contextName];
             INTERMediator.additionalCondition = value;
             IMLibLocalContext.archive();
-        } else {
-            INTERMediator.additionalCondition = {};
-            IMLibLocalContext.archive();
+        // } else {
+        //     INTERMediator.additionalCondition = {};
+        //     IMLibLocalContext.archive();
         }
     },
 
