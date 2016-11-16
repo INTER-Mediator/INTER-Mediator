@@ -61,6 +61,52 @@ class IMUtil
         return dirname(__FILE__);
     }
 
+    public static function pathToTheme()
+    {
+        return dirname(__FILE__) . "/themes";
+    }
+
+    public static function getMIMEType($path)
+    {
+        $type = "application/octet-stream";
+        switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
+            case 'jpg':
+                $type = 'image/jpeg';
+                break;
+            case 'css':
+                $type = 'text/css';
+                break;
+            case 'jpeg':
+                $type = 'image/jpeg';
+                break;
+            case 'png':
+                $type = 'image/png';
+                break;
+            case 'html':
+                $type = 'text/html';
+                break;
+            case 'txt':
+                $type = 'text/plain';
+                break;
+            case 'gif':
+                $type = 'image/gif';
+                break;
+            case 'bmp':
+                $type = 'image/bmp';
+                break;
+            case 'tif':
+                $type = 'image/tiff';
+                break;
+            case 'tiff':
+                $type = 'image/tiff';
+                break;
+            case 'pdf':
+                $type = 'application/pdf';
+                break;
+        }
+        return $type;
+    }
+
     public static function combinePathComponents($ar)
     {
         $path = "";
