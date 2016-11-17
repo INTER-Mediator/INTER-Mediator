@@ -920,7 +920,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $this->dbSettings->setFieldsRequired($fieldArray);
                     $this->dbSettings->setValue($valueArray);
                 }
+                $this->dbClass->requireUpdatedRecord(true);
                 $this->updateDB();
+                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'new':
             case 'create':

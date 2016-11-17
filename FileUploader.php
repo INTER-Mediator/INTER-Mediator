@@ -206,7 +206,7 @@ class FileUploader
             }
 
             if (!file_exists($fileRoot . $dirPath)) {
-                $result = mkdir($fileRoot . $dirPath, 0744, true);
+                $result = mkdir($fileRoot . $dirPath, 0755, true);
                 if (!$result) {
                     $dbProxyInstance->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
                     $dbProxyInstance->processingRequest("noop");
@@ -215,6 +215,7 @@ class FileUploader
                     return;
                 }
             }
+            //exec("chmod -R o+x " . escapeshellcmd($fileRoot));
         }
         $result = move_uploaded_file(IMUtil::removeNull($fileInfoTemp), $filePath);
         if (!$result) {

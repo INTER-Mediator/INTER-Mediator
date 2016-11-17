@@ -1608,7 +1608,7 @@ var INTERMediator = {
                 }
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'COPY',
-                    name: buttonName,
+                    name: currentContextDef['name'],
                     contextDef: currentContextDef,
                     keyValue: currentRecord[currentContextDef['key']]
                 });
@@ -1718,7 +1718,7 @@ var INTERMediator = {
                 }
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'DELETE',
-                    name: buttonName,
+                    name: currentContextDef['name'],
                     key: keyField,
                     value: keyValue,
                     confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
@@ -1852,7 +1852,7 @@ var INTERMediator = {
                     }
                     IMLibPageNavigation.deleteInsertOnNavi.push({
                         kind: 'INSERT',
-                        name: buttonName,
+                        name: currentContextDef['name'],
                         key: keyField,
                         confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
                     });

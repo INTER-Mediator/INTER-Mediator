@@ -48,7 +48,7 @@ var IMLibUI = {
 
     hasLockUIElement: function () {
         var key, judge = false;
-        for(key in IMLibUI.changeValueLock) {
+        for (key in IMLibUI.changeValueLock) {
             judge |= IMLibUI.changeValueLock[key];
         }
         return judge;
@@ -181,7 +181,15 @@ var IMLibUI = {
                 var contextInfoCapt = contextInfo;
                 var newValueCapt = newValue;
                 return function (result) {
-                    var updateRequiredContext, currentValue, associatedNode;
+                    var updateRequiredContext, currentValue, associatedNode, field;
+                    var keyField = contextInfoCapt.context.getKeyField();
+                    var recordObj = result.dbresult[0];
+                    var keepProp = INTERMediator.partialConstructing;
+                    INTERMediator.partialConstructing = false;
+                    for (field in recordObj) {
+                        contextInfoCapt.context.setValue(keyField + "=" + recordObj[keyField], field, recordObj[field]);
+                    }
+                    INTERMediator.partialConstructing = keepProp;
                     updateRequiredContext = IMLibContextPool.dependingObjects(idValueCapt2);
                     for (i = 0; i < updateRequiredContext.length; i++) {
                         updateRequiredContext[i].foreignValue = {};
@@ -195,8 +203,8 @@ var IMLibUI = {
                             }
                         }
                     }
-                    INTERMediatorOnPage.hideProgress();
                     IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
+                    INTERMediatorOnPage.hideProgress();
                     INTERMediator.flushMessage();
                     IMLibUI.unlockUIElement(idValueCapt2);
                 };
