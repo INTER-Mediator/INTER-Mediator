@@ -11,6 +11,10 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.6 (in development)
+- Well-designed CSS files are added by Yuko Oki. She is web designer and a lecturer of
+  Kyoto University of Art and Design.
+- Themes can be retrieved from accessing the definition file as below:
+  def_file.php?theme=default&type=css&name=style.css
 - In the Post Only mode, radio buttons don't require to set the name attribute. The nodes having the
   same data-im attribute automatically set the appropriate name attributes.
 - New interleave method INTERMediatorOnPage.modifyPostOnlyContext is defined. The parameter is post only
@@ -19,6 +23,8 @@ Ver.5.6 (in development)
   causes just assign the field value to checkbox, but it doesn't happen to update with clicking it.
 - Added titles to almost all sample HTML files.
 - Update recipe.rb and sample_spec.rb for the INTER-Mediator-Server VM
+- The access privilege of directories and file of uploaded file set to 755. Previously it was 744, but
+  a rental server which is limited feature tries to prevent to set all bits of group/other.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.

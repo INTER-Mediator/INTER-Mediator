@@ -18,60 +18,71 @@
     <script type="text/javascript" src="navi2.php"></script>
 </head>
 <body>
-<h1>The Master/Detail UI Navigation with showing both areas</h1>
-<!--<div id="IM_NAVIGATOR"></div>-->
-<!-- Table for the list view -->
-<div id="listarea" style="float:left; margin-right: 24px;">
-    <table border="1">
-        <thead>
-        <tr>
-            <th></th><th>name</th><th>unitprice</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td></td>
-            <td data-im="productlist@name"></td>
-            <td class="price" data-im="productlist@unitprice"></td>
-        </tr>
-        </tbody>
-    </table>
+<header>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <h1>The Master/Detail UI Navigation with showing both areas</h1>
+    <!--<div id="IM_NAVIGATOR"></div>-->
+    <div style="display:flex;flex-direction:row;">
+        <!-- Table for the list view -->
+        <div id="listarea" style="margin-right: 12px">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>name</th>
+                    <th>unitprice</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td style="white-space:nowrap;"></td>
+                    <td data-im="productlist@name"></td>
+                    <td class="price" data-im="productlist@unitprice"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Table for the detail view -->
+        <div id="detailarea">
+            <table>
+                <tbody>
+                <tr>
+                    <th>id</th>
+                    <td data-im="productdetail@id"></td>
+                </tr>
+                <tr>
+                    <th>name</th>
+                    <td><input type="text" size="40" data-im="productdetail@name"></td>
+                </tr>
+                <tr>
+                    <th>unitprice</th>
+                    <td><input type="text" size="40" data-im="productdetail@unitprice"></td>
+                </tr>
+                <tr>
+                    <th>photofile</th>
+                    <td><input type="text" size="40" data-im="productdetail@photofile"></td>
+                </tr>
+                <tr>
+                    <th>acknowledgement</th>
+                    <td><input type="text" size="40" data-im="productdetail@acknowledgement"></td>
+                </tr>
+                <tr>
+                    <th>ack_link</th>
+                    <td><input type="text" size="40" data-im="productdetail@ack_link"></td>
+                </tr>
+                <tr>
+                    <th>photofile</th>
+                    <td><img src="../Sample_products/images/" data-im="productdetail@photofile@#src"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-<!-- Table for the detail view -->
-<div id="detailarea">
-    <table border="1">
-        <tbody>
-        <tr>
-            <th>id</th>
-            <td data-im="productdetail@id"></td>
-        </tr>
-        <tr>
-            <th>name</th>
-            <td><input type="text" size="60" data-im="productdetail@name"></td>
-        </tr>
-        <tr>
-            <th>unitprice</th>
-            <td><input type="text" size="60" data-im="productdetail@unitprice"></td>
-        </tr>
-        <tr>
-            <th>photofile</th>
-            <td><input type="text" size="60" data-im="productdetail@photofile"></td>
-        </tr>
-        <tr>
-            <th>acknowledgement</th>
-            <td><input type="text" size="60" data-im="productdetail@acknowledgement"></td>
-        </tr>
-        <tr>
-            <th>ack_link</th>
-            <td><input type="text" size="60" data-im="productdetail@ack_link"></td>
-        </tr>
-        <tr>
-            <th>photofile</th>
-            <td><img src="../Sample_products/images/" data-im="productdetail@photofile@#src"></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div style="clear: both"/>
+<footer>
+    <small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>

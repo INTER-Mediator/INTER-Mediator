@@ -24,8 +24,13 @@
     </script>
 </head>
 <body>
+
+<header>
+  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
 <h1>Post-Onlyモードの入力ページサンプル</h1>
-<table border="1">
+<table>
     <tbody data-im-control="post">
     <tr>
         <th>お住まいの都道府県は？</th>
@@ -38,14 +43,14 @@
     <tr>
         <th>お住まいの都道府県は？</th>
         <td>
-            <input type="radio" data-im="surveyinput@Q3" value="1"/>1
-            <input type="radio" data-im="surveyinput@Q3" value="2"/>2
-            <input type="radio" data-im="surveyinput@Q3" value="3"/>3
+            <label><input type="radio" data-im="surveyinput@Q3" value="1"/> 1</label>
+            <label><input type="radio" data-im="surveyinput@Q3" value="2"/> 2</label>
+            <label><input type="radio" data-im="surveyinput@Q3" value="3"/> 3</label>
         </td>
     </tr>
     <tr>
         <th>よろしいですか？</th>
-        <td><input type="checkbox" data-im="surveyinput@Q4" value="OK"/>はい</td>
+        <td><label><input type="checkbox" data-im="surveyinput@Q4" value="OK"/> はい</label></td>
     </tr>
     <tr>
         <th></th>
@@ -53,6 +58,9 @@
     </tr>
     </tbody>
 </table>
-
+</div>
+<footer>
+<small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>

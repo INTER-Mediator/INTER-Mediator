@@ -13,6 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link type="text/css" rel="stylesheet" href="../sample.css">
     <title data-im="_@pagetitle"></title>
     <script type="text/javascript" src="crosstable.php"></script>
     <script type="text/javascript">
@@ -30,7 +31,8 @@
         td {
             min-width: 6px;
             min-height: 6px;
-            background-color: darkgray;
+            background-color: #bbb;
+            border: 1px solid #999
         }
     </style>
 </head>
@@ -46,6 +48,9 @@
     </div>
 </div>
 <div id="container" style="display: none">
+    <header>
+        <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+    </header>
     <h1>The Cross Table Sample</h1>
     <table>
         <tbody data-im-control="cross-table">
@@ -69,6 +74,9 @@
         </tr>
         </tbody>
     </table>
+    <footer>
+        <small>INTER-Mediator ©2016</small>
+    </footer>
 </div>
 </body>
 </html>
