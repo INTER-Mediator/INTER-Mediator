@@ -85,8 +85,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             return;
         }
     }
-    if (isset($_GET['themes'])) {
-        $tName = str_replace('..','',$_GET['themes']);
+    if (isset($_GET['theme'])) {
+        $tName = str_replace('..','',$_GET['theme']);
         $tType = str_replace('..','',$_GET['type']);
         if (strtolower($tType) == "css" && !isset($_GET['name'])) {
             $fpath = IMUtil::pathToTheme() . "/{$tName}/{$tType}/";
