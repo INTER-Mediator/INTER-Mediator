@@ -215,6 +215,7 @@ class FileUploader
                     return;
                 }
             }
+            //exec("chmod -R o+x " . escapeshellcmd($fileRoot));
         }
         $result = move_uploaded_file(IMUtil::removeNull($fileInfoTemp), $filePath);
         if (!$result) {

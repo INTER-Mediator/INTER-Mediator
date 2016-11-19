@@ -172,18 +172,17 @@ var IMLibElement = {
                 element.value = curVal;
             } else if (nodeTag == 'TEXTAREA') {
                 if (INTERMediator.defaultTargetInnerHTML) {
-                    if (INTERMediator.isIE) {
+                    if (INTERMediator.isIE) { // for IE
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
                     }
                     element.innerHTML = curVal;
                 } else {
-                    if (curVal.length > 0 && INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
-                        // for IE11
+                    if (curVal.length > 0 && INTERMediator.isTrident && INTERMediator.ieVersion >= 11) { // for IE11
                         curVal = curVal.replace(/\r\n/g, IMLib.nl_char).replace(/\r/g, IMLib.nl_char);
                     }
                     element.value = curVal;
                 }
-            } else { // include option and button tag node
+            } else { // include option tag node
                 if (INTERMediator.defaultTargetInnerHTML) {
                     element.innerHTML = curVal;
                 } else {

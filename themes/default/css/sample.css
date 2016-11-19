@@ -172,3 +172,9 @@ select[type="text"]{
 	padding:20px 0 5px;
 
 }
+hr{
+	margin:10px 0;
+}
+.back_btn{
+	padding-bottom:10px;
+}
