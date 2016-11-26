@@ -9,84 +9,256 @@
  */
 
 //'use strict';
+/**
+ * @fileoverview INTERMediator class is defined here.
+ */
 
+// Global type definition for JSDoc.
+/**
+ * @typedef {Object} IMType_VariablePropertiesClass
+ * @property {string} __case_by_case__ The property name varies as case by case.
+ * This means this object will have multiple properties, and their name don't fixed.
+ * Each property has a value and should be described as the generic notation.
+ * Anyway, this class is JavaScript's typical object.
+ */
+
+/**
+ * Web page generator main class. This class has just static methods and properties.
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var INTERMediator = {
-    /*
-     Properties
+    /**
+     * Show the debug messages at the top of the page.
+     * @public
+     * @type {boolean}
      */
     debugMode: false,
-    // Show the debug messages at the top of the page.
+    /**
+     * The separator for target specification.
+     * This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
+     * @public
+     * @type {string}
+     */
     separator: '@',
-    // This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
+    /**
+     * The separator for multiple target specifications. The white space characters are
+     * used as it in current version.
+     * @deprecated
+     * @type {string}
+     */
     defDivider: '|',
-    // Same as the 'separator'.
+    /**
+     * If the target (i.e. 3rd component) of the target specification is omitted in generic tags,
+     * the value will set into innerHTML property. Otherwise it's set as a text node.
+     * @public
+     * @type {boolean}
+     */
     defaultTargetInnerHTML: false,
-    // For general elements, if target isn't specified, the value will be set to innerHTML.
-    // Otherwise, set as the text node.
+    /**
+     * Navigation is controlled by this property.
+     * @public
+     * @type {object}
+     */
     navigationLabel: null,
-    // Navigation is controlled by this parameter.
+    /**
+     * Storing the id value of linked elements.
+     * @private
+     * @type {Array}
+     */
     elementIds: [],
-    //widgetElementIds: [],
-    radioNameMode: false,
+
+    //radioNameMode: false,
+    /**
+     * If this property is true, any radio buttuns aren't set the 'check.'
+     * The default value of false.
+     * @public
+     * @type {boolean}
+     */
     dontSelectRadioCheck: false,
+    /**
+     * If this property is true, the optimistic lock in editing field won't work, and update
+     * database without checking of modification by other users.
+     * The default value of false.
+     * @public
+     * @type {boolean}
+     */
     ignoreOptimisticLocking: false,
+    /**
+     * The debug messages are suppressed if it's true. This can temporally stop messages.
+     * The default value of false.
+     * @public
+     * @type {boolean}
+     */
     supressDebugMessageOnPage: false,
+    /**
+     * The error messages are suppressed if it's true. This can temporally stop messages.
+     * The default value of false.
+     * @public
+     * @type {boolean}
+     */
     supressErrorMessageOnPage: false,
+    /**
+     * The debug messages are suppressed if it's true. This can temporally stop messages.
+     * The default value of false.
+     * @public
+     * @type {object}
+     */
     additionalFieldValueOnNewRecord: {},
+    /**
+     * @public
+     * @type {object}
+     */
     additionalFieldValueOnUpdate: {},
+    /**
+     * @public
+     * @type {object}
+     */
     additionalFieldValueOnDelete: {},
+    /**
+     * @public
+     * @type {integer}
+     */
     waitSecondsAfterPostMessage: 4,
+    /**
+     * @public
+     * @type {integer}
+     */
     pagedAllCount: 0,
-    totalRecordCount: null,  // for DB_FileMaker_FX
+    /**
+     * This property is for DB_FileMaker_FX.
+     * @public
+     * @type {integer}
+     */
+    totalRecordCount: null,
+    /**
+     * @private
+     * @type {integer}
+     */
     currentEncNumber: 0,
+    /**
+     * @type {boolean}
+     */
     isIE: false,
+    /**
+     * @type {boolean}
+     */
     isTrident: false,
+    /**
+     * @type {boolean}
+     */
     isEdge: false,
+    /**
+     * @type {integer}
+     */
     ieVersion: -1,
+    /**
+     * @type {boolean}
+     */
     titleAsLinkInfo: true,
+    /**
+     * @type {boolean}
+     */
     classAsLinkInfo: true,
+    /**
+     * @type {boolean}
+     */
     isDBDataPreferable: false,
+    /**
+     * @type {string}
+     */
     noRecordClassName: '_im_for_noresult_',
-    //   nullAcceptable: true,
-
+    /**
+     * Storing the innerHTML property of the BODY tagged node to retrieve the page to initial condition.
+     * @private
+     * @type {string}
+     */
     rootEnclosure: null,
-    // Storing to retrieve the page to initial condition.
-    // {node:xxx, parent:xxx, currentRoot:xxx, currentAfter:xxxx}
-
+    /**
+     * @type {boolean}
+     */
     useSessionStorage: true,
     // Use sessionStorage for the Local Context instead of Cookie.
 
+    /**
+     * @type {Array}
+     */
     errorMessages: [],
+    /**
+     * @type {Array}
+     */
     debugMessages: [],
-
+    /**
+     * @type {boolean}
+     */
     partialConstructing: true,
+    /**
+     * @type {integer}
+     */
     linkedElmCounter: 0,
+    /**
+     * @type {object}
+     */
     pusherObject: null,
+    /**
+     * @type {integer}
+     */
     buttonIdNum: 0,
+    /**
+     * @type {string}
+     */
     masterNodeOriginalDisplay: 'block',
+    /**
+     * @type {string}
+     */
     detailNodeOriginalDisplay: 'none',
+    /**
+     * @type {boolean}
+     */
     pusherAvailable: false,
-
+    /**
+     * @type {boolean}
+     */
     dateTimeFunction: false,
-    postOnlyNodes: null,
+
+    // postOnlyNodes: null,
+    /**
+     * @type {integer}
+     */
     postOnlyNumber: 1,
 
+    /**
+     * @type {boolean}
+     */
     errorMessageByAlert: false,
+    /**
+     * @type {boolean}
+     */
     errorMessageOnAlert: null,
 
+    /**
+     * @type {boolean}
+     */
     isTablet: false,
+    /**
+     * @type {boolean}
+     */
     isMobile: false,
 
-    crossTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
-
-    /* These following properties moved to the setter/getter architecture, and defined out side of this object.
-     startFrom: 0,pagedSize: 0,additionalCondition: {},additionalSortKey: {},
+    /**
+     * @type {integer}
      */
+    crossTableStage: 0, // 0: not cross table, 1: column label, 2: row label, 3 interchange cells
 
     //=================================
     // Message for Programmers
     //=================================
 
+    /**
+     * Add a debug message with the specified level.
+     * @param message The message strings.
+     * @param level The level of message.
+     */
     setDebugMessage: function (message, level) {
         if (level === undefined) {
             level = 1;
@@ -284,15 +456,15 @@ var INTERMediator = {
         INTERMediator.startFrom = 0;
         IMLibLocalContext.archive();
     },
-    /**
-     * //=================================
-     * // Construct Page
-     * //=================================
 
-     * Construct the Web Page with DB Data
-     * You should call here when you show the page.
-     *
-     * parameter: true=construct page, others=construct partially
+    //=================================
+    //Construct Page
+    //=================================
+    /**
+     * Construct the Web Page with DB Data. Usually this method will be called automatically.
+     * @param indexOfKeyFieldObject If this parameter is omitted or set to true,
+     *    INTER-Mediator is going to generate entire page. If ths parameter is set as the Context object,
+     *    INTER-Mediator is going to generate a part of page which relies on just its context.
      */
     construct: function (indexOfKeyFieldObject) {
         var timerTask;
@@ -314,23 +486,26 @@ var INTERMediator = {
         setTimeout(timerTask, 0);
     },
 
-    /* ===========================================================
-
-     INTERMediator.constructMain() is the public entry for generating page.
-     This has 3-way calling conventions.
-
-     [1] INTERMediator.constructMain() or INTERMediator.constructMain(true)
-     This happens to generate page from scratch.
-
-     [2] INTERMediator.constructMain(context)
-     This will be reconstracted to nodes of the "context" parameter.
-     The context parameter should be refered to a IMLIbContext object.
-
-     [3] INTERMediator.constructMain(context, recordset)
-     This will append nodes to the enclocure of the "context" as a repeater.
-     The context parameter should be refered to a IMLIbContext object.
-     The recordset parameter is the newly created record as the form of an array of an dictionary.
-
+    /**
+     * This method is page generation main method. This will be called with one of the following
+     * 3 ways:
+     * <ol>
+     *     <li>INTERMediator.constructMain() or INTERMediator.constructMain(true)<br>
+     *         This happens to generate page from scratch.</li>
+     *     <li>INTERMediator.constructMain(context)<br>
+     *         This will be reconstracted to nodes of the "context" parameter.
+     *         The context parameter should be refered to a IMLIbContext object.</li>
+     *     <li>INTERMediator.constructMain(context, recordset)<br>
+     *         This will append nodes to the enclocure of the "context" as a repeater.
+     *         The context parameter should be refered to a IMLIbContext object.
+     *         The recordset parameter is the newly created record
+     *         as the form of an array of an dictionary.</li>
+     * </ol>
+     * @param updateRequiredContext If this parameter is omitted or set to true,
+     *    INTER-Mediator is going to generate entire page. If ths parameter is set as the Context object,
+     *    INTER-Mediator is going to generate a part of page which relies on just its context.
+     * @param recordset If the updateRequiredContext paramter is set as the Context object,
+     *    This parameter is set to newly created record.
      */
     constructMain: function (updateRequiredContext, recordset) {
         var i, theNode, postSetFields = [], radioName = {}, nameSerial = 1,
@@ -2390,9 +2565,9 @@ var INTERMediator = {
             delete value[contextName];
             INTERMediator.additionalCondition = value;
             IMLibLocalContext.archive();
-        // } else {
-        //     INTERMediator.additionalCondition = {};
-        //     IMLibLocalContext.archive();
+            // } else {
+            //     INTERMediator.additionalCondition = {};
+            //     IMLibLocalContext.archive();
         }
     },
 

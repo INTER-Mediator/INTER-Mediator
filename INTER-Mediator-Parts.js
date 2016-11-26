@@ -8,19 +8,17 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-/**
- * TinyMCE bridgeObject
- * @type {{instanciate: Function, ids: Array, finish: Function}}
- */
-
 //'use strict';
-
-var IMParts_Catalog = {};
-/*********
- *
- * File Uploader
- * @type {{html5DDSuported: boolean, instanciate: Function, ids: Array, finish: Function}}
+/**
+ * @fileoverview IMParts_Catalog class is defined here.
  */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
+var IMParts_Catalog = {};
+
 IMParts_Catalog['fileupload'] = {
     html5DDSuported: false,
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/

@@ -233,13 +233,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeUpdateDB();
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['edit'])
-                    || isset($currentDataSource['send-mail']['update'])
-                    || $this->dbSettings->notifyServer
-                    || ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterUpdateToDB"))
-                ) {
-                    $this->dbClass->requireUpdatedRecord(true);
-                }
+//                if (isset($currentDataSource['send-mail']['edit'])
+//                    || isset($currentDataSource['send-mail']['update'])
+//                    || $this->dbSettings->notifyServer
+//                    || ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterUpdateToDB"))
+//                ) {
+                    $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
+//                }
                 $result = $this->dbClass->updateDB();
             }
 //            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
@@ -313,13 +313,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeCreateToDB();
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['new']) ||
-                    isset($currentDataSource['send-mail']['create']) ||
-                    $this->dbSettings->notifyServer ||
-                    ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCreateToDB"))
-                ) {
-                    $this->dbClass->requireUpdatedRecord(true);
-                }
+//                if (isset($currentDataSource['send-mail']['new']) ||
+//                    isset($currentDataSource['send-mail']['create']) ||
+//                    $this->dbSettings->notifyServer ||
+//                    ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCreateToDB"))
+//                ) {
+                    $this->dbClass->requireUpdatedRecord(true); // Always Requred Created Record
+//                }
                 $resultOfCreate = $this->dbClass->createInDB($bypassAuth);
                 $result = $this->dbClass->updatedRecord();
             }

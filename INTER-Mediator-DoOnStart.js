@@ -8,8 +8,9 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-/*
- This source file should be described statements to execute on the loading time of header's script tag.
+/**
+ * @fileoverview This source file should be described statements to execute
+ * on the loading time of header's script tag.
  */
 
 INTERMediator.propertyIETridentSetup();
