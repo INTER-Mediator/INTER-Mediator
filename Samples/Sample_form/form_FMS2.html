@@ -14,10 +14,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
-    <link rel="stylesheet" type="text/css" href="../sample.css">
+    <!--<link rel="stylesheet" type="text/css" href="../sample.css">-->
     <link rel="stylesheet" type="text/css" href="form.css">
     <script type="text/javascript" src="include_FMS2.php"></script>
     <script type="text/javascript" src="form.js"></script>
+    <style>
+        .width300   {
+            width: 200px;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -41,21 +46,21 @@
 <table border="1">
     <tbody>
     <tr>
-        <th>id</th>
+        <th class="width300">id</th>
         <td>
           <div data-im="person_layout@id"></div>
         </td>
     </tr>
     <tr>
-        <th>address</th>
+        <th class="width300">address</th>
         <td><input type="text" data-im="person_layout@address" value=""></td>
     </tr>
     <tr>
-        <th>mail</th>
+        <th class="width300">mail</th>
         <td><input type="text" data-im="person_layout@mail" value=""></td>
     </tr>
     <tr>
-        <th class="a b c d">category</th>
+        <th class="width300">category</th>
         <td>
             <select data-im="person_layout@category">
                 <option value="101">Family</option>
@@ -65,11 +70,11 @@
         </td>
     </tr>
     <tr>
-        <th>check</th>
+        <th class="width300">check</th>
         <td><input type="checkbox" data-im="person_layout@check" value="1"></td>
     </tr>
     <tr>
-        <th>multi-valued check(use "mail" field)</th>
+        <th class="width300">multi-valued check(use "mail" field)</th>
         <td>
             <input type="checkbox" data-im="person_layout@mail" value="Dog">Dog
             <input type="checkbox" data-im="person_layout@mail" value="Cat">Cat
@@ -96,22 +101,23 @@
                 <tr>
                     <th>person_id</th>
                     <th>datetime</th>
-                    <th>summary</th>
-                    <th>important</th>
-                    <th>way</th>
-                    <th>kind</th>
-                    <th>description</th>
+                    <th>summary/way</th>
+                    <th>description/way-kind</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>
+                    <td rowspan="2">
                         <div data-im="contact_to@contact_to::person_id"></div>
                     </td>
                     <td><input type="text" data-im="contact_to@contact_to::datetime"></td>
                     <td><input type="text" data-im="contact_to@contact_to::summary"></td>
-                    <td><input type="checkbox" data-im="contact_to@contact_to::important" value="1"></td>
-                    <td>
+                    <td><textarea data-im="contact_to@contact_to::description"></textarea></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="checkbox" data-im="contact_to@contact_to::important" value="1">important | way:
                         <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="4">Direct
                         <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="5">Indirect
                         <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="6">Others
@@ -122,14 +128,12 @@
                                     data-im="contact_way@id@value contact_way@name@innerHTML"
                                     value=""></option>
                         </select>
-                    </td>
-                    <td>
                         <select data-im="contact_to@contact_to::kind">
                             <option class="IM[cor_way_kind@kind_id@value|cor_way_kind@contact_kind::name@innerHTML] contactkind"
                                     value=""></option>
                         </select>
                     </td>
-                    <td><textarea data-im="contact_to@contact_to::description"></textarea></td>
+                    <td></td>
                 </tr>
                 </tbody>
             </table>

@@ -218,3 +218,6 @@ $uploadFilePathMode = "";
  * This header will be appended other server url than the origin.
  */
 //$accessControlAllowOrigin = "https://server.msyk.net";
+
+//$altThemePath = "/var/www/thmeme";    //Your original thmeme directory.
+//$themeName = "blackbird;      //Default theme name.

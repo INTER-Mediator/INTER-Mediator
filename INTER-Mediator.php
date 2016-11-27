@@ -85,27 +85,30 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             return;
         }
     }
+
     if (isset($_GET['theme'])) {
-        $tName = str_replace('..','',$_GET['theme']);
-        $tType = str_replace('..','',$_GET['type']);
-        if (strtolower($tType) == "css" && !isset($_GET['name'])) {
-            $fpath = IMUtil::pathToTheme() . "/{$tName}/{$tType}/";
-            $cssFiles = glob ("{$fpath}*.css");
-            $fContent ='';
-            foreach($cssFiles as $aFile){
-                $fContent .= file_get_contents($aFile);
-            }
-            $fpath = "something.css";
-        } else {
-            $fName = str_replace('..', '', $_GET['name']);
-            $fpath = IMUtil::pathToTheme() . "/{$tName}/{$tType}/{$fName}";
-            $fContent = file_get_contents($fpath);
-        }
-        header("Content-Type: " . IMUtil::getMIMEType($fpath));
-        header("Content-Length: " . strlen($fContent));
-        $util = new IMUtil();
-        $util->outputSecurityHeaders();
-        echo $fContent;
+        $themeManager = new Theme();
+        $themeManager->processing();
+//        $tName = str_replace('..','',$_GET['theme']);
+//        $tType = str_replace('..','',$_GET['type']);
+//        if (strtolower($tType) == "css" && !isset($_GET['name'])) {
+//            $fpath = IMUtil::pathToTheme() . "/{$tName}/{$tType}/";
+//            $cssFiles = glob ("{$fpath}*.css");
+//            $fContent ='';
+//            foreach($cssFiles as $aFile){
+//                $fContent .= file_get_contents($aFile);
+//            }
+//            $fpath = "something.css";
+//        } else {
+//            $fName = str_replace('..', '', $_GET['name']);
+//            $fpath = IMUtil::pathToTheme() . "/{$tName}/{$tType}/{$fName}";
+//            $fContent = file_get_contents($fpath);
+//        }
+//        header("Content-Type: " . IMUtil::getMIMEType($fpath));
+//        header("Content-Length: " . strlen($fContent));
+//        $util = new IMUtil();
+//        $util->outputSecurityHeaders();
+//        echo $fContent;
     } else if (isset($g_serverSideCall) && $g_serverSideCall) {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);

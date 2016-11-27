@@ -171,7 +171,7 @@ class FX {
     var $fuzzyFXPass = ''; // this is to handle the fact that I couldn't provide a default value for a pass-by-value param in PHP4
 
     // Constructor
-    function FX ($dataServer, $dataPort=80, $dataType='', $dataURLType='') {
+    function __construct ($dataServer, $dataPort=80, $dataType='', $dataURLType='') {
         $this->dataServer = $dataServer;
         $this->dataPort = $dataPort;
         $this->dataPortSuffix = ":" . $dataPort;
