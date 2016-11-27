@@ -31,7 +31,7 @@ p.logo{
 }
 
 #wrapper{
-	width:900px;
+	width:1024px;
 	margin:auto;
 }
 
@@ -177,4 +177,7 @@ hr{
 }
 .back_btn{
 	padding-bottom:10px;
+}
+.memo{
+	padding:10px;
 }

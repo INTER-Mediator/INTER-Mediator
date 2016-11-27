@@ -20,70 +20,79 @@
     <script type="text/javascript" src="list_detail.js"></script>
 </head>
 <body>
-<h1>Product List</h1>
-<!-- Table for the list view -->
-<div id="listarea">
-    <table border="1">
-        <thead>
+<header>
+  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+  <h1>Product List</h1>
+  <!-- Table for the list view -->
+  <div id="listarea">
+    <table>
+      <thead>
         <tr>
-            <th>id's</th><th>name</th><th>unitprice</th><th>photo</th><!--<th>container field</th>-->
+          <th>id's</th><th>name</th><th>unitprice</th><th>photo</th><!--<th>container field</th>-->
         </tr>
         </thead>
-        <tbody>
+      <tbody>
         <tr>
-            <td>
-                <button id="showdetail" data-im="productlist@id@#id">Detail</button>
+          <td>
+            <button id="showdetail" data-im="productlist@id@#id">Detail</button>
             </td>
-            <td data-im="productlist@name"></td>
-            <td class="price" data-im="productlist@unitprice"></td>
-            <td>
-                <img width="30" src="images/" data-im="productlist@photofile@#src">
-                <a data-im="productlist@ack_link@href|productlist@acknowledgement"></a>
+          <td data-im="productlist@name"></td>
+          <td class="price" data-im="productlist@unitprice"></td>
+          <td>
+            <img width="30" src="images/" data-im="productlist@photofile@#src">
+            <a data-im="productlist@ack_link@href|productlist@acknowledgement"></a>
             </td>
-            <!--
+          <!--
             <td>
                 <img width="50" src="contexts_FMS.php?media=" data-im="productlist@obj@#src">
             </td>
             -->
         </tr>
         </tbody>
-    </table>
-</div>
-<!-- Table for the detail view -->
-<div id="detailarea" class="hidden">
+      </table>
+  </div>
+  <!-- Table for the detail view -->
+  <div id="detailarea" class="hidden">
     <a id="showlist">Show List</a>
     <table border="1">
-        <tbody>
+      <tbody>
         <tr>
-            <th>id</th>
-            <td data-im="productdetail@id"></td>
+          <th>id</th>
+          <td data-im="productdetail@id"></td>
         </tr>
         <tr>
-            <th>name</th>
-            <td data-im="productdetail@name"></td>
+          <th>name</th>
+          <td data-im="productdetail@name"></td>
         </tr>
         <tr>
-            <th>unitprice</th>
-            <td data-im="productdetail@unitprice"></td>
+          <th>unitprice</th>
+          <td data-im="productdetail@unitprice"></td>
         </tr>
         <tr>
-            <th>photofile</th>
-            <td data-im="productdetail@photofile"></td>
+          <th>photofile</th>
+          <td data-im="productdetail@photofile"></td>
         </tr>
         <tr>
-            <th>acknowledgement</th>
-            <td data-im="productdetail@acknowledgement"></td>
+          <th>acknowledgement</th>
+          <td data-im="productdetail@acknowledgement"></td>
         </tr>
         <tr>
-            <th>ack_link</th>
-            <td data-im="productdetail@ack_link"></td>
+          <th>ack_link</th>
+          <td data-im="productdetail@ack_link"></td>
         </tr>
         <tr>
-            <th>photofile</th>
-            <td><img src="images/" data-im="productdetail@photofile@#src"></td>
+          <th>photofile</th>
+          <td><img src="images/" data-im="productdetail@photofile@#src"></td>
         </tr>
         </tbody>
-    </table>
+      </table>
+  </div>
 </div>
+<footer>
+<small>INTER-Mediator ©2016</small>
+</footer>
+
 </body>
 </html>

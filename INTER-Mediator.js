@@ -669,6 +669,7 @@ var INTERMediator = {
                 bodyNode.innerHTML = INTERMediator.rootEnclosure;
             }
             postSetFields = [];
+            INTERMediatorOnPage.setReferenceToTheme();
 
             try {
                 seekEnclosureNode(bodyNode, null, null, null);
