@@ -14,6 +14,14 @@
 
 //'use strict';
 
+/**
+ * @fileoverview INTERMediator_DBAdapter class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var INTERMediator_DBAdapter = {
 
     eliminateDuplicatedConditions: false,

@@ -25,6 +25,9 @@ Ver.5.6 (in development)
 - Update recipe.rb and sample_spec.rb for the INTER-Mediator-Server VM
 - The access privilege of directories and file of uploaded file set to 755. Previously it was 744, but
   a rental server which is limited feature tries to prevent to set all bits of group/other.
+- Updating and Creating record operations always return the records affected with its operations.
+- JSDoc generating script is added as dist-docs/jsdocgen.sh. You have to install JSDoc with npm.
+  Of course, all JS codes aren't documented so far, we will fill up step by step.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.

@@ -9,7 +9,14 @@
  */
 
 //'use strict';
-
+/**
+ * @fileoverview INTERMediatorOnPage class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var INTERMediatorOnPage = {
     authCountLimit: 4,
     authCount: 0,

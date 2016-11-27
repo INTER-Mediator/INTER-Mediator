@@ -25,6 +25,7 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Kentaro Suzuki
 - Nobuo Hayashi
 - Kazuaki Osawa
+- Hiroko Oki
 
 ## Special Thanks to:
 - Tomomitsu Baba

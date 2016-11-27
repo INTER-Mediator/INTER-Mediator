@@ -8,6 +8,14 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibContextPool, IMLibContext and IMLibLocalContext classes are defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLibContextPool = {
     poolingContexts: null,
 
@@ -496,6 +504,10 @@ var IMLibContextPool = {
     }
 };
 
+/**
+ *
+ * @constructor
+ */
 var IMLibContext = function (contextName) {
     this.contextName = contextName;  // Context Name, set on initialization.
     this.tableName = null;
@@ -1478,7 +1490,11 @@ var IMLibContext = function (contextName) {
     this.setTable(this);
 };
 
-
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLibLocalContext = {
     contextName: '_',
     store: {},
