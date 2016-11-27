@@ -2115,7 +2115,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}FROM " . $this->handler->quotedEntityName($table);
-        if (count($conditions) > 0) {
+        if (is_array($conditions) && count($conditions) > 0) {
             $sql .= " WHERE ";
             $first = true;
             foreach ($conditions as $field => $value) {
