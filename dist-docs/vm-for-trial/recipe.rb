@@ -178,12 +178,12 @@ if node[:platform] == 'alpine'
   execute 'yes im4135dev | sudo passwd postgres' do
     command 'yes im4135dev | sudo passwd postgres'
   end
-  #execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
-  #  command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
-  #end
-  #service 'postgresql' do
-  #  action [ :enable, :start ]
-  #end
+  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  end
+  service 'postgresql' do
+    action [ :enable, :start ]
+  end
 else
   service 'postgresql' do
     action [ :enable, :start ]
@@ -340,33 +340,48 @@ package 'acl' do
 end
 
 if node[:platform] == 'alpine'
-  package 'php7' do
+  package 'php5' do
     action :install
   end
-  package 'php7-apache2' do
+  package 'php5-apache2' do
     action :install
   end
-  package 'php7-json' do
+  package 'php5-curl' do
     action :install
   end
-  package 'php7-curl' do
+  package 'php5-pdo' do
     action :install
   end
-  package 'php7-pdo' do
+  package 'php5-openssl' do
     action :install
   end
-  package 'php7-phar' do
+  package 'php5-dom' do
     action :install
+  end
+  package 'php5-json' do
+    action :install
+  end
+  package 'php5-phar' do
+    action :install
+  end
+  execute 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp' do
+    command 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp'
+  end
+  execute 'mv /tmp/phpunit-5.6.2.phar /usr/local/bin/phpunit' do
+    command 'mv /tmp/phpunit-5.6.2.phar /usr/local/bin/phpunit'
+  end
+  execute 'chmod +x /usr/local/bin/phpunit' do
+    command 'chmod +x /usr/local/bin/phpunit'
   end
 elsif node[:platform] == 'ubuntu'
   package 'libmysqlclient-dev' do
     action :install
   end
   if node[:platform_version].to_f >= 16
-    package 'php7.0-mbstring' do
+    package 'php5.0-mbstring' do
       action :install
     end
-    package 'php7.0-bcmath' do
+    package 'php5.0-bcmath' do
       action :install
     end
   end
@@ -515,7 +530,7 @@ if node[:platform] == 'redhat'
     action :install
   end
 end
-if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'nodejs' do
     action :install
   end
@@ -779,7 +794,7 @@ end
 
 # Install npm packages
 
-if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   execute 'npm install -g buster' do
     command 'npm install -g buster'
   end
@@ -792,6 +807,12 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[
 
   execute 'npm install -g phantomjs' do
     command 'npm install -g phantomjs'
+  end
+end
+
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  package 'xvfb' do
+    action :install
   end
 end
 
@@ -1355,6 +1376,26 @@ execute '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer' do
   command '( echo im4135dev; echo im4135dev ) | sudo smbpasswd -s -a developer'
 end
 
+
+if node[:platform] == 'alpine'
+  file '/etc/local.d/buster-server.start' do
+    owner 'root'
+    group 'root'
+    mode '755'
+    content <<-EOF
+#!/bin/sh -e
+/usr/bin/buster-server &
+/bin/sleep 5
+/usr/bin/phantomjs /usr/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
+/usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
+exit 0
+EOF
+  end
+  execute 'rc-update add local default' do
+    command 'rc-update add local default'
+  end
+end
+
 if node[:platform] == 'ubuntu'
   file '/etc/default/keyboard' do
     owner 'root'
@@ -1424,9 +1465,6 @@ end
 
 # Install Selenium WebDriver
 if node[:platform] == 'ubuntu'
-  package 'xvfb' do
-    action :install
-  end
   package 'x11-xkb-utils' do
     action :install
   end
@@ -1440,9 +1478,6 @@ if node[:platform] == 'ubuntu'
     action :install
   end
   package 'xfonts-scalable' do
-    action :install
-  end
-  package 'x11-xkb-utils' do
     action :install
   end
   package 'xserver-xorg-core' do
