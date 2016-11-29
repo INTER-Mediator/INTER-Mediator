@@ -10,9 +10,13 @@
 
 #nonsupportmessage {
     background-color: #333333;
+	margin:10px;
+	padding:10px;
+	border-radius:5px;
 }
 
 #nonsupportmessage div {
     text-align: center;
     color: yellow;
+	margin-bottom:10px;
 }

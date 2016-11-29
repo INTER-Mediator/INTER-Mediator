@@ -830,7 +830,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             $value = $fieldValues[$counter];
             $counter++;
             $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
-            if (in_array($field, $fieldInfos) && $convertedValue === "" ) {
+            if (in_array($field, $fieldInfos) && $convertedValue === "") {
                 $setClause[] = "{$field}=NULL";
             } else {
                 $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
@@ -952,7 +952,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         for ($i = 0; $i < $countFields; $i++) {
             $field = $requiredFields[$i];
             $value = $fieldValues[$i];
-            if (in_array($field, $fieldInfos) && $value === "" ) {
+            if (in_array($field, $fieldInfos) && $value === "") {
                 $setValues[] = "NULL";
             } else {
                 $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
@@ -2075,7 +2075,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $sql = "{$this->handler->sqlSELECTCommand()}* FROM " . $this->handler->quotedEntityName($table);
-        if (count($conditions) > 0) {
+        if (is_array($conditions) && count($conditions) > 0) {
             $sql .= " WHERE ";
             $first = true;
             foreach ($conditions as $field => $value) {
@@ -2115,7 +2115,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $sql = "{$this->handler->sqlDELETECommand()}FROM " . $this->handler->quotedEntityName($table);
-        if (count($conditions) > 0) {
+        if (is_array($conditions) && count($conditions) > 0) {
             $sql .= " WHERE ";
             $first = true;
             foreach ($conditions as $field => $value) {

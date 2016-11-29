@@ -189,7 +189,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function countQueryResult()
     {
-        $className = get_class($this->userExpanded);
+        $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "countQueryResult")) {
             $this->logger->setDebugMessage("The method 'countQueryResult' of the class '{$className}' is calling.", 2);
             return $result = $this->userExpanded->countQueryResult();
@@ -205,7 +205,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function getTotalCount()
     {
-        $className = get_class($this->userExpanded);
+        $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "getTotalCount")) {
             $this->logger->setDebugMessage("The method 'getTotalCount' of the class '{$className}' is calling.", 2);
             return $result = $this->userExpanded->getTotalCount();
@@ -607,6 +607,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         if (!$this->dbClass->setupConnection())  {
             return false;
         }
+        file_put_contents("/tmp/1", var_export($dbClassName,true));
+
         if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
             $this->logger->setDebugMode($debug);
         }

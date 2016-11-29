@@ -33,7 +33,7 @@ class GenerateJSCode
     {
         $q = '"';
         echo "INTERMediator.setDebugMessage({$q}"
-        . str_replace("\n", " ", addslashes($message)) . "{$q});";
+            . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
     public function generateErrorMessageJS($message)
@@ -56,13 +56,14 @@ class GenerateJSCode
         $oAuthProvider = null;
         $oAuthClientID = null;
         $oAuthRedirect = null;
+        $themeName = "default";
         $dbClass = null;
         $params = IMUtil::getFromParamsPHPFile(array(
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
             "passwordPolicy", "documentRootPrefix", "dbClass",
-            "nonSupportMessageId", "valuesForLocalContext",
+            "nonSupportMessageId", "valuesForLocalContext", "themeName",
         ), true);
         $generatedPrivateKey = $params["generatedPrivateKey"];
         $passPhrase = $params["passPhrase"];
@@ -77,6 +78,7 @@ class GenerateJSCode
         $nonSupportMessageId = $params["nonSupportMessageId"];
         $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
         $valuesForLocalContext = $params["valuesForLocalContext"];
+        $themeName = is_null($params["themeName"]) ? $themeName : $params["themeName"];
 
         /*
          * Read the JS programs regarding by the developing or deployed.
@@ -166,7 +168,10 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
         $this->generateAssignJS(
-            "INTERMediatorOnPage.getIMRootPath", "function(){return {$q}{$pathToIMRootDir}{$q};}");
+            "INTERMediatorOnPage.getTheme", "function(){return {$q}",
+            isset($options['themeName']) ? $options['themeName'] : $themeName, "{$q};}");
+//        $this->generateAssignJS(
+//            "INTERMediatorOnPage.getIMRootPath", "function(){return {$q}{$pathToIMRootDir}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getDataSources", "function(){return ",
             arrayToJSExcluding($datasource, '', array('password')), ";}");
@@ -176,7 +181,7 @@ class GenerateJSCode
         $this->generateAssignJS(
             "INTERMediatorOnPage.getOptionsTransaction",
             "function(){return ", arrayToJS(isset($options['transaction']) ? $options['transaction'] : '', ''), ";}");
-        $this->generateAssignJS("INTERMediatorOnPage.dbClassName","{$q}{$dbClassName}{$q}");
+        $this->generateAssignJS("INTERMediatorOnPage.dbClassName", "{$q}{$dbClassName}{$q}");
 
         $isEmailAsUsernae = isset($options['authentication'])
             && isset($options['authentication']['email-as-username'])
@@ -213,12 +218,12 @@ class GenerateJSCode
             "INTERMediatorOnPage.clientNotificationIdentifier",
             "function(){return ", arrayToJS($clientId, ''), ";}");
 
-        if ($nonSupportMessageId!= "") {
+        if ($nonSupportMessageId != "") {
             $this->generateAssignJS(
                 "INTERMediatorOnPage.nonSupportMessageId",
                 "{$q}{$nonSupportMessageId}{$q}");
         }
-        
+
         $pusherParams = null;
         if (isset($pusherParameters)) {
             $pusherParams = $pusherParameters;
@@ -313,9 +318,10 @@ class GenerateJSCode
                 "INTERMediatorOnPage.publickey",
                 "new biRSAKeyPair('", $publickey['e']->toHex(), "','0','", $publickey['n']->toHex(), "')");
             if (in_array(sha1($generatedPrivateKey), array(
-                '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
-                '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3
-            )) && isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] !== '192.168.56.101') {
+                    '413351603fa756ecd8270147d1a84e9a2de2a3f9',  // Ver. 5.2
+                    '094f61a9db51e0159fb0bf7d02a321d37f29a715',  // Ver. 5.3
+                )) && isset($_SERVER['SERVER_ADDR']) && $_SERVER['SERVER_ADDR'] !== '192.168.56.101'
+            ) {
                 $this->generateDebugMessageJS('Please change the value of $generatedPrivateKey in params.php.');
             }
         }
@@ -334,11 +340,11 @@ class GenerateJSCode
         }
 
         // Initial values for local context
-        if (! isset($valuesForLocalContext)) {
+        if (!isset($valuesForLocalContext)) {
             $valuesForLocalContext = array();
         }
         if (isset($options['local-context'])) {
-            foreach($options['local-context'] as $item) {
+            foreach ($options['local-context'] as $item) {
                 $valuesForLocalContext[$item['key']] = $item['value'];
             }
         }

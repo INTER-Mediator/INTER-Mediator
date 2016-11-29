@@ -213,6 +213,7 @@ class DefinitionChecker
             'channel' => 'string',
         ),
         'credit-including' => 'string',
+        'theme' => 'string',
     );
     private
         $prohibitKeywordsForDataSource = array(

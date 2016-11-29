@@ -61,11 +61,6 @@ class IMUtil
         return dirname(__FILE__);
     }
 
-    public static function pathToTheme()
-    {
-        return dirname(__FILE__) . "/themes";
-    }
-
     public static function getMIMEType($path)
     {
         $type = "application/octet-stream";

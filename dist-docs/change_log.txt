@@ -28,6 +28,9 @@ Ver.5.6 (in development)
 - Updating and Creating record operations always return the records affected with its operations.
 - JSDoc generating script is added as dist-docs/jsdocgen.sh. You have to install JSDoc with npm.
   Of course, all JS codes aren't documented so far, we will fill up step by step.
+- The $altThemePath variable in params.php file can have the alternative theme directory path for adding
+  solution specific theme.
+- The $themeName variable in params.php file can have the default theme name for all web pages.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
@@ -38,6 +41,7 @@ Ver.5.6 (in development)
 - [BUG FIX] Justify the compatibility of the Master/Detail Style UI and additional conditions.
 - [BUG FIX] The DB_Null class's setupConnection() method returned false, but it prevent to following processing.
 - [BUG FIX] The source of context is a SQL's VIEW, fields in associated records can't be updated in some cases.
+- [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)
 - Support PHP 7 and checking on 7.1.0 Release Candidate 2, too.
