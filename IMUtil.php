@@ -105,6 +105,7 @@ class IMUtil
     public static function combinePathComponents($ar)
     {
         $path = "";
+        $isFirstItem = true;
         foreach ($ar as $item) {
             $isSepTerminate = (substr($path, -1) == DIRECTORY_SEPARATOR);
             $isSepStart = (substr($item, 0, 1) == DIRECTORY_SEPARATOR);
@@ -113,10 +114,19 @@ class IMUtil
             } elseif ($isSepTerminate && $isSepStart) {
                 $path .= substr($item, 1);
             } else {
-                $path .= DIRECTORY_SEPARATOR . $item;
+                if (! $isFirstItem || ! self::isPHPExecutingWindows()) {
+                    $path .= DIRECTORY_SEPARATOR;
+                }
+                $path .= $item;
             }
+            $isFirstItem = false;
         }
         return $path;
+    }
+
+    public static function isPHPExecutingWindows() {
+        $osName = php_uname("s");
+        return $osName == "Windows NT";
     }
 
     public static function includeLibClasses($classes)
@@ -131,6 +141,7 @@ class IMUtil
                     $classComp[] = $cComp;
                 }
             }
+
             $fpath = IMUtil::combinePathComponents(array_merge($pathComp, $classComp)) . ".php";
             if (file_exists($fpath)) {
                 require_once($fpath);
