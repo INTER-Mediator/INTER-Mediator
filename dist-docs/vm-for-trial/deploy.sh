@@ -42,17 +42,6 @@ if [ $RESULT = '' ] ; then
 fi
 
 if [ $OS = 'alpine' ] ; then
-    addgroup im-developer
-    addgroup developer im-developer
-    addgroup apache im-developer
-else
-    groupadd im-developer
-    usermod -a -G im-developer developer
-    usermod -a -G im-developer www-data
-fi
-yes im4135dev | passwd postgres
-
-if [ $OS = 'alpine' ] ; then
     echo "127.0.0.1 localhost inter-mediator-server" > /etc/hosts
     ip addr add 192.168.56.101/24 dev eth1
     echo "auto lo" > /etc/network/interfaces
@@ -79,15 +68,26 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php5-apache2
     apk add --no-cache php5-curl
     apk add --no-cache php5-pdo
+    apk add --no-cache php5-pdo_mysql
+    apk add --no-cache php5-pdo_pgsql
+    apk add --no-cache php5-pdo_sqlite
     apk add --no-cache php5-openssl
     apk add --no-cache php5-dom
     apk add --no-cache php5-json
+    apk add --no-cache php5-bcmath
     apk add --no-cache php5-phar
     apk add --no-cache git
     apk add --no-cache nodejs
     apk add --no-cache samba
+    apk add --no-cache dbus
+    apk add --no-cache firefox
+    apk add --no-cache chromium libgudev
     apk add --no-cache xvfb
+    apk add --no-cache fontconfig-dev
 
+    apk add --no-cache ca-certificates
+    apk add --no-cache wget
+    update-ca-certificates
     wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp
     mv /tmp/phpunit-5.6.2.phar /usr/local/bin/phpunit
     chmod +x /usr/local/bin/phpunit
@@ -100,6 +100,10 @@ if [ $OS = 'alpine' ] ; then
     /etc/init.d/postgresql setup
     rc-service postgresql start
     rc-update add postgresql
+    rc-service dbus start
+    rc-update add dbus
+    rc-service samba start
+    rc-update add samba
 else
     echo "set grub-pc/install_devices /dev/sda" | debconf-communicate
     aptitude clean
@@ -126,6 +130,7 @@ else
     apt-get install libfontconfig1 --assume-yes
     apt-get install samba --assume-yes
     apt-get install phpunit --assume-yes
+    apt-get install xvfb --assume-yes
 
     # for Japanese
     apt-get install language-pack-ja --assume-yes
@@ -137,6 +142,17 @@ else
 
     aptitude clean
 fi
+
+if [ $OS = 'alpine' ] ; then
+    addgroup im-developer
+    addgroup developer im-developer
+    addgroup apache im-developer
+else
+    groupadd im-developer
+    usermod -a -G im-developer developer
+    usermod -a -G im-developer www-data
+fi
+yes im4135dev | passwd postgres
 
 mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' identified by 'im4135dev';" -u root
 if [ $OS = 'alpine' ] ; then
@@ -221,7 +237,6 @@ echo "\$webServerName = array('');" >> "${WEBROOT}/params.php"
 
 cd "${IMROOT}"
 npm install -g buster
-npm install -g phantomjs
 
 # Copy Templates
 
@@ -264,12 +279,20 @@ mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini
 
 # Share the Web Root Directory with SMB.
 
-sed ':loop; N; $!b loop; ;s/#### Networking ####\n/#### Networking ####\n   hosts allow = 192.168.56. 127./g' "${SMBCONF}" > "${SMBCONF}".tmp
-mv "${SMBCONF}".tmp "${SMBCONF}"
-echo "" >> "${SMBCONF}"
-echo "[webroot]" >> "${SMBCONF}"
-echo "   comment = Apache Root Directory" >> "${SMBCONF}"
-echo "   path = /var/www/html" >> "${SMBCONF}"
+if [ $OS = 'alpine' ] ; then
+    echo "   hosts allow = 192.168.56. 127." >> "${SMBCONF}"
+    echo "" >> "${SMBCONF}"
+    echo "[webroot]" >> "${SMBCONF}"
+    echo "   comment = Apache Root Directory" >> "${SMBCONF}"
+    echo "   path = /var/www/localhost/htdocs" >> "${SMBCONF}"
+else
+    sed ':loop; N; $!b loop; ;s/#### Networking ####\n/#### Networking ####\n   hosts allow = 192.168.56. 127./g' "${SMBCONF}" > "${SMBCONF}".tmp
+    mv "${SMBCONF}".tmp "${SMBCONF}"
+    echo "" >> "${SMBCONF}"
+    echo "[webroot]" >> "${SMBCONF}"
+    echo "   comment = Apache Root Directory" >> "${SMBCONF}"
+    echo "   path = /var/www/html" >> "${SMBCONF}"
+fi
 echo "   guest ok = no" >> "${SMBCONF}"
 echo "   browseable = yes" >> "${SMBCONF}"
 echo "   read only = no" >> "${SMBCONF}"
@@ -289,7 +312,13 @@ dpkg-reconfigure -f noninteractive keyboard-configuration
 
 # Launch buster-server for unit testing
 
-echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &\nexit 0' > /etc/rc.local
+if [ $OS = 'alpine' ] ; then
+    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\nexport DISPLAY=:99.0\nXvfb :99 -screen 0 1024x768x24 &\n/bin/sleep 5\n/usr/bin/buster-server &\n/bin/sleep 5\nfirefox http://localhost:1111/capture > /dev/null &\n#chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &\n/bin/sleep 5\nexit 0' > /etc/local.d/buster-server.start
+    chmod 755 /etc/local.d/buster-server.start
+    rc-update add local default
+else
+    echo -e '#!/bin/sh -e\n#\n# rc.local\n#\n# This script is executed at the end of each multiuser runlevel.\n# Make sure that the script will "exit 0" on success or any other\n# value on error.\n#\n# In order to enable or disable this script just change the execution\n# bits.\n#\n# By default this script does nothing.\n\n/usr/local/bin/buster-server &\n/bin/sleep 5\n/usr/local/bin/phantomjs /usr/local/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &\nexit 0' > /etc/rc.local
+fi
 
 # The end of task.
 

@@ -186,23 +186,44 @@ describe package('acl'), :if => os[:family] == 'alpine' || os[:family] == 'ubunt
   it { should be_installed }
 end
 
-describe package('php7'), :if => os[:family] == 'alpine' do
+describe package('php5'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7-apache2'), :if => os[:family] == 'alpine' do
+describe package('php5-apache2'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7-json'), :if => os[:family] == 'alpine' do
+describe package('php5-curl'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7-curl'), :if => os[:family] == 'alpine' do
+describe package('php5-pdo'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7-pdo'), :if => os[:family] == 'alpine' do
+describe package('php5-pdo_mysql'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php7-phar'), :if => os[:family] == 'alpine' do
+describe package('php5-pdo_pgsql'), :if => os[:family] == 'alpine' do
   it { should be_installed }
+end
+describe package('php5-pdo_sqlite'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-openssl'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-dom'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-json'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-bcmath'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php5-phar'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' do
+  it { should be_file }
 end
 describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
@@ -307,7 +328,7 @@ describe package('git'), :if => os[:family] == 'alpine' || os[:family] == 'ubunt
   it { should be_installed }
 end
 
-describe package('nodejs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+describe package('nodejs'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
 end
 
@@ -323,7 +344,7 @@ describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redh
   it { should be_installed }
 end
 
-describe package('buster'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
+describe package('buster'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed.by('npm').with_version('0.7.18') }
 end
 
@@ -331,10 +352,30 @@ describe package('bzip2'), :if => os[:family] == 'redhat' && os[:release].to_f >
   it { should be_installed }
 end
 
+describe package('xvfb'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+describe package('dbus'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('firefox'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+
+describe package('chromium'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('libgudev'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+
 describe package('phantomjs'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed.by('npm').with_version('2.1.7') }
 end
 
+describe package('fontconfig-dev'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('libfontconfig1'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
@@ -437,7 +478,7 @@ describe file(WEBROOT + '/params.php') do
   its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
 end
 describe file(WEBROOT + '/params.php'), :if => os[:family] == 'alpine' do
-  its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
+  its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
 end
 describe file(WEBROOT + '/params.php'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
@@ -607,6 +648,14 @@ describe file('/etc/firewalld/zones/public.xml'), :if => os[:family] == 'redhat'
   its(:content) { should match /<service name="http"\/>/ }
 end
 
+describe file('/etc/local.d/buster-server.start'), :if => os[:family] == 'alpine' do
+  it { should be_file }
+  it { should be_mode 755 }
+  its(:content) { should match /export DISPLAY=:99.0/ }
+  its(:content) { should match /Xvfb :99 -screen 0 1024x768x24 &/ }
+  its(:content) { should match /\/usr\/bin\/buster-server &/ }
+  its(:content) { should match /firefox http:\/\/localhost:1111\/capture > \/dev\/null &/ }
+end
 describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
