@@ -140,6 +140,9 @@ class IMUtil
                 }
             }
             $fpath = IMUtil::combinePathComponents(array_merge($pathComp, $classComp)) . ".php";
+
+            echo "#{$fpath}#".file_exists($fpath)."$\n";
+
             if (file_exists($fpath)) {
                 require_once($fpath);
             }
