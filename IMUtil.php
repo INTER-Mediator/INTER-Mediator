@@ -104,6 +104,7 @@ class IMUtil
 
     public static function combinePathComponents($ar)
     {
+        var_dump($ar);
         $path = "";
         $isFirstItem = true;
         foreach ($ar as $item) {
@@ -120,13 +121,16 @@ class IMUtil
                 $path .= $item;
             }
             $isFirstItem = false;
+            var_dump($path);
         }
         return $path;
     }
 
     public static function isPHPExecutingWindows() {
-        return php_uname("s") == "Windows NT";
+        $osName = php_uname("s");
+        return $osName == "Windows NT";
     }
+
     public static function includeLibClasses($classes)
     {
         $pathComp = array(self::pathToINTERMediator(), "lib");
@@ -139,7 +143,11 @@ class IMUtil
                     $classComp[] = $cComp;
                 }
             }
+
             $fpath = IMUtil::combinePathComponents(array_merge($pathComp, $classComp)) . ".php";
+
+            echo "#{$fpath}#".file_exists($fpath)."$\n";
+
             if (file_exists($fpath)) {
                 require_once($fpath);
             }
