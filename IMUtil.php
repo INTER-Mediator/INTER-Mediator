@@ -105,6 +105,7 @@ class IMUtil
     public static function combinePathComponents($ar)
     {
         $path = "";
+        $isFirstItem = true;
         foreach ($ar as $item) {
             $isSepTerminate = (substr($path, -1) == DIRECTORY_SEPARATOR);
             $isSepStart = (substr($item, 0, 1) == DIRECTORY_SEPARATOR);
@@ -113,12 +114,19 @@ class IMUtil
             } elseif ($isSepTerminate && $isSepStart) {
                 $path .= substr($item, 1);
             } else {
-                $path .= DIRECTORY_SEPARATOR . $item;
+                if (! $isFirstItem || ! self::isPHPExecutingWindows()) {
+                    $path .= DIRECTORY_SEPARATOR;
+                }
+                $path .= $item;
             }
+            $isFirstItem = false;
         }
         return $path;
     }
 
+    public static function isPHPExecutingWindows() {
+        return php_uname("s") == "WINNT";
+    }
     public static function includeLibClasses($classes)
     {
         $pathComp = array(self::pathToINTERMediator(), "lib");
