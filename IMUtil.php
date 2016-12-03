@@ -130,7 +130,7 @@ class IMUtil
         $osName = php_uname("s");
         var_dump($osName);
 
-        return $osName == "WINNT";
+        return $osName == "Windows NT";
     }
     public static function includeLibClasses($classes)
     {
