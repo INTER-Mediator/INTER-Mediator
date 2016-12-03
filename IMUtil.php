@@ -104,6 +104,7 @@ class IMUtil
 
     public static function combinePathComponents($ar)
     {
+        var_dump($ar);
         $path = "";
         $isFirstItem = true;
         foreach ($ar as $item) {
@@ -139,6 +140,7 @@ class IMUtil
                     $classComp[] = $cComp;
                 }
             }
+
             $fpath = IMUtil::combinePathComponents(array_merge($pathComp, $classComp)) . ".php";
 
             echo "#{$fpath}#".file_exists($fpath)."$\n";
