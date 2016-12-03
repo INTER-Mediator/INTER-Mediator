@@ -104,7 +104,6 @@ class IMUtil
 
     public static function combinePathComponents($ar)
     {
-        var_dump($ar);
         $path = "";
         $isFirstItem = true;
         foreach ($ar as $item) {
