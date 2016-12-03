@@ -127,7 +127,10 @@ class IMUtil
     }
 
     public static function isPHPExecutingWindows() {
-        return php_uname("s") == "WINNT";
+        $osName = php_uname("s");
+        var_dump($osName);
+
+        return $osName == "WINNT";
     }
     public static function includeLibClasses($classes)
     {
