@@ -125,7 +125,7 @@ class IMUtil
     }
 
     public static function isPHPExecutingWindows() {
-        return php_uname("s") == "WINNT";
+        return php_uname("s") == "Windows NT";
     }
     public static function includeLibClasses($classes)
     {
