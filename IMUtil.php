@@ -121,6 +121,7 @@ class IMUtil
                 $path .= $item;
             }
             $isFirstItem = false;
+            var_dump($path);
         }
         return $path;
     }
