@@ -121,7 +121,6 @@ class IMUtil
                 $path .= $item;
             }
             $isFirstItem = false;
-            var_dump($path);
         }
         return $path;
     }
@@ -145,9 +144,6 @@ class IMUtil
             }
 
             $fpath = IMUtil::combinePathComponents(array_merge($pathComp, $classComp)) . ".php";
-
-            echo "#{$fpath}#".file_exists($fpath)."$\n";
-
             if (file_exists($fpath)) {
                 require_once($fpath);
             }
