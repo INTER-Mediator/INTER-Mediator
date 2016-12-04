@@ -405,3 +405,42 @@ IMParts_Catalog['fileupload'] = {
         }
     }
 };
+
+IMParts_Catalog["jsonformat"] = {
+    instanciate: function (parentNode) {
+        var newId = parentNode.getAttribute('id') + '-jsonf';
+        var newNode = document.createElement('pre');
+        newNode.setAttribute('id', newId);
+        parentNode.appendChild(newNode);
+        IMParts_Catalog["jsonformat"].ids.push(newId);
+
+        parentNode._im_getComponentId = (function () {
+            var theId = newId;
+            return function () {
+                return theId;
+            }
+        })();
+
+        parentNode._im_setValue = (function () {
+            var theId = newId;
+            return function (str) {
+                IMParts_Catalog["jsonformat"].initialValues[theId] = JSON.stringify(JSON.parse(str), null, '    ');
+            };
+        })();
+    },
+
+    ids: [],
+    initialValues: {},
+
+    finish: function () {
+        for (var i = 0; i < IMParts_Catalog["jsonformat"].ids.length; i++) {
+            var targetId = IMParts_Catalog["jsonformat"].ids[i];
+            var targetNode = document.getElementById(targetId);
+            if (targetNode) {
+                targetNode.appendChild(document.createTextNode(IMParts_Catalog["jsonformat"].initialValues[targetId]));
+            }
+        }
+        IMParts_Catalog["jsonformat"].ids = [];
+        IMParts_Catalog["jsonformat"].initialValues = {};
+    }
+};
