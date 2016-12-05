@@ -424,7 +424,8 @@ IMParts_Catalog["jsonformat"] = {
         parentNode._im_setValue = (function () {
             var theId = newId;
             return function (str) {
-                IMParts_Catalog["jsonformat"].initialValues[theId] = JSON.stringify(JSON.parse(str), null, '    ');
+                IMParts_Catalog["jsonformat"].initialValues[theId]
+                    = str ? JSON.stringify(JSON.parse(str), null, '    ') : "";
             };
         })();
     },
