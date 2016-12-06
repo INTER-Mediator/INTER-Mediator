@@ -31,6 +31,7 @@ Ver.5.6 (in development)
 - The $altThemePath variable in params.php file can have the alternative theme directory path for adding
   solution specific theme.
 - The $themeName variable in params.php file can have the default theme name for all web pages.
+- JavaScript component "jsonformater" is added. Useage is: <div data-im-widget="jsonformater" data-im="t@f"></div>
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
