@@ -43,6 +43,8 @@ Ver.5.6 (in development)
 - [BUG FIX] The DB_Null class's setupConnection() method returned false, but it prevent to following processing.
 - [BUG FIX] The source of context is a SQL's VIEW, fields in associated records can't be updated in some cases.
 - [BUG FIX] Fixed not to work on Windows Server until Ver.5.5-dev.
+- [BUG FIX] The format function or INTERMediatorLib.numberFormat method returned ".0" in case of zero value.
+            Now they return "0.0".
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)
