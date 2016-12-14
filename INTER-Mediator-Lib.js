@@ -707,6 +707,7 @@ var INTERMediatorLib = {
                 s.push(n);
             }
         }
+        s = s.length < 1 ? ["0"] : s;
         return sign + s.reverse().join(this.cachedDigitSeparator[1])
             + (underNumStr == '' ? '' : this.cachedDigitSeparator[0] + underNumStr);
     },
