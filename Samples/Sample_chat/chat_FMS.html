@@ -13,40 +13,48 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" type="text/css" href="../sample.css">
+    <!--<link rel="stylesheet" type="text/css" href="../sample.css">-->
     <title>INTER-Mediator - Sample - Authorized Chat / FileMaker Server</title>
     <script type="text/javascript" src="include_FMS.php"></script>
     <script type="text/javascript" src="chat.js"></script>
 </head>
 <body>
-<h1>Simple but Authorized Chat</h1>
-<table>
+<header>
+  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+  <h1>Simple but Authorized Chat</h1>
+  <table>
     <thead>
-    <tr>
+      <tr>
         <td></td>
         <td></td>
         <td></td>
         <td>
-            <input type="text" id="message">
-            <button id="postbutton">Post</button>
-            <button id="logoutbutton">Logout</button>
-        </td>
-    </tr>
-    <tr>
+          <input type="text" id="message">
+          <button id="postbutton">Post</button>
+          <button id="logoutbutton">Logout</button>
+          </td>
+      </tr>
+      <tr>
         <th>Date and Time</th>
         <th>User</th>
         <th>Group</th>
         <th>Message</th>
-    </tr>
-    </thead>
+      </tr>
+      </thead>
     <tbody>
-    <tr>
+      <tr>
         <td data-im="chat@postdt"></td>
         <td data-im="chat@user"></td>
         <td data-im="chat@groupname"></td>
         <td data-im="chat@message"></td>
-    </tr>
-    </tbody>
-</table>
+      </tr>
+      </tbody>
+  </table>
+</div>
+<footer>
+<small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>

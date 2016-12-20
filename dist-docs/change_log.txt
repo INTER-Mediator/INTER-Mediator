@@ -10,8 +10,45 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.5 (in development)
-- Support PHP 7.
+Ver.5.6 (in development)
+- Well-designed CSS files are added by Yuko Oki. She is web designer and a lecturer of
+  Kyoto University of Art and Design.
+- Themes can be retrieved from accessing the definition file as below:
+  def_file.php?theme=default&type=css&name=style.css
+- In the Post Only mode, radio buttons don't require to set the name attribute. The nodes having the
+  same data-im attribute automatically set the appropriate name attributes.
+- New interleave method INTERMediatorOnPage.modifyPostOnlyContext is defined. The parameter is post only
+  context definition and should return a context definition which is modified or not.
+- For preventing to update by editing element's value, data-im-control="unbind" is introduced. This attribute
+  causes just assign the field value to checkbox, but it doesn't happen to update with clicking it.
+- Added titles to almost all sample HTML files.
+- Update deploy.sh, recipe.rb and sample_spec.rb for the INTER-Mediator-Server VM
+- The access privilege of directories and file of uploaded file set to 755. Previously it was 744, but
+  a rental server which is limited feature tries to prevent to set all bits of group/other.
+- Updating and Creating record operations always return the records affected with its operations.
+- JSDoc generating script is added as dist-docs/jsdocgen.sh. You have to install JSDoc with npm.
+  Of course, all JS codes aren't documented so far, we will fill up step by step.
+- The $altThemePath variable in params.php file can have the alternative theme directory path for adding
+  solution specific theme.
+- The $themeName variable in params.php file can have the default theme name for all web pages.
+- JavaScript component "jsonformater" is added. Useage is: <div data-im-widget="jsonformater" data-im="t@f"></div>
+- [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
+- [BUG FIX] MediaAccess class didn't work for privileged access with users.
+- [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
+- [BUG FIX] Customized button names on the pagination control didn't work correctly.
+- [BUG FIX] The INTERMediatorOnPage.doBeforeConstruct method won't be called other than just after page loaded.
+- [BUG FIX] INTERMediator.clearCondition sometimes clears all condition if a parameter is set.
+- [BUG FIX] MySQL PDO driver holds the keyword of SQL with quote characters.
+- [BUG FIX] Justify the compatibility of the Master/Detail Style UI and additional conditions.
+- [BUG FIX] The DB_Null class's setupConnection() method returned false, but it prevent to following processing.
+- [BUG FIX] The source of context is a SQL's VIEW, fields in associated records can't be updated in some cases.
+- [BUG FIX] Fixed not to work on Windows Server until Ver.5.5-dev.
+- [BUG FIX] The format function or INTERMediatorLib.numberFormat method returned ".0" in case of zero value.
+            Now they return "0.0".
+- [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
+
+Ver.5.5 (October 13, 2016)
+- Support PHP 7 and checking on 7.1.0 Release Candidate 2, too.
 - Add "phpseclib_v2" (phpseclib 2.0.3) in "lib" directory for supporting PHP 7.
 - Add "Constant-Time Encoding" in "lib" directory for phpseclib 2.0.
   <https://github.com/paragonie/constant_time_encoding>
@@ -23,6 +60,11 @@ Ver.5.5 (in development)
 - Update sample_schema_mysql.txt, recipe.rb and sample_spec.rb for the INTER-Mediator-Server VM.
 - The getDataAtLastRecord(key) method in IMLibContext class is added.
 - The setValue method of IMLibContext class returns affected node's id attribute values.
+- If nullable and numeric field is updated/created with "" value, write the value as NULL.
+  This behavior requires to set blank in case of updating text field with no string.
+- The record to merge an e-mail is retrieved from the database class's instance. This means
+  if you want to add/modify fields for e-mail, you can describe codes in advisor classes, but
+  you have to use the setUpdatedRecord method to send values you modified to mail processor.
 - [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
   attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba). The affected 
   version is 5.4 only.
@@ -41,6 +83,12 @@ Ver.5.5 (in development)
   is 5.4 only.
 - [BUG FIX] Fix handling 'neq' operator of search criteria when using FileMaker Server (Disable
   compound found requests internally when using 'neq' operator). The affected version is 5.4 only.
+- [BUG FIX] DB_FileMaker_FX in RC1 was the script for all operations are added in "read" operation.
+- [BUG FIX] On the MediaAccess class, the authorization for “all” operation didn’t apply.
+- [BUG FIX] Fix the "undefined" copy button in pagination control.
+- [BUG FIX] Fix customized button names in pagination control.
+- [BUG FIX] Textarea on Edge showed in single line in spite of the multiple line string. With this
+  fix, IM uses value property of textarea node to set the value.
 
 Ver.5.4 (August 24, 2016)
 - You don't have to call INTERMediator.construct() anymore. If you want to do anything before page

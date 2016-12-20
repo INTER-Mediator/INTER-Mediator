@@ -14,62 +14,73 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - List-Detail Style Navigation/MySQL</title>
-    <link type="text/css" rel="stylesheet" href="../sample.css">
+    <!--<link type="text/css" rel="stylesheet" href="../sample.css">-->
     <script type="text/javascript" src="navi1.php"></script>
 </head>
 <body>
-<!-- Table for the list view -->
-<div id="listarea" style="float:left; margin-right: 24px;">
-    <table border="1">
-        <thead>
-        <tr>
-            <th></th><th>name</th><th>unitprice</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td></td>
-            <td data-im="productlist@name"></td>
-            <td class="price" data-im="productlist@unitprice"></td>
-        </tr>
-        </tbody>
-    </table>
+<header>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <h1>The Master/Detail UI Navigation with hiding Master area</h1>
+    <!-- Table for the list view -->
+    <div id="listarea" style="float:left; margin-right: 24px;">
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                <th>name</th>
+                <th>unitprice</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td></td>
+                <td data-im="productlist@name"></td>
+                <td class="price" data-im="productlist@unitprice"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Table for the detail view -->
+    <div id="detailarea">
+        <table>
+            <tbody>
+            <tr>
+                <th>id</th>
+                <td data-im="productdetail@id"></td>
+            </tr>
+            <tr>
+                <th>name</th>
+                <td><input type="text" size="60" data-im="productdetail@name"></td>
+            </tr>
+            <tr>
+                <th>unitprice</th>
+                <td><input type="text" size="60" data-im="productdetail@unitprice"></td>
+            </tr>
+            <tr>
+                <th>photofile</th>
+                <td><input type="text" size="60" data-im="productdetail@photofile"></td>
+            </tr>
+            <tr>
+                <th>acknowledgement</th>
+                <td><input type="text" size="60" data-im="productdetail@acknowledgement"></td>
+            </tr>
+            <tr>
+                <th>ack_link</th>
+                <td><input type="text" size="60" data-im="productdetail@ack_link"></td>
+            </tr>
+            <tr>
+                <th>photofile</th>
+                <td><img src="../Sample_products/images/" data-im="productdetail@photofile@#src"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <br clear="all">
 </div>
-<!-- Table for the detail view -->
-<div id="detailarea">
-    <table border="1">
-        <tbody>
-        <tr>
-            <th>id</th>
-            <td data-im="productdetail@id"></td>
-        </tr>
-        <tr>
-            <th>name</th>
-            <td><input type="text" size="60" data-im="productdetail@name"></td>
-        </tr>
-        <tr>
-            <th>unitprice</th>
-            <td><input type="text" size="60" data-im="productdetail@unitprice"></td>
-        </tr>
-        <tr>
-            <th>photofile</th>
-            <td><input type="text" size="60" data-im="productdetail@photofile"></td>
-        </tr>
-        <tr>
-            <th>acknowledgement</th>
-            <td><input type="text" size="60" data-im="productdetail@acknowledgement"></td>
-        </tr>
-        <tr>
-            <th>ack_link</th>
-            <td><input type="text" size="60" data-im="productdetail@ack_link"></td>
-        </tr>
-        <tr>
-            <th>photofile</th>
-            <td><img src="../Sample_products/images/" data-im="productdetail@photofile@#src"></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<div style="clear: both"/>
+<footer>
+    <small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>

@@ -8,10 +8,18 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibElement class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false;
+            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false, imControl;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -25,6 +33,7 @@ var IMLibElement = {
         }
 
         nodeTag = element.tagName;
+        imControl = element.getAttribute('data-im-control');
 
         if (clearField === true && curTarget == '') {
             switch (nodeTag) {
@@ -55,29 +64,29 @@ var IMLibElement = {
         if (curTarget != null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
                 //if (element.getAttribute('data-im-element') !== 'processed') {
-                    curTarget = curTarget.substring(1);
-                    if (curTarget == 'innerHTML') {
-                        if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
-                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
-                        }
-                        element.innerHTML += curVal;
-                    } else if (curTarget == 'textNode' || curTarget == 'script') {
-                        textNode = document.createTextNode(curVal);
-                        if (nodeTag == 'TEXTAREA') {
-                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-                        }
-                        element.appendChild(textNode);
-                    } else if (curTarget.indexOf('style.') == 0) {
-                        styleName = curTarget.substring(6, curTarget.length);
-                        element.style[styleName] = curVal;
-                    } else {
-                        currentValue = element.getAttribute(curTarget);
-                        if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
-                            curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
-                        }
-                        element.setAttribute(curTarget, currentValue + curVal);
+                curTarget = curTarget.substring(1);
+                if (curTarget == 'innerHTML') {
+                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                     }
-                    isReplaceOrAppned = true;
+                    element.innerHTML += curVal;
+                } else if (curTarget == 'textNode' || curTarget == 'script') {
+                    textNode = document.createTextNode(curVal);
+                    if (nodeTag == 'TEXTAREA') {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                    }
+                    element.appendChild(textNode);
+                } else if (curTarget.indexOf('style.') == 0) {
+                    styleName = curTarget.substring(6, curTarget.length);
+                    element.style[styleName] = curVal;
+                } else {
+                    currentValue = element.getAttribute(curTarget);
+                    if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
+                        curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
+                    }
+                    element.setAttribute(curTarget, currentValue + curVal);
+                }
+                isReplaceOrAppned = true;
                 //}
             } else if (curTarget.charAt(0) == '$') { // Replacing
                 curTarget = curTarget.substring(1);
@@ -169,27 +178,29 @@ var IMLibElement = {
             } else if (nodeTag == 'SELECT') {
                 needPostValueSet = true;
                 element.value = curVal;
-            } else { // include option tag node
+            } else if (nodeTag == 'TEXTAREA') {
                 if (INTERMediator.defaultTargetInnerHTML) {
-                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                    if (INTERMediator.isIE) { // for IE
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
                     }
                     element.innerHTML = curVal;
                 } else {
-                    if (nodeTag == 'TEXTAREA' && curVal.length > 0) {
-                        if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
-                            // for IE11
-                            curVal = curVal.replace(/\r\n/g, IMLib.nl_char).replace(/\r/g, IMLib.nl_char);
-                        } else {
-                            curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
-                        }
+                    if (curVal.length > 0 && INTERMediator.isTrident && INTERMediator.ieVersion >= 11) { // for IE11
+                        curVal = curVal.replace(/\r\n/g, IMLib.nl_char).replace(/\r/g, IMLib.nl_char);
                     }
-                    textNode = document.createTextNode(curVal);
-                    element.appendChild(textNode);
+                    element.value = curVal;
+                }
+            } else { // include option tag node
+                if (INTERMediator.defaultTargetInnerHTML) {
+                    element.innerHTML = curVal;
+                } else {
+                    element.appendChild(document.createTextNode(curVal));
                 }
             }
         }
-        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') && !isReplaceOrAppned) {
+        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA')
+            && !isReplaceOrAppned
+            && (!imControl || imControl.indexOf('unbind') > 0 )) {
             var idValue = element.id;
             var elementCapt = element;
             INTERMediatorLib.addEvent(element, 'blur', function (event) {

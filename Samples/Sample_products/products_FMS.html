@@ -14,35 +14,44 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
-    <link type="text/css" rel="stylesheet" href="../sample.css">
+    <!--<link type="text/css" rel="stylesheet" href="../sample.css">-->
     <script type="text/javascript" src="products_FMS_include.php"></script>
     <script type="text/javascript" src="products.js"></script>
 </head>
 <body>
-<table border="1">
+<header>
+  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+  <h1>Product List</h1>
+  <table>
     <thead>
-    <tr>
+      <tr>
         <th>id's</th>
         <th>name</th>
         <th>unitprice</th>
         <th>photo</th>
-    </tr>
-    </thead>
+      </tr>
+      </thead>
     <tbody>
-    <tr>
+      <tr>
         <td><a href="detail_FMS.html?id=" data-im="product@id@#href">Detail</a></td>
         <td>
-            <div data-im="product@name"></div>
-        </td>
+          <div data-im="product@name"></div>
+          </td>
         <td align="right">
-            <div data-im="product@unitprice"></div>
-        </td>
+          <div data-im="product@unitprice"></div>
+          </td>
         <td>
-            <img width="30" src="images/" data-im="product@photofile@#src"/>
-            <a data-im="product@ack_link@href|product@acknowledgement"></a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+          <img width="30" src="images/" data-im="product@photofile@#src"/>
+          <a data-im="product@ack_link@href|product@acknowledgement"></a>
+          </td>
+      </tr>
+      </tbody>
+  </table>
+</div>
+<footer>
+<small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>

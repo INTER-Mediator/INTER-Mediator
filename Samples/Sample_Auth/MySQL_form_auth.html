@@ -13,101 +13,107 @@
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <link rel="stylesheet" type="text/css" href="../sample.css"/>
-    <link rel="stylesheet" type="text/css" href="form_auth.css"/>
+    <!--<link rel="stylesheet" type="text/css" href="../sample.css"/>-->
     <title>INTER-Mediator - Sample - Form Style/MySQL</title>
     <script type="text/javascript" src="MySQL_definitions.php"></script>
     <script type="text/javascript" src="form_auth.js"></script>
 </head>
 <body>
-<h1>Contact Information Management System</h1>
-
-<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
-<table border="1">
+<header>
+  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+  <h1>Authorization Trial and Debugging</h1>
+  <div class="sub_title" id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+  <table>
     <tbody>
-    <tr>
+      <tr>
         <th>id</th>
         <td>
-            <div data-im="person@id"></div>
-        </td>
+          <div data-im="person@id"></div>
+          </td>
         <th>category</th>
         <td>
-            <select data-im="person@category">
-                <option value="101">Family</option>
-                <option value="102">ClassMate</option>
-                <option value="103">Collegue</option>
+          <select data-im="person@category">
+            <option value="101">Family</option>
+            <option value="102">ClassMate</option>
+            <option value="103">Collegue</option>
             </select>
-        </td>
+          </td>
         <th>check</th>
         <td><input type="checkbox" title="person@checking" value="1"/></td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <th>name</th>
         <td colspan="5"><input type="text" data-im="person@name" value=""/></td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <th>mail</th>
         <td colspan="5"><input type="text" data-im="person@mail" value=""/></td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <th>location</th>
         <td colspan="5">
-            <input type="radio" name="radio1" title="person@location" value="201"/>Domestic
-            <input type="radio" name="radio1" title="person@location" value="202"/>International
-            <input type="radio" name="radio1" title="person@location" value="203"/>Neightbor
-            <input type="radio" name="radio1" title="person@location" value="204"/>Space
-        </td>
-    </tr>
-    <tr>
+          <label><input type="radio" name="radio1" title="person@location" value="201"/> Domestic</label>
+          <label><input type="radio" name="radio1" title="person@location" value="202"/> International</label>
+          <label><input type="radio" name="radio1" title="person@location" value="203"/> Neightbor</label>
+          <label><input type="radio" name="radio1" title="person@location" value="204"/> Space</label>
+          </td>
+      </tr>
+      <tr>
         <th>memo</th>
         <td colspan="5"><textarea title="person@address"></textarea></td>
-    </tr>
-    <tr>
+      </tr>
+      <tr>
         <td colspan="6">
-            <table border="1">
-                <thead>
-                <tr>
-                    <th>datetime</th>
-                    <th>summary</th>
-                    <th>important</th>
-                    <th>way</th>
-                    <th>kind</th>
-                    <th>description</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td><input type="text" data-im="contact@datetime"/></td>
-                    <td><input type="text" data-im="contact@summary"/></td>
-                    <td><input type="checkbox" data-im="contact@important" value="1"/></td>
-                    <td>
-                        <select data-im="contact@way">
-                            <option data-im="contact_way@id@value|contact_way@name@innerHTML"></option>
-                        </select>
-                    </td>
-                    <td>
-                        <select data-im="contact@kind">
-                            <option data-im="kindid|kindname"></option>
-                        </select>
-                    </td>
-                    <td><textarea data-im="contact@description@innerHTML"></textarea></td>
-                </tr>
-                </tbody>
+          <table>
+            <thead>
+              <tr>
+                <th>datetime</th>
+                <th>summary</th>
+                <th>important</th>
+                <th>way</th>
+                <th>kind</th>
+                <th>description</th>
+              </tr>
+              </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" data-im="contact@datetime"/></td>
+                <td><input type="text" data-im="contact@summary"/></td>
+                <td><input type="checkbox" data-im="contact@important" value="1"/></td>
+                <td>
+                  <select data-im="contact@way">
+                    <option data-im="contact_way@id@value|contact_way@name@innerHTML"></option>
+                    </select>
+                  </td>
+                <td>
+                  <select data-im="contact@kind">
+                    <option data-im="kindid|kindname"></option>
+                    </select>
+                  </td>
+                <td><textarea data-im="contact@description@innerHTML"></textarea></td>
+              </tr>
+              </tbody>
             </table>
-        </td>
-    </tr>
-    <tr>
+          </td>
+      </tr>
+      <tr>
         <td colspan="6">
-            <ul>
-                <li>
-                    <hr/>
-                    <input type="text" title="history@startdate"/></li>
-                <li><input type="text" title="history@enddate"/></li>
-                <li><input type="text" title="history@description"/></li>
+          <ul>
+            <li>
+              <hr/>
+              <input type="text" title="history@startdate"/></li>
+            <li><input type="text" title="history@enddate"/></li>
+            <li><input type="text" title="history@description"/></li>
             </ul>
-        </td>
-    </tr>
-    </tbody>
-</table>
+          </td>
+      </tr>
+      </tbody>
+  </table>
+</div>
+<footer>
+<small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>

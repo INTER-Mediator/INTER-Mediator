@@ -8,19 +8,45 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-var IMLibCalc = {
-    calculateRequiredObject: null,
-    /*
-     key => {    // Key is the id attribute of the node which is defined as "calcuration"
-     "field":
-     "expression": exp.replace(/ /g, ""),   // expression
-     "nodeInfo": nInfo,     // node if object i.e. {field:.., table:.., target:..., tableidnex:....}
-     "values": {}   // key=target name in expression, value=real value.
-     // if value=undefined, it shows the value is calculation field
-     "refers": {}
-     }
-     */
+/**
+ * @fileoverview IMLibCalc class is defined here.
+ */
 
+/**
+ * @typedef {Object} IMType_CalculateFieldDefinition
+ * @property {string} field The field name.
+ * @property {string} expression The expression which is defined for this field.
+ * @property {PrivateNodeInfo} nodeInfo The NodeInfo object for this target node.
+ * @property {PrivateVariablePropertiesClass} values This property refers object
+ * which is each property is the item name in expression, and its value is the real value.
+ * If the referring field is for calculation required, the value is 'undefined.'
+ * @property {PrivateVariablePropertiesClass} refers TBD
+ */
+
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
+var IMLibCalc = {
+    /**
+     * This property stores IMType_CalculateFieldDefinition objects for each calculation required nodes.
+     * The property name is the id attribute of the node which bond to the calculated property
+     * following 'target' which is the 3rd component of target spec of the node.
+     * After calling the INTERMediator.constructMain() method, this property has to be set any array.
+     * @type {IMType_VariablePropertiesClass<IMType_CalculateFieldDefinition>}
+     */
+    calculateRequiredObject: null,
+
+    /**
+     *
+     * @param contextObj
+     * @param keyingValue
+     * @param currentContext
+     * @param nodeId
+     * @param nInfo
+     * @param currentRecord
+     */
     updateCalculationInfo: function (contextObj, keyingValue, currentContext, nodeId, nInfo, currentRecord) {
         var calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
             calcDefField, atPos, fieldLength;
@@ -66,7 +92,9 @@ var IMLibCalc = {
         }
     },
 
-
+    /**
+     *
+     */
     updateCalculationFields: function () {
         var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, calcFieldInfo;
         var targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record;
@@ -132,9 +160,10 @@ var IMLibCalc = {
                     INTERMediatorOnPage.getMessages()[1037], []));
         }
     },
-    /*
-     On updating, the updatedNodeId should be set to the updating node id.
-     On deleting, parameter doesn't required.
+    /**
+     * On updating, the updatedNodeId should be set to the updating node id.
+     * On deleting, parameter doesn't required.
+     * @param updatedNodeId
      */
     recalculation: function (updatedNodeId) {
         var nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false;
@@ -226,6 +255,9 @@ var IMLibCalc = {
 
     },
 
+    /**
+     *
+     */
     setUndefinedToAllValues: function () {
         var nodeId, calcObject, ix, targetNode, field, targetExp, targetIds, isRemoved, idValue, repeaterTop;
 

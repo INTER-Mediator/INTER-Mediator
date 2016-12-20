@@ -167,7 +167,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 } else if (isset($currentDataSource['send-mail']['read'])) {
                     $dataSource = $currentDataSource['send-mail']['read'];
                 }
-                $mailResult = $mailSender->processing($dataSource, $result,
+                $mailResult = $mailSender->processing(
+                    $dataSource,
+                    $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
                 if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
@@ -187,7 +189,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function countQueryResult()
     {
-        $className = get_class($this->userExpanded);
+        $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "countQueryResult")) {
             $this->logger->setDebugMessage("The method 'countQueryResult' of the class '{$className}' is calling.", 2);
             return $result = $this->userExpanded->countQueryResult();
@@ -203,7 +205,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function getTotalCount()
     {
-        $className = get_class($this->userExpanded);
+        $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
         if ($this->userExpanded !== null && method_exists($this->userExpanded, "getTotalCount")) {
             $this->logger->setDebugMessage("The method 'getTotalCount' of the class '{$className}' is calling.", 2);
             return $result = $this->userExpanded->getTotalCount();
@@ -231,13 +233,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeUpdateDB();
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['edit'])
-                    || isset($currentDataSource['send-mail']['update'])
-                    || $this->dbSettings->notifyServer
-                    || ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterUpdateToDB"))
-                ) {
-                    $this->dbClass->requireUpdatedRecord(true);
-                }
+//                if (isset($currentDataSource['send-mail']['edit'])
+//                    || isset($currentDataSource['send-mail']['update'])
+//                    || $this->dbSettings->notifyServer
+//                    || ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterUpdateToDB"))
+//                ) {
+                    $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
+//                }
                 $result = $this->dbClass->updateDB();
             }
 //            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterSetToDB")) {
@@ -279,7 +281,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
                 $mailResult = $mailSender->processing(
                     $dataSource,
-                    $result,
+                    $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
                 if ($mailResult !== true) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
@@ -311,13 +313,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->userExpanded->doBeforeCreateToDB();
             }
             if ($this->dbClass !== null) {
-                if (isset($currentDataSource['send-mail']['new']) ||
-                    isset($currentDataSource['send-mail']['create']) ||
-                    $this->dbSettings->notifyServer ||
-                    ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCreateToDB"))
-                ) {
-                    $this->dbClass->requireUpdatedRecord(true);
-                }
+//                if (isset($currentDataSource['send-mail']['new']) ||
+//                    isset($currentDataSource['send-mail']['create']) ||
+//                    $this->dbSettings->notifyServer ||
+//                    ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCreateToDB"))
+//                ) {
+                    $this->dbClass->requireUpdatedRecord(true); // Always Requred Created Record
+//                }
                 $resultOfCreate = $this->dbClass->createInDB($bypassAuth);
                 $result = $this->dbClass->updatedRecord();
             }
@@ -602,7 +604,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             return false;
         }
         $this->dbClass->setUpSharedObjects($this);
-        $this->dbClass->setupConnection();
+        if (!$this->dbClass->setupConnection())  {
+            return false;
+        }
         if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
             $this->logger->setDebugMode($debug);
         }
@@ -727,6 +731,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->paramCryptResponse = isset($this->PostData['cresponse']) ? $this->PostData['cresponse'] : "";
         $this->clientId = isset($this->PostData['clientid']) ? $this->PostData['clientid'] :
             (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "Non-browser-client");
+        return true;
     }
 
     /*
@@ -920,7 +925,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $this->dbSettings->setFieldsRequired($fieldArray);
                     $this->dbSettings->setValue($valueArray);
                 }
+                $this->dbClass->requireUpdatedRecord(true);
                 $this->updateDB();
+                $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'new':
             case 'create':

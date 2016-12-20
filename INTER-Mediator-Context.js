@@ -8,6 +8,14 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibContextPool, IMLibContext and IMLibLocalContext classes are defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLibContextPool = {
     poolingContexts: null,
 
@@ -496,6 +504,10 @@ var IMLibContextPool = {
     }
 };
 
+/**
+ *
+ * @constructor
+ */
 var IMLibContext = function (contextName) {
     this.contextName = contextName;  // Context Name, set on initialization.
     this.tableName = null;
@@ -701,11 +713,11 @@ var IMLibContext = function (contextName) {
 
         var handleAsNullValue = ["0000-00-00", "0000-00-00 00:00:00"];
 
-        function checkSameValue(initialvalue, currentFieldVal)  {
-            if (handleAsNullValue.indexOf(initialvalue))   {
+        function checkSameValue(initialvalue, currentFieldVal) {
+            if (handleAsNullValue.indexOf(initialvalue)) {
                 initialvalue = "";
             }
-            if (handleAsNullValue.indexOf(currentFieldVal))   {
+            if (handleAsNullValue.indexOf(currentFieldVal)) {
                 currentFieldVal = "";
             }
             return initialvalue != currentFieldVal;
@@ -1149,7 +1161,7 @@ var IMLibContext = function (contextName) {
         var storekeys = Object.keys(this.store);
         if (storekeys.length > 0) {
             lastKey = storekeys[storekeys.length - 1];
-            return this.getValue(lastKey, key, value);
+            return this.getValue(lastKey, key);
         }
         return undefined;
     };
@@ -1478,7 +1490,11 @@ var IMLibContext = function (contextName) {
     this.setTable(this);
 };
 
-
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLibLocalContext = {
     contextName: '_',
     store: {},
@@ -1596,11 +1612,13 @@ var IMLibLocalContext = {
     },
 
     bindingNode: function (node) {
-        var linkInfos, nodeInfo, idValue, i, j, value, params, idArray, unexistId;
+        var linkInfos, nodeInfo, idValue, i, j, value, params, unbinding, unexistId, dataImControl;
         if (node.nodeType != 1) {
             return;
         }
         linkInfos = INTERMediatorLib.getLinkedElementInfo(node);
+        dataImControl = node.getAttribute("data-im-control");
+        unbinding = (dataImControl && dataImControl == "unbind");
         for (i = 0; i < linkInfos.length; i++) {
             nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i]);
             if (nodeInfo.table == this.contextName) {
@@ -1611,7 +1629,7 @@ var IMLibLocalContext = {
                 if (!this.binding[nodeInfo.field]) {
                     this.binding[nodeInfo.field] = [];
                 }
-                if (this.binding[nodeInfo.field].indexOf(idValue) < 0) {
+                if (this.binding[nodeInfo.field].indexOf(idValue) < 0 && ! unbinding) {
                     this.binding[nodeInfo.field].push(idValue);
                     //this.store[nodeInfo.field] = document.getElementById(idValue).value;
                 }
@@ -1641,14 +1659,26 @@ var IMLibLocalContext = {
                     })());
                     break;
                 case 'condition':
-                    IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
-                        var contextName = params[1];
-                        return function () {
-                            INTERMediator.startFrom = 0;
-                            IMLibUI.eventUpdateHandler(contextName);
-                            IMLibPageNavigation.navigationSetup();
-                        };
-                    })());
+                    var attrType = node.getAttribute("type");
+                    if (attrType && attrType == "text") {
+                        IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
+                            var contextName = params[1];
+                            return function () {
+                                INTERMediator.startFrom = 0;
+                                IMLibUI.eventUpdateHandler(contextName);
+                                IMLibPageNavigation.navigationSetup();
+                            };
+                        })());
+                    } else if (attrType && (attrType == "checkbox" ||attrType == "radio")) {
+                        IMLibChangeEventDispatch.setExecute(idValue, (function () {
+                            var contextName = params[1];
+                            return function () {
+                                INTERMediator.startFrom = 0;
+                                IMLibUI.eventUpdateHandler(contextName);
+                                IMLibPageNavigation.navigationSetup();
+                            };
+                        })());
+                    }
                     break;
                 case 'limitnumber':
                     IMLibChangeEventDispatch.setExecute(idValue, (function () {

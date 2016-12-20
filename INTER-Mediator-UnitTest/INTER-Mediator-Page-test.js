@@ -2,6 +2,12 @@ var assert = buster.referee.assert;
 INTERMediatorOnPage.getIMRootPath = function() {
     return "/INTER-Mediator";
 };
+INTERMediatorOnPage.getEntryPath = function() {
+    return "/INTER-Mediator";
+};
+INTERMediatorOnPage.getTheme = function() {
+    return "default";
+};
 
 buster.testCase("INTERMediatorOnPage.getMessages() Test", {
     "should return null": function () {

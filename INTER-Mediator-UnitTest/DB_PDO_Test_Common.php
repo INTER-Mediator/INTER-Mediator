@@ -43,7 +43,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAggregation();
         $result = $this->db_proxy->readFromDB("summary");
         $recordCount = $this->db_proxy->countQueryResult("summary");
-        $this->assertEquals(count($result), 10, "After the query, 10 records should be retrieved.");
+        $this->assertEquals(is_array($result) ? count($result) : -1, 10, "After the query, 10 records should be retrieved.");
         $this->assertEquals($recordCount, 10, "The aggregation didn't count real record, and should match with records key");
         $cStr = "Onion";
         $this->assertEquals(substr($result[0]["item_name"], 0, strlen($cStr)), $cStr, "Field value is not same as the definition(1).");
@@ -59,7 +59,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person", 1);
         $result = $this->db_proxy->readFromDB("person");
         $recordCount = $this->db_proxy->countQueryResult("person");
-        $this->assertTrue(count($result) == 1, "After the query, just one should be retrieved.");
+        $this->assertTrue((is_array($result) ? count($result) : -1) == 1, "After the query, just one should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[0]["id"] == 1, "Field value is not same as the definition.");
     }
@@ -69,7 +69,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAccess("person", 1000000);
         $result = $this->db_proxy->readFromDB("person");
         $recordCount = $this->db_proxy->countQueryResult("person");
-        $this->assertTrue(count($result) == 3, "After the query, some records should be retrieved.");
+        $this->assertTrue((is_array($result) ? count($result) : -1) == 3, "After the query, some records should be retrieved.");
         $this->assertTrue($recordCount == 3, "This table contanins 3 records");
         $this->assertTrue($result[2]["name"] === 'Anyone', "Field value is not same as the definition.");
         $this->assertTrue($result[2]["id"] == 3, "Field value is not same as the definition.");
@@ -285,10 +285,10 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $this->db_proxy->processingRequest("read");
         $result = $this->db_proxy->getDatabaseResult();
-        $this->assertTrue(count($result) == $this->db_proxy->getDatabaseResultCount(), $testName);
+        $this->assertTrue((is_array($result) ? count($result) : -1) == $this->db_proxy->getDatabaseResultCount(), $testName);
 
         //based on INSERT person SET id=2,name='Someone',address='Tokyo, Japan',mail='msyk@msyk.net';
-        foreach ($result as $index=>$record) {
+        foreach ($result as $index => $record) {
             if ($record["id"] == 2) {
                 $this->assertTrue($record["name"] == "Someone", $testName);
                 $this->assertTrue($record["address"] == 'Tokyo, Japan', $testName);

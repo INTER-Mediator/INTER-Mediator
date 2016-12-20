@@ -14,6 +14,14 @@
 
 //'use strict';
 
+/**
+ * @fileoverview INTERMediator_DBAdapter class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var INTERMediator_DBAdapter = {
 
     eliminateDuplicatedConditions: false,
@@ -162,11 +170,11 @@ var INTERMediator_DBAdapter = {
                 }
             }
         } catch (e) {
-            if (INTERMediatorOnPage.getIMRootPath() !== '[ERROR]') {
-                INTERMediator.setErrorMessage(e,
-                    INTERMediatorLib.getInsertedString(
-                        INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
-            }
+            //if (INTERMediatorOnPage.getIMRootPath() !== '[ERROR]') {
+            INTERMediator.setErrorMessage(e,
+                INTERMediatorLib.getInsertedString(
+                    INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
+            //}
         }
         if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
             return changePasswordResult;
@@ -243,7 +251,9 @@ var INTERMediator_DBAdapter = {
 
                     if (jsonObject.errorMessages.length > 0) {
                         INTERMediator.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
-                        failedProc();
+                        if (failedProc) {
+                            failedProc();
+                        }
                         throw 'Communication Error';
                     }
 
@@ -507,7 +517,7 @@ var INTERMediator_DBAdapter = {
             returnValue.count = 0;
             returnValue.registeredId = result.registeredId;
             returnValue.nullAcceptable = result.nullAcceptable;
-            returnValue.count = Object.keys(result.dbresult).length;
+            returnValue.count = result.dbresult ? Object.keys(result.dbresult).length : 0;
             // for (var ix in result.dbresult) {
             //     returnValue.count++;
             // }
@@ -586,7 +596,7 @@ var INTERMediator_DBAdapter = {
                     var recordsNumber = Number(args.records);
                     var succesProcCapt = successProc;
                     return function (result) {
-                        result.count = Object.keys(result.dbresult).length;
+                        result.count = result.dbresult ? Object.keys(result.dbresult).length : 0;
                         // for (var ix in result.dbresult) {
                         //     result.count++;
                         // }
@@ -927,8 +937,8 @@ var INTERMediator_DBAdapter = {
             INTERMediatorOnPage.retrieveAuthInfo();
             INTERMediator_DBAdapter.server_access_async(
                 params,
-                1017,
-                1015,
+                1013,
+                1014,
                 successProc,
                 failedProc,
                 INTERMediator_DBAdapter.createExceptionFunc(
@@ -1120,25 +1130,25 @@ var INTERMediator_DBAdapter = {
         var params = INTERMediator_DBAdapter.db_createParameters(args);
         if (params) {
             INTERMediatorOnPage.retrieveAuthInfo();
-                INTERMediator_DBAdapter.server_access_async(
-                    params,
-                    1018,
+            INTERMediator_DBAdapter.server_access_async(
+                params,
+                1018,
+                1016,
+                successProc,
+                failedProc,
+                INTERMediator_DBAdapter.createExceptionFunc(
                     1016,
-                    successProc,
-                    failedProc,
-                    INTERMediator_DBAdapter.createExceptionFunc(
-                        1016,
-                        (function () {
-                            var argsCapt = args;
-                            var succesProcCapt = successProc;
-                            var failedProcCapt = failedProc;
-                            return function () {
-                                INTERMediator_DBAdapter.db_createRecord_async(
-                                    argsCapt, succesProcCapt, failedProcCapt);
-                            };
-                        })()
-                    )
-                );
+                    (function () {
+                        var argsCapt = args;
+                        var succesProcCapt = successProc;
+                        var failedProcCapt = failedProc;
+                        return function () {
+                            INTERMediator_DBAdapter.db_createRecord_async(
+                                argsCapt, succesProcCapt, failedProcCapt);
+                        };
+                    })()
+                )
+            );
         }
     },
 

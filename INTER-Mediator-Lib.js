@@ -9,7 +9,14 @@
  */
 
 //'use strict';
-
+/**
+ * @fileoverview IMLib and INTERMediatorLib classes are defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLib = {
     nl_char: '\n',
     cr_char: '\r',
@@ -33,6 +40,11 @@ var IMLib = {
     }
 };
 
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var INTERMediatorLib = {
 
     ignoreEnclosureRepeaterClassName: '_im_ignore_enc_rep',
@@ -539,6 +551,19 @@ var INTERMediatorLib = {
         };
     },
 
+    /**
+     * @typedef {Object} IMType_NodeInfo
+     * @property {string} field The field name.
+     * @property {string} table The context name defined in the relevant definition file.
+     * @property {string} target The target information which specified in the 3rd component of target spec.
+     * @property {string} tableidnex This is used for FileMaker database's portal expanding.
+     */
+
+    /**
+     * This method returns the IMType_NodeInfo object of the node specified with the parameter.
+     * @param idValue the id attribute of the linked node.
+     * @returns {IMType_NodeInfo}
+     */
     getCalcNodeInfoArray: function (idValue) {
         var comps, tableName, fieldName, targetName, node, attribute;
 
@@ -636,13 +661,23 @@ var INTERMediatorLib = {
         return value;
     },
 
+    /**
+     * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point.
+     * @param {number} value The source value.
+     * @param {integer} digit Positive number means after the decimal point, and negative menas before it.
+     * @returns {number}
+     */
     Round: function (value, digit) {
         var powers = Math.pow(10, digit);
         return Math.round(value * powers) / powers;
     },
 
-    /*
-     digit should be a positive value. negative value doesn't support so far.
+    /**
+     * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point
+     * with a thousands separator.
+     * @param {number} value The source value.
+     * @param {integer} digit Positive number means after the decimal point, and negative menas before it.
+     * @returns {string}
      */
     numberFormat: function (str, digit) {
         var s, n, sign, power, underDot, underNumStr, pstr, roundedNum, underDecimalNum, integerNum;
@@ -672,6 +707,7 @@ var INTERMediatorLib = {
                 s.push(n);
             }
         }
+        s = s.length < 1 ? ["0"] : s;
         return sign + s.reverse().join(this.cachedDigitSeparator[1])
             + (underNumStr == '' ? '' : this.cachedDigitSeparator[0] + underNumStr);
     },

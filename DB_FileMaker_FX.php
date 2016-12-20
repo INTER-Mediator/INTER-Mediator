@@ -56,7 +56,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
 
     public function setupConnection()
     {
-
+        return true;
     }
 
     public static function defaultKey()
@@ -894,7 +894,9 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         } else {
             $currentSearch = '';
             if (isset($context['script'])) {
-                $currentSearch = $this->executeScriptsforLoading($context['script']);
+                if ($condition['db-operation'] == 'load' || $condition['db-operation'] == 'read') {
+                    $currentSearch = $this->executeScriptsforLoading($context['script']);
+                }
             }
             $queryValue = '';
             $qNum = 1;
@@ -1698,7 +1700,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $ds = $this->dbSettings->getDataSource();
         foreach ($ds as $contextDef) {
             if ($contextDef["name"] == $fieldComp[0] ||
-                ($contextDef["table"] && $contextDef["table"] == $fieldComp[0])
+                (isset($contextDef["table"]) && $contextDef["table"] == $fieldComp[0])
             ) {
                 if ($contextDef["relation"] &&
                     $contextDef["relation"][0] &&
