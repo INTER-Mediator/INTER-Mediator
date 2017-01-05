@@ -13,36 +13,41 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <!--<link rel="stylesheet" type="text/css" href="../sample.css">-->
     <title>INTER-Mediator - Sample - Uploading a file / FileMaker Server</title>
     <script type="text/javascript" src="include_FileMaker.php"></script>
     <script type="text/javascript">
-//        window.onload = function () {
-            IMParts_Catalog.fileupload.progressSupported = true;
-            //IMParts_Catalog.fileupload.forceOldStyleForm = true;
-//            INTERMediator.construct(true);
-//        }
+        IMParts_Catalog.fileupload.progressSupported = true;
     </script>
 </head>
 <body>
-<h1>Uploading a file to the container field Test</h1>
-<table>
-    <thead>
-    <tr>
-        <th>Date and Time</th>
-        <th>Message</th>
-        <th>Image</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td><div data-im="testtable@dt1"></div></td>
-        <td data-im="testtable@vc1" data-im-widget="fileupload"></td>
-        <td><image src="" data-im="testtable@vc1@#src"></td>
-        <td></td>
-    </tr>
-    </tbody>
-</table>
+<header>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <h1>Uploading a file to the container field Test</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Date and Time</th>
+            <th>Message</th>
+            <th>Image</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <div data-im="testtable@dt1"></div>
+            </td>
+            <td data-im="testtable@vc1" data-im-widget="fileupload"></td>
+            <td><img src="" data-im="testtable@vc1@#src"></td>
+            <td></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer>
+    <small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>

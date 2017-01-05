@@ -15,11 +15,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title></title>
     <script type="text/javascript" src="def05.php"></script>
-
     <script type="text/javascript">
-        window.onload = function () {
-            INTERMediator.construct();
-        }
         INTERMediatorOnPage.processingBeforePostOnlyContext = function (node) {
             var dtString, nodeIds, idValue, aNode;
             dtString = INTERMediatorLib.dateTimeStringISO();
@@ -47,81 +43,87 @@
             height: 60px;
         }
     </style>
-
 </head>
 <body>
-<table>
-    <tbody data-im-control="post">
-    <tr>
-        <th>From:</th>
-        <td>
-            <input type="text" data-im="message@user">
-            <input type="hidden" data-im="message@postdt">
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <textarea data-im="message@message"></textarea>
-            <button data-im-control="post">投稿</button>
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-
-<table>
-    <tbody>
-    <tr>
-        <td colspan="4">
-            <hr/>
-        </td>
-    </tr>
-    <tr>
-        <th>From:</th>
-        <td data-im="message@user"></td>
-        <th>Date:</th>
-        <td data-im="message@postdt"></td>
-    </tr>
-    <tr>
-        <td colspan="4" data-im="message@message@innerHTML"
-            style="background-color: #CCCCCC"></td>
-    </tr>
-    <tr>
-        <td style="width: 50px; background-color: gray">Comment</td>
-        <td colspan="3">
-            <input type="hidden" data-im="message@id"/>
-            <table>
-                <tbody data-im-control="post">
-                <tr>
-                    <th>From:</th>
-                    <td>
-                        <input type="text" data-im="comment@user">
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2"><textarea data-im="comment@message"></textarea>
-                        <button data-im-control="post">投稿</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <table>
-                <tbody>
-                <tr>
-                    <th>From:</th>
-                    <td data-im="comment@user"></td>
-                    <th>Date:</th>
-                    <td data-im="comment@postdt"></td>
-                </tr>
-                <tr>
-                    <td colspan="4" data-im="comment@message@innerHTML"
-                        style="background-color: #CCCCCC"></td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    </tbody>
-</table>
+<header>
+    <p class="logo"><img src="../../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <h1>test title</h1>
+    <table>
+        <tbody data-im-control="post">
+        <tr>
+            <th>From:</th>
+            <td>
+                <input type="text" data-im="message@user">
+                <input type="hidden" data-im="message@postdt">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <textarea data-im="message@message"></textarea>
+                <button data-im-control="post">投稿</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table>
+        <tbody>
+        <tr>
+            <td colspan="4">
+                <hr/>
+            </td>
+        </tr>
+        <tr>
+            <th>From:</th>
+            <td data-im="message@user"></td>
+            <th>Date:</th>
+            <td data-im="message@postdt"></td>
+        </tr>
+        <tr>
+            <td colspan="4" data-im="message@message@innerHTML"
+                style="background-color: #CCCCCC"></td>
+        </tr>
+        <tr>
+            <td style="width: 50px; background-color: gray">Comment</td>
+            <td colspan="3">
+                <input type="hidden" data-im="message@id"/>
+                <table>
+                    <tbody data-im-control="post">
+                    <tr>
+                        <th>From:</th>
+                        <td>
+                            <input type="text" data-im="comment@user">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><textarea data-im="comment@message"></textarea>
+                            <button data-im-control="post">投稿</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table>
+                    <tbody>
+                    <tr>
+                        <th>From:</th>
+                        <td data-im="comment@user"></td>
+                        <th>Date:</th>
+                        <td data-im="comment@postdt"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" data-im="comment@message@innerHTML"
+                            style="background-color: #CCCCCC"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer>
+    <small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>
