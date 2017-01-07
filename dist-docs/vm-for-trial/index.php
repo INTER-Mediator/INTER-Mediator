@@ -3,7 +3,7 @@
 /*
  * INTER-Mediator Server VM for Trial
  *
- *   Copyright (c) 2010-2016 INTER-Mediator Directive Committee
+ *   Copyright (c) 2010-2017 INTER-Mediator Directive Committee
  *
  *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
@@ -39,6 +39,12 @@ $fmModDate = (new DateTime($modDate))->format('Y年m月d日');
 
 $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
+$osName = 'Ubuntu Server';
+$osVersion = '14.04';
+if (file_exists('/etc/alpine-release')) {
+    $osName = 'Alpine Linux';
+    $osVersion = file_get_contents('/etc/alpine-release');
+}
 ?>
 <html lang="ja">
 <head>
@@ -631,12 +637,12 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <h3>VMに関する情報</h3>
 <ul>
-    <li>OS：Ubuntu Server 14.04.5</li>
+    <li>OS：<?php echo htmlspecialchars($osName . ' ' . $osVersion, ENT_QUOTES, 'UTF-8'); ?></li>
     <li>インストール言語：Japanese/ja_JP.UTF-8</li>
     <li>キーボード：Japanese</li>
     <li>タイムゾーン：Asia/Tokyo</li>
     <li>ホスト名：inter-mediator-server</li>
-    <li>Webサーバルート：/var/www/html</li>
+    <li>Webサーバルート：<?php if ($osName === 'Alpine Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?></li>
     <li>初期設定：OpenSSH Server, LAMP Server, Mail Server, PostgreSQL database</li>
     <li>アクセス方法：SSH、SFTP、HTTP、SMB</li>
     <li>作成グループ：im-developer（developerおよびwww-dataが所属）</li>
@@ -652,7 +658,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <p>VM上で下記のコマンドを実行すると、サンプルデータベース（MySQL、PostgreSQL、SQLite）を初期化できます。</p>
 <ul>
-    <li>source /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh</li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'source /var/www/localhost/htdocs/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; } else { echo 'source /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; }; ?></li>
 </ul>
 <p>上記コマンドを実行すると「Do you initialize the test databases? [y/n]:
     」と尋ねられるので、「y」を入力してenterキーあるいはreturnキーを押すとサンプルデータベースが初期化されます。
@@ -661,8 +667,8 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <p>VM上で下記のコマンドを実行すると、INTER-Mediatorのテストを実行できます。</p>
 <ul>
-    <li>phpunit /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php</li>
-    <li>/usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js</li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'phpunit /var/www/localhost/htdocs/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php'; } else { echo 'phpunit /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php'; }; ?></li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'buster-test -r specification -c /var/www/localhost/htdocs/INTER-Mediator/spec/buster.js'; } else { echo '/usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js'; }; ?></li>
 </ul>
 
 </body>
