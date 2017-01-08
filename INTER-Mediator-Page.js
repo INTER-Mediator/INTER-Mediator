@@ -1056,7 +1056,7 @@ var INTERMediatorOnPage = {
     },
 
     setReferenceToTheme: function () {
-        var headNode, bodyNode, linkElement;
+        var headNode, bodyNode, linkElement, i, styleIndex = -1;
         headNode = document.getElementsByTagName('HEAD')[0];
         bodyNode = document.getElementsByTagName('BODY')[0];
         linkElement = document.createElement('link');
@@ -1064,6 +1064,17 @@ var INTERMediatorOnPage = {
             + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
         linkElement.setAttribute('rel', 'stylesheet');
         linkElement.setAttribute('type', 'text/css');
-        headNode.appendChild(linkElement);
+        for (i = 0; i < headNode.childNodes.length; i++) {
+            if (headNode.childNodes[i] &&
+                headNode.childNodes[i].nodeType == 1 &&
+                headNode.childNodes[i].tagName == 'STYLE') {
+                styleIndex = i;
+            }
+        }
+        if (styleIndex > -1) {
+            headNode.insertBefore(linkElement, headNode.childNodes[styleIndex]);
+        } else {
+            headNode.appendChild(linkElement);
+        }
     }
 };
