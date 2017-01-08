@@ -2182,6 +2182,7 @@ var INTERMediator = {
                         }
                         contextDef = detailContext.getContextDef();
                         contextName = contextDef.name;
+                        INTERMediator.clearCondition(contextName);
                         INTERMediator.addCondition(contextName, {field: f, operator: '=', value: v});
                         INTERMediator.constructMain(detailContext);
                         INTERMediator.clearCondition(contextName);
