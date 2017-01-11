@@ -9,42 +9,45 @@
  */
 
 /*全体に共通するスタイル　ここから*/
-*   {
+* {
     font-family: Verdana, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
-	font-weight:lighter;
-	letter-spacing:1px;
-	margin:0;
-	padding:0;
-}
-h1{
-	color:#333;
-	border-bottom:1px solid #999;
-	padding:20px 0;
-	font-size:1.5em;
-	margin-bottom:20px;
-}
-p.logo{
-	background:#333;
-	padding:10px 20px 5px;
-	border-left:30px solid #9b9bcc;
-	
+    font-weight: lighter;
+    letter-spacing: 1px;
+    margin: 0;
+    padding: 0;
 }
 
-#wrapper{
-	width:1024px;
-	margin:auto;
+h1 {
+    color: #333;
+    border-bottom: 1px solid #999;
+    padding: 20px 0;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+}
+
+p.logo {
+    background: #333;
+    padding: 10px 20px 5px;
+    border-left: 30px solid #9b9bcc;
+
+}
+
+#wrapper {
+    width: 1024px;
+    margin: auto;
 }
 
 /*全体に共通するスタイル　ここまで*/
 
 /*フッターに関するスタイル　ここから*/
-footer{
-	border-top:1px solid #9b9bcc;
-	padding:10px 20px;
-	color:999;
-	text-align:right;
-	font-size:0.8em;
+footer {
+    border-top: 1px solid #9b9bcc;
+    padding: 10px 20px;
+    color: #999;
+    text-align: right;
+    font-size: 0.8em;
 }
+
 /*フッターに関するスタイル　ここまで*/
 
 .IM_NAV_panel {
@@ -53,7 +56,7 @@ footer{
     margin: 4px 0 4px 0;
 }
 
-.IM_NAV_JUMP   {
+.IM_NAV_JUMP {
     width: 50px;
     text-align: right;
 }
@@ -86,27 +89,27 @@ span.IM_POSTMESSAGE {
 }
 
 #_im_logo {
-	margin-right: 12px;
+    margin-right: 12px;
 }
 
 #_im_progress {
-	background-color: #000000;
-	text-align: center;
-	width: 150px;
-	height: 65px;
-	left: 0;
-	top: 0;
-	color: #DDDDAA;
-	font-size: 6px;
-	position: absolute;
-	padding: 6px;
-	border-radius: 0 0 10px 0;
-	border-right: solid 4px #779933;
-	border-bottom: solid 4px #779933;
-	z-index: 999999;
+    background-color: #000000;
+    text-align: center;
+    width: 150px;
+    height: 65px;
+    left: 0;
+    top: 0;
+    color: #DDDDAA;
+    font-size: 6px;
+    position: absolute;
+    padding: 6px;
+    border-radius: 0 0 10px 0;
+    border-right: solid 4px #779933;
+    border-bottom: solid 4px #779933;
+    z-index: 999999;
 }
 
-#_im_authpanel{
+#_im_authpanel {
     width: 350px;
     background-color: #333333;
     color: #DDDDAA;
@@ -115,18 +118,26 @@ span.IM_POSTMESSAGE {
     border-radius: 10px;
     position: relative;
 }
-._im_authlabel   {
+
+._im_authlabel {
     width: 120px;
     text-align: right;
     float: left;
 }
 
-#_im_password{}
-#_im_username{}
-#_im_authbutton{}
-#_im_changebutton{}
+#_im_password {
+}
 
-._im_alertmessage   {
+#_im_username {
+}
+
+#_im_authbutton {
+}
+
+#_im_changebutton {
+}
+
+._im_alertmessage {
     color: red;
 }
 
@@ -134,71 +145,79 @@ span.IM_POSTMESSAGE {
 table {
     border-collapse: collapse;
     font-size: 11pt;
-	margin-bottom:20px;
-	border-top:3px solid #9b9bcc;
+    margin-bottom: 20px;
+    border-top: 3px solid #9b9bcc;
 }
 
 table._im_index {
     float: left;
 }
-td,th{
-	padding:10px 20px;
-	border-top:1px solid #999;
-	border-bottom:1px solid #999;
+
+td, th {
+    padding: 10px 20px;
+    border-top: 1px solid #999;
+    border-bottom: 1px solid #999;
 
 }
 
 th {
-	background-color: #EEEEEE;
-	text-align:left;
+    background-color: #EEEEEE;
+    text-align: left;
 }
 
 td {
 }
-.align_top{
-	vertical-align:top;
+
+.align_top {
+    vertical-align: top;
 }
 
 /*テーブルに関するスタイル　ここまで*/
 
 /*フォームに関するスタイル　ここから*/
-input   {
+input {
     font-size: 11pt;
-	padding:2px;
+    padding: 2px;
 }
 
-textarea   {
-    font-size: 11pt;
-}
-
-option   {
+textarea {
     font-size: 11pt;
 }
 
-button   {
+option {
     font-size: 11pt;
-	padding:2px 10px;
 }
-label{
-	padding-right:10px;
+
+button {
+    font-size: 11pt;
+    padding: 2px 10px;
 }
-select[type="text"]{
-	font-size:11px;
-	color:red;
+
+label {
+    padding-right: 10px;
 }
+
+select[type="text"] {
+    font-size: 11px;
+    color: red;
+}
+
 /*フォームに関するスタイル　ここまで*/
 
-.sub_title{
-	font-size:1.2em;
-	padding:20px 0 5px;
+.sub_title {
+    font-size: 1.2em;
+    padding: 20px 0 5px;
 
 }
-hr{
-	margin:10px 0;
+
+hr {
+    margin: 10px 0;
 }
-.back_btn{
-	padding-bottom:10px;
+
+.back_btn {
+    padding-bottom: 10px;
 }
-.memo{
-	padding:10px;
+
+.memo {
+    padding: 10px;
 }
