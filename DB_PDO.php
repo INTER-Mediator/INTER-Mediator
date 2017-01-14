@@ -1755,7 +1755,8 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         if (!$this->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "{$this->handler->sqlSELECTCommand()}groupname FROM {$tableName} WHERE {$userField}="
+        $user = $this->authSupportUnifyUsernameAndEmail($user);
+        $sql = "{$this->handler->sqlSELECTCommand()}* FROM {$tableName} WHERE {$userField}="
             . $this->link->quote($user) . " AND {$keyField}=" . $this->link->quote($keyValue);
         $result = $this->link->query($sql);
         if ($result === false) {
@@ -1764,7 +1765,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
         }
         $this->logger->setDebugMessage("[authSupportCheckMediaPrivilege] {$sql}");
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            return true;
+            return $row;
         }
         return false;
     }

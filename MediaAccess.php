@@ -233,7 +233,6 @@ class MediaAccess
                 $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("all");
                 $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("all");
             }
-
             if ($authInfoTarget == 'field-user') {
                 $endOfPath = strpos($target, "?");
                 $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;

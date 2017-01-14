@@ -49,6 +49,7 @@ Ver.5.6 (in development)
 - [BUG FIX] The format function or INTERMediatorLib.numberFormat method returned ".0" in case of zero value.
             Now they return "0.0".
 - [BUG FIX] JS Wideget support samples are modified as the correct local variable capture style.
+- [BUG FIX] MediaAccess with Authentication by email account didn't work well, it fixed.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)
