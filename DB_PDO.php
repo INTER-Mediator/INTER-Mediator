@@ -1138,6 +1138,9 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             return false;
         }
         $lastKeyValue = $this->handler->copyRecords($tableInfo, $queryClause, null, null);
+        if ($lastKeyValue === false) {
+            return false;
+        }
         $this->queriedPrimaryKeys = array($lastKeyValue);
         $this->queriedEntity = $tableName;
         //======
