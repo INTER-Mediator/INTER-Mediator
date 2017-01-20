@@ -1239,9 +1239,9 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $returnValue = false;
         $this->authDbClass->authSupportRemoveOutdatedChallenges();
         // Database user mode is user_id=0
+        $user = $this->dbClass->authSupportUnifyUsernameAndEmail($user);
         $uid = $this->dbClass->authSupportGetUserIdFromUsername($user);
         $storedChallenge = $this->authDbClass->authSupportCheckMediaToken($uid);
-
         if (strlen($storedChallenge) == 24 && $storedChallenge == $token) { // ex.fc0d54312ce33c2fac19d758
             $returnValue = true;
         }
