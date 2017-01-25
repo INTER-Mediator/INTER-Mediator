@@ -34,6 +34,8 @@ Thanks for nice works.
 
 * Constant-Time Encoding (https://paragonie.com/blog/2016/06/constant-time-encoding-boring-cryptography-rfc-4648-and-you)
 
+* CodeMirror (https://codemirror.net/)
+
 ==========================================
 Account Information for FileMaker Database
 ------------------------------------------
