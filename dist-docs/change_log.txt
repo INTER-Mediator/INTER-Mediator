@@ -24,6 +24,7 @@ Ver.5.6 (in development)
 - For preventing to update by editing element's value, data-im-control="unbind" is introduced. This attribute
   causes just assign the field value to checkbox, but it doesn't happen to update with clicking it.
 - Added titles to almost all sample HTML files.
+- Add "CodeMirror" (CodeMirror 5.23.0) in "INTER-Mediator-Support" directory for INTER-Mediator-Server VM.
 - Update Vagrantfile, deploy.sh, recipe.rb and sample_spec.rb for changing OS of INTER-Mediator-Server VM.
 - The access privilege of directories and file of uploaded file set to 755. Previously it was 744, but
   a rental server which is limited feature tries to prevent to set all bits of group/other.
