@@ -55,7 +55,6 @@ if (count($_GET) > 0) {
             $ermessage .= '確認しましたが、該当する申し込みがありません。';
         } else {
             $message .= 'アカウントを発行し、そのご案内をメールでお送りしました。';
-            $contextDef["query"][0]["value"] = $result;
             $dbInstance = new DB_Proxy();
             $dbInstance->initialize(
                 array($contextDef),

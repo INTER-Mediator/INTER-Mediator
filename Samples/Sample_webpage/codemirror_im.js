@@ -42,7 +42,8 @@ IMParts_Catalog["codemirror"] = {
             var targetId = this.ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
-                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode});
+                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode,
+                    autoRefresh: true});
                 editor.setValue(this.initialValues[targetId]);
                 editor.on("change", function () {
                     var nodeId = targetId;

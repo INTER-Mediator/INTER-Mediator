@@ -51,6 +51,10 @@ Ver.5.6 (in development)
             Now they return "0.0".
 - [BUG FIX] JS Wideget support samples are modified as the correct local variable capture style.
 - [BUG FIX] MediaAccess with Authentication by email account didn't work well, it fixed.
+- [BUG FIX] Sending mail on reading can retrieves queried data.
+- [BUG FIX] The confirm.php in User_Enroll folder had a query condition bug.
+- [BUG FIX] The definition file editor didn't work until ver.5.5-dev or around.
+- [BUG FIX] The page file editor didn't work until ver.5.5-dev or around.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)

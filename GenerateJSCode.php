@@ -169,7 +169,7 @@ class GenerateJSCode
             "INTERMediatorOnPage.getEntryPath", "function(){return {$q}{$pathToMySelf}{$q};}");
         $this->generateAssignJS(
             "INTERMediatorOnPage.getTheme", "function(){return {$q}",
-            isset($options['themeName']) ? $options['themeName'] : $themeName, "{$q};}");
+            isset($options['theme']) ? $options['theme'] : $themeName, "{$q};}");
 //        $this->generateAssignJS(
 //            "INTERMediatorOnPage.getIMRootPath", "function(){return {$q}{$pathToIMRootDir}{$q};}");
         $this->generateAssignJS(

@@ -45,7 +45,8 @@ IMParts_Catalog["codemirror"] = {
                 var editor = CodeMirror.fromTextArea(targetNode, {
                     mode: this.mode,
                     lineNumbers: true,
-                    viewportMargin: Infinity
+                    viewportMargin: Infinity,
+                    autoRefresh: true
                 });
                 editor.setValue(this.initialValues[targetId]);
                 editor.on("change", function () {
