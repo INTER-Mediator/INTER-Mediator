@@ -51,11 +51,10 @@ if (file_exists('/etc/alpine-release')) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</title>
-    <link href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/sample.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/include_MySQL.php"></script>
     <script type="text/javascript" src="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/index.js"></script>
 </head>
-<body>
+<body style="margin: 8px">
 <h1>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</h1>
 
 <h2>現在アクセスしているマシンについて</h2>
@@ -78,7 +77,7 @@ if (file_exists('/etc/alpine-release')) {
 
 <h2>リンク</h2>
 
-<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/" target="_blank">サンプルプログラム</a></p>
+<h3><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/" target="_blank">サンプルプログラム</a></h3>
 <ul data-im-control="ignore_enc_rep">
     <li>サンプルの中にある認証ユーザー用のデータベースには、user1〜user5の5つのユーザーが定義されており、パスワードはユーザー名と同一です。
         概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。
@@ -130,19 +129,19 @@ if (file_exists('/etc/alpine-release')) {
         ?></li>
 </ul>
 
-<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Auth_Support/MySQL_accountmanager.html"
-      target="_blank">ユーザー管理ページサンプル</a></p>
+<h3><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Auth_Support/MySQL_accountmanager.html"
+      target="_blank">ユーザー管理ページサンプル</a></h3>
 <ul>
     <li>ユーザー名、パスワード共に、user1でログインができますが、通常の利用は、利用者と別の管理者を作り、その管理者でのみログインできるようにします。</li>
 </ul>
 
-<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/info.php" target="_blank">phpinfo()関数の実行</a></p>
-
-<p>
-    <a href="https://inter-mediator.com/" target="_blank">INTER-Mediator Site</a>|
-    <a href="http://inter-mediator.info/" target="_blank">Manual</a>|
-    <a href="http://inter-mediator.org/" target="_blank">Committee</a>
-</p>
+<h3>その他のリンク</h3>
+<ul>
+    <li><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/info.php" target="_blank">phpinfo()関数の実行</a></li>
+    <li><a href="https://inter-mediator.com/" target="_blank">INTER-Mediator Web Site</a></li>
+    <li><a href="http://inter-mediator.info/" target="_blank">INTER-Mediator Manual Site</a></li>
+    <li><a href="http://inter-mediator.org/" target="_blank">INTER-Mediator Directive Committee</a></li>
+</ul>
 
 
 <h2>トライアル用のページファイルと定義ファイル</h2>
@@ -150,7 +149,7 @@ if (file_exists('/etc/alpine-release')) {
 <p>
     以下のリンクは、Webサーバのルートに配置したファイルで、ページファイルエディタと定義ファイルエディタで開いて内容を編集し、その結果を参照することができます。いずれのリンクも、別のウインドウないしはタブを開きます。ページ更新が必要なときには手作業で行ってください。初期状態では何も表示しないようになっています。もちろん、独自に変更を加えて、自由に使ってみてください。</p>
 
-<table style="float:left;">
+<table style="float: left; margin-right: 20px">
     <tr>
         <td><a href="/page01.html" target="_blank">page01.htmlを表示する</a></td>
         <td>
@@ -371,8 +370,7 @@ if (file_exists('/etc/alpine-release')) {
         </td>
     </tr>
 </table>
-
-<table style="float:left;">
+<table style="float: left">
     <tr>
         <td><a href="/page21.html" target="_blank">page21.htmlを表示する</a></td>
         <td>
@@ -593,8 +591,7 @@ if (file_exists('/etc/alpine-release')) {
         </td>
     </tr>
 </table>
-
-<br clear="all"/>
+<br clear="all">
 
 <h2>サーバ構築情報</h2>
 
