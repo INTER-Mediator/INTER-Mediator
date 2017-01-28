@@ -1008,4 +1008,9 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue(count($recSet) == 0, "Count pk values");
     }
 
+    public function testIsSupportAggregation()
+    {
+        $this->dbProxySetupForAccess('person_layout', 1);
+        $this->assertFalse($this->db_proxy->dbClass->isSupportAggregation());
+    }
 }
