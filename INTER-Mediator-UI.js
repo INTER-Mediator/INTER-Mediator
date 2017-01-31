@@ -192,11 +192,13 @@ var IMLibUI = {
                 return function (result) {
                     var updateRequiredContext, currentValue, associatedNode, field;
                     var keyField = contextInfoCapt.context.getKeyField();
-                    var recordObj = result.dbresult[0];
-                    var keepProp = INTERMediator.partialConstructing;
-                    INTERMediator.partialConstructing = false;
-                    for (field in recordObj) {
-                        contextInfoCapt.context.setValue(keyField + "=" + recordObj[keyField], field, recordObj[field]);
+                    if (result && result.dbresult) {
+                        var recordObj = result.dbresult[0];
+                        var keepProp = INTERMediator.partialConstructing;
+                        INTERMediator.partialConstructing = false;
+                        for (field in recordObj) {
+                            contextInfoCapt.context.setValue(keyField + "=" + recordObj[keyField], field, recordObj[field]);
+                        }
                     }
                     INTERMediator.partialConstructing = keepProp;
                     updateRequiredContext = IMLibContextPool.dependingObjects(idValueCapt2);

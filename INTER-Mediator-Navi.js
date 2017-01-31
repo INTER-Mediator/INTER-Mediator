@@ -180,7 +180,7 @@ IMLibPageNavigation = {
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false)
                         );
                         break;
-                    case　'DELETE':
+                    case 'DELETE':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
                         contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
@@ -207,7 +207,7 @@ IMLibPageNavigation = {
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['value'],
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false));
                         break;
-                    case　'COPY':
+                    case 'COPY':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
                         contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];

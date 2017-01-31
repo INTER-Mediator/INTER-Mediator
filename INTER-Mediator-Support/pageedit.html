@@ -15,47 +15,49 @@
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <link rel="shortcut icon" href="../dist-docs/vm-for-trial/im-icon.png" type="image/png"/>
     <link rel="stylesheet" type="text/css" href="defedit.css"/>
-    <link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
     <title>INTER-Mediator - Page File Editor</title>
     <script src="pageedit.php"></script>
     <script src="codemirror_im.js"></script>
-    <script src="CodeMirror/lib/codemirror.js"></script>
-    <script src="CodeMirror/addon/runmode/runmode.js"></script>
-    <script src="CodeMirror/addon/runmode/colorize.js"></script>
-    <script src="CodeMirror/mode/javascript/javascript.js"></script>
-    <script src="CodeMirror/mode/xml/xml.js"></script>
-    <script src="CodeMirror/mode/css/css.js"></script>
-    <script src="CodeMirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/addon/runmode/runmode.js"></script>
+    <script src="codemirror/addon/runmode/colorize.js"></script>
+    <script src="codemirror/addon/display/autorefresh.js"></script>
+    <script src="codemirror/mode/javascript/javascript.js"></script>
+    <script src="codemirror/mode/xml/xml.js"></script>
+    <script src="codemirror/mode/css/css.js"></script>
+    <script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
     <script type="text/javascript">
-        window.onload = function () {
-            var nodeUnsupport = document.getElementById('nonsupportmessage');
-            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
-                var params = INTERMediatorOnPage.getURLParametersAsArray();
-                INTERMediator.addCondition('pagefile',{field: 'target', value: params.target});
-                INTERMediator.additionalFieldValueOnNewRecord['pagefile']
-                        = {field: 'target', value: params.target};
-                INTERMediator.additionalFieldValueOnUpdate['pagefile']
-                        = {field: 'target', value: params.target};
-                INTERMediator.additionalFieldValueOnDelete['pagefile']
-                        = {field: 'target', value: params.target};
+        INTERMediatorOnPage.doBeforeConstruct = function () {
+            var params = INTERMediatorOnPage.getURLParametersAsArray();
+            INTERMediator.clearCondition('pagefile');
+            INTERMediator.addCondition('pagefile', {field: 'target', value: params.target});
+            INTERMediator.additionalFieldValueOnNewRecord['pagefile']
+                = {field: 'target', value: params.target};
+            INTERMediator.additionalFieldValueOnUpdate['pagefile']
+                = {field: 'target', value: params.target};
+            INTERMediator.additionalFieldValueOnDelete['pagefile']
+                = {field: 'target', value: params.target};
 
-                document.getElementById('deffile').appendChild(document.createTextNode(params.target));
-                INTERMediator.ignoreOptimisticLocking = true;
-                INTERMediator.construct(true);
-                document.getElementById('container').style.display = "block";
-            }
-        }
-//        INTERMediatorOnPage.doAfterConstruct = function () {
-//            var node = document.getElementById('container');
-//            node.style.display = "block";
-//            if (textArea) {
-//                var myTextarea = document.getElementById(textArea);
-//            }
-//        }
-//        var textArea;
-//        INTERMediatorOnPage.pageContentGenerated = function (target) {
-//             textArea = INTERMediatorOnPage.getNodeIdFromIMDefinition("pagefile@content", target, true);
-//        }
+            document.getElementById('deffile').appendChild(document.createTextNode(params.target));
+            INTERMediator.ignoreOptimisticLocking = true;
+        };
+
+        INTERMediatorOnPage.doAfterConstruct = function () {
+            document.getElementById('container').style.display = "block";
+        };
+
+        //        INTERMediatorOnPage.doAfterConstruct = function () {
+        //            var node = document.getElementById('container');
+        //            node.style.display = "block";
+        //            if (textArea) {
+        //                var myTextarea = document.getElementById(textArea);
+        //            }
+        //        }
+        //        var textArea;
+        //        INTERMediatorOnPage.pageContentGenerated = function (target) {
+        //             textArea = INTERMediatorOnPage.getNodeIdFromIMDefinition("pagefile@content", target, true);
+        //        }
     </script>
     <style>
         INPUT {
