@@ -1149,7 +1149,7 @@ var IMLibContext = function (contextName) {
         var storekeys = Object.keys(this.store);
         if (storekeys.length > 0) {
             lastKey = storekeys[storekeys.length - 1];
-            return this.getValue(lastKey, key, value);
+            return this.getValue(lastKey, key);
         }
         return undefined;
     };
