@@ -55,6 +55,7 @@ Ver.5.6 (in development)
 - [BUG FIX] The confirm.php in User_Enroll folder had a query condition bug.
 - [BUG FIX] The definition file editor didn't work until ver.5.5-dev or around.
 - [BUG FIX] The page file editor didn't work until ver.5.5-dev or around.
+- [BUG FIX] The tinymce widget support code bug fix.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)
