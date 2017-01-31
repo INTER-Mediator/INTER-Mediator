@@ -12,6 +12,7 @@ IM_Entry(
     array(
         array(
             'name' => 'surveyinput',
+            'view' => 'survey',
             'table' => 'survey',
             'key' => 'id',
             'post-dismiss-message' => 'ありがとうございました',

@@ -90,18 +90,24 @@ IMParts_Catalog["jquery_fileupload"] = {
         node.style.width = "0";
         pNode.appendChild(node);
 
-        targetNode._im_getComponentId = function () {
+        targetNode._im_getComponentId = (function () {
             var theId = nodeId;
-            return theId;
-        };
-        targetNode._im_setValue = function (str) {
+            return function () {
+                return theId;
+            };
+        })();
+        targetNode._im_setValue = (function () {
             var aNode = targetNode;
-            aNode.value = str;
-        };
-        targetNode._im_getValue = function (str) {
+            return function (str) {
+                aNode.value = str;
+            };
+        })();
+        targetNode._im_getValue = (function () {
             var aNode = targetNode;
-            return aNode.value;
-        };
+            return function () {
+                return aNode.value;
+            };
+        })();
     },
 
     ids: [],

@@ -61,9 +61,51 @@ class IMUtil
         return dirname(__FILE__);
     }
 
+    public static function getMIMEType($path)
+    {
+        $type = "application/octet-stream";
+        switch (strtolower(substr($path, strrpos($path, '.') + 1))) {
+            case 'jpg':
+                $type = 'image/jpeg';
+                break;
+            case 'css':
+                $type = 'text/css';
+                break;
+            case 'jpeg':
+                $type = 'image/jpeg';
+                break;
+            case 'png':
+                $type = 'image/png';
+                break;
+            case 'html':
+                $type = 'text/html';
+                break;
+            case 'txt':
+                $type = 'text/plain';
+                break;
+            case 'gif':
+                $type = 'image/gif';
+                break;
+            case 'bmp':
+                $type = 'image/bmp';
+                break;
+            case 'tif':
+                $type = 'image/tiff';
+                break;
+            case 'tiff':
+                $type = 'image/tiff';
+                break;
+            case 'pdf':
+                $type = 'application/pdf';
+                break;
+        }
+        return $type;
+    }
+
     public static function combinePathComponents($ar)
     {
         $path = "";
+        $isFirstItem = true;
         foreach ($ar as $item) {
             $isSepTerminate = (substr($path, -1) == DIRECTORY_SEPARATOR);
             $isSepStart = (substr($item, 0, 1) == DIRECTORY_SEPARATOR);
@@ -72,10 +114,19 @@ class IMUtil
             } elseif ($isSepTerminate && $isSepStart) {
                 $path .= substr($item, 1);
             } else {
-                $path .= DIRECTORY_SEPARATOR . $item;
+                if (! $isFirstItem || ! self::isPHPExecutingWindows()) {
+                    $path .= DIRECTORY_SEPARATOR;
+                }
+                $path .= $item;
             }
+            $isFirstItem = false;
         }
         return $path;
+    }
+
+    public static function isPHPExecutingWindows() {
+        $osName = php_uname("s");
+        return $osName == "Windows NT";
     }
 
     public static function includeLibClasses($classes)
@@ -90,6 +141,7 @@ class IMUtil
                     $classComp[] = $cComp;
                 }
             }
+
             $fpath = IMUtil::combinePathComponents(array_merge($pathComp, $classComp)) . ".php";
             if (file_exists($fpath)) {
                 require_once($fpath);

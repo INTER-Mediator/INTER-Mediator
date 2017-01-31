@@ -1,0 +1,115 @@
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */
+
+*   {
+	/*    font-family: Verdana, "游ゴシック", YuGothic, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif; */
+	font-family: Verdana, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
+	/*    font-size: 10pt; */
+}
+
+.IM_NAV_panel {
+	background-color: #CCCCCC;
+	padding: 4px;
+	margin: 4px 0 4px 0;
+}
+
+.IM_NAV_JUMP   {
+	width: 50px;
+	text-align: right;
+}
+
+span.IM_NAV_info {
+	font-size: 9pt;
+	color: #333333;
+}
+
+span.IM_NAV_button {
+	padding: 2px 4px 2px 4px;
+	margin: 2px 6px 2px 6px;
+	border-radius: 3px;
+	background-color: #000000;
+	color: yellow;
+	cursor: pointer;
+}
+
+span.IM_NAV_disabled {
+	background-color: #666666;
+	color: #333333;
+}
+
+div.IM_CREDIT {
+
+}
+
+span.IM_POSTMESSAGE {
+	color: orange;
+}
+
+#_im_authpanel{
+	width: 350px;
+	background-color: #333333;
+	color: #DDDDAA;
+	margin: 50px auto 0 auto;
+	padding: 20px;
+	border-radius: 10px;
+	position: relative;
+}
+._im_authlabel   {
+	width: 120px;
+	text-align: right;
+	float: left;
+}
+
+#_im_password{}
+#_im_username{}
+#_im_authbutton{}
+#_im_changebutton{}
+
+._im_alertmessage   {
+	color: red;
+}
+
+table {
+	border-collapse: collapse;
+	background-color: #EEEEEE;
+	font-size: 10pt;
+}
+
+table._im_index {
+	float: left;
+}
+
+th {
+	border: 1px solid #444444;
+	padding: 6px;
+	margin: 4px;
+}
+
+td {
+	border: 1px solid #444444;
+	padding: 4px;
+	margin: 4px;
+}
+
+input   {
+	font-size: 10pt;
+}
+
+textarea   {
+	font-size: 10pt;
+}
+
+option   {
+	font-size: 10pt;
+}
+
+button   {
+	font-size: 10pt;
+}

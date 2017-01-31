@@ -86,12 +86,10 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
     }
 
-//    file_put_contents("/tmp/php2.log", "POST: " . var_export($_POST, true), FILE_APPEND);
-//    file_put_contents("/tmp/php2.log", "GET: " . var_export($_GET, true), FILE_APPEND);
-//    file_put_contents("/tmp/php2.log", "FILES: " . var_export($_FILES, true), FILE_APPEND);
-//    file_put_contents("/tmp/php2.log", "SERVER: " . var_export($_SERVER, true), FILE_APPEND);
-
-    if (isset($g_serverSideCall) && $g_serverSideCall) {
+    if (isset($_GET['theme'])) {
+        $themeManager = new Theme();
+        $themeManager->processing();
+    } else if (isset($g_serverSideCall) && $g_serverSideCall) {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
         $dbInstance->processingRequest("NON");
@@ -121,14 +119,17 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else {
         $dbInstance = new DB_Proxy();
-        $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        $util = new IMUtil();
-        if ($util->protectCSRF() === TRUE) {
-            $dbInstance->processingRequest();
-            $dbInstance->finishCommunication(false);
+        if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
+            $dbInstance->finishCommunication(true);
         } else {
-            $dbInstance->addOutputData('debugMessages', 'Invalid Request Error.');
-            $dbInstance->addOutputData('errorMessages', array('Invalid Request Error.'));
+            $util = new IMUtil();
+            if ($util->protectCSRF() === TRUE) {
+                $dbInstance->processingRequest();
+                $dbInstance->finishCommunication(false);
+            } else {
+                $dbInstance->addOutputData('debugMessages', 'Invalid Request Error.');
+                $dbInstance->addOutputData('errorMessages', array('Invalid Request Error.'));
+            }
         }
         $dbInstance->exportOutputDataAsJSON();
     }
@@ -148,7 +149,7 @@ function loadClass($className)
     ) {
         $result = include_once $className . '.php';
         if (!$result) {
-        
+
         }
         if (!$result) {
             $errorGenerator = new GenerateJSCode();

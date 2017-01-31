@@ -8,6 +8,14 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibPageNavigation class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 IMLibPageNavigation = {
     deleteInsertOnNavi: [],
     /**
@@ -172,7 +180,7 @@ IMLibPageNavigation = {
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false)
                         );
                         break;
-                    case　'DELETE':
+                    case 'DELETE':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
                         contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
@@ -199,7 +207,7 @@ IMLibPageNavigation = {
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['value'],
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false));
                         break;
-                    case　'COPY':
+                    case 'COPY':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
                         contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];

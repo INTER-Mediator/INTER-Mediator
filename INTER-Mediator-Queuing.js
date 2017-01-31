@@ -8,8 +8,14 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-/*
- http://stackoverflow.com/questions/17718673/how-is-a-promise-defer-library-implemented
+/**
+ * @fileoverview IMLibQueue class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * Thanks for nice idea from: http://stackoverflow.com/questions/17718673/how-is-a-promise-defer-library-implemented
+ * @constructor
  */
 var IMLibQueue = {
     tasks: [],

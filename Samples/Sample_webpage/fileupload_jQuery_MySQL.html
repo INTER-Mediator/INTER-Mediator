@@ -13,7 +13,6 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" type="text/css" href="../sample.css">
     <link rel="stylesheet" href="jQuery-File-Upload/css/jquery.fileupload.css">
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
@@ -24,94 +23,100 @@
     <script src="jQuery-File-Upload/js/vendor/jquery.ui.widget.js"></script>
     <script src="jQuery-File-Upload/js/jquery.iframe-transport.js"></script>
     <script src="jQuery-File-Upload/js/jquery.fileupload.js"></script>
-    <!--<script src="bootstrap/js/bootstrap.min.js"></script>-->
     <script type="text/javascript">
-//        window.onload = function () {
-            IMParts_Catalog.fileupload.progressSupported = true;
-            //IMParts_Catalog.fileupload.forceOldStyleForm = true;
-//            INTERMediator.construct(true);
-//        }
+        IMParts_Catalog.fileupload.progressSupported = true;
     </script>
 </head>
 <body>
-<div class="container">
-<h1>JavaScript Component Test</h1>
-    <p>This sample requires jQuery File Upload and Bootstrap.</p>
-    <span class="btn btn-success fileinput-button">
+<header>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+    <div class="container">
+        <h1>JavaScript Component Test for jQuery File Upload</h1>
+        <p>This sample requires jQuery File Upload and Bootstrap.</p>
+        <span class="btn btn-success fileinput-button">
         <i class="glyphicon glyphicon-plus"></i>
         <span>ファイル選択...</span>
             <!-- The file input field used as target for the file upload widget -->
         <input id="fileupload" type="file" name="files[]" multiple>
     </span>
-    <span id="filenamelabel" style="display:none">選択ファイル: </span>
-    <span id="filename" style="display:none"></span>
-    <span id="uploadarea" class="btn btn-primary" style="display:none">
+        <span id="filenamelabel" style="display:none">選択ファイル: </span>
+        <span id="filename" style="display:none"></span>
+        <span id="uploadarea" class="btn btn-primary" style="display:none">
         <i class="glyphicon"></i>
          <span>アップロード</span>
     </span>
-    <!-- The global progress bar -->
-    <div id="progress" class="progress" style="margin-top: 6px;">
-        <div class="bar" style="width: 0%;"></div>
-    </div>
+        <!-- The global progress bar -->
+        <div id="progress" class="progress" style="margin-top: 6px;">
+            <div class="bar" style="width: 0%;"></div>
+        </div>
 
-    <!--<input id="fileupload" type="file" name="files[]" data-url="server/php/" multiple>-->
-<!--<div id="progress">-->
-    <!--<div class="bar" style="width: 0%;"></div>-->
-<!--</div>-->
-<script>
-    $(function () {
-        $('#fileupload').fileupload({
-            dataType: 'json',
-            url: "jQuery-File-Upload/server/php/index.php",
-            add: function (e, data) {
-                $('#filename').text(data.files[0].name);
-                $('#filenamelabel').css('display', 'inline');
-                $('#filename').css('display', 'inline');
-                $('#uploadarea').css('display', 'inline');
-                $('#uploadarea').click(function () {
-                    data.submit();
+        <!--<input id="fileupload" type="file" name="files[]" data-url="server/php/" multiple>-->
+        <!--<div id="progress">-->
+        <!--<div class="bar" style="width: 0%;"></div>-->
+        <!--</div>-->
+        <script>
+            $(function () {
+                $('#fileupload').fileupload({
+                    dataType: 'json',
+                    url: "jQuery-File-Upload/server/php/index.php",
+                    add: function (e, data) {
+                        $('#filename').text(data.files[0].name);
+                        $('#filenamelabel').css('display', 'inline');
+                        $('#filename').css('display', 'inline');
+                        $('#uploadarea').css('display', 'inline');
+                        $('#uploadarea').click(function () {
+                            data.submit();
+                        });
+                    },
+                    done: function (e, data) {
+
+                    },
+                    fail: function (e, data) {
+                        window.alert(data.textStatus);
+                    },
+                    progressall: function (e, data) {
+                        var progress = parseInt(data.loaded / data.total * 100, 10);
+                        $('#progress .bar').css('width', progress + '%');
+                    }
                 });
-            },
-            done: function (e, data) {
+            });
+        </script>
 
-            },
-            fail: function (e, data) {
-                window.alert(data.textStatus);
-            },
-            progressall: function (e, data) {
-                var progress = parseInt(data.loaded / data.total * 100, 10);
-                $('#progress .bar').css('width', progress + '%');
-            }
-        });
-    });
-</script>
-
-<table>
-    <thead>
-    <tr>
-        <th>Date and Time</th>
-        <th>Message</th>
-        <th>History</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td><div data-im="testtable@dt1"></div><div data-im="testtable@vc1"></div></td>
-        <td data-im="testtable@vc1" data-im-widget="jquery_fileupload"></td>
-        <td>
-            <table>
-                <tbody>
-                <tr>
-                    <td data-im="fileupload@path"></td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-        <td></td>
-    </tr>
-    </tbody>
-</table>
+        <table>
+            <thead>
+            <tr>
+                <th>Date and Time</th>
+                <th>Message</th>
+                <th>History</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <div data-im="testtable@dt1"></div>
+                    <div data-im="testtable@vc1"></div>
+                </td>
+                <td data-im="testtable@vc1" data-im-widget="jquery_fileupload"></td>
+                <td>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td data-im="fileupload@path"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
+<footer>
+    <small>INTER-Mediator ©2016</small>
+</footer>
 </body>
 </html>

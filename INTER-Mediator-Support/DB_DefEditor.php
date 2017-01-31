@@ -63,9 +63,11 @@ function changeIncludeIMPath($src, $validStatement)
 
 class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 {
-    var $recordCount;
+    private $recordCount;
+    private $isRequiredUpdated = false;
+    private $updatedRecord = null;
 
-    var $spacialValue = array('IM_TODAY');
+    private $spacialValue = array('IM_TODAY');
 
     function readFromDB()
     {
@@ -341,6 +343,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'options':
                 $result[] = array(
                     'id' => $seq,
+                    'theme' => getValueFromArray($globalOptions, 'theme'),
                     'separator' => getValueFromArray($globalOptions, 'separator'),
                     'transaction' => getValueFromArray($globalOptions, 'transaction'),
                     'media-root-dir' => getValueFromArray($globalOptions, 'media-root-dir'),
@@ -540,6 +543,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         );
 
         // $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
+        $result = null;
 
         switch ($dataSourceName) {
             case 'contexts':
@@ -660,6 +664,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         unset($globalDataSource[$contextID][$theKey]);
                     }
                 }
+                $result = array($globalDataSource[$contextID]);
                 break;
             case 'relation':
             case 'query':
@@ -684,14 +689,17 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             $fieldValue = null;
                         }
                     }
+                    $contextIndex = floor($contextID / 10000);
+                    $itemIndex = $contextID % 10000;
                     if (!is_null($fieldValue)) {
-                        $globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key] = $fieldValue;
+                        $globalDataSource[$contextIndex][$dataSourceName][$itemIndex][$key] = $fieldValue;
                     } else if ($key === $theKey &&
-                        isset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key])
+                        isset($globalDataSource[$contextIndex][$dataSourceName][$itemIndex][$key])
                     ) {
-                        unset($globalDataSource[floor($contextID / 10000)][$dataSourceName][$contextID % 10000][$key]);
+                        unset($globalDataSource[$contextIndex][$dataSourceName][$itemIndex][$key]);
                     }
                 }
+                $result = array($globalDataSource[$contextIndex][$dataSourceName][$itemIndex]);
                 break;
             case 'options':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
@@ -782,6 +790,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         unset($globalOptions[$theKey]);
                     }
                 }
+                $result = array($globalOptions);
                 break;
             case 'aliases':
             case 'formatter':
@@ -794,6 +803,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         break;
                     }
                 }
+                $result = array($globalOptions[$dataSourceName][$recordID]);
                 break;
             case 'browser-compatibility':
                 $recordID = $contextID % 10000;
@@ -826,10 +836,12 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     }
                     $globalOptions[$dataSourceName] = $tempBCArray;
                 }
+                $result = array($globalOptions);
                 break;
             case 'dbsettings':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 $globalDBSpecs[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                $result = array($globalDBSpecs);
                 break;
             case 'external-db':
                 $recordID = $contextID % 10000;
@@ -844,11 +856,13 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 $globalDBSpecs['external-db'][] = array(
                     'db' => '= new value =',
                 );
+                $result = array($globalDBSpecs['external-db']);
                 break;
             case 'debug':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 $globalDebug = $this->dbSettings->getValueOfField($theKey);
                 $globalDebug = ($globalDebug === 'false' || $globalDebug === '') ? false : intval($globalDebug);
+                $result = array(array('id' => 0, 'debug' => $globalDebug));
                 break;
             default:
                 break;
@@ -874,6 +888,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 return null;
             }
         }
+        $this->updatedRecord = $result;
+        return $result;
     }
 
     function createInDB($bypassAuth)
@@ -1192,13 +1208,13 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     public
     function requireUpdatedRecord($value)
     {
-        // TODO: Implement requireUpdatedRecord() method.
+        $this->isRequiredUpdated = $value;
     }
 
     public
     function updatedRecord()
     {
-        // TODO: Implement updatedRecord() method.
+        return $this->updatedRecord;
     }
 
     public
@@ -1241,7 +1257,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
     public
     function setupConnection()
     {
-        // TODO: Implement setupConnection() method.
+        return true;
     }
 
     public

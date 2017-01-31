@@ -9,7 +9,14 @@
  */
 
 //'use strict';
-
+/**
+ * @fileoverview INTERMediatorOnPage class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var INTERMediatorOnPage = {
     authCountLimit: 4,
     authCount: 0,
@@ -283,6 +290,7 @@ var INTERMediatorOnPage = {
         }
     },
 
+    defaultBackgroundImage: null,
     defaultBackgroundColor: null,
     loginPanelHTML: null,
 
@@ -368,10 +376,10 @@ var INTERMediatorOnPage = {
         backBox.style.height = '100%';
         backBox.style.width = '100%';
         if (INTERMediatorOnPage.defaultBackgroundImage) {
-            if (INTERMediatorOnPage.isSetDefaultStyle && INTERMediatorOnPage.getIMRootPath !== undefined) {
-                backBox.style.backgroundImage =
-                    'url(' + INTERMediatorOnPage.getIMRootPath() + '/themes/default/images/background.gif)';
-            }
+            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.defaultBackgroundImage + ')';
+        } else if (INTERMediatorOnPage.isSetDefaultStyle) {
+            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
+                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background.gif)';
         }
         if (INTERMediatorOnPage.defaultBackgroundColor) {
             backBox.style.backgroundColor = INTERMediatorOnPage.defaultBackgroundColor;
@@ -650,9 +658,9 @@ var INTERMediatorOnPage = {
         backBox.style.height = '100%';
         backBox.style.width = '100%';
         //backBox.style.backgroundColor = '#BBBBBB';
-        if (INTERMediatorOnPage.isSetDefaultStyle && INTERMediatorOnPage.getIMRootPath !== undefined) {
-            backBox.style.backgroundImage =
-                'url(' + INTERMediatorOnPage.getIMRootPath() + '/themes/default/images/background-error.gif)';
+        if (INTERMediatorOnPage.isSetDefaultStyle) {
+            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
+                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background-error.gif)';
         }
         backBox.style.position = 'absolute';
         backBox.style.padding = ' 50px 0 0 0';
@@ -1012,17 +1020,17 @@ var INTERMediatorOnPage = {
 
         frontPanel = document.getElementById('_im_progress');
         if (!frontPanel) {
-            rootPath = INTERMediatorOnPage.getIMRootPath();
-            headNode = document.getElementsByTagName('HEAD')[0];
+            //rootPath = INTERMediatorOnPage.getIMRootPath();
+            //headNode = document.getElementsByTagName('HEAD')[0];
             bodyNode = document.getElementsByTagName('BODY')[0];
             frontPanel = document.createElement('div');
             frontPanel.setAttribute('id', '_im_progress');
             frontPanel.style.position = 'fixed';
             linkElement = document.createElement('link');
-            linkElement.setAttribute('href', rootPath + '/themes/default/css/style.css');
-            linkElement.setAttribute('rel', 'stylesheet');
-            linkElement.setAttribute('type', 'text/css');
-            headNode.appendChild(linkElement);
+            // linkElement.setAttribute('href', rootPath + '/themes/default/css/style.css');
+            // linkElement.setAttribute('rel', 'stylesheet');
+            // linkElement.setAttribute('type', 'text/css');
+            // headNode.appendChild(linkElement);
             if (bodyNode.firstChild) {
                 bodyNode.insertBefore(frontPanel, bodyNode.firstChild);
             } else {
@@ -1034,13 +1042,39 @@ var INTERMediatorOnPage = {
              */
             imageIM = document.createElement('img');
             imageIM.setAttribute('id', '_im_logo');
-            imageIM.setAttribute('src', rootPath + '/themes/default/images/logo.gif');
+            imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
+                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=logo.gif');
             frontPanel.appendChild(imageIM);
             imageProgress = document.createElement('img');
-            imageProgress.setAttribute('src', rootPath + '/themes/default/images/inprogress.gif');
+            imageProgress.setAttribute('src',
+                INTERMediatorOnPage.getEntryPath()
+                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif');
             frontPanel.appendChild(imageProgress);
             frontPanel.appendChild(document.createElement('BR'));
             frontPanel.appendChild(document.createTextNode('INTER-Mediator working'));
+        }
+    },
+
+    setReferenceToTheme: function () {
+        var headNode, bodyNode, linkElement, i, styleIndex = -1;
+        headNode = document.getElementsByTagName('HEAD')[0];
+        bodyNode = document.getElementsByTagName('BODY')[0];
+        linkElement = document.createElement('link');
+        linkElement.setAttribute('href', INTERMediatorOnPage.getEntryPath()
+            + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
+        linkElement.setAttribute('rel', 'stylesheet');
+        linkElement.setAttribute('type', 'text/css');
+        for (i = 0; i < headNode.childNodes.length; i++) {
+            if (headNode.childNodes[i] &&
+                headNode.childNodes[i].nodeType == 1 &&
+                headNode.childNodes[i].tagName == 'STYLE') {
+                styleIndex = i;
+            }
+        }
+        if (styleIndex > -1) {
+            headNode.insertBefore(linkElement, headNode.childNodes[styleIndex]);
+        } else {
+            headNode.appendChild(linkElement);
         }
     }
 };

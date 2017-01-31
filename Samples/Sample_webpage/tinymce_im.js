@@ -40,15 +40,18 @@ IMParts_Catalog["tinymce"] = {
         parentNode.appendChild(newNode);
         this.ids.push(newId);
 
-        parentNode._im_getComponentId = function () {
+        targetNode._im_getComponentId = (function () {
             var theId = newId;
-            return theId;
-        };
-
-        parentNode._im_setValue = function (str) {
-            var targetNode = newNode;
-            targetNode.innerHTML = str;
-        };
+            return function () {
+                return theId;
+            };
+        })();
+        targetNode._im_setValue = (function () {
+            var aNode = newNode;
+            return function (str) {
+                aNode.innerHTML = str;
+            };
+        })();
     },
     ids: [],
     finish: function (update) {

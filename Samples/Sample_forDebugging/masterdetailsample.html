@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--<link rel="stylesheet" type="text/css" href="../sample.css">-->
+    <title></title>
+    <script type="text/javascript" src="masterdetailsample.php"></script>
+    <script>
+//        INTERMediatorOnPage.doBeforeConstruct = function () {
+//            var params = INTERMediatorOnPage.getURLParametersAsArray();
+//            if (params['id']) {
+//                INTERMediator.clearCondition();
+//                INTERMediator.addCondition(
+//                        "postaldetail",
+//                        {field: "id", operator: "=", value: params['id']}
+//                );
+//
+//            }
+//        };
+
+        INTERMediatorOnPage.doAfterConstruct = function () {
+            justifyBlock();
+
+            var params = INTERMediatorOnPage.getURLParametersAsArray();
+            if (params['id'] && !INTERMediator.partialConstructing) {
+                var context = IMLibContextPool.contextFromName("postalcode");
+                var buttonId = context.store["id=" + params['id']]['_im_button_master_id'];
+                document.getElementById(buttonId).click();
+            }
+        };
+
+        function justifyBlock() {
+            var headH = document.getElementById("head").clientHeight +
+                    document.getElementById("IM_CREDIT").clientHeight;
+            var tableW = IMLibContextPool.contextFromName("postalcode").enclosureNode.parentNode.clientWidth;
+            document.getElementById("masterpane").style.height = (window.innerHeight - headH) + "px";
+            document.getElementById("masterpane").style.width = tableW + "px";
+            document.getElementById("detailpane").style.height = (window.innerHeight - headH) + "px";
+        }
+    </script>
+    <style>
+        th {
+            white-space: nowrap;
+        }
+
+        td {
+            white-space: nowrap;
+        }
+
+    </style>
+</head>
+<body style="margin:0;padding:0">
+<div id="head" style="height: 30px;font-size: 24px; background-color: #fffead">Dummy Header</div>
+<div style="display: flex; flex-direction: row; flex-wrap: nowrap;">
+    <div id="masterpane" style="overflow: auto;flex-shrink: 1; flex-grow: 1; background-color: #ddf3ff">
+        <table>
+            <tbody>
+            <tr>
+                <td></td>
+                <td data-im="postalcode@id"></td>
+                <td data-im="postalcode@f3"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div id="detailpane" style="flex-shrink: 2;flex-grow: 10;overflow-x: visible;overflow-y:scroll;">
+        <table style="background-color: #F3F3F3;">
+            <tbody>
+            <tr>
+                <th>郵便番号</th>
+                <td><input class="textfield" type="text" data-im="postaldetail@f3"/></td>
+            </tr>
+            <tr>
+                <th>都道府県</th>
+                <td><input class="textfield" type="text" data-im="postaldetail@f7"/></td>
+            </tr>
+            <tr>
+                <th>市区町村</th>
+                <td><input class="textfield" type="text" data-im="postaldetail@f8"/></td>
+            </tr>
+            <tr>
+                <th>町域名</th>
+                <td><input class="textfield" type="text" data-im="postaldetail@f9"/></td>
+            </tr>
+            <tr>
+                <th>メモ</th>
+                <td><input class="textfield" type="text" data-im="postaldetail@memo"/></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+</body>
+</html>

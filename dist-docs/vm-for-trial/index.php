@@ -3,7 +3,7 @@
 /*
  * INTER-Mediator Server VM for Trial
  *
- *   Copyright (c) 2010-2016 INTER-Mediator Directive Committee
+ *   Copyright (c) 2010-2017 INTER-Mediator Directive Committee
  *
  *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
  *   INTER-Mediator is supplied under MIT License.
@@ -39,17 +39,22 @@ $fmModDate = (new DateTime($modDate))->format('Y年m月d日');
 
 $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
+$osName = 'Ubuntu Server';
+$osVersion = '14.04';
+if (file_exists('/etc/alpine-release')) {
+    $osName = 'Alpine Linux';
+    $osVersion = file_get_contents('/etc/alpine-release');
+}
 ?>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</title>
-    <link href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/sample.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/include_MySQL.php"></script>
     <script type="text/javascript" src="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/index.js"></script>
 </head>
-<body>
+<body style="margin: 8px">
 <h1>INTER-Mediator <?php echo htmlspecialchars($version, ENT_QUOTES, 'UTF-8'); ?> - VM for Trial</h1>
 
 <h2>現在アクセスしているマシンについて</h2>
@@ -72,7 +77,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <h2>リンク</h2>
 
-<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/" target="_blank">サンプルプログラム</a></p>
+<h3><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Samples/" target="_blank">サンプルプログラム</a></h3>
 <ul data-im-control="ignore_enc_rep">
     <li>サンプルの中にある認証ユーザー用のデータベースには、user1〜user5の5つのユーザーが定義されており、パスワードはユーザー名と同一です。
         概ね、user1でログインができますが、アクセス権の設定のテストも行っており、すべてのユーザーでのログインができるとは限りません。
@@ -124,19 +129,19 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
         ?></li>
 </ul>
 
-<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Auth_Support/MySQL_accountmanager.html"
-      target="_blank">ユーザー管理ページサンプル</a></p>
+<h3><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/../../Auth_Support/MySQL_accountmanager.html"
+      target="_blank">ユーザー管理ページサンプル</a></h3>
 <ul>
     <li>ユーザー名、パスワード共に、user1でログインができますが、通常の利用は、利用者と別の管理者を作り、その管理者でのみログインできるようにします。</li>
 </ul>
 
-<p><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/info.php" target="_blank">phpinfo()関数の実行</a></p>
-
-<p>
-    <a href="https://inter-mediator.com/" target="_blank">INTER-Mediator Site</a>|
-    <a href="http://inter-mediator.info/" target="_blank">Manual</a>|
-    <a href="http://inter-mediator.org/" target="_blank">Committee</a>
-</p>
+<h3>その他のリンク</h3>
+<ul>
+    <li><a href="<?php echo htmlspecialchars($vmFilesRootURI, ENT_QUOTES, 'UTF-8'); ?>/info.php" target="_blank">phpinfo()関数の実行</a></li>
+    <li><a href="https://inter-mediator.com/" target="_blank">INTER-Mediator Web Site</a></li>
+    <li><a href="http://inter-mediator.info/" target="_blank">INTER-Mediator Manual Site</a></li>
+    <li><a href="http://inter-mediator.org/" target="_blank">INTER-Mediator Directive Committee</a></li>
+</ul>
 
 
 <h2>トライアル用のページファイルと定義ファイル</h2>
@@ -144,7 +149,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 <p>
     以下のリンクは、Webサーバのルートに配置したファイルで、ページファイルエディタと定義ファイルエディタで開いて内容を編集し、その結果を参照することができます。いずれのリンクも、別のウインドウないしはタブを開きます。ページ更新が必要なときには手作業で行ってください。初期状態では何も表示しないようになっています。もちろん、独自に変更を加えて、自由に使ってみてください。</p>
 
-<table style="float:left;">
+<table style="float: left; margin-right: 20px">
     <tr>
         <td><a href="/page01.html" target="_blank">page01.htmlを表示する</a></td>
         <td>
@@ -365,8 +370,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
         </td>
     </tr>
 </table>
-
-<table style="float:left;">
+<table style="float: left">
     <tr>
         <td><a href="/page21.html" target="_blank">page21.htmlを表示する</a></td>
         <td>
@@ -587,8 +591,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
         </td>
     </tr>
 </table>
-
-<br clear="all"/>
+<br clear="all">
 
 <h2>サーバ構築情報</h2>
 
@@ -631,12 +634,12 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <h3>VMに関する情報</h3>
 <ul>
-    <li>OS：Ubuntu Server 14.04.5</li>
+    <li>OS：<?php echo htmlspecialchars($osName . ' ' . $osVersion, ENT_QUOTES, 'UTF-8'); ?></li>
     <li>インストール言語：Japanese/ja_JP.UTF-8</li>
     <li>キーボード：Japanese</li>
     <li>タイムゾーン：Asia/Tokyo</li>
     <li>ホスト名：inter-mediator-server</li>
-    <li>Webサーバルート：/var/www/html</li>
+    <li>Webサーバルート：<?php if ($osName === 'Alpine Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?></li>
     <li>初期設定：OpenSSH Server, LAMP Server, Mail Server, PostgreSQL database</li>
     <li>アクセス方法：SSH、SFTP、HTTP、SMB</li>
     <li>作成グループ：im-developer（developerおよびwww-dataが所属）</li>
@@ -652,7 +655,7 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <p>VM上で下記のコマンドを実行すると、サンプルデータベース（MySQL、PostgreSQL、SQLite）を初期化できます。</p>
 <ul>
-    <li>source /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh</li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'source /var/www/localhost/htdocs/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; } else { echo 'source /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; }; ?></li>
 </ul>
 <p>上記コマンドを実行すると「Do you initialize the test databases? [y/n]:
     」と尋ねられるので、「y」を入力してenterキーあるいはreturnキーを押すとサンプルデータベースが初期化されます。
@@ -661,8 +664,8 @@ $vmFilesRootURI = dirname(substr(__FILE__, strlen($_SERVER["DOCUMENT_ROOT"])));
 
 <p>VM上で下記のコマンドを実行すると、INTER-Mediatorのテストを実行できます。</p>
 <ul>
-    <li>phpunit /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php</li>
-    <li>/usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js</li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'phpunit /var/www/localhost/htdocs/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php'; } else { echo 'phpunit /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php'; }; ?></li>
+    <li><?php if ($osName === 'Alpine Linux') { echo 'buster-test -r specification -c /var/www/localhost/htdocs/INTER-Mediator/spec/buster.js'; } else { echo '/usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js'; }; ?></li>
 </ul>
 
 </body>

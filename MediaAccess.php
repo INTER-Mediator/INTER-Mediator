@@ -53,7 +53,6 @@ class MediaAccess
             if (isset($options['media-context'])) {
                 $this->checkAuthentication($dbProxyInstance, $options, $target);
             }
-
             $content = false;
             $dq = '"';
             if (!$isURL) { // File path.
@@ -234,7 +233,6 @@ class MediaAccess
                 $authInfoField = $dbProxyInstance->dbClass->getFieldForAuthorization("all");
                 $authInfoTarget = $dbProxyInstance->dbClass->getTargetForAuthorization("all");
             }
-
             if ($authInfoTarget == 'field-user') {
                 $endOfPath = strpos($target, "?");
                 $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
@@ -279,15 +277,38 @@ class MediaAccess
                 if (count($authorizedGroups) == 0 && count($authorizedUsers) == 0) {
                     return;
                 }
-                if (in_array($dbProxyInstance->dbClass->dbSettings->getCurrentUser(), $authorizedUsers)) {
-                    return;
-                }
+//                if (in_array($_COOKIE[$cookieNameUser], $authorizedUsers)) {
+//                    return;
+//                }
                 $belongGroups = $dbProxyInstance->dbClass->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
-                if (!in_array($dbProxyInstance->dbClass->dbSettings->getCurrentUser(), $authorizedUsers)
+                if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
                     && count(array_intersect($belongGroups, $authorizedGroups)) == 0
                 ) {
                     $this->exitAsError(400);
                 }
+               $endOfPath = strpos($target, "?");
+                $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
+                $pathComponents = explode('/', substr($target, 0, $endOfPath));
+                $indexKeying = -1;
+                $contextName = '';
+                foreach ($pathComponents as $index => $dname) {
+                    $decodedComponent = urldecode($dname);
+                    if (strpos($decodedComponent, '=') !== false) {
+                        $indexKeying = $index;
+                        $fieldComponents = explode('=', $decodedComponent);
+                        $keyField = $fieldComponents[0];
+                        $keyValue = $fieldComponents[1];
+                        $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
+                    } else {
+                        $contextName = $pathComponents[$index];
+                    }
+                }
+                if ($indexKeying == -1) {
+                    //    $this->exitAsError(401);
+                }
+                $dbProxyInstance->dbSettings->setCurrentUser($_COOKIE[$cookieNameUser]);
+                $dbProxyInstance->dbSettings->setDataSourceName($contextName);
+                $this->contextRecord = $dbProxyInstance->readFromDB();
             }
         } else {
             $endOfPath = strpos($target, "?");

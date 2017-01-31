@@ -17,16 +17,20 @@ IMParts_Catalog["codemirror"] = {
         parentNode.appendChild(newNode);
         this.ids.push(newId);
 
-        parentNode._im_getComponentId = function () {
+        parentNode._im_getComponentId = (function () {
             var theId = newId;
-            return theId;
-        };
+            return function () {
+                return theId;
+            }
+        })();
 
-        var self = this;
-        parentNode._im_setValue = function (str) {
+        parentNode._im_setValue = (function () {
             var theId = newId;
-            self.initialValues[theId] = str;
-        };
+            var self = this;
+            return function (str) {
+                self.initialValues[theId] = str;
+            };
+        })();
     },
 
     ids: [],
@@ -38,7 +42,8 @@ IMParts_Catalog["codemirror"] = {
             var targetId = this.ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
-                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode});
+                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode,
+                    autoRefresh: true});
                 editor.setValue(this.initialValues[targetId]);
                 editor.on("change", function () {
                     var nodeId = targetId;

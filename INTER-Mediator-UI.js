@@ -8,6 +8,14 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibUI class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLibUI = {
 
     isShiftKeyDown: false,
@@ -15,6 +23,7 @@ var IMLibUI = {
 
     mobileSelectionColor: '#BBBBBB',
     mobileNaviBackButtonId: null,
+    mergedFieldSeparator: "\n",
 
     changeValueLock: {},
 
@@ -48,7 +57,7 @@ var IMLibUI = {
 
     hasLockUIElement: function () {
         var key, judge = false;
-        for(key in IMLibUI.changeValueLock) {
+        for (key in IMLibUI.changeValueLock) {
             judge |= IMLibUI.changeValueLock[key];
         }
         return judge;
@@ -181,7 +190,17 @@ var IMLibUI = {
                 var contextInfoCapt = contextInfo;
                 var newValueCapt = newValue;
                 return function (result) {
-                    var updateRequiredContext, currentValue, associatedNode;
+                    var updateRequiredContext, currentValue, associatedNode, field;
+                    var keyField = contextInfoCapt.context.getKeyField();
+                    if (result && result.dbresult) {
+                        var recordObj = result.dbresult[0];
+                        var keepProp = INTERMediator.partialConstructing;
+                        INTERMediator.partialConstructing = false;
+                        for (field in recordObj) {
+                            contextInfoCapt.context.setValue(keyField + "=" + recordObj[keyField], field, recordObj[field]);
+                        }
+                    }
+                    INTERMediator.partialConstructing = keepProp;
                     updateRequiredContext = IMLibContextPool.dependingObjects(idValueCapt2);
                     for (i = 0; i < updateRequiredContext.length; i++) {
                         updateRequiredContext[i].foreignValue = {};
@@ -195,8 +214,8 @@ var IMLibUI = {
                             }
                         }
                     }
-                    INTERMediatorOnPage.hideProgress();
                     IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
+                    INTERMediatorOnPage.hideProgress();
                     INTERMediator.flushMessage();
                     IMLibUI.unlockUIElement(idValueCapt2);
                 };
@@ -809,14 +828,15 @@ var IMLibUI = {
                         isMerged = false;
                         for (index = 0; index < fieldData.length; index++) {
                             if (fieldData[index]['field'] == comp[1]) {
-                                fieldData[index]['value'] += mergedValues.join(IMLib.nl_char) + IMLib.nl_char;
+                                fieldData[index]['value'] += IMLibUI.mergedFieldSeparator;
+                                fieldData[index]['value'] += mergedValues.join(IMLibUI.mergedFieldSeparator);
                                 isMerged = true;
                             }
                         }
                         if (!isMerged) {
                             fieldData.push({
                                 field: comp[1],
-                                value: mergedValues.join(IMLib.nl_char) + IMLib.nl_char
+                                value: mergedValues.join(IMLibUI.mergedFieldSeparator)
                             });
                         }
                     }
@@ -833,6 +853,9 @@ var IMLibUI = {
         }
 
         contextInfo = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', selectedContext);
+        if (INTERMediatorOnPage.modifyPostOnlyContext) {
+            contextInfo = INTERMediatorOnPage.modifyPostOnlyContext(contextInfo);
+        }
         INTERMediator_DBAdapter.db_createRecord_async(
             {name: selectedContext, dataset: fieldData},
             function (result) {

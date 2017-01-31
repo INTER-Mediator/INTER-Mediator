@@ -8,10 +8,18 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibElement class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLibElement = {
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
-            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false;
+            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false, imControl;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -25,6 +33,7 @@ var IMLibElement = {
         }
 
         nodeTag = element.tagName;
+        imControl = element.getAttribute('data-im-control');
 
         if (clearField === true && curTarget == '') {
             switch (nodeTag) {
@@ -171,18 +180,17 @@ var IMLibElement = {
                 element.value = curVal;
             } else if (nodeTag == 'TEXTAREA') {
                 if (INTERMediator.defaultTargetInnerHTML) {
-                    if (INTERMediator.isIE) {
+                    if (INTERMediator.isIE) { // for IE
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
                     }
                     element.innerHTML = curVal;
                 } else {
-                    if (curVal.length > 0 && INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
-                        // for IE11
+                    if (curVal.length > 0 && INTERMediator.isTrident && INTERMediator.ieVersion >= 11) { // for IE11
                         curVal = curVal.replace(/\r\n/g, IMLib.nl_char).replace(/\r/g, IMLib.nl_char);
                     }
                     element.value = curVal;
                 }
-            } else { // include option and button tag node
+            } else { // include option tag node
                 if (INTERMediator.defaultTargetInnerHTML) {
                     element.innerHTML = curVal;
                 } else {
@@ -190,7 +198,9 @@ var IMLibElement = {
                 }
             }
         }
-        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') && !isReplaceOrAppned) {
+        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA')
+            && !isReplaceOrAppned
+            && (!imControl || imControl.indexOf('unbind') > 0 )) {
             var idValue = element.id;
             var elementCapt = element;
             INTERMediatorLib.addEvent(element, 'blur', function (event) {

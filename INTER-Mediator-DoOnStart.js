@@ -8,8 +8,9 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-/*
- This source file should be described statements to execute on the loading time of header's script tag.
+/**
+ * @fileoverview This source file should be described statements to execute
+ * on the loading time of header's script tag.
  */
 
 INTERMediator.propertyIETridentSetup();
@@ -111,23 +112,12 @@ INTERMediatorLib.addEvent(window, 'load', function () {
     if (INTERMediatorOnPage.isAutoConstruct) {
         if (errorNode) {
             if (INTERMediatorOnPage.INTERMediatorCheckBrowser(errorNode)) {
-                if (INTERMediatorOnPage.doBeforeConstruct) {
-                    INTERMediatorOnPage.doBeforeConstruct();
-                }
-                if (INTERMediatorOnPage.isAutoConstruct) {
-                    INTERMediator.construct(true);
-                }
-            }
-        } else {
-            if (INTERMediatorOnPage.doBeforeConstruct) {
-                INTERMediatorOnPage.doBeforeConstruct();
-            }
-            if (INTERMediatorOnPage.isAutoConstruct) {
                 INTERMediator.construct(true);
             }
+        } else {
+            INTERMediator.construct(true);
         }
     }
-    // INTERMediatorOnPage.isFinishToConstruct = true;
 });
 
 // ****** This file should terminate on the new line. INTER-Mediator adds some codes before here. ****

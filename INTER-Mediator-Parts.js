@@ -8,19 +8,17 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-/**
- * TinyMCE bridgeObject
- * @type {{instanciate: Function, ids: Array, finish: Function}}
- */
-
 //'use strict';
-
-var IMParts_Catalog = {};
-/*********
- *
- * File Uploader
- * @type {{html5DDSuported: boolean, instanciate: Function, ids: Array, finish: Function}}
+/**
+ * @fileoverview IMParts_Catalog class is defined here.
  */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
+var IMParts_Catalog = {};
+
 IMParts_Catalog['fileupload'] = {
     html5DDSuported: false,
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
@@ -405,5 +403,45 @@ IMParts_Catalog['fileupload'] = {
             }
             return null;
         }
+    }
+};
+
+IMParts_Catalog["jsonformat"] = {
+    instanciate: function (parentNode) {
+        var newId = parentNode.getAttribute('id') + '-jsonf';
+        var newNode = document.createElement('pre');
+        newNode.setAttribute('id', newId);
+        parentNode.appendChild(newNode);
+        IMParts_Catalog["jsonformat"].ids.push(newId);
+
+        parentNode._im_getComponentId = (function () {
+            var theId = newId;
+            return function () {
+                return theId;
+            }
+        })();
+
+        parentNode._im_setValue = (function () {
+            var theId = newId;
+            return function (str) {
+                IMParts_Catalog["jsonformat"].initialValues[theId]
+                    = str ? JSON.stringify(JSON.parse(str), null, '    ') : "";
+            };
+        })();
+    },
+
+    ids: [],
+    initialValues: {},
+
+    finish: function () {
+        for (var i = 0; i < IMParts_Catalog["jsonformat"].ids.length; i++) {
+            var targetId = IMParts_Catalog["jsonformat"].ids[i];
+            var targetNode = document.getElementById(targetId);
+            if (targetNode) {
+                targetNode.appendChild(document.createTextNode(IMParts_Catalog["jsonformat"].initialValues[targetId]));
+            }
+        }
+        IMParts_Catalog["jsonformat"].ids = [];
+        IMParts_Catalog["jsonformat"].initialValues = {};
     }
 };
