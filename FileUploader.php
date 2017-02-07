@@ -275,8 +275,6 @@ class FileUploader
         }
 
         $dbProxyInstance->processingRequest("update");
-        file_put_contents("/tmp/1", var_export($dbProxyInstance->logger->getDebugMessages(),true));
-        file_put_contents("/tmp/2", var_export($dbProxyInstance->logger->getErrorMessages(),true));
 
         $relatedContext = null;
         if ($useContainer === FALSE) {
