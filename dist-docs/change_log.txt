@@ -56,7 +56,8 @@ Ver.5.6 (in development)
 - [BUG FIX] The definition file editor didn't work until ver.5.5-dev or around.
 - [BUG FIX] The page file editor didn't work until ver.5.5-dev or around.
 - [BUG FIX] The tinymce widget support code bug fix.
-- [BUG FIX] Text field by input tag on IE prevent to use input method. This issue was fixed.
+- [BUG FIX] Text field by input tag on IE prevent to use input method. This issue was fixed. The affected 
+  versions are 5.4 and 5.5.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)
