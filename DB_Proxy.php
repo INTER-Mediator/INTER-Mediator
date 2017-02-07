@@ -799,7 +799,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $authorizedUsers = $this->dbClass->getAuthorizedUsers($access);
 
                     $this->logger->setDebugMessage(str_replace("\n", "",
-                            "contextName={$access}/access={$this->dbSettings->getDataSourceName()}/"
+                            "contextName={$this->dbSettings->getDataSourceName()}/access={$access}/"
                             . "authorizedUsers=" . var_export($authorizedUsers, true)
                             . "/authorizedGroups=" . var_export($authorizedGroups, true))
                         , 2);
@@ -856,6 +856,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // Come here access=challenge or authenticated access
         switch ($access) {
             case 'describe':
+                $this->logger->setDebugMessage("[processingRequest] start describe processing", 2);
                 $result = $this->dbClass->getSchema($this->dbSettings->getDataSourceName());
                 $this->outputOfProcessing['dbresult'] = $result;
                 $this->outputOfProcessing['resultCount'] = 0;
@@ -863,7 +864,8 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             case 'read':
             case 'select':
-                $result = $this->readFromDB();
+            $this->logger->setDebugMessage("[processingRequest] start read processing", 2);
+            $result = $this->readFromDB();
                 if (isset($tableInfo['protect-reading']) && is_array($tableInfo['protect-reading'])) {
                     $recordCount = count($result);
                     for ($index = 0; $index < $recordCount; $index++) {
@@ -879,6 +881,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 $this->outputOfProcessing['totalCount'] = $this->getTotalCount();
                 break;
             case 'update':
+                $this->logger->setDebugMessage("[processingRequest] start update processing", 2);
                 if (isset($tableInfo['protect-writing']) && is_array($tableInfo['protect-writing'])) {
                     $fieldArray = array();
                     $valueArray = array();
@@ -900,14 +903,17 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 break;
             case 'new':
             case 'create':
-                $result = $this->createInDB($this->dbSettings->getDataSourceName(), $bypassAuth);
+            $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
+            $result = $this->createInDB($this->dbSettings->getDataSourceName(), $bypassAuth);
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
                 $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
             case 'delete':
+                $this->logger->setDebugMessage("[processingRequest] start delete processing", 2);
                 $this->deleteFromDB($this->dbSettings->getDataSourceName());
                 break;
             case 'copy':
+                $this->logger->setDebugMessage("[processingRequest] start copy processing", 2);
                 $result = $this->copyInDB($this->dbSettings->getDataSourceName());
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
                 $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
@@ -915,6 +921,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             case 'challenge':
                 break;
             case 'changepassword':
+                $this->logger->setDebugMessage("[processingRequest] start changepassword processing", 2);
                 if (isset($this->PostData['newpass'])) {
                     $changeResult = $this->changePassword($this->paramAuthUser, $this->PostData['newpass']);
                     $this->outputOfProcessing['changePasswordResult'] = ($changeResult ? true : false);
@@ -923,6 +930,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
                 break;
             case 'unregister':
+                $this->logger->setDebugMessage("[processingRequest] start unregister processing", 2);
                 if (!is_null($this->dbSettings->notifyServer) && $this->clientPusherAvailable) {
                     $tableKeys = null;
                     if (isset($this->PostData['pks'])) {

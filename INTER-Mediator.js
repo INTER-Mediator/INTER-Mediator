@@ -1224,7 +1224,7 @@ var INTERMediator = {
                         var changeFunction = function (id, evt) {
                             return function () {
                                 if (evt === 'change' ||
-                                    (evt === 'input' && document.getElementById(id).textContent === '')) {
+                                    (evt === 'input' && document.getElementById(id).value === '')) {
                                     if (IMLibUI.valueChange(id)) {
                                         if (document.getElementById(id).tagName == 'SELECT') {
                                             children = document.getElementById(id).childNodes;
