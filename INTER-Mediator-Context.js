@@ -1607,7 +1607,7 @@ var IMLibLocalContext = {
                     INTERMediator.pagedSize = this.store._im_pagedSize;
                 }
             }
-            this.updateAll();
+            this.updateAll(true);
         }
     },
 
