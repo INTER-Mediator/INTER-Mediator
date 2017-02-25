@@ -462,10 +462,18 @@ class QdsmtpBase extends QdsmtpError{
 		);
 
 	function sayHello(){
-		$items = array(
-			array( 'EHLO' , $this->smtp_param['HOST'] ),
-			array( 'HELO' , $this->smtp_param['HOST'] ),
-			);
+	    // Gmail issue is handled with below forum information. 2017-02-25 msyk
+	    // https://productforums.google.com/forum/#!topic/gmail-ja/djNLitD1aHQ
+//		$items = array(
+//			array( 'EHLO' , $this->smtp_param['HOST'] ),
+//			array( 'HELO' , $this->smtp_param['HOST'] ),
+//			);
+        $host = str_replace("ssl://", "", $this->smtp_param['HOST']);
+        $items = array(
+            array( 'EHLO' , $host ),
+            array( 'HELO' , $host ),
+        );
+        // ========
 		if( !$this->tryUntilSuccess( $items ) ){
 			return $this->errorGather('HOST:'.$this->smtp_param['HOST'].' say no HELLO',__LINE__);
 		}
