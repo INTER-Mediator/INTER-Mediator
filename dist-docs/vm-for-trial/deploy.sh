@@ -166,7 +166,7 @@ if [ $OS = 'alpine' ] ; then
     echo "skip-character-set-client-handshake" >> /etc/mysql/my.cnf
     echo "" >> /etc/mysql/my.cnf
     echo "[mysqld_safe]" >> /etc/mysql/my.cnf
-    echo "log-error=/var/log/mysqld.log" >> /etc/mysql/my.cnf
+    echo "#log-error=/var/log/mysqld.log" >> /etc/mysql/my.cnf
     echo "pid-file=/var/run/mysqld/mysqld.pid" >> /etc/mysql/my.cnf
     echo "" >> /etc/mysql/my.cnf
     echo "[client]" >> /etc/mysql/my.cnf
