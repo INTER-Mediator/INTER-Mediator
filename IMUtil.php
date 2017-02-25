@@ -167,6 +167,8 @@ class IMUtil
             return array(
                 'phpseclib\Crypt\RSA',
                 'phpseclib\Crypt\Hash',
+                'phpseclib\Crypt\Base',
+                'phpseclib\Crypt\Rijndael',
                 'phpseclib\Crypt\AES',
                 'phpseclib\Math\BigInteger',
             );
@@ -182,6 +184,8 @@ class IMUtil
                 'phpseclib\Crypt\RSA\Raw',
                 'phpseclib\Crypt\RSA\XML',
                 'phpseclib\Crypt\Hash',
+                'phpseclib\Crypt\Base',
+                'phpseclib\Crypt\Rijndael',
                 'phpseclib\Crypt\AES',
                 'phpseclib\Math\BigInteger',
                 'ParagonIE\ConstantTime\EncoderInterface',
