@@ -1730,7 +1730,7 @@ var INTERMediator = {
          */
         function tableVoting(linkDefs) {
             var j, nodeInfoArray, nodeInfoField, nodeInfoTable, maxVoted, maxTableName, tableName,
-                nodeInfoTableIndex, context,
+                nodeInfoTableIndex, context, restDefs = [],
                 tableVote = [],    // Containing editable elements or not.
                 fieldList = []; // Create field list for database fetch.
 
@@ -1769,6 +1769,19 @@ var INTERMediator = {
                 }
             }
             context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName);
+            if (linkDefs.length > 0 && !context) {
+                INTERMediator.setErrorMessage(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(1046, [maxTableName]));
+            }
+            for (j = 0; j < linkDefs.length; j++) {
+                if (linkDefs[j].indexOf(maxTableName) !== 0)    {
+                    restDefs.push(linkDefs[j])
+                }
+            }
+            if (linkDefs.length > 0 && context && restDefs.length > 0) {
+                INTERMediator.setErrorMessage(
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(1047, [maxTableName,restDefs.toString()]));
+            }
             return {targettable: context, fieldlist: fieldList['_im_index_' + maxTableName]};
         }
 

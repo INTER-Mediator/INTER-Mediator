@@ -1607,7 +1607,7 @@ var IMLibLocalContext = {
                     INTERMediator.pagedSize = this.store._im_pagedSize;
                 }
             }
-            this.updateAll();
+            this.updateAll(true);
         }
     },
 
@@ -1654,7 +1654,9 @@ var IMLibLocalContext = {
                     IMLibMouseEventDispatch.setExecute(idValue, (function () {
                         var contextName = params[1];
                         return function () {
+                            INTERMediator.startFrom = 0;
                             IMLibUI.eventUpdateHandler(contextName);
+                            IMLibPageNavigation.navigationSetup();
                         };
                     })());
                     break;
