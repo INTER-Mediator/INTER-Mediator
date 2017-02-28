@@ -63,6 +63,7 @@ Ver.5.6 (in development)
 - [BUG FIX] Qdsmtp couldn't send email with Gmail account for protocol stricting. The bundled Qdsmtp is patched.
 - [BUG FIX] Add including path for phpseclib.
 - [BUG FIX] Pagination bar wasn't updated when the search button which data-im is '_@update:xxx.'
+- [BUG FIX] In same case, the LIMIT parameter of non paging context set to the pagination length.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)

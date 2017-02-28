@@ -814,7 +814,7 @@ var IMLibContext = function (contextName) {
                             recordNumber = parseInt(this.contextDefinition.maxrecords, 10);
                         }
                     } else {
-                        if (this.contextDefinition.relation) {
+                        if (this.contextDefinition.relation || this.contextDefinition.paging !== true) {
                             recordNumber = parseInt(this.contextDefinition.records, 10);
                         } else {
                             recordNumber = parseInt(INTERMediator.pagedSize, 10);
@@ -826,7 +826,7 @@ var IMLibContext = function (contextName) {
                     (parseInt(this.contextDefinition.records, 10) < parseInt(INTERMediator.pagedSize, 10))) {
                     recordNumber = parseInt(this.contextDefinition.records, 10);
                 } else {
-                    if (this.contextDefinition.relation) {
+                    if (this.contextDefinition.relation || this.contextDefinition.paging !== true) {
                         recordNumber = parseInt(this.contextDefinition.records, 10);
                     } else {
                         recordNumber = parseInt(INTERMediator.pagedSize, 10);
