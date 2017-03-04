@@ -55,7 +55,7 @@ if (count($_POST) > 0) {
                         'read' => array(
                             'to' => 'email',
                             'bcc' => 'info@msyk.net',
-                            'subject-constant' => 'パスワードのリセットを受付ました',
+                            'subject-constant' => 'パスワードをリセットしました',
                             'from-constant' => 'Masayuki Nii <info@msyk.net>',
                             'body-template' => 'resetmail.txt',
                             'body-fields' => "email",
