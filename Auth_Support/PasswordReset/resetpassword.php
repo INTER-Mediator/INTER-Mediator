@@ -14,25 +14,21 @@ if (count($_GET) > 0) {
     if (!isset($_GET['c']) || strlen($_GET['c']) < 10) {
         $message .= '接続するときのURLが正しくありません。途中で欠けた文字で接続していないか確認してください。';
     } else {
-        $cred = $_GET['c'];
+        $cred = preg_replace ('/[^0-9A-Fa-f]/' , '' , $_GET['c']);
     }
 }
 if (count($_POST) > 0) {
-    $cred = $_POST['cred'];
+    $cred = preg_replace ('/[^0-9A-Fa-f]/' , '' , $_POST['cred']);
+    $hashedpw = preg_replace ('/[^0-9A-Fa-f]/' , '' , $_POST['hashedpw']);
 
     require_once('../../INTER-Mediator.php');   // Set the valid path to INTER-Mediator.php
     $dbInstance = new DB_Proxy();
     $dbInstance->initialize(
         array(),
-        array(
-            'authentication' => array(
-                'email-as-username' => true,
-            ),
-        ),
+        array('authentication' => array('email-as-username' => true,),),
         array("db-class" => "PDO" /* or "FileMaker_FX" */),
         2);
-    $result = $dbInstance->resetPasswordSequenceReturnBack(
-        null, $_POST['mail'], $_POST['cred'], $_POST['hashedpw']);
+    $result = $dbInstance->resetPasswordSequenceReturnBack(null, $_POST['mail'], $cred, $hashedpw);
 //    $dbInstance->finishCommunication(true);
 //    $dbInstance->exportOutputDataAsJSON();
 
@@ -59,7 +55,7 @@ if (count($_POST) > 0) {
                         'read' => array(
                             'to' => 'email',
                             'bcc' => 'info@msyk.net',
-                            'subject-constant' => 'パスワードのリセットを受付ました',
+                            'subject-constant' => 'パスワードをリセットしました',
                             'from-constant' => 'Masayuki Nii <info@msyk.net>',
                             'body-template' => 'resetmail.txt',
                             'body-fields' => "email",
@@ -141,7 +137,7 @@ header('Content-Type: text/html;charset="UTF-8"');
 
 <p class="errormsg"><?php echo $message; ?></p>
 
-<form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>"
+<form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF'], ENT_QUOTES, 'UTF-8'); ?>"
       onsubmit="return leastChecking();">
     <input id="cred" type="hidden" name="cred" value="<?php echo $cred; ?>"/>
     <input id="hashedpw" type="hidden" name="hashedpw"/>
