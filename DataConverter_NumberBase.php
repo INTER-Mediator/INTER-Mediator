@@ -45,6 +45,7 @@ class DataConverter_NumberBase
 
     public function converterFromUserToDB($str)
     {
+        $str = mb_convert_kana($str, "a");
         $comp = explode($this->decimalMark, $str);
         $intPart = intval(str_replace($this->thSepMark, '', $comp[0]));
         if (isset($comp[1])) {
