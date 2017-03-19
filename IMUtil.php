@@ -271,7 +271,6 @@ class IMUtil
         return $val;
     }
 
-
     public static function getFromParamsPHPFile($vars, $permitUndef = false)
     {
         $currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR;

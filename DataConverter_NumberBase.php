@@ -22,10 +22,14 @@ class DataConverter_NumberBase
     protected $thSepMark = null;
     protected $currencyMark = null;
     protected $useMbstring;
+    protected $choosenLocale;
 
     public function __construct()
     {
-        $this->useMbstring = setLocaleAsBrowser(LC_ALL);
+        IMLocale::setLocaleAsBrowser(LC_ALL);
+        $this->choosenLocale = IMLocale::$choosenLocale;
+        $this->useMbstring = IMLocale::$useMbstring;
+        /*
         $locInfo = localeconv();
         $this->decimalMark = $locInfo['mon_decimal_point'];
         // @codeCoverageIgnoreStart
@@ -40,6 +44,18 @@ class DataConverter_NumberBase
         $this->currencyMark = $locInfo['currency_symbol'];
         if (strlen($this->currencyMark) == 0) {
             $this->currencyMark = '¥';
+        }
+*/
+        $this->decimalMark = '.';
+        $this->thSepMark = ',';
+        $this->currencyMark = '¥';
+
+        $nfClass = IMLocale::numberFormatterClassName();
+        $formatter = new $nfClass($this->choosenLocale, 1 /*NumberFormatter::DECIMAL*/);
+        if ($formatter) {
+            $this->decimalMark = $formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
+            $this->thSepMark = $formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
+            $this->currencyMark = $formatter->getSymbol(8 /*NumberFormatter::CURRENCY_SYMBOL*/);
         }
     }
 
