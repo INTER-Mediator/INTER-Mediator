@@ -21,21 +21,20 @@ if ($pid < 1) {
     echo json_encode(array("ERROR" => "Invalid Product Number."));
     exit();
 }
+$prodPrice = mb_eregi_replace("/[^0-9]/", "", $_GET["p"]);
 
 $contextDef = array(
     array(
-        'records' => 10,
         'name' => 'product',
         'key' => 'id',
-        'query' => array(array('field' => 'name', 'value' => '%', 'operator' => 'LIKE')),
-        'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
     ),
 );
 $dbInstance = new DB_Proxy();
 $dbInstance->ignoringPost();
 $dbInstance->initialize($contextDef, array(), array("db-class" => "PDO"), 2, "product");
-$dbInstance->dbSettings->addExtraCriteria("id", "=", $pid);
-$dbInstance->processingRequest("read");
+$dbInstance->dbSettings->addExtraCriteria('id', '=', $pid);
+$dbInstance->dbSettings->addExtraCriteria("unitprice", $prodPrice);
+$dbInstance->processingRequest("update");
 $pInfo = $dbInstance->getDatabaseResult();
 $logInfo = $dbInstance->logger->getMessagesForJS();
 echo json_encode(array("data"=>$pInfo,"log"=>$logInfo));
