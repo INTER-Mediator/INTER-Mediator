@@ -39,7 +39,7 @@ echo " Build to: ${buildPath}"
 echo "-------------------------------------------------"
 echo "Choose the build result from these:"
 echo ' (1) Complete (everything contains)'
-echo ' (2) Core only (the least set to work wep applications)'
+echo ' (2) Core only (the least set to work web applications)'
 echo ' (3) Core + Support (add Auth_Support and INTER-Mediator-Support)'
 echo ' (4) Write just version and release date to metadata.json'
 /bin/echo -n "Type 1, 2, 3 or 4, and then type return----> "
@@ -207,7 +207,7 @@ echo "Build to: ${buildPath}" >> "${buildDir}/${receipt}"
 if [ $choice = 1 ]; then
     echo 'Your Choice: (1) Complete (everything contains)' >> "${buildDir}/${receipt}"
 elif [ $choice = 2 ]; then
-    echo 'Your Choice: (2) Core only (the least set to work wep applications)' >> "${buildDir}/${receipt}"
+    echo 'Your Choice: (2) Core only (the least set to work web applications)' >> "${buildDir}/${receipt}"
 elif [ $choice = 3 ]; then
     echo 'Your Choice: (3) Core + Support (add Auth_Support and INTER-Mediator-Support)' >> "${buildDir}/${receipt}"
 else

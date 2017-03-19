@@ -4,7 +4,7 @@ require_once('RetrieveFMXML.class.php');
 
 #### Part of FX.php #####################################################
 #                                                                       #
-#  License: Artistic License and addendum (included with release)       #
+#  License: Artistic License (included with release)                    #
 # Web Site: www.iviking.org                                             #
 #                                                                       #
 #########################################################################
@@ -178,7 +178,7 @@ and places where you will have to set flags in the order process.
                 if ($this->FX->verifyPeer == false) curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER,false);
                 curl_setopt($curlHandle, CURLOPT_POSTFIELDS, $this->dataURLParams);
                 if (($this->FX->DBPassword != '' || $this->FX->DBUser != 'FX') && defined('CURLOPT_HTTPAUTH')) {
-                    curl_setopt($curlHandle, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+                    curl_setopt($curlHandle, CURLOPT_HTTPAUTH, ($this->useBasicAuth)?CURLAUTH_BASIC:CURLAUTH_ANY);
                     curl_setopt($curlHandle, CURLOPT_USERPWD, $this->FX->DBUser . ':' . $this->FX->DBPassword);
                 }
                 ob_start();
