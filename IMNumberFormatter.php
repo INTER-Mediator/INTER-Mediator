@@ -20,7 +20,7 @@ class IMNumberFormatter
     public function __construct($locale, $style, $pattern = '')
     {
         $this->locale = $locale;
-        setlocale($locale);
+        setlocale(LC_ALL, $locale);
     }
 
     public function getSymbol($attr)
