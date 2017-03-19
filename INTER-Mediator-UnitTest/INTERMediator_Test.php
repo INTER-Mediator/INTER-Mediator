@@ -161,22 +161,22 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
     {
         $testName = "Check getLocaleFromBrowser function in INTER-Mediator.php.";
         $headerStr = "ja";
-        $locStr = getLocaleFromBrowser($headerStr);
+        $locStr = IMLocale::getLocaleFromBrowser($headerStr);
         $this->assertTrue($locStr == "ja", $testName);
         $headerStr = "ja_JP";
-        $locStr = getLocaleFromBrowser($headerStr);
+        $locStr = IMLocale::getLocaleFromBrowser($headerStr);
         $this->assertTrue($locStr == "ja_JP", $testName);
         $headerStr = "en_US";
-        $locStr = getLocaleFromBrowser($headerStr);
+        $locStr = IMLocale::getLocaleFromBrowser($headerStr);
         $this->assertTrue($locStr == "en_US", $testName);
         $headerStr = "ja, en";
-        $locStr = getLocaleFromBrowser($headerStr);
+        $locStr = IMLocale::getLocaleFromBrowser($headerStr);
         $this->assertTrue($locStr == "ja", $testName);
         $headerStr = "en, ja";
-        $locStr = getLocaleFromBrowser($headerStr);
+        $locStr = IMLocale::getLocaleFromBrowser($headerStr);
         $this->assertTrue($locStr == "en", $testName);
         $headerStr = "ja; q=1.0, en; q=0.1";
-        $locStr = getLocaleFromBrowser($headerStr);
+        $locStr = IMLocale::getLocaleFromBrowser($headerStr);
         $this->assertTrue($locStr == "ja", $testName);
 //        $headerStr = "ja; q=0.1, en; q=1.0";
 //        $locStr = getLocaleFromBrowser($headerStr);

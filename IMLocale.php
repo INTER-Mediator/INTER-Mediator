@@ -18,12 +18,13 @@ class IMLocale
     public static function numberFormatterClassName()
     {
         $cName = "IMNumberFormatter";
-        if (class_exists("NumberFormatter")) {
+        if (class_exists("NumberFormatter") && ! IMLocale::$alwaysIMClasses) {
             $cName = "NumberFormatter";
         }
         return $cName;
     }
 
+    public static $alwaysIMClasses = false; // for unit testing
     public static $choosenLocale = '';
     public static $useMbstring = false;
 
