@@ -57,6 +57,9 @@ class DataConverter_NumberBase
             $this->thSepMark = $formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
             $this->currencyMark = $formatter->getSymbol(8 /*NumberFormatter::CURRENCY_SYMBOL*/);
         }
+
+        echo "###### {$this->decimalMark} / {$this->thSepMark} / {$this->currencyMark} ######";
+
     }
 
     public function converterFromUserToDB($str)
