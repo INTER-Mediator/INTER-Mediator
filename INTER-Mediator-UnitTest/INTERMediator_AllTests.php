@@ -28,7 +28,8 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DB_Settings_Test.php');
         $suite->addTestFile($folder . 'DataConverter_AppendPrefix_Test.php');
         $suite->addTestFile($folder . 'DataConverter_AppendSuffix_Test.php');
-        $suite->addTestFile($folder . 'DataConverter_Currency_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_Base_Test.php');
         $suite->addTestFile($folder . 'DataConverter_FMDateTime_Test.php');
         $suite->addTestFile($folder . 'DataConverter_HTMLString_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NullZeroString_Test.php');

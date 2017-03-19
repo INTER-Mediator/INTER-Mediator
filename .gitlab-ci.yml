@@ -4,7 +4,7 @@ job:
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DB_Settings_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_AppendPrefix_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_AppendSuffix_Test.php
-    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_Currency_Test.php
+    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_Currency_YenIM_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_FMDateTime_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_HTMLString_Test.php
     - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_NullZeroString_Test.php

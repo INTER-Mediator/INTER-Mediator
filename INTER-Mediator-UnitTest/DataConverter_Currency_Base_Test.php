@@ -5,20 +5,15 @@
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 require_once(dirname(__FILE__) . '/../DataConverter_Currency.php');
 
-class DataConverter_Currency_Test extends PHPUnit_Framework_TestCase
+abstract class DataConverter_Currency_Base_Test extends PHPUnit_Framework_TestCase
 {
-    public function setUp()
-    {
-        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'ja';
-        $this->dataconverter = new DataConverter_Currency();
-
-        $this->thSepMark = ',';
-        $this->currencyMark = '¥';
-    }
+    protected $currencyMark;
+    protected $thSepMark;
+    protected $dataconverter;
 
     public function test_converterFromDBtoUser()
     {
-        $expected = $this->currencyMark . '1' . $this->thSepMark . '000';
+        $expected = "{$this->currencyMark}1{$this->thSepMark}000";
         $string = '1000';
         $this->assertEquals($expected, $this->dataconverter->converterFromDBtoUser($string));
     }
