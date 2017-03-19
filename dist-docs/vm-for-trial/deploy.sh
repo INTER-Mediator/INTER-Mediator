@@ -274,8 +274,13 @@ chown developer:developer .*
 
 # Modify php.ini
 
-cat /etc/php5/apache2/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php5/apache2/php.ini.tmp
-mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini
+if [ $OS = 'alpine' ] ; then
+    cat /etc/php5/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php5/php.ini.tmp
+    mv /etc/php5/php.ini.tmp /etc/php5/php.ini
+else
+    cat /etc/php5/apache2/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php5/apache2/php.ini.tmp
+    mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini
+fi
 
 # Share the Web Root Directory with SMB.
 
@@ -303,12 +308,14 @@ echo "   force group = im-developer" >> "${SMBCONF}"
 
 # Modify /etc/default/keyboard, /etc/default/locale for Japanese
 
-cat /etc/default/keyboard | sed -e 's/XKBLAYOUT="us"/XKBLAYOUT="jp"/g' > /etc/default/keyboard.tmp
-mv /etc/default/keyboard.tmp /etc/default/keyboard
-cat /etc/default/locale | sed -e 's/LANG="en_US.UTF-8"/LANG="ja_JP.UTF-8"/g' > /etc/default/locale.tmp
-mv /etc/default/locale.tmp /etc/default/locale
-chmod u+s /usr/bin/fbterm
-dpkg-reconfigure -f noninteractive keyboard-configuration
+if [ $OS != 'alpine' ] ; then
+	cat /etc/default/keyboard | sed -e 's/XKBLAYOUT="us"/XKBLAYOUT="jp"/g' > /etc/default/keyboard.tmp
+    mv /etc/default/keyboard.tmp /etc/default/keyboard
+    cat /etc/default/locale | sed -e 's/LANG="en_US.UTF-8"/LANG="ja_JP.UTF-8"/g' > /etc/default/locale.tmp
+    mv /etc/default/locale.tmp /etc/default/locale
+    chmod u+s /usr/bin/fbterm
+    dpkg-reconfigure -f noninteractive keyboard-configuration
+fi
 
 # Launch buster-server for unit testing
 
