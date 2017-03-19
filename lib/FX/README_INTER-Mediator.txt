@@ -1,11 +1,11 @@
 FX.php inside of INTER-Mediator
 Masayuki Nii
 nii@msyk.net
-September 9, 2011 / Feb 6, 2012 modified
+September 9, 2011 / Feb 6, 2012 / March 19, 2017 modified
 
 FX.php is developed by Chris Hansen et,al, and it could be used for FileMaker Server with PHP.
 
-* FX.php website: http://www.iviking.org/FX.php/ *
+* FX.php website: http://fx.iviking.org/ *
 * FX.php Souce code repository: https://github.com/yodarunamok/fxphp *
 * This framework(INTER-Mediator) is neither affiliated with nor endorsed by Chris Hansen. *
 

@@ -4,7 +4,7 @@ require_once('RetrieveFXData.class.php');
 
 #### Part of FX.php #####################################################
 #                                                                       #
-#  License: Artistic License and addendum (included with release)       #
+#  License: Artistic License (included with release)                    #
 # Web Site: www.iviking.org                                             #
 #                                                                       #
 #########################################################################
@@ -23,6 +23,7 @@ class RetrieveFMXML extends RetrieveFXData {
     var $dataURL = '';
     var $dataURLParams = '';
     var $invalidXMLChars = array("\x0B", "\x0C", "\x12");
+    var $useBasicAuth = true;
 
     /*
         Translation array and callback function used with preg_replace_callback
@@ -49,13 +50,14 @@ class RetrieveFMXML extends RetrieveFXData {
     );
 
 	function utf8HTMLEntities($matches) {
-		if(count($matches) == 2){
-			return $this->FX->BuildExtendedChar($matches[0],$matches[1]);
-		}elseif(count($matches) == 3){
-			return $this->FX->BuildExtendedChar($matches[0],$matches[1],$matches[2]);
-		}elseif(count($matches) == 4){
-			return $this->FX->BuildExtendedChar($matches[0],$matches[1],$matches[2],$matches[3]);
-		}
+        // $matches contains full match as first item so everything is +1
+        if(count($matches) == 3){
+            return $this->FX->BuildExtendedChar($matches[1],$matches[2]);
+        }elseif(count($matches) == 4){
+            return $this->FX->BuildExtendedChar($matches[1],$matches[2],$matches[3]);
+        }elseif(count($matches) == 5){
+            return $this->FX->BuildExtendedChar($matches[1],$matches[2],$matches[3],$matches[4]);
+        }
         return ''; // TODO something went wrong, but this should be explicit someday
 	}
 
