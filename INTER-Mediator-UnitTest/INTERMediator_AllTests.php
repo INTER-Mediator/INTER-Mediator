@@ -19,6 +19,10 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
     {
         $suite = new PHPUnit_Framework_TestSuite( 'all tests' );
         $folder = dirname( __FILE__ ) . '/';
+        $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_DollerIM_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_DollerIntl_Test.php');
         $suite->addTestFile($folder . 'DB_Formatters_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
@@ -26,10 +30,6 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         //$suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
         $suite->addTestFile($folder . 'DB_Proxy_Test.php');
         $suite->addTestFile($folder . 'DB_Settings_Test.php');
-        $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
-        $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');
-        $suite->addTestFile($folder . 'DataConverter_Currency_DollerIM_Test.php');
-        $suite->addTestFile($folder . 'DataConverter_Currency_DollerIntl_Test.php');
         $suite->addTestFile($folder . 'DataConverter_AppendPrefix_Test.php');
         $suite->addTestFile($folder . 'DataConverter_AppendSuffix_Test.php');
         $suite->addTestFile($folder . 'DataConverter_FMDateTime_Test.php');

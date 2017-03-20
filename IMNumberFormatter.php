@@ -16,12 +16,22 @@
 class IMNumberFormatter
 {
     private $locale = '';
+    private $decimalPoint = '';
+    private $thSeparator = '';
+    private $currencySymbol = '';
     private $flactionDigit = 0;
 
     public function __construct($locale, $style, $pattern = '')
     {
         $this->locale = $locale;
         setlocale(LC_ALL, $locale);
+        $locInfo = localeconv();
+        if ($locInfo['currency_symbol'] == '') {
+            $locInfo = IMLocaleFormatTable::getLocaleFormat($locale);
+        }
+        $this->decimalPoint = $locInfo['mon_decimal_point'];
+        $this->thSeparator = $locInfo['mon_thousands_sep'];
+        $this->currencySymbol = $locInfo['currency_symbol'];
     }
 
     public function getSymbol($attr)
@@ -30,12 +40,10 @@ class IMNumberFormatter
         $s = '';
         switch ($attr) {
             case 0: /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/
-                $s = $locInfo['mon_decimal_point'];
-                $s = strlen($s) > 0 ? $s : ".";
+                $s = $this->decimalPoint;
                 break;
             case 1: /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/
-                $s = $locInfo['mon_thousands_sep'];
-                $s = strlen($s) > 0 ? $s : ",";
+                $s = $this->thSeparator;
                 break;
         }
         return $s;
@@ -47,30 +55,24 @@ class IMNumberFormatter
         $s = '';
         switch ($attr) {
             case 5: /*NumberFormatter::CURRENCY_CODE*/
-                $s = $locInfo['currency_symbol'];
-                $s = strlen($s) > 0 ? $s : "￥";
+                $s = $this->currencySymbol;
                 break;
         }
         return $s;
     }
 
-    public function setAttribute($attr, $value){
+    public function setAttribute($attr, $value)
+    {
         switch ($attr) {
             case 8: /*NumberFormatter::FRACTION_DIGITS*/
                 $this->flactionDigit = $value;
                 break;
         }
-}
+    }
 
     public function formatCurrency($value, $currency)
     {
-        $locInfo = localeconv();
-        $c = $locInfo['currency_symbol'];
-        $c = strlen($c) > 0 ? $c : "￥";
-        $d = $locInfo['mon_decimal_point'];
-        $d = strlen($d) > 0 ? $d : ".";
-        $s = $locInfo['mon_thousands_sep'];
-        $s = strlen($s) > 0 ? $s : ",";
-        return $c . number_format($value, $this->flactionDigit, $d, $s);
+        return $this->currencySymbol .
+            number_format($value, $this->flactionDigit, $this->decimalPoint, $this->thSeparator);
     }
 }

@@ -29,16 +29,14 @@ class DataConverter_NumberBase
         IMLocale::setLocale(LC_ALL);
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
-        $this->decimalMark = '.';
-        $this->thSepMark = ',';
-        $this->currencyMark = '¥';
         $nfClass = IMLocale::numberFormatterClassName();
         $formatter = new $nfClass($this->choosenLocale, 0 /*NumberFormatter::DECIMAL*/);
-        if ($formatter) {
-            $this->decimalMark = $formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
-            $this->thSepMark = $formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
-            $this->currencyMark = $formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
+        if (!$formatter) {
+            return null;
         }
+        $this->decimalMark = $formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
+        $this->thSepMark = $formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
+        $this->currencyMark = $formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
     }
 
     public function converterFromUserToDB($str)
