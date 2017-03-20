@@ -18,8 +18,12 @@ class IMLocale
     public static function numberFormatterClassName()
     {
         $cName = "IMNumberFormatter";
-        if (class_exists("NumberFormatter") && !IMLocale::$alwaysIMClasses) {
-            $cName = "NumberFormatter";
+        try {
+            if (class_exists("NumberFormatter") && !IMLocale::$alwaysIMClasses) {
+                $cName = "NumberFormatter";
+            }
+        } catch(Exception $e)  {
+
         }
         return $cName;
     }
