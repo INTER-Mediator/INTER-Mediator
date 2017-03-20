@@ -23,6 +23,8 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_DollerIM_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_DollerIntl_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_PoundIM_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_PoundIntl_Test.php');
         $suite->addTestFile($folder . 'DB_Formatters_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
