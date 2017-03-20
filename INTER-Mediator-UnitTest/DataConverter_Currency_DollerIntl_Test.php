@@ -10,7 +10,7 @@ class DataConverter_Currency_DollerIntl_Test extends DataConverter_Currency_Base
 {
     public function setUp()
     {
-        $_SERVER['HTTP_ACCEPT_LANGUAGE'] = 'en';
+        IMLocale::$localForTest = 'en_US';
         IMLocale::$alwaysIMClasses = false;
         $this->dataconverter = new DataConverter_Currency();
 

@@ -16,6 +16,7 @@
 class IMNumberFormatter
 {
     private $locale = '';
+    private $flactionDigit = 0;
 
     public function __construct($locale, $style, $pattern = '')
     {
@@ -36,11 +37,40 @@ class IMNumberFormatter
                 $s = $locInfo['mon_thousands_sep'];
                 $s = strlen($s) > 0 ? $s : ",";
                 break;
-            case 8: /*NumberFormatter::CURRENCY_SYMBOL*/
+        }
+        return $s;
+    }
+
+    public function getTextAttribute($attr)
+    {
+        $locInfo = localeconv();
+        $s = '';
+        switch ($attr) {
+            case 5: /*NumberFormatter::CURRENCY_CODE*/
                 $s = $locInfo['currency_symbol'];
-                $s = strlen($s) > 0 ? $s : "¥";
+                $s = strlen($s) > 0 ? $s : "￥";
                 break;
         }
         return $s;
+    }
+
+    public function setAttribute($attr, $value){
+        switch ($attr) {
+            case 8: /*NumberFormatter::FRACTION_DIGITS*/
+                $this->flactionDigit = $value;
+                break;
+        }
+}
+
+    public function formatCurrency($value, $currency)
+    {
+        $locInfo = localeconv();
+        $c = $locInfo['currency_symbol'];
+        $c = strlen($c) > 0 ? $c : "￥";
+        $d = $locInfo['mon_decimal_point'];
+        $d = strlen($d) > 0 ? $d : ".";
+        $s = $locInfo['mon_thousands_sep'];
+        $s = strlen($s) > 0 ? $s : ",";
+        return $c . number_format($value, $this->flactionDigit, $d, $s);
     }
 }

@@ -26,40 +26,19 @@ class DataConverter_NumberBase
 
     public function __construct()
     {
-        IMLocale::setLocaleAsBrowser(LC_ALL);
+        IMLocale::setLocale(LC_ALL);
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
-        /*
-        $locInfo = localeconv();
-        $this->decimalMark = $locInfo['mon_decimal_point'];
-        // @codeCoverageIgnoreStart
-        if (strlen($this->decimalMark) == 0) {
-            $this->decimalMark = '.';
-        }
-        // @codeCoverageIgnoreEnd
-        $this->thSepMark = $locInfo['mon_thousands_sep'];
-        if (strlen($this->thSepMark) == 0) {
-            $this->thSepMark = ',';
-        }
-        $this->currencyMark = $locInfo['currency_symbol'];
-        if (strlen($this->currencyMark) == 0) {
-            $this->currencyMark = '¥';
-        }
-*/
         $this->decimalMark = '.';
         $this->thSepMark = ',';
         $this->currencyMark = '¥';
-
         $nfClass = IMLocale::numberFormatterClassName();
-        $formatter = new $nfClass($this->choosenLocale, 1 /*NumberFormatter::DECIMAL*/);
+        $formatter = new $nfClass($this->choosenLocale, 0 /*NumberFormatter::DECIMAL*/);
         if ($formatter) {
             $this->decimalMark = $formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
             $this->thSepMark = $formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
-            $this->currencyMark = $formatter->getSymbol(8 /*NumberFormatter::CURRENCY_SYMBOL*/);
+            $this->currencyMark = $formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
         }
-
-        echo "###### {$this->decimalMark} / {$this->thSepMark} / {$this->currencyMark} ######";
-
     }
 
     public function converterFromUserToDB($str)

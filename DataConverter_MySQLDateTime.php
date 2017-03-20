@@ -27,7 +27,7 @@ class DataConverter_MySQLDateTime
     function __construct($format = '')
     {
         $this->fmt = $format;
-        IMLocale::setLocaleAsBrowser(LC_ALL);
+        IMLocale::setLocale(LC_ALL);
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
         date_default_timezone_set($this->tz);

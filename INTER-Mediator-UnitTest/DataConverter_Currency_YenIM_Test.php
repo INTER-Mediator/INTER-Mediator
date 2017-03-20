@@ -15,6 +15,6 @@ class DataConverter_Currency_YenIM_Test extends DataConverter_Currency_Base_Test
         $this->dataconverter = new DataConverter_Currency();
 
         $this->thSepMark = ',';
-        $this->currencyMark = '¥';
+        $this->currencyMark = '￥';
     }
 }
