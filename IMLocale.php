@@ -65,11 +65,11 @@ class IMLocale
             IMLocale::$currencyCode = 'USD';
         } else {
             if ($isWindows) {
-                $self = new IMLocale();
                 setlocale($locType, IMLocaleStringTable::getLocaleString($lstr) . 'UTF-8');
             } else {
                 setlocale($locType, $lstr . 'UTF-8');
             }
+            IMLocale::$currencyCode = IMLocaleCurrencyTable::getLocaleFormat($lstr);
         }
     }
 
