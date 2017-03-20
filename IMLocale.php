@@ -18,7 +18,7 @@ class IMLocale
     public static function numberFormatterClassName()
     {
         $cName = "IMNumberFormatter";
-        try {
+        try {   // This exception handling requires just PHP 5.2. On above 5.3 or later, it doesn't need to 'try.'
             if (class_exists("NumberFormatter") && !IMLocale::$alwaysIMClasses) {
                 $cName = "NumberFormatter";
             }

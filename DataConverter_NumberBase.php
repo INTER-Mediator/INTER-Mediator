@@ -30,7 +30,7 @@ class DataConverter_NumberBase
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
         $nfClass = IMLocale::numberFormatterClassName();
-        $this->formatter = new $nfClass($this->choosenLocale, 0 /*NumberFormatter::DECIMAL*/);
+        $this->formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
         if (!$this->formatter) {
             return null;
         }
