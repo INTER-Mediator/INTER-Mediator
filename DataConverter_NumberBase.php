@@ -17,12 +17,12 @@ require_once('INTER-Mediator.php');
 
 class DataConverter_NumberBase
 {
-
     protected $decimalMark = null;
     protected $thSepMark = null;
     protected $currencyMark = null;
     protected $useMbstring;
     protected $choosenLocale;
+    protected $formatter;
 
     public function __construct()
     {
@@ -30,13 +30,13 @@ class DataConverter_NumberBase
         $this->choosenLocale = IMLocale::$choosenLocale;
         $this->useMbstring = IMLocale::$useMbstring;
         $nfClass = IMLocale::numberFormatterClassName();
-        $formatter = new $nfClass($this->choosenLocale, 0 /*NumberFormatter::DECIMAL*/);
-        if (!$formatter) {
+        $this->formatter = new $nfClass($this->choosenLocale, 0 /*NumberFormatter::DECIMAL*/);
+        if (!$this->formatter) {
             return null;
         }
-        $this->decimalMark = $formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
-        $this->thSepMark = $formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
-        $this->currencyMark = $formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
+        $this->decimalMark = $this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
+        $this->thSepMark = $this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
+        $this->currencyMark = $this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
     }
 
     public function converterFromUserToDB($str)

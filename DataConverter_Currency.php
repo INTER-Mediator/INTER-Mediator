@@ -28,10 +28,8 @@ class DataConverter_Currency extends DataConverter_NumberBase
 
     function converterFromDBtoUser($str)
     {
-        $nfClass = IMLocale::numberFormatterClassName();
-        $formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
-        $formatter->setAttribute(8 /*NumberFormatter::FRACTION_DIGITS*/, $this->d);
-        return $formatter->formatCurrency($str, IMLocale::$currencyCode);
+        $this->formatter->setAttribute(8 /*NumberFormatter::FRACTION_DIGITS*/, $this->d);
+        return $this->formatter->formatCurrency($str, IMLocale::$currencyCode);
     }
 
     function converterFromUserToDB($str)
