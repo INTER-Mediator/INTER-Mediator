@@ -15,7 +15,7 @@
  */
 class IMLocaleCurrencyTable
 {
-    public static function getLocaleFormat($localeCode)
+    public static function getCurrenctyCode($localeCode)
     {
         if (strpos($localeCode, "_") !== false) {
             $localeCode = substr($localeCode, strpos($localeCode, "_") + 1, 2);

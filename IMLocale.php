@@ -69,7 +69,7 @@ class IMLocale
             } else {
                 setlocale($locType, $lstr . 'UTF-8');
             }
-            IMLocale::$currencyCode = IMLocaleCurrencyTable::getLocaleFormat($lstr);
+            IMLocale::$currencyCode = IMLocaleCurrencyTable::getCurrenctyCode($lstr);
         }
     }
 
