@@ -17,6 +17,11 @@ class IMLocaleStringTable
 {
     public static function getLocaleString($localeCode)
     {
+        if (substr($localeCode, 0, 2) == 'ja') {
+            return "jpn_jpn";
+        } else if (substr($localeCode, 0, 5) == 'en_US') {
+            return "English_United_States";
+        }
         return IMLocaleStringTable::$localeStrTable[$localeCode];
     }
 

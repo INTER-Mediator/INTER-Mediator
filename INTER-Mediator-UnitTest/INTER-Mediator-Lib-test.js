@@ -77,7 +77,11 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         // A negative second parameter doesn't support so far.
     },
     "format string detection": function()   {
-        assert.equals(INTERMediatorLib.digitSeparator(), [".", ",", 3]);
+        assert.equals(INTERMediatorOnPage.localInfo, {
+            mon_decimal_point:'.',
+            mon_thousands_sep:',',
+            currency_symbol:'￥'
+        });
     }
 });
 

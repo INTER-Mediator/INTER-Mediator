@@ -71,6 +71,13 @@ var INTERMediatorOnPage = {
     clientNotificationIdentifier: null,
     metadata: null,
     isLDAP: null,
+    appLocale: null,
+    localInfo: {
+        mon_decimal_point:'.',
+        mon_thousands_sep:',',
+        currency_symbol:'￥'
+    },
+    appCurrency: null,
 
     clearCredentials: function () {
         'use strict';

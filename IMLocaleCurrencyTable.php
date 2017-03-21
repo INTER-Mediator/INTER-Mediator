@@ -15,8 +15,13 @@
  */
 class IMLocaleCurrencyTable
 {
-    public static function getCurrenctyCode($localeCode)
+    public static function getCurrencyCode($localeCode)
     {
+        if (substr($localeCode, 0, 2) == 'ja') {
+            return "JPY";
+        } else if (substr($localeCode, 0, 5) == 'en_US') {
+            return "USD";
+        }
         if (strpos($localeCode, "_") !== false) {
             $localeCode = substr($localeCode, strpos($localeCode, "_") + 1, 2);
         }
@@ -24,6 +29,21 @@ class IMLocaleCurrencyTable
             $localeCode = 'JP';
         }
         $locInfo = IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($localeCode)];
+
+        return $locInfo;
+    }
+
+    public static function getContoryCurrencyCode($cCode)
+    {
+        if ($cCode == 'JP') {
+            return "JPY";
+        } else if ($cCode == 'US') {
+            return "USD";
+        }
+        if (!isset(IMLocaleCurrencyTable::$localeCurrencyTable[$cCode])) {
+            $cCode = 'JP';
+        }
+        $locInfo = IMLocaleCurrencyTable::$localeCurrencyTable[strtoupper($cCode)];
 
         return $locInfo;
     }
@@ -47,7 +67,6 @@ class IMLocaleCurrencyTable
         'AU' => 'AUD',
         'AT' => 'EUR',
         'AZ' => 'AZM',
-        'PT' => 'EUR',
         'BS' => 'BSD',
         'BH' => 'BHD',
         'BD' => 'BDT',
@@ -59,7 +78,6 @@ class IMLocaleCurrencyTable
         'BM' => 'BMD',
         'BT' => 'BTN',
         'BO' => 'BOB',
-        'AN' => 'ANG',
         'BA' => 'BAM',
         'BW' => 'BWP',
         'BR' => 'BRL',
@@ -171,7 +189,6 @@ class IMLocaleCurrencyTable
         'MU' => 'MUR',
         'YT' => 'EUR',
         'MX' => 'MXN',
-        'FM' => 'USD',
         'MD' => 'MDL',
         'MC' => 'EUR',
         'MN' => 'MNT',
@@ -181,15 +198,12 @@ class IMLocaleCurrencyTable
         'MZ' => 'MZM',
         'NA' => 'NAD',
         'NP' => 'NPR',
-        'NL' => 'EUR',
-        'AN' => 'ANG',
         'NC' => 'XPF',
         'NZ' => 'NZD',
         'NI' => 'NIO',
         'NE' => 'XOF',
         'NG' => 'NGN',
         'NF' => 'AUD',
-        'GB' => 'GBP',
         'MP' => 'USD',
         'NO' => 'NOK',
         'OM' => 'OMR',
@@ -201,21 +215,15 @@ class IMLocaleCurrencyTable
         'PE' => 'PEN',
         'PH' => 'PHP',
         'PL' => 'PLN',
-        'FM' => 'USD',
-        'PT' => 'EUR',
         'PR' => 'USD',
         'QA' => 'QAR',
         'RE' => 'EUR',
         'RO' => 'ROL',
-        'MP' => 'USD',
         'RU' => 'RUB',
         'RW' => 'RWF',
-        'AN' => 'ANG',
-        'MP' => 'USD',
         'WS' => 'WST',
         'SM' => 'EUR',
         'SA' => 'SAR',
-        'GB' => 'GBP',
         'SN' => 'XOF',
         'RS' => 'EUR',
         'SC' => 'SCR',
@@ -225,45 +233,30 @@ class IMLocaleCurrencyTable
         'SI' => 'EUR',
         'SB' => 'SBD',
         'ZA' => 'ZAR',
-        'ES' => 'EUR',
         'LK' => 'LKR',
-        'GP' => 'EUR',
         'KN' => 'XCD',
         'VI' => 'USD',
-        'AN' => 'ANG',
-        'VI' => 'USD',
-        'KN' => 'XCD',
         'LC' => 'XCD',
-        'AN' => 'ANG',
-        'GP' => 'EUR',
-        'VI' => 'USD',
         'VC' => 'XCD',
         'SR' => 'SRG',
         'SZ' => 'SZL',
         'SE' => 'SEK',
         'CH' => 'CHF',
-        'PF' => 'XPF',
         'TW' => 'TWD',
         'TJ' => 'TJS',
         'TZ' => 'TZS',
         'TH' => 'THB',
-        'MP' => 'USD',
         'TG' => 'XOF',
         'TO' => 'TOP',
-        'VG' => 'USD',
         'TT' => 'TTD',
-        'FM' => 'USD',
         'TN' => 'TND',
         'TR' => 'TRY',
         'TM' => 'TMM',
         'TC' => 'USD',
         'TV' => 'AUD',
-        'VI' => 'USD',
         'UG' => 'UGX',
         'UA' => 'UAH',
-        'VC' => 'XCD',
         'AE' => 'AED',
-        'GB' => 'GBP',
         'US' => 'USD',
         'UY' => 'UYU',
         'UZ' => 'UZS',
@@ -271,10 +264,7 @@ class IMLocaleCurrencyTable
         'VA' => 'EUR',
         'VE' => 'VEB',
         'VN' => 'VND',
-        'VG' => 'USD',
-        'GB' => 'GBP',
         'WF' => 'XPF',
-        'FM' => 'USD',
         'YE' => 'YER',
         'ZM' => 'ZMK',
         'ZW' => 'ZWD',

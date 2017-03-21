@@ -57,10 +57,9 @@ var INTERMediatorLib = {
     roleAsHeaderDataControlName: 'header',
     roleAsFooterDataControlName: 'footer',
     roleAsNoResultDataControlName: 'noresult',
-    cachedDigitSeparator: null,
 
     initialize: function () {
-        var num, str, decimal, separator, digits;
+        var num, str, decimal, separator;
 
 //            INTERMediator.startFrom = 0;
 //            INTERMediator.pagedSize = 0;
@@ -68,18 +67,24 @@ var INTERMediatorLib = {
 //        INTERMediator.additionalSortKey = {};
 
         // Initialize the cachedDigitSeparator property.
-        try {
-            num = new Number(1000.1);
-            str = num.toLocaleString();
-            decimal = str.substr(-2, 1);
-            str = str.substring(0, str.length - 2);
-            separator = str.match(/[^0-9]/)[0];
-            digits = str.length - str.indexOf(separator) - 1;
-            INTERMediatorLib.cachedDigitSeparator = [decimal, separator, digits];
-        } catch (ex) {
-            INTERMediatorLib.cachedDigitSeparator = ['.', ',', 3];
-        }
-
+        // try {
+        //     num = new Number(1000.1);
+        //     str = num.toLocaleString();
+        //     decimal = str.substr(-2, 1);
+        //     str = str.substring(0, str.length - 2);
+        //     separator = str.match(/[^0-9]/)[0];
+        //     INTERMediatorOnPage.localInfo = {
+        //         mon_decimal_point:decimal,
+        //         mon_thousands_sep:separator,
+        //         currency_symbol:'￥'
+        //     };
+        // } catch (ex) {
+        //     INTERMediatorOnPage.localInfo = {
+        //         mon_decimal_point:'.',
+        //         mon_thousands_sep:',',
+        //         currency_symbol:'￥'
+        //     };
+        // }
         IMLibLocalContext.unarchive();
 
         return null;
@@ -95,10 +100,6 @@ var INTERMediatorLib = {
         }
 
         return null;
-    },
-
-    digitSeparator: function () {
-        return this.cachedDigitSeparator;
     },
 
     generatePasswordHash: function (password) {
@@ -650,7 +651,8 @@ var INTERMediatorLib = {
         str = (new String(str)).toString();
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
-            if ((c >= '0' && c <= '9') || c == '.' || c == '-' || c == this.cachedDigitSeparator[0]) {
+            if ((c >= '0' && c <= '9') || c == '.' || c == '-' ||
+                c == INTERMediatorOnPage.localInfo["mon_decimal_point"]) {
                 s += c;
             }
         }
@@ -708,11 +710,16 @@ var INTERMediatorLib = {
             }
         }
         s = s.length < 1 ? ["0"] : s;
-        return sign + s.reverse().join(this.cachedDigitSeparator[1])
-            + (underNumStr == '' ? '' : this.cachedDigitSeparator[0] + underNumStr);
+        return sign + s.reverse().join(INTERMediatorOnPage.localInfo["mon_thousands_sep"])
+            + (underNumStr == '' ? '' : INTERMediatorOnPage.localInfo["mon_decimal_point"] + underNumStr);
     },
 
-    objectToString: function (obj) {
+    currencyFormat: function (str, digit) {
+        return INTERMediatorOnPage.localInfo["currency_symbol"] +
+            INTERMediatorLib.numberFormat(str, digit);
+    },
+
+        objectToString: function (obj) {
         var str, i, key;
 
         if (obj === null) {

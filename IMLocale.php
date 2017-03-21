@@ -22,7 +22,7 @@ class IMLocale
             if (class_exists("NumberFormatter") && !IMLocale::$alwaysIMClasses) {
                 $cName = "NumberFormatter";
             }
-        } catch(Exception $e)  {
+        } catch (Exception $e) {
 
         }
         return $cName;
@@ -33,6 +33,7 @@ class IMLocale
     public static $currencyCode = 'USD';
     public static $useMbstring = false;
     public static $localForTest = '';
+    public static $options = null;
 
     /**
      * Set the locale with parameter, for UNIX and Windows OS.
@@ -41,12 +42,32 @@ class IMLocale
      */
     public static function setLocale($locType, $localeName = '')
     {
-        if (IMLocale::$localForTest != '') {
-            $lstr = IMLocale::$localForTest;
-        } else {
-            $lstr = ($localeName != '') ? $localeName : IMLocale::getLocaleFromBrowser();
+        $isSetLocale = false;
+        $isSetCurrency = false;
+        $appLocale = null;
+        $appCurrency = null;
+        $params = IMUtil::getFromParamsPHPFile(array("appLocale", "appCurrency",), true);
+        $appLocale = isset(IMLocale::$options['app-locale']) ? IMLocale::$options['app-locale'] : $params["appLocale"];
+        $appCurrency = isset(IMLocale::$options['app-currency']) ? IMLocale::$options['app-currency'] : $params["appCurrency"];
+        if (!is_null($appLocale)) {
+            IMLocale::$choosenLocale = $appLocale;
+            IMLocale::$currencyCode = IMLocaleCurrencyTable::getCurrencyCode($appLocale);
+            $isSetLocale = true;
+            $isSetCurrency = true;
+            $lstr = $appLocale;
         }
-        IMLocale::$choosenLocale = $lstr;
+        if (!is_null($appCurrency)) {
+            IMLocale::$currencyCode = IMLocaleCurrencyTable::getContoryCurrencyCode($appCurrency);
+            $isSetCurrency = true;
+        }
+        if (!$isSetLocale) {
+            if (IMLocale::$localForTest != '') {
+                $lstr = IMLocale::$localForTest;
+            } else {
+                $lstr = ($localeName != '') ? $localeName : IMLocale::getLocaleFromBrowser();
+            }
+            IMLocale::$choosenLocale = $lstr;
+        }
 
         // Detect server platform, Windows or Unix
         $isWindows = false;
@@ -59,21 +80,13 @@ class IMLocale
         if (array_search(substr($lstr, 0, 2), array('zh', 'ja', 'ko', 'vi'))) {
             IMLocale::$useMbstring = true;
         }
-        if (substr($lstr, 0, 2) == 'ja') {
-            $lstr = $isWindows ? "jpn_jpn" : $lstr;
-            setlocale($locType, $lstr);
-            IMLocale::$currencyCode = 'JPY';
-        } else if (substr($lstr, 0, 5) == 'en_US') {
-            $lstr = $isWindows ? "English_United_States" : $lstr;
-            setlocale($locType, $lstr);
-            IMLocale::$currencyCode = 'USD';
+        if ($isWindows) {
+            setlocale($locType, IMLocaleStringTable::getLocaleString($lstr) . 'UTF-8');
         } else {
-            if ($isWindows) {
-                setlocale($locType, IMLocaleStringTable::getLocaleString($lstr) . 'UTF-8');
-            } else {
-                setlocale($locType, $lstr . 'UTF-8');
-            }
-            IMLocale::$currencyCode = IMLocaleCurrencyTable::getCurrenctyCode($lstr);
+            setlocale($locType, $lstr . 'UTF-8');
+        }
+        if (!$isSetCurrency) {
+            IMLocale::$currencyCode = IMLocaleCurrencyTable::getCurrencyCode($lstr);
         }
     }
 
