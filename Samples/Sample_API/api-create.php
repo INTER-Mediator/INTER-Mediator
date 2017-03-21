@@ -16,12 +16,8 @@
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 spl_autoload_register('loadClass');
 
-$pid = mb_eregi_replace("/[^0-9]/", "", $_GET["id"]);
-if ($pid < 1) {
-    echo json_encode(array("ERROR" => "Invalid Product Number."));
-    exit();
-}
-
+$prodName = $_GET["n"];
+$prodPrice = mb_eregi_replace("/[^0-9]/", "", $_GET["p"]);
 $contextDef = array(
     array(
         'records' => 10,
@@ -34,9 +30,10 @@ $contextDef = array(
 $dbInstance = new DB_Proxy();
 $dbInstance->ignoringPost();
 $dbInstance->initialize($contextDef, array(), array("db-class" => "PDO"), 2, "product");
-$dbInstance->dbSettings->addExtraCriteria("id", "=", $pid);
-$dbInstance->processingRequest("read");
+$dbInstance->dbSettings->addExtraCriteria("name", $prodName);
+$dbInstance->dbSettings->addExtraCriteria("unitprice", $prodPrice);
+$dbInstance->processingRequest("create");
 $pInfo = $dbInstance->getDatabaseResult();
 $logInfo = $dbInstance->logger->getMessagesForJS();
-echo json_encode(array("data"=>$pInfo,"log"=>$logInfo));
+echo json_encode(array("data" => $pInfo, "log" => $logInfo));
 

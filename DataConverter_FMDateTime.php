@@ -21,6 +21,7 @@ class DataConverter_FMDateTime
     private $tz = 'Asia/Tokyo'; // Should be custimizable.
 
     private $useMbstring;
+    private $choosenLocale;
     private $fmtNum;
 
     /**
@@ -31,7 +32,9 @@ class DataConverter_FMDateTime
     public function __construct($format = '')
     {
         $this->fmt = $format;
-        $this->useMbstring = setLocaleAsBrowser(LC_TIME);
+        IMLocale::setLocale(LC_ALL);
+        $this->choosenLocale = IMLocale::$choosenLocale;
+        $this->useMbstring = IMLocale::$useMbstring;
         date_default_timezone_set($this->tz);
     }
 

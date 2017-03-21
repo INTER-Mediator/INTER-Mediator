@@ -17,30 +17,26 @@ require_once('INTER-Mediator.php');
 
 class DataConverter_NumberBase
 {
-
     protected $decimalMark = null;
     protected $thSepMark = null;
     protected $currencyMark = null;
     protected $useMbstring;
+    protected $choosenLocale;
+    protected $formatter;
 
     public function __construct()
     {
-        $this->useMbstring = setLocaleAsBrowser(LC_ALL);
-        $locInfo = localeconv();
-        $this->decimalMark = $locInfo['mon_decimal_point'];
-        // @codeCoverageIgnoreStart
-        if (strlen($this->decimalMark) == 0) {
-            $this->decimalMark = '.';
+        IMLocale::setLocale(LC_ALL);
+        $this->choosenLocale = IMLocale::$choosenLocale;
+        $this->useMbstring = IMLocale::$useMbstring;
+        $nfClass = IMLocale::numberFormatterClassName();
+        $this->formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
+        if (!$this->formatter) {
+            return null;
         }
-        // @codeCoverageIgnoreEnd
-        $this->thSepMark = $locInfo['mon_thousands_sep'];
-        if (strlen($this->thSepMark) == 0) {
-            $this->thSepMark = ',';
-        }
-        $this->currencyMark = $locInfo['currency_symbol'];
-        if (strlen($this->currencyMark) == 0) {
-            $this->currencyMark = '¥';
-        }
+        $this->decimalMark = $this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
+        $this->thSepMark = $this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
+        $this->currencyMark = $this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
     }
 
     public function converterFromUserToDB($str)

@@ -1774,7 +1774,7 @@ var INTERMediator = {
                     INTERMediatorLib.getInsertedStringFromErrorNumber(1046, [maxTableName]));
             }
             for (j = 0; j < linkDefs.length; j++) {
-                if (linkDefs[j].indexOf(maxTableName) !== 0)    {
+                if (linkDefs[j].indexOf(maxTableName) !== 0 && linkDefs[j].indexOf("_@") !== 0)    {
                     restDefs.push(linkDefs[j])
                 }
             }

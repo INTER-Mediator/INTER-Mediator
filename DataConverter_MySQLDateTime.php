@@ -22,11 +22,14 @@ class DataConverter_MySQLDateTime
 
     private $useMbstring;
     private $fmt;
+    private $choosenLocale;
 
     function __construct($format = '')
     {
         $this->fmt = $format;
-        $this->useMbstring = setLocaleAsBrowser(LC_TIME);
+        IMLocale::setLocale(LC_ALL);
+        $this->choosenLocale = IMLocale::$choosenLocale;
+        $this->useMbstring = IMLocale::$useMbstring;
         date_default_timezone_set($this->tz);
     }
 
