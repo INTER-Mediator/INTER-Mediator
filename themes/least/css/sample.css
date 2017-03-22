@@ -85,15 +85,19 @@ span.IM_POSTMESSAGE {
 }
 
 #_im_password {
+    color: black;
 }
 
 #_im_username {
+    color: black;
 }
 
 #_im_authbutton {
+    color: black;
 }
 
 #_im_changebutton {
+    color: black;
 }
 
 ._im_alertmessage {
