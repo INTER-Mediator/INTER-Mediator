@@ -26,9 +26,9 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Nobuo Hayashi
 - Kazuaki Osawa
 - Hiroko Oki
+- Tomomitsu Baba
 
 ## Special Thanks to:
-- Tomomitsu Baba
 - Candy
 - Katsunori Eda
 - Naomi Hamaji
