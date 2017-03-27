@@ -39,7 +39,7 @@ class IMUtil
         // End of for 5.2
         return $timeValue;
     }
-    
+
     public static function phpVersion()
     {
         $vString = explode('.', phpversion());
@@ -114,7 +114,7 @@ class IMUtil
             } elseif ($isSepTerminate && $isSepStart) {
                 $path .= substr($item, 1);
             } else {
-                if (! $isFirstItem || ! self::isPHPExecutingWindows()) {
+                if (!$isFirstItem || !self::isPHPExecutingWindows()) {
                     $path .= DIRECTORY_SEPARATOR;
                 }
                 $path .= $item;
@@ -124,7 +124,8 @@ class IMUtil
         return $path;
     }
 
-    public static function isPHPExecutingWindows() {
+    public static function isPHPExecutingWindows()
+    {
         $osName = php_uname("s");
         return $osName == "Windows NT";
     }
@@ -161,9 +162,10 @@ class IMUtil
         }
         return "Invalid_Class_Specification";
     }
-    
-    public static function phpSecLibRequiredClasses()   {
-        if (IMUtil::phpVersion() < 6)   {
+
+    public static function phpSecLibRequiredClasses()
+    {
+        if (IMUtil::phpVersion() < 6) {
             return array(
                 'phpseclib\Crypt\RSA',
                 'phpseclib\Crypt\Hash',
@@ -232,9 +234,12 @@ class IMUtil
     {
         $postMaxSize = self::return_bytes(ini_get('post_max_size'));
 
+        $sizeCheck = isset($_SERVER['HTTP_CONTENT_LENGTH']) ?
+            ($_SERVER['HTTP_CONTENT_LENGTH'] > $postMaxSize) : true;
+
         if ($_SERVER['REQUEST_METHOD'] == 'POST'
             //    && count($_POST) == 0
-            && $_SERVER['HTTP_CONTENT_LENGTH'] > $postMaxSize
+            && $sizeCheck
             && strpos($_SERVER['HTTP_CONTENT_TYPE'], 'multipart/form-data') === 0
         ) {
             return true;
@@ -389,7 +394,7 @@ class IMUtil
     {
         if (is_null($params)) {
             $params = IMUtil::getFromParamsPHPFile(
-                array('xFrameOptions', 'contentSecurityPolicy','accessControlAllowOrigin'), true);
+                array('xFrameOptions', 'contentSecurityPolicy', 'accessControlAllowOrigin'), true);
         }
         $xFrameOptions = str_replace("\r", '', str_replace("\n", '', $params['xFrameOptions']));
         $contentSecurityPolicy = str_replace("\r", '', str_replace("\n", '', $params['contentSecurityPolicy']));
