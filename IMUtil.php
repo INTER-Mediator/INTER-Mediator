@@ -234,13 +234,9 @@ class IMUtil
     {
         $postMaxSize = self::return_bytes(ini_get('post_max_size'));
 
-        $sizeCheck = isset($_SERVER['HTTP_CONTENT_LENGTH']) ?
-            ($_SERVER['HTTP_CONTENT_LENGTH'] > $postMaxSize) : true;
-
         if ($_SERVER['REQUEST_METHOD'] == 'POST'
-            //    && count($_POST) == 0
-            && $sizeCheck
-            && strpos($_SERVER['HTTP_CONTENT_TYPE'], 'multipart/form-data') === 0
+            && $_SERVER['CONTENT_LENGTH'] > $postMaxSize
+            && strpos($_SERVER['CONTENT_TYPE'], 'multipart/form-data') === 0
         ) {
             return true;
         }
