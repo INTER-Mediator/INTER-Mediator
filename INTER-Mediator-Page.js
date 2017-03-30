@@ -475,6 +475,7 @@ var INTERMediatorOnPage = {
             passwordLabel.appendChild(passwordBox);
 
             authButton = document.createElement('BUTTON');
+            authButton.id = '_im_authbutton';
             authButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2004)));
             frontPanel.appendChild(authButton);
 
@@ -513,6 +514,7 @@ var INTERMediatorOnPage = {
                 newPasswordBox.size = '12';
                 newPasswordLabel.appendChild(newPasswordBox);
                 chgpwButton = document.createElement('BUTTON');
+                chgpwButton.id = '_im_changebutton';
                 chgpwButton.appendChild(document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2005)));
                 frontPanel.appendChild(chgpwButton);
 
@@ -527,6 +529,7 @@ var INTERMediatorOnPage = {
                 breakLine = document.createElement('HR');
                 frontPanel.appendChild(breakLine);
                 oAuthButton = document.createElement('BUTTON');
+                oAuthButton.id = '_im_authbutton';
                 oAuthButton.appendChild(document.createTextNode(
                     INTERMediatorLib.getInsertedStringFromErrorNumber(2014)));
                 frontPanel.appendChild(oAuthButton);
