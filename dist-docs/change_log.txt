@@ -43,6 +43,8 @@ Ver.5.6 (in development)
 - Application Locale and Currency Locale are supprted. The option parameters in IM_Entry function can have
   'app-locale' and 'app-currency' keyed values. The params.php file can have $appLocale and $appCurrency vars.
 - The count function for expression is added.
+- The default value of INTERMediatorOnPage.isSetDefaultStyle property set to false. This might be taken over
+  the theme features.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
