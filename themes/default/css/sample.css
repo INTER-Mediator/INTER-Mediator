@@ -181,6 +181,7 @@ span.IM_NAV_button {
     background-color: #000000;
     color: yellow;
     cursor: pointer;
+    display: inline-block;
 }
 
 span.IM_NAV_disabled {

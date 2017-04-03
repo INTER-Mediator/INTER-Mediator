@@ -21,9 +21,8 @@
 </head>
 <body>
 <header>
-  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+    <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
 </header>
-<div id="wrapper">
 <div id="nonsupportmessage">
     <div>
         If you see this, you must use any unsupported web browser.<br>
@@ -36,98 +35,106 @@
         描画処理中の場合はしばらくお待ちください。
     </div>
 </div>
-<h1>Contact Management (Sample for Several Fundamental Features)</h1>
-<div class="sub_title" id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
-<table border="1">
-    <tbody>
-    <tr>
-        <th>id</th>
-        <td>
-            <div data-im="person@id"></div>
-        </td>
-        <th>category</th>
-        <td>
-            <select data-im="person@category">
-                <option value="101">Family</option>
-                <option value="102">ClassMate</option>
-                <option value="103">Collegue</option>
-            </select>
-        </td>
-        <th>check</th>
-        <td><input type="checkbox" data-im="person@checking" value="1"></td>
-    </tr>
-    <tr>
-        <th>name</th>
-        <td colspan="5"><input type="text" data-im="person@name" value=""></td>
-    </tr>
-    <tr>
-        <th>mail</th>
-        <td colspan="5"><input type="text" data-im="person@mail" value=""></td>
-    </tr>
-    <tr>
-        <th>location</th>
-        <td colspan="5">
-            <label><input type="radio" name="radio1" data-im="person@location" value="201"> Domestic</label>
-            <label><input type="radio" name="radio1" data-im="person@location" value="202"> International</label>
-            <label><input type="radio" name="radio1" data-im="person@location" value="203"> Neightbor</label>
-            <label><input type="radio" name="radio1" data-im="person@location" value="204"> Space</label>
-        </td>
-    </tr>
-    <tr>
-        <th>memo</th>
-        <td colspan="5"><textarea data-im="person@memo"></textarea></td>
-    </tr>
-    <tr>
-        <td colspan="6">
-            <table border="1">
-                <thead>
-                <tr>
-                    <th>datetime</th>
-                    <th>summary</th>
-                    <th>important</th>
-                    <th>way</th>
-                    <th>kind</th>
-                    <th>description</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td><input type="text" data-im="contact@datetime"></td>
-                    <td><input type="text" data-im="contact@summary"></td>
-                    <td><input type="checkbox" data-im="contact@important" value="1"></td>
-                    <td>
-                        <select data-im="contact@way">
-                            <option data-im="contact_way@id@value|contact_way@name@innerHTML"></option>
-                        </select>
-                    </td>
-                    <td>
-                        <select data-im="contact@kind">
-                            <option data-im="kindid|kindname"></option>
-                        </select>
-                    </td>
-                    <td><textarea data-im="contact@description@innerHTML"></textarea></td>
-                </tr>
-                </tbody>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="6">
-            <ul>
-                <li>
-                    <hr>
-                    <input type="text" data-im="history@startdate"></li>
-                <li><input type="text" data-im="history@enddate"></li>
-                <li><input type="text" data-im="history@description"></li>
-            </ul>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
+<div id="wrapper" style="display:none">
+    <h1>Contact Management (Sample for Several Fundamental Features)</h1>
+    <div class="sub_title" id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
+    <table border="1">
+        <tbody>
+        <tr>
+            <th>id</th>
+            <td>
+                <div data-im="person@id"></div>
+            </td>
+        </tr>
+        <tr>
+            <th>category</th>
+            <td>
+                <select data-im="person@category">
+                    <option value="101">Family</option>
+                    <option value="102">ClassMate</option>
+                    <option value="103">Collegue</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>check</th>
+            <td><input type="checkbox" data-im="person@checking" value="1"></td>
+        </tr>
+        <tr>
+            <th>name</th>
+            <td colspan="5"><input type="text" data-im="person@name" value=""></td>
+        </tr>
+        <tr>
+            <th>mail</th>
+            <td colspan="5"><input type="text" data-im="person@mail" value=""></td>
+        </tr>
+        <tr>
+            <th>location</th>
+            <td colspan="5">
+                <label><input type="radio" name="radio1" data-im="person@location" value="201"> Domestic</label>
+                <label><input type="radio" name="radio1" data-im="person@location" value="202"> International</label>
+                <label><input type="radio" name="radio1" data-im="person@location" value="203"> Neightbor</label>
+                <label><input type="radio" name="radio1" data-im="person@location" value="204"> Space</label>
+            </td>
+        </tr>
+        <tr>
+            <th>memo</th>
+            <td colspan="5"><textarea data-im="person@memo"></textarea></td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <table border="1">
+                    <thead>
+                    <tr>
+                        <th>datetime</th>
+                        <th>summary</th>
+                        <th>way</th>
+                        <th>kind</th>
+                        <th>description</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" data-im="contact@datetime"></td>
+                        <td>
+                            <input type="text" data-im="contact@summary"><br>
+                            important: <input type="checkbox" data-im="contact@important" value="1">
+                        </td>
+                        <td>
+                            <select data-im="contact@way">
+                                <option data-im="contact_way@id@value|contact_way@name@innerHTML"></option>
+                            </select>
+                        </td>
+                        <td>
+                            <select data-im="contact@kind">
+                                <option data-im="kindid|kindname"></option>
+                            </select>
+                        </td>
+                        <td><textarea style="width: 100px" data-im="contact@description@innerHTML"></textarea></td>
+                        <td></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <ul>
+                    <li>
+                        <hr>
+                        <input type="text" data-im="history@startdate"></li>
+                    <li><input type="text" data-im="history@enddate"></li>
+                    <li><input type="text" data-im="history@description"></li>
+                </ul>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
 </div>
 <footer>
-<small>INTER-Mediator ©2016</small>
+    <small>INTER-Mediator ©2016</small>
 </footer>
 </body>
 </html>

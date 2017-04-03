@@ -31,6 +31,11 @@ IM_Entry(array(
                 ),
             ),
         'repeat-control' => 'insert copy-contact,history delete',
+        'button-names' => array(
+            'insert'=>'レコード追加',
+            'delete'=>'レコード削除',
+            'copy'=>'レコード複製',
+        ),
     ),
     array(
         'name' => 'contact',
