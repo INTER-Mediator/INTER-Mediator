@@ -101,6 +101,7 @@ $browserCompatibility = array(
     'Safari' => '4+',
     //'Safari'=>array('Mac'=>'4+','Win'=>'4+'), // Sample for dividing with OS
     'Opera' => '1+',
+    'WebKit' => '1+',
 );
 
 /*

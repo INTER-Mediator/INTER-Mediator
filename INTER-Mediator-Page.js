@@ -766,6 +766,8 @@ var INTERMediatorOnPage = {
                 agentPos = navigator.appVersion.indexOf('Version/') + 8;
             } else if (navigator.userAgent.indexOf('Firefox/') > -1) {
                 agentPos = navigator.userAgent.indexOf('Firefox/') + 8;
+            } else if (navigator.appVersion.indexOf('WebKit/') > -1) {
+                agentPos = navigator.appVersion.indexOf('WebKit/') + 7;
             }
 
             if (agentPos > -1) {

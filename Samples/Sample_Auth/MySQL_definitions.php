@@ -25,6 +25,11 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
+            'button-names' => array(
+                'insert'=>'レコード追加',
+                'delete'=>'レコード削除',
+                'copy'=>'レコード複製',
+            ),
 //            'authentication' => array(
 //                'read' => array( /* load, update, new, delete*/
 //                    'group' => array("group1"),
