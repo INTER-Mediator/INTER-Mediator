@@ -159,7 +159,7 @@ footer {
 
 /* INTER-Mediator specific style definitions */
 .IM_NAV_panel {
-    background-color: #CCCCCC;
+    background-color: #9b9bcc;
     padding: 4px;
     margin: 4px 0 4px 0;
 }
@@ -179,8 +179,9 @@ span.IM_NAV_button {
     margin: 2px 6px 2px 6px;
     border-radius: 3px;
     background-color: #000000;
-    color: yellow;
+    color: #bdbdee;
     cursor: pointer;
+    display: inline-block;
 }
 
 span.IM_NAV_disabled {
@@ -193,7 +194,7 @@ div.IM_CREDIT {
 }
 
 span.IM_POSTMESSAGE {
-    color: orange;
+    color: #7c7caa;
 }
 
 #_im_logo {
@@ -207,30 +208,43 @@ span.IM_POSTMESSAGE {
     height: 65px;
     left: 0;
     top: 0;
-    color: #DDDDAA;
+    color: #9b9bcc;
     font-size: 6px;
     position: absolute;
     padding: 6px;
     border-radius: 0 0 10px 0;
-    border-right: solid 4px #779933;
-    border-bottom: solid 4px #779933;
+    border-right: solid 4px #9b9bcc;
+    border-bottom: solid 4px #9b9bcc;
     z-index: 999999;
 }
 
 #_im_authpanel {
-    width: 350px;
+    width: 450px;
     background-color: #333333;
-    color: #DDDDAA;
+    color: #bdbdee;
     margin: 50px auto 0 auto;
     padding: 20px;
     border-radius: 10px;
     position: relative;
+    font-weight: bold;
 }
 
 ._im_authlabel {
     width: 120px;
     text-align: right;
     float: left;
+    color: #bdbdee;
+    font-weight: normal;
+    font-size: 1em;
+}
+
+._im_authlabel_pwchange {
+    width: 120px;
+    text-align: right;
+    float: left;
+    color: #bdbdee;
+    font-size: 0.75em;
+    padding-top: 4px;
 }
 
 #_im_password {
@@ -243,6 +257,18 @@ span.IM_POSTMESSAGE {
 }
 
 #_im_changebutton {
+}
+
+#_im_login_message {
+    text-align: center;
+    font-size: 0.75em;
+    color: #e89da8;
+}
+
+#_im_newpass_message {
+    text-align: center;
+    font-size: 0.75em;
+    color: #e89da8;
 }
 
 ._im_alertmessage {

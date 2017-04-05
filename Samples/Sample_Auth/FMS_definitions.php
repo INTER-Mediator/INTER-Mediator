@@ -28,6 +28,11 @@ IM_Entry(
                 array('field' => 'id', 'direction' => 'ascend'
                 ),
             ),
+            'button-names' => array(
+                'insert'=>'レコード追加',
+                'delete'=>'レコード削除',
+                'copy'=>'レコード複製',
+            ),
             'authentication' => array(
                 'read' => array( /* load, update, new, delete*/
                     'group' => array("group1","group2"),

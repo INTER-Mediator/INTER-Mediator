@@ -8,12 +8,9 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-// window.onload = function () {
-//     var nodeUnsupport = document.getElementById('nonsupportmessage');
-//     if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
-//         INTERMediator.construct(true);
-//     }
-// };
+INTERMediatorOnPage.doAfterConstruct = function () {
+    document.getElementById("wrapper").style.display = "block";
+};
 
 function test() {
     INTERMediator_DBAdapter.db_createRecord({

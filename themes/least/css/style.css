@@ -68,8 +68,8 @@ span.IM_POSTMESSAGE {
     z-index: 999999;
 }
 
-#_im_authpanel {
-    width: 350px;
+#_im_authpanel{
+    width: 450px;
     background-color: #333333;
     color: #DDDDAA;
     margin: 50px auto 0 auto;
@@ -77,11 +77,20 @@ span.IM_POSTMESSAGE {
     border-radius: 10px;
     position: relative;
 }
-
-._im_authlabel {
+._im_authlabel   {
     width: 120px;
     text-align: right;
     float: left;
+    color: #DDDDAA;
+}
+
+._im_authlabel_pwchange {
+    width: 120px;
+    text-align: right;
+    float: left;
+    color: #DDDDAA;
+    font-size: 0.75em;
+    padding-top: 4px;
 }
 
 #_im_password {
@@ -98,6 +107,18 @@ span.IM_POSTMESSAGE {
 
 #_im_changebutton {
     color: black;
+}
+
+#_im_login_message {
+    text-align: center;
+    font-size: 0.75em;
+    color: red;
+}
+
+#_im_newpass_message {
+    text-align: center;
+    font-size: 0.75em;
+    color: red;
 }
 
 ._im_alertmessage {

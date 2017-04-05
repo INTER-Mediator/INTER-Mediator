@@ -48,7 +48,7 @@ var INTERMediatorOnPage = {
     isAutoConstruct: true,
 
     isShowChangePassword: true,
-    isSetDefaultStyle: true,
+    isSetDefaultStyle: false,
     authPanelTitle: null,
     isOAuthAvailable: false,
     oAuthClientID: null,
@@ -484,9 +484,11 @@ var INTERMediatorOnPage = {
             frontPanel.appendChild(breakLine);
 
             newPasswordMessage = document.createElement('DIV');
-            newPasswordMessage.style.textAlign = 'center';
-            newPasswordMessage.style.textSize = '10pt';
-            newPasswordMessage.style.color = '#994433';
+            if (INTERMediatorOnPage.isSetDefaultStyle) {
+                newPasswordMessage.style.textAlign = 'center';
+                newPasswordMessage.style.textSize = '10pt';
+                newPasswordMessage.style.color = '#994433';
+            }
             newPasswordMessage.id = '_im_login_message';
             frontPanel.appendChild(newPasswordMessage);
 
@@ -504,7 +506,7 @@ var INTERMediatorOnPage = {
                     newPasswordSpan.style.fontSize = '0.7em';
                     newPasswordSpan.style.paddingTop = '4px';
                 }
-                INTERMediatorLib.setClassAttributeToNode(newPasswordSpan, '_im_authlabel');
+                INTERMediatorLib.setClassAttributeToNode(newPasswordSpan, '_im_authlabel_pwchange');
                 newPasswordLabel.appendChild(newPasswordSpan);
                 newPasswordSpan.appendChild(
                     document.createTextNode(INTERMediatorLib.getInsertedStringFromErrorNumber(2006)));
@@ -519,9 +521,11 @@ var INTERMediatorOnPage = {
                 frontPanel.appendChild(chgpwButton);
 
                 newPasswordMessage = document.createElement('DIV');
-                newPasswordMessage.style.textAlign = 'center';
-                newPasswordMessage.style.textSize = '10pt';
-                newPasswordMessage.style.color = '#994433';
+                if (INTERMediatorOnPage.isSetDefaultStyle) {
+                    newPasswordMessage.style.textAlign = 'center';
+                    newPasswordMessage.style.textSize = '10pt';
+                    newPasswordMessage.style.color = '#994433';
+                }
                 newPasswordMessage.id = '_im_newpass_message';
                 frontPanel.appendChild(newPasswordMessage);
             }
@@ -762,6 +766,8 @@ var INTERMediatorOnPage = {
                 agentPos = navigator.appVersion.indexOf('Version/') + 8;
             } else if (navigator.userAgent.indexOf('Firefox/') > -1) {
                 agentPos = navigator.userAgent.indexOf('Firefox/') + 8;
+            } else if (navigator.appVersion.indexOf('WebKit/') > -1) {
+                agentPos = navigator.appVersion.indexOf('WebKit/') + 7;
             }
 
             if (agentPos > -1) {
@@ -1030,23 +1036,16 @@ var INTERMediatorOnPage = {
 
         frontPanel = document.getElementById('_im_progress');
         if (!frontPanel) {
-            //rootPath = INTERMediatorOnPage.getIMRootPath();
-            //headNode = document.getElementsByTagName('HEAD')[0];
             bodyNode = document.getElementsByTagName('BODY')[0];
             frontPanel = document.createElement('div');
             frontPanel.setAttribute('id', '_im_progress');
             frontPanel.style.position = 'fixed';
             linkElement = document.createElement('link');
-            // linkElement.setAttribute('href', rootPath + '/themes/default/css/style.css');
-            // linkElement.setAttribute('rel', 'stylesheet');
-            // linkElement.setAttribute('type', 'text/css');
-            // headNode.appendChild(linkElement);
             if (bodyNode.firstChild) {
                 bodyNode.insertBefore(frontPanel, bodyNode.firstChild);
             } else {
                 bodyNode.appendChild(frontPanel);
             }
-
             /*  GIF animation image was generated on
              But they describe no copyright or kind of message doesn't required.
              */

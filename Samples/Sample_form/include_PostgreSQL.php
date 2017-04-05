@@ -28,6 +28,11 @@ IM_Entry(
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete copy-contact,history',
             'sequence' => 'im_sample.person_id_seq',
+            'button-names' => array(
+                'insert'=>'レコード追加',
+                'delete'=>'レコード削除',
+                'copy'=>'レコード複製',
+            ),
         ),
         array(
             'name' => 'contact',
