@@ -77,8 +77,11 @@ cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/t
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-UI.js"                    >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/js_lib/tinySHA1.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/lib/js_lib/sha256.js"                    >> "${buildPath}/temp.js"
+if [ ! -f "${topOfDir}/${YUICOMP}" ]; then
+    cat "${originalPath}/lib/js_lib/tinySHA1.js"              >> "${buildPath}/temp.js"
+    echo ';'                                                  >> "${buildPath}/temp.js"
+    cat "${originalPath}/lib/js_lib/sha256.js"                >> "${buildPath}/temp.js"
+fi
 cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
@@ -95,18 +98,24 @@ if [ -f "${topOfDir}/${YUICOMP}" ]; then
     osName=$(uname -s)
     echo "Detected OS: ${osName}"
     if [[ "${osName}" == CYGWIN* ]];  then
-    	jarPath=$(cygpath -w "${topOfDir}/${YUICOMP}")
-    	temp2Path=$(cygpath -w "${buildPath}/temp2.js")
-    	temp3Path=$(cygpath -w "${buildPath}/temp3.js")
-    	yuiLogPath=$(cygpath -w "${buildDir}/${YUICOMPLOG}")
+        jarPath=$(cygpath -w "${topOfDir}/${YUICOMP}")
+        temp2Path=$(cygpath -w "${buildPath}/temp2.js")
+        temp3Path=$(cygpath -w "${buildPath}/temp3.js")
+        yuiLogPath=$(cygpath -w "${buildDir}/${YUICOMPLOG}")
     else
-    	jarPath="${topOfDir}/${YUICOMP}"
-    	temp2Path="${buildPath}/temp2.js"
-    	temp3Path="${buildPath}/temp3.js"
-    	yuiLogPath="${buildDir}/${YUICOMPLOG}"
+        jarPath="${topOfDir}/${YUICOMP}"
+        temp2Path="${buildPath}/temp2.js"
+        temp3Path="${buildPath}/temp3.js"
+        yuiLogPath="${buildDir}/${YUICOMPLOG}"
     fi
     java -jar "${jarPath}"  "${temp2Path}" -v --charset UTF-8 -o "${temp3Path}" 2> "${yuiLogPath}"
     sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/INTER-Mediator.js"
+    head -n 9 "${buildPath}/INTER-Mediator.js"           > "${buildPath}/temp.js"
+    tail -n 1 "${originalPath}/lib/js_lib/tinySHA1.js"  >> "${buildPath}/temp.js"
+    echo ';'                                            >> "${buildPath}/temp.js"
+    tail -n 1 "${originalPath}/lib/js_lib/sha256.js"    >> "${buildPath}/temp.js"
+    tail -n 1 "${buildPath}/INTER-Mediator.js"          >> "${buildPath}/temp.js"
+    mv "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
     rm  "${buildPath}/temp.js" "${temp2Path}" "${temp3Path}"
 else
     rm  "${buildPath}/temp.js"
@@ -183,8 +192,8 @@ if [ $choice = 1 ]; then
 else
     echo "PROCESSING: ${originalPath}/dist-docs/License.txt"
     cp -p   "${originalPath}/dist-docs/License.txt" "${buildPath}"
-	readmeLines=`wc -l "${originalPath}/dist-docs/readme.txt" | awk '{print $1}'`
-	lines=`expr $readmeLines - 8`
+    readmeLines=`wc -l "${originalPath}/dist-docs/readme.txt" | awk '{print $1}'`
+    lines=`expr $readmeLines - 8`
     echo "PROCESSING: ${originalPath}/dist-docs/readme.txt"
     head -n `echo $lines` "${originalPath}/dist-docs/readme.txt" > "${buildPath}/readme.txt"
 fi
