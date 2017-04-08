@@ -135,8 +135,8 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
         $this->assertTrue(hex2bin_for53($hexString) === $binaryString, $testName);
 
         $version = explode('.', PHP_VERSION);
-        if ( $version[0] >= 5 && $version[1] >= 4 ) {
-           $this->assertTrue(hex2bin_for53($hexString) === hex2bin($hexString), $testName);
+        if ($version[0] >= 5 && $version[1] >= 4) {
+            $this->assertTrue(hex2bin_for53($hexString) === hex2bin($hexString), $testName);
         }
     }
 
@@ -182,13 +182,13 @@ class INTERMediator_Test extends PHPUnit_Framework_TestCase
 //        $locStr = getLocaleFromBrowser($headerStr);
 //        $this->assertTrue($locStr == "en", $testName);
     }
-/*
-function IM_Entry($datasource, $options, $dbspecification, $debug = false)
-function loadClass($className)
-function arrayToJS($ar, $prefix)
-function arrayToJSExcluding($ar, $prefix, $exarray)
-function arrayToQuery($ar, $prefix)
-function getRelativePath()
-function setLocaleAsBrowser($locType)
-*/
+    /*
+    function IM_Entry($datasource, $options, $dbspecification, $debug = false)
+    function loadClass($className)
+    function arrayToJS($ar, $prefix)
+    function arrayToJSExcluding($ar, $prefix, $exarray)
+    function arrayToQuery($ar, $prefix)
+    function getRelativePath()
+    function setLocaleAsBrowser($locType)
+    */
 }

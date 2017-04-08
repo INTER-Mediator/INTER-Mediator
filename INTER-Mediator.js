@@ -1028,18 +1028,19 @@ var INTERMediator = {
                     node, [targetRepeater], null, parentObjectInfo, currentContextObj,
                     function (context) {
                         var currentContextDef = context.getContextDef();
+                        INTERMediator.clearCondition(currentContextDef.name, "_imlabel_crosstable");
                         INTERMediator.addCondition(currentContextDef.name, {
                             field: currentContextDef['relation'][0]['foreign-key'],
                             operator: 'IN',
                             value: colArray,
                             onetime: true
-                        });
+                        }, undefined, "_imlabel_crosstable");
                         INTERMediator.addCondition(currentContextDef.name, {
                             field: currentContextDef['relation'][1]['foreign-key'],
                             operator: 'IN',
                             value: rowArray,
                             onetime: true
-                        });
+                        }, undefined, "_imlabel_crosstable");
                     },
                     function (contextObj, targetRecords) {
                         var dataKeyColumn, dataKeyRow, currentContextDef, ix,
@@ -1774,13 +1775,13 @@ var INTERMediator = {
                     INTERMediatorLib.getInsertedStringFromErrorNumber(1046, [maxTableName]));
             }
             for (j = 0; j < linkDefs.length; j++) {
-                if (linkDefs[j].indexOf(maxTableName) !== 0 && linkDefs[j].indexOf("_@") !== 0)    {
+                if (linkDefs[j].indexOf(maxTableName) !== 0 && linkDefs[j].indexOf("_@") !== 0) {
                     restDefs.push(linkDefs[j])
                 }
             }
             if (linkDefs.length > 0 && context && restDefs.length > 0) {
                 INTERMediator.setErrorMessage(
-                    INTERMediatorLib.getInsertedStringFromErrorNumber(1047, [maxTableName,restDefs.toString()]));
+                    INTERMediatorLib.getInsertedStringFromErrorNumber(1047, [maxTableName, restDefs.toString()]));
             }
             return {targettable: context, fieldlist: fieldList['_im_index_' + maxTableName]};
         }
@@ -2195,8 +2196,12 @@ var INTERMediator = {
                         }
                         contextDef = detailContext.getContextDef();
                         contextName = contextDef.name;
-                        INTERMediator.clearCondition(contextName);
-                        INTERMediator.addCondition(contextName, {field: f, operator: '=', value: v});
+                        INTERMediator.clearCondition(contextName, "_imlabel_crosstable");
+                        INTERMediator.addCondition(contextName, {
+                            field: f,
+                            operator: '=',
+                            value: v
+                        }, undefined, "_imlabel_crosstable");
                         INTERMediator.constructMain(detailContext);
                         INTERMediator.clearCondition(contextName);
                         if (isMasterHide) {
@@ -2539,12 +2544,15 @@ var INTERMediator = {
         IMLibLocalContext.setValue(localKey, value, true);
     },
 
-    addCondition: function (contextName, condition, notMatching) {
+    addCondition: function (contextName, condition, notMatching, label) {
         var value, i, hasIdentical;
         if (notMatching != undefined) {
             condition['matching'] = !notMatching;
         } else {
             condition['matching'] = INTERMediator_DBAdapter.eliminateDuplicatedConditions;
+        }
+        if (label != undefined) {
+            condition['label'] = label;
         }
         if (INTERMediator.additionalCondition) {
             value = INTERMediator.additionalCondition;
@@ -2574,15 +2582,29 @@ var INTERMediator = {
         IMLibLocalContext.archive();
     },
 
-    clearCondition: function (contextName) {
-        var value = INTERMediator.additionalCondition;
-        if (value[contextName]) {
-            delete value[contextName];
-            INTERMediator.additionalCondition = value;
-            IMLibLocalContext.archive();
-            // } else {
-            //     INTERMediator.additionalCondition = {};
-            //     IMLibLocalContext.archive();
+    clearCondition: function (contextName, label) {
+        var i, value = INTERMediator.additionalCondition;
+        if (label == undefined) {
+            if (value[contextName]) {
+                delete value[contextName];
+                INTERMediator.additionalCondition = value;
+                IMLibLocalContext.archive();
+                // } else {
+                //     INTERMediator.additionalCondition = {};
+                //     IMLibLocalContext.archive();
+            }
+        }
+        else {
+            if (value[contextName]) {
+                for (i = 0; i < value[contextName].length; i++) {
+                    if (value[contextName][i]["label"] == label) {
+                        value[contextName].splice(i, 1);
+                        i--;
+                    }
+                }
+                INTERMediator.additionalCondition = value;
+                IMLibLocalContext.archive();
+            }
         }
     },
 
