@@ -98,6 +98,9 @@ class IMUtil
             case 'pdf':
                 $type = 'application/pdf';
                 break;
+            case 'svg':
+                $type = 'image/svg+xml';
+                break;
         }
         return $type;
     }

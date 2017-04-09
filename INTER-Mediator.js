@@ -596,6 +596,7 @@ var INTERMediator = {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
+                        INTERMediatorOnPage.hideProgress();
                         INTERMediatorOnPage.authenticating(
                             function () {
                                 INTERMediator.constructMain(updateRequiredContext);
@@ -614,7 +615,6 @@ var INTERMediator = {
         for (i = 0; i < imPartsShouldFinished.length; i++) {
             imPartsShouldFinished[i].finish();
         }
-
         INTERMediatorOnPage.hideProgress();
 
         for (i = 0; i < appendingNodesAtLast.length; i++) {

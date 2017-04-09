@@ -166,9 +166,9 @@ footer {
 
 /* INTER-Mediator specific style definitions === Repeat Controls */
 
-.IM_Button_Delete , .IM_Button_Delete{
+.IM_Button_Delete, .IM_Button_Delete {
     margin-bottom: 10PX;
-    margin-left:10PX;
+    margin-left: 10PX;
 }
 
 /* INTER-Mediator specific style definitions === Navigation */
@@ -215,23 +215,33 @@ span.IM_POSTMESSAGE {
 
 /* INTER-Mediator specific style definitions === Progress panel on the left-top corner */
 #_im_logo {
-    margin-right: 12px;
+    width: 40px;
+    height: 40px;
+    background-image: url(logo.gif);
+    display: inline-block;
+    margin-right: 8px;
+}
+
+#_im_animatedimage {
+    width: 40px;
+    height: 40px;
+    background-image: url(inprogress.gif);
+    display: inline-block;
+    margin-left: 8px;
 }
 
 #_im_progress {
-    background-color: #000000;
-    text-align: center;
-    width: 150px;
-    height: 65px;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100vw;
+    height: 100vh;
     left: 0;
     top: 0;
     color: #9b9bcc;
-    font-size: 6px;
-    position: absolute;
-    padding: 6px;
-    border-radius: 0 0 10px 0;
-    border-right: solid 4px #9b9bcc;
-    border-bottom: solid 4px #9b9bcc;
     z-index: 999999;
 }
 
@@ -245,6 +255,40 @@ span.IM_POSTMESSAGE {
     border-radius: 10px;
     position: relative;
     font-weight: bold;
+}
+
+#_im_authpback {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    padding: 50px 0 0 0;
+    z-index: 999998;
+    background-image: url(background.gif);
+}
+
+#_im_autherrorback {
+    height: 100%;
+    width: 100%;
+    background-image: url(background-error.gif);
+    position: absolute;
+    padding: 50px 0 0 0;
+    top: 0;
+    left: 0;
+    z-index: 999999;
+}
+
+#_im_autherrormessage {
+    width: 240px;
+    background-color: #333333;
+    color: #DD6666;
+    font-size: 16pt;
+    margin: 50px auto 0 auto;
+    padding: 20px 4px 20px 4px;
+    border-radius: 10px;
+    position: relative;
+    text-align: center;
 }
 
 ._im_authlabel {
