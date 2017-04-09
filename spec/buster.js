@@ -16,6 +16,7 @@ config["My tests"] = {
         "INTER-Mediator-UnitTest/INTER-Mediator-Element-test.js",
         "INTER-Mediator-UnitTest/INTER-Mediator-Lib-test.js",
         "INTER-Mediator-UnitTest/INTER-Mediator-Page-test.js",
+        "INTER-Mediator-UnitTest/INTER-Mediator-test.js",
         "INTER-Mediator-UnitTest/RSA_JavaScript-test.js",
         "INTER-Mediator-UnitTest/js-expression-eval-test.js",
         "INTER-Mediator-UnitTest/sha1-test.js"
