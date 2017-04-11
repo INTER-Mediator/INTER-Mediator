@@ -23,6 +23,8 @@ class Theme
         $params = IMUtil::getFromParamsPHPFile(array("altThemePath", "themeName",), true);
         $this->altThemePath = $params["altThemePath"];
         $this->themeName = $params["themeName"];
+        $themeNameInRequest = $_GET['theme'];
+        $selfInRequest = $_SERVER["SCRIPT_NAME"];
 
         $tType = str_replace('..', '', $_GET['type']);
         if (strtolower($tType) == "css" && !isset($_GET['name'])) {
@@ -32,6 +34,8 @@ class Theme
             foreach ($cssFiles as $aFile) {
                 $fContent .= file_get_contents($aFile);
             }
+            $fContent = preg_replace("/url\(([^\)]+)\)/",
+                "url({$selfInRequest}?theme={$themeNameInRequest}" . '&type=images&name=$1)', $fContent);
             $fpath = "something.css";
         } else {
             $fName = str_replace('..', '', $_GET['name']);

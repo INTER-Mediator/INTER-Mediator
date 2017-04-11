@@ -48,6 +48,7 @@ Ver.5.6 (in development)
 - The variable $browserCompatibility or 'browser-compatibility' keyed value can contain 'WebKit' key as a sign
   of any browser. Web browsers in mobile application might have the 'WebKit' string in its user agent.
 - The addCondtion and clearConditon method of INTERMediator class has "label" property for stabilizing.
+- Progress information is changed as more simple gear style icon and gray background.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
