@@ -73,9 +73,9 @@ var INTERMediatorOnPage = {
     isLDAP: null,
     appLocale: null,
     localInfo: {
-        mon_decimal_point:'.',
-        mon_thousands_sep:',',
-        currency_symbol:'￥'
+        mon_decimal_point: '.',
+        mon_thousands_sep: ',',
+        currency_symbol: '￥'
     },
     appCurrency: null,
 
@@ -297,8 +297,8 @@ var INTERMediatorOnPage = {
         }
     },
 
-    defaultBackgroundImage: null,
-    defaultBackgroundColor: null,
+//    defaultBackgroundImage: null, // Removed on Ver.5.6
+//   defaultBackgroundColor: null, // Removed on Ver.5.6
     loginPanelHTML: null,
 
     authenticating: function (doAfterAuth, doTest) {
@@ -379,23 +379,19 @@ var INTERMediatorOnPage = {
 
         bodyNode = document.getElementsByTagName('BODY')[0];
         backBox = document.createElement('div');
+        backBox.id = '_im_authpback';
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
-        backBox.style.height = '100%';
-        backBox.style.width = '100%';
-        if (INTERMediatorOnPage.defaultBackgroundImage) {
-            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.defaultBackgroundImage + ')';
-        } else if (INTERMediatorOnPage.isSetDefaultStyle) {
+        if (INTERMediatorOnPage.isSetDefaultStyle) {
+            backBox.style.height = '100%';
+            backBox.style.width = '100%';
             backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
                 + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background.gif)';
+            backBox.style.position = 'absolute';
+            backBox.style.padding = ' 50px 0 0 0';
+            backBox.style.top = '0';
+            backBox.style.left = '0';
+            backBox.style.zIndex = '999998';
         }
-        if (INTERMediatorOnPage.defaultBackgroundColor) {
-            backBox.style.backgroundColor = INTERMediatorOnPage.defaultBackgroundColor;
-        }
-        backBox.style.position = 'absolute';
-        backBox.style.padding = ' 50px 0 0 0';
-        backBox.style.top = '0';
-        backBox.style.left = '0';
-        backBox.style.zIndex = '999998';
 
         if (INTERMediatorOnPage.loginPanelHTML) {
             backBox.innerHTML = INTERMediatorOnPage.loginPanelHTML;
@@ -668,30 +664,35 @@ var INTERMediatorOnPage = {
 
         bodyNode = document.getElementsByTagName('BODY')[0];
         backBox = document.createElement('div');
+        backBox.id = "_im_autherrorback";
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
-        backBox.style.height = '100%';
-        backBox.style.width = '100%';
-        //backBox.style.backgroundColor = '#BBBBBB';
         if (INTERMediatorOnPage.isSetDefaultStyle) {
-            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
-                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background-error.gif)';
+            backBox.style.height = '100%';
+            backBox.style.width = '100%';
+            //backBox.style.backgroundColor = '#BBBBBB';
+            if (INTERMediatorOnPage.isSetDefaultStyle) {
+                backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
+                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background-error.gif)';
+            }
+            backBox.style.position = 'absolute';
+            backBox.style.padding = ' 50px 0 0 0';
+            backBox.style.top = '0';
+            backBox.style.left = '0';
+            backBox.style.zIndex = '999999';
         }
-        backBox.style.position = 'absolute';
-        backBox.style.padding = ' 50px 0 0 0';
-        backBox.style.top = '0';
-        backBox.style.left = '0';
-        backBox.style.zIndex = '999999';
-
         frontPanel = document.createElement('div');
-        frontPanel.style.width = '240px';
-        frontPanel.style.backgroundColor = '#333333';
-        frontPanel.style.color = '#DD6666';
-        frontPanel.style.fontSize = '16pt';
-        frontPanel.style.margin = '50px auto 0 auto';
-        frontPanel.style.padding = '20px 4px 20px 4px';
-        frontPanel.style.borderRadius = '10px';
-        frontPanel.style.position = 'relatvie';
-        frontPanel.style.textAlign = 'Center';
+        frontPanel.id = "_im_autherrormessage";
+        if (INTERMediatorOnPage.isSetDefaultStyle) {
+            frontPanel.style.width = '240px';
+            frontPanel.style.backgroundColor = '#333333';
+            frontPanel.style.color = '#DD6666';
+            frontPanel.style.fontSize = '16pt';
+            frontPanel.style.margin = '50px auto 0 auto';
+            frontPanel.style.padding = '20px 4px 20px 4px';
+            frontPanel.style.borderRadius = '10px';
+            frontPanel.style.position = 'relatvie';
+            frontPanel.style.textAlign = 'Center';
+        }
         frontPanel.onclick = function () {
             bodyNode.removeChild(backBox);
         };
@@ -1026,48 +1027,51 @@ var INTERMediatorOnPage = {
         var frontPanel;
         frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
-            frontPanel.parentNode.removeChild(frontPanel);
+            //frontPanel.parentNode.removeChild(frontPanel);
+            frontPanel.style.display = "none";
         }
     },
 
+    /*  GIF animation image was generated on
+     But they describe no copyright or kind of message doesn't required. */
+
     showProgress: function () {
         'use strict';
-        var rootPath, headNode, bodyNode, frontPanel, linkElement, imageProgress, imageIM;
+        var brNode, bodyNode, frontPanel, imageProgress, imageIM;
 
         frontPanel = document.getElementById('_im_progress');
         if (!frontPanel) {
             bodyNode = document.getElementsByTagName('BODY')[0];
             frontPanel = document.createElement('div');
             frontPanel.setAttribute('id', '_im_progress');
-            frontPanel.style.position = 'fixed';
-            linkElement = document.createElement('link');
             if (bodyNode.firstChild) {
                 bodyNode.insertBefore(frontPanel, bodyNode.firstChild);
             } else {
                 bodyNode.appendChild(frontPanel);
             }
-            /*  GIF animation image was generated on
-             But they describe no copyright or kind of message doesn't required.
-             */
-            imageIM = document.createElement('img');
-            imageIM.setAttribute('id', '_im_logo');
+            imageIM = document.createElement("img");
             imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
-                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=logo.gif');
+                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=gears.svg');
             frontPanel.appendChild(imageIM);
-            imageProgress = document.createElement('img');
-            imageProgress.setAttribute('src',
-                INTERMediatorOnPage.getEntryPath()
-                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif');
-            frontPanel.appendChild(imageProgress);
-            frontPanel.appendChild(document.createElement('BR'));
-            frontPanel.appendChild(document.createTextNode('INTER-Mediator working'));
+            // imageIM = document.createElement('div');
+            // imageIM.setAttribute('id', '_im_logo');
+            // frontPanel.appendChild(imageIM);
+            // imageProgress = document.createElement('div');
+            // imageProgress.setAttribute('id', '_im_animatedimage');
+            // frontPanel.appendChild(imageProgress);
+            // brNode = document.createElement('BR');
+            // brNode.setAttribute('clear', 'all');
+            // frontPanel.appendChild(brNode);
+            // frontPanel.appendChild(document.createTextNode('INTER-Mediator working'));
         }
+        frontPanel.style.display = "flex";
     },
 
+    // Gear SVG was generated on http://loading.io/.
+
     setReferenceToTheme: function () {
-        var headNode, bodyNode, linkElement, i, styleIndex = -1;
+        var headNode, linkElement, i, styleIndex = -1;
         headNode = document.getElementsByTagName('HEAD')[0];
-        bodyNode = document.getElementsByTagName('BODY')[0];
         linkElement = document.createElement('link');
         linkElement.setAttribute('href', INTERMediatorOnPage.getEntryPath()
             + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
@@ -1076,8 +1080,10 @@ var INTERMediatorOnPage = {
         for (i = 0; i < headNode.childNodes.length; i++) {
             if (headNode.childNodes[i] &&
                 headNode.childNodes[i].nodeType == 1 &&
-                headNode.childNodes[i].tagName == 'STYLE') {
+                headNode.childNodes[i].tagName == 'LINK' &&
+                headNode.childNodes[i].rel == 'stylesheet') {
                 styleIndex = i;
+                break;
             }
         }
         if (styleIndex > -1) {

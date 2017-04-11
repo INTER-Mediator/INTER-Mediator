@@ -8,7 +8,7 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-/*全体に共通するスタイル　ここから*/
+/* Styles for Generic Elements */
 * {
     font-family: Verdana, "ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "メイリオ", Meiryo, sans-serif;
     font-weight: lighter;
@@ -69,7 +69,7 @@ hr {
     margin: 10px 0;
 }
 
-/*テーブルに関するスタイル　ここから*/
+/* Styles for tables */
 table {
     border-collapse: collapse;
     font-size: 11pt;
@@ -100,9 +100,7 @@ td {
     vertical-align: top;
 }
 
-/*テーブルに関するスタイル　ここまで*/
-
-/*フォームに関するスタイル　ここから*/
+/* Styles for Form elements */
 input {
     font-size: 11pt;
     padding: 2px;
@@ -130,7 +128,7 @@ select[type="text"] {
     color: red;
 }
 
-/*フォームに関するスタイル　ここまで*/
+/* Other style definitions */
 
 p.logo {
     background: #333;
@@ -144,9 +142,20 @@ p.logo {
     margin: auto;
 }
 
-/*全体に共通するスタイル　ここまで*/
+.sub_title {
+    font-size: 1.2em;
+    padding: 20px 0 5px;
 
-/*フッターに関するスタイル　ここから*/
+}
+
+.back_btn {
+    padding-bottom: 10px;
+}
+
+.memo {
+    padding: 10px;
+}
+
 footer {
     border-top: 1px solid #9b9bcc;
     padding: 10px 20px;
@@ -155,9 +164,14 @@ footer {
     font-size: 0.8em;
 }
 
-/*フッターに関するスタイル　ここまで*/
+/* INTER-Mediator specific style definitions === Repeat Controls */
 
-/* INTER-Mediator specific style definitions */
+.IM_Button_Delete, .IM_Button_Delete {
+    margin-bottom: 10PX;
+    margin-left: 10PX;
+}
+
+/* INTER-Mediator specific style definitions === Navigation */
 .IM_NAV_panel {
     background-color: #9b9bcc;
     padding: 4px;
@@ -178,55 +192,103 @@ span.IM_NAV_button {
     padding: 2px 4px 2px 4px;
     margin: 2px 6px 2px 6px;
     border-radius: 3px;
-    background-color: #000000;
-    color: #bdbdee;
+    background-color: #6161ae;
+    color: #eeeeee;
     cursor: pointer;
     display: inline-block;
 }
 
 span.IM_NAV_disabled {
     background-color: #666666;
-    color: #333333;
+    color: #eeeeee;
 }
 
+/* INTER-Mediator specific style definitions === Credit at the bottom of page */
 div.IM_CREDIT {
 
 }
 
+/* INTER-Mediator specific style definitions === Message with Post-Only Mode */
 span.IM_POSTMESSAGE {
     color: #7c7caa;
 }
 
+/* INTER-Mediator specific style definitions === Progress panel on the left-top corner */
 #_im_logo {
-    margin-right: 12px;
+    width: 40px;
+    height: 40px;
+    background-image: url(logo.gif);
+    display: inline-block;
+    margin-right: 8px;
+}
+
+#_im_animatedimage {
+    width: 40px;
+    height: 40px;
+    background-image: url(inprogress.gif);
+    display: inline-block;
+    margin-left: 8px;
 }
 
 #_im_progress {
-    background-color: #000000;
-    text-align: center;
-    width: 150px;
-    height: 65px;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100vw;
+    height: 100vh;
     left: 0;
     top: 0;
     color: #9b9bcc;
-    font-size: 6px;
-    position: absolute;
-    padding: 6px;
-    border-radius: 0 0 10px 0;
-    border-right: solid 4px #9b9bcc;
-    border-bottom: solid 4px #9b9bcc;
     z-index: 999999;
 }
 
+/* INTER-Mediator specific style definitions === Authentication Panel and background */
 #_im_authpanel {
     width: 450px;
-    background-color: #333333;
-    color: #bdbdee;
-    margin: 50px auto 0 auto;
+    background-color: rgba(51, 51, 51, 0.7);
+    color: #eeeeee;
+    margin: 150px auto 0 auto;
     padding: 20px;
     border-radius: 10px;
     position: relative;
     font-weight: bold;
+}
+
+#_im_authpback {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    padding: 50px 0 0 0;
+    z-index: 999998;
+    background-image: url(background.gif);
+}
+
+#_im_autherrorback {
+    height: 100%;
+    width: 100%;
+    background-image: url(background-error.gif);
+    position: absolute;
+    padding: 50px 0 0 0;
+    top: 0;
+    left: 0;
+    z-index: 999999;
+}
+
+#_im_autherrormessage {
+    width: 240px;
+    background-color: #333333;
+    color: #DD6666;
+    font-size: 16pt;
+    margin: 50px auto 0 auto;
+    padding: 20px 4px 20px 4px;
+    border-radius: 10px;
+    position: relative;
+    text-align: center;
 }
 
 ._im_authlabel {
@@ -248,9 +310,11 @@ span.IM_POSTMESSAGE {
 }
 
 #_im_password {
+    margin-bottom: 15px;
 }
 
 #_im_username {
+    margin-bottom: 15px;
 }
 
 #_im_authbutton {
@@ -261,30 +325,18 @@ span.IM_POSTMESSAGE {
 
 #_im_login_message {
     text-align: center;
-    font-size: 0.75em;
+    font-size: 1em;
     color: #e89da8;
+    line-height: 180%;
 }
 
 #_im_newpass_message {
     text-align: center;
-    font-size: 0.75em;
+    font-size: 1em;
     color: #e89da8;
+    line-height: 180%;
 }
 
 ._im_alertmessage {
     color: red;
-}
-
-.sub_title {
-    font-size: 1.2em;
-    padding: 20px 0 5px;
-
-}
-
-.back_btn {
-    padding-bottom: 10px;
-}
-
-.memo {
-    padding: 10px;
 }
