@@ -186,40 +186,40 @@ describe package('acl'), :if => os[:family] == 'alpine' || os[:family] == 'ubunt
   it { should be_installed }
 end
 
-describe package('php5'), :if => os[:family] == 'alpine' do
+describe package('php7'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-apache2'), :if => os[:family] == 'alpine' do
+describe package('php7-apache2'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-curl'), :if => os[:family] == 'alpine' do
+describe package('php7-curl'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-pdo'), :if => os[:family] == 'alpine' do
+describe package('php7-pdo'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-pdo_mysql'), :if => os[:family] == 'alpine' do
+describe package('php7-pdo_mysql'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-pdo_pgsql'), :if => os[:family] == 'alpine' do
+describe package('php7-pdo_pgsql'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-pdo_sqlite'), :if => os[:family] == 'alpine' do
+describe package('php7-pdo_sqlite'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-openssl'), :if => os[:family] == 'alpine' do
+describe package('php7-openssl'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-dom'), :if => os[:family] == 'alpine' do
+describe package('php7-dom'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-json'), :if => os[:family] == 'alpine' do
+describe package('php7-json'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-bcmath'), :if => os[:family] == 'alpine' do
+describe package('php7-bcmath'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
-describe package('php5-phar'), :if => os[:family] == 'alpine' do
+describe package('php7-phar'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe file('/usr/local/bin/phpunit'), :if => os[:family] == 'alpine' do
@@ -229,6 +229,9 @@ describe package('libmysqlclient-dev'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 describe package('php'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
+describe package('php7-mbstring'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php7.0-mbstring'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
@@ -340,6 +343,9 @@ describe package('nodejs-legacy'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
+describe package('nodejs-npm'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('npm'), :if => os[:family] == 'ubuntu' || (os[:family] == 'redhat' && os[:release].to_f >= 6) do
   it { should be_installed }
 end
@@ -583,6 +589,14 @@ describe file('/home/developer') do
   it { should be_grouped_into 'developer' }
 end
 
+describe file('/etc/php7/php.ini'), :if => os[:family] == 'alpine' do
+  it { should be_file }
+  its(:content) { should match /max_execution_time = 120/ }
+  its(:content) { should match /max_input_time = 120/ }
+  its(:content) { should match /memory_limit = 256M/ }
+  its(:content) { should match /post_max_size = 100M/ }
+  its(:content) { should match /upload_max_filesize = 100M/ }
+end
 describe file('/etc/php5/apache2/php.ini'), :if => os[:family] == 'ubuntu' && os[:release].to_f < 16 do
   it { should be_file }
   its(:content) { should match /max_execution_time = 120/ }
@@ -660,6 +674,10 @@ describe file('/etc/rc.local'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   its(:content) { should match /\/usr\/local\/bin\/buster-server &/ }
   its(:content) { should match /\/usr\/local\/bin\/phantomjs \/usr\/local\/lib\/node_modules\/buster\/script\/phantom.js http:\/\/localhost:1111\/capture > \/dev\/null &/ }
+end
+
+describe file('/etc/motd'), :if => os[:family] == 'alpine' do
+  its(:content) { should match /Welcome to INTER-Mediator-Server VM!/ }
 end
 
 #describe service('buster-server'), :if => os[:family] == 'ubuntu' do

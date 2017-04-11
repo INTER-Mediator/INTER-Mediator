@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.4, Ubuntu Server 14.04, Ubuntu Server 16.04, CentOS 6.6 and CentOS 7
+# Recipe file of Itamae for Alpine Linux 3.5, Ubuntu Server 14.04, Ubuntu Server 16.04, CentOS 6.6 and CentOS 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on OS X usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -340,28 +340,40 @@ package 'acl' do
 end
 
 if node[:platform] == 'alpine'
-  package 'php5' do
+  package 'php7' do
     action :install
   end
-  package 'php5-apache2' do
+  package 'php7-apache2' do
     action :install
   end
-  package 'php5-curl' do
+  package 'php7-curl' do
     action :install
   end
-  package 'php5-pdo' do
+  package 'php7-pdo' do
     action :install
   end
-  package 'php5-openssl' do
+  package 'php7-pdo_mysql' do
     action :install
   end
-  package 'php5-dom' do
+  package 'php7-pdo_pgsql' do
     action :install
   end
-  package 'php5-json' do
+  package 'php7-pdo_sqlite' do
     action :install
   end
-  package 'php5-phar' do
+  package 'php7-openssl' do
+    action :install
+  end
+  package 'php7-dom' do
+    action :install
+  end
+  package 'php7-json' do
+    action :install
+  end
+  package 'php7-bcmath' do
+    action :install
+  end
+  package 'php7-phar' do
     action :install
   end
   execute 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp' do
@@ -548,6 +560,11 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14
   end
 end
 
+if node[:platform] == 'alpine'
+  package 'nodejs-npm' do
+    action :install
+  end
+end
 if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'npm' do
     action :install
@@ -1082,7 +1099,12 @@ end
 execute 'chown -R developer:developer /home/developer' do
   command 'chown -R developer:developer /home/developer'
 end
-
+  
+if node[:platform] == 'alpine'
+  execute 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini' do
+    command 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini'
+  end
+end
 if node[:platform] == 'ubuntu'
   if node[:platform_version].to_f < 16
     execute 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini' do
@@ -1534,6 +1556,9 @@ if node[:platform] == 'ubuntu'
 end
 
 if node[:platform] == 'alpine'
+  execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
+    command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
+  end
   execute 'poweroff' do
     command 'poweroff'
   end
