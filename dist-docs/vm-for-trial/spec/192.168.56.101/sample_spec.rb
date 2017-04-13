@@ -412,6 +412,16 @@ describe package('unifont'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
 end
 
+describe package('virtualbox-additions-grsec'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('virtualbox-guest-additions'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('virtualbox-guest-modules-grsec'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+
 describe package('linux-generic-lts-xenial'), :if => os[:family] == 'ubuntu' && os[:release].to_i == 14 do
   it { should be_installed }
 end

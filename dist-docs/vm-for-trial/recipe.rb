@@ -46,8 +46,8 @@ EOF
   file '/etc/apk/repositories' do
     content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.4/main
-http://dl-5.alpinelinux.org/alpine/v3.4/community
+http://dl-5.alpinelinux.org/alpine/v3.5/main
+http://dl-5.alpinelinux.org/alpine/v3.5/community
 http://dl-5.alpinelinux.org/alpine/edge/main
 http://dl-5.alpinelinux.org/alpine/edge/community
 http://dl-5.alpinelinux.org/alpine/edge/testing
@@ -175,15 +175,15 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  execute 'yes im4135dev | sudo passwd postgres' do
-    command 'yes im4135dev | sudo passwd postgres'
-  end
-  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
-    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
-  end
-  service 'postgresql' do
-    action [ :enable, :start ]
-  end
+  #execute 'yes im4135dev | sudo passwd postgres' do
+  #  command 'yes im4135dev | sudo passwd postgres'
+  #end
+  #execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+  #  command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  #end
+  #service 'postgresql' do
+  #  action [ :enable, :start ]
+  #end
 else
   service 'postgresql' do
     action [ :enable, :start ]
@@ -212,7 +212,7 @@ character-set-server=utf8mb4
 skip-character-set-client-handshake
 
 [mysqld_safe]
-log-error=/var/log/mysqld.log
+#log-error=/var/log/mysqld.log
 pid-file=/var/run/mysqld/mysqld.pid
 
 [client]
@@ -375,6 +375,18 @@ if node[:platform] == 'alpine'
   end
   package 'php7-phar' do
     action :install
+  end
+  package 'php7-mbstring' do
+    action :install
+  end
+  package 'ca-certificates' do
+    action :install
+  end
+  package 'wget' do
+    action :install
+  end
+  execute 'update-ca-certificates' do
+    command 'update-ca-certificates'
   end
   execute 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp' do
     command 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp'
@@ -571,7 +583,11 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   end
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine'
+  package 'fontconfig-dev' do
+    action :install
+  end
+elsif node[:platform] == 'ubuntu'
   package 'libfontconfig1' do
     action :install
   end
@@ -829,6 +845,18 @@ end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'xvfb' do
+    action :install
+  end
+end
+
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  package 'virtualbox-additions-grsec' do
+    action :install
+  end
+  #package 'virtualbox-guest-additions' do
+  #  action :install
+  #end
+  package 'virtualbox-guest-modules-grsec' do
     action :install
   end
 end
@@ -1406,10 +1434,26 @@ if node[:platform] == 'alpine'
     mode '755'
     content <<-EOF
 #!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+export DISPLAY=:99.0
+Xvfb :99 -screen 0 1024x768x24 &
+/bin/sleep 5
 /usr/bin/buster-server &
 /bin/sleep 5
-/usr/bin/phantomjs /usr/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
-/usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
+firefox http://localhost:1111/capture > /dev/null &
+#chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
+/bin/sleep 5
 exit 0
 EOF
   end
@@ -1486,7 +1530,20 @@ end
 
 
 # Install Selenium WebDriver
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine'
+  package 'dbus' do
+    action :install
+  end
+  package 'firefox' do
+    action :install
+  end
+  package 'chromium' do
+    action :install
+  end
+  package 'libgudev' do
+    action :install
+  end
+elsif node[:platform] == 'ubuntu'
   package 'x11-xkb-utils' do
     action :install
   end
