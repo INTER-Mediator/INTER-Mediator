@@ -87,6 +87,10 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache xvfb
     apk add --no-cache fontconfig-dev
 
+    apk add --no-cache virtualbox-additions-grsec
+    #apk add --no-cache virtualbox-guest-additions
+    apk add --no-cache virtualbox-guest-modules-grsec
+
     apk add --no-cache ca-certificates
     apk add --no-cache wget
     update-ca-certificates
