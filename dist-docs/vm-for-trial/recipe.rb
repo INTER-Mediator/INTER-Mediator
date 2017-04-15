@@ -1,6 +1,6 @@
 # Recipe file of Itamae for Alpine Linux 3.5, Ubuntu Server 14.04, Ubuntu Server 16.04, CentOS 6.6 and CentOS 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
-#   - Install Ruby on the host of VM (You don't need installing Ruby on OS X usually)
+#   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
 #     See detail: http://serverspec.org/
 #   - Change directory to "vm-for-trial" directory on the host of VM
@@ -849,7 +849,7 @@ if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine'
   package 'virtualbox-additions-grsec' do
     action :install
   end
