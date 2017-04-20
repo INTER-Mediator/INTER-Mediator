@@ -1,6 +1,6 @@
-# Recipe file of Itamae for Alpine Linux 3.4, Ubuntu Server 14.04, Ubuntu Server 16.04, CentOS 6.6 and CentOS 7
+# Recipe file of Itamae for Alpine Linux 3.5, Ubuntu Server 14.04, Ubuntu Server 16.04, CentOS 6.6 and CentOS 7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
-#   - Install Ruby on the host of VM (You don't need installing Ruby on OS X usually)
+#   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
 #     See detail: http://serverspec.org/
 #   - Change directory to "vm-for-trial" directory on the host of VM
@@ -46,8 +46,8 @@ EOF
   file '/etc/apk/repositories' do
     content <<-EOF
 #/media/cdrom/apks
-http://dl-5.alpinelinux.org/alpine/v3.4/main
-http://dl-5.alpinelinux.org/alpine/v3.4/community
+http://dl-5.alpinelinux.org/alpine/v3.5/main
+http://dl-5.alpinelinux.org/alpine/v3.5/community
 http://dl-5.alpinelinux.org/alpine/edge/main
 http://dl-5.alpinelinux.org/alpine/edge/community
 http://dl-5.alpinelinux.org/alpine/edge/testing
@@ -175,15 +175,15 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  execute 'yes im4135dev | sudo passwd postgres' do
-    command 'yes im4135dev | sudo passwd postgres'
-  end
-  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
-    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
-  end
-  service 'postgresql' do
-    action [ :enable, :start ]
-  end
+  #execute 'yes im4135dev | sudo passwd postgres' do
+  #  command 'yes im4135dev | sudo passwd postgres'
+  #end
+  #execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+  #  command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  #end
+  #service 'postgresql' do
+  #  action [ :enable, :start ]
+  #end
 else
   service 'postgresql' do
     action [ :enable, :start ]
@@ -212,7 +212,7 @@ character-set-server=utf8mb4
 skip-character-set-client-handshake
 
 [mysqld_safe]
-log-error=/var/log/mysqld.log
+#log-error=/var/log/mysqld.log
 pid-file=/var/run/mysqld/mysqld.pid
 
 [client]
@@ -340,29 +340,53 @@ package 'acl' do
 end
 
 if node[:platform] == 'alpine'
-  package 'php5' do
+  package 'php7' do
     action :install
   end
-  package 'php5-apache2' do
+  package 'php7-apache2' do
     action :install
   end
-  package 'php5-curl' do
+  package 'php7-curl' do
     action :install
   end
-  package 'php5-pdo' do
+  package 'php7-pdo' do
     action :install
   end
-  package 'php5-openssl' do
+  package 'php7-pdo_mysql' do
     action :install
   end
-  package 'php5-dom' do
+  package 'php7-pdo_pgsql' do
     action :install
   end
-  package 'php5-json' do
+  package 'php7-pdo_sqlite' do
     action :install
   end
-  package 'php5-phar' do
+  package 'php7-openssl' do
     action :install
+  end
+  package 'php7-dom' do
+    action :install
+  end
+  package 'php7-json' do
+    action :install
+  end
+  package 'php7-bcmath' do
+    action :install
+  end
+  package 'php7-phar' do
+    action :install
+  end
+  package 'php7-mbstring' do
+    action :install
+  end
+  package 'ca-certificates' do
+    action :install
+  end
+  package 'wget' do
+    action :install
+  end
+  execute 'update-ca-certificates' do
+    command 'update-ca-certificates'
   end
   execute 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp' do
     command 'wget https://phar.phpunit.de/phpunit-5.6.2.phar -P /tmp'
@@ -548,13 +572,22 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14
   end
 end
 
+if node[:platform] == 'alpine'
+  package 'nodejs-npm' do
+    action :install
+  end
+end
 if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'npm' do
     action :install
   end
 end
 
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine'
+  package 'fontconfig-dev' do
+    action :install
+  end
+elsif node[:platform] == 'ubuntu'
   package 'libfontconfig1' do
     action :install
   end
@@ -812,6 +845,18 @@ end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'xvfb' do
+    action :install
+  end
+end
+
+if node[:platform] == 'alpine'
+  package 'virtualbox-additions-grsec' do
+    action :install
+  end
+  #package 'virtualbox-guest-additions' do
+  #  action :install
+  #end
+  package 'virtualbox-guest-modules-grsec' do
     action :install
   end
 end
@@ -1082,7 +1127,12 @@ end
 execute 'chown -R developer:developer /home/developer' do
   command 'chown -R developer:developer /home/developer'
 end
-
+  
+if node[:platform] == 'alpine'
+  execute 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini' do
+    command 'cat /etc/php7/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php7/php.ini.tmp && mv /etc/php7/php.ini.tmp /etc/php7/php.ini'
+  end
+end
 if node[:platform] == 'ubuntu'
   if node[:platform_version].to_f < 16
     execute 'cat /etc/php5/apache2/php.ini | sed -e "s/max_execution_time = 30/max_execution_time = 120/g" | sed -e "s/max_input_time = 60/max_input_time = 120/g" | sed -e "s/memory_limit = 128M/memory_limit = 256M/g" | sed -e "s/post_max_size = 8M/post_max_size = 100M/g" | sed -e "s/upload_max_filesize = 2M/upload_max_filesize = 100M/g" > /etc/php5/apache2/php.ini.tmp && mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini' do
@@ -1384,10 +1434,26 @@ if node[:platform] == 'alpine'
     mode '755'
     content <<-EOF
 #!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+export DISPLAY=:99.0
+Xvfb :99 -screen 0 1024x768x24 &
+/bin/sleep 5
 /usr/bin/buster-server &
 /bin/sleep 5
-/usr/bin/phantomjs /usr/lib/node_modules/buster/script/phantom.js http://localhost:1111/capture > /dev/null &
-/usr/bin/Xvfb :99 -screen 0 1024x768x24 -extension RANDR > /dev/null 2>&1 &
+firefox http://localhost:1111/capture > /dev/null &
+#chromium-browser --no-sandbox http://localhost:1111/capture > /dev/null &
+/bin/sleep 5
 exit 0
 EOF
   end
@@ -1464,7 +1530,20 @@ end
 
 
 # Install Selenium WebDriver
-if node[:platform] == 'ubuntu'
+if node[:platform] == 'alpine'
+  package 'dbus' do
+    action :install
+  end
+  package 'firefox' do
+    action :install
+  end
+  package 'chromium' do
+    action :install
+  end
+  package 'libgudev' do
+    action :install
+  end
+elsif node[:platform] == 'ubuntu'
   package 'x11-xkb-utils' do
     action :install
   end
@@ -1534,6 +1613,9 @@ if node[:platform] == 'ubuntu'
 end
 
 if node[:platform] == 'alpine'
+  execute 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd' do
+    command 'echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd'
+  end
   execute 'poweroff' do
     command 'poweroff'
   end

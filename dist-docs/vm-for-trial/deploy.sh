@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.4.6 and Ubuntu Server 14.04.5
+# setup shell script for Alpine Linux 3.5 and Ubuntu Server 14.04
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
@@ -64,26 +64,32 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache postgresql
     apk add --no-cache sqlite
     apk add --no-cache acl
-    apk add --no-cache php5
-    apk add --no-cache php5-apache2
-    apk add --no-cache php5-curl
-    apk add --no-cache php5-pdo
-    apk add --no-cache php5-pdo_mysql
-    apk add --no-cache php5-pdo_pgsql
-    apk add --no-cache php5-pdo_sqlite
-    apk add --no-cache php5-openssl
-    apk add --no-cache php5-dom
-    apk add --no-cache php5-json
-    apk add --no-cache php5-bcmath
-    apk add --no-cache php5-phar
+    apk add --no-cache php7
+    apk add --no-cache php7-apache2
+    apk add --no-cache php7-curl
+    apk add --no-cache php7-pdo
+    apk add --no-cache php7-pdo_mysql
+    apk add --no-cache php7-pdo_pgsql
+    apk add --no-cache php7-pdo_sqlite
+    apk add --no-cache php7-openssl
+    apk add --no-cache php7-dom
+    apk add --no-cache php7-json
+    apk add --no-cache php7-bcmath
+    apk add --no-cache php7-phar
+    apk add --no-cache php7-mbstring
     apk add --no-cache git
     apk add --no-cache nodejs
+    apk add --no-cache nodejs-npm
     apk add --no-cache samba
     apk add --no-cache dbus
     apk add --no-cache firefox
     apk add --no-cache chromium libgudev
     apk add --no-cache xvfb
     apk add --no-cache fontconfig-dev
+
+    apk add --no-cache virtualbox-additions-grsec
+    #apk add --no-cache virtualbox-guest-additions
+    apk add --no-cache virtualbox-guest-modules-grsec
 
     apk add --no-cache ca-certificates
     apk add --no-cache wget
@@ -275,8 +281,8 @@ chown developer:developer .*
 # Modify php.ini
 
 if [ $OS = 'alpine' ] ; then
-    cat /etc/php5/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php5/php.ini.tmp
-    mv /etc/php5/php.ini.tmp /etc/php5/php.ini
+    cat /etc/php7/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php7/php.ini.tmp
+    mv /etc/php7/php.ini.tmp /etc/php7/php.ini
 else
     cat /etc/php5/apache2/php.ini | sed -e 's/max_execution_time = 30/max_execution_time = 120/g' | sed -e 's/max_input_time = 60/max_input_time = 120/g' | sed -e 's/memory_limit = 128M/memory_limit = 256M/g' | sed -e 's/post_max_size = 8M/post_max_size = 100M/g' | sed -e 's/upload_max_filesize = 2M/upload_max_filesize = 100M/g' > /etc/php5/apache2/php.ini.tmp
     mv /etc/php5/apache2/php.ini.tmp /etc/php5/apache2/php.ini
@@ -330,7 +336,8 @@ fi
 # The end of task.
 
 if [ $OS = 'alpine' ] ; then
-    poweroff
+    echo "Welcome to INTER-Mediator-Server VM!" > /etc/motd
+	poweroff
 else
     /sbin/shutdown -h now
 fi
