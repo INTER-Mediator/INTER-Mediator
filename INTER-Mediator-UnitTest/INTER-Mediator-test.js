@@ -1,6 +1,9 @@
 var assert = buster.referee.assert;
 
 buster.testCase("INTERMediator class additionalConditions", {
+    setUp: function () {
+        INTERMediator.clearCondition("context1");
+    },
     "AdditionalCondition-Add_Clear": function () {
         INTERMediator.addCondition("context1", {field: "f1", operator: "=", value: 1});
         assert.equals(INTERMediator.additionalCondition["context1"].length, 1, "Having 1 condition in context.");
@@ -15,7 +18,6 @@ buster.testCase("INTERMediator class additionalConditions", {
     },
 
     "AdditionalCondition-Add_Clear_Label": function () {
-        INTERMediator.clearCondition("context1");
         INTERMediator.addCondition("context1", {field: "f1", operator: "=", value: 1});
         INTERMediator.addCondition("context1", {field: "f2", operator: "=", value: 1});
         INTERMediator.addCondition("context1", {field: "f3", operator: "=", value: 1}, undefined, "label");
