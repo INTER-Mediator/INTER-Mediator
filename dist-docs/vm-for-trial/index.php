@@ -640,7 +640,7 @@ if (file_exists('/etc/alpine-release')) {
     <li>タイムゾーン：Asia/Tokyo</li>
     <li>ホスト名：inter-mediator-server</li>
     <li>Webサーバルート：<?php if ($osName === 'Alpine Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?></li>
-    <li>初期設定：OpenSSH Server, LAMP Server, Mail Server, PostgreSQL database</li>
+    <?php if ($osName === 'Ubuntu Server') { echo '<li>初期設定：OpenSSH Server, LAMP Server, Mail Server, PostgreSQL database</li>'; }; ?>
     <li>アクセス方法：SSH、SFTP、HTTP、SMB</li>
     <li>作成グループ：im-developer（developerおよびwww-dataが所属）</li>
 </ul>
