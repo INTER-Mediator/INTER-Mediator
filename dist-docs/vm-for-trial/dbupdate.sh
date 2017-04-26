@@ -23,7 +23,11 @@ if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
     mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
-    mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+    if [ -e "/etc/alpine-release" ]; then
+        mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+    else
+        mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $2,$3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
+    fi
 
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'drop database if exists test_db;'
     echo "${VMPASSWORD}" | sudo -u postgres -S psql -c 'create database test_db;'
