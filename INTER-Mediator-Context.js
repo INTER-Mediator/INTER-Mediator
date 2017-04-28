@@ -145,6 +145,16 @@ var IMLibContextPool = {
         }
     },
 
+    getContextFromEnclosure: function (enclosureNode) {
+        var i;
+
+        for (i = 0; i < this.poolingContexts.length; i++) {
+            if (this.poolingContexts[i].enclosureNode === enclosureNode) {
+                return this.poolingContexts[i];
+            }
+        }
+    },
+
     contextFromEnclosureId: function (idValue) {
         var i, enclosure;
         if (!idValue) {
