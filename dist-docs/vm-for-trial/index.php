@@ -85,7 +85,7 @@ if (file_exists('/etc/alpine-release')) {
     </li>
     <li>FileMaker向けのサンプルプログラムはホストマシンで、FileMaker Serverが稼働している場合で、
         このVMのネットワークを「ホストオンリーアダプター」にしていれば、おそらくそのまま稼働します。
-        他のホストや異なるネットワーク設定の場合は、/var/www/html/params.phpファイルの、
+        他のホストや異なるネットワーク設定の場合は、<?php if ($osName === 'Alpine Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?>/params.phpファイルの、
         $dbServer変数の値を変更してください。
     </li>
     <li><strong>サンプルデータベースの最終更新日</strong>：MySQL=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
