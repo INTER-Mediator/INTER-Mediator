@@ -1633,7 +1633,7 @@ var IMLibLocalContext = {
             nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfos[i]);
             if (nodeInfo.table == this.contextName) {
                 if (!node.id) {
-                    node.id = nextIdValue();
+                    node.id = INTERMediator.nextIdValue();
                 }
                 idValue = node.id;
                 if (!this.binding[nodeInfo.field]) {
@@ -1711,15 +1711,15 @@ var IMLibLocalContext = {
                 IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true);
             }
         }
-
-        function nextIdValue() {
-            INTERMediator.linkedElmCounter++;
-            return currentIdValue();
-        }
-
-        function currentIdValue() {
-            return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
-        }
+        //
+        // function nextIdValue() {
+        //     INTERMediator.linkedElmCounter++;
+        //     return currentIdValue();
+        // }
+        //
+        // function currentIdValue() {
+        //     return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
+        // }
 
     },
 

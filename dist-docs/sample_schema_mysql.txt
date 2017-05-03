@@ -16,9 +16,12 @@ Enter password:
 */
 SET NAMES 'utf8mb4';
 
-GRANT USAGE ON *.* TO 'web'@'localhost' IDENTIFIED BY 'password';
-DROP USER 'web'@'localhost';
+# DROP USER 'web'@'localhost';
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
+# GRANT USAGE ON *.* TO 'web'@'localhost' IDENTIFIED BY 'password';
+
+# Grant to All operations for all objects with web account
+GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
 
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db
@@ -528,9 +531,6 @@ CREATE TABLE information (
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
-
-# Grant to All operations for all objects with web account
-GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
 
 # Sample Data
 INSERT product SET name="Apple",id=1,category_id=1,unitprice=340,photofile='mela-verde.png',acknowledgement='Image: djcodrin / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=982';
