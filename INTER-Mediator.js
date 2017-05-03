@@ -1086,7 +1086,7 @@ var INTERMediator = {
                 );
             } // The end of function expandCrossTableEnclosure().
 
-// Detect cross table components in a tbody enclosure.
+            // Detect cross table components in a tbody enclosure.
             function crossTableComponents(node) {
                 var components = [], count = 0;
                 repeatCTComponents(node.childNodes);
@@ -1095,7 +1095,7 @@ var INTERMediator = {
                 function repeatCTComponents(nodes) {
                     var childNodes, i;
                     for (i = 0; i < nodes.length; i++) {
-                        if (nodes[i].nodeType == 1 && (nodes[i].tagName == 'TH' || nodes[i].tagName == 'TD')) {
+                        if (nodes[i].nodeType === 1 && (nodes[i].tagName === 'TH' || nodes[i].tagName === 'TD')) {
                             components[count] = nodes[i];
                             count += 1;
                         } else {
@@ -1129,11 +1129,11 @@ var INTERMediator = {
                         nodeId = currentLinkedNodes[k].getAttribute('id');
                         replacedNode = INTERMediator.setIdValue(currentLinkedNodes[k]);
                         typeAttr = replacedNode.getAttribute('type');
-                        if (typeAttr == 'checkbox' || typeAttr == 'radio') {
+                        if (typeAttr === 'checkbox' || typeAttr === 'radio') {
                             children = replacedNode.parentNode.childNodes;
                             for (i = 0; i < children.length; i++) {
                                 if (children[i].nodeType === 1 && children[i].tagName == 'LABEL' &&
-                                    nodeId == children[i].getAttribute('for')) {
+                                    nodeId === children[i].getAttribute('for')) {
                                     children[i].setAttribute('for', replacedNode.getAttribute('id'));
                                     break;
                                 }
@@ -1173,7 +1173,7 @@ var INTERMediator = {
                     linkInfoArray = INTERMediatorLib.getLinkedElementInfo(currentLinkedNodes[k]);
                     // info array for it  set the name attribute of radio button
                     // should be different for each group
-                    if (typeAttr == 'radio') { // set the value to radio button
+                    if (typeAttr === 'radio') { // set the value to radio button
                         nameTableKey = linkInfoArray.join('|');
                         if (!nameTable[nameTableKey]) {
                             nameTable[nameTableKey] = nameAttrCounter;
@@ -1194,7 +1194,7 @@ var INTERMediator = {
                             IMLibCalc.updateCalculationInfo(
                                 contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
                         }
-                        if (nInfo['table'] == currentContextDef['name']) {
+                        if (nInfo['table'] === currentContextDef['name']) {
                             isContext = true;
                             curTarget = nInfo['target'];
                             //    objectReference[nInfo['field']] = nodeId;
@@ -1230,8 +1230,8 @@ var INTERMediator = {
 
                     targetFirstChar = curTarget ? curTarget.charAt(0) : "";
                     imControl = currentLinkedNodes[k].getAttribute('data-im-control');
-                    if (isContext && !isInsidePostOnly && targetFirstChar != '#' && targetFirstChar != '$' &&
-                        (nodeTag == 'INPUT' || nodeTag == 'SELECT' || nodeTag == 'TEXTAREA') &&
+                    if (isContext && !isInsidePostOnly && targetFirstChar !== '#' && targetFirstChar !== '$' &&
+                        (nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') &&
                         (!imControl || imControl.indexOf('unbind') > 0 )
                     ) {
                         //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
@@ -1240,7 +1240,7 @@ var INTERMediator = {
                                 if (evt === 'change' ||
                                     (evt === 'input' && document.getElementById(id).value === '')) {
                                     if (IMLibUI.valueChange(id)) {
-                                        if (document.getElementById(id).tagName == 'SELECT') {
+                                        if (document.getElementById(id).tagName === 'SELECT') {
                                             children = document.getElementById(id).childNodes;
                                             for (i = 0; i < children.length; i++) {
                                                 if (children[i].nodeType === 1) {
@@ -1268,7 +1268,7 @@ var INTERMediator = {
                                 'todo': changeFunction(nodeId, 'input')
                             });
                         }
-                        if (nodeTag != 'SELECT') {
+                        if (nodeTag !== 'SELECT') {
                             INTERMediator.eventListenerPostAdding.push({
                                 'id': nodeId,
                                 'event': 'keydown',
@@ -1387,7 +1387,7 @@ var INTERMediator = {
                             seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj);
                         }
                     }
-                    if (ix + 1 != countRecord) {
+                    if ((ix + 1) !== countRecord) {
                         for (i = 0; i < repeatersOneRec.length; i++) {
                             newNode = repeatersOneRec[i];
                             dataAttr = newNode.getAttribute('data-im-control');
@@ -1416,48 +1416,6 @@ var INTERMediator = {
             }
         }
 
-
-        // /* --------------------------------------------------------------------
-        //
-        //  */
-        // function setIdValue(node) {
-        //     var i, elementInfo, comp, overwrite = true;
-        //
-        //     if (node.getAttribute('id') === null) {
-        //         node.setAttribute('id', nextIdValue());
-        //     } else {
-        //         if (INTERMediator.elementIds.indexOf(node.getAttribute('id')) >= 0) {
-        //             elementInfo = INTERMediatorLib.getLinkedElementInfo(node);
-        //             for (i = 0; i < elementInfo.length; i++) {
-        //                 comp = elementInfo[i].split(INTERMediator.separator);
-        //                 if (comp[2] == '#id') {
-        //                     overwrite = false;
-        //                 }
-        //             }
-        //             if (overwrite) {
-        //                 node.setAttribute('id', nextIdValue());
-        //             }
-        //         }
-        //         INTERMediator.elementIds.push(node.getAttribute('id'));
-        //     }
-        //     return node;
-        // }
-        //
-        // /* --------------------------------------------------------------------
-        //
-        //  */
-        // function nextIdValue() {
-        //     INTERMediator.linkedElmCounter++;
-        //     return currentIdValue();
-        // }
-        //
-        // /* --------------------------------------------------------------------
-        //
-        //  */
-        // function currentIdValue() {
-        //     return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
-        // }
-        //
         /* --------------------------------------------------------------------
 
          */
@@ -1525,7 +1483,7 @@ var INTERMediator = {
                         index = 0;
                         for (keyField in relationValue) {
                             fieldName = currentContextDef['relation'][index]['foreign-key'];
-                            if (oneRecord[fieldName] != relationValue[keyField]) {
+                            if (oneRecord[fieldName] !== relationValue[keyField]) {
                                 isMatch = false;
                                 break;
                             }
@@ -1809,653 +1767,6 @@ var INTERMediator = {
             }
             return clonedNodes;
         }
-
-        // /* --------------------------------------------------------------------
-        //
-        //  */
-        // function setupCopyButton(encNodeTag, repNodeTag, repeaters, currentContext, currentRecord) {
-        //     // Handling Copy buttons
-        //     var buttonNode, thisId, copyJSFunction, tdNodes, tdNode, buttonName, currentContextDef;
-        //
-        //     currentContextDef = currentContext.getContextDef();
-        //     if (!currentContextDef['repeat-control']
-        //         || !currentContextDef['repeat-control'].match(/copy/i)) {
-        //         return;
-        //     }
-        //     if (currentContextDef['paging'] == true) {
-        //         IMLibPageNavigation.deleteInsertOnNavi.push({
-        //             kind: 'COPY',
-        //             name: currentContextDef['name'],
-        //             contextDef: currentContextDef,
-        //             keyValue: currentRecord[currentContextDef['key']]
-        //         });
-        //     } else {
-        //         buttonNode = document.createElement('BUTTON');
-        //         INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Copy');
-        //         buttonName = INTERMediatorOnPage.getMessages()[14];
-        //         if (currentContextDef['button-names'] && currentContextDef['button-names']['copy']) {
-        //             buttonName = currentContextDef['button-names']['copy'];
-        //         }
-        //         buttonNode.appendChild(document.createTextNode(buttonName));
-        //         thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
-        //         buttonNode.setAttribute('id', thisId);
-        //         INTERMediator.buttonIdNum++;
-        //         copyJSFunction = function (a, b) {
-        //             var currentContext = a, currentRecord = b;
-        //             return function () {
-        //                 IMLibUI.copyButton(currentContext, currentRecord);
-        //             };
-        //         };
-        //         eventListenerPostAdding.push({
-        //             'id': thisId,
-        //             'event': 'click',
-        //             'todo': copyJSFunction(currentContext, currentRecord[currentContextDef['key']])
-        //         });
-        //         switch (encNodeTag) {
-        //         case 'TBODY':
-        //             tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
-        //             tdNode = tdNodes[tdNodes.length - 1];
-        //             tdNode.appendChild(buttonNode);
-        //             break;
-        //         case 'SELECT':
-        //             break;
-        //         default:
-        //             if (repeaters[0] && repeaters[0].childNodes) {
-        //                 repeaters[repeaters.length - 1].appendChild(buttonNode);
-        //             } else {
-        //                 repeaters.push(buttonNode);
-        //             }
-        //             break;
-        //         }
-        //     }
-        // }
-        //
-        // /* --------------------------------------------------------------------
-        //
-        //  */
-        // function setupDeleteButton(encNodeTag, repeaters, currentContext, keyField, keyValue) {
-        //     // Handling Delete buttons
-        //     var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName, currentContextDef;
-        //
-        //     currentContextDef = currentContext.contextDefinition;
-        //     if (!currentContextDef['repeat-control']
-        //         || !currentContextDef['repeat-control'].match(/delete/i)) {
-        //         return;
-        //     }
-        //     if (currentContextDef['relation']
-        //         || currentContextDef['records'] === undefined
-        //         || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
-        //
-        //         buttonNode = document.createElement('BUTTON');
-        //         INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Delete');
-        //         buttonName = INTERMediatorOnPage.getMessages()[6];
-        //         if (currentContextDef['button-names'] && currentContextDef['button-names']['delete']) {
-        //             buttonName = currentContextDef['button-names']['delete'];
-        //         }
-        //         buttonNode.appendChild(document.createTextNode(buttonName));
-        //         thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
-        //         buttonNode.setAttribute('id', thisId);
-        //         INTERMediator.buttonIdNum++;
-        //         deleteJSFunction = function (a, b, c, d) {
-        //             var currentContext = a, keyField = b, keyValue = c, confirming = d;
-        //             return function () {
-        //                 IMLibUI.deleteButton(currentContext, keyField, keyValue, confirming);
-        //             };
-        //         };
-        //         eventListenerPostAdding.push({
-        //             'id': thisId,
-        //             'event': 'click',
-        //             'todo': deleteJSFunction(
-        //                 currentContext,
-        //                 keyField,
-        //                 keyValue,
-        //                 currentContextDef['repeat-control'].match(/confirm-delete/i))
-        //         });
-        //         switch (encNodeTag) {
-        //         case 'TBODY':
-        //             tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
-        //             tdNode = tdNodes[tdNodes.length - 1];
-        //             tdNode.appendChild(buttonNode);
-        //             break;
-        //         case 'SELECT':
-        //             // OPTION tag can't contain any other tags.
-        //             break;
-        //         default:
-        //             if (repeaters[0] && repeaters[0].childNodes) {
-        //                 repeaters[repeaters.length - 1].appendChild(buttonNode);
-        //             } else {
-        //                 repeaters.push(buttonNode);
-        //             }
-        //             break;
-        //         }
-        //     } else {
-        //         IMLibPageNavigation.deleteInsertOnNavi.push({
-        //             kind: 'DELETE',
-        //             name: currentContextDef['name'],
-        //             key: keyField,
-        //             value: keyValue,
-        //             confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
-        //         });
-        //     }
-        // }
-        //
-        // /* --------------------------------------------------------------------
-        //
-        //  */
-        // function setupInsertButton(currentContext, keyValue, node, relationValue) {
-        //     var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
-        //         firstLevelNodes, targetNodeTag, existingButtons, keyField, thisId, encNodeTag,
-        //         buttonName, setTop, currentContextDef;
-        //
-        //     encNodeTag = node.tagName;
-        //     currentContextDef = currentContext.getContextDef();
-        //     if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
-        //         if (relationValue.length > 0 || !currentContextDef['paging'] || currentContextDef['paging'] === false) {
-        //             buttonNode = document.createElement('BUTTON');
-        //             INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Insert');
-        //             buttonName = INTERMediatorOnPage.getMessages()[5];
-        //             if (currentContextDef['button-names'] && currentContextDef['button-names']['insert']) {
-        //                 buttonName = currentContextDef['button-names']['insert'];
-        //             }
-        //             buttonNode.appendChild(document.createTextNode(buttonName));
-        //             thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
-        //             buttonNode.setAttribute('id', thisId);
-        //             INTERMediator.buttonIdNum++;
-        //             shouldRemove = [];
-        //             switch (encNodeTag) {
-        //             case 'TBODY':
-        //                 setTop = false;
-        //                 targetNodeTag = 'TFOOT';
-        //                 if (currentContextDef['repeat-control'].match(/top/i)) {
-        //                     targetNodeTag = 'THEAD';
-        //                     setTop = true;
-        //                 }
-        //                 enclosedNode = node.parentNode;
-        //                 firstLevelNodes = enclosedNode.childNodes;
-        //                 footNode = null;
-        //                 for (i = 0; i < firstLevelNodes.length; i++) {
-        //                     if (firstLevelNodes[i].tagName === targetNodeTag) {
-        //                         footNode = firstLevelNodes[i];
-        //                         break;
-        //                     }
-        //                 }
-        //                 if (footNode === null) {
-        //                     footNode = document.createElement(targetNodeTag);
-        //                     enclosedNode.appendChild(footNode);
-        //                 }
-        //                 existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert');
-        //                 if (existingButtons.length == 0) {
-        //                     trNode = document.createElement('TR');
-        //                     INTERMediatorLib.setClassAttributeToNode(trNode, 'IM_Insert_TR');
-        //                     tdNode = document.createElement('TD');
-        //                     INTERMediatorLib.setClassAttributeToNode(tdNode, 'IM_Insert_TD');
-        //                     setIdValue(trNode);
-        //                     if (setTop && footNode.childNodes) {
-        //                         footNode.insertBefore(trNode, footNode.childNodes[0]);
-        //                     } else {
-        //                         footNode.appendChild(trNode);
-        //                     }
-        //                     trNode.appendChild(tdNode);
-        //                     tdNode.appendChild(buttonNode);
-        //                     shouldRemove = [trNode.getAttribute('id')];
-        //                 }
-        //                 break;
-        //             case 'UL':
-        //             case 'OL':
-        //                 liNode = document.createElement('LI');
-        //                 existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert');
-        //                 if (existingButtons.length == 0) {
-        //                     liNode.appendChild(buttonNode);
-        //                     if (currentContextDef['repeat-control'].match(/top/i)) {
-        //                         node.insertBefore(liNode, node.firstChild);
-        //                     } else {
-        //                         node.appendChild(liNode);
-        //                     }
-        //                 }
-        //                 break;
-        //             case 'SELECT':
-        //                 // Select enclosure can't include Insert button.
-        //                 break;
-        //             default:
-        //                 divNode = document.createElement('DIV');
-        //                 existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
-        //                 if (existingButtons.length == 0) {
-        //                     divNode.appendChild(buttonNode);
-        //                     if (currentContextDef['repeat-control'].match(/top/i)) {
-        //                         node.insertBefore(divNode, node.firstChild);
-        //                     } else {
-        //                         node.appendChild(divNode);
-        //                     }
-        //                 }
-        //                 break;
-        //             }
-        //             insertJSFunction = function (a, b, c, d, e) {
-        //                 var contextName = a, relationValue = b, nodeId = c, removeNodes = d, confirming = e;
-        //                 return function () {
-        //                     IMLibUI.insertButton(
-        //                         currentContext,
-        //                         keyValue,
-        //                         relationValue,
-        //                         nodeId,
-        //                         confirming
-        //                     );
-        //                 };
-        //             };
-        //
-        //             INTERMediatorLib.addEvent(
-        //                 buttonNode,
-        //                 'click',
-        //                 insertJSFunction(
-        //                     currentContextDef['name'],
-        //                     relationValue,
-        //                     node.getAttribute('id'),
-        //                     shouldRemove,
-        //                     currentContextDef['repeat-control'].match(/confirm-insert/i))
-        //             );
-        //
-        //         } else {
-        //             if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
-        //                 keyField = currentContextDef['key'] ? currentContextDef['key'] : '-recid';
-        //             } else {
-        //                 keyField = currentContextDef['key'] ? currentContextDef['key'] : 'id';
-        //             }
-        //             IMLibPageNavigation.deleteInsertOnNavi.push({
-        //                 kind: 'INSERT',
-        //                 name: currentContextDef['name'],
-        //                 key: keyField,
-        //                 confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
-        //             });
-        //         }
-        //     }
-        // }
-        //
-        // /* --------------------------------------------------------------------
-        //
-        //  */
-        // function setupNavigationButton(encNodeTag, repeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
-        //     // Handling Detail buttons
-        //     var buttonNode, thisId, tdNodes, tdNode, firstInNode, contextDef,
-        //         isHide, masterContext, detailContext, showingNode, isHidePageNavi, buttonName, i,
-        //         isTouchRepeater, moveToDetailFunc;
-        //
-        //     if (!currentContextDef['navi-control']
-        //         || !currentContextDef['navi-control'].match(/master/i)
-        //         || encNodeTag == 'SELECT') {
-        //         return;
-        //     }
-        //
-        //     isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
-        //     isHide = currentContextDef['navi-control'].match(/hide/i);
-        //     isHidePageNavi = isHide && (currentContextDef['paging'] == true);
-        //
-        //     if (INTERMediator.detailNodeOriginalDisplay) {
-        //         detailContext = IMLibContextPool.getDetailContext();
-        //         if (detailContext) {
-        //             showingNode = detailContext.enclosureNode;
-        //             if (showingNode.tagName == 'TBODY') {
-        //                 showingNode = showingNode.parentNode;
-        //             }
-        //             INTERMediator.detailNodeOriginalDisplay = showingNode.style.display;
-        //         }
-        //     }
-        //
-        //     buttonNode = document.createElement('BUTTON');
-        //     INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Master');
-        //     buttonName = INTERMediatorOnPage.getMessages()[12];
-        //     if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail']) {
-        //         buttonName = currentContextDef['button-names']['navi-detail'];
-        //     }
-        //     buttonNode.appendChild(document.createTextNode(buttonName));
-        //     thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
-        //     buttonNode.setAttribute('id', thisId);
-        //     INTERMediator.buttonIdNum++;
-        //     masterContext = IMLibContextPool.getMasterContext();
-        //     masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId);
-        //
-        //     if (isTouchRepeater) {
-        //         moveToDetailFunc = moveToDetail(encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi);
-        //         for (i = 0; i < repeaters.length; i++) {
-        //             var originalColor = repeaters[i].style.backgroundColor;
-        //             eventListenerPostAdding.push({
-        //                 'id': repeaters[i].id,
-        //                 'event': 'touchstart',
-        //                 'todo': (function () {
-        //                     var targetNode = repeaters[i];
-        //                     return function () {
-        //                         IMLibEventResponder.touchEventCancel = false;
-        //                         targetNode.style.backgroundColor = IMLibUI.mobileSelectionColor;
-        //                     };
-        //                 })()
-        //             });
-        //             eventListenerPostAdding.push({
-        //                 'id': repeaters[i].id,
-        //                 'event': 'touchend',
-        //                 'todo': (function () {
-        //                     var targetNode = repeaters[i];
-        //                     var orgColor = originalColor;
-        //                     return function () {
-        //                         targetNode.style.backgroundColor = orgColor;
-        //                         if (!IMLibEventResponder.touchEventCancel) {
-        //                             IMLibEventResponder.touchEventCancel = false;
-        //                             moveToDetailFunc();
-        //                         }
-        //                     };
-        //                 })()
-        //             });
-        //             eventListenerPostAdding.push({
-        //                 'id': repeaters[i].id,
-        //                 'event': 'touchmove',
-        //                 'todo': (function () {
-        //                     return function () {
-        //                         IMLibEventResponder.touchEventCancel = true;
-        //                     };
-        //                 })()
-        //             });
-        //             eventListenerPostAdding.push({
-        //                 'id': repeaters[i].id,
-        //                 'event': 'touchcancel',
-        //                 'todo': (function () {
-        //                     return function () {
-        //                         IMLibEventResponder.touchEventCancel = true;
-        //                     };
-        //                 })()
-        //             });
-        //         }
-        //     } else {
-        //         eventListenerPostAdding.push({
-        //             'id': thisId,
-        //             'event': 'click',
-        //             'todo': moveToDetail(encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi)
-        //         });
-        //
-        //         switch (encNodeTag) {
-        //         case 'TBODY':
-        //             tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
-        //             tdNode = tdNodes[0];
-        //             firstInNode = tdNode.childNodes[0];
-        //             if (firstInNode) {
-        //                 tdNode.insertBefore(buttonNode, firstInNode);
-        //             } else {
-        //                 tdNode.appendChild(buttonNode);
-        //             }
-        //             break;
-        //         case 'SELECT':
-        //             break;
-        //         default:
-        //             firstInNode = repeaters[repeaters.length - 1].childNodes[0];
-        //             if (firstInNode) {
-        //                 repeaters[repeaters.length - 1].insertBefore(buttonNode, firstInNode);
-        //             } else {
-        //                 repeaters[repeaters.length - 1].appendChild(buttonNode);
-        //             }
-        //             break;
-        //         }
-        //     }
-        //
-        //     function moveToDetail(encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi) {
-        //         var f = keyField, v = keyValue, ff = foreignField, fv = foreignValue;
-        //         var fvalue = {}, etag = encNodeTag, isMasterHide = isHide, isPageHide = isHidePageNavi;
-        //         fvalue[ff] = fv;
-        //
-        //         return function () {
-        //             var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, conditions,
-        //                 node;
-        //
-        //             INTERMediator.previousModeDetail = {
-        //                 encNodeTag: etag,
-        //                 keyField: f,
-        //                 keyValue: v,
-        //                 foreignField: ff,
-        //                 foreignValue: fv,
-        //                 isHide: isMasterHide,
-        //                 isHidePageNavi: isPageHide
-        //             };
-        //
-        //             masterContext = IMLibContextPool.getMasterContext();
-        //             detailContext = IMLibContextPool.getDetailContext();
-        //             if (detailContext) {
-        //                 if (INTERMediatorOnPage.naviBeforeMoveToDetail) {
-        //                     INTERMediatorOnPage.naviBeforeMoveToDetail(masterContext, detailContext);
-        //                 }
-        //                 contextDef = detailContext.getContextDef();
-        //                 contextName = contextDef.name;
-        //                 INTERMediator.clearCondition(contextName, "_imlabel_crosstable");
-        //                 INTERMediator.addCondition(contextName, {
-        //                     field: f,
-        //                     operator: '=',
-        //                     value: v
-        //                 }, undefined, "_imlabel_crosstable");
-        //                 INTERMediator.constructMain(detailContext);
-        //                 INTERMediator.clearCondition(contextName);
-        //                 if (isMasterHide) {
-        //                     INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY};
-        //                     window.scrollTo(0, 0);
-        //                     masterEnclosure = masterContext.enclosureNode;
-        //                     if (etag == 'TBODY') {
-        //                         masterEnclosure = masterEnclosure.parentNode;
-        //                     }
-        //                     INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display;
-        //                     masterEnclosure.style.display = 'none';
-        //
-        //                     detailEnclosure = detailContext.enclosureNode;
-        //                     if (detailEnclosure.tagName == 'TBODY') {
-        //                         detailEnclosure = detailEnclosure.parentNode;
-        //                     }
-        //                     detailEnclosure.style.display = INTERMediator.detailNodeOriginalDisplay;
-        //                 }
-        //                 if (isPageHide) {
-        //                     document.getElementById('IM_NAVIGATOR').style.display = 'none';
-        //                 }
-        //                 if (IMLibUI.mobileNaviBackButtonId) {
-        //                     node = document.getElementById(IMLibUI.mobileNaviBackButtonId);
-        //                     node.style.display = 'inline-block';
-        //                 }
-        //                 if (INTERMediatorOnPage.naviAfterMoveToDetail) {
-        //                     masterContext = IMLibContextPool.getMasterContext();
-        //                     detailContext = IMLibContextPool.getDetailContext();
-        //                     INTERMediatorOnPage.naviAfterMoveToDetail(masterContext, detailContext);
-        //                 }
-        //             }
-        //         };
-        //     }
-        // }
-        //
-        // /* --------------------------------------------------------------------
-        //
-        //  */
-        // function setupBackNaviButton(currentContext, node) {
-        //     var buttonNode, divNode, i, masterContext, naviControlValue, currentContextDef, showingNode,
-        //         isHidePageNavi, isUpdateMaster, isTouchRepeater, aNode, nodes, isTop;
-        //
-        //     currentContextDef = currentContext.getContextDef();
-        //
-        //     if (!currentContextDef['navi-control']
-        //         || !currentContextDef['navi-control'].match(/detail/i)) {
-        //         return;
-        //     }
-        //
-        //     masterContext = IMLibContextPool.getMasterContext();
-        //     naviControlValue = masterContext.getContextDef()['navi-control'];
-        //     if (!naviControlValue
-        //         || (!naviControlValue.match(/hide/i))) {
-        //         return;
-        //     }
-        //     isHidePageNavi = masterContext.getContextDef()['paging'] == true;
-        //     isUpdateMaster = currentContextDef['navi-control'].match(/update/i);
-        //     isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
-        //     isTop = !(currentContextDef['navi-control'].match(/bottom/i));
-        //
-        //     showingNode = currentContext.enclosureNode;
-        //     if (showingNode.tagName == 'TBODY') {
-        //         showingNode = showingNode.parentNode;
-        //     }
-        //     if (INTERMediator.detailNodeOriginalDisplay) {
-        //         INTERMediator.detailNodeOriginalDisplay = showingNode.style.display;
-        //     }
-        //     showingNode.style.display = 'none';
-        //
-        //     if (isTouchRepeater) {
-        //         nodes = document.getElementsByClassName('IM_Button_BackNavi');
-        //         if (!nodes || nodes.length == 0) {
-        //             aNode = createBackButton('DIV', currentContextDef);
-        //             IMLibUI.mobileNaviBackButtonId = aNode.id;
-        //             aNode.style.display = 'none';
-        //             nodes = INTERMediatorLib.getElementsByAttributeValue(   // Check jQuery Mobile
-        //                 document.getElementsByTagName('BODY')[0], 'data-role', isTop ? 'header' : 'footer');
-        //             if (nodes && nodes[0]) {
-        //                 if (nodes[0].firstChild) {
-        //                     nodes[0].insertBefore(aNode, nodes[0].firstChild);
-        //                 } else {
-        //                     nodes[0].appendChild(aNode);
-        //                 }
-        //             } else {   // If the page doesn't use JQuery Mobile
-        //                 switch (node.tagName) {
-        //                 case 'TBODY':
-        //                     tbodyTargetNode(node, isTop, aNode);
-        //                     break;
-        //                 case 'UL':
-        //                 case 'OL':
-        //                     genericTargetNode(node, isTop, 'LI', aNode);
-        //                     break;
-        //                 case 'SELECT':
-        //                     break;
-        //                 default:
-        //                     genericTargetNode(node, isTop, 'DIV', aNode);
-        //                     break;
-        //                 }
-        //             }
-        //             INTERMediatorLib.addEvent(
-        //                 aNode,
-        //                 'click',
-        //                 moveToMaster(masterContext, currentContext, isHidePageNavi, isUpdateMaster)
-        //             );
-        //         }
-        //     } else {
-        //         buttonNode = createBackButton('BUTTON', currentContextDef);
-        //         switch (node.tagName) {
-        //         case 'TBODY':
-        //             tbodyTargetNode(node, isTop, buttonNode);
-        //             break;
-        //         case 'UL':
-        //         case 'OL':
-        //             genericTargetNode(node, isTop, 'LI', buttonNode);
-        //             break;
-        //         case 'SELECT':
-        //             break;
-        //         default:
-        //             genericTargetNode(node, isTop, 'DIV', buttonNode);
-        //             break;
-        //         }
-        //         INTERMediatorLib.addEvent(
-        //             buttonNode,
-        //             'click',
-        //             moveToMaster(masterContext, currentContext, isHidePageNavi, isUpdateMaster)
-        //         );
-        //     }
-        //
-        //     function createBackButton(tagName, currentContextDef) {
-        //         var buttonNode, buttonName;
-        //         buttonNode = document.createElement(tagName);
-        //         INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_BackNavi');
-        //         buttonName = INTERMediatorOnPage.getMessages()[13];
-        //         if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back']) {
-        //             buttonName = currentContextDef['button-names']['navi-back'];
-        //         }
-        //         buttonNode.appendChild(document.createTextNode(buttonName));
-        //         setIdForIMButtons(buttonNode);
-        //         return buttonNode;
-        //     }
-        //
-        //     function tbodyTargetNode(node, isTop, buttonNode) {
-        //         var targetNodeTag, enclosedNode, firstLevelNodes, targetNode, existingButtons, trNode, tdNode;
-        //
-        //         targetNodeTag = isTop ? 'THEAD' : 'TFOOT';
-        //         enclosedNode = node.parentNode;
-        //         firstLevelNodes = enclosedNode.childNodes;
-        //         targetNode = null;
-        //         for (i = 0; i < firstLevelNodes.length; i++) {
-        //             if (firstLevelNodes[i].tagName === targetNodeTag) {
-        //                 targetNode = firstLevelNodes[i];
-        //                 break;
-        //             }
-        //         }
-        //         if (targetNode === null) {
-        //             targetNode = document.createElement(targetNodeTag);
-        //             appendingNodesAtLast.push({
-        //                 targetNode: targetNode,
-        //                 parentNode: enclosedNode,
-        //                 siblingNode: (targetNodeTag == 'THEAD') ? enclosedNode.firstChild : null
-        //             });
-        //         }
-        //         existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi');
-        //         if (existingButtons.length == 0) {
-        //             trNode = document.createElement('TR');
-        //             INTERMediatorLib.setClassAttributeToNode(trNode, 'IM_NaviBack_TR');
-        //             tdNode = document.createElement('TD');
-        //             INTERMediatorLib.setClassAttributeToNode(tdNode, 'IM_NaviBack_TD');
-        //             setIdValue(trNode);
-        //             targetNode.appendChild(trNode);
-        //             trNode.appendChild(tdNode);
-        //             tdNode.appendChild(buttonNode);
-        //         }
-        //     }
-        //
-        //     function genericTargetNode(node, isTop, naviEncTag, buttonNode) {
-        //         var newNode, existingButtons;
-        //         newNode = document.createElement(naviEncTag);
-        //         existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi');
-        //         if (existingButtons.length == 0) {
-        //             newNode.appendChild(buttonNode);
-        //             if (!isTop) {
-        //                 node.appendChild(newNode);
-        //             } else {
-        //                 node.insertBefore(newNode, node.firstChild);
-        //             }
-        //         }
-        //     }
-        //
-        //     function moveToMaster(a, b, c, d) {
-        //         var masterContextCL = a, detailContextCL = b, pageNaviShow = c, masterUpdate = d, node;
-        //         return function () {
-        //             var showingNode;
-        //             if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
-        //                 INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
-        //             }
-        //             showingNode = detailContextCL.enclosureNode;
-        //             if (showingNode.tagName == 'TBODY') {
-        //                 showingNode = showingNode.parentNode;
-        //             }
-        //             showingNode.style.display = 'none';
-        //
-        //             showingNode = masterContextCL.enclosureNode;
-        //             if (showingNode.tagName == 'TBODY') {
-        //                 showingNode = showingNode.parentNode;
-        //             }
-        //             showingNode.style.display = INTERMediator.masterNodeOriginalDisplay;
-        //
-        //             if (pageNaviShow) {
-        //                 document.getElementById('IM_NAVIGATOR').style.display = 'block';
-        //             }
-        //             if (masterUpdate) {
-        //                 INTERMediator.constructMain(masterContextCL);
-        //             }
-        //             if (IMLibUI.mobileNaviBackButtonId) {
-        //                 node = document.getElementById(IMLibUI.mobileNaviBackButtonId);
-        //                 node.style.display = 'none';
-        //             }
-        //             if (INTERMediatorOnPage.naviAfterMoveToMaster) {
-        //                 masterContextCL = IMLibContextPool.getMasterContext();
-        //                 detailContextCL = IMLibContextPool.getDetailContext();
-        //                 INTERMediatorOnPage.naviAfterMoveToMaster(masterContextCL, detailContextCL);
-        //             }
-        //             if (INTERMediatorOnPage.masterScrollPosition) {
-        //                 window.scrollTo(
-        //                     INTERMediatorOnPage.masterScrollPosition.x,
-        //                     INTERMediatorOnPage.masterScrollPosition.y);
-        //             }
-        //         };
-        //     }
-        // }
 
         /* --------------------------------------------------------------------
 
