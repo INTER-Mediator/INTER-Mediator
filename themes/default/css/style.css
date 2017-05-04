@@ -257,6 +257,14 @@ span.IM_POSTMESSAGE {
     font-weight: bold;
 }
 
+#_im_authpanel INPUT{
+    color: black;
+}
+
+#_im_authpanel BUTTON{
+    color: #50506c;
+}
+
 #_im_authpback {
     position: absolute;
     height: 100%;

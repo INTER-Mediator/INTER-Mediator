@@ -480,6 +480,7 @@ var INTERMediator = {
         INTERMediatorOnPage.showProgress();
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
             if (INTERMediatorOnPage.isFinishToConstruct) {
+                INTERMediatorOnPage.hideProgress();
                 return;
             }
             INTERMediatorOnPage.isFinishToConstruct = true;
@@ -527,6 +528,7 @@ var INTERMediator = {
             INTERMediatorOnPage.doBeforeConstruct();
         }
         if (!INTERMediatorOnPage.isAutoConstruct) {
+            INTERMediatorOnPage.hideProgress();
             return;
         }
         INTERMediator.crossTableStage = 0;
@@ -626,7 +628,6 @@ var INTERMediator = {
         for (i = 0; i < imPartsShouldFinished.length; i++) {
             imPartsShouldFinished[i].finish();
         }
-        INTERMediatorOnPage.hideProgress();
 
         for (i = 0; i < INTERMediator.appendingNodesAtLast.length; i++) {
             theNode = INTERMediator.appendingNodesAtLast[i].targetNode;
@@ -657,6 +658,7 @@ var INTERMediator = {
         }
         INTERMediatorOnPage.isFinishToConstruct = false;
         INTERMediator.partialConstructing = true;
+        INTERMediatorOnPage.hideProgress();
 
         INTERMediator.flushMessage(); // Show messages
 

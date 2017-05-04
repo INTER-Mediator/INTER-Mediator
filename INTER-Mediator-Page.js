@@ -537,14 +537,14 @@ var INTERMediatorOnPage = {
         }
         passwordBox.onkeydown = function (event) {
             keyCode = (window.event) ? window.event.which : event.keyCode;
-            if (keyCode == 13) {
+            if (keyCode === 13) {
                 authButton.onclick();
             }
         };
         userBox.value = INTERMediatorOnPage.authUser;
         userBox.onkeydown = function (event) {
             keyCode = (window.event) ? window.event.which : event.keyCode;
-            if (keyCode == 13) {
+            if (keyCode === 13) {
                 passwordBox.focus();
             }
         };
@@ -1022,16 +1022,24 @@ var INTERMediatorOnPage = {
         document.cookie = cookieString;
     },
 
+    /*
+     * The hiding process is realized by _im_progress's div elements, but it's quite sensitive.
+     * Now this method is going to be called multiple times in case of edit text field.
+     * But it doesn't work by excluding to call by flag variable. I don't know why.
+     * 2017-05-04 Masayuki Nii
+     */
     hideProgress: function () {
         'use strict';
-        var frontPanel = document.getElementById('_im_progress');
-        var themeName = INTERMediatorOnPage.getTheme().toLowerCase();
+       var frontPanel, themeName;
+        frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
-            if (themeName == "least" || themeName == "thosedays") {
-                frontPanel.parentNode.removeChild(frontPanel);
+            themeName = INTERMediatorOnPage.getTheme().toLowerCase();
+            if (themeName === "least" || themeName === "thosedays") {
+                frontPanel.style.display = "none";
             } else {
-                frontPanel.addEventListener("transitionend", function(ev){
-                    frontPanel.parentNode.removeChild(frontPanel);
+                frontPanel.addEventListener("transitionend", function (ev) {
+                    var frontPanel = document.getElementById('_im_progress');
+                    frontPanel.style.display = "none";
                 }, true);
                 frontPanel.style.transitionProperty = "opacity";
                 frontPanel.style.transitionDuration = "0.3s";
@@ -1051,6 +1059,7 @@ var INTERMediatorOnPage = {
         frontPanel = document.getElementById('_im_progress');
         if (!frontPanel) {
             frontPanel = document.createElement('div');
+
             frontPanel.setAttribute('id', '_im_progress');
             bodyNode = document.getElementsByTagName('BODY')[0];
             if (bodyNode.firstChild) {
@@ -1058,7 +1067,7 @@ var INTERMediatorOnPage = {
             } else {
                 bodyNode.appendChild(frontPanel);
             }
-            if (themeName == "least" || themeName == "thosedays") {
+            if (themeName === "least" || themeName === "thosedays") {
                 imageIM = document.createElement('img');
                 imageIM.setAttribute('id', '_im_logo');
                 imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
@@ -1080,10 +1089,12 @@ var INTERMediatorOnPage = {
                 frontPanel.appendChild(imageIM);
             }
         }
-        if (themeName == "least" || themeName == "thosedays") {
+        if (themeName === "least" || themeName === "thosedays") {
 
         } else {
+            frontPanel.style.opacity = 1.0;
             frontPanel.style.display = "flex";
+            console.log("Show progress panel");
         }
     },
 
@@ -1099,9 +1110,9 @@ var INTERMediatorOnPage = {
         linkElement.setAttribute('type', 'text/css');
         for (i = 0; i < headNode.childNodes.length; i++) {
             if (headNode.childNodes[i] &&
-                headNode.childNodes[i].nodeType == 1 &&
-                headNode.childNodes[i].tagName == 'LINK' &&
-                headNode.childNodes[i].rel == 'stylesheet') {
+                headNode.childNodes[i].nodeType === 1 &&
+                headNode.childNodes[i].tagName === 'LINK' &&
+                headNode.childNodes[i].rel === 'stylesheet') {
                 styleIndex = i;
                 break;
             }
