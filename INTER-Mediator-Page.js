@@ -1024,6 +1024,8 @@ var INTERMediatorOnPage = {
 
     /*
      * The hiding process is realized by _im_progress's div elements, but it's quite sensitive.
+     * I've tried to set the CSS amimations but it seems to be a reson to stay the progress panel.
+     * So far I gave up to use CSS animations. I think it's matter of handling transitionend event.
      * Now this method is going to be called multiple times in case of edit text field.
      * But it doesn't work by excluding to call by flag variable. I don't know why.
      * 2017-05-04 Masayuki Nii
@@ -1037,13 +1039,16 @@ var INTERMediatorOnPage = {
             if (themeName === "least" || themeName === "thosedays") {
                 frontPanel.style.display = "none";
             } else {
-                frontPanel.addEventListener("transitionend", function (ev) {
-                    var frontPanel = document.getElementById('_im_progress');
-                    frontPanel.style.display = "none";
-                }, true);
-                frontPanel.style.transitionProperty = "opacity";
-                frontPanel.style.transitionDuration = "0.3s";
+                // frontPanel.addEventListener("transitionend", function (ev) {
+                //     var frontPanel = document.getElementById('_im_progress');
+                //     frontPanel.style.display = "none";
+                //     frontPanel.style.transitionProperty = "";
+                //     frontPanel.style.transitionDuration = "";
+                // }, true);
+                // frontPanel.style.transitionProperty = "opacity";
+                // frontPanel.style.transitionDuration = "0.3s";
                 frontPanel.style.opacity = 0;
+                frontPanel.style.display = "none";
             }
         }
     },

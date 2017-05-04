@@ -243,6 +243,8 @@ span.IM_POSTMESSAGE {
     top: 0;
     color: #9b9bcc;
     z-index: 999999;
+    transition-property: opacity;
+    transition-duration: 0.2s;
 }
 
 /* INTER-Mediator specific style definitions === Authentication Panel and background */
@@ -257,11 +259,11 @@ span.IM_POSTMESSAGE {
     font-weight: bold;
 }
 
-#_im_authpanel INPUT{
+#_im_authpanel INPUT {
     color: black;
 }
 
-#_im_authpanel BUTTON{
+#_im_authpanel BUTTON {
     color: #50506c;
 }
 
