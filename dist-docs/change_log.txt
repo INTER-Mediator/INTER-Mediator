@@ -83,6 +83,7 @@ Ver.5.6 (in development)
 - [BUG FIX] Fix the MediaAccess class's generating cookie names.
 - [BUG FIX] FX 6.10 based DB_FileMaker_FX class reported error, but it's cause of modified path.
 - [BUG FIX] In some case, "the 'NumberFormat' class doesn't exist" message arose, but it was cared in class loader.
+- [BUG FIX] Formetter classes didn't work for other than read operations in DB_PDO.
 - [SECURITY FIX] The resetpassword.php in Auth_Support/PasswordReset folder had security issues.
   If you use the resetpassword.php file in your solution. we'd like to replace the fixed version.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
