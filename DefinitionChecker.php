@@ -191,7 +191,7 @@ class DefinitionChecker
             'group-table' => 'string',
             'corresponding-table' => 'string',
             'challenge-table' => 'string',
-            'authexpired' => 'string',
+            'authexpired' => 'string|integer',
             'storing' => 'string(cookie|cookie-domainwide|session-storage)',
             'realm' => 'string',
             'email-as-username' => 'boolean',
