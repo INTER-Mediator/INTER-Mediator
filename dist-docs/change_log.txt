@@ -80,6 +80,7 @@ Ver.5.6 (in development)
 - [BUG FIX] Custom themes path had bug fix.
 - [BUG FIX] In case of file uploading, $_SERVER doesn't have 'HTTP_CONTENT_LENGTH' key in any case.
 - [BUG FIX] Fix buildup.sh to avoid double minify tinySHA1.js and sha256.js when using YUI Compressor.
+- [BUG FIX] Fix the MediaAccess class's generating cookie names.
 - [SECURITY FIX] The resetpassword.php in Auth_Support/PasswordReset folder had security issues.
   If you use the resetpassword.php file in your solution. we'd like to replace the fixed version.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
