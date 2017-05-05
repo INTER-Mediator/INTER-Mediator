@@ -50,6 +50,7 @@ Ver.5.6 (in development)
 - The addCondition and clearCondition method of INTERMediator class has "label" property for stabilizing.
 - Progress information is changed as more simple gear style icon and gray background.
 - Some functions are moved to INTER-Mediator-Navi, and refactored them.
+- FileMaker sample db "TestDB.fmp12" and "TestDB_close.fmp12" didn't set the PHP API access privilege, and so on.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
