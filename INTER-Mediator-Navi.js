@@ -462,12 +462,12 @@ IMLibPageNavigation = {
                             valueArray.push({field: field, value: updateData[keying][field]});
                         }
                     }
+                    keyingComp = keying.split('=');
+                    keyingField = keyingComp[0];
+                    keyingComp.shift();
+                    keyingValue = keyingComp.join('=');
                     if (!INTERMediator.ignoreOptimisticLocking) {
-                        keyingComp = keying.split('=');
-                        keyingField = keyingComp[0];
-                        keyingComp.shift();
-                        keyingValue = keyingComp.join('=');
-                        checkQueryParameter = {
+                         checkQueryParameter = {
                             name: context.contextName,
                             records: 1,
                             paging: false,

@@ -174,10 +174,9 @@ var IMLibUI = {
             IMLibUI.unlockUIElement(idValue);
             return false;
         }
-        if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
+        if (INTERMediatorOnPage.getOptionsTransaction() === 'none') {
             // Just supporting NON-target info.
-            // contextInfo.context.setValue(
-            // contextInfo.record, contextInfo.field, newValue);
+            contextInfo.context.setValue(contextInfo.record, contextInfo.field, newValue);
             contextInfo.context.setModified(contextInfo.record, contextInfo.field, newValue);
             IMLibUI.unlockUIElement(idValue);
             return false;
