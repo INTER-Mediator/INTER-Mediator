@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--
+/*
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */  -->
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1"/>
+    <title></title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css"/>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+    <script type="text/javascript" src="masterdetail_FMS.php"></script>
+    <script type="text/javascript">
+//        window.onload = function () {
+//            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(document.getElementById('nonsupport'))) {
+//                INTERMediator.construct(true);
+//            }
+//        };
+
+        INTERMediatorOnPage.doAfterConstruct = function () {
+            var node = document.getElementById('container');
+            node.style.display = "block"
+        };
+
+        INTERMediatorOnPage.naviAfterMoveToMaster = function(masterContext, detailContext)  {
+            var node = document.getElementById('searchfield');
+            node.parentNode.style.display = "block"
+        };
+
+        INTERMediatorOnPage.naviAfterMoveToDetail = function(masterContext, detailContext){
+            var node = document.getElementById('searchfield');
+            node.parentNode.style.display = "none"
+        };
+    </script>
+    <style>
+        .IM_Button_BackNavi    {
+            padding: 10px;
+            marging: 0;
+            border: solid 1px #BBBBBB;
+            border-radius: 5px;
+            background-color: #F7F7F7;
+            box-shadow: 0 2px 2px rgba( 0.0, 0.0, 0.0, 0.4);
+            cursor: pointer;
+            color: #333333;
+            font-size: 10pt;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        .label  {
+            font-weight: bold;
+            font-size: 80%;
+        }
+    </style>
+</head>
+<body>
+<div id="nonsupportmessage">
+    <div style="text-align:center;color:yellow;background-color:black;">
+        If you see this, you must use any supported
+        web browser with Javascript enabled.
+    </div>
+    <div style="text-align:center;color:yellow;background-color:black;">
+        この表示はサポート対象外のWebブラウザーを使っているために表示されてます。
+        対応ブラウザーをJavaScriptを有効にした上でお使い下さい。
+    </div>
+</div>
+<div id="container" style="display: none">
+    <h1>Japanese Postal Code</h1>
+    <div data-role="page" id="jqm-page1">
+        <div data-role="header">
+            <input type="text" id="searchfield"
+                   placeholder="&#x1F50D;"
+                   style="font-size: 16pt;"
+                   data-im="_@condition:placelist:f3,f7,f8,f9:*match*"/>
+        </div>
+        <div role="main" class="ui-content">
+            <ul data-role="listview">
+                <li>
+                    <span data-im="placelist@f7"></span>
+                    <span data-im="placelist@f8"></span>
+                    <span data-im="placelist@f9"></span>
+                </li>
+            </ul>
+            <ul data-role="listview">
+                <li>
+                    <span class="label">郵便番号 </span>
+                    <span data-im="placedetail@f3"></span>
+                </li>
+                <li>
+                    <span class="label">都道府県 </span>
+                    <span data-im="placedetail@f7"></span>
+                </li>
+                <li>
+                    <span class="label">市区町村 </span>
+                    <span data-im="placedetail@f8"></span>
+                </li>
+                <li>
+                    <span class="label">町域名 </span>
+                    <span data-im="placedetail@f9"></span>
+                </li>
+            </ul>
+        </div>
+        <div data-role="footer" id="footer">
+        </div>
+    </div>
+</div>
+</body>
+</html>

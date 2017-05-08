@@ -6,8 +6,23 @@
  * Time: 13:27
  * To change this template use File | Settings | File Templates.
  */
-require_once(dirname(__FILE__) . '/../lib/phpseclib/Crypt/RSA.php');
-require_once(dirname(__FILE__) . '/../lib/phpseclib/Math/BigInteger.php');
+
+if ((float)phpversion() >= 7.0) {
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/RSA.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Math/BigInteger.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v2/Crypt/Random.php');
+    if (!defined('CRYPT_RSA_PRIVATE_FORMAT_PKCS1')) {
+        define('CRYPT_RSA_PRIVATE_FORMAT_PKCS1', constant('phpseclib\Crypt\RSA::PRIVATE_FORMAT_PKCS1'));
+    }
+    if (!defined('CRYPT_RSA_ENCRYPTION_PKCS1')) {
+        define('CRYPT_RSA_ENCRYPTION_PKCS1', constant('phpseclib\Crypt\RSA::ENCRYPTION_PKCS1'));
+    }
+} else {
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Crypt/RSA.php');
+    require_once(dirname(__FILE__) . '/../lib/phpseclib_v1/Math/BigInteger.php');    
+}
+require_once(dirname(__FILE__) . '/../lib/bi2php/biRSA.php');
+require_once(dirname(__FILE__) . '/../IMUtil.php');
 
 class RSA_Test extends PHPUnit_Framework_TestCase
 {
@@ -15,13 +30,15 @@ class RSA_Test extends PHPUnit_Framework_TestCase
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
+        $rsaClass = IMUtil::phpSecLibClass('phpseclib\Crypt\RSA');
+        $this->rsa = new $rsaClass;
     }
 
     public function testGeneratedKey()
     {
         $publickey = null;
         $privatekey = null;
-        $rsa = new Crypt_RSA();
+        $rsa = $this->rsa;
         extract($rsa->createKey(512)); /* 128, 256 didn't work, 512, 1024 work, 2048 didn't finish in 5 min. */
         $rsa->loadKey($publickey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
 //        echo "privatekey=",$privatekey,"\n";
@@ -57,7 +74,7 @@ HF8TtKANZd1EWQ/agZ65H2/NdL8H6zCgmKpYFTqFGwlYrnWrsbD1UxcCAwEAAQ==
 EOL;
 
 
-        $rsa = new Crypt_RSA();
+        $rsa = $this->rsa;
         $rsa->loadKey($publickey);
         $str = "123";
         $enc = $rsa->encrypt($str);
@@ -95,10 +112,102 @@ EOL;
 //        }
 //        $data = $temp;
 
-        $rsa = new Crypt_RSA();
+        $rsa = $this->rsa;
         $rsa->loadKey($generatedKey);
         $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
         $dec = $rsa->decrypt(pack("H*", $data));
         $this->assertEquals($str, $dec, "Decrypt with Supplied key.");
+    }
+
+    public function testBiRSA()
+    {
+        $generatedKey = <<<EOL
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAxH7++yiHJUHEDU3wMw+FDfrlgOHNP+yiCFmYQPI0G7oj5uTy
+tPMv3YVrEtb2Y62452C6WZcLSwOBqWlLUGfH0NJx35aaZG2CsUheNJEH+WEIFyel
+mJmWDmwfZ6DnO+nsICylGWryDfgF7n4854mxa/SfI5bYAJD6x2D3o/NDwanlsbiU
+B/ICKQmhZXvqNRRWdIEALasdLsDQ15MCfBTG1vKZqB9hiCFnZQEvrUKfWLdp6Uqa
+j15QdEvTFopramsTkQHlOy/CnQDD7Qng8Qzqm7Ycq3Xz2R/nq5k/GeAnQdxKzW1j
+QhktWfYrFQtxhyKcPXa/bchNkzctp3a/QRN2WwIDAQABAoIBAFvXoAZ0ovZfDuvJ
+CgRTtLUcGDltUSoXyIRunCN/EawEDNPXHzpEkJLR0YI0x2U/xbUgGPnXB4hAU1KD
+zJgAafzI4EDJe9CE/xkt4hpfz4JYQBfSiCwTXXfQQb2GD46Jf7xqIaEHw6uTyfH3
+PzBZw3vaEqfn0X4yRYT7ZcRT58+UcAQJqQDU/6ZwNckewzhWzh/27LfstV+nJe5u
+GSmRdb2H3x9ISKb+EMysM0n+YrNKC9giObCRm7EbIOE5iJvZnA0SiBP/y90anhsS
+gHXaN4/cL5/U/ld9Nuk+MOH6R0qoVuGegDjdqHC+fCMUYbMvWKbnZiHU0/PnFfnu
+SKxkmgECgYEA4kQDLLEq9ebk1nS402AWx0XNlJHmVR/PFUbVTOT1xMWFhZA4XMnX
+KkMmeYIUMDJJcLbTBUYFeoygOM8TA5BSATxHGt9xrO2dl75HWVYP7Ncedc4iSj6P
+dM4EsnFHKCgL2LqEuaQnMIDTZKo0WnlLphChJ3MzXwVzK5lXAiKHnaECgYEA3lF6
+/o0mYjWTV0PDDYvUp6mtf2h5/V/wSDA7I4IJ9BpnsOIFCdShn8rDYN9qxJS0t3US
+8kNNXgFrq2zjCDMibr1xALnyXnPlc86c2+kfgv+7Biu2foJ3MI4cL9umn/y76ENE
+6VaO9bUs1HHKA0SFXNEr3ZFjm+kzx3qZZh1MensCgYBn99yFkrss1vXb3TJ4XjTZ
+SCfY1tnBz6X2HuAwPxz3V9OstcJQUKa/0q9BMhZYtyKr2jZIvA4Ua73LnMsd3hjw
+XGRH4th3H5BEg7iBQlx69bYXZ6q19t0wTOI3pHmP6CbZZYtLSjR/wxJftR3tXML4
+AbgrSnIWfYiYRhOG9ZrfQQKBgFkxTWwUywJ5xhwrlnS31eBSRcYo71BFDkyX9RIA
+2OdzNIiVlTnlcdZ+7bXOzLIDiyFTOf+yGrcNUNocvFUM1tKg9FY7Q867JqI4kVv1
+Amx3FtyZ6wSEaTc0vIBC2m2zYtwDKQGIdaCESHEPGeIHuo2LadLhwpnJjLmKKUL7
+nDRDAoGADIHzuzFTYYgG4heLd2yXGv5+MDX+NmVzTr1j5dVOfzpiBJBjCN8Q9x3v
+v9nNeZFIhPbhCTjCdY/NlcIHOZqUQulTu1DpDZ7zFO1Fs4aEDnBvp9i8yJquxhOQ
+dBazzmZ3S/t2b6NtqClmn/1BgjgnKYURBn888UzbX6lqCNG3/mI=
+-----END RSA PRIVATE KEY-----
+EOL;
+        $rsa = $this->rsa;
+        $rsa->loadKey($generatedKey);
+        $privatekey = $rsa->getPrivateKey();
+        $keyComp = $rsa->_parseKey($privatekey, CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+        $keyEncrypt = new biRSAKeyPair($keyComp['publicExponent']->toHex(), '0', $keyComp['modulus']->toHex());
+        $keyDecrypt = new biRSAKeyPair('0', $keyComp['privateExponent']->toHex(), $keyComp['modulus']->toHex());
+        $data = "happySAD200333#$#$#$#";
+        $enc = $keyEncrypt->biEncryptedString($data);
+        //var_dump($enc);
+        $decrypted = $keyDecrypt->biDecryptedString($enc);
+        $this->assertEquals($data, $decrypted, "Encrypt and decrypt with bi2RSA.");
+    }
+
+    public function testDecryptJSGenerated()
+    {
+        $generatedKey = <<<EOL
+-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAxH7++yiHJUHEDU3wMw+FDfrlgOHNP+yiCFmYQPI0G7oj5uTy
+tPMv3YVrEtb2Y62452C6WZcLSwOBqWlLUGfH0NJx35aaZG2CsUheNJEH+WEIFyel
+mJmWDmwfZ6DnO+nsICylGWryDfgF7n4854mxa/SfI5bYAJD6x2D3o/NDwanlsbiU
+B/ICKQmhZXvqNRRWdIEALasdLsDQ15MCfBTG1vKZqB9hiCFnZQEvrUKfWLdp6Uqa
+j15QdEvTFopramsTkQHlOy/CnQDD7Qng8Qzqm7Ycq3Xz2R/nq5k/GeAnQdxKzW1j
+QhktWfYrFQtxhyKcPXa/bchNkzctp3a/QRN2WwIDAQABAoIBAFvXoAZ0ovZfDuvJ
+CgRTtLUcGDltUSoXyIRunCN/EawEDNPXHzpEkJLR0YI0x2U/xbUgGPnXB4hAU1KD
+zJgAafzI4EDJe9CE/xkt4hpfz4JYQBfSiCwTXXfQQb2GD46Jf7xqIaEHw6uTyfH3
+PzBZw3vaEqfn0X4yRYT7ZcRT58+UcAQJqQDU/6ZwNckewzhWzh/27LfstV+nJe5u
+GSmRdb2H3x9ISKb+EMysM0n+YrNKC9giObCRm7EbIOE5iJvZnA0SiBP/y90anhsS
+gHXaN4/cL5/U/ld9Nuk+MOH6R0qoVuGegDjdqHC+fCMUYbMvWKbnZiHU0/PnFfnu
+SKxkmgECgYEA4kQDLLEq9ebk1nS402AWx0XNlJHmVR/PFUbVTOT1xMWFhZA4XMnX
+KkMmeYIUMDJJcLbTBUYFeoygOM8TA5BSATxHGt9xrO2dl75HWVYP7Ncedc4iSj6P
+dM4EsnFHKCgL2LqEuaQnMIDTZKo0WnlLphChJ3MzXwVzK5lXAiKHnaECgYEA3lF6
+/o0mYjWTV0PDDYvUp6mtf2h5/V/wSDA7I4IJ9BpnsOIFCdShn8rDYN9qxJS0t3US
+8kNNXgFrq2zjCDMibr1xALnyXnPlc86c2+kfgv+7Biu2foJ3MI4cL9umn/y76ENE
+6VaO9bUs1HHKA0SFXNEr3ZFjm+kzx3qZZh1MensCgYBn99yFkrss1vXb3TJ4XjTZ
+SCfY1tnBz6X2HuAwPxz3V9OstcJQUKa/0q9BMhZYtyKr2jZIvA4Ua73LnMsd3hjw
+XGRH4th3H5BEg7iBQlx69bYXZ6q19t0wTOI3pHmP6CbZZYtLSjR/wxJftR3tXML4
+AbgrSnIWfYiYRhOG9ZrfQQKBgFkxTWwUywJ5xhwrlnS31eBSRcYo71BFDkyX9RIA
+2OdzNIiVlTnlcdZ+7bXOzLIDiyFTOf+yGrcNUNocvFUM1tKg9FY7Q867JqI4kVv1
+Amx3FtyZ6wSEaTc0vIBC2m2zYtwDKQGIdaCESHEPGeIHuo2LadLhwpnJjLmKKUL7
+nDRDAoGADIHzuzFTYYgG4heLd2yXGv5+MDX+NmVzTr1j5dVOfzpiBJBjCN8Q9x3v
+v9nNeZFIhPbhCTjCdY/NlcIHOZqUQulTu1DpDZ7zFO1Fs4aEDnBvp9i8yJquxhOQ
+dBazzmZ3S/t2b6NtqClmn/1BgjgnKYURBn888UzbX6lqCNG3/mI=
+-----END RSA PRIVATE KEY-----
+EOL;
+        $enc =
+            '8c87f3e5ef1021a764e80b92b3cf168130b8cb5c5b72016449bfb812da1718cc' .
+            'ea125dec512a9c91bfc336f35ea1804aafb2ef6b55c715a2fca2c90491d270bd' .
+            '9a857bee7734bfef3252afac67cb3a6c8dcc9168164a44a9c8f31001289077ef' .
+            '3e493d4581cdb94c7812140d1ebca802636cf16cdc5fe48128f758094ebe64fe' .
+            '4b7fb1fb814c8502e1c52fcd9cbc3431a7fc8f3f8dda146eef15b4d14192f444' .
+            '6b9cff5bd8c3f2c8ba90b00ab93263182ad3ed7ad0d460cc02529826c6048091' .
+            '1c712d6e212ced1a7f5fc18a1574fdceb101f28d13cd106e8d04a24de9ab3570' .
+            '77fee33e168b584a1cbf6ea27de9e88a89e1616b18897cd7288d2a02c62434a7';
+        $rsa = $this->rsa;
+        $rsa->loadKey($generatedKey);
+        $keyComp = $rsa->_parseKey($rsa->getPrivateKey(), CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+        $keyDecrypt = new biRSAKeyPair('0', $keyComp['privateExponent']->toHex(), $keyComp['modulus']->toHex());
+        $decrypted = $keyDecrypt->biDecryptedString($enc);
+        $this->assertEquals("1234OhmyGOD#", $decrypted, "Decrypt from JavaScript encripted date.");
     }
 }

@@ -1,12 +1,18 @@
 <?php
-/*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 require_once('../../INTER-Mediator.php');
 
 IM_Entry(
@@ -19,6 +25,17 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
             'repeat-control' => 'insert delete',
+            'authentication' => array(
+                'read' => array( /* load, update, new, delete*/
+                    'user' => array(),
+                    'group' => array("group1","group2"),
+                ),
+                'update' => array( /* load, update, new, delete*/
+                    'user' => array(),
+                    'group' => array("group2"),
+                ),
+            ),
+
         ),
         array(
             'name' => 'contact',
@@ -83,5 +100,3 @@ IM_Entry(
     array('db-class' => 'PDO'),
     2
 );
-
-?>

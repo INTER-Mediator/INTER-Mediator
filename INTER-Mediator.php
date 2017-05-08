@@ -1,12 +1,17 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
@@ -16,21 +21,13 @@ require_once('DB_Interfaces.php');
 require_once('DB_Logger.php');
 require_once('DB_Settings.php');
 require_once('DB_UseSharedObjects.php');
+require_once('DB_AuthCommon.php');
 require_once('DB_Proxy.php');
+require_once('IMUtil.php');
 
-$currentDir = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR;
+IMUtil::includeLibClasses(IMUtil::phpSecLibRequiredClasses());
 
-if (!class_exists('Crypt_RSA')) {
-    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Crypt' . DIRECTORY_SEPARATOR . 'RSA.php');
-}
-if (!class_exists('Crypt_Hash')) {
-    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Crypt' . DIRECTORY_SEPARATOR . 'Hash.php');
-}
-if (!class_exists('Math_BigInteger')) {
-    require_once($currentDir . 'phpseclib' . DIRECTORY_SEPARATOR . 'Math' . DIRECTORY_SEPARATOR . 'BigInteger.php');
-}
-
-$currentDirParam = $currentDir . 'params.php';
+$currentDirParam = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'params.php';
 $parentDirParam = dirname(dirname(__FILE__)) . DIRECTORY_SEPARATOR . 'params.php';
 if (file_exists($parentDirParam)) {
     include($parentDirParam);
@@ -46,10 +43,11 @@ if (isset($defaultTimezone)) {
 define("IM_TODAY", strftime('%Y-%m-%d'));
 $g_dbInstance = null;
 
+spl_autoload_register('loadClass');
+
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
     global $g_dbInstance, $g_serverSideCall;
-    spl_autoload_register('loadClass');
 
     // check required PHP extensions
     $requiredFunctions = array(
@@ -60,7 +58,8 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             if ($key == 'authentication'
                 && isset($option['user'])
                 && is_array($option['user'])
-                && array_search('database_native', $option['user']) !== false) {
+                && array_search('database_native', $option['user']) !== false
+            ) {
                 // Native Authentication requires BC Math functions
                 $requiredFunctions = array_merge($requiredFunctions, array('bcmath' => 'bcadd'));
                 break;
@@ -87,10 +86,13 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
     }
 
-    if (isset($g_serverSideCall) && $g_serverSideCall) {
+    if (isset($_GET['theme'])) {
+        $themeManager = new Theme();
+        $themeManager->processing();
+    } else if (isset($g_serverSideCall) && $g_serverSideCall) {
         $dbInstance = new DB_Proxy();
         $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        $dbInstance->processingRequest($options, "NON");
+        $dbInstance->processingRequest("NON");
         $g_dbInstance = $dbInstance;
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
@@ -107,19 +109,27 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         || (isset($_GET['access']) && $_GET['access'] == 'uploadfile')
     ) {
         $fileUploader = new FileUploader();
-        $fileUploader->processing($datasource, $options, $dbspecification, $debug);
+        if (IMUtil::guessFileUploadError()) {
+            $fileUploader->processingAsError($datasource, $options, $dbspecification, $debug);
+        } else {
+            $fileUploader->processing($datasource, $options, $dbspecification, $debug);
+        }
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else {
         $dbInstance = new DB_Proxy();
-        $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        if ($_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
-            $dbInstance->processingRequest($options);
-            $dbInstance->finishCommunication(false);
+        if (!$dbInstance->initialize($datasource, $options, $dbspecification, $debug)) {
+            $dbInstance->finishCommunication(true);
         } else {
-            $dbInstance->addOutputData('debugMessages', 'Invalid Request Error.');
-            $dbInstance->addOutputData('errorMessages', array('Invalid Request Error.'));
+            $util = new IMUtil();
+            if ($util->protectCSRF() === TRUE) {
+                $dbInstance->processingRequest();
+                $dbInstance->finishCommunication(false);
+            } else {
+                $dbInstance->addOutputData('debugMessages', 'Invalid Request Error.');
+                $dbInstance->addOutputData('errorMessages', array('Invalid Request Error.'));
+            }
         }
         $dbInstance->exportOutputDataAsJSON();
     }
@@ -132,10 +142,20 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
  */
 function loadClass($className)
 {
-    if ((include_once $className . '.php') === false) {
-        $errorGenerator = new GenerateJSCode();
-        if (strpos($className, "MessageStrings_") !== 0) {
-            $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
+    if (strpos($className, 'PHPUnit_') === false &&
+        $className !== 'PHP_Invoker' &&
+        strpos($className, 'PHPExcel_') === false &&
+        $className !== 'Composer\Autoload\ClassLoader'
+    ) {
+        $result = include_once $className . '.php';
+        if (!$result) {
+
+        }
+        if (!$result) {
+            $errorGenerator = new GenerateJSCode();
+            if (strpos($className, "MessageStrings_") !== 0) {
+                $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
+            }
         }
     }
 
@@ -166,7 +186,7 @@ function valueForJSInsert($str)
  * @param string prefix strings for the prefix for key
  * @return string JavaScript source
  */
-function arrayToJS($ar, $prefix)
+function arrayToJS($ar, $prefix = "")
 {
     if (is_array($ar)) {
         $items = array();
@@ -260,7 +280,6 @@ function getRelativePath()
 {
     $caller = explode(DIRECTORY_SEPARATOR, dirname($_SERVER['SCRIPT_FILENAME']));
     $imDirectory = explode(DIRECTORY_SEPARATOR, dirname(__FILE__));
-    $commonPath = '';
     $shorterLength = min(count($caller), count($imDirectory));
     for ($i = 0; $i < $shorterLength; $i++) {
         if ($caller[$i] != $imDirectory[$i]) {
@@ -270,83 +289,6 @@ function getRelativePath()
     $relPath = str_repeat('../', count($caller) - $i)
         . implode('/', array_slice($imDirectory, $i));
     return $relPath;
-}
-
-/**
- * Set the locale with parameter, for UNIX and Windows OS.
- * @param string locType locale identifier string.
- * @return boolean If true, strings with locale are possibly multi-byte string.
- */
-function setLocaleAsBrowser($locType)
-{
-    $lstr = getLocaleFromBrowser(
-        (!isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) ? 'ja_JP' : $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-
-    // Detect server platform, Windows or Unix
-    $isWindows = false;
-    $uname = php_uname();
-    if (strpos($uname, 'Windows')) {
-        $isWindows = true;
-    }
-
-    $useMbstring = false;
-    if ($lstr == 'ja_JP') {
-        $useMbstring = true;
-        if ($isWindows) {
-            setlocale($locType, 'jpn_jpn');
-        } else {
-            setlocale($locType, 'ja_JP');
-        }
-    } else if ($lstr == 'ja') {
-        $useMbstring = true;
-        if ($isWindows) {
-            setlocale($locType, 'jpn_jpn');
-        } else {
-            setlocale($locType, 'ja_JP');
-        }
-    } else if ($lstr == 'en_US') {
-        if ($isWindows) {
-            setlocale($locType, 'jpn_jpn');
-        } else {
-            setlocale($locType, 'en_US');
-        }
-    } else if ($lstr == 'en') {
-        if ($isWindows) {
-            setlocale($locType, 'jpn_jpn');
-        } else {
-            setlocale($locType, 'en_US');
-        }
-    } else {
-        setlocale($locType, '');
-    }
-    return $useMbstring;
-}
-
-/**
- * Get the locale string (ex. 'ja_JP') from HTTP header from a browser.
- * @param string $accept $_SERVER['HTTP_ACCEPT_LANGUAGE']
- * @return string Most prior locale identifier
- */
-function getLocaleFromBrowser($accept)
-{
-    $lstr = strtolower($accept);
-    // Extracting first item and cutting the priority infos.
-    if (strpos($lstr, ',') !== false) $lstr = substr($lstr, 0, strpos($lstr, ','));
-    if (strpos($lstr, ';') !== false) $lstr = substr($lstr, 0, strpos($lstr, ';'));
-
-    // Convert to the right locale identifier.
-    if (strpos($lstr, '-') !== false) {
-        $lstr = explode('-', $lstr);
-    } else if (strpos($lstr, '_') !== false) {
-        $lstr = explode('_', $lstr);
-    } else {
-        $lstr = array($lstr);
-    }
-    if (count($lstr) == 1)
-        $lstr = $lstr[0];
-    else
-        $lstr = strtolower($lstr[0]) . '_' . strtoupper($lstr[1]);
-    return $lstr;
 }
 
 function hex2bin_for53($str)

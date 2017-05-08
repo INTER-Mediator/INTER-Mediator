@@ -17,7 +17,27 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
         date_default_timezone_set('Asia/Tokyo');
 
         $this->db_proxy = new DB_Proxy(true);
-        $this->db_proxy->initialize(array(),
+        $this->db_proxy->initialize(array(
+            array(
+                'records' => 1,
+                'paging' => true,
+                'name' => 'person',
+                'key' => 'id',
+                'query' => array(array('field' => 'id', 'value' => '5', 'operator' => 'eq'),),
+                'sort' => array(array('field' => 'id', 'direction' => 'asc'),),
+                'repeat-control' => 'insert delete',
+                'authentication' => array(
+                    'read' => array( /* load, update, new, delete*/
+                        'user' => array(),
+                        'group' => array("group1", "group2"),
+                    ),
+                    'update' => array( /* load, update, new, delete*/
+                        'user' => array(),
+                        'group' => array("group2"),
+                    ),
+                ),
+            ),
+        ),
             array(
                 'authentication' => array( // table only, for all operations
                     'user' => array('user1'), // Itemize permitted users
@@ -37,14 +57,17 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
                 'user' => 'web',
                 'password' => 'password',
             ),
-            false);
+            false,
+            'person'
+        );
     }
 
     /**
      * @runInSeparateProcess
      * @preserveGlobalState disabled
      */
-    function test___construct()    {
+    function test___construct()
+    {
         $testName = "Check __construct function in DB_Proxy.php.";
         if (function_exists('xdebug_get_headers')) {
             ob_start();
@@ -52,11 +75,29 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
             $headers = xdebug_get_headers();
             header_remove();
             ob_clean();
-            
+
             $this->assertContains('X-XSS-Protection: 1; mode=block', $headers);
             $this->assertContains('X-Content-Type-Options: nosniff', $headers);
             $this->assertContains('X-Frame-Options: SAMEORIGIN', $headers);
         }
+    }
+
+    function testAuthGroup()
+    {
+        $aGroup = $this->db_proxy->dbClass->getAuthorizedGroups("read");
+        $this->assertContains('group1', $aGroup);
+        $this->assertContains('group2', $aGroup);
+        $this->assertNotContains('group3', $aGroup);
+    }
+
+    function testAuthUser()
+    {
+        $aGroup = $this->db_proxy->dbClass->getAuthorizedUsers("read");
+        $this->assertContains('user1', $aGroup);
+        $this->assertNotContains('user2', $aGroup);
+        $this->assertNotContains('user3', $aGroup);
+        $this->assertNotContains('user4', $aGroup);
+        $this->assertNotContains('user5', $aGroup);
     }
 
 }

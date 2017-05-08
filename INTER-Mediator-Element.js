@@ -1,12 +1,21 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibElement class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var IMLibElement = {
     patterns: [
         /^number\(([0-9]+)\)/,
@@ -19,11 +28,16 @@ var IMLibElement = {
     ],
 
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
+<<<<<<< HEAD
         "use strict";
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
             needPostValueSet = false, nodeTag, curValues, i, formattedValue = null,
             formatSpec, flags = {}, formatOption, negativeColor, negativeStyle, charStyle,
             kanjiSeparator, param1, negativeSign, negativeTailSign;
+=======
+        var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode,
+            needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false, imControl;
+>>>>>>> INTER-Mediator/master
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -37,7 +51,9 @@ var IMLibElement = {
         }
 
         nodeTag = element.tagName;
+        imControl = element.getAttribute('data-im-control');
 
+<<<<<<< HEAD
         if (clearField === true && curTarget === "") {
             switch (nodeTag) {
                 case "INPUT":
@@ -50,12 +66,18 @@ var IMLibElement = {
                     }
                     break;
                 case "SELECT":
+=======
+        if (clearField === true && curTarget == '') {
+            switch (nodeTag) {
+            case 'INPUT':
+                switch (element.getAttribute('type')) {
+                case 'text':
+                    element.value = '';
+>>>>>>> INTER-Mediator/master
                     break;
                 default:
-                    while (element.childNodes.length > 0) {
-                        element.removeChild(element.childNodes[0]);
-                    }
                     break;
+<<<<<<< HEAD
             }
         }
 
@@ -153,21 +175,49 @@ var IMLibElement = {
             if (formattedValue === null) {
                 formattedValue = curVal;
                 INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
+=======
+                }
+                break;
+            case 'SELECT':
+                break;
+            default:
+                while (element.childNodes.length > 0) {
+                    if (element.parentNode.getAttribute('data-im-element') === 'processed' ||
+                        INTERMediatorLib.isWidgetElement(element.parentNode)) {
+                        // for data-im-widget
+                        return false;
+                    }
+                    element.removeChild(element.childNodes[0]);
+                }
+                break;
+>>>>>>> INTER-Mediator/master
             }
-            curVal = formattedValue;
         }
 
+<<<<<<< HEAD
         if (curTarget !== null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) === "#") { // Appending
                 curTarget = curTarget.substring(1);
                 if (curTarget === "innerHTML") {
                     if (INTERMediator.isIE && nodeTag === "TEXTAREA") {
+=======
+        if (curTarget != null && curTarget.length > 0) { //target is specified
+            if (curTarget.charAt(0) == '#') { // Appending
+                //if (element.getAttribute('data-im-element') !== 'processed') {
+                curTarget = curTarget.substring(1);
+                if (curTarget == 'innerHTML') {
+                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+>>>>>>> INTER-Mediator/master
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                     }
                     element.innerHTML += curVal;
                 } else if (curTarget === "textNode" || curTarget === "script") {
                     textNode = document.createTextNode(curVal);
+<<<<<<< HEAD
                     if (nodeTag === "TEXTAREA") {
+=======
+                    if (nodeTag == 'TEXTAREA') {
+>>>>>>> INTER-Mediator/master
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     element.appendChild(textNode);
@@ -179,8 +229,12 @@ var IMLibElement = {
                     }
                 } else {
                     currentValue = element.getAttribute(curTarget);
+                    if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
+                        curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
+                    }
                     element.setAttribute(curTarget, currentValue + curVal);
                 }
+<<<<<<< HEAD
             }
             else if (curTarget.charAt(0) === "$") { // Replacing
                 curTarget = curTarget.substring(1);
@@ -195,6 +249,23 @@ var IMLibElement = {
                     }
                     element.innerHTML = element.innerHTML.replace("$", curVal);
                 } else if (curTarget.indexOf("style.") === 0) {
+=======
+                isReplaceOrAppned = true;
+                //}
+            } else if (curTarget.charAt(0) == '$') { // Replacing
+                curTarget = curTarget.substring(1);
+                if (curTarget == 'innerHTML') {
+                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                    }
+                    element.innerHTML = element.innerHTML.replace('$', curVal);
+                } else if (curTarget == 'textNode' || curTarget == 'script') {
+                    if (nodeTag == 'TEXTAREA') {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
+                    }
+                    element.innerHTML = element.innerHTML.replace('$', curVal);
+                } else if (curTarget.indexOf('style.') == 0) {
+>>>>>>> INTER-Mediator/master
                     styleName = curTarget.substring(6, curTarget.length);
                     if (curTarget !== "style.color" ||
                         (curTarget === "style.color" && !negativeColor)) {
@@ -202,11 +273,17 @@ var IMLibElement = {
                     }
                 } else {
                     currentValue = element.getAttribute(curTarget);
-                    element.setAttribute(curTarget, currentValue.replace("$", curVal));
+                    curVal = String(curVal);
+                    if (curVal.indexOf('/fmi/xml/cnt/') === 0 && currentValue.indexOf('?media=') === -1) {
+                        curVal = INTERMediatorOnPage.getEntryPath() + '?media=' + curVal;
+                    }
+                    element.setAttribute(curTarget, currentValue.replace('$', curVal));
                 }
+                isReplaceOrAppned = true;
             } else { // Setting
                 if (INTERMediatorLib.isWidgetElement(element)) {
                     element._im_setValue(curVal);
+<<<<<<< HEAD
                 } else if (curTarget === "innerHTML") { // Setting
                     if (INTERMediator.isIE && nodeTag === "TEXTAREA") {
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
@@ -214,17 +291,30 @@ var IMLibElement = {
                     element.innerHTML = curVal;
                 } else if (curTarget === "textNode") {
                     if (nodeTag === "TEXTAREA") {
+=======
+                } else if (curTarget == 'innerHTML') { // Setting
+                    if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
+                    }
+                    element.innerHTML = curVal;
+                } else if (curTarget == 'textNode') {
+                    if (nodeTag == 'TEXTAREA') {
+>>>>>>> INTER-Mediator/master
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                     }
                     textNode = document.createTextNode(curVal);
                     element.appendChild(textNode);
                 } else if (curTarget === "script") {
                     textNode = document.createTextNode(curVal);
+<<<<<<< HEAD
                     if (nodeTag === "SCRIPT") {
+=======
+                    if (nodeTag == 'SCRIPT') {
+>>>>>>> INTER-Mediator/master
                         element.appendChild(textNode);
                     } else {
-                        scriptNode = document.createElement("script");
-                        scriptNode.type = "text/javascript";
+                        scriptNode = document.createElement('script');
+                        scriptNode.type = 'text/javascript';
                         scriptNode.appendChild(textNode);
                         element.appendChild(scriptNode);
                     }
@@ -241,12 +331,21 @@ var IMLibElement = {
         } else { // if the 'target' is not specified.
             if (INTERMediatorLib.isWidgetElement(element)) {
                 element._im_setValue(curVal);
+<<<<<<< HEAD
             } else if (nodeTag === "INPUT") {
                 typeAttr = element.getAttribute("type");
                 if (typeAttr === "checkbox" || typeAttr === "radio") { // set the value
                     valueAttr = element.value;
                     curValues = curVal.toString().split("\n");
                     if (typeAttr === "checkbox" && curValues.length > 1) {
+=======
+            } else if (nodeTag == 'INPUT') {
+                typeAttr = element.getAttribute('type');
+                if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
+                    valueAttr = element.value;
+                    curValues = curVal.toString().split(IMLib.nl_char);
+                    if (typeAttr == 'checkbox' && curValues.length > 1) {
+>>>>>>> INTER-Mediator/master
                         for (i = 0; i < curValues.length; i++) {
                             if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                                 if (INTERMediator.isIE) {
@@ -270,16 +369,25 @@ var IMLibElement = {
                 } else { // this node must be text field
                     element.value = curVal;
                 }
+<<<<<<< HEAD
             } else if (nodeTag === "SELECT") {
+=======
+            } else if (nodeTag == 'SELECT') {
+>>>>>>> INTER-Mediator/master
                 needPostValueSet = true;
                 element.value = curVal;
-            } else { // include option tag node
+            } else if (nodeTag == 'TEXTAREA') {
                 if (INTERMediator.defaultTargetInnerHTML) {
+<<<<<<< HEAD
                     if (INTERMediator.isIE && nodeTag === "TEXTAREA") {
+=======
+                    if (INTERMediator.isIE) { // for IE
+>>>>>>> INTER-Mediator/master
                         curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
                     }
                     element.innerHTML = curVal;
                 } else {
+<<<<<<< HEAD
                     if (nodeTag === "TEXTAREA") {
                         if (INTERMediator.isTrident && INTERMediator.ieVersion >= 11) {
                             // for IE11
@@ -287,12 +395,22 @@ var IMLibElement = {
                         } else {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
+=======
+                    if (curVal.length > 0 && INTERMediator.isTrident && INTERMediator.ieVersion >= 11) { // for IE11
+                        curVal = curVal.replace(/\r\n/g, IMLib.nl_char).replace(/\r/g, IMLib.nl_char);
+>>>>>>> INTER-Mediator/master
                     }
-                    textNode = document.createTextNode(curVal);
-                    element.appendChild(textNode);
+                    element.value = curVal;
+                }
+            } else { // include option tag node
+                if (INTERMediator.defaultTargetInnerHTML) {
+                    element.innerHTML = curVal;
+                } else {
+                    element.appendChild(document.createTextNode(curVal));
                 }
             }
         }
+<<<<<<< HEAD
 
         if (formatSpec && negativeColor) {
             negativeSign = INTERMediatorOnPage.localeInfo.negative_sign;
@@ -330,25 +448,43 @@ var IMLibElement = {
             }
         }
 
+=======
+        if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA')
+            && !isReplaceOrAppned
+            && (!imControl || imControl.indexOf('unbind') > 0 )) {
+            var idValue = element.id;
+            var elementCapt = element;
+            INTERMediatorLib.addEvent(element, 'blur', function (event) {
+                if (!IMLibUI.valueChange(idValue, true) && this.id === idValue) {
+                    elementCapt.focus();
+                }
+            });
+        }
+        element.setAttribute('data-im-element', 'processed');
+>>>>>>> INTER-Mediator/master
         return needPostValueSet;
     },
 
     getValueFromIMNode: function (element) {
-        var nodeTag, typeAttr, newValue, dbspec, mergedValues, targetNodes, k, valueAttr;
+        var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr;
 
         if (element) {
             nodeTag = element.tagName;
             typeAttr = element.getAttribute('type');
         } else {
-            return "";
+            return '';
         }
         if (INTERMediatorLib.isWidgetElement(element) ||
             (INTERMediatorLib.isWidgetElement(element.parentNode))) {
             newValue = element._im_getValue();
-        } else if (nodeTag == "INPUT") {
+        } else if (nodeTag == 'INPUT') {
             if (typeAttr == 'checkbox') {
+<<<<<<< HEAD
                 dbspec = INTERMediatorOnPage.getDBSpecification();
                 if (dbspec["db-class"] !== null && dbspec["db-class"] == "FileMaker_FX") {
+=======
+                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+>>>>>>> INTER-Mediator/master
                     mergedValues = [];
                     targetNodes = element.parentNode.getElementsByTagName('INPUT');
                     for (k = 0; k < targetNodes.length; k++) {
@@ -356,7 +492,7 @@ var IMLibElement = {
                             mergedValues.push(targetNodes[k].getAttribute('value'));
                         }
                     }
-                    newValue = mergedValues.join("\n");
+                    newValue = mergedValues.join(IMLib.nl_char);
                 } else {
                     valueAttr = element.getAttribute('value');
                     if (element.checked) {
@@ -370,9 +506,9 @@ var IMLibElement = {
             } else { //text, password
                 newValue = element.value;
             }
-        } else if (nodeTag == "SELECT") {
+        } else if (nodeTag == 'SELECT') {
             newValue = element.value;
-        } else if (nodeTag == "TEXTAREA") {
+        } else if (nodeTag == 'TEXTAREA') {
             newValue = element.value;
         } else {
             newValue = element.innerHTML;
@@ -380,6 +516,7 @@ var IMLibElement = {
         return newValue;
     },
 
+<<<<<<< HEAD
     checkOptimisticLock: function (element, target) {
         var linkInfo, nodeInfo, idValue, contextInfo, keyingComp, keyingField, keyingValue, checkQueryParameter,
             currentVal, response, targetField, targetContext, initialvalue, newValue, isOthersModified,
@@ -517,6 +654,14 @@ var IMLibElement = {
         for (key in removeNodes) {
             if (removeNodes.hasOwnProperty(key)) {
                 removeNode = document.getElementById(removeNodes[key]);
+=======
+    deleteNodes: function (removeNodes) {
+        var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;
+
+        for (key = 0; key < removeNodes.length; key++) {
+            removeNode = document.getElementById(removeNodes[key]);
+            if (removeNode) {
+>>>>>>> INTER-Mediator/master
                 removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
                 if (removingNodes) {
                     for (i = 0; i < removingNodes.length; i++) {
@@ -537,11 +682,17 @@ var IMLibElement = {
                                         referes[j] = [];
                                         values[j] = [];
                                         for (k = 0; k < calcObject.referes[j].length; k++) {
+<<<<<<< HEAD
                                             if (calcObject.referes.hasOwnProperty(j)) {
                                                 if (removeNodeId != calcObject.referes[j][k]) {
                                                     referes[j].push(calcObject.referes[j][k]);
                                                     values[j].push(calcObject.values[j][k]);
                                                 }
+=======
+                                            if (removeNodeId != calcObject.referes[j][k]) {
+                                                referes[j].push(calcObject.referes[j][k]);
+                                                values[j].push(calcObject.values[j][k]);
+>>>>>>> INTER-Mediator/master
                                             }
                                         }
                                     }
@@ -554,8 +705,12 @@ var IMLibElement = {
                 }
                 try {
                     removeNode.parentNode.removeChild(removeNode);
+<<<<<<< HEAD
                 } catch
                     (ex) {
+=======
+                } catch (ex) {
+>>>>>>> INTER-Mediator/master
                     // Avoid an error for Safari
                 }
             }

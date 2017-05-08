@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<!--* INTER-Mediator-->
+<!--* Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)-->
+<!--* This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.-->
+<!--*-->
+<!--* INTER-Mediator is supplied under MIT License.-->
+<!--* Please see the full license for details:-->
+<!--* https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt-->
+
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!--<link type="text/css" rel="stylesheet" href="default.css" />-->
+    <title></title>
+    <script type="text/javascript" src="context.php"></script>
+    <script type="text/javascript">
+        INTERMediatorOnPage.processingBeforePostOnlyContext = function(target)  {
+            var email = document.getElementById('email').value;
+            if (!checkExistsMailAddress(email)) {
+                alert('メールアドレスはすでに登録されています。');
+                return false;
+            }
+            return true;
+        };
+        function checkExistsMailAddress(addr) {
+            var com = new XMLHttpRequest();
+            com.open("get", "accountcheck.php?m=" + encodeURIComponent(addr), false);
+            com.send(null);
+            if (com.status != 200) {
+                alert("サーバエラーです：" + com.statusText);
+            } else if (parseInt(com.responseText) < 1) {
+                return true;
+            }
+            return false;
+        }
+    </script>
+</head>
+<body onload="INTERMediator.construct(true);">
+<h1>ユーザ登録</h1>
+<table>
+    <tbody data-im-control="post">
+    <tr>
+        <th style="text-align:right">お名前</th>
+        <td><input id="name" type="text" data-im="user-enroll@realname"/></td>
+    </tr>
+    <tr>
+        <th style="text-align:right">メールアドレス</th>
+        <td><input id="email" type="text" data-im="user-enroll@email"/></td>
+    </tr>
+    <tr>
+        <th></th>
+        <td><input type="button" data-im-control="post" value="登録する"/></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

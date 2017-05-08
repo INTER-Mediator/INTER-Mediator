@@ -1,60 +1,63 @@
 <!DOCTYPE html>
 <!--
 /*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
-*
-*   This project started at the end of 2009.
-*   INTER-Mediator is supplied under MIT License.
-*/
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ */
 -->
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
     <link rel="shortcut icon" href="../dist-docs/vm-for-trial/im-icon.png" type="image/png"/>
     <link rel="stylesheet" type="text/css" href="defedit.css"/>
-    <link rel="stylesheet" href="CodeMirror/lib/codemirror.css">
-    <title>INTER-Mediator - Definition File Editor</title>
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+    <title>INTER-Mediator - Page File Editor</title>
     <script src="pageedit.php"></script>
     <script src="codemirror_im.js"></script>
-    <script src="CodeMirror/lib/codemirror.js"></script>
-    <script src="CodeMirror/addon/runmode/runmode.js"></script>
-    <script src="CodeMirror/addon/runmode/colorize.js"></script>
-    <script src="CodeMirror/mode/javascript/javascript.js"></script>
-    <script src="CodeMirror/mode/xml/xml.js"></script>
-    <script src="CodeMirror/mode/css/css.js"></script>
-    <script src="CodeMirror/mode/htmlmixed/htmlmixed.js"></script>
+    <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/addon/runmode/runmode.js"></script>
+    <script src="codemirror/addon/runmode/colorize.js"></script>
+    <script src="codemirror/addon/display/autorefresh.js"></script>
+    <script src="codemirror/mode/javascript/javascript.js"></script>
+    <script src="codemirror/mode/xml/xml.js"></script>
+    <script src="codemirror/mode/css/css.js"></script>
+    <script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
     <script type="text/javascript">
-        window.onload = function () {
-            var nodeUnsupport = document.getElementById('nonsupportmessage');
-            if (INTERMediatorOnPage.INTERMediatorCheckBrowser(nodeUnsupport)) {
-                var params = INTERMediatorOnPage.getURLParametersAsArray();
-                INTERMediator.addCondition('pagefile',{field: 'target', value: params.target});
-                INTERMediator.additionalFieldValueOnNewRecord['pagefile']
-                        = {field: 'target', value: params.target};
-                INTERMediator.additionalFieldValueOnUpdate['pagefile']
-                        = {field: 'target', value: params.target};
-                INTERMediator.additionalFieldValueOnDelete['pagefile']
-                        = {field: 'target', value: params.target};
+        INTERMediatorOnPage.doBeforeConstruct = function () {
+            var params = INTERMediatorOnPage.getURLParametersAsArray();
+            INTERMediator.clearCondition('pagefile');
+            INTERMediator.addCondition('pagefile', {field: 'target', value: params.target});
+            INTERMediator.additionalFieldValueOnNewRecord['pagefile']
+                = {field: 'target', value: params.target};
+            INTERMediator.additionalFieldValueOnUpdate['pagefile']
+                = {field: 'target', value: params.target};
+            INTERMediator.additionalFieldValueOnDelete['pagefile']
+                = {field: 'target', value: params.target};
 
-                document.getElementById('deffile').appendChild(document.createTextNode(params.target));
-                INTERMediator.ignoreOptimisticLocking = true;
-                INTERMediator.construct(true);
-                document.getElementById('container').style.display = "block";
-            }
-        }
-//        INTERMediatorOnPage.doAfterConstruct = function () {
-//            var node = document.getElementById('container');
-//            node.style.display = "block";
-//            if (textArea) {
-//                var myTextarea = document.getElementById(textArea);
-//            }
-//        }
-//        var textArea;
-//        INTERMediatorOnPage.pageContentGenerated = function (target) {
-//             textArea = INTERMediatorOnPage.getNodeIdFromIMDefinition("pagefile@content", target, true);
-//        }
+            document.getElementById('deffile').appendChild(document.createTextNode(params.target));
+            INTERMediator.ignoreOptimisticLocking = true;
+        };
+
+        INTERMediatorOnPage.doAfterConstruct = function () {
+            document.getElementById('container').style.display = "block";
+        };
+
+        //        INTERMediatorOnPage.doAfterConstruct = function () {
+        //            var node = document.getElementById('container');
+        //            node.style.display = "block";
+        //            if (textArea) {
+        //                var myTextarea = document.getElementById(textArea);
+        //            }
+        //        }
+        //        var textArea;
+        //        INTERMediatorOnPage.pageContentGenerated = function (target) {
+        //             textArea = INTERMediatorOnPage.getNodeIdFromIMDefinition("pagefile@content", target, true);
+        //        }
     </script>
     <style>
         INPUT {
@@ -63,6 +66,11 @@
 
         TH {
             color: #666666;
+        }
+
+        .CodeMirror {
+            border: 1px solid #eee;
+            height: auto;
         }
     </style>
 </head>
@@ -83,7 +91,7 @@
     </div>
 </div>
 <div id="container" style="display:none;">
-    <h1>Definition File Editor</h1>
+    <h1>Page File Editor</h1>
 
     <h2>Target Page File</h2>
 
@@ -91,11 +99,11 @@
 
     <h2>Page File</h2>
 
-    <div class="_im_enclosure">
-        <div class="_im_repeater">
+    <div data-im-control="enclosure">
+        <div data-im-control="repeater">
             <p>キータイプする毎にほぼ自動的に保存します</p>
-            <div class="IM[pagefile@content]  IM_WIDGET[codemirror]"
-                 style="width: 600px; border: 1px solid gray"></div>
+            <div data-im="pagefile@content" data-im-widget="codemirror"
+                 style="width: 99%; border: 1px solid gray; margin:0 2px 0 2px"></div>
         </div>
     </div>
 </div>

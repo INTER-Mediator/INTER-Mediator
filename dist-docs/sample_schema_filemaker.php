@@ -1,15 +1,20 @@
 <?php
 /**
  * INTER-Mediator
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- * 
- * This project started at the end of 2009.
- * 
- * 
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ *
  * This schema file is for the sample of INTER-Mediator using FileMaker ODBC, encoded by UTF-8.
- * 
+ *
  * [Required software]
- * FileMaker xDBC client drivers for FileMaker 13
+ * FileMaker Server 13 (Note: This script doesn't work with FileMaker Server 14)
+ *
+ * xDBC Client Drivers for FileMaker 13
  * http://help.filemaker.com/app/answers/detail/a_id/12921
  *
  * Actual ODBC Pack (for Mac OS X)
@@ -19,9 +24,10 @@
  *
  * Example:
  * $ /Library/FileMaker\ Server/Web\ Publishing/publishing-engine/php/mountain\ lion/bin/php sample_schema_filemaker.php
- * Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]: 
+ * Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]:
  *
  */
+date_default_timezone_set('Asia/Tokyo');
 set_time_limit(0);
 $stdin = fopen("php://stdin", "r");
 echo "Do you initialize the FileMaker test database (TestDB) via ODBC? [y/n]: ";
@@ -5164,7 +5170,16 @@ if ('y' == trim(fgets($stdin, 64))) {
     } catch (Exception $e) {
         echo 'Table "saleslog" is missing.' . "\n";
     }
-    
+
+    try {
+        if (!odbc_exec($conn, 'DELETE FROM "information"')) {
+            throw new Exception('Table Missing');
+        }
+        odbc_exec($conn, 'INSERT INTO "information" ("lastupdated") VALUES (DATE \'' . date("Y-m-d") . '\')');
+    } catch (Exception $e) {
+        echo 'Table "information" is missing.' . "\n";
+    }
+
     odbc_close($conn);
 } else {
     echo 'exit' . PHP_EOL;

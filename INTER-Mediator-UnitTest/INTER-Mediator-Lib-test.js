@@ -4,7 +4,7 @@
  * [Preparation]
  * - Install Node.js locally.
  * - Set the current directory to the INTER-Mediator dirctory.
- * - Execute command "sudo npm link buster"
+ * - Execute command "sudo npm install buster"
  *     The "node_modules" folder is going to create on the current folder.
  *
  * [At the start of your development]
@@ -31,15 +31,15 @@ buster.testCase("repeaterTagFromEncTag() Test", {
     "should return 'LI' if parameter is 'OL'": function () {
         assert.equals(INTERMediatorLib.repeaterTagFromEncTag("OL"), "LI");
     },
-    "should return 'DIV' if parameter is 'DIV'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("DIV"), "DIV");
-    },
-    "should return 'SPAN' if parameter is 'SPAN'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("SPAN"), "SPAN");
-    },
-    "should return null if parameter is 'BODY'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("BODY"), null);
-    }
+    //"should return 'DIV' if parameter is 'DIV'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("DIV"), "DIV");
+    //},
+    //"should return 'SPAN' if parameter is 'SPAN'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("SPAN"), "SPAN");
+    //},
+    //"should return null if parameter is 'BODY'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("BODY"), null);
+    //}
 });
 
 buster.testCase("INTERMediatorLib.generatePasswordHash() Test", {
@@ -104,8 +104,17 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         assert.equals(INTERMediatorLib.numberFormat(999999, -3), "1,000,000");
         // A negative second parameter doesn't support so far.
     },
+<<<<<<< HEAD
     "format string detection": function() {
         assert.equals(INTERMediatorLib.digitSeparator(), [".", ",", 3]);
+=======
+    "format string detection": function()   {
+        assert.equals(INTERMediatorOnPage.localInfo, {
+            mon_decimal_point:'.',
+            mon_thousands_sep:',',
+            currency_symbol:'￥'
+        });
+>>>>>>> INTER-Mediator/master
     }
 });
 
@@ -359,5 +368,28 @@ buster.testCase("INTERMediatorLib.Round() Test", {
 buster.testCase("IMLibElement.getValueFromIMNode() Test", {
     "should return '' if parameter is null.": function () {
         assert.equals(IMLibElement.getValueFromIMNode(null), "");
+    }
+});
+
+buster.testCase("IMLib Date/Time String Test", {
+    "should return the valid date time string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateTimeStringISO(dt), "2015-08-25 12:43:51");
+    },
+    "should return the valid date time string(2)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateTimeStringFileMaker(dt), "08/25/2015 12:43:51");
+    },
+    "should return the valid date string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateStringISO(dt), "2015-08-25");
+    },
+    "should return the valid date string(2)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateStringFileMaker(dt), "08/25/2015");
+    },
+    "should return the valid time string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.timeString(dt), "12:43:51");
     }
 });

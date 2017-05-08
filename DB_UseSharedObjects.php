@@ -1,12 +1,17 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 abstract class DB_UseSharedObjects
 {
@@ -20,7 +25,7 @@ abstract class DB_UseSharedObjects
     {
         if ( $obj === null )    {
             $this->setSettings(new DB_Settings());
-            $this->setLogger(new DB_Logger());
+            $this->setLogger(DB_Logger::getInstance());
             $this->setFormatter(new DB_Formatters());
         } else {
             $this->setSettings($obj->dbSettings);

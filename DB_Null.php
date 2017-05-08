@@ -1,40 +1,49 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
-
-require_once('INTER-Mediator/INTER-Mediator.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'INTER-Mediator.php');
 
 class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
 {
 
-    public function getFromDB($dataSourceName)
+    public function readFromDB()
     {
         return null;
     }
 
-    public function countQueryResult($dataSourceName)
+    public function countQueryResult()
     {
         return 0;
     }
 
-    public function setToDB($dataSourceName)
+    public function getTotalCount()
+    {
+        return 0;
+    }
+
+    public function updateDB()
     {
         return null;
     }
 
-    public function newToDB($dataSourceName, $bypassAuth)
+    public function createInDB($bypassAuth)
     {
         return null;
     }
 
-    public function deleteFromDB($dataSourceName)
+    public function deleteFromDB()
     {
         return null;
     }
@@ -46,7 +55,7 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
 
     public function setupConnection()
     {
-        return null;
+        return true;
     }
 
     public static function defaultKey()
@@ -114,7 +123,7 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
         return null;
     }
 
-    function authSupportCreateUser($username, $hashedpassword)
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
         return null;
     }
@@ -172,5 +181,30 @@ class DB_Null extends DB_UseSharedObjects implements DB_Access_Interface
     public function softDeleteActivate($field, $value)
     {
         return null;
+    }
+
+    public function copyInDB()
+    {
+        return false;
+    }
+
+    public function isSupportAggregation()
+    {
+        return false;
+    }
+
+    public function authSupportUserEnrollmentStart($userid, $hash)
+    {
+        return false;
+    }
+
+    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
+    {
+        return false;
+    }
+
+    public function authSupportUserEnrollmentEnrollingUser($hash)
+    {
+        return false;
     }
 }

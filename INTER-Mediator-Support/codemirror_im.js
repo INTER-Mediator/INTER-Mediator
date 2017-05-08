@@ -1,10 +1,11 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- * 
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2015 Masayuki Nii, All rights reserved.
- * 
- *   This project started at the end of 2009.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
 IMParts_Catalog["codemirror"] = {
@@ -16,16 +17,20 @@ IMParts_Catalog["codemirror"] = {
         parentNode.appendChild(newNode);
         this.ids.push(newId);
 
-        parentNode._im_getComponentId = function () {
+        parentNode._im_getComponentId = (function () {
             var theId = newId;
-            return theId;
-        };
+            return function () {
+                return theId;
+            }
+        })();
 
-        var self = this;
-        parentNode._im_setValue = function (str) {
+        parentNode._im_setValue = (function () {
+            var self = IMParts_Catalog["codemirror"];
             var theId = newId;
-            self.initialValues[theId] = str;
-        };
+            return function (str) {
+                self.initialValues[theId] = str;
+            }
+        })();
     },
 
     ids: [],
@@ -37,7 +42,12 @@ IMParts_Catalog["codemirror"] = {
             var targetId = this.ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
-                var editor = CodeMirror.fromTextArea(targetNode, {mode: this.mode});
+                var editor = CodeMirror.fromTextArea(targetNode, {
+                    mode: this.mode,
+                    lineNumbers: true,
+                    viewportMargin: Infinity,
+                    autoRefresh: true
+                });
                 editor.setValue(this.initialValues[targetId]);
                 editor.on("change", function () {
                     var nodeId = targetId;

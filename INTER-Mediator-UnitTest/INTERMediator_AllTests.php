@@ -1,13 +1,15 @@
 <?php
 /**
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
  * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
@@ -17,6 +19,12 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
     {
         $suite = new PHPUnit_Framework_TestSuite( 'all tests' );
         $folder = dirname( __FILE__ ) . '/';
+        $suite->addTestFile($folder . 'DataConverter_Currency_YenIM_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_YenIntl_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_DollerIM_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_DollerIntl_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_PoundIM_Test.php');
+        $suite->addTestFile($folder . 'DataConverter_Currency_PoundIntl_Test.php');
         $suite->addTestFile($folder . 'DB_Formatters_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
@@ -26,7 +34,6 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DB_Settings_Test.php');
         $suite->addTestFile($folder . 'DataConverter_AppendPrefix_Test.php');
         $suite->addTestFile($folder . 'DataConverter_AppendSuffix_Test.php');
-        $suite->addTestFile($folder . 'DataConverter_Currency_Test.php');
         $suite->addTestFile($folder . 'DataConverter_FMDateTime_Test.php');
         $suite->addTestFile($folder . 'DataConverter_HTMLString_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NullZeroString_Test.php');
@@ -34,7 +41,9 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DataConverter_Number_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NumberBase_Test.php');
         $suite->addTestFile($folder . 'GenerateJSCode_Test.php');
+        $suite->addTestFile($folder . 'IMUtil_Test.php');
         $suite->addTestFile($folder . 'INTERMediator_Test.php');
+        $suite->addTestFile($folder . 'LDAPAuth_Test.php');
         $suite->addTestFile($folder . 'MediaAccess_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_ja_Test.php');
@@ -44,6 +53,10 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
          * The test case OME_Test.php should run on the my/your own environment.
          */
         $suite->addTestFile($folder . 'RSA_Test.php');
+        if (php_uname('n') !== 'inter-mediator-server') {
+            $suite->addTestFile($folder . 'defedit_Test.php');
+            $suite->addTestFile($folder . 'pageedit_Test.php');
+        }
         return $suite;
     }
 }

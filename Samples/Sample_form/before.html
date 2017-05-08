@@ -1,42 +1,48 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
 <!-- 
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- * 
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- * 
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
- -->
+-->
+<html lang="ja">
 <head>
+    <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>INTER-Mediator - Sample</title>
 </head>
 <body>
-<table border="1">
+<header>
+  <p class="logo"><img src="../images/logo_t-100.png" alt=""></p>
+</header>
+<div id="wrapper">
+<h1>Contact Management (Sample for Several Fundamental Features)</h1>
+<table>
     <tr>
-        <td>id</td>
+        <th>id</th>
         <td>
-            <div></div>
+          <div></div>
         </td>
     </tr>
     <tr>
-        <td>name</td>
-        <td><input type="text" name="" value=""/></td>
+        <th>name</th>
+      <td><input type="text" name="" value=""/></td>
     </tr>
     <tr>
-        <td>address</td>
-        <td><input type="text" name="" value=""/></td>
+        <th>address</th>
+      <td><input type="text" name="" value=""/></td>
     </tr>
     <tr>
-        <td>mail</td>
-        <td><input type="text" name="" value=""/></td>
+        <th>mail</th>
+      <td><input type="text" name="" value=""/></td>
     </tr>
     <tr>
-        <td>category</td>
+        <th>category</th>
         <td>
             <select name="">
                 <option value="101">Family</option>
@@ -46,24 +52,24 @@
         </td>
     </tr>
     <tr>
-        <td>check</td>
-        <td><input type="checkbox" name="" value=""/></td>
+        <th>check</th>
+      <td><input type="checkbox" name="" value=""/></td>
     </tr>
     <tr>
-        <td>location</td>
+        <th>location</th>
         <td>
-            <input type="radio" name="" value="201"/>Domestic
-            <input type="radio" name="" value="202"/>International
-            <input type="radio" name="" value="203"/>Neightbor
-            <input type="radio" name="" value="204"/>Space
+            <label><input type="radio" name="" value="201"/> Domestic</label>
+            <label><input type="radio" name="" value="202"/> International</label>
+            <label><input type="radio" name="" value="203"/> Neightbor</label>
+            <label><input type="radio" name="" value="204"/> Space</label>
         </td>
     </tr>
     <tr>
-        <td>memo</td>
-        <td><textarea name=""></textarea></td>
+        <th>memo</th>
+      <td><textarea name=""></textarea></td>
     </tr>
 </table>
-<table border="1">
+<table>
     <tr>
         <th>id</th>
         <th>person_id</th>
@@ -85,9 +91,9 @@
         <td><input type="text" name=""/></td>
         <td><input type="checkbox" name=""/></td>
         <td>
-            <input type="radio" name="" value="301"/>Direct
-            <input type="radio" name="" value="302"/>Phone
-            <input type="radio" name="" value="303"/>Another
+            <label><input type="radio" name="" value="301"/> Direct</label>
+            <label><input type="radio" name="" value="302"/> Phone</label>
+            <label><input type="radio" name="" value="303"/> Another</label>
         </td>
         <td>
             <select name="">
@@ -99,7 +105,7 @@
         <td><textarea name=""></textarea></td>
     </tr>
 </table>
-<table border="1">
+<table>
     <tr>
         <th>id</th>
         <th>person_id</th>
@@ -119,5 +125,9 @@
         <td><input type="text" name=""/></td>
     </tr>
 </table>
+</div>
+<footer>
+<small>INTER-Mediator ©2017</small>
+</footer>
 </body>
 </html>

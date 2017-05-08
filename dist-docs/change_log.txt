@@ -5,10 +5,401 @@ http://inter-mediator.org/
 =================================
 
 Change Log will be supplied by English only.
-Latest changes might exist on the GitHub repository. Please check: https://github.com/INTER-Mediator/INTER-Mediator.
-Also the Migration Guide (Japanese) might be informative: http://inter-mediator.info/ja/migration.html.
+Latest changes might exist on the GitHub repository.
+Please check: https://github.com/INTER-Mediator/INTER-Mediator
+Also the Migration Guide (Japanese) might be informative:
+  http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.1 (in development)
+Ver.5.6 (in development)
+- Well-designed CSS files as the 'default' theme are added by Yuko Oki. She is web designer and a lecturer of
+  Kyoto University of Art and Design.
+- Themes can be retrieved from accessing the definition file as below:
+  def_file.php?theme=default&type=css&name=style.css
+- The 'thosedays' theme are added for previous sample css style. The 'least' theme is just for pagenation,
+  login panel and so on, it means least definitions css.
+- In the Post Only mode, radio buttons don't require to set the name attribute. The nodes having the
+  same data-im attribute automatically set the appropriate name attributes.
+- New interleave method INTERMediatorOnPage.modifyPostOnlyContext is defined. The parameter is post only
+  context definition and should return a context definition which is modified or not.
+- For preventing to update by editing element's value, data-im-control="unbind" is introduced. This attribute
+  causes just assign the field value to checkbox, but it doesn't happen to update with clicking it.
+- Added titles to almost all sample HTML files.
+- Update FX.php 6.10 for DB_FileMaker_FX class.
+- Add "CodeMirror" (CodeMirror 5.23.0) in "INTER-Mediator-Support" directory for INTER-Mediator-Server VM.
+- Update Vagrantfile, deploy.sh, recipe.rb and sample_spec.rb for changing OS of INTER-Mediator-Server VM.
+- The access privilege of directories and file of uploaded file set to 755. Previously it was 744, but
+  a rental server which is limited feature tries to prevent to set all bits of group/other.
+- Updating and Creating record operations always return the records affected with its operations.
+- JSDoc generating script is added as dist-docs/jsdocgen.sh. You have to install JSDoc with npm.
+  Of course, all JS codes aren't documented so far, we will fill up step by step.
+- The $altThemePath variable in params.php file can have the alternative theme directory path for adding
+  solution specific theme.
+- The $themeName variable in params.php file can have the default theme name for all web pages.
+- JavaScript component "jsonformater" is added. Useage is: <div data-im-widget="jsonformater" data-im="t@f"></div>
+- The style named 'thosedays' applies CSS definitions as same as older version's sample files.
+- Checking the result of voting for target specifications, and show error message if the context which is specified
+  in target specifications in page file doesn't exist.
+- Locale feature was refactored to support intl module both existing and not.
+- Application Locale and Currency Locale are supprted. The option parameters in IM_Entry function can have
+  'app-locale' and 'app-currency' keyed values. The params.php file can have $appLocale and $appCurrency vars.
+- The count function for expression is added.
+- The default value of INTERMediatorOnPage.isSetDefaultStyle property set to false. This might be taken over
+  the theme features.
+- The variable $browserCompatibility or 'browser-compatibility' keyed value can contain 'WebKit' key as a sign
+  of any browser. Web browsers in mobile application might have the 'WebKit' string in its user agent.
+- The addCondition and clearCondition method of INTERMediator class has "label" property for stabilizing.
+- Progress information is changed as more simple gear style icon and gray background.
+- Some functions are moved to INTER-Mediator-Navi, and refactored them.
+- [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
+- [BUG FIX] MediaAccess class didn't work for privileged access with users.
+- [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
+- [BUG FIX] Customized button names on the pagination control didn't work correctly.
+- [BUG FIX] The INTERMediatorOnPage.doBeforeConstruct method won't be called other than just after page loaded.
+- [BUG FIX] INTERMediator.clearCondition sometimes clears all condition if a parameter is set.
+- [BUG FIX] MySQL PDO driver holds the keyword of SQL with quote characters.
+- [BUG FIX] Justify the compatibility of the Master/Detail Style UI and additional conditions.
+- [BUG FIX] The DB_Null class's setupConnection() method returned false, but it prevent to following processing.
+- [BUG FIX] The source of context is a SQL's VIEW, fields in associated records can't be updated in some cases.
+- [BUG FIX] Fixed not to work on Windows Server until Ver.5.5-dev.
+- [BUG FIX] The format function or INTERMediatorLib.numberFormat method returned ".0" in case of zero value.
+            Now they return "0.0".
+- [BUG FIX] JS Wideget support samples are modified as the correct local variable capture style.
+- [BUG FIX] MediaAccess with Authentication by email account didn't work well, it fixed.
+- [BUG FIX] Sending mail on reading can retrieves queried data.
+- [BUG FIX] The confirm.php in User_Enroll folder had a query condition bug.
+- [BUG FIX] The definition file editor didn't work until ver.5.5-dev or around.
+- [BUG FIX] The page file editor didn't work until ver.5.5-dev or around.
+- [BUG FIX] The tinymce widget support code bug fix.
+- [BUG FIX] Text field by input tag on IE prevent to use input method. This issue was fixed. The affected 
+  versions are 5.4 and 5.5.
+- [BUG FIX] Qdsmtp couldn't send email with Gmail account for protocol stricting. The bundled Qdsmtp is patched.
+- [BUG FIX] Add including path for phpseclib.
+- [BUG FIX] Pagination bar wasn't updated when the search button which data-im is '_@update:xxx.'
+- [BUG FIX] In same case, the LIMIT parameter of non paging context set to the pagination length.
+- [BUG FIX] Target specifications using local context show the error message, but that's wrong messages.
+- [BUG FIX] Custom themes path had bug fix.
+- [BUG FIX] In case of file uploading, $_SERVER doesn't have 'HTTP_CONTENT_LENGTH' key in any case.
+- [BUG FIX] Fix buildup.sh to avoid double minify tinySHA1.js and sha256.js when using YUI Compressor.
+- [BUG FIX] Fix the MediaAccess class's generating cookie names.
+- [SECURITY FIX] The resetpassword.php in Auth_Support/PasswordReset folder had security issues.
+  If you use the resetpassword.php file in your solution. we'd like to replace the fixed version.
+- [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
+
+Ver.5.5 (October 13, 2016)
+- Support PHP 7 and checking on 7.1.0 Release Candidate 2, too.
+- Add "phpseclib_v2" (phpseclib 2.0.3) in "lib" directory for supporting PHP 7.
+- Add "Constant-Time Encoding" in "lib" directory for phpseclib 2.0.
+  <https://github.com/paragonie/constant_time_encoding>
+- In SQL Database, NULL value of date or datetime type fields are falling down zero components data,
+  such as 0000-00-00 00:00:00. So the zeros data handles the same as a blank.
+- Tests for sample web pages by Selenium Web Driver are introduced.
+- The Access-Control-Allow-Origin header can be appended with variable $accessControlAllowOrigin
+  in params.php file.
+- Update sample_schema_mysql.txt, recipe.rb and sample_spec.rb for the INTER-Mediator-Server VM.
+- The getDataAtLastRecord(key) method in IMLibContext class is added.
+- The setValue method of IMLibContext class returns affected node's id attribute values.
+- If nullable and numeric field is updated/created with "" value, write the value as NULL.
+  This behavior requires to set blank in case of updating text field with no string.
+- The record to merge an e-mail is retrieved from the database class's instance. This means
+  if you want to add/modify fields for e-mail, you can describe codes in advisor classes, but
+  you have to use the setUpdatedRecord method to send values you modified to mail processor.
+- [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
+  attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba). The affected 
+  version is 5.4 only.
+- [BUG FIX] The field which applied a data converter class in FMS's portal, the converter didn't
+  apply to the value in updating the field value.
+- [BUG FIX] On the update and create operation, the recordset modified by adviser definition class 
+  doesn't affect to the mail...déjà vu ? or didn't finish yet? The affected version is 5.4 only.
+- [BUG FIX] FileMaker_FX class couldn't apply the "script" keyed value for "load" (or "read") 
+  operation in a context definition when setting search criteria and using "-findquery" command
+  internnally. The affected version is 5.4 only.
+- [BUG FIX] Fix in expression parsing.
+- [BUG FIX] The id attribute value of "Detail" buttons on master/detail context is wrong
+  spelling (_im_buttom_master_id). This id value is changed as correct one (_im_button_master_id.)
+- [BUG FIX] FileMaker_FX class couldn't apply the "script" and "query" keyed value for "load" 
+  (or "read") operation in a context definition when setting search criteria. The affected version
+  is 5.4 only.
+- [BUG FIX] Fix handling 'neq' operator of search criteria when using FileMaker Server (Disable
+  compound found requests internally when using 'neq' operator). The affected version is 5.4 only.
+- [BUG FIX] DB_FileMaker_FX in RC1 was the script for all operations are added in "read" operation.
+- [BUG FIX] On the MediaAccess class, the authorization for “all” operation didn’t apply.
+- [BUG FIX] Fix the "undefined" copy button in pagination control.
+- [BUG FIX] Fix customized button names in pagination control.
+- [BUG FIX] Textarea on Edge showed in single line in spite of the multiple line string. With this
+  fix, IM uses value property of textarea node to set the value.
+
+Ver.5.4 (August 24, 2016)
+- You don't have to call INTERMediator.construct() anymore. If you want to do anything before page
+  generating, describe "INTERMediatorOnPage.doBeforeConstruct = function(){..};" on any valid place.
+  The node having the id attribute "nonsupportmessage" will disappear after page generating. If you
+  require to the another id value, you can set it into params.php as the value "$nonSupportMessageId".
+- "IN" operator in SQL db can be accepted with DB_PDO class. The value should be an array of itemized
+  values.
+- If the automatic calling to construct method doesn't requre, descirbe the below in doBeforeConstruct
+  or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
+- Creating Cross Table for PDO. It contains 3 contexts for column, row and value cells.
+  See the sample Samples/Practices/crosstable.html.
+- The "post-query-stored" key in context of the definition file is introduced. It will be specified
+  a method name, ant the method has to be define in the INTERMediatorOnPage object with one variable
+  for referring context object. It will be called after query and stored values in context.
+- The second "option" parameter of IM_Entry function can have the key "local-context" as the array of
+  "key" and "value" keyed elements. These affect as the initial values of relevant local context value.
+- The variable "$valuesForLocalContext" in params.php supplies initial values for local context.
+  The value of this variable has to be an associated array with key and value.
+- Improve setting search criteria when using FileMaker Server 12 or later to use the same fields for
+  multiple values in the same "and" or "or" search criteria. (Use "-findquery" command internnally,
+  but compound find requests using both "and" and "or" search criteria is still not supported.)
+- Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
+- FileUploader can detect exceeding file size limit and returns valid error messages.
+- New Sample "Sample_API" is added. This is for explanation of server-side apis.
+- On the Master-Detail style UI, the scrolled point in Master display can be retrieved when the page
+  is backed from the Detail display.
+- Add "CWPKit" in "lib" directory for FileMaker Server to remove a dependency of FX.php in the future.
+- Customizing X-Frame-Options and Content-Security-Policy headers in the params.php file.
+- Customizing the file path format of uploaded file with params.php file.
+- The IMLibUI.valueChange method is locked with the id attribute value to prevent the error when multiple
+  updating processes run simultaneously.
+- Supporting jQuery File Upload. Check the file Samples/Sample_website/fileupload_jQuery_MySQL.html.
+- Reduce error messages when the mbstring extension is disabled.
+- Add .eslintrc.js.
+- Update sample_schema_mysql.txt, dbupdate.sh, recipe.rb and sample_spec.rb for the INTER-Mediator-Server
+  virtual machine.
+- The 'choice', 'condition', 'accumulate' and 'lastindexof' functions are introduced into expression.
+- On Post-Only mode, nodes with the same data-im-group attribute are corrected as the value in one field.
+- The ignorePost method is introduced in DB_Proxy class for ignoring the $_POST values in adviser class.
+- In the context with 'aggregation-*' value, if the 'paging' is true, the pagination works fine. You should
+  use this carefully because pagination requires to count total records and it could be a perforance issue.
+- Update sample SQL files. These are added indices for authentication.
+- When the received json data is wrong, the server_access_async method calls the function for failing
+  in the parameter.
+- DB_Logger class works as Signleton. The messages within advice definition classes can be returned.
+- In the FileUploader.php, file path to be stored in fielad was absolute one if no related table to store
+  them. So it's not appropriate, all file paths are relative so far.
+- Update TestDB.fmp12 and TestDB_clone.fmp12 to modify the Serial Number setting of 'asset_id' field.
+- [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
+  being shown inappropriately.
+- [BUG FIX] addCondition method's third was eliminated, the matching feature is activated anytime.
+  So when the 3rd parameter is nothing, the matching follows the value of
+  INTERMediator_DBAdapter.eliminateDuplicatedConditions.
+- [BUG FIX] Fix the issue of MediaAccess class and the file upload component when using the Native
+  Authentication for mobile devices. The affected version is 5.3 only.
+- [BUG FIX] INTERMediatorOnPage.defaultBackgroundImage affects as expected.
+- [BUG FIX] String array value for single value operator works fine.
+- [BUG FIX] Modify the value of INTERMediatorOnPage.getIMRootPath on Windows Server.
+- [BUG FIX] Update FX.php to fix compatibility with authentication for FileMaker Server.
+- [BUG FIX] Enrolment methods had a bug in case of FileMaker Server with issuedhash for SQLite.
+- [BUG FIX] When the text field bond to local context didn't update calculated property.
+- [BUG FIX] Authentication prevented in case of just specify on the second parameter of IM_Entry.
+- [BUG FIX] Fix DB_FileMaker_FX class not to throw an exception when failed to convert a value 
+  using DataConverter classes.
+- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server and a
+  count of related records on the portal object is 1 (Thanks to Kiyonori Ito).
+- [BUG FIX] Fix showing a portal record when using portal access mode for FileMaker Server and
+  there are multiple portal objects on a layout.
+- [BUG FIX] Fix showing portal records when using portal access mode for FileMaker Server after
+  deleting a related record. The affected version is 5.3 only.
+- [BUG FIX] Fix to be accumulated cross table conditions on a page.
+- [BUG FIX] Calculated property's fields weren't handled as existing fields and show errors.
+- [BUG FIX] In case of the keyed value is just 0, the id attribute wasn't assigned to each element.
+- [BUG FIX] Fix clearing and saving data in a textarea element of the first related field when 
+  using Microsoft Edge or Internet Explorer.
+- [BUG FIX] Fix DB_FileMaker_FX class for DataConverter_FMDateTime class to handle the fields on
+  the portal objects with portal access mode correctly.
+- [BUG FIX] The 'button-names' keyed values didn't affect to buttons on pagenation bar.
+- [BUG FIX] Fix displaying when the value of SELECT element is empty.
+- [BUG FIX] On the update and create operation, the recordset modified by adviser definition class doesn't
+  affect to the mail.
+- [BUG FIX] Improve updating the display of nodes which depends on the value of radio buttons.
+- [BUG FIX] Sample_Asset's detail pages didn't show right record.
+- [BUG FIX] Fix uploading when using old version of Microsoft Edge which can't upload with drag and drop.
+- [BUG FIX] Fix setting INTERMediator.isEdge property.
+
+Ver.5.3 (February 21, 2016)
+- Support OAuth2 with OAuthAuth.php class and the sample redirected page is OAuthCatcher.php
+  in the Auth_Support directory.
+- Master/Detail style UI (controlled by 'navi-control' key) support mobile environment ex. JQuery Mobile.
+  The Samples/Sample_Mobile folder includes some demos for mobile device.
+- SQL aggregation can be defined as a read-only context. The aggregation-select,
+  aggregation-from, aggregation-group-by key are added.
+- The database update communucations (Create, Update, Delete, Copy) are working in asynchronous mode.
+- MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
+  for PHP).
+- Generic enclosure/repeater mechanism is implemented. See Sample_forDebugging/genericrepeater.html
+  or the link "generic enclosure/repeater" in "Debugging" row of the sample portal page.
+- Update phpseclib to version 1.0.0.
+- The "source" key for data source of first parameter of IM_Entry function is introduced. Contexts that
+  has same "source" key's value is going to be updated and re-constructed when insert/delete operation
+  is happend in one of them.
+- The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
+  for the first parameter.
+- The credential for authentication can be stored in the sessionStorage.
+- Utility methods, dateStringISO, dateStringFileMaker and timeString, are defined in INTERMediatorLib.
+- Be able to customize a style of the file uploading area when using the file upload component.
+- LDAPAuth class can report errors.
+- INTER-Mediator version can be described in the 'metadata.json' file, and dist-docs/build.sh
+  can update the metadata.json.
+- Polish code for sending messages. Sending mail for each record.
+- The INTERMediator.addCondition method works not only append conditions but also matching and
+  replace the value. The default behavior is matching, and set the 3rd parameter to true for appending.
+- When the local context is stored in sessionStorage, the search and hash sections of the url of document
+  are eliminated from the key of storage item.
+- The 'storing' key in 'authentication' in the second option parameter of IM_Entry function
+  supports the 'session-storage' key, and it stores credentials into sessionStorage object.
+- Save NULL to the database when the user's input is empty via DataConverter_MySQLDateTime class.
+- Add match() in js-expression-eval-parser.js for the validation rules.
+- The master context object can store the id attribute value of "Detail" buttons. These can be retrieved
+  from MASTER_CONTEXT.getValue(RECORD_KEY, "_im_buttom_master_id").
+- Enable the Post Only Mode when using an input elemement button (<input type="button"> or <input 
+  type="submit">).
+- Modify the sample application of uploading a file.
+- Send mail for each record in queried ones.
+- All header description of source files are updated, and build.sh was adapted them.
+- Password policy can be set in the 2nd "option" parameter of IM_Entry function.
+  The key is 'password-policy' and the following terms can be applied.
+  "useAlphabet useNumber useUpper useLower usePunctuation length(10) notUserName",
+- Add background image files (background.gif and background-error.gif) to improve compatibility with
+  CSP (Content Security Policy).
+- Update some samples to improve compatibility with CSP (Content Security Policy).
+- Add Dockerfile for CircleCI.
+- Add .gitlab-ci.yml for GitLab CI.
+- Update buster.js and package.json for unit testing.
+- Avoid outputting an error message in an error log file in case of an invalid request.
+- The second parameter of the doAfterCreateToDB method is passed all fields of the newly created record.
+  Previously it was just a key field value of new record.
+- Avoid outputting messages in an error log file if there is no portal objects on the layout when using 
+  FileMaker Server.
+- Functions for expression are added: match, test, itemIndexOf.
+- The DataConverter_MarkdownString class is added.
+- Add a mobile sample application to Samples/Sample_Mobile directory.
+- Remove IMLibElement.checkOptimisticLock().
+- Update the value of $generatedPrivateKey in params.php and output an debug message if not changing 
+  the value of $generatedPrivateKey in params.php for security reasons.
+- The email enrollment and resetting password are added in the Auth_Support folder.
+- Two methods are added in one of the interface. Any Database Class should aware of them.
+- The 'body-fields' keyed value can contain the stirng constant with start @.
+  The value "@123,name" replaces @@1@@ to "123" and @@2@@ to the value of name field.
+- data-im-control attribute's value 'header', 'footer', 'separator' are supported.
+- In SQL statement, the table or view name in from clause is quoted by appropritate character
+- The 'realname' field is added to sample schemas for MySQL/PostgreSQL/SQLite.
+- Update TestDB.fmp12, TestDB_clone.fmp12 and TestDB.fp7 to add 'realname' field and 'limitdt' field
+  to 'authuser' table.
+- The global variables $g_dbInstance, $g_serverSideCall in INTER-Mediator.php are deprecated.
+- [INFO] FileMaker Server 11 has been deprecated. In the near future, INTER-Mediator will require
+  FileMaker Server 12 or later if using FileMaker Server.
+- [SECURITY FIX] Improve preventing CSRF Attack by specifying $webServerName (the FQDN for your web 
+  server) in params.php.
+- [SECURITY FIX] Fix the possibility of an open redirection vulnerability in the file upload component.
+- [SECURITY FIX] Update FileUploader.php to prevent the HTTP header injection in PHP's header() for 
+  Internet Explorer and PHP 5.2.x/PHP 5.3.x (Fixed in PHP 5.4.38, PHP 5.5.22 and PHP 5.6.6).
+- [BUG FIX] Fix detection of params.php file.
+- [BUG FIX] Fix loading DB_TextFile class. The affected version is 5.2 only.
+- [BUG FIX] Modify INTERMediator.totalRecordCount after IMLibPageNavigation.deleteRecordFromNavi method.
+- [BUG FIX] Fix detecting the Post Only Mode when the value of the enclosure's data-im-control element
+  is "enclosure post".
+- [BUG FIX] Fix not to remove focus from input field on the Post Only Mode when using validation in some 
+  cases.
+- [BUG FIX] Definition File Editor can store the some values that are as array.
+- [BUG FIX] If the "key" key wasn't supplied, the calculation goes wrong results.
+- [BUG FIX] Fix buildup.sh to include "themes" directory correctly. The affected version is 5.2 only.
+- [BUG FIX] When insert/delete record, it didn't affect to other contexts. #299 This issue was resolved.
+- [BUG FIX] Samples/templates didn't work in case of unsupported browsers.
+- [BUG FIX] The variable $dbClass in params.php file didn't affect.
+- [BUG FIX] CodeMirror component couldn't update the value to database.
+- [BUG FIX] Modify Japanese error message of error code 1040.
+
+Ver.5.2 (August 24, 2015)
+- Record Copying is supported for single record, and also with associated records for PDO.
+- Authentication with an LDAP user.
+- Handle some operators of conditions ('!=', '>', '>=', '<', '<=') as valid when using FileMaker 
+  Server.
+- The "button-names" key in a context of definition file supports to customize the button names.
+- The list aggregate function was introduced.
+- Add IMLIbUI.validation() as a public method.
+- INTER-Mediator-Server VM can update with just "git pull origin master" command.
+- DataConverter classes for currency and number was improved in case of missing locale information.
+- The following 4 methods can be defined and they are going to be called when the page moves to
+  the master/detail navigation. All function can have two parameters that are referring the master
+  and detail contexts.
+      INTERMediatorOnPage.naviBeforeMoveToDetail
+      INTERMediatorOnPage.naviAfterMoveToDetail
+      INTERMediatorOnPage.naviBeforeMoveToMaster
+      INTERMediatorOnPage.naviAfterMoveToMaster
+- The following variables in the params.php file weren't effective, so they are removed from the file.
+      $prohibitSetCondition = true;
+      $prohibitSetOrder = true;
+      $prohibitSetWriteCriticalFields = true;
+      $prohibitIgnoreCondition = true;
+      $httpAccounts = array('user'=>'testtest');
+      $httpRedirectURL = "http://10.0.1.226/im/Sample_products/products_MySQL.html";
+- Now setting the 'records' key manually in the definition file to a value bigger than maxrecords
+  will actually bring maxrecords to the same value, no need to repeat yourself.
+- Preserve the value of INTERMediator.startFrom after inserting a new record not to move to
+  the first page for a list page when pagination is enabled.
+- Hide buttons and the input area for pagination on the navigation bar when the 'paging' key
+  is not set.
+- Call INTERMediator.construct method after using deleteButton method if necessary.
+- Add getTotalCount() to DB_PDO class to get the total number of records in the main table.
+- Add circle.yml to test with CircleCI.
+- Update TestDB.fmp12 and TestDB.fp7 to add the last updated date on "person_layout" layout.
+- Update sample_schema_mysql.txt, TestDB.fmp12, TestDB_clone.fmp12 and TestDB.fp7 to add
+  "information" table.
+- The sample with jQuery's DatePicker UI component on
+  Samples/Sample_webpage/jquery_datepicker_MySQL.html.
+- The VM DB update script on dist-docs/vm-for-trial/dbupdate.sh. I'd like to ask you to use
+  the "source" commmand to execute it.
+- Customized login panel can include the error messages with the im_login_message and
+  the im_newpass_message class's DIV node.
+- Update smb.conf in INTER-Mediator Server Virtual Machine.
+- Update an index page of INTER-Mediator Server Virtual Machine to display the last updated
+  date.
+- Add image and css files (inprogress.gif, logo.gif and style.css).
+- Add .codeclimate.yml.
+- Some terms of "new", "load", "edit" replaced to CRUD words "create", "read", "update".
+  But all original terms are still available.
+- Output an error message when after a failed upload due to a server side error.
+- Detect Microsoft Edge in "browser-compatibility" key.
+- Remove the 'MSIE' token from $browserCompatibility in params.php.
+- Update messages for non-supported browsers in the sample template.
+- [SECURITY FIX] Update FileUploader.php to prevent move_uploaded_file() NULL byte injection in
+  file name (CVE-2015-2348) for PHP 5.2.x and PHP 5.3.x (CVE-2015-2348 was fixed in PHP 5.4.39,
+  PHP 5.5.23 and PHP 5.6.7).
+- [BUG FIX] The definition file editor supports the 'soft-delete' key, and also the field which
+  can't contain ether boolean or string value appropriately.
+- [BUG FIX] The definition file editor supports the 'pusher-app_id', 'pusher-key' and
+  'pusher-secret' keys and send-mail settings etc.
+- [BUG FIX] Fix other issues of the definition file editor.
+- [BUG FIX] Fix an error when the value of 'operator' key in 'query' key is '=' in a definition
+  file using FileMaker Server.
+- [BUG FIX] Calculation bug fixed. In case of multiple uses of a calculated property.
+- [BUG FIX] Fix 'inline' and 'end-of-sibling' key options of validation. The affected version is
+  5.1 only.
+- [BUG FIX] A term of the "send-mail" in DefinitionChecker class was wrong.
+- [BUG FIX] Some value in the Local Context weren't archived.
+- [BUG FIX] Parser had a bug for multiple references in a page.
+- [BUG FIX] PDO class had a bug for authentication but it would affect in a rare case.
+- [BUG FIX] Fix inserting data including null character to the database when using FileMaker Server.
+- [BUG FIX] Post Only Mode and Validation work fine.
+- [BUG FIX] Fix showing an image of FileMaker's container field if the value of "src" attribute in
+  the page file includes "?media=". The affected version is 5.1 only.
+- [BUG FIX] Fix loading English MessageStrings class when the value of Accept-Language request header
+  includes 'ja'.
+- [BUG FIX] Fix the behavior of 'maxrecords' key for pagination (Thanks to Kazuaki Osawa).
+- [BUG FIX] Fix the behavior of 'maxrecords' key for Master/Detail style page.
+- [BUG FIX] Fix displaying the navigation bar when using the master-detail style UI.
+- [BUG FIX] Fix compatibility with PHPExcel due to autoloading.
+- [BUG FIX] Fix calculation for over-million numbers.
+- [BUG FIX] Fix detecting a browser's version number (excluding MSIE) for $browserCompatibility or
+  the "browser-compatibility" key.
+- [BUG FIX] Fix checking the version of Internet Explorer when specifying the version number string
+  with '-' (ex. 'Trident' => '6-') in $browserCompatibility or the "browser-compatibility" key.
+
+Ver.5.1 (May 22, 2015)
+- Support uploading a file to FileMaker's container field when using FileMaker Server 13 or later.
+- Improve the compatibility with file upload component and Mobile Safari.
+- Add the sample application of uploading a file to FileMaker's container field in the 
+  "Sample_webpage" directory and update the sample database (TestDB.fmp12).
+- Calculated property can use the unbound fields as items in the expression. You don't need to set the target
+  (like qty@style.color) in the "field" of "calculation", just set the field name.
 - Update phpseclib to version 0.3.10.
 - Change SHA-1 JavaScript library.
   (tiny-sha1 <https://code.google.com/p/tiny-sha1/> is contained in the INTER-Mediator.)
@@ -20,6 +411,20 @@ Ver.5.1 (in development)
   It can be overridden by params.php file's $appLocale valuable.
 - Update TestDB.fmp12, TestDB_clone.fmp12, TestDB.fp7 and TestDBSchemeForFMS.xlsx to add "total" field to the 
   "invoice" table for the server side calculation sample.
+- Add the 'memo' field in sample databases.
+- The script to build the VM contains installation of samba and sharing the web root.
+- Update Vagrantfile for the INTER-Mediator-Server virtual machine to use a box file 
+  which be installed VirtualBox Guest Additions.
+- Enable SMB in INTER-Mediator Server Virtual Machine.
+- [BUG FIX] Fix loading DB_Null.php in some cases.
+- [BUG FIX] The page editor title was "Definition File Editor" and correct it.
+- [BUG FIX] The 'navi-control' behavior was sometimes wrong.
+- [BUG FIX] Update TestDB.fmp12 to fix add a related record using portal access mode in 
+  the sample application.
+- [BUG FIX] Update files for the INTER-Mediator-Server virtual machine to fix issues of
+  the page editor and the definition file editor etc.
+- [BUG FIX] Definition File Editor supports sending email settings.
+- [BUG FIX] The validation didn't work on the blank text field.
 
 Ver.5.0 (February 20, 2015) =====================================
 [Major differences from Ver.4.0]

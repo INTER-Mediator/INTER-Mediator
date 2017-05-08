@@ -1,13 +1,17 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
- * 
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- * 
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
-window.onload = function () {
-    INTERMediator.construct(true);
+
+INTERMediatorOnPage.doBeforeConstruct = function () {
+    //INTERMediator.addCondition("postalcode", {field: "f9", operator: "LIKE", value: "%東%"});
+    //INTERMediator.addCondition("postalcode", {field: "f9", operator: "LIKE", value: "%西%"});
+    //INTERMediator.addCondition("postalcode", {field: "__operation__", operator: "ex"});
 };
 
 INTERMediatorOnPage.doAfterConstruct = function () {
@@ -36,13 +40,13 @@ INTERMediatorOnPage.doAfterConstruct = function () {
         INTERMediator.additionalSortKey = {"postalcode": {field: 'f9', direction: 'DESC'}};
         doSearch();
     });
-}
+};
 
 function doSearch() {
     IMLibLocalContext.update('condition');
     IMLibLocalContext.update("number");
     var limit = IMLibLocalContext.getValue("pagedSize");
-    if(parseInt(limit) > 0) {
+    if (parseInt(limit) > 0) {
         INTERMediator.pagedSize = limit;
     }
     var c1 = IMLibLocalContext.getValue("condition");
