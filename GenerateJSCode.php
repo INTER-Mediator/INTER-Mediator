@@ -58,8 +58,8 @@ class GenerateJSCode
         $oAuthRedirect = null;
         $themeName = "default";
         $dbClass = null;
-        $appLocale = null;
-        $appCurrency = null;
+        $appLocale = 'ja_JP';
+        $appCurrency = 'JP';
         $params = IMUtil::getFromParamsPHPFile(array(
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
@@ -82,8 +82,10 @@ class GenerateJSCode
         $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
         $valuesForLocalContext = $params["valuesForLocalContext"];
         $themeName = is_null($params["themeName"]) ? $themeName : $params["themeName"];
-        $appLocale = isset($options['app-locale']) ? $options['app-locale'] : $params["appLocale"];
-        $appCurrency = isset($options['app-currency']) ? $options['app-currency'] : $params["appCurrency"];
+        $appLocale = isset($options['app-locale']) ? $options['app-locale']
+            : (isset($params['app-locale']) ? $params["appLocale"] : 'ja_JP');
+        $appCurrency = isset($options['app-currency']) ? $options['app-currency']
+            : (isset($params['app-currency']) ? $params["appCurrency"] : 'JP');
 
         /*
          * Read the JS programs regarding by the developing or deployed.
@@ -259,8 +261,8 @@ class GenerateJSCode
 
         if (!is_null($appLocale)) {
             $this->generateAssignJS("INTERMediatorOnPage.appLocale", "{$q}{$appLocale}{$q}");
-            $this->generateAssignJS("INTERMediatorOnPage.localInfo",
-                "JSON.parse('".json_encode(IMLocaleFormatTable::getLocaleFormat($appLocale))."')");
+            $this->generateAssignJS("INTERMediatorOnPage.localeInfo",
+                "JSON.parse('" . json_encode(IMLocaleFormatTable::getLocaleFormat($appLocale)) . "')");
         }
         if (!is_null($appCurrency)) {
             $this->generateAssignJS("INTERMediatorOnPage.appCurrency", "{$q}{$appCurrency}{$q}");

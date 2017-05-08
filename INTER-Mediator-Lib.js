@@ -626,7 +626,7 @@ var INTERMediatorLib = {
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
             if ((c >= '0' && c <= '9') || c == '.' || c == '-' ||
-                c == INTERMediatorOnPage.localInfo["mon_decimal_point"]) {
+                c == INTERMediatorOnPage.localeInfo["mon_decimal_point"]) {
                 s += c;
             }
         }
@@ -910,8 +910,8 @@ var INTERMediatorLib = {
     decimalFormat: function (str, digit, flags) {
         "use strict";
         return INTERMediatorLib.numberFormatImpl(str, digit,
-            INTERMediatorOnPage.localeInfo.decimal_point,
-            INTERMediatorOnPage.localeInfo.thousands_sep,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
             false,
             flags
         );
@@ -941,7 +941,7 @@ var INTERMediatorLib = {
     },
 
     currencyFormat: function (str, digit) {
-        return INTERMediatorOnPage.localInfo["currency_symbol"] +
+        return INTERMediatorOnPage.localeInfo["currency_symbol"] +
             INTERMediatorLib.numberFormat(str, digit);
     },
 

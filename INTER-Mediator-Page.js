@@ -72,7 +72,7 @@ var INTERMediatorOnPage = {
     metadata: null,
     isLDAP: null,
     appLocale: null,
-    localInfo: {
+    localeInfo: {
         mon_decimal_point: '.',
         mon_thousands_sep: ',',
         currency_symbol: '￥'

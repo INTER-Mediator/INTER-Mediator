@@ -105,7 +105,7 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         // A negative second parameter doesn't support so far.
     },
     "format string detection": function()   {
-        assert.equals(INTERMediatorOnPage.localInfo, {
+        assert.equals(INTERMediatorOnPage.localeInfo, {
             mon_decimal_point:'.',
             mon_thousands_sep:',',
             currency_symbol:'￥'

@@ -27,9 +27,112 @@ var IMLibElement = {
         /^percent[\(\)]*/
     ],
 
+    // Formatting values
+    //
+    getFormattedValue: function (element) {
+        var flags, formatSpec, formatOption, negativeColor, negativeStyle, charStyle,
+            kanjiSeparator, param1, formattedValue = null;
+
+        formatSpec = element.getAttribute("data-im-format");
+        if (!formatSpec) {
+            return null;
+        }
+        flags = {
+            useSeparator: false,
+            blankIfZero: false,
+            negativeStyle: 0,
+            charStyle: 0,
+            kanjiSeparator: 0
+        };
+        formatOption = element.getAttribute("data-im-format-options");
+        if (formatOption) {
+            if (formatOption.toLowerCase().split(" ").indexOf("useseparator") > -1) {
+                flags.useSeparator = true;
+            }
+            if (formatOption.toLowerCase().split(" ").indexOf("blankifzero") > -1) {
+                flags.blankIfZero = true;
+            }
+        }
+        negativeColor = element.getAttribute("data-im-format-negative-color");
+        negativeStyle = element.getAttribute("data-im-format-negative-style");
+        if (negativeStyle) {
+            if (negativeStyle.toLowerCase() === "leadingminus" ||
+                negativeStyle.toLowerCase() === "leading-minus") {
+                flags.negativeStyle = 0;
+            } else if (negativeStyle.toLowerCase() === "trailingminus" ||
+                negativeStyle.toLowerCase() === "trailing-minus") {
+                flags.negativeStyle = 1;
+            } else if (negativeStyle.toLowerCase() === "parenthesis") {
+                flags.negativeStyle = 2;
+            } else if (negativeStyle.toLowerCase() === "angle") {
+                flags.negativeStyle = 3;
+            } else if (negativeStyle.toLowerCase() === "credit") {
+                flags.negativeStyle = 4;
+            } else if (negativeStyle.toLowerCase() === "triangle") {
+                flags.negativeStyle = 5;
+            }
+        }
+        charStyle = element.getAttribute("data-im-format-numeral-type");
+        if (charStyle) {
+            if (charStyle.toLowerCase() === "half-width") {
+                flags.charStyle = 0;
+            } else if (charStyle.toLowerCase() === "full-width") {
+                flags.charStyle = 1;
+            } else if (charStyle.toLowerCase() === "kanji-numeral-modern") {
+                flags.charStyle = 2;
+            } else if (charStyle.toLowerCase() === "kanji-numeral") {
+                flags.charStyle = 3;
+            }
+        }
+        kanjiSeparator = element.getAttribute("data-im-format-kanji-separator");
+        if (kanjiSeparator) {
+            if (kanjiSeparator.toLowerCase() === "every-4th-place") {
+                flags.kanjiSeparator = 1;
+            } else if (kanjiSeparator.toLowerCase() === "full-notation") {
+                flags.kanjiSeparator = 2;
+            }
+            if (flags.kanjiSeparator > 0) {
+                flags.useSeparator = true;
+            }
+        }
+        for (i = 0; i < IMLibElement.patterns.length; i++) {
+            param1 = formatSpec.match(IMLibElement.patterns[i]);
+            if (param1) {
+                switch (param1.length) {
+                case 3:
+                    if (param1[0].indexOf("boolean") > -1) {
+                        formattedValue = INTERMediatorLib.booleanFormat(curVal, param1[1], param1[2]);
+                    }
+                    break;
+                case 2:
+                    if (param1[0].indexOf("number") > -1) {
+                        formattedValue = INTERMediatorLib.decimalFormat(curVal, param1[1], flags);
+                    } else if (param1[0].indexOf("currency") > -1) {
+                        formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1], flags);
+                    } else if (param1[0].indexOf("percent") > -1) {
+                        formattedValue = INTERMediatorLib.percentFormat(curVal, param1[1], flags);
+                    }
+                    break;
+                default:
+                    if (param1[0].indexOf("number") > -1) {
+                        formattedValue = INTERMediatorLib.decimalFormat(curVal, 0, flags);
+                    } else if (param1[0].indexOf("currency") > -1) {
+                        formattedValue = INTERMediatorLib.currencyFormat(curVal, 0, flags);
+                    } else if (param1[0].indexOf("percent") > -1) {
+                        formattedValue = INTERMediatorLib.percentFormat(curVal, 0, flags);
+                    }
+                    break;
+                }
+                break;
+            }
+        }
+        return formattedValue;
+    },
+
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
-        var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode, formatSpec,
+        var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode, formatSpec, formattedValue,
             needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false, imControl;
+
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
         if (curVal === undefined) {
@@ -66,102 +169,10 @@ var IMLibElement = {
                     break;
                 }
             }
-
-            formatSpec = element.getAttribute("data-im-format");
-            if (formatSpec) {
-                flags = {
-                    useSeparator: false,
-                    blankIfZero: false,
-                    negativeStyle: 0,
-                    charStyle: 0,
-                    kanjiSeparator: 0
-                };
-                formatOption = element.getAttribute("data-im-format-options");
-                if (formatOption) {
-                    if (formatOption.toLowerCase().split(" ").indexOf("useseparator") > -1) {
-                        flags.useSeparator = true;
-                    }
-                    if (formatOption.toLowerCase().split(" ").indexOf("blankifzero") > -1) {
-                        flags.blankIfZero = true;
-                    }
-                }
-                negativeColor = element.getAttribute("data-im-format-negative-color");
-                negativeStyle = element.getAttribute("data-im-format-negative-style");
-                if (negativeStyle) {
-                    if (negativeStyle.toLowerCase() === "leadingminus" ||
-                        negativeStyle.toLowerCase() === "leading-minus") {
-                        flags.negativeStyle = 0;
-                    } else if (negativeStyle.toLowerCase() === "trailingminus" ||
-                        negativeStyle.toLowerCase() === "trailing-minus") {
-                        flags.negativeStyle = 1;
-                    } else if (negativeStyle.toLowerCase() === "parenthesis") {
-                        flags.negativeStyle = 2;
-                    } else if (negativeStyle.toLowerCase() === "angle") {
-                        flags.negativeStyle = 3;
-                    } else if (negativeStyle.toLowerCase() === "credit") {
-                        flags.negativeStyle = 4;
-                    } else if (negativeStyle.toLowerCase() === "triangle") {
-                        flags.negativeStyle = 5;
-                    }
-                }
-                charStyle = element.getAttribute("data-im-format-numeral-type");
-                if (charStyle) {
-                    if (charStyle.toLowerCase() === "half-width") {
-                        flags.charStyle = 0;
-                    } else if (charStyle.toLowerCase() === "full-width") {
-                        flags.charStyle = 1;
-                    } else if (charStyle.toLowerCase() === "kanji-numeral-modern") {
-                        flags.charStyle = 2;
-                    } else if (charStyle.toLowerCase() === "kanji-numeral") {
-                        flags.charStyle = 3;
-                    }
-                }
-                kanjiSeparator = element.getAttribute("data-im-format-kanji-separator");
-                if (kanjiSeparator) {
-                    if (kanjiSeparator.toLowerCase() === "every-4th-place") {
-                        flags.kanjiSeparator = 1;
-                    } else if (kanjiSeparator.toLowerCase() === "full-notation") {
-                        flags.kanjiSeparator = 2;
-                    }
-                    if (flags.kanjiSeparator > 0) {
-                        flags.useSeparator = true;
-                    }
-                }
-                for (i = 0; i < IMLibElement.patterns.length; i++) {
-                    param1 = formatSpec.match(IMLibElement.patterns[i]);
-                    if (param1) {
-                        switch (param1.length) {
-                        case 3:
-                            if (param1[0].indexOf("boolean") > -1) {
-                                formattedValue = INTERMediatorLib.booleanFormat(curVal, param1[1], param1[2]);
-                            }
-                            break;
-                        case 2:
-                            if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.decimalFormat(curVal, param1[1], flags);
-                            } else if (param1[0].indexOf("currency") > -1) {
-                                formattedValue = INTERMediatorLib.currencyFormat(curVal, param1[1], flags);
-                            } else if (param1[0].indexOf("percent") > -1) {
-                                formattedValue = INTERMediatorLib.percentFormat(curVal, param1[1], flags);
-                            }
-                            break;
-                        default:
-                            if (param1[0].indexOf("number") > -1) {
-                                formattedValue = INTERMediatorLib.decimalFormat(curVal, 0, flags);
-                            } else if (param1[0].indexOf("currency") > -1) {
-                                formattedValue = INTERMediatorLib.currencyFormat(curVal, 0, flags);
-                            } else if (param1[0].indexOf("percent") > -1) {
-                                formattedValue = INTERMediatorLib.percentFormat(curVal, 0, flags);
-                            }
-                            break;
-                        }
-                        break;
-                    }
-                }
-                if (formattedValue === null) {
-                    formattedValue = curVal;
-                    INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
-                }
+            formattedValue = IMLibElement.getFormattedValue(element);
+            if (formattedValue === null) {
+                formattedValue = curVal;
+                INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
             }
         }
 
