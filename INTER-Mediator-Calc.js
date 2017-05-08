@@ -29,44 +29,15 @@
  * @constructor
  */
 var IMLibCalc = {
-<<<<<<< HEAD
-    calculateOnServer: "im_server",
-    calculateRequiredObject: null,
-    /*
-     key => {    // Key is the id attribute of the node which is defined as "calcuration"
-     "field":
-     "expression": exp.replace(/ /g, ""),   // expression
-     "nodeInfo": nInfo,     // node if object i.e. {field:.., table:.., target:..., tableidnex:....}
-     "values": {}   // key=target name in expression, value=real value.
-     // if value=undefined, it shows the value is calculation field
-     "refers": {}
-     }
-=======
     /**
      * This property stores IMType_CalculateFieldDefinition objects for each calculation required nodes.
      * The property name is the id attribute of the node which bond to the calculated property
      * following 'target' which is the 3rd component of target spec of the node.
      * After calling the INTERMediator.constructMain() method, this property has to be set any array.
      * @type {IMType_VariablePropertiesClass<IMType_CalculateFieldDefinition>}
->>>>>>> INTER-Mediator/master
      */
     calculateRequiredObject: null,
 
-<<<<<<< HEAD
-    removeInvalidNodeInfo: function () {
-        var objectKey;
-        for (objectKey in IMLibCalc.calculateRequiredObject) {
-            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(objectKey)) {
-                if (!document.getElementById(objectKey)) {
-                    delete IMLibCalc.calculateRequiredObject[objectKey];
-                }
-            }
-        }
-    },
-
-    updateCalculationInfo: function (currentContext, nodeId, nInfo, currentRecord) {
-        var calcDef, exp, field, elements, i, index, objectKey, calcFieldInfo, itemIndex, values, referes,
-=======
     /**
      *
      * @param contextObj
@@ -78,49 +49,11 @@ var IMLibCalc = {
      */
     updateCalculationInfo: function (contextObj, keyingValue, currentContext, nodeId, nInfo, currentRecord) {
         var calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
->>>>>>> INTER-Mediator/master
             calcDefField, atPos, fieldLength;
 
 
         calcDef = currentContext['calculation'];
         for (index in calcDef) {
-<<<<<<< HEAD
-            if (calcDef.hasOwnProperty(index)) {
-                atPos = calcDef[index]["field"].indexOf("@");
-                fieldLength = calcDef[index]["field"].length;
-                calcDefField = calcDef[index]["field"].substring(0, atPos >= 0 ? atPos : fieldLength);
-                if (calcDefField == nInfo["field"]) {
-                    try {
-                        exp = calcDef[index]["expression"];
-                        field = calcDef[index]["field"];
-                        elements = Parser.parse(exp).variables();
-                        calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(field);
-                        objectKey = nodeId
-                            + (calcFieldInfo.target.length > 0 ? (INTERMediator.separator + calcFieldInfo.target) : "");
-                    } catch (ex) {
-                        INTERMediator.setErrorMessage(ex,
-                            INTERMediatorLib.getInsertedString(
-                                INTERMediatorOnPage.getMessages()[1036], [field, exp]));
-                    }
-                    if (elements) {
-                        values = {};
-                        referes = {};
-                        for (i = 0; i < elements.length; i++) {
-                            itemIndex = elements[i];
-                            if (itemIndex) {
-                                values[itemIndex] = [currentRecord[itemIndex]];
-                                referes[itemIndex] = [undefined];
-                            }
-                        }
-                        IMLibCalc.calculateRequiredObject[objectKey] = {
-                            "field": field,
-                            "expression": exp,
-                            "nodeInfo": nInfo,
-                            "values": values,
-                            "referes": referes
-                        };
-                    }
-=======
             atPos = calcDef[index]['field'].indexOf(INTERMediator.separator);
             fieldLength = calcDef[index]['field'].length;
             calcDefField = calcDef[index]['field'].substring(0, atPos >= 0 ? atPos : fieldLength);
@@ -155,7 +88,6 @@ var IMLibCalc = {
                         'values': values,
                         'referes': referes
                     };
->>>>>>> INTER-Mediator/master
                 }
             }
         }
@@ -166,33 +98,11 @@ var IMLibCalc = {
      */
     updateCalculationFields: function () {
         var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, calcFieldInfo;
-<<<<<<< HEAD
-        var targetNode, field, valueSeries, targetElement, i, hasReferes;
-=======
         var targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record;
->>>>>>> INTER-Mediator/master
 
         IMLibCalc.setUndefinedToAllValues();
         IMLibNodeGraph.clear();
         for (nodeId in IMLibCalc.calculateRequiredObject) {
-<<<<<<< HEAD
-            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                if (calcObject) {
-                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
-                    targetNode = document.getElementById(calcFieldInfo.field);
-                    hasReferes = false;
-                    for (field in calcObject.referes) {
-                        if (calcObject.referes.hasOwnProperty(field)) {
-                            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                                IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
-                                hasReferes = false;
-                            }
-                        }
-                    }
-                    if (!hasReferes) {
-                        IMLibNodeGraph.addEdge(nodeId);
-=======
             calcObject = IMLibCalc.calculateRequiredObject[nodeId];
             if (calcObject) {
                 hasReferes = false;
@@ -200,7 +110,6 @@ var IMLibCalc = {
                     for (ix = 0; ix < calcObject.referes[field].length; ix++) {
                         IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
                         hasReferes = false;
->>>>>>> INTER-Mediator/master
                     }
                 }
             }
@@ -220,17 +129,6 @@ var IMLibCalc = {
                     valuesArray = calcObject.values;
                     refersArray = calcObject.referes;
                     for (field in valuesArray) {
-<<<<<<< HEAD
-                        if (valuesArray.hasOwnProperty(field)) {
-                            valueSeries = [];
-                            for (ix = 0; ix < valuesArray[field].length; ix++) {
-                                if (valuesArray[field][ix] == undefined) {
-                                    targetElement = document.getElementById(refersArray[field][ix]);
-                                    valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
-                                } else {
-                                    valueSeries.push(valuesArray[field][ix]);
-                                }
-=======
                         valueSeries = [];
                         for (ix = 0; ix < valuesArray[field].length; ix++) {
                             if (valuesArray[field][ix] == undefined) {
@@ -246,24 +144,11 @@ var IMLibCalc = {
                                 }
                             } else {
                                 valueSeries.push(valuesArray[field][ix]);
->>>>>>> INTER-Mediator/master
                             }
                             calcObject.values[field] = valueSeries;
                         }
                     }
-<<<<<<< HEAD
-                    if (exp != IMLibCalc.calculateOnServer) {
-                        IMLibElement.setValueToIMNode(
-                            targetNode,
-                            calcFieldInfo.target.length > 0 ? calcFieldInfo.target : calcObject.nodeInfo.target,
-                            Parser.evaluate(exp, valuesArray),
-                            true);
-                    }
-                } else {
-
-=======
                     IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
->>>>>>> INTER-Mediator/master
                 }
             }
         } while (leafNodes.length > 0);
@@ -278,17 +163,10 @@ var IMLibCalc = {
      * On deleting, parameter doesn't required.
      * @param updatedNodeId
      */
-<<<<<<< HEAD
-    recalculation: function (updatedNodeId, updateOnServer) {
-        var nodeId, newValueAdded, leafNodes, calcObject, ix, calcFieldInfo, updatedValue, isRecalcAll = false;
-        var targetNode, newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, exp, nInfo, valuesArray;
-        var refersArray, valueSeries, targetElement, serverSideContexts, aContext, isNoRemoved;
-=======
     recalculation: function (updatedNodeId) {
         var nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false;
         var newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, exp, nInfo, valuesArray;
         var refersArray, valueSeries, targetElement, contextInfo, record, idValue;
->>>>>>> INTER-Mediator/master
 
         if (updatedNodeId === undefined) {
             isRecalcAll = true;
@@ -303,52 +181,12 @@ var IMLibCalc = {
         IMLibCalc.setUndefinedToAllValues();
         IMLibNodeGraph.clear();
         for (nodeId in IMLibCalc.calculateRequiredObject) {
-<<<<<<< HEAD
-            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                if (IMLibCalc.calculateOnServer != calcObject.expression) {
-                    calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
-                    targetNode = document.getElementById(calcFieldInfo.field);
-                    for (field in calcObject.referes) {
-                        if (calcObject.referes.hasOwnProperty(field)) {
-                            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                                IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (updatedNodeIds.length > 0) {
-            do {
-                leafNodes = IMLibNodeGraph.getLeafNodes();
-                isNoRemoved = true;
-                for (i = 0; i < leafNodes.length; i++) {
-                    if (updatedNodeIds.indexOf(leafNodes[i]) < 0) {
-                        IMLibNodeGraph.removeNode(leafNodes[i]);
-                        isNoRemoved = false;
-                    }
-                }
-            } while (leafNodes.length > 0 && isNoRemoved === false);
-        }
-
-        serverSideContexts = [];
-        for (nodeId in IMLibCalc.calculateRequiredObject) {
-            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-                aContext = IMLibContextPool.getContextInfoFromId(nodeId, "").context;
-                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                if (IMLibCalc.calculateOnServer == calcObject.expression && updateOnServer === true) {
-                    if (serverSideContexts.indexOf(aContext) < 0) {
-                        serverSideContexts.push(aContext);
-                    }
-=======
             calcObject = IMLibCalc.calculateRequiredObject[nodeId];
             idValue = nodeId.match(IMLibCalc.regexpForSeparator) ?
                 nodeId.split(IMLibCalc.regexpForSeparator)[0] : nodeId;
             for (field in calcObject.referes) {
                 for (ix = 0; ix < calcObject.referes[field].length; ix++) {
                     IMLibNodeGraph.addEdge(nodeId, calcObject.referes[field][ix]);
->>>>>>> INTER-Mediator/master
                 }
             }
         }
@@ -370,17 +208,6 @@ var IMLibCalc = {
                     valuesArray = calcObject.values;
                     refersArray = calcObject.referes;
                     for (field in valuesArray) {
-<<<<<<< HEAD
-                        if (valuesArray.hasOwnProperty(field)) {
-                            valueSeries = [];
-                            for (ix = 0; ix < valuesArray[field].length; ix++) {
-                                if (valuesArray[field][ix] == undefined) {
-                                    targetElement = document.getElementById(refersArray[field][ix]);
-                                    valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));
-                                } else {
-                                    valueSeries.push(valuesArray[field][ix]);
-                                }
-=======
                         valueSeries = [];
                         for (ix = 0; ix < valuesArray[field].length; ix++) {
                             if (valuesArray[field][ix] == undefined) {
@@ -394,7 +221,6 @@ var IMLibCalc = {
                                 }
                             } else {
                                 valueSeries.push(valuesArray[field][ix]);
->>>>>>> INTER-Mediator/master
                             }
                             calcObject.values[field] = valueSeries;
                         }
@@ -455,39 +281,6 @@ var IMLibCalc = {
         } while (isRemoved);
 
         for (nodeId in IMLibCalc.calculateRequiredObject) {
-<<<<<<< HEAD
-            if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
-                calcObject = IMLibCalc.calculateRequiredObject[nodeId];
-                calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(nodeId);
-                targetNode = document.getElementById(calcFieldInfo.field);
-                for (field in calcObject.values) {
-                    if (calcObject.values.hasOwnProperty(field)) {
-                        if (field.indexOf(INTERMediator.separator) > -1) {
-                            targetExp = field;
-                        } else {
-                            targetExp = calcObject.nodeInfo.table + INTERMediator.separator + field;
-                        }
-                        do {
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromRepeater(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetIds = INTERMediatorOnPage.getNodeIdsHavingTargetFromEnclosure(targetNode, targetExp);
-                            if (targetIds && targetIds.length > 0) {
-                                break;
-                            }
-                            targetNode = INTERMediatorLib.getParentRepeater(
-                                INTERMediatorLib.getParentEnclosure(targetNode));
-                        } while (targetNode);
-                        if (INTERMediatorLib.is_array(targetIds)) {
-                            calcObject.referes[field] = [];
-                            calcObject.values[field] = [];
-                            for (ix = 0; ix < targetIds.length; ix++) {
-                                calcObject.referes[field].push(targetIds[ix]);
-                                calcObject.values[field].push(undefined);
-                            }
-                        }
-=======
             calcObject = IMLibCalc.calculateRequiredObject[nodeId];
             targetNode = document.getElementById(nodeId);
             for (field in calcObject.values) {
@@ -529,7 +322,6 @@ var IMLibCalc = {
                     for (ix = 0; ix < targetIds.length; ix++) {
                         calcObject.referes[field].push(targetIds[ix]);
                         calcObject.values[field].push(undefined);
->>>>>>> INTER-Mediator/master
                     }
                 } else {
                     calcObject.referes[field] = [undefined];

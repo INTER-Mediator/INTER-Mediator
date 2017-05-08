@@ -9,11 +9,6 @@ CodeMirror-4.8.0
 Samples/Sample_webpage/bootstrap/
 Samples/Sample_webpage/jQuery-File-Upload/
 Samples-Test/target
-
 dist-docs/pg_upgrade_internal.log
-
 dist-docs/pg_upgrade_server.log
-
 dist-docs/pg_upgrade_utility.log
-
-Samples/Sample_invoice/include_MySQL.php

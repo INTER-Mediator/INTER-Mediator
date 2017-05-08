@@ -365,27 +365,6 @@ class GenerateJSCode
         if (isset($valuesForLocalContext) && is_array($valuesForLocalContext) && count($valuesForLocalContext) > 0) {
             $this->generateAssignJS("INTERMediatorOnPage.initLocalContext", arrayToJS($valuesForLocalContext));
         }
-<<<<<<< HEAD
-        $localeSign = isset($appLocale) ? $appLocale : ini_get("intl.default_locale");
-        setlocale(LC_ALL, $localeSign);
-        $localInfo = localeconv();
-        
-        $localDefaultInfo = array(
-            "negative_sign" => "-",
-            "decimal_point" => ".",
-            "mon_decimal_point" => ".",
-            "thousands_sep" => ",",
-            "mon_thousands_sep" => ",",
-        );
-        foreach($localDefaultInfo as $localInfoKey => $localInfoValue) {
-            if (!isset($localInfo[$localInfoKey]) || $localInfo[$localInfoKey] === '') {
-                $localInfo[$localInfoKey] = $localInfoValue;
-            }
-        }
-        
-        $this->generateAssignJS("INTERMediatorOnPage.localeInfo", arrayToJS($localInfo,""));
-=======
->>>>>>> INTER-Mediator/master
     }
 
     private function combineScripts($currentDir)

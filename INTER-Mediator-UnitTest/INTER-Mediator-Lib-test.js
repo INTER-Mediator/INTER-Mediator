@@ -104,17 +104,12 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         assert.equals(INTERMediatorLib.numberFormat(999999, -3), "1,000,000");
         // A negative second parameter doesn't support so far.
     },
-<<<<<<< HEAD
-    "format string detection": function() {
-        assert.equals(INTERMediatorLib.digitSeparator(), [".", ",", 3]);
-=======
     "format string detection": function()   {
         assert.equals(INTERMediatorOnPage.localInfo, {
             mon_decimal_point:'.',
             mon_thousands_sep:',',
             currency_symbol:'￥'
         });
->>>>>>> INTER-Mediator/master
     }
 });
 

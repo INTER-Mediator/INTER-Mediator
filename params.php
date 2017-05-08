@@ -168,10 +168,6 @@ $pusherParameters = array(
 );
 */
 
-<<<<<<< HEAD
-// This locale is going to be used to detect the decimal mark etc. formatting infos.
-//$appLocale = "ja_JP";
-=======
 /* LDAP Support */
 // $ldapServer = "ldap://homeserver.msyk.net";
 // $ldapPort = 389;
@@ -231,4 +227,3 @@ $uploadFilePathMode = "";
 //$appLocale = "ja_JP";   // Locale for application has to be specified the langunage_country code.
 //$appCurrency = "JP";    // Locale for currency has to be specified the country code.
 
->>>>>>> INTER-Mediator/master

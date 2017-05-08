@@ -59,34 +59,7 @@ var INTERMediatorLib = {
     roleAsNoResultDataControlName: 'noresult',
 
     initialize: function () {
-        var num, str, decimal, separator;
-
-//            INTERMediator.startFrom = 0;
-//            INTERMediator.pagedSize = 0;
-//        INTERMediator.additionalCondition = {};
-//        INTERMediator.additionalSortKey = {};
-
-        // Initialize the cachedDigitSeparator property.
-        // try {
-        //     num = new Number(1000.1);
-        //     str = num.toLocaleString();
-        //     decimal = str.substr(-2, 1);
-        //     str = str.substring(0, str.length - 2);
-        //     separator = str.match(/[^0-9]/)[0];
-        //     INTERMediatorOnPage.localInfo = {
-        //         mon_decimal_point:decimal,
-        //         mon_thousands_sep:separator,
-        //         currency_symbol:'￥'
-        //     };
-        // } catch (ex) {
-        //     INTERMediatorOnPage.localInfo = {
-        //         mon_decimal_point:'.',
-        //         mon_thousands_sep:',',
-        //         currency_symbol:'￥'
-        //     };
-        // }
         IMLibLocalContext.unarchive();
-
         return null;
     },
 
@@ -396,7 +369,7 @@ var INTERMediatorLib = {
 
     getLinkedElementInfo: function (node) {
         var result = INTERMediatorLib.getLinkedElementInfoImpl(node)
-        if (result !== false)   {
+        if (result !== false) {
             return result;
         }
         if (INTERMediatorLib.isWidgetElement(node.parentNode)) {
@@ -652,12 +625,8 @@ var INTERMediatorLib = {
         str = str.toString();
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
-<<<<<<< HEAD
-            if ((c >= "0" && c <= "9") || c === "." || c === "-" || c === this.cachedDigitSeparator[0]) {
-=======
             if ((c >= '0' && c <= '9') || c == '.' || c == '-' ||
                 c == INTERMediatorOnPage.localInfo["mon_decimal_point"]) {
->>>>>>> INTER-Mediator/master
                 s += c;
             }
         }
@@ -904,14 +873,18 @@ var INTERMediatorLib = {
                     formatted = String(formatted).split(String(i)).join(String.fromCharCode(65296 + i));
                 }
             } else if (flags.charStyle === 2) {
-                numbers = { 0: "〇", 1: "一", 2: "二", 3: "三", 4: "四",
-                    5: "五", 6: "六", 7: "七", 8: "八", 9: "九"};
+                numbers = {
+                    0: "〇", 1: "一", 2: "二", 3: "三", 4: "四",
+                    5: "五", 6: "六", 7: "七", 8: "八", 9: "九"
+                };
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
                 }
             } else if (flags.charStyle === 3) {
-                numbers = { 0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四",
-                    5: "伍", 6: "六", 7: "七", 8: "八", 9: "九"};
+                numbers = {
+                    0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四",
+                    5: "伍", 6: "六", 7: "七", 8: "八", 9: "九"
+                };
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
                 }
@@ -965,37 +938,14 @@ var INTERMediatorLib = {
                 return falseString;
             }
         }
-<<<<<<< HEAD
-    },
-
-    percentFormat: function (str, digit, flags) {
-        "use strict";
-        if (flags === undefined) {
-            flags = {};
-        }
-        flags.usePercentNotation = true;
-        if (digit === undefined) {
-            digit = 0;
-        }
-        return INTERMediatorLib.numberFormatImpl(str, digit,
-            INTERMediatorOnPage.localeInfo.decimal_point,
-            INTERMediatorOnPage.localeInfo.thousands_sep,
-            false,
-            flags
-        );
-=======
-        s = s.length < 1 ? ["0"] : s;
-        return sign + s.reverse().join(INTERMediatorOnPage.localInfo["mon_thousands_sep"])
-            + (underNumStr == '' ? '' : INTERMediatorOnPage.localInfo["mon_decimal_point"] + underNumStr);
     },
 
     currencyFormat: function (str, digit) {
         return INTERMediatorOnPage.localInfo["currency_symbol"] +
             INTERMediatorLib.numberFormat(str, digit);
->>>>>>> INTER-Mediator/master
     },
 
-        objectToString: function (obj) {
+    objectToString: function (obj) {
         var str, i, key;
 
         if (obj === null) {
@@ -1470,7 +1420,7 @@ var IMLibNodeGraph = {
         }
         return dests;
     },
-    removeNode: function(node)  {
+    removeNode: function (node) {
         var i, newEdges = [];
         for (i = 0; i < this.edges.length; i++) {
             if (this.edges[i].to != node) {

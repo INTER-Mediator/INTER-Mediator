@@ -265,12 +265,6 @@ var IMLibUI = {
                 messageNodes[0].parentNode.removeChild(messageNodes[0]);
                 delete messageNodes[0];
             }
-<<<<<<< HEAD
-            IMLibCalc.removeInvalidNodeInfo();
-            IMLibCalc.recalculation(idValue, true);
-            INTERMediator.flushMessage();
-=======
->>>>>>> INTER-Mediator/master
         }
         if (!messageNodes) {
             messageNodes = [];
@@ -524,16 +518,6 @@ var IMLibUI = {
                 INTERMediator.setErrorMessage(ex, 'EXCEPTION-3');
             }
         }
-<<<<<<< HEAD
-        for (i = 0; i < removeNodes.length; i++) {
-            IMLibContextPool.removeRecordFromPool(removeNodes[i]);
-        }
-        IMLibElement.deleteNodes(removeNodes);
-        IMLibCalc.recalculation(undefined, true);
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
-=======
->>>>>>> INTER-Mediator/master
     },
 
     insertButton: function (currentObj, keyValue, foreignValues, updateNodes, isConfirm) {

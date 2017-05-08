@@ -252,24 +252,6 @@ var IMLibContextPool = {
     },
 
     removeRecordFromPool: function (repeaterIdValue) {
-<<<<<<< HEAD
-        var i, j, keying, field, nodeIds = [], targetContextIndex = -1, targetKeying,
-            targetKeyingObj = null, idValue;
-        for (i = 0; i < this.poolingContexts.length; i++) {
-            for (keying in this.poolingContexts[i].binding) {
-                if (this.poolingContexts[i].binding.hasOwnProperty(keying)) {
-                    for (field in this.poolingContexts[i].binding[keying]) {
-                        if (this.poolingContexts[i].binding[keying].hasOwnProperty(field)) {
-                            if (field == '_im_repeater') {
-                                for (j = 0; j < this.poolingContexts[i].binding[keying][field].length; j++) {
-                                    if (repeaterIdValue == this.poolingContexts[i].binding[keying][field][j].id) {
-                                        targetKeyingObj = this.poolingContexts[i].binding[keying];
-                                        targetKeying = keying;
-                                        targetContextIndex = i;
-                                    }
-                                }
-                            }
-=======
         var i, j, field, nodeIds = [], targetKeying, targetKeyingObj, parentKeying, relatedId, idValue, delNodes,
             contextAndKey, sameOriginContexts, countDeleteNodes;
 
@@ -289,26 +271,11 @@ var IMLibContextPool = {
                     for (j = 0; j < targetKeyingObj[field].length; j++) {
                         if (nodeIds.indexOf(targetKeyingObj[field][j].id) < 0) {
                             nodeIds.push(targetKeyingObj[field][j].id);
->>>>>>> INTER-Mediator/master
                         }
                     }
                 }
             }
 
-<<<<<<< HEAD
-        for (field in targetKeyingObj) {
-            if (targetKeyingObj.hasOwnProperty(field)) {
-                for (j = 0; j < targetKeyingObj[field].length; j++) {
-                    nodeIds.push(targetKeyingObj[field][j].id);
-                }
-            }
-        }
-        if (targetContextIndex > -1) {
-            for (idValue in this.poolingContexts[targetContextIndex].contextInfo) {
-                if (this.poolingContexts[targetContextIndex].contextInfo.hasOwnProperty(idValue)) {
-                    if (nodeIds.indexOf(idValue) >= 0) {
-                        delete this.poolingContexts[targetContextIndex].contextInfo[idValue];
-=======
             if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
                 // for FileMaker portal access mode
                 parentKeying = Object.keys(contextAndKey.context.binding)[0];
@@ -328,7 +295,6 @@ var IMLibContextPool = {
                     if (nodeIds.indexOf(idValue) >= 0) {
                         delete contextAndKey.context.contextInfo[idValue];
                         delNodes.push(idValue);
->>>>>>> INTER-Mediator/master
                     }
                 }
             }
@@ -585,13 +551,6 @@ var IMLibContext = function (contextName) {
     this.setTable(this);
 };
 
-<<<<<<< HEAD
-    this.getInsertOrder = function (record) {
-        var cName, sortKeys = [], contextDef, i, sortFields = [], sortDirections = [];
-        for (cName in INTERMediator.additionalSortKey) {
-            if (INTERMediator.additionalSortKey.hasOwnProperty(cName) && cName == this.contextName) {
-                sortKeys.push(INTERMediator.additionalSortKey[cName]);
-=======
 IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorProc, warnMultipleRecProc, warnOthersModifyProc) {
     var nodeInfo, contextInfo, linkInfo, changedObj, criteria, newValue;
 
@@ -633,7 +592,6 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
                     succeedProc,
                     errorProc
                 );
->>>>>>> INTER-Mediator/master
             }
 
         }
@@ -1172,20 +1130,6 @@ IMLibContext.prototype.rearrangePendingOrder = function (isDebug) {
     this.pendingOrder = [];
 };
 
-<<<<<<< HEAD
-    this.getRepeaterEndNode = function (index) {
-        var nodeId, field, repeaters = [], repeater, node, i, enclosure, children;
-
-        var recKey = this.recordOrder[index];
-        for (field in this.binding[recKey]) {
-            if (this.binding[recKey].hasOwnProperty(field)) {
-                nodeId = this.binding[recKey][field].nodeId;
-                repeater = INTERMediatorLib.getParentRepeater(document.getElementById(nodeId));
-                if (!repeater in repeaters) {
-                    repeaters.push(repeater);
-                }
-            }
-=======
 IMLibContext.prototype.getRepeaterEndNode = function (index) {
     var nodeId, field, repeaters = [], repeater, node, i, enclosure, children;
 
@@ -1195,7 +1139,6 @@ IMLibContext.prototype.getRepeaterEndNode = function (index) {
         repeater = INTERMediatorLib.getParentRepeater(document.getElementById(nodeId));
         if (!(repeater in repeaters)) {
             repeaters.push(repeater);
->>>>>>> INTER-Mediator/master
         }
     }
     if (repeaters.length < 1) {
@@ -1226,35 +1169,6 @@ IMLibContext.prototype.storeRecords = function (records) {
                 this.setValue(keyField + '=' + keyValue, field, record[field]);
             }
         }
-<<<<<<< HEAD
-        return node;
-    };
-
-    // setData____ methods are for storing data both the model and the database.
-    //
-    this.setDataAtLastRecord = function (key, value) {
-        var lastKey, keyAndValue;
-        var storekeys = Object.keys(this.store);
-        if (storekeys.length > 0) {
-            lastKey = storekeys[storekeys.length - 1];
-            this.setValue(lastKey, key, value);
-            keyAndValue = lastKey.split("=");
-            INTERMediator_DBAdapter.db_update({
-                name: this.contextName,
-                conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
-                dataset: [{field: key, value: value}]
-            });
-            IMLibCalc.recalculation(undefined, true);
-            INTERMediator.flushMessage();
-        }
-    };
-
-    this.setDataWithKey = function (pkValue, key, value) {
-        var targetKey, contextDef, storeElements;
-        contextDef = this.getContextDef();
-        if (!contextDef) {
-            return;
-=======
     }
 };
 
@@ -1316,7 +1230,6 @@ IMLibContext.prototype.setValue = function (recKey, key, value, nodeId, target, 
     if (recKey != undefined && recKey != null) {
         if (this.store[recKey] === undefined) {
             this.store[recKey] = {};
->>>>>>> INTER-Mediator/master
         }
         if (portal && this.store[recKey][key] === undefined) {
             this.store[recKey][key] = {};
@@ -1473,22 +1386,11 @@ IMLibContext.prototype.isContaining = function (value) {
     var contextDef, contextName, checkResult = [], i, fieldName, result, opePosition, leftHand, rightHand,
         leftResult, rightResult;
 
-<<<<<<< HEAD
-        contextDef = this.getContextDef();
-        contextName = contextDef.name;
-        if (contextDef.query) {
-            for (i in contextDef.query) {
-                if (contextDef.query.hasOwnProperty(i)) {
-                    checkResult.push(checkCondition(contextDef.query[i], value));
-                }
-            }
-=======
     contextDef = this.getContextDef();
     contextName = contextDef.name;
     if (contextDef.query) {
         for (i in contextDef.query) {
             checkResult.push(checkCondition(contextDef.query[i], value));
->>>>>>> INTER-Mediator/master
         }
     }
     if (INTERMediator.additionalCondition[contextName]) {
@@ -1535,21 +1437,6 @@ IMLibContext.prototype.isContaining = function (value) {
         }
     }
 
-<<<<<<< HEAD
-        if (this.foreignValue) {
-            for (fieldName in this.foreignValue) {
-                if (this.foreignValue.hasOwnProperty(fieldName) && contextDef.relation) {
-                    for (i in contextDef.relation) {
-                        if (contextDef.relation.hasOwnProperty(i)) {
-                            if (contextDef.relation[i]['join-field'] == fieldName) {
-                                result &= (checkCondition({
-                                    field: contextDef.relation[i]['foreign-key'],
-                                    operator: "=",
-                                    value: this.foreignValue[fieldName]
-                                }, value));
-                            }
-                        }
-=======
     if (this.foreignValue) {
         for (fieldName in this.foreignValue) {
             if (contextDef.relation) {
@@ -1560,7 +1447,6 @@ IMLibContext.prototype.isContaining = function (value) {
                             operator: '=',
                             value: this.foreignValue[fieldName]
                         }, value));
->>>>>>> INTER-Mediator/master
                     }
                 }
             }
@@ -1736,11 +1622,7 @@ var IMLibLocalContext = {
     },
 
     bindingNode: function (node) {
-<<<<<<< HEAD
-        var linkInfos, nodeInfo, idValue, i, value, params;
-=======
         var linkInfos, nodeInfo, idValue, i, j, value, params, unbinding, unexistId, dataImControl;
->>>>>>> INTER-Mediator/master
         if (node.nodeType != 1) {
             return;
         }
@@ -1804,11 +1686,7 @@ var IMLibLocalContext = {
                             var contextName = params[1];
                             var targetIdValue = idValue;
                             return function () {
-<<<<<<< HEAD
-                                INTERMediator.pagedSize = document.getElementById(targetIdValue).value;
-=======
                                 INTERMediator.startFrom = 0;
->>>>>>> INTER-Mediator/master
                                 IMLibUI.eventUpdateHandler(contextName);
                                 IMLibPageNavigation.navigationSetup();
                             };
@@ -1884,19 +1762,6 @@ var IMLibLocalContext = {
 
     updateAll: function (isStore) {
         var index, key, nodeIds, idValue, targetNode;
-<<<<<<< HEAD
-        for (key in this.binding) {
-            if (this.binding.hasOwnProperty(key)) {
-                nodeIds = this.binding[key];
-                for (index = 0; index < nodeIds.length; index++) {
-                    idValue = nodeIds[index];
-                    targetNode = document.getElementById(idValue);
-                    if (targetNode &&
-                        ( targetNode.tagName == "INPUT" || targetNode.tagName == "TEXTAREA" || targetNode.tagName == "SELECT")) {
-                        IMLibLocalContext.update(idValue);
-                        break;
-                    }
-=======
         for (key in IMLibLocalContext.binding) {
             nodeIds = IMLibLocalContext.binding[key];
             for (index = 0; index < nodeIds.length; index++) {
@@ -1910,7 +1775,6 @@ var IMLibLocalContext = {
                         IMLibLocalContext.updateFromNodeValue(idValue);
                     }
                     break;
->>>>>>> INTER-Mediator/master
                 }
             }
         }
