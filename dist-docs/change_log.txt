@@ -50,7 +50,7 @@ Ver.5.6 (in development)
 - The addCondition and clearCondition method of INTERMediator class has "label" property for stabilizing.
 - Progress information is changed as more simple gear style icon and gray background.
 - Some functions are moved to INTER-Mediator-Navi, and refactored them.
-- FileMaker sample db "TestDB.fmp12" and "TestDB_close.fmp12" didn't set the PHP API access privilege, and so on.
+- FileMaker sample db "TestDB.fmp12" and "TestDB_clone.fmp12" didn't set the PHP API access privilege, and so on.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
@@ -82,9 +82,8 @@ Ver.5.6 (in development)
 - [BUG FIX] In case of file uploading, $_SERVER doesn't have 'HTTP_CONTENT_LENGTH' key in any case.
 - [BUG FIX] Fix buildup.sh to avoid double minify tinySHA1.js and sha256.js when using YUI Compressor.
 - [BUG FIX] Fix the MediaAccess class's generating cookie names.
-- [BUG FIX] FX 6.10 based DB_FileMaker_FX class reported error, but it's cause of modified path.
 - [BUG FIX] In some case, "the 'NumberFormat' class doesn't exist" message arose, but it was cared in class loader.
-- [BUG FIX] Formetter classes didn't work for other than read operations in DB_PDO.
+- [BUG FIX] Formatter classes didn't work for other than read operations in DB_PDO.
 - [BUG FIX] The pagination size popup menu didn't work as we expected.
 - [BUG FIX] On the batch save mode without lock, the update operation didn't work.
 - [BUG FIX] On the batch save mode, the context wasn't updated.
