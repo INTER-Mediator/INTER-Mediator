@@ -379,6 +379,12 @@ if node[:platform] == 'alpine'
   package 'php7-mbstring' do
     action :install
   end
+  package 'php7-xml' do
+    action :install
+  end
+  package 'php7-simplexml' do
+    action :install
+  end
   package 'ca-certificates' do
     action :install
   end
