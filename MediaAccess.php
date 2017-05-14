@@ -326,8 +326,7 @@ class MediaAccess
                     $keyField = $fieldComponents[0];
                     $keyValue = $fieldComponents[1];
                     $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-                } else {
-                    $contextName = $pathComponents[$index];
+                    $contextName = $pathComponents[$index-1];
                 }
             }
             if ($indexKeying == -1) {
