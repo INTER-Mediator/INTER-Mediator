@@ -153,7 +153,10 @@ function loadClass($className)
         }
         if (!$result) {
             $errorGenerator = new GenerateJSCode();
-            if (strpos($className, "MessageStrings_") !== 0) {
+            if ($className === "NumberFormatter") {
+                // abondan this case.
+            } else if (strpos($className, "MessageStrings_") !== 0) {
+                //if (strpos($className, "MessageStrings_") !== 0) {
                 $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
             }
         }
