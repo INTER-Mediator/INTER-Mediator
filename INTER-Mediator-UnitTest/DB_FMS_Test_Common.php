@@ -11,6 +11,7 @@ require_once(dirname(__FILE__) . '/../DB_Proxy.php');
 require_once(dirname(__FILE__) . '/../DB_Logger.php');
 require_once(dirname(__FILE__) . '/../DB_FileMaker_FX.php');
 require_once(dirname(__FILE__) . '/../IMUtil.php');
+require_once(dirname(__FILE__) . '/../IMLocale.php');
 require_once(dirname(__FILE__) . '/../LDAPAuth.php');
 require_once(dirname(__FILE__) . '/../MessageStrings.php');
 

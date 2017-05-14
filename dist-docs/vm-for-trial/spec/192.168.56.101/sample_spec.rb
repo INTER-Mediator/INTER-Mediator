@@ -219,6 +219,9 @@ end
 describe package('php7-bcmath'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php7.0-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
 describe package('php7-phar'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
@@ -240,7 +243,10 @@ end
 describe package('php-mbstring'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
-describe package('php7.0-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7-xml'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php7-simplexml'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php-pear'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
