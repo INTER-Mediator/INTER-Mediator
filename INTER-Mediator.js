@@ -1273,18 +1273,18 @@ var INTERMediator = {
                         //         });
                         //     }
                         // }
-                        if (nodeTag !== 'SELECT') {
-                            INTERMediator.eventListenerPostAdding.push({
-                                'id': nodeId,
-                                'event': 'keydown',
-                                'todo': IMLibUI.keyDown
-                            });
-                            INTERMediator.eventListenerPostAdding.push({
-                                'id': nodeId,
-                                'event': 'keyup',
-                                'todo': IMLibUI.keyUp
-                            });
-                        }
+                        // if (nodeTag !== 'SELECT') {
+                        //     INTERMediator.eventListenerPostAdding.push({
+                        //         'id': nodeId,
+                        //         'event': 'keydown',
+                        //         'todo': IMLibUI.keyDown
+                        //     });
+                        //     INTERMediator.eventListenerPostAdding.push({
+                        //         'id': nodeId,
+                        //         'event': 'keyup',
+                        //         'todo': IMLibUI.keyUp
+                        //     });
+                        // }
                     }
 
                 } catch (ex) {
