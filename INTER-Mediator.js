@@ -1236,39 +1236,43 @@ var INTERMediator = {
                         (!imControl || imControl.indexOf('unbind') > 0 )
                     ) {
                         //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
-                        var changeFunction = function (id, evt) {
-                            return function () {
-                                if (evt === 'change' ||
-                                    (evt === 'input' && document.getElementById(id).value === '')) {
-                                    if (IMLibUI.valueChange(id)) {
-                                        if (document.getElementById(id).tagName === 'SELECT') {
-                                            children = document.getElementById(id).childNodes;
-                                            for (i = 0; i < children.length; i++) {
-                                                if (children[i].nodeType === 1) {
-                                                    if (children[i].tagName === 'OPTION' &&
-                                                        children[i].getAttribute('data-im-element') === 'auto-generated') {
-                                                        delNodes.push(children[i].getAttribute('id'));
-                                                        IMLibElement.deleteNodes(delNodes);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            };
-                        };
-                        INTERMediator.eventListenerPostAdding.push({
-                            'id': nodeId,
-                            'event': 'change',
-                            'todo': changeFunction(nodeId, 'change')
-                        });
-                        if (INTERMediator.isTrident || INTERMediator.isEdge) {
-                            INTERMediator.eventListenerPostAdding.push({
-                                'id': nodeId,
-                                'event': 'input',
-                                'todo': changeFunction(nodeId, 'input')
-                            });
-                        }
+
+                        // These codes moved to IMLibElement.setValueToIMNode and IMLibUI.valueChange.
+                        // Below remains to clarify moving, but if everyone can agree, these can be removed.
+
+                        // if (currentLinkedNodes[k].tagName === 'SELECT') {
+                        //     var changeFunction = function (id, evt) {
+                        //         return function () {
+                        //             if (evt === 'change' ||
+                        //                 (evt === 'input' && document.getElementById(id).value === '')) {
+                        //                 if (IMLibUI.valueChange(id)) {
+                        //                     children = document.getElementById(id).childNodes;
+                        //                     for (i = 0; i < children.length; i++) {
+                        //                         if (children[i].nodeType === 1) {
+                        //                             if (children[i].tagName === 'OPTION' &&
+                        //                                 children[i].getAttribute('data-im-element') === 'auto-generated') {
+                        //                                 delNodes.push(children[i].getAttribute('id'));
+                        //                                 IMLibElement.deleteNodes(delNodes);
+                        //                             }
+                        //                         }
+                        //                     }
+                        //                 }
+                        //             }
+                        //         };
+                        //     };
+                        //     INTERMediator.eventListenerPostAdding.push({
+                        //         'id': nodeId,
+                        //         'event': 'change',
+                        //         'todo': changeFunction(nodeId, 'change')
+                        //     });
+                        //     if (INTERMediator.isTrident || INTERMediator.isEdge) {
+                        //         INTERMediator.eventListenerPostAdding.push({
+                        //             'id': nodeId,
+                        //             'event': 'input',
+                        //             'todo': changeFunction(nodeId, 'input')
+                        //         });
+                        //     }
+                        // }
                         if (nodeTag !== 'SELECT') {
                             INTERMediator.eventListenerPostAdding.push({
                                 'id': nodeId,

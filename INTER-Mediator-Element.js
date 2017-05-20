@@ -205,13 +205,47 @@ var IMLibElement = {
                 INTERMediatorLib.addEvent(element, 'blur', (function () {
                     var idValue = element.id;
                     var elementCapt = element;
-                    return function(event){
+                    return function (event) {
                         if (!IMLibUI.valueChange(idValue, true)) {
                             elementCapt.focus();
                         }
                     }
                 })());
                 element.dataset.imbluradded = "set";
+            }
+            if (!element.dataset.imchangeadded) {
+                INTERMediatorLib.addEvent(element, 'change', (function () {
+                    var idValue = element.id;
+                    var elementCapt = element;
+                    return function (event) {
+                        if (!IMLibUI.valueChange(idValue, false)) {
+                            elementCapt.focus();
+                        }
+                    }
+                })());
+                element.dataset.imchangeadded = "set";
+            }
+            if ((INTERMediator.isTrident || INTERMediator.isEdge) && !element.dataset.iminputadded) {
+                INTERMediatorLib.addEvent(element, 'input', (function () {
+                    var idValue = element.id;
+                    var elementCapt = element;
+                    return function (event) {
+                        if (document.getElementById(idValue).value === '') {
+                            if (!IMLibUI.valueChange(idValue, false)) {
+                                elementCapt.focus();
+                            }
+                        }
+                    }
+                })());
+                element.dataset.iminputadded = "set";
+            }
+            if (nodeTag !== 'SELECT') {
+                INTERMediatorLib.addEvent(element, 'keydown', function () {
+                    IMLibUI.keyDown();
+                });
+                INTERMediatorLib.addEvent(element, 'keyup', function () {
+                    IMLibUI.keyUp();
+                });
             }
         }
         element.setAttribute('data-im-element', 'processed');
