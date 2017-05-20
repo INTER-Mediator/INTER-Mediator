@@ -202,7 +202,7 @@ var IMLibUI = {
                     var contextInfoCapt = contextInfo;
                     var newValueCapt = newValue;
                     return function (result) {
-                        var updateRequiredContext, currentValue, associatedNode, field, children, delNodes;
+                        var updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes;
                         var keyField = contextInfoCapt.context.getKeyField();
                         if (result && result.dbresult) {
                             var recordObj = result.dbresult[0];
@@ -227,14 +227,17 @@ var IMLibUI = {
                                 }
                             }
                         }
-                        children = document.getElementById(idValueCapt2).childNodes;
-                        for (i = 0; i < children.length; i++) {
-                            if (children[i].nodeType === 1) {
-                                if (children[i].tagName === 'OPTION' &&
-                                    children[i].getAttribute('data-im-element') === 'auto-generated') {
-                                    delNodes = [];
-                                    delNodes.push(children[i].getAttribute('id'));
-                                    IMLibElement.deleteNodes(delNodes);
+                        node = document.getElementById(idValueCapt2);
+                        if (node && node.tagName === "SELECT") {
+                            children = node.childNodes;
+                            for (i = 0; i < children.length; i++) {
+                                if (children[i].nodeType === 1) {
+                                    if (children[i].tagName === 'OPTION' &&
+                                        children[i].getAttribute('data-im-element') === 'auto-generated') {
+                                        delNodes = [];
+                                        delNodes.push(children[i].getAttribute('id'));
+                                        IMLibElement.deleteNodes(delNodes);
+                                    }
                                 }
                             }
                         }
