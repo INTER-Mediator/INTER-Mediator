@@ -55,6 +55,16 @@ var IMLibUI = {
         return IMLibUI.changeValueLock[idValue] === true;
     },
 
+    isLockAnyUIElements: function () {
+        var nodeId;
+        for(nodeId in IMLibUI.changeValueLock){
+            if(IMLibUI.changeValueLock[nodeId] === true)    {
+                return true;
+            }
+        }
+        return false;
+    },
+
     hasLockUIElement: function () {
         var key, judge = false;
         for (key in IMLibUI.changeValueLock) {
@@ -77,7 +87,7 @@ var IMLibUI = {
      */
     valueChange: function (idValue, validationOnly) {
         var changedObj, objType, i, newValue, result, linkInfo, nodeInfo, contextInfo, parentContext,
-            keyingComp, keyingField, keyingValue, targetField, targetContext, targetNode, targetSpec;
+            targetField, targetNode, targetSpec;
 
         if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
             INTERMediator.setDebugMessage('Canceled to update the value with shift+control keys.');
@@ -99,6 +109,7 @@ var IMLibUI = {
 
         // Locking.
         if (!validationOnly && IMLibUI.isLockUIElement(idValue)) {
+            console.log("wait-valueChange:"+idValue, IMLibUI.changeValueLock);
             setTimeout((function () {
                 var idCapt = idValue;
                 var voCapt = validationOnly;
@@ -354,11 +365,25 @@ var IMLibUI = {
 
     copyButton: function (contextObj, keyValue) {
         var contextDef, assocDef, i, index, def, assocContexts, pStart, copyTerm;
+        contextDef = contextObj.getContextDef();
+        var idValue = contextDef["name"];
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var coCapt = contextObj;
+                var kvCapt = keyValue;
+                return function () {
+                    IMLibUI.copyButton(coCapt, kvCapt);
+                }
+            })(), 100);
+            return true;
+        }
+        IMLibUI.lockUIElement(idValue);
 
         INTERMediatorOnPage.showProgress();
-        contextDef = contextObj.getContextDef();
         if (contextDef['repeat-control'].match(/confirm-copy/)) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1041])) {
+                IMLibUI.unlockUIElement(idValue);
                 return;
             }
         }
@@ -423,6 +448,7 @@ var IMLibUI = {
                         }
                         IMLibCalc.recalculation();
                         INTERMediatorOnPage.hideProgress();
+                        IMLibUI.unlockUIElement(contextDefCapt["name"]);
                         INTERMediator.flushMessage();
                     };
                 })(),
@@ -430,6 +456,7 @@ var IMLibUI = {
             );
         } catch (ex) {
             INTERMediator.setErrorMessage(ex, 'EXCEPTION-43');
+            IMLibUI.unlockUIElement(idValue);
         }
     },
 
