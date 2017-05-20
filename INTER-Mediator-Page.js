@@ -78,6 +78,8 @@ var INTERMediatorOnPage = {
         currency_symbol: '￥'
     },
     appCurrency: null,
+    isShowProgress: true,
+    frontPanelMetrics: null,
 
     clearCredentials: function () {
         'use strict';
@@ -1032,7 +1034,10 @@ var INTERMediatorOnPage = {
      */
     hideProgress: function () {
         'use strict';
-       var frontPanel, themeName;
+        if (!INTERMediatorOnPage.isShowProgress) {
+            return;
+        }
+        var frontPanel, themeName;
         frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
             themeName = INTERMediatorOnPage.getTheme().toLowerCase();
@@ -1048,7 +1053,10 @@ var INTERMediatorOnPage = {
                 // frontPanel.style.transitionProperty = "opacity";
                 // frontPanel.style.transitionDuration = "0.3s";
                 frontPanel.style.opacity = 0;
-                frontPanel.style.display = "none";
+                //frontPanel.style.left = "-10000px";
+                // frontPanel.style.width = 0;
+                // frontPanel.style.height = 0;
+                //frontPanel.style.display = "none";
             }
         }
     },
@@ -1058,6 +1066,9 @@ var INTERMediatorOnPage = {
 
     showProgress: function () {
         'use strict';
+        if (!INTERMediatorOnPage.isShowProgress) {
+            return;
+        }
         var brNode, bodyNode, frontPanel, imageProgress, imageIM,
             themeName = INTERMediatorOnPage.getTheme().toLowerCase();
 
@@ -1098,7 +1109,16 @@ var INTERMediatorOnPage = {
 
         } else {
             frontPanel.style.opacity = 1.0;
-            frontPanel.style.display = "flex";
+            //frontPanel.style.left = "0px";
+            // frontPanel.style.top = "0px";
+            // frontPanel.style.width = "100vw";
+            // frontPanel.style.height = "100vh";
+            //frontPanel.style.display = "flex";
+            // setTimeout(function () {
+            //     if (INTERMediatorOnPage.progressStatus) {
+            //         frontPanel.style.display = "flex";
+            //     }
+            // }, 10);
         }
     },
 

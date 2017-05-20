@@ -8,6 +8,10 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+// INTERMediatorOnPage.doBeforeConstruct = function () {
+//     INTERMediatorOnPage.isShowProgress = false;
+// };
+
 INTERMediatorOnPage.doAfterConstruct = function () {
     document.getElementById("wrapper").style.display = "block";
 };

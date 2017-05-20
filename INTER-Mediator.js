@@ -477,10 +477,8 @@ var INTERMediator = {
      */
     construct: function (indexOfKeyFieldObject) {
         var timerTask;
-        INTERMediatorOnPage.showProgress();
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
             if (INTERMediatorOnPage.isFinishToConstruct) {
-                INTERMediatorOnPage.hideProgress();
                 return;
             }
             INTERMediatorOnPage.isFinishToConstruct = true;
@@ -528,9 +526,10 @@ var INTERMediator = {
             INTERMediatorOnPage.doBeforeConstruct();
         }
         if (!INTERMediatorOnPage.isAutoConstruct) {
-            INTERMediatorOnPage.hideProgress();
             return;
         }
+        INTERMediatorOnPage.showProgress();
+
         INTERMediator.crossTableStage = 0;
         INTERMediator.appendingNodesAtLast = [];
         IMLibEventResponder.setup();
