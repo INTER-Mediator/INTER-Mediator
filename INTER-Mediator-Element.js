@@ -201,13 +201,18 @@ var IMLibElement = {
         if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA')
             && !isReplaceOrAppned
             && (!imControl || imControl.indexOf('unbind') > 0 )) {
-            var idValue = element.id;
-            var elementCapt = element;
-            INTERMediatorLib.addEvent(element, 'blur', function (event) {
-                if (!IMLibUI.valueChange(idValue, true) && this.id === idValue) {
-                    elementCapt.focus();
-                }
-            });
+            if (!element.dataset.imbluradded) {
+                INTERMediatorLib.addEvent(element, 'blur', (function () {
+                    var idValue = element.id;
+                    var elementCapt = element;
+                    return function(event){
+                        if (!IMLibUI.valueChange(idValue, true)) {
+                            elementCapt.focus();
+                        }
+                    }
+                })());
+                element.dataset.imbluradded = "set";
+            }
         }
         element.setAttribute('data-im-element', 'processed');
         return needPostValueSet;

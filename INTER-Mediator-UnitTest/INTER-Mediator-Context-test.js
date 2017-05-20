@@ -68,12 +68,8 @@ buster.testCase("Remote Context Test", {
         assert.equals(context1.getValue(2, 'test2'), 'value2');
         assert.equals(context1.getValue(3, 'test3'), 'value3');
 
-//        console.log(context);
-
         context1.setValue(1, 'test1', 'change1');
         context2.setValue(2, 'test2', 'change2');
-
-//       console.log(context);
 
         for (j = 0; j < 3; j++) {
             for (i = 1; i < 4; i++) {

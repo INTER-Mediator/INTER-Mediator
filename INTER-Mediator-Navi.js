@@ -78,9 +78,7 @@ IMLibPageNavigation = {
                     (navLabel === null || navLabel[0] === null) ? '<<' : navLabel[0]));
                 node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ''));
                 INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator_DBAdapter.unregister();
-                    INTERMediator.startFrom = 0;
-                    INTERMediator.constructMain(true);
+                    IMLibPageNavigation.moveRecordFromNavi("navimoving", 0);
                 });
 
                 node = document.createElement('SPAN');
@@ -90,9 +88,7 @@ IMLibPageNavigation = {
                 node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ''));
                 prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
                 INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator_DBAdapter.unregister();
-                    INTERMediator.startFrom = prevPageCount;
-                    INTERMediator.constructMain(true);
+                    IMLibPageNavigation.moveRecordFromNavi("navimoving", prevPageCount);
                 });
 
                 node = document.createElement('SPAN');
@@ -103,9 +99,7 @@ IMLibPageNavigation = {
                 nextPageCount =
                     (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
                 INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator_DBAdapter.unregister();
-                    INTERMediator.startFrom = nextPageCount;
-                    INTERMediator.constructMain(true);
+                    IMLibPageNavigation.moveRecordFromNavi("navimoving", nextPageCount);
                 });
 
                 node = document.createElement('SPAN');
@@ -119,9 +113,7 @@ IMLibPageNavigation = {
                     endPageCount = allCount - (allCount % pageSize);
                 }
                 INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator_DBAdapter.unregister();
-                    INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
-                    INTERMediator.constructMain(true);
+                    IMLibPageNavigation.moveRecordFromNavi("navimoving", (endPageCount > 0) ? endPageCount : 0);
                 });
 
                 // Get from http://agilmente.com/blog/2013/08/04/inter-mediator_pagenation_1/
@@ -146,7 +138,7 @@ IMLibPageNavigation = {
                             c_node.value = max_page;
                         }
                         INTERMediator.startFrom = ( ~~c_node.value - 1 ) * pageSize;
-                        INTERMediator.construct(true);
+                        INTERMediator.constructMain(true);
                     }
                 );
                 // ---------
@@ -179,7 +171,7 @@ IMLibPageNavigation = {
                             onNaviInsertFunction(
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['name'],
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['key'],
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false)
+                                IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'])
                         );
                         break;
                     case 'DELETE':
@@ -207,7 +199,7 @@ IMLibPageNavigation = {
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['name'],
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['key'],
                                 IMLibPageNavigation.deleteInsertOnNavi[i]['value'],
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false));
+                                IMLibPageNavigation.deleteInsertOnNavi[i]['confirm']));
                         break;
                     case 'COPY':
                         node = document.createElement('SPAN');
@@ -238,7 +230,7 @@ IMLibPageNavigation = {
                 }
             }
             if (navLabel === null || navLabel[10] !== false) {
-                if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
+                if (INTERMediatorOnPage.getOptionsTransaction() === 'none') {
                     node = document.createElement('SPAN');
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(
@@ -272,6 +264,24 @@ IMLibPageNavigation = {
         }
     },
 
+    moveRecordFromNavi: function(targetName, page)  {
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var a = targetName, b = page;
+                return function () {
+                    IMLibPageNavigation.moveRecordFromNavi(a, b);
+                }
+            })(), 100);
+            return true;
+        }
+        IMLibUI.lockUIElement(targetName);
+
+        INTERMediator_DBAdapter.unregister();
+        INTERMediator.startFrom = page;
+        INTERMediator.constructMain(true);
+    },
+
     insertRecordFromNavi: function (targetName, keyField, isConfirm) {
         var conditions, restore, contextDef;
 
@@ -280,6 +290,18 @@ IMLibPageNavigation = {
                 return;
             }
         }
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var a = targetName, b = keyField, c = isConfirm;
+                return function () {
+                    IMLibPageNavigation.insertRecordFromNavi(a, b, c);
+                }
+            })(), 100);
+            return true;
+        }
+        IMLibUI.lockUIElement(targetName);
+
         INTERMediatorOnPage.showProgress();
         contextDef = INTERMediatorLib.getNamedObject(
             INTERMediatorOnPage.getDataSources(), 'name', targetName);
@@ -306,6 +328,7 @@ IMLibPageNavigation = {
                         } else {
                             INTERMediator.pagedAllCount++;
                         }
+                        IMLibUI.unlockUIElement(targetName);
                         INTERMediator_DBAdapter.unregister();
                         INTERMediator.constructMain(true);
                         INTERMediator.additionalCondition = restore;
@@ -317,6 +340,7 @@ IMLibPageNavigation = {
 
                 }, null);
         } catch (ex) {
+            IMLibUI.unlockUIElement(targetName);
             if (ex == '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
@@ -336,11 +360,22 @@ IMLibPageNavigation = {
     },
 
     deleteRecordFromNavi: function (targetName, keyField, keyValue, isConfirm) {
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var a = targetName, b = keyField, c = keyValue, d = isConfirm;
+                return function () {
+                    IMLibPageNavigation.deleteRecordFromNavi(a, b, c, c);
+                }
+            })(), 100);
+            return true;
+        }
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                 return;
             }
         }
+        IMLibUI.lockUIElement(targetName);
         INTERMediatorOnPage.showProgress();
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
@@ -349,35 +384,54 @@ IMLibPageNavigation = {
                     name: targetName,
                     conditions: [{field: keyField, operator: '=', value: keyValue}]
                 },
-                function () {
-                    INTERMediator.pagedAllCount--;
-                    INTERMediator.totalRecordCount--;
-                    if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
-                        INTERMediator.startFrom--;
-                        if (INTERMediator.startFrom < 0) {
-                            INTERMediator.startFrom = 0;
+                (function () {
+                    var targetCapt = targetName;
+                    return function () {
+                        INTERMediator.pagedAllCount--;
+                        INTERMediator.totalRecordCount--;
+                        if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
+                            INTERMediator.startFrom--;
+                            if (INTERMediator.startFrom < 0) {
+                                INTERMediator.startFrom = 0;
+                            }
                         }
-                    }
-                    INTERMediator.constructMain(true);
-                    INTERMediatorOnPage.hideProgress();
-                    INTERMediator.flushMessage();
-                },
+                        IMLibUI.unlockUIElement(targetCapt);
+                        INTERMediator.constructMain(true);
+                        INTERMediatorOnPage.hideProgress();
+                        INTERMediator.flushMessage();
+                    };
+                })(),
                 null
             );
         } catch (ex) {
             INTERMediator.setErrorMessage(ex, 'EXCEPTION-6');
+            IMLibUI.unlockUIElement(targetName);
         }
     },
 
     copyRecordFromNavi: function (contextDef, keyValue) {
-        var assocDef, i, def, assocContexts, pStart, copyTerm, index;
+        var assocDef, i, def, assocContexts, pStart, copyTerm, index, idValue;
 
-        INTERMediatorOnPage.showProgress();
         if (contextDef['repeat-control'].match(/confirm-copy/)) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1041])) {
                 return;
             }
         }
+
+        idValue = contextDef["name"];
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var a = contextDef, b = keyValue;
+                return function () {
+                    IMLibPageNavigation.copyRecordFromNavi(a, b);
+                }
+            })(), 100);
+            return true;
+        }
+        IMLibUI.lockUIElement(idValue);
+
+        INTERMediatorOnPage.showProgress();
         try {
             if (contextDef['relation']) {
                 for (index in contextDef['relation']) {
@@ -414,10 +468,11 @@ IMLibPageNavigation = {
                     associated: assocDef.length > 0 ? assocDef : null
                 },
                 (function () {
-                    var contextDefCapt = contextDef;
+                    var contextDefCapt = contextDef, idCapt = idValue;
                     return function (result) {
                         var restore, conditions;
                         var newId = result.newRecordKeyValue;
+                        IMLibUI.unlockUIElement(idCapt);
                         if (newId > -1) {
                             restore = INTERMediator.additionalCondition;
                             INTERMediator.startFrom = 0;
@@ -440,6 +495,7 @@ IMLibPageNavigation = {
             );
         } catch (ex) {
             INTERMediator.setErrorMessage(ex, 'EXCEPTION-43');
+            IMLibUI.unlockUIElement(idValue);
         }
     },
 
@@ -467,7 +523,7 @@ IMLibPageNavigation = {
                     keyingComp.shift();
                     keyingValue = keyingComp.join('=');
                     if (!INTERMediator.ignoreOptimisticLocking) {
-                         checkQueryParameter = {
+                        checkQueryParameter = {
                             name: context.contextName,
                             records: 1,
                             paging: false,

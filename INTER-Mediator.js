@@ -659,6 +659,7 @@ var INTERMediator = {
         INTERMediator.partialConstructing = true;
         INTERMediatorOnPage.hideProgress();
 
+        IMLibUI.clearLockInfo();
         INTERMediator.flushMessage(); // Show messages
 
         /* --------------------------------------------------------------------
@@ -1221,7 +1222,6 @@ var INTERMediator = {
                                 }
                             }
                             contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
-                            //console.log("setValue(", keyingValue, nInfo['field'], curVal, nodeId, curTarget);
                             if (idValuesForFieldName[nInfo['field']] === undefined) {
                                 idValuesForFieldName[nInfo['field']] = [];
                             }

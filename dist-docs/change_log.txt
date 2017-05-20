@@ -94,6 +94,7 @@ Ver.5.6 (in development)
 - [BUG FIX] The MediaAccess class didn't detect context name in case of class:// url ends with /.
 - [BUG FIX] Samples/Sample_asset has 'Return Today' button but it didn't work for missing view keyed value.
 - [BUG FIX] Fix URL of the CSS file in simplelist_MySQL.html/simplelist_FMS.html in Samples/Sample_Mobile directory.
+- [BUG FIX] Updating and processing from buttons are improved. They are serialized with IMUILib's object.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)
