@@ -149,19 +149,14 @@ function loadClass($className)
     ) {
         $result = include_once $className . '.php';
         if (!$result) {
-
-        }
-        if (!$result) {
             $errorGenerator = new GenerateJSCode();
             if ($className === "NumberFormatter") {
-                // abondan this case.
+                // abandon this case. In IMLocale class, check to exist this PHP system class.
             } else if (strpos($className, "MessageStrings_") !== 0) {
-                //if (strpos($className, "MessageStrings_") !== 0) {
                 $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
             }
         }
     }
-
 }
 
 /**

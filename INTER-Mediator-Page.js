@@ -1099,7 +1099,6 @@ var INTERMediatorOnPage = {
         } else {
             frontPanel.style.opacity = 1.0;
             frontPanel.style.display = "flex";
-            console.log("Show progress panel");
         }
     },
 
