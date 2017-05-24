@@ -6,8 +6,7 @@ pages:
   - apt-get update
   - apt-get install -y zip
   - mkdir public
-  #- echo 'GitLab Pages Test' > ./public/index.html
-  - echo 2 | ./dist-docs/buildup.sh && zip -r INTER-Mediator.zip ../im_build/INTER-Mediator/ && mv INTER-Mediator.zip ./public/
+  - echo 2 | ./dist-docs/buildup.sh && zip -r INTER-Mediator.zip ../im_build/INTER-Mediator/ && mv INTER-Mediator.zip ./public/ && mv ./public/INTER-Mediator.zip ./public/INTER-Mediator-master.zip
   artifacts:
     paths:
     - public
