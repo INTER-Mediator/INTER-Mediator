@@ -79,7 +79,6 @@ var IMLibContextPool = {
                         if (refNode && !(calcKey in IMLibCalc.calculateRequiredObject)) {
                             IMLibElement.setValueToIMNode(refNode, targetNodes[j].target, value, true);
                             result.push(targetNodes[j].id);
-                            //console.log(refNode, targetNodes[j].target, value);
                         }
                     }
                 }
@@ -962,7 +961,6 @@ IMLibContext.prototype.setOriginal = function (repeaters) {
 };
 
 IMLibContext.prototype.setTable = function (context) {
-    // console.error(context);
     var contextDef;
     if (!context || !INTERMediatorOnPage.getDataSources) {
         this.tableName = this.contextName;
@@ -1221,7 +1219,6 @@ IMLibContext.prototype.setDataWithKey = function (pkValue, key, value) {
 };
 
 IMLibContext.prototype.setValue = function (recKey, key, value, nodeId, target, portal) {
-    //console.error(this.contextName, this.tableName, recKey, key, value, nodeId);
     var updatedNodeIds = null;
     if (portal) {
         /* eslint no-console: ["error", {allow: ["error"]}] */
@@ -1577,8 +1574,6 @@ var IMLibLocalContext = {
         } else {
             INTERMediatorOnPage.setCookieWorker('_im_localcontext', jsonString, false, 0);
         }
-        //console.log('##Archive:', key);
-        //console.log('##Archive:', this.store);
     },
 
     unarchive: function () {
@@ -1601,8 +1596,6 @@ var IMLibLocalContext = {
         }
         if (localContext && localContext.length > 0) {
             this.store = JSON.parse(localContext);
-            //console.log('##Unarchive:', key);
-            //console.log('##Unarchive:', this.store);
             if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
                 if (this.store._im_additionalCondition) {
                     INTERMediator.additionalCondition = this.store._im_additionalCondition;

@@ -940,10 +940,10 @@ var INTERMediatorLib = {
         }
     },
 
-    currencyFormat: function (str, digit) {
-        return INTERMediatorOnPage.localeInfo["currency_symbol"] +
-            INTERMediatorLib.numberFormat(str, digit);
-    },
+    // currencyFormat: function (str, digit) {
+    //     return INTERMediatorOnPage.localeInfo["currency_symbol"] +
+    //         INTERMediatorLib.numberFormat(str, digit);
+    // },
 
     objectToString: function (obj) {
         var str, i, key;

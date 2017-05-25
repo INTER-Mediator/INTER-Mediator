@@ -70,6 +70,7 @@ IM_Entry(
         ),
         array(
             'name' => 'rentback',
+            'view' => 'rent',
             'table' => 'rent',
             'key' => 'rent_id',
             'query' => array(

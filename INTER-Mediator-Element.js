@@ -29,7 +29,7 @@ var IMLibElement = {
 
     // Formatting values
     //
-    getFormattedValue: function (element) {
+    getFormattedValue: function (element, curVal) {
         var flags, formatSpec, formatOption, negativeColor, negativeStyle, charStyle,
             kanjiSeparator, param1, formattedValue = null;
 
@@ -169,13 +169,18 @@ var IMLibElement = {
                     break;
                 }
             }
-            formattedValue = IMLibElement.getFormattedValue(element);
+        }
+        formattedValue = IMLibElement.getFormattedValue(element, curVal);
+        if (element.getAttribute("data-im-format")) {
             if (formattedValue === null) {
-                formattedValue = curVal;
-                INTERMediator.setErrorMessage("The 'data-im-format' attribute is not valid: " + formatSpec);
+                INTERMediator.setErrorMessage(
+                    "The 'data-im-format' attribute is not valid: " + formatSpec);
+            } else {
+                curVal = formattedValue;
             }
         }
 
+        negativeColor = element.getAttribute("data-im-format-negative-color");
         if (curTarget != null && curTarget.length > 0) { //target is specified
             if (curTarget.charAt(0) == '#') { // Appending
                 //if (element.getAttribute('data-im-element') !== 'processed') {
@@ -360,13 +365,52 @@ var IMLibElement = {
         if ((nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA')
             && !isReplaceOrAppned
             && (!imControl || imControl.indexOf('unbind') > 0 )) {
-            var idValue = element.id;
-            var elementCapt = element;
-            INTERMediatorLib.addEvent(element, 'blur', function (event) {
-                if (!IMLibUI.valueChange(idValue, true) && this.id === idValue) {
-                    elementCapt.focus();
-                }
-            });
+            if (!element.dataset.imbluradded) {
+                INTERMediatorLib.addEvent(element, 'blur', (function () {
+                    var idValue = element.id;
+                    var elementCapt = element;
+                    return function (event) {
+                        if (!IMLibUI.valueChange(idValue, true)) {
+                            elementCapt.focus();
+                        }
+                    }
+                })());
+                element.dataset.imbluradded = "set";
+            }
+            if (!element.dataset.imchangeadded) {
+                INTERMediatorLib.addEvent(element, 'change', (function () {
+                    var idValue = element.id;
+                    var elementCapt = element;
+                    return function (event) {
+                        if (!IMLibUI.valueChange(idValue, false)) {
+                            elementCapt.focus();
+                        }
+                    }
+                })());
+                element.dataset.imchangeadded = "set";
+            }
+            if ((INTERMediator.isTrident || INTERMediator.isEdge) && !element.dataset.iminputadded) {
+                INTERMediatorLib.addEvent(element, 'input', (function () {
+                    var idValue = element.id;
+                    var elementCapt = element;
+                    return function (event) {
+                        if (document.getElementById(idValue).value === '') {
+                            if (!IMLibUI.valueChange(idValue, false)) {
+                                elementCapt.focus();
+                            }
+                        }
+                    }
+                })());
+                element.dataset.iminputadded = "set";
+            }
+            if (nodeTag !== 'SELECT') {
+                INTERMediatorLib.addEvent(element, 'keydown', function () {
+                    IMLibUI.keyDown();
+                });
+                INTERMediatorLib.addEvent(element, 'keyup', function () {
+                    IMLibUI.keyUp();
+                });
+            }
         }
         element.setAttribute('data-im-element', 'processed');
         return needPostValueSet;

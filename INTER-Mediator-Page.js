@@ -78,6 +78,7 @@ var INTERMediatorOnPage = {
         currency_symbol: '￥'
     },
     appCurrency: null,
+    isShowProgress: true,
 
     clearCredentials: function () {
         'use strict';
@@ -1032,23 +1033,18 @@ var INTERMediatorOnPage = {
      */
     hideProgress: function () {
         'use strict';
-       var frontPanel, themeName;
+        if (!INTERMediatorOnPage.isShowProgress) {
+            return;
+        }
+        var frontPanel, themeName;
         frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
             themeName = INTERMediatorOnPage.getTheme().toLowerCase();
             if (themeName === "least" || themeName === "thosedays") {
                 frontPanel.style.display = "none";
             } else {
-                // frontPanel.addEventListener("transitionend", function (ev) {
-                //     var frontPanel = document.getElementById('_im_progress');
-                //     frontPanel.style.display = "none";
-                //     frontPanel.style.transitionProperty = "";
-                //     frontPanel.style.transitionDuration = "";
-                // }, true);
-                // frontPanel.style.transitionProperty = "opacity";
-                // frontPanel.style.transitionDuration = "0.3s";
+                frontPanel.style.transitionDuration = "0.3s";
                 frontPanel.style.opacity = 0;
-                frontPanel.style.display = "none";
             }
         }
     },
@@ -1058,6 +1054,9 @@ var INTERMediatorOnPage = {
 
     showProgress: function () {
         'use strict';
+        if (!INTERMediatorOnPage.isShowProgress) {
+            return;
+        }
         var brNode, bodyNode, frontPanel, imageProgress, imageIM,
             themeName = INTERMediatorOnPage.getTheme().toLowerCase();
 
@@ -1097,6 +1096,7 @@ var INTERMediatorOnPage = {
         if (themeName === "least" || themeName === "thosedays") {
 
         } else {
+            frontPanel.style.transitionDuration = "0";
             frontPanel.style.opacity = 1.0;
             frontPanel.style.display = "flex";
         }
