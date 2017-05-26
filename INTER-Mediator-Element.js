@@ -404,11 +404,11 @@ var IMLibElement = {
                 element.dataset.iminputadded = "set";
             }
             if (nodeTag !== 'SELECT') {
-                INTERMediatorLib.addEvent(element, 'keydown', function () {
-                    IMLibUI.keyDown();
+                INTERMediatorLib.addEvent(element, 'keydown', function (ev) {
+                    IMLibUI.keyDown(ev);
                 });
-                INTERMediatorLib.addEvent(element, 'keyup', function () {
-                    IMLibUI.keyUp();
+                INTERMediatorLib.addEvent(element, 'keyup', function (ev) {
+                    IMLibUI.keyUp(ev);
                 });
             }
         }
