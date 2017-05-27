@@ -13,6 +13,9 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.6 (in development)
 - Well-designed CSS files as the 'default' theme are added by Yuko Oki. She is web designer and a lecturer of
   Kyoto University of Art and Design.
+- [CAUTION!] The default theme applies more CSS selecters than ever. If you don't want to apply new default theme
+  to your solution, you could set the "theme" keyed value to "least." It doesn't apply any CSS settings without
+  login panel and pagenation control.
 - Themes can be retrieved from accessing the definition file as below:
   def_file.php?theme=default&type=css&name=style.css
 - The 'thosedays' theme are added for previous sample css style. The 'least' theme is just for pagenation,
