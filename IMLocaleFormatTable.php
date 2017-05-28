@@ -25,7 +25,9 @@ class IMLocaleFormatTable
         return array(
             'mon_decimal_point' => $locInfo[0],
             'mon_thousands_sep' => $locInfo[1],
-            'currency_symbol' => $locInfo[2]
+            'currency_symbol' => $locInfo[2],
+            'positive_sign' => '',
+            'negative_sign' => '-',
         );
     }
 

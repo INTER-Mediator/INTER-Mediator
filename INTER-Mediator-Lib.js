@@ -648,6 +648,15 @@ var INTERMediatorLib = {
         return Math.round(value * powers) / powers;
     },
 
+    normalizeNumerics: function (value) {
+        var i;
+        for (i = 0; i < 10; i++) {
+            value = String(value).split(String.fromCharCode(65296 + i)).join(String(i));
+            // Full-width numeric characters start from 0xFF10(65296). This is convert to Full to ASCII char for numeric.
+        }
+        return value;
+    },
+
     /**
      * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point
      * with a thousands separator.
@@ -670,9 +679,7 @@ var INTERMediatorLib = {
         if (String(str).match(/[-]/)) {
             str = prefix + String(str).split("-").join("");
         }
-        for (i = 0; i < 10; i++) {
-            str = String(str).split(String.fromCharCode(65296 + i)).join(String(i));
-        }
+        str = INTERMediatorLib.normalizeNumerics(str);
         n = this.toNumber(str);
         if (isNaN(n)) {
             return "";
@@ -711,8 +718,7 @@ var INTERMediatorLib = {
             n = n * 100;
         }
 
-        underDot = (digit === undefined) ?
-            INTERMediatorOnPage.localeInfo.frac_digits : this.toNumber(digit);
+        underDot = (digit === undefined) ? INTERMediatorOnPage.localeInfo.frac_digits : this.toNumber(digit);
         power = Math.pow(10, underDot);
         roundedNum = Math.round(n * power);
         underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
@@ -793,7 +799,6 @@ var INTERMediatorLib = {
                                 } else {
                                     formatted = pstr + formatted;
                                 }
-
                             }
                         }
                         i++;
@@ -939,11 +944,6 @@ var INTERMediatorLib = {
             }
         }
     },
-
-    // currencyFormat: function (str, digit) {
-    //     return INTERMediatorOnPage.localeInfo["currency_symbol"] +
-    //         INTERMediatorLib.numberFormat(str, digit);
-    // },
 
     objectToString: function (obj) {
         var str, i, key;

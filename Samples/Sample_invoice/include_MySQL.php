@@ -38,7 +38,7 @@ IM_Entry(array(
                     0 =>
                         array(
                             'field' => 'total_calc',
-                            'expression' => 'format(sum(item@amount_calc) * (1 + _@taxRate ))',
+                            'expression' => 'sum(item@amount_calc) * (1 + _@taxRate )',
                         ),
                 ),
         ),
@@ -86,7 +86,7 @@ IM_Entry(array(
                     0 =>
                         array(
                             'field' => 'amount_calc',
-                            'expression' => 'format(qty * if ( unitprice = \'\', product@unitprice, unitprice ))',
+                            'expression' => 'qty * if(unitprice = \'\', product@unitprice, unitprice)',
                         ),
                     1 =>
                         array(
@@ -110,29 +110,7 @@ IM_Entry(array(
                 ),
         ),
 ),
-    array(
-        'formatter' =>
-            array(
-                0 =>
-                    array(
-                        'field' => 'item@qty',
-                        'converter-class' => 'NullZeroString',
-                        'parameter' => '0',
-                    ),
-                1 =>
-                    array(
-                        'field' => 'item@unitprice',
-                        'converter-class' => 'NullZeroString',
-                        'parameter' => '0',
-                    ),
-                2 =>
-                    array(
-                        'field' => 'product@unitprice',
-                        'converter-class' => 'Number',
-                        'parameter' => '2',
-                    ),
-            ),
-    ),
+    array(),
     array(
         'db-class' => 'PDO',
     ),

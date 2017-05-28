@@ -417,7 +417,7 @@ var IMLibElement = {
     },
 
     getValueFromIMNode: function (element) {
-        var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr;
+        var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr, formatSpec;
 
         if (element) {
             nodeTag = element.tagName;
@@ -428,8 +428,8 @@ var IMLibElement = {
         if (INTERMediatorLib.isWidgetElement(element) ||
             (INTERMediatorLib.isWidgetElement(element.parentNode))) {
             newValue = element._im_getValue();
-        } else if (nodeTag == 'INPUT') {
-            if (typeAttr == 'checkbox') {
+        } else if (nodeTag === 'INPUT') {
+            if (typeAttr === 'checkbox') {
                 if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
                     mergedValues = [];
                     targetNodes = element.parentNode.getElementsByTagName('INPUT');
@@ -447,17 +447,25 @@ var IMLibElement = {
                         newValue = '';
                     }
                 }
-            } else if (typeAttr == 'radio') {
+            } else if (typeAttr === 'radio') {
                 newValue = element.value;
             } else { //text, password
                 newValue = element.value;
             }
-        } else if (nodeTag == 'SELECT') {
+        } else if (nodeTag === 'SELECT') {
             newValue = element.value;
-        } else if (nodeTag == 'TEXTAREA') {
+        } else if (nodeTag === 'TEXTAREA') {
             newValue = element.value;
         } else {
             newValue = element.innerHTML;
+        }
+        formatSpec = element.getAttribute("data-im-format");
+        if(formatSpec)  {
+            newValue = newValue.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, "g"), "");
+            newValue = INTERMediatorLib.normalizeNumerics(newValue);
+            if (newValue !== "")    {
+                newValue = parseFloat(newValue);
+            }
         }
         return newValue;
     },
@@ -488,7 +496,7 @@ var IMLibElement = {
                                         referes[j] = [];
                                         values[j] = [];
                                         for (k = 0; k < calcObject.referes[j].length; k++) {
-                                            if (removeNodeId != calcObject.referes[j][k]) {
+                                            if (removeNodeId !== calcObject.referes[j][k]) {
                                                 referes[j].push(calcObject.referes[j][k]);
                                                 values[j].push(calcObject.values[j][k]);
                                             }

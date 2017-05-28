@@ -190,11 +190,11 @@ var IMLibCalc = {
                 }
             }
         }
-        if (serverSideContexts.length > 0) {
-            for (i = 0; i < serverSideContexts.length; i++) {
-                INTERMediator.constructMain(serverSideContexts[i]);
-            }
-        }
+        // if (serverSideContexts.length > 0) {
+        //     for (i = 0; i < serverSideContexts.length; i++) {
+        //         INTERMediator.constructMain(serverSideContexts[i]);
+        //     }
+        // }
 
         do {
             leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
