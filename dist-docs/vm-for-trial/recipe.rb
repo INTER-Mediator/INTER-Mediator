@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.5, Ubuntu Server 14.04, Ubuntu Server 16.04, CentOS 6.6 and CentOS 7
+# Recipe file of Itamae for Alpine Linux 3.5/3.6, Ubuntu Server 14.04/16.04, CentOS 6.6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -8,6 +8,7 @@
 
 if node[:platform] == 'alpine'
   WEBROOT = "/var/www/localhost/htdocs"
+  OLDWEBROOT = "/var/www/html"
 elsif node[:platform] == 'ubuntu' && node[:platform_version].to_f < 14
   WEBROOT = "/var/www"
 else
@@ -143,9 +144,9 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  #execute 'usermod -a -G im-developer apache' do
-  #  command 'usermod -a -G im-developer apache'
-  #end
+  execute 'usermod -a -G im-developer apache' do
+    command 'usermod -a -G im-developer apache'
+  end
 elsif node[:platform] == 'redhat'
   execute 'usermod -a -G im-developer apache' do
     command 'usermod -a -G im-developer apache'
@@ -827,6 +828,12 @@ end
 if node[:platform] == 'redhat'
   execute 'service httpd restart' do
     command 'service httpd restart'
+  end
+end
+
+if node[:platform] == 'alpine'
+  execute "ln -s \"#{WEBROOT}\" \"#{OLDWEBROOT}\"" do
+    command "ln -s \"#{WEBROOT}\" \"#{OLDWEBROOT}\""
   end
 end
 

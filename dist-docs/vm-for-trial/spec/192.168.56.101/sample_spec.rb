@@ -7,6 +7,7 @@ if ENV['CIRCLECI']
   end
 end
 
+OLDWEBROOT = "/var/www/html"
 if os[:family] == 'alpine'
   WEBROOT = "/var/www/localhost/htdocs"
 else
@@ -443,6 +444,14 @@ end
 describe file('/etc/apache2/sites-enabled/inter-mediator-server.conf'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   its(:content) { should match /#Header add Content-Security-Policy "default-src 'self'"/ }
+end
+
+describe file(WEBROOT) do
+  it { should be_directory }
+end
+
+describe file(OLDWEBROOT), :if => os[:family] == 'alpine' do
+  it { should be_symlink }
 end
 
 describe file(WEBROOT + '/INTER-Mediator') do
