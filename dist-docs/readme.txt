@@ -4,7 +4,7 @@ Driven by INTER-Mediator Directive Committee (http://inter-mediator.org/)
 
 Thanks for your interest of this software.
 
-Product information: http://inter-mediator.com
+Product information: https://inter-mediator.com
 Online manual: http://inter-mediator.info
 
 Sample pages with this archived file are published at below.
@@ -39,7 +39,7 @@ Thanks for nice works.
 ==========================================
 Account Information for FileMaker Database
 ------------------------------------------
-The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" (Last updated: August 5, 2016)
+The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" (Last updated: May 15, 2017)
 have the administrator account as:
 
  username: admin
