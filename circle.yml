@@ -38,3 +38,4 @@ test:
     - npm test
     - BUNDLE_GEMFILE=dist-docs/docker/Gemfile bundle
     # - rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/container/container_spec.rb -f doc -c
+    # - rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
