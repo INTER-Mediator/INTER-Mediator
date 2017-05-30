@@ -5,7 +5,11 @@ pages:
   - uname -a
   - apt-get update
   - apt-get install -y zip
+  - apt-get install -y git
   - mkdir public
+  - cd ..
+  - git clone https://github.com/matthiasmullie/minify
+  - cd -
   - echo 2 | ./dist-docs/buildup.sh && zip -r INTER-Mediator.zip ../im_build/INTER-Mediator/ && mv INTER-Mediator.zip ./public/ && mv ./public/INTER-Mediator.zip ./public/INTER-Mediator-master.zip
   artifacts:
     paths:

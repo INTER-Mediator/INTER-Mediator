@@ -7,4 +7,5 @@ group :test do
   gem 'net-ssh', '2.9.2'
   gem 'serverspec'
   gem 'itamae'
+  gem 'selenium-webdriver' '2.53.0'
 end
