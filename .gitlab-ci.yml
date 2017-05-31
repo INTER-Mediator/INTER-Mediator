@@ -9,7 +9,7 @@ pages:
   - cd ..
   - git clone https://github.com/matthiasmullie/minify
   - cd -
-  - echo 2 | ./dist-docs/buildup.sh && zip -r INTER-Mediator.zip ../im_build/INTER-Mediator/ && mv INTER-Mediator.zip ./public/ && mv ./public/INTER-Mediator.zip ./public/INTER-Mediator-master.zip
+  - echo 2 | ./dist-docs/buildup.sh && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ./public/
   artifacts:
     paths:
     - public
