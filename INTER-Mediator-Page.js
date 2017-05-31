@@ -78,6 +78,7 @@ var INTERMediatorOnPage = {
         currency_symbol: '￥'
     },
     appCurrency: null,
+    isShowProgress: true,
 
     clearCredentials: function () {
         'use strict';
@@ -537,14 +538,14 @@ var INTERMediatorOnPage = {
         }
         passwordBox.onkeydown = function (event) {
             keyCode = (window.event) ? window.event.which : event.keyCode;
-            if (keyCode == 13) {
+            if (keyCode === 13) {
                 authButton.onclick();
             }
         };
         userBox.value = INTERMediatorOnPage.authUser;
         userBox.onkeydown = function (event) {
             keyCode = (window.event) ? window.event.which : event.keyCode;
-            if (keyCode == 13) {
+            if (keyCode === 13) {
                 passwordBox.focus();
             }
         };
@@ -1022,13 +1023,29 @@ var INTERMediatorOnPage = {
         document.cookie = cookieString;
     },
 
+    /*
+     * The hiding process is realized by _im_progress's div elements, but it's quite sensitive.
+     * I've tried to set the CSS amimations but it seems to be a reson to stay the progress panel.
+     * So far I gave up to use CSS animations. I think it's matter of handling transitionend event.
+     * Now this method is going to be called multiple times in case of edit text field.
+     * But it doesn't work by excluding to call by flag variable. I don't know why.
+     * 2017-05-04 Masayuki Nii
+     */
     hideProgress: function () {
         'use strict';
-        var frontPanel;
+        if (!INTERMediatorOnPage.isShowProgress) {
+            return;
+        }
+        var frontPanel, themeName;
         frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
-            //frontPanel.parentNode.removeChild(frontPanel);
-            frontPanel.style.display = "none";
+            themeName = INTERMediatorOnPage.getTheme().toLowerCase();
+            if (themeName === "least" || themeName === "thosedays") {
+                frontPanel.style.display = "none";
+            } else {
+                frontPanel.style.transitionDuration = "0.3s";
+                frontPanel.style.opacity = 0;
+            }
         }
     },
 
@@ -1037,34 +1054,51 @@ var INTERMediatorOnPage = {
 
     showProgress: function () {
         'use strict';
-        var brNode, bodyNode, frontPanel, imageProgress, imageIM;
+        if (!INTERMediatorOnPage.isShowProgress) {
+            return;
+        }
+        var brNode, bodyNode, frontPanel, imageProgress, imageIM,
+            themeName = INTERMediatorOnPage.getTheme().toLowerCase();
 
         frontPanel = document.getElementById('_im_progress');
         if (!frontPanel) {
-            bodyNode = document.getElementsByTagName('BODY')[0];
             frontPanel = document.createElement('div');
+
             frontPanel.setAttribute('id', '_im_progress');
+            bodyNode = document.getElementsByTagName('BODY')[0];
             if (bodyNode.firstChild) {
                 bodyNode.insertBefore(frontPanel, bodyNode.firstChild);
             } else {
                 bodyNode.appendChild(frontPanel);
             }
-            imageIM = document.createElement("img");
-            imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
-                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=gears.svg');
-            frontPanel.appendChild(imageIM);
-            // imageIM = document.createElement('div');
-            // imageIM.setAttribute('id', '_im_logo');
-            // frontPanel.appendChild(imageIM);
-            // imageProgress = document.createElement('div');
-            // imageProgress.setAttribute('id', '_im_animatedimage');
-            // frontPanel.appendChild(imageProgress);
-            // brNode = document.createElement('BR');
-            // brNode.setAttribute('clear', 'all');
-            // frontPanel.appendChild(brNode);
-            // frontPanel.appendChild(document.createTextNode('INTER-Mediator working'));
+            if (themeName === "least" || themeName === "thosedays") {
+                imageIM = document.createElement('img');
+                imageIM.setAttribute('id', '_im_logo');
+                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
+                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=logo.gif');
+                frontPanel.appendChild(imageIM);
+                imageProgress = document.createElement('img');
+                imageProgress.setAttribute('id', '_im_animatedimage');
+                imageProgress.setAttribute('src', INTERMediatorOnPage.getEntryPath()
+                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif');
+                frontPanel.appendChild(imageProgress);
+                brNode = document.createElement('BR');
+                brNode.setAttribute('clear', 'all');
+                frontPanel.appendChild(brNode);
+                frontPanel.appendChild(document.createTextNode('INTER-Mediator working'));
+            } else {
+                imageIM = document.createElement("img");
+                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
+                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=gears.svg');
+                frontPanel.appendChild(imageIM);
+            }
         }
-        frontPanel.style.display = "flex";
+        if (themeName === "least" || themeName === "thosedays") {
+
+        } else {
+            frontPanel.style.transitionDuration = "0";
+            frontPanel.style.opacity = 1.0;
+        }
     },
 
     // Gear SVG was generated on http://loading.io/.
@@ -1079,9 +1113,9 @@ var INTERMediatorOnPage = {
         linkElement.setAttribute('type', 'text/css');
         for (i = 0; i < headNode.childNodes.length; i++) {
             if (headNode.childNodes[i] &&
-                headNode.childNodes[i].nodeType == 1 &&
-                headNode.childNodes[i].tagName == 'LINK' &&
-                headNode.childNodes[i].rel == 'stylesheet') {
+                headNode.childNodes[i].nodeType === 1 &&
+                headNode.childNodes[i].tagName === 'LINK' &&
+                headNode.childNodes[i].rel === 'stylesheet') {
                 styleIndex = i;
                 break;
             }

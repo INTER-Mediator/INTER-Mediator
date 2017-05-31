@@ -833,7 +833,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if (in_array($field, $fieldInfos) && $convertedValue === "") {
                 $setClause[] = "{$field}=NULL";
             } else {
-                $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = $this->formatter->formatterToDB($filedInForm, $convertedValue);
                 $setClause[] = "{$field}=?";
                 $setParameter[] = $convertedValue;
@@ -880,7 +880,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         if ($isFirstRow) {
                             $this->fieldInfo[] = $field;
                         }
-                        $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                        $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
                     }
                     $sqlResult[] = $rowArray;
@@ -955,7 +955,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
             if (in_array($field, $fieldInfos) && $value === "") {
                 $setValues[] = "NULL";
             } else {
-                $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                 $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
                 $setValues[] = $this->link->quote(
                     $this->formatter->formatterToDB($filedInForm, $convertedValue));
@@ -967,7 +967,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                 $field = $itemDef['field'];
                 $value = $itemDef['value'];
                 if (!in_array($field, $setColumnNames)) {
-                    $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                    $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                     $convertedValue = (is_array($value)) ? implode("\n", $value) : $value;
                     $setValues[] = $this->link->quote(
                         $this->formatter->formatterToDB($filedInForm, $convertedValue));
@@ -1021,7 +1021,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         if ($isFirstRow) {
                             $this->fieldInfo[] = $field;
                         }
-                        $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                        $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
                     }
                     $sqlResult[] = $rowArray;
@@ -1170,7 +1170,7 @@ class DB_PDO extends DB_AuthCommon implements DB_Access_Interface, DB_Interface_
                         if ($isFirstRow) {
                             $this->fieldInfo[] = $field;
                         }
-                        $filedInForm = "{$tableName}{$this->dbSettings->getSeparator()}{$field}";
+                        $filedInForm = "{$this->dbSettings->getEntityForUpdate()}{$this->dbSettings->getSeparator()}{$field}";
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
                     }
                     $sqlResult[] = $rowArray;

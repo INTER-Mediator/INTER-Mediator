@@ -350,7 +350,7 @@ class DB_FileMaker_FX extends DB_AuthCommon implements DB_Access_Interface
         $fxPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FX';
         $fxFiles = array(
             'FX.php',
-            'datasource_classes' . DIRECTORY_SEPARATOR . 'RetrieveFM7Data.class.php',
+            'lib/datasource_classes' . DIRECTORY_SEPARATOR . 'RetrieveFM7Data.class.php',
         );
         foreach ($fxFiles as $fxFile) {
             $path = $fxPath . DIRECTORY_SEPARATOR . $fxFile;

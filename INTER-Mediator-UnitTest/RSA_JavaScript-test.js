@@ -67,7 +67,6 @@ buster.testCase("RSA-JS Test:", {
         var publickey = new biRSAKeyPair('010001', '0', modulus);
         var originalString="1234OhmyGOD#";
         var enc = publickey.biEncryptedString(originalString);
-        //console.log(enc);
         var privatekey = new biRSAKeyPair('0', privateEx, modulus);
         var decrypted = privatekey.biDecryptedString(enc);
         assert.equals(originalString, decrypted);

@@ -213,12 +213,14 @@ class MediaAccess
                 || isset($context['authentication']['load'])
                 || isset($context['authentication']['read']))
         ) {
-            $realm = isset($context['authentication']['realm']) ? "_{$context['authentication']['realm']}" : '';
-            $cookieNameUser = "_im_username{$realm}";
-            $cookieNameToken = "_im_mediatoken{$realm}";
+            $realm = '';
+            $cookieNameUser = "_im_username";
+            $cookieNameToken = "_im_mediatoken";
             if (isset($options['authentication']['realm'])) {
-                $cookieNameUser .= '_' . str_replace(".", "_", $options['authentication']['realm']);
-                $cookieNameToken .= '_' . str_replace(".", "_", $options['authentication']['realm']);
+                $realm = str_replace(" ", "_",
+                    str_replace(".", "_", $options['authentication']['realm']));
+                $cookieNameUser .= ('_' . $realm);
+                $cookieNameToken .= ('_' . $realm);
             }
             if (!$dbProxyInstance->checkMediaToken($_COOKIE[$cookieNameUser], $_COOKIE[$cookieNameToken])) {
                 $this->exitAsError(401);
@@ -324,8 +326,7 @@ class MediaAccess
                     $keyField = $fieldComponents[0];
                     $keyValue = $fieldComponents[1];
                     $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-                } else {
-                    $contextName = $pathComponents[$index];
+                    $contextName = $pathComponents[$index-1];
                 }
             }
             if ($indexKeying == -1) {

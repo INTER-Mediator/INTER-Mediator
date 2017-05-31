@@ -7,6 +7,7 @@ if ENV['CIRCLECI']
   end
 end
 
+OLDWEBROOT = "/var/www/html"
 if os[:family] == 'alpine'
   WEBROOT = "/var/www/localhost/htdocs"
 else
@@ -219,6 +220,9 @@ end
 describe package('php7-bcmath'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php7.0-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
 describe package('php7-phar'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
@@ -240,7 +244,10 @@ end
 describe package('php-mbstring'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
-describe package('php7.0-bcmath'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+describe package('php7-xml'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php7-simplexml'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('php-pear'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
@@ -437,6 +444,14 @@ end
 describe file('/etc/apache2/sites-enabled/inter-mediator-server.conf'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   its(:content) { should match /#Header add Content-Security-Policy "default-src 'self'"/ }
+end
+
+describe file(WEBROOT) do
+  it { should be_directory }
+end
+
+describe file(OLDWEBROOT), :if => os[:family] == 'alpine' do
+  it { should be_symlink }
 end
 
 describe file(WEBROOT + '/INTER-Mediator') do

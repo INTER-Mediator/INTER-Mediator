@@ -1,14 +1,14 @@
 #!/bin/bash
 #
-# setup shell script for Alpine Linux 3.5 and Ubuntu Server 14.04
+# setup shell script for Alpine Linux 3.5/3.6 and Ubuntu Server 14.04
 #
 # This file can get from the URL below.
 # https://raw.githubusercontent.com/INTER-Mediator/INTER-Mediator/master/dist-docs/vm-for-trial/deploy.sh
 #
 # How to test using Serverspec 2 after running this file on the guest of VM:
 #
-# - Install Ruby on the host of VM (You don't need installing Ruby on OS X usually)
-# - Install Serverspec 2 on the host of VM (ex. "sudo gem install serverspec" on OS X)
+# - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
+# - Install Serverspec 2 on the host of VM (ex. "sudo gem install serverspec" on macOS)
 #   See detail: http://serverspec.org/
 # - Change directory to "vm-for-trial" directory on the host of VM
 # - Run "rake spec" on the host of VM
@@ -18,6 +18,7 @@ OS=`cat /etc/os-release | grep ^ID | cut -d'=' -f2`
 
 if [ $OS = 'alpine' ] ; then
     WEBROOT="/var/www/localhost/htdocs"
+	OLDWEBROOT="/var/www/html"
 else
     WEBROOT="/var/www/html"
 fi
@@ -77,6 +78,8 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-bcmath
     apk add --no-cache php7-phar
     apk add --no-cache php7-mbstring
+    apk add --no-cache php7-xml
+    apk add --no-cache php7-simplexml
     apk add --no-cache git
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm
@@ -238,6 +241,10 @@ echo "jU6zr1wG9awuXj8j5x37eFXnfD/p92GpteyHuIDpog==" >> "${WEBROOT}/params.php"
 echo "-----END RSA PRIVATE KEY-----" >> "${WEBROOT}/params.php"
 echo "EOL;" >> "${WEBROOT}/params.php"
 echo "\$webServerName = array('');" >> "${WEBROOT}/params.php"
+
+if [ $OS = 'alpine' ] ; then
+	ln -s ${WEBROOT} ${OLDWEBROOT}
+fi
 
 # Install npm packages
 

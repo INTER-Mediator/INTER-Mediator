@@ -13,6 +13,9 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.6 (in development)
 - Well-designed CSS files as the 'default' theme are added by Yuko Oki. She is web designer and a lecturer of
   Kyoto University of Art and Design.
+- [CAUTION!] The default theme applies more CSS selecters than ever. If you don't want to apply new default theme
+  to your solution, you could set the "theme" keyed value to "least." It doesn't apply any CSS settings without
+  login panel and pagenation control.
 - Themes can be retrieved from accessing the definition file as below:
   def_file.php?theme=default&type=css&name=style.css
 - The 'thosedays' theme are added for previous sample css style. The 'least' theme is just for pagenation,
@@ -47,8 +50,13 @@ Ver.5.6 (in development)
   the theme features.
 - The variable $browserCompatibility or 'browser-compatibility' keyed value can contain 'WebKit' key as a sign
   of any browser. Web browsers in mobile application might have the 'WebKit' string in its user agent.
-- The addCondtion and clearConditon method of INTERMediator class has "label" property for stabilizing.
+- The addCondition and clearCondition method of INTERMediator class has "label" property for stabilizing.
 - Progress information is changed as more simple gear style icon and gray background.
+- Some functions are moved to INTER-Mediator-Navi, and refactored them.
+- Update FileMaker sample DB ("TestDB.fmp12" and "TestDB_clone.fmp12") to set the REST API / PHP API access privilege, 
+  and so on.
+- [SECURITY FIX] The resetpassword.php in Auth_Support/PasswordReset folder had security issues.
+  If you use the resetpassword.php file in your solution. we'd like to replace the fixed version.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
 - [BUG FIX] MediaAccess class didn't work for privileged access with users.
 - [BUG FIX] INTERMediator.partialConstructing property wasn't appropriate value in doAfterProcessing method.
@@ -78,9 +86,18 @@ Ver.5.6 (in development)
 - [BUG FIX] Target specifications using local context show the error message, but that's wrong messages.
 - [BUG FIX] Custom themes path had bug fix.
 - [BUG FIX] In case of file uploading, $_SERVER doesn't have 'HTTP_CONTENT_LENGTH' key in any case.
-- [BUG FIX] Fix buildup.sh to avoid double minify tinySHA1.js and sha256.js when using YUI Compressor.
-- [SECURITY FIX] The resetpassword.php in Auth_Support/PasswordReset folder had security issues.
-  If you use the resetpassword.php file in your solution. we'd like to replace the fixed version.
+- [BUG FIX] Fix buildup.sh to avoid calculation errors when using a minified version made by YUI Compressor.
+  Now buildup.sh uses Minify <http://www.minifier.org/> instead of YUI Compressor.
+- [BUG FIX] Fix the MediaAccess class's generating cookie names.
+- [BUG FIX] In some case, "the 'NumberFormat' class doesn't exist" message arose, but it was cared in class loader.
+- [BUG FIX] Formatter classes didn't work for other than read operations in DB_PDO.
+- [BUG FIX] The pagination size popup menu didn't work as we expected.
+- [BUG FIX] On the batch save mode without lock, the update operation didn't work.
+- [BUG FIX] On the batch save mode, the context wasn't updated.
+- [BUG FIX] The MediaAccess class didn't detect context name in case of class:// url ends with /.
+- [BUG FIX] Samples/Sample_asset has 'Return Today' button but it didn't work for missing view keyed value.
+- [BUG FIX] Fix URL of the CSS file in simplelist_MySQL.html/simplelist_FMS.html in Samples/Sample_Mobile directory.
+- [BUG FIX] Updating and processing from buttons are improved. They are serialized with IMUILib's object.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)

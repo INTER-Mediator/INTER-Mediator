@@ -8,13 +8,12 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="5.6-dev"
+version="5.6-RC2"
 
-# The jar file of YUI can be donwloaded from below.
-# http://grepcode.com/snapshot/repo1.maven.org/maven2/com.yahoo.platform.yui/yuicompressor/2.4.7
+# The file of minify <http://www.minifier.org> can be downloaded from below.
+# git clone https://github.com/matthiasmullie/minify
 #
-YUICOMP="yuicompressor-2.4.7.jar"
-YUICOMPLOG="yuicomp.log"
+MINIFYJS="minify"
 buildRootName="im_build"
 imRootName="INTER-Mediator"
 receipt="receipt.txt"
@@ -30,11 +29,15 @@ originalPath=$(dirname "${distDocDir}")
 printf '{"version":"%s","releasedate":"%s"}' "${version}" "${dt}" > "${originalPath}/metadata.json"
 
 topOfDir=$(dirname "${originalPath}")
+minifyjsDir="${topOfDir}/${MINIFYJS}"
 buildDir="${topOfDir}/${buildRootName}"
 buildPath="${buildDir}/${imRootName}"
 
 echo " Original: ${originalPath}"
 echo " Build to: ${buildPath}"
+if [ -e "${minifyjsDir}" ]; then
+    echo " Path of minifier: ${minifyjsDir}"
+fi
 
 echo "-------------------------------------------------"
 echo "Choose the build result from these:"
@@ -77,7 +80,7 @@ cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/t
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-UI.js"                    >> "${buildPath}/temp.js"
-if [ ! -f "${topOfDir}/${YUICOMP}" ]; then
+if [ ! -e "${minifyjsDir}" ]; then
     cat "${originalPath}/lib/js_lib/tinySHA1.js"              >> "${buildPath}/temp.js"
     echo ';'                                                  >> "${buildPath}/temp.js"
     cat "${originalPath}/lib/js_lib/sha256.js"                >> "${buildPath}/temp.js"
@@ -92,31 +95,29 @@ cat "${originalPath}/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/t
 cp "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
 
 #### Compress INTER-Mediator.js
-if [ -f "${topOfDir}/${YUICOMP}" ]; then
+if [ -e "${minifyjsDir}" ]; then
     sed '1s/*/*!/' "${buildPath}/temp.js" > "${buildPath}/temp2.js"
 
     osName=$(uname -s)
     echo "Detected OS: ${osName}"
     if [[ "${osName}" == CYGWIN* ]];  then
-        jarPath=$(cygpath -w "${topOfDir}/${YUICOMP}")
         temp2Path=$(cygpath -w "${buildPath}/temp2.js")
         temp3Path=$(cygpath -w "${buildPath}/temp3.js")
-        yuiLogPath=$(cygpath -w "${buildDir}/${YUICOMPLOG}")
     else
-        jarPath="${topOfDir}/${YUICOMP}"
         temp2Path="${buildPath}/temp2.js"
         temp3Path="${buildPath}/temp3.js"
-        yuiLogPath="${buildDir}/${YUICOMPLOG}"
     fi
-    java -jar "${jarPath}"  "${temp2Path}" -v --charset UTF-8 -o "${temp3Path}" 2> "${yuiLogPath}"
+	"${minifyjsDir}"/bin/minifyjs "${temp2Path}" > "${temp3Path}"
     sed '1s/*!/*/' "${temp3Path}" > "${buildPath}/INTER-Mediator.js"
-    head -n 9 "${buildPath}/INTER-Mediator.js"           > "${buildPath}/temp.js"
-    tail -n 1 "${originalPath}/lib/js_lib/tinySHA1.js"  >> "${buildPath}/temp.js"
+    head -n 9 "${originalPath}/INTER-Mediator.js"        > "${buildPath}/temp.js"
+	cat "${temp3Path}"                                  >> "${buildPath}/temp.js"
+	echo ";\n"                                          >> "${buildPath}/temp.js"
+	tail -n 1 "${originalPath}/lib/js_lib/tinySHA1.js"  >> "${buildPath}/temp.js"
     echo ';'                                            >> "${buildPath}/temp.js"
     tail -n 1 "${originalPath}/lib/js_lib/sha256.js"    >> "${buildPath}/temp.js"
-    tail -n 1 "${buildPath}/INTER-Mediator.js"          >> "${buildPath}/temp.js"
-    mv "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
-    rm  "${buildPath}/temp.js" "${temp2Path}" "${temp3Path}"
+	echo "\n"                                           >> "${buildPath}/temp.js"
+    mv  "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"
+    rm  "${temp2Path}" "${temp3Path}"
 else
     rm  "${buildPath}/temp.js"
 fi
@@ -225,7 +226,7 @@ fi
 echo "" >> "${buildDir}/${receipt}"
 echo "You can deploy the 'INTER-Mediator' folder into your web applications. Enjoy!!" >> "${buildDir}/${receipt}"
 echo "" >> "${buildDir}/${receipt}"
-echo "INTER-Mediator Web Site: http://inter-mediator.org" >> "${buildDir}/${receipt}"
+echo "INTER-Mediator Web Site: https://inter-mediator.com/" >> "${buildDir}/${receipt}"
 
 echo "================================================="
 echo " INTER-Mediator Ver.${version} was successfully Build"

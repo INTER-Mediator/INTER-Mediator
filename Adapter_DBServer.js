@@ -428,7 +428,6 @@ var INTERMediator_DBAdapter = {
             clientid = null, requireAuth = false, changePasswordResult = null,
             mediatoken = null, jsonObject, i, returnValue = true;
         try {
-            //console.log(myRequest.responseText);
             jsonObject = JSON.parse(myRequest.responseText);
         } catch (ex) {
             INTERMediator.setErrorMessage(ex,
