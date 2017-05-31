@@ -4,8 +4,7 @@ pages:
   - export LANG=ja_JP.UTF-8
   - uname -a
   - apt-get update
-  - apt-get install -y zip
-  - apt-get install -y git
+  - apt-get install -y zip git php
   - mkdir public
   - cd ..
   - git clone https://github.com/matthiasmullie/minify
