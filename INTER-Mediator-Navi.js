@@ -636,7 +636,7 @@ IMLibPageNavigation = {
             || !currentContextDef['repeat-control'].match(/copy/i)) {
             return;
         }
-        if (currentContextDef['paging'] == true) {
+        if (currentContextDef['paging'] === true && currentContextDef['records'] === 1) {
             IMLibPageNavigation.deleteInsertOnNavi.push({
                 kind: 'COPY',
                 name: currentContextDef['name'],
