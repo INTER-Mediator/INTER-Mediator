@@ -20,6 +20,10 @@ Ver.5.6 (in development)
   def_file.php?theme=default&type=css&name=style.css
 - The 'thosedays' theme are added for previous sample css style. The 'least' theme is just for pagenation,
   login panel and so on, it means least definitions css.
+- Officially support MariaDB.
+- Update Vagrantfile, deploy.sh, recipe.rb and sample_spec.rb for changing OS of INTER-Mediator-Server VM
+  to reduce size of the VM file. Now the OS of INTER-Mediator-Server VM is Alpine Linux 3.6 (instead of
+  Ubuntu Server 14.04) and MariaDB is running on the new VM.
 - In the Post Only mode, radio buttons don't require to set the name attribute. The nodes having the
   same data-im attribute automatically set the appropriate name attributes.
 - New interleave method INTERMediatorOnPage.modifyPostOnlyContext is defined. The parameter is post only
@@ -29,7 +33,6 @@ Ver.5.6 (in development)
 - Added titles to almost all sample HTML files.
 - Update FX.php 6.10 for DB_FileMaker_FX class.
 - Add "CodeMirror" (CodeMirror 5.23.0) in "INTER-Mediator-Support" directory for INTER-Mediator-Server VM.
-- Update Vagrantfile, deploy.sh, recipe.rb and sample_spec.rb for changing OS of INTER-Mediator-Server VM.
 - The access privilege of directories and file of uploaded file set to 755. Previously it was 744, but
   a rental server which is limited feature tries to prevent to set all bits of group/other.
 - Updating and Creating record operations always return the records affected with its operations.
