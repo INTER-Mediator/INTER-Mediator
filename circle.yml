@@ -4,8 +4,6 @@ machine:
   timezone: Asia/Tokyo
   php:
     version: 5.3.3
-  ruby:
-    version: 2.2.3
 dependencies:
   override:
     - docker info
@@ -15,12 +13,15 @@ database:
   override:
     - sudo sed -i 's/us-east-1\.ec2\.//g' /etc/apt/sources.list
     - sudo apt-get update
-    - sudo aptitude install php5-sqlite --assume-yes
+    - sudo aptitude install php5-sqlite google-chrome-stable --assume-yes
     - npm install
     - node_modules/.bin/buster-server:
         background: true
     - sleep 5
     - firefox http://localhost:1111/capture:
+        background: true
+    - sleep 5
+    - google-chrome --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture:
         background: true
     - sleep 5
     - mysql -u root < ./dist-docs/sample_schema_mysql.txt
