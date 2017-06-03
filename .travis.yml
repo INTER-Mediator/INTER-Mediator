@@ -41,7 +41,7 @@ before_script:
   - firefox http://localhost:1111/capture &
   - sleep 5
   - phantomjs node_modules/buster/script/phantom.js http://localhost:1111/capture &
-  ## Headless Chrome is avalbile on trusty
+  ## Headless Chrome is available on trusty
   #- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture &
   - sleep 5
   - mysql -u root < ./dist-docs/sample_schema_mysql.txt
