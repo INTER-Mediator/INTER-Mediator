@@ -147,12 +147,13 @@ function loadClass($className)
         strpos($className, 'PHPExcel_') === false &&
         $className !== 'Composer\Autoload\ClassLoader'
     ) {
+        if ($className === 'NumberFormatter' && !class_exists($className)) {
+            $className = 'IMNumberFormatter';
+        }
         $result = include_once $className . '.php';
         if (!$result) {
             $errorGenerator = new GenerateJSCode();
-            if ($className === "NumberFormatter") {
-                // abandon this case. In IMLocale class, check to exist this PHP system class.
-            } else if (strpos($className, "MessageStrings_") !== 0) {
+            if (strpos($className, "MessageStrings_") !== 0) {
                 $errorGenerator->generateErrorMessageJS("The class '{$className}' is not defined.");
             }
         }
