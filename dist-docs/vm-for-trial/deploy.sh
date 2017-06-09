@@ -217,8 +217,13 @@ echo 'AddType "text/html; charset=UTF-8" .html' > "${WEBROOT}/.htaccess"
 echo '<?php' > "${WEBROOT}/params.php"
 echo "\$dbUser = 'web';" >> "${WEBROOT}/params.php"
 echo "\$dbPassword = 'password';" >> "${WEBROOT}/params.php"
-echo "\$dbDSN = 'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';" \
-            >> "${WEBROOT}/params.php"
+if [ $OS = 'alpine' ] ; then
+    echo "\$dbDSN = 'mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';" \
+        >> "${WEBROOT}/params.php"
+else
+    echo "\$dbDSN = 'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';" \
+        >> "${WEBROOT}/params.php"
+fi
 echo "\$dbOption = array();" >> "${WEBROOT}/params.php"
 echo "\$browserCompatibility = array(" >> "${WEBROOT}/params.php"
 echo "'Chrome' => '1+','FireFox' => '2+','msie' => '9+','Opera' => '1+'," >> "${WEBROOT}/params.php"
@@ -299,6 +304,9 @@ fi
 
 if [ $OS = 'alpine' ] ; then
     echo "   hosts allow = 192.168.56. 127." >> "${SMBCONF}"
+    echo "" >> "${SMBCONF}"
+    echo "[global]" >> "${SMBCONF}"
+    echo "   browseable = no" >> "${SMBCONF}"
     echo "" >> "${SMBCONF}"
     echo "[webroot]" >> "${SMBCONF}"
     echo "   comment = Apache Root Directory" >> "${SMBCONF}"
