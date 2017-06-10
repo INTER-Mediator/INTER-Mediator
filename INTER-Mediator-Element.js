@@ -22,14 +22,18 @@ var IMLibElement = {
             needPostValueSet = false, nodeTag, curValues, i, isReplaceOrAppned = false, imControl;
         // IE should \r for textNode and <br> for innerHTML, Others is not required to convert
 
-        if (curVal === undefined) {
-            return false;   // Or should be an error?
-        }
         if (!element) {
             return false;   // Or should be an error?
         }
-        if (curVal === null || curVal === false) {
+        if (!curVal) {
             curVal = '';
+        }
+        if (Array.isArray(curVal)) {
+            if(curVal.length > 0) {
+                curVal = curVal[0];
+            } else  {
+                curVal = '';
+            }
         }
 
         nodeTag = element.tagName;
@@ -150,8 +154,8 @@ var IMLibElement = {
                 typeAttr = element.getAttribute('type');
                 if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
                     valueAttr = element.value;
-                    curValues = curVal.toString().split(IMLib.nl_char);
-                    if (typeAttr == 'checkbox' && curValues.length > 1) {
+                        curValues = curVal.toString().split(IMLib.nl_char);
+                   if (typeAttr == 'checkbox' && curValues.length > 1) {
                         for (i = 0; i < curValues.length; i++) {
                             if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                                 if (INTERMediator.isIE) {
@@ -202,7 +206,7 @@ var IMLibElement = {
             && !isReplaceOrAppned
             && (!imControl || imControl.indexOf('unbind') > 0 )) {
             if (!element.dataset.imbluradded) {
-                INTERMediatorLib.addEvent(element, 'blur', (function () {
+                IMLibBlurEventDispatch.setExecute(element.id, (function () {
                     var idValue = element.id;
                     var elementCapt = element;
                     return function (event) {
@@ -214,7 +218,7 @@ var IMLibElement = {
                 element.dataset.imbluradded = "set";
             }
             if (!element.dataset.imchangeadded) {
-                INTERMediatorLib.addEvent(element, 'change', (function () {
+                IMLibChangeEventDispatch.setExecute(element.id, (function () {
                     var idValue = element.id;
                     var elementCapt = element;
                     return function (event) {
@@ -226,7 +230,7 @@ var IMLibElement = {
                 element.dataset.imchangeadded = "set";
             }
             if ((INTERMediator.isTrident || INTERMediator.isEdge) && !element.dataset.iminputadded) {
-                INTERMediatorLib.addEvent(element, 'input', (function () {
+                IMLibInputEventDispatch.setExecute(element.id, (function () {
                     var idValue = element.id;
                     var elementCapt = element;
                     return function (event) {
@@ -238,14 +242,6 @@ var IMLibElement = {
                     }
                 })());
                 element.dataset.iminputadded = "set";
-            }
-            if (nodeTag !== 'SELECT') {
-                INTERMediatorLib.addEvent(element, 'keydown', function (ev) {
-                    IMLibUI.keyDown(ev);
-                });
-                INTERMediatorLib.addEvent(element, 'keyup', function (ev) {
-                    IMLibUI.keyUp(ev);
-                });
             }
         }
         element.setAttribute('data-im-element', 'processed');

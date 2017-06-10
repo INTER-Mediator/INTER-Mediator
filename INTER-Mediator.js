@@ -1164,6 +1164,7 @@ var INTERMediator = {
             for (k = 0; k < currentLinkedNodes.length; k++) {
                 try {
                     nodeTag = currentLinkedNodes[k].tagName;
+
                     nodeId = currentLinkedNodes[k].getAttribute('id');
                     if (INTERMediatorLib.isWidgetElement(currentLinkedNodes[k])) {
                         nodeId = currentLinkedNodes[k]._im_getComponentId();
@@ -1202,25 +1203,25 @@ var INTERMediator = {
                             //    objectReference[nInfo['field']] = nodeId;
 
                             // Set data to the element.
-                            if (curVal === null) {
-                                if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, '')) {
-                                    postSetFields.push({'id': nodeId, 'value': curVal});
-                                }
-                            } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                                if (curVal && curVal.length > 0) {
-                                    if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal[0])) {
-                                        postSetFields.push({'id': nodeId, 'value': curVal[0]});
-                                    }
-                                } else {
-                                    if (currentLinkedNodes[k].tagName === 'SELECT') {
-                                        postSetFields.push({'id': nodeId, 'value': ''});
-                                    }
-                                }
-                            } else {
+                            // if (curVal === null) {
                                 if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
                                     postSetFields.push({'id': nodeId, 'value': curVal});
                                 }
-                            }
+                            // } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
+                            //     if (curVal && curVal.length > 0) {
+                            //         if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal[0])) {
+                            //             postSetFields.push({'id': nodeId, 'value': curVal[0]});
+                            //         }
+                            //     } else {
+                            //         if (currentLinkedNodes[k].tagName === 'SELECT') {
+                            //             postSetFields.push({'id': nodeId, 'value': ''});
+                            //         }
+                            //     }
+                            // } else {
+                            //     if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
+                            //         postSetFields.push({'id': nodeId, 'value': curVal});
+                            //     }
+                            // }
                             contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
                             if (idValuesForFieldName[nInfo['field']] === undefined) {
                                 idValuesForFieldName[nInfo['field']] = [];
