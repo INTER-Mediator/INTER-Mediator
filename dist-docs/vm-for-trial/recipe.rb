@@ -86,9 +86,10 @@ if node[:platform] == 'alpine'
   execute 'addgroup im-developer' do
     command 'addgroup im-developer'
   end
-  #execute 'usermod -a -G im-developer developer' do
-  #  command 'usermod -a -G im-developer developer'
-  #end
+  ## ToDo
+  execute 'usermod -a -G im-developer developer' do
+    command 'usermod -a -G im-developer developer'
+  end
 else
   execute 'groupadd im-developer' do
     command 'groupadd im-developer'
@@ -176,15 +177,15 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  #execute 'yes im4135dev | sudo passwd postgres' do
-  #  command 'yes im4135dev | sudo passwd postgres'
-  #end
-  #execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
-  #  command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
-  #end
-  #service 'postgresql' do
-  #  action [ :enable, :start ]
-  #end
+  execute 'yes im4135dev | sudo passwd postgres' do
+    command 'yes im4135dev | sudo passwd postgres'
+  end
+  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  end
+  service 'postgresql' do
+    action [ :enable, :start ]
+  end
 else
   service 'postgresql' do
     action [ :enable, :start ]
@@ -616,6 +617,10 @@ end
 
 package 'samba' do
   action :install
+end
+
+service 'samba' do
+  action [ :enable, :start ]
 end
 
 if node[:platform] == 'ubuntu'
@@ -1422,6 +1427,9 @@ file "#{SMBCONF}" do
 # Please note that you also need to set appropriate Unix permissions
 # to the drivers directory for these users to have write rights in it
 ;   write list = root, @lpadmin
+
+[global]
+   browseable = no
 
 [webroot]
    comment = Apache Root Directory
