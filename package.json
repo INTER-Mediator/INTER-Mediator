@@ -1,12 +1,16 @@
 {
     "name" : "INTER-Mediator",
     "description" : "Web Development Framework",
-    "author" : "Masayuki Nii",
+    "author" : "INTER-Mediator Directive Committee",
     "contributors": [
+        {"name" : "Masayuki Nii"},
         {"name" : "Atsushi Matsuo"},
         {"name" : "Kiyonori Ito"},
         {"name" : "Kentaro Suzuki"},
-        {"name" : "Nobuo Hayashi"}
+        {"name" : "Nobuo Hayashi"},
+        {"name" : "Kazuaki Osawa"},
+        {"name" : "Hiroko Oki"},
+        {"name" : "Tomomitsu Baba"}
     ],
     "repository": {
         "type": "git",
