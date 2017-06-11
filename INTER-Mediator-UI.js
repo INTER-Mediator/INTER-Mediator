@@ -582,7 +582,7 @@ var IMLibUI = {
         INTERMediatorOnPage.showProgress();
         recordSet = [];
         relatedRecordSet = [];
-        if (foreignValues !== null) {
+        if (foreignValues) {
             for (index in currentContext['relation']) {
                 if (currentContext['relation'].hasOwnProperty(index)) {
                     recordSet.push({
