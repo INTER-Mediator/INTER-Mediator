@@ -16,7 +16,7 @@ Enter password:
 */
 SET NAMES 'utf8mb4';
 
-# DROP USER 'web'@'localhost';
+DROP USER IF EXISTS 'web'@'localhost';
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
 # GRANT USAGE ON *.* TO 'web'@'localhost' IDENTIFIED BY 'password';
 
