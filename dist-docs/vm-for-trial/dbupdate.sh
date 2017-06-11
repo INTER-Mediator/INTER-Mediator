@@ -22,6 +22,9 @@ read -p "Do you initialize the test databases? [y/n]: " INPUT
 if [ "$INPUT" = "y" -o "$INPUT" = "Y" ]; then
     echo "Initializing databases..."
 
+    if [ -e "/etc/alpine-release" ]; then
+        mysql -u root --password="${VMPASSWORD}" test_db -e "DROP USER IF EXISTS 'web'@'localhost';"
+    fi
     mysql -u root --password="${VMPASSWORD}" < "${IMDISTDOC}/sample_schema_mysql.txt"
     if [ -e "/etc/alpine-release" ]; then
         mysql -u root --password="${VMPASSWORD}" test_db -e "update information set lastupdated='`date -d "\`git --git-dir=/${IMROOT}/.git log -1 -- -p dist-docs/sample_schema_mysql.txt | grep Date: | awk '{print $3,$4,$5,$6}'\`" +%Y-%m-%d`' where id = 1;"
