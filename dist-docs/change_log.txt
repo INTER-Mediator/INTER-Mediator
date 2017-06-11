@@ -21,9 +21,9 @@ Ver.5.6 (in development)
 - The 'thosedays' theme are added for previous sample css style. The 'least' theme is just for pagenation,
   login panel and so on, it means least definitions css.
 - Officially support MariaDB.
-- Update Vagrantfile, deploy.sh, recipe.rb and sample_spec.rb for changing OS of INTER-Mediator-Server VM
-  to reduce size of the VM file. Now the OS of INTER-Mediator-Server VM is Alpine Linux 3.6 (instead of
-  Ubuntu Server 14.04) and MariaDB is running on the new VM.
+- Update Vagrantfile, deploy.sh, dbupdate.sh, recipe.rb and sample_spec.rb for changing OS of 
+  INTER-Mediator-Server VM to reduce size of the VM file. Now the OS of INTER-Mediator-Server VM is
+  Alpine Linux 3.6 (instead of Ubuntu Server 14.04) and MariaDB is running on the new VM.
 - In the Post Only mode, radio buttons don't require to set the name attribute. The nodes having the
   same data-im attribute automatically set the appropriate name attributes.
 - New interleave method INTERMediatorOnPage.modifyPostOnlyContext is defined. The parameter is post only
