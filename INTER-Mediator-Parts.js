@@ -136,7 +136,10 @@ IMParts_Catalog['fileupload'] = {
             buttonNode.setAttribute('type', 'submit');
             buttonNode.setAttribute('disabled', '');
             buttonNode.appendChild(document.createTextNode(this.uploadButtonLabel));
-            newNode.addEventListener('click', function (event) {
+            if (!newNode.id)   {
+                newNode.id = INTERMediator.nextIdValue();
+            }
+            IMLibMouseEventDispatch.setExecute(newNode.id, function (event) {
                 if (this.children.length > 0) {
                     if (this.children[0].style.display === 'none' || this.children[0].style.display === '') {
                         this.children[0].style.display = 'flex';
@@ -144,7 +147,10 @@ IMParts_Catalog['fileupload'] = {
                     }
                 }
             }, true);
-            cancelButtonWrapper.addEventListener('click', function(c) {
+            if (!cancelButtonWrapper.id)   {
+                cancelButtonWrapper.id = INTERMediator.nextIdValue();
+            }
+            IMLibMouseEventDispatch.setExecute(cancelButtonWrapper.id, function(c) {
                 this.parentNode.style.display = 'none';
             });
             divNode.appendChild(cancelButtonWrapper);

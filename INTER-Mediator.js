@@ -346,10 +346,11 @@ var INTERMediator = {
                 debugNode.style.backgroundColor = '#DDDDDD';
                 clearButton = document.createElement('button');
                 clearButton.setAttribute('title', 'clear');
-                INTERMediatorLib.addEvent(clearButton, 'click', function (e) {
+                clearButton.id = '_im_debug_panel_4873643897897_button';
+                IMLibMouseEventDispatch.setExecute(clearButton.id, function () {
+                    var target;
                     target = document.getElementById('_im_debug_panel_4873643897897');
                     target.parentNode.removeChild(target);
-                    e.preventDefault();
                 });
                 tNode = document.createTextNode('clear');
                 clearButton.appendChild(tNode);
@@ -804,7 +805,10 @@ var INTERMediator = {
                     (postNodes[i].tagName === 'INPUT' &&
                     (postNodes[i].getAttribute('type').toLowerCase() === 'button' ||
                     postNodes[i].getAttribute('type').toLowerCase() === 'submit'))) {
-                    INTERMediatorLib.addEvent(postNodes[i], 'click',
+                    if (!postNodes[i].id)   {
+                        postNodes[i].id = INTERMediator.nextIdValue();
+                    }
+                    IMLibMouseEventDispatch.setExecute(postNodes[i].id,
                         (function () {
                             var targetNode = postNodes[i];
                             return function () {

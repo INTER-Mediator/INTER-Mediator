@@ -1666,7 +1666,7 @@ var IMLibLocalContext = {
                 case 'condition':
                     var attrType = node.getAttribute("type");
                     if (attrType && attrType == "text") {
-                        IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
+                        IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 13, (function () {
                             var contextName = params[1];
                             return function () {
                                 INTERMediator.startFrom = 0;

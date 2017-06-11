@@ -53,9 +53,9 @@ buster.testCase("INTER-Mediator Element Test", {
         value = [999,888,777];
         IMLibElement.setValueToIMNode(tempElement, "", value, true);
         assert.equals(tempElement.value, "999");
-        value = "qwe\n122";
+        value = "qwe122";
         IMLibElement.setValueToIMNode(tempElement, "", value, true);
-        assert.equals(tempElement.value, "qwe122");
+        assert.equals(tempElement.value, value);
     },
     "IMLibElement.setValueToIMNode() has to set the value to checkbox": function () {
         var value;

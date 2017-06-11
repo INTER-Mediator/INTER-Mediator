@@ -623,6 +623,10 @@ var INTERMediatorLib = {
         }
     },
 
+    /*
+    INTER-Mediator supporting browser is over Ver.9 for IE. So this method is already deprecated.
+    The eventInfos property doesn't use other than below methods.
+     */
     eventInfos: [],
 
     addEvent: function (node, evt, func) {
@@ -645,6 +649,8 @@ var INTERMediatorLib = {
             this.eventInfos[serialId].node.detachEvent('on' + this.eventInfos[serialId].evt, this.eventInfos[serialId].func);
         }
     },
+
+    // - - - - -
 
     toNumber: function (str) {
         var s = '', i, c;
