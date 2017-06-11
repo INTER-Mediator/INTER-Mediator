@@ -924,7 +924,6 @@ IMLibPageNavigation = {
                 encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi);
             for (i = 0; i < repeaters.length; i++) {
                 var originalColor = repeaters[i].style.backgroundColor;
-                IMLibMouseEventDispatch.setExecute()
                 INTERMediator.eventListenerPostAdding.push({
                     'id': repeaters[i].id,
                     'event': 'touchstart',
