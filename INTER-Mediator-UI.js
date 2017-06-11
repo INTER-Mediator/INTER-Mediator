@@ -18,34 +18,11 @@
  */
 var IMLibUI = {
 
-    isShiftKeyDown: false,
-    isControlKeyDown: false,
-
     mobileSelectionColor: '#BBBBBB',
     mobileNaviBackButtonId: null,
     mergedFieldSeparator: "\n",
 
     changeValueLock: {},
-
-    keyDown: function (evt) {
-        var keyCode = (window.event) ? evt.which : evt.keyCode;
-        if (keyCode == 16) {
-            IMLibUI.isShiftKeyDown = true;
-        }
-        if (keyCode == 17) {
-            IMLibUI.isControlKeyDown = true;
-        }
-    },
-
-    keyUp: function (evt) {
-        var keyCode = (window.event) ? evt.which : evt.keyCode;
-        if (keyCode == 16) {
-            IMLibUI.isShiftKeyDown = false;
-        }
-        if (keyCode == 17) {
-            IMLibUI.isControlKeyDown = false;
-        }
-    },
 
     lockUIElement: function (idValue) {
         if (IMLibUI.changeValueLock[idValue]) {
@@ -99,16 +76,6 @@ var IMLibUI = {
     valueChange: function (idValue, validationOnly) {
         var changedObj, objType, i, newValue, result, linkInfo, nodeInfo, contextInfo, parentContext,
             targetField, targetNode, targetSpec, returnValue = true, isKeepLock = false;
-
-        if (IMLibUI.isShiftKeyDown && IMLibUI.isControlKeyDown) {
-            INTERMediator.setDebugMessage('Canceled to update the value with shift+control keys.');
-            INTERMediator.flushMessage();
-            IMLibUI.isShiftKeyDown = false;
-            IMLibUI.isControlKeyDown = false;
-            return true;
-        }
-        IMLibUI.isShiftKeyDown = false;
-        IMLibUI.isControlKeyDown = false;
 
         changedObj = document.getElementById(idValue);
         if (!changedObj) {
