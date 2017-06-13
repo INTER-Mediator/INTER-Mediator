@@ -59,34 +59,7 @@ var INTERMediatorLib = {
     roleAsNoResultDataControlName: 'noresult',
 
     initialize: function () {
-        var num, str, decimal, separator;
-
-//            INTERMediator.startFrom = 0;
-//            INTERMediator.pagedSize = 0;
-//        INTERMediator.additionalCondition = {};
-//        INTERMediator.additionalSortKey = {};
-
-        // Initialize the cachedDigitSeparator property.
-        // try {
-        //     num = new Number(1000.1);
-        //     str = num.toLocaleString();
-        //     decimal = str.substr(-2, 1);
-        //     str = str.substring(0, str.length - 2);
-        //     separator = str.match(/[^0-9]/)[0];
-        //     INTERMediatorOnPage.localInfo = {
-        //         mon_decimal_point:decimal,
-        //         mon_thousands_sep:separator,
-        //         currency_symbol:'￥'
-        //     };
-        // } catch (ex) {
-        //     INTERMediatorOnPage.localInfo = {
-        //         mon_decimal_point:'.',
-        //         mon_thousands_sep:',',
-        //         currency_symbol:'￥'
-        //     };
-        // }
         IMLibLocalContext.unarchive();
-
         return null;
     },
 
@@ -396,7 +369,7 @@ var INTERMediatorLib = {
 
     getLinkedElementInfo: function (node) {
         var result = INTERMediatorLib.getLinkedElementInfoImpl(node)
-        if (result !== false)   {
+        if (result !== false) {
             return result;
         }
         if (INTERMediatorLib.isWidgetElement(node.parentNode)) {
@@ -508,10 +481,10 @@ var INTERMediatorLib = {
      */
 
     repeaterTagFromEncTag: function (tag) {
-        if (tag == 'TBODY') return 'TR';
-        else if (tag == 'SELECT') return 'OPTION';
-        else if (tag == 'UL') return 'LI';
-        else if (tag == 'OL') return 'LI';
+        if (tag === 'TBODY') return 'TR';
+        else if (tag === 'SELECT') return 'OPTION';
+        else if (tag === 'UL') return 'LI';
+        else if (tag === 'OL') return 'LI';
         //else if (tag == 'DIV') return 'DIV';
         //else if (tag == 'SPAN') return 'SPAN';
         return null;
@@ -533,11 +506,11 @@ var INTERMediatorLib = {
         tableName = '';
         fieldName = '';
         targetName = '';
-        if (comps.length == 3) {
+        if (comps.length === 3) {
             tableName = comps[0];
             fieldName = comps[1];
             targetName = comps[2];
-        } else if (comps.length == 2) {
+        } else if (comps.length === 2) {
             tableName = comps[0];
             fieldName = comps[1];
         } else {
@@ -548,7 +521,7 @@ var INTERMediatorLib = {
             'field': fieldName,
             'target': targetName,
             'tableindex': '_im_index_' + tableName,
-            'crossTable': INTERMediator.crossTableStage == 3
+            'crossTable': INTERMediator.crossTableStage === 3
         };
     },
 
@@ -624,8 +597,8 @@ var INTERMediatorLib = {
     },
 
     /*
-    INTER-Mediator supporting browser is over Ver.9 for IE. So this method is already deprecated.
-    The eventInfos property doesn't use other than below methods.
+     INTER-Mediator supporting browser is over Ver.9 for IE. So this method is already deprecated.
+     The eventInfos property doesn't use other than below methods.
      */
     eventInfos: [],
 
@@ -654,19 +627,23 @@ var INTERMediatorLib = {
 
     toNumber: function (str) {
         var s = '', i, c;
-        str = (new String(str)).toString();
+        str = str.toString();
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
-            if ((c >= '0' && c <= '9') || c == '.' || c == '-' ||
-                c == INTERMediatorOnPage.localInfo["mon_decimal_point"]) {
+            if ((c >= '0' && c <= '9') ||
+                c === '.' ||
+                c === '-' ||
+                c === INTERMediatorOnPage.localInfo["mon_decimal_point"]) {
                 s += c;
+            } else if (c >= '０' && c <= '９') {
+                s += String.fromCharCode(c.charCodeAt(0) - '０'.charCodeAt(0) + '0'.charCodeAt(0));
             }
         }
         return parseFloat(s);
     },
 
     RoundHalfToEven: function (value, digit) {
-        return value;
+        throw "RoundHalfToEven method is NOT implemented.";
     },
 
     /**
@@ -725,7 +702,7 @@ var INTERMediatorLib = {
             INTERMediatorLib.numberFormat(str, digit);
     },
 
-        objectToString: function (obj) {
+    objectToString: function (obj) {
         var str, i, key;
 
         if (obj === null) {
