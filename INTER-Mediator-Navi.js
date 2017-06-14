@@ -31,6 +31,10 @@ IMLibPageNavigation = {
 
         navigation = document.getElementById('IM_NAVIGATOR');
         if (navigation !== null) {
+            if (!IMLibContextPool.getPagingContext()) {
+                navigation.style.display = "none";
+                return;
+            }
             insideNav = navigation.childNodes;
             for (i = 0; i < insideNav.length; i++) {
                 navigation.removeChild(insideNav[i]);
@@ -138,22 +142,26 @@ IMLibPageNavigation = {
                 c_node = document.createElement('INPUT');
                 c_node.setAttribute('class', 'IM_NAV_JUMP');
                 c_node.setAttribute('type', 'text');
+                if (!c_node.id) {
+                    c_node.id = INTERMediator.nextIdValue();
+                }
                 c_node.setAttribute('value', Math.ceil(INTERMediator.startFrom / pageSize + 1));
                 node.appendChild(c_node);
                 node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[11]));
                 // ---------
-                IMLibChangeEventDispatch.setExecute(c_node,function () {
-                        if (c_node.value < 1) {
-                            c_node.value = 1;
-                        }
-                        var max_page = Math.ceil(allCount / pageSize);
-                        if (max_page < c_node.value) {
-                            c_node.value = max_page;
-                        }
-                        INTERMediator.startFrom = ( ~~c_node.value - 1 ) * pageSize;
-                        INTERMediator.constructMain(true);
+                IMLibChangeEventDispatch.setExecute(c_node.id, function () {
+                    var moveTo, max_page;
+                    moveTo = INTERMediatorLib.toNumber(c_node.value);
+                    if (moveTo < 1) {
+                        moveTo = 1;
                     }
-                );
+                    max_page = Math.ceil(allCount / pageSize);
+                    if (max_page < moveTo) {
+                        moveTo = max_page;
+                    }
+                    INTERMediator.startFrom = ( moveTo - 1 ) * pageSize;
+                    INTERMediator.constructMain(true);
+                });
             }
 
             if (navLabel === null || navLabel[9] !== false) {
@@ -653,14 +661,10 @@ IMLibPageNavigation = {
             || !currentContextDef['repeat-control'].match(/copy/i)) {
             return;
         }
-        if (currentContextDef['paging'] === true && currentContextDef['records'] === 1) {
-            IMLibPageNavigation.deleteInsertOnNavi.push({
-                kind: 'COPY',
-                name: currentContextDef['name'],
-                contextDef: currentContextDef,
-                keyValue: currentRecord[currentContextDef['key']]
-            });
-        } else {
+        if (currentContextDef['relation']
+            || currentContextDef['records'] === undefined
+            || !currentContextDef['paging']
+            || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) !== 1)) {
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Copy');
             buttonName = INTERMediatorOnPage.getMessages()[14];
@@ -694,6 +698,13 @@ IMLibPageNavigation = {
                     }
                     break;
             }
+        } else {
+            IMLibPageNavigation.deleteInsertOnNavi.push({
+                kind: 'COPY',
+                name: currentContextDef['name'],
+                contextDef: currentContextDef,
+                keyValue: currentRecord[currentContextDef['key']]
+            });
         }
     },
 
@@ -711,7 +722,8 @@ IMLibPageNavigation = {
         }
         if (currentContextDef['relation']
             || currentContextDef['records'] === undefined
-            || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) != 1)) {
+            || !currentContextDef['paging']
+            || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) !== 1)) {
 
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Delete');

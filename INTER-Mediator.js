@@ -805,7 +805,7 @@ var INTERMediator = {
                     (postNodes[i].tagName === 'INPUT' &&
                     (postNodes[i].getAttribute('type').toLowerCase() === 'button' ||
                     postNodes[i].getAttribute('type').toLowerCase() === 'submit'))) {
-                    if (!postNodes[i].id)   {
+                    if (!postNodes[i].id) {
                         postNodes[i].id = INTERMediator.nextIdValue();
                     }
                     IMLibMouseEventDispatch.setExecute(postNodes[i].id,
@@ -1204,28 +1204,9 @@ var INTERMediator = {
                         if (nInfo['table'] === currentContextDef['name']) {
                             isContext = true;
                             curTarget = nInfo['target'];
-                            //    objectReference[nInfo['field']] = nodeId;
-
-                            // Set data to the element.
-                            // if (curVal === null) {
-                                if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
-                                    postSetFields.push({'id': nodeId, 'value': curVal});
-                                }
-                            // } else if ((typeof curVal == 'object' || curVal instanceof Object)) {
-                            //     if (curVal && curVal.length > 0) {
-                            //         if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal[0])) {
-                            //             postSetFields.push({'id': nodeId, 'value': curVal[0]});
-                            //         }
-                            //     } else {
-                            //         if (currentLinkedNodes[k].tagName === 'SELECT') {
-                            //             postSetFields.push({'id': nodeId, 'value': ''});
-                            //         }
-                            //     }
-                            // } else {
-                            //     if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
-                            //         postSetFields.push({'id': nodeId, 'value': curVal});
-                            //     }
-                            // }
+                            if (IMLibElement.setValueToIMNode(currentLinkedNodes[k], curTarget, curVal)) {
+                                postSetFields.push({'id': nodeId, 'value': curVal});
+                            }
                             contextObj.setValue(keyingValue, nInfo['field'], curVal, nodeId, curTarget);
                             if (idValuesForFieldName[nInfo['field']] === undefined) {
                                 idValuesForFieldName[nInfo['field']] = [];
@@ -1233,65 +1214,6 @@ var INTERMediator = {
                             idValuesForFieldName[nInfo['field']].push(nodeId);
                         }
                     }
-
-                    targetFirstChar = curTarget ? curTarget.charAt(0) : "";
-                    imControl = currentLinkedNodes[k].getAttribute('data-im-control');
-                    if (isContext && !isInsidePostOnly && targetFirstChar !== '#' && targetFirstChar !== '$' &&
-                        (nodeTag === 'INPUT' || nodeTag === 'SELECT' || nodeTag === 'TEXTAREA') &&
-                        (!imControl || imControl.indexOf('unbind') > 0 )
-                    ) {
-                        //IMLibChangeEventDispatch.setExecute(nodeId, IMLibUI.valueChange);
-
-                        // These codes moved to IMLibElement.setValueToIMNode and IMLibUI.valueChange.
-                        // Below remains to clarify moving, but if everyone can agree, these can be removed.
-
-                        // if (currentLinkedNodes[k].tagName === 'SELECT') {
-                        //     var changeFunction = function (id, evt) {
-                        //         return function () {
-                        //             if (evt === 'change' ||
-                        //                 (evt === 'input' && document.getElementById(id).value === '')) {
-                        //                 if (IMLibUI.valueChange(id)) {
-                        //                     children = document.getElementById(id).childNodes;
-                        //                     for (i = 0; i < children.length; i++) {
-                        //                         if (children[i].nodeType === 1) {
-                        //                             if (children[i].tagName === 'OPTION' &&
-                        //                                 children[i].getAttribute('data-im-element') === 'auto-generated') {
-                        //                                 delNodes.push(children[i].getAttribute('id'));
-                        //                                 IMLibElement.deleteNodes(delNodes);
-                        //                             }
-                        //                         }
-                        //                     }
-                        //                 }
-                        //             }
-                        //         };
-                        //     };
-                        //     INTERMediator.eventListenerPostAdding.push({
-                        //         'id': nodeId,
-                        //         'event': 'change',
-                        //         'todo': changeFunction(nodeId, 'change')
-                        //     });
-                        //     if (INTERMediator.isTrident || INTERMediator.isEdge) {
-                        //         INTERMediator.eventListenerPostAdding.push({
-                        //             'id': nodeId,
-                        //             'event': 'input',
-                        //             'todo': changeFunction(nodeId, 'input')
-                        //         });
-                        //     }
-                        // }
-                        // if (nodeTag !== 'SELECT') {
-                        //     INTERMediator.eventListenerPostAdding.push({
-                        //         'id': nodeId,
-                        //         'event': 'keydown',
-                        //         'todo': IMLibUI.keyDown
-                        //     });
-                        //     INTERMediator.eventListenerPostAdding.push({
-                        //         'id': nodeId,
-                        //         'event': 'keyup',
-                        //         'todo': IMLibUI.keyUp
-                        //     });
-                        // }
-                    }
-
                 } catch (ex) {
                     if (ex == '_im_requath_request_') {
                         throw ex;
