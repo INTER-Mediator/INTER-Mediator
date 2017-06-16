@@ -140,10 +140,11 @@ IMParts_Catalog['fileupload'] = {
                 newNode.id = INTERMediator.nextIdValue();
             }
             IMLibMouseEventDispatch.setExecute(newNode.id, function (event) {
-                if (this.children.length > 0) {
-                    if (this.children[0].style.display === 'none' || this.children[0].style.display === '') {
-                        this.children[0].style.display = 'flex';
-                        this.children[0].style.display = '-webkit-flex';
+                var node = document.getElementById(newNode.id);
+                if (node !== null && node.children.length > 0) {
+                    if (node.children[0].style.display === 'none' || node.children[0].style.display === '') {
+                        node.children[0].style.display = 'flex';
+                        node.children[0].style.display = '-webkit-flex';
                     }
                 }
             }, true);
@@ -253,7 +254,7 @@ IMParts_Catalog['fileupload'] = {
                                     '&_im_keyvalue=' + encodeURIComponent(updateInfo.record.split('=')[1]) +
                                     '&_im_contextnewrecord=' + encodeURIComponent('uploadfile') +
                                     (isProgressing ?
-                                    ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : ''),
+                                        ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : ''),
                                 {
                                     fileName: file.name,
                                     content: file
