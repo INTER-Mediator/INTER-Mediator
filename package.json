@@ -21,10 +21,9 @@
         "test-local" : "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies" : {
-        "buster" : "~0.7",
-        "phantomjs" : ">=1.0.0"
+        "buster" : "~0.7"
     },
     "engines" : {
-        "node" : "~0.10"
+        "node" : ">=6.11.0"
     }
 }
