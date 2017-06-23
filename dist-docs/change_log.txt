@@ -10,7 +10,7 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.6 (in development)
+Ver.5.6 (June 23, 2017)
 - Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of
   Kyoto University of Art and Design.
 - [CAUTION!] The default theme applies more CSS selectors than ever. If you don't want to apply new default theme
