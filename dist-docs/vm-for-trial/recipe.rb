@@ -573,13 +573,11 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || node[:
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
   end
 end
-
 if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14
-  package 'nodejs-legacy' do
+  package 'nodejs' do
     action :install
   end
 end
-
 if node[:platform] == 'alpine'
   package 'nodejs-npm' do
     action :install
@@ -588,6 +586,20 @@ end
 if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'npm' do
     action :install
+  end
+end
+if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+  execute 'npm install -g n' do
+    command 'npm install -g n'
+  end
+  execute 'n stable' do
+    command 'n stable'
+  end
+  execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
+    command 'ln -sf /usr/local/bin/node /usr/bin/node'
+  end
+  execute 'apt-get purge -y nodejs' do
+    command 'apt-get purge -y nodejs'
   end
 end
 
