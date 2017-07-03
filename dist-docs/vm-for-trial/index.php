@@ -88,11 +88,11 @@ if (file_exists('/etc/alpine-release')) {
         他のホストや異なるネットワーク設定の場合は、<?php if ($osName === 'Alpine Linux') { echo '/var/www/localhost/htdocs'; } else { echo '/var/www/html'; }; ?>/params.phpファイルの、
         $dbServer変数の値を変更してください。
     </li>
-    <li><strong>サンプルデータベースの最終更新日</strong>：MySQL=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
+    <li><strong>サンプルデータベースの最終更新日</strong>：<?php if ($osName === 'Alpine Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>=<?php echo htmlspecialchars($mysqlModDate, ENT_QUOTES, 'UTF-8'); ?>、
         FileMaker=<?php echo htmlspecialchars($fmModDate, ENT_QUOTES, 'UTF-8'); ?>
         <br><strong>あなたがお使いのサンプルデータベース</strong>：
-        <span data-im-control="enclosure"><span data-im-control="noresult">MySQL=2015年7月10日以前</span>
-            <span data-im-control="repeater"><span data-im="information@lastupdated">MySQL=</span></span>
+        <span data-im-control="enclosure"><span data-im-control="noresult"><?php if ($osName === 'Alpine Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>=2015年7月10日以前</span>
+        <span data-im-control="repeater"><span data-im="information@lastupdated"><?php if ($osName === 'Alpine Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>=</span></span>
         </span><?php
         try {
             $ch = curl_init();
@@ -612,7 +612,7 @@ if (file_exists('/etc/alpine-release')) {
             <td>sudoによりルート権限取得可能</td>
         </tr>
         <tr>
-            <td>MySQL</td>
+            <td><?php if ($osName === 'Alpine Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?></td>
             <td>root@localhost</td>
             <td>im4135dev</td>
             <td>プロセスの稼働ユーザーはmysql</td>
@@ -653,7 +653,7 @@ if (file_exists('/etc/alpine-release')) {
 
 <h3>サンプルデータベースの初期化方法</h3>
 
-<p>VM上で下記のコマンドを実行すると、サンプルデータベース（MySQL、PostgreSQL、SQLite）を初期化できます。</p>
+<p>VM上で下記のコマンドを実行すると、サンプルデータベース（<?php if ($osName === 'Alpine Linux') { echo 'MariaDB'; } else { echo 'MySQL'; }; ?>、PostgreSQL、SQLite）を初期化できます。</p>
 <ul>
     <li><?php if ($osName === 'Alpine Linux') { echo 'source /var/www/localhost/htdocs/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; } else { echo 'source /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh'; }; ?></li>
 </ul>

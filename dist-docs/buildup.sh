@@ -8,7 +8,7 @@
 # Please see the full license for details:
 # https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
-version="5.6-RC2"
+version="5.7-dev"
 
 # The file of minify <http://www.minifier.org> can be downloaded from below.
 # git clone https://github.com/matthiasmullie/minify
@@ -71,13 +71,12 @@ cp  "${originalPath}/metadata.json" "${buildPath}/metadata.json"
 #### Merge js files
 echo "PROCESSING: Merging JS files"
 cp  "${originalPath}/INTER-Mediator.js"                          "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Element.js"               >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Context.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Lib.js"                   >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Calc.js"                  >> "${buildPath}/temp.js"
-cat "${originalPath}/INTER-Mediator-Page.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-UI.js"                    >> "${buildPath}/temp.js"
@@ -90,6 +89,8 @@ cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/t
 cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
 cat "${originalPath}/Adapter_DBServer.js"                     >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
+cat "${originalPath}/lib/js_lib/js-expression-eval-parser.js" >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/temp.js"
 
 cp "${buildPath}/temp.js" "${buildPath}/INTER-Mediator.js"

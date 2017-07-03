@@ -7,6 +7,7 @@ if ENV['CIRCLECI']
   end
 end
 
+OLDWEBROOT = "/var/www/html"
 if os[:family] == 'alpine'
   WEBROOT = "/var/www/localhost/htdocs"
 else
@@ -405,6 +406,9 @@ end
 describe package('samba') do
   it { should be_installed }
 end
+describe service('samba') do
+  it { should be_running }
+end
 
 describe package('language-pack-ja'), :if => os[:family] == 'ubuntu' do
   it { should be_installed }
@@ -443,6 +447,14 @@ end
 describe file('/etc/apache2/sites-enabled/inter-mediator-server.conf'), :if => os[:family] == 'ubuntu' do
   it { should be_file }
   its(:content) { should match /#Header add Content-Security-Policy "default-src 'self'"/ }
+end
+
+describe file(WEBROOT) do
+  it { should be_directory }
+end
+
+describe file(OLDWEBROOT), :if => os[:family] == 'alpine' do
+  it { should be_symlink }
 end
 
 describe file(WEBROOT + '/INTER-Mediator') do
@@ -500,7 +512,7 @@ describe file(WEBROOT + '/params.php') do
   its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
 end
 describe file(WEBROOT + '/params.php'), :if => os[:family] == 'alpine' do
-  its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
+  its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
 end
 describe file(WEBROOT + '/params.php'), :if => os[:family] == 'ubuntu' do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/var\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
@@ -639,11 +651,18 @@ describe file('/etc/samba/smb.conf') do
     its(:content) { should match /path = \/var\/www\/html/ }
   end
   its(:content) { should match /guest ok = no/ }
-  its(:content) { should match /browseable = yes/ }
   its(:content) { should match /read only = no/ }
   its(:content) { should match /create mask = 0664/ }
   its(:content) { should match /directory mask = 0775/ }
   its(:content) { should match /force group = im-developer/ }
+end
+
+describe command('testparm -s --section-name=global 2>/dev/null | grep browseable | cut -d"=" -f2 | awk \'{print $1}\'') do
+  its(:stdout) { should match /^No$/ }
+end
+
+describe command('testparm -s --section-name=webroot 2>/dev/null | grep browseable | cut -d"=" -f2 | awk \'{print $1}\'') do
+  its(:stdout) { should match /^Yes$/ }
 end
 
 describe file('/home/developer') do

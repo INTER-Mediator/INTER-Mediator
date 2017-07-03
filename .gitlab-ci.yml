@@ -4,9 +4,12 @@ pages:
   - export LANG=ja_JP.UTF-8
   - uname -a
   - apt-get update
-  - apt-get install -y zip
+  - apt-get install -y zip git php5-cli
   - mkdir public
-  - echo 2 | ./dist-docs/buildup.sh && zip -r INTER-Mediator.zip ../im_build/INTER-Mediator/ && mv INTER-Mediator.zip ./public/ && mv ./public/INTER-Mediator.zip ./public/INTER-Mediator-master.zip
+  - cd ..
+  - git clone https://github.com/matthiasmullie/minify
+  - cd -
+  - echo 2 | ./dist-docs/buildup.sh && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ../INTER-Mediator/public/
   artifacts:
     paths:
     - public

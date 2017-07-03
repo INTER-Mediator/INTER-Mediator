@@ -27,21 +27,35 @@ var IMLibElement = {
             /^percent\(([0-9]+)\)/,
             /^percent[\(\)]*/
         ],
-
         formatters: [
             {pattern: /^number\(([0-9]+)\)/, handling: IMLibElement.NumberFormatter},
-            {pattern: /^number[\(\)]*/, handling: NumberFormatter},
-            {pattern: /^currency\(([0-9]+)\)/, handling: CurrencyFormatter},
-            {pattern: /^currency[\(\)]*/, handling: Currencyb},
+            {pattern: /^number[\(\)]*/, handling: IMLibElement.NumberFormatter},
+            {pattern: /^currency\(([0-9]+)\)/, handling: IMLibElement.CurrencyFormatter},
+            {pattern: /^currency[\(\)]*/, handling: IMLibElement.CurrencyFormatter},
             {
                 pattern: /^boolean\([\"|']([\S]+)[\"|'],[\s]*[\"|']([\S]+)[\"|']\)/,
-                handling: BooleanFormatter
+                handling: IMLibElement.BooleanFormatter
             },
-            {pattern: /^percent\(([0-9]+)\)/, handling: PercentFormatter},
-            {pattern: /^percent[\(\)]*/, handling: PercentFormatter}
+            {pattern: /^percent\(([0-9]+)\)/, handling: IMLibElement.PercentFormatter},
+            {pattern: /^percent[\(\)]*/, handling: IMLibElement.PercentFormatter}
         ],
 
         NumberFormatter: function (node) {
+            var formatOption;
+            formatOption = element.getAttribute("data-im-format-options");
+        },
+
+        CurrencyFormatter: function (node) {
+            var formatOption;
+            formatOption = element.getAttribute("data-im-format-options");
+        },
+
+        BooleanFormatter: function (node) {
+            var formatOption;
+            formatOption = element.getAttribute("data-im-format-options");
+        },
+
+        PercentFormatter: function (node) {
             var formatOption;
             formatOption = element.getAttribute("data-im-format-options");
         },
@@ -146,8 +160,7 @@ var IMLibElement = {
                 }
             }
             return formattedValue;
-        }
-        ,
+        },
 
         setValueToIMNode: function (element, curTarget, curVal, clearField) {
             var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode, formatSpec, formattedValue,
@@ -168,7 +181,7 @@ var IMLibElement = {
             nodeTag = element.tagName;
             imControl = element.getAttribute('data-im-control');
 
-            if (clearField === true && curTarget == '') {
+            if (clearField === true && curTarget === '') {
                 switch (nodeTag) {
                     case 'INPUT':
                         switch (element.getAttribute('type')) {
@@ -201,18 +214,18 @@ var IMLibElement = {
             }
 
             negativeColor = element.getAttribute("data-im-format-negative-color");
-            if (curTarget != null && curTarget.length > 0) { //target is specified
-                if (curTarget.charAt(0) == '#') { // Appending
+            if (curTarget !== null && curTarget.length > 0) { //target is specified
+                if (curTarget.charAt(0) === '#') { // Appending
                     //if (element.getAttribute('data-im-element') !== 'processed') {
                     curTarget = curTarget.substring(1);
-                    if (curTarget == 'innerHTML') {
-                        if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                    if (curTarget === 'innerHTML') {
+                        if (INTERMediator.isIE && nodeTag === 'TEXTAREA') {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                         }
                         element.innerHTML += curVal;
                     } else if (curTarget === "textNode" || curTarget === "script") {
                         textNode = document.createTextNode(curVal);
-                        if (nodeTag == 'TEXTAREA') {
+                        if (nodeTag === 'TEXTAREA') {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
                         element.appendChild(textNode);
@@ -231,19 +244,19 @@ var IMLibElement = {
                     }
                     isReplaceOrAppned = true;
                     //}
-                } else if (curTarget.charAt(0) == '$') { // Replacing
+                } else if (curTarget.charAt(0) === '$') { // Replacing
                     curTarget = curTarget.substring(1);
-                    if (curTarget == 'innerHTML') {
-                        if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                    if (curTarget === 'innerHTML') {
+                        if (INTERMediator.isIE && nodeTag === 'TEXTAREA') {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                         }
                         element.innerHTML = element.innerHTML.replace('$', curVal);
-                    } else if (curTarget == 'textNode' || curTarget == 'script') {
-                        if (nodeTag == 'TEXTAREA') {
+                    } else if (curTarget === 'textNode' || curTarget === 'script') {
+                        if (nodeTag === 'TEXTAREA') {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
                         element.innerHTML = element.innerHTML.replace('$', curVal);
-                    } else if (curTarget.indexOf('style.') == 0) {
+                    } else if (curTarget.indexOf('style.') === 0) {
                         styleName = curTarget.substring(6, curTarget.length);
                         if (curTarget !== "style.color" ||
                             (curTarget === "style.color" && !negativeColor)) {
@@ -261,20 +274,20 @@ var IMLibElement = {
                 } else { // Setting
                     if (INTERMediatorLib.isWidgetElement(element)) {
                         element._im_setValue(curVal);
-                    } else if (curTarget == 'innerHTML') { // Setting
-                        if (INTERMediator.isIE && nodeTag == 'TEXTAREA') {
+                    } else if (curTarget === 'innerHTML') { // Setting
+                        if (INTERMediator.isIE && nodeTag === 'TEXTAREA') {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br>");
                         }
                         element.innerHTML = curVal;
-                    } else if (curTarget == 'textNode') {
-                        if (nodeTag == 'TEXTAREA') {
+                    } else if (curTarget === 'textNode') {
+                        if (nodeTag === 'TEXTAREA') {
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r");
                         }
                         textNode = document.createTextNode(curVal);
                         element.appendChild(textNode);
                     } else if (curTarget === "script") {
                         textNode = document.createTextNode(curVal);
-                        if (nodeTag == 'SCRIPT') {
+                        if (nodeTag === 'SCRIPT') {
                             element.appendChild(textNode);
                         } else {
                             scriptNode = document.createElement('script');
@@ -295,12 +308,12 @@ var IMLibElement = {
             } else { // if the 'target' is not specified.
                 if (INTERMediatorLib.isWidgetElement(element)) {
                     element._im_setValue(curVal);
-                } else if (nodeTag == 'INPUT') {
+                } else if (nodeTag === 'INPUT') {
                     typeAttr = element.getAttribute('type');
-                    if (typeAttr == 'checkbox' || typeAttr == 'radio') { // set the value
+                    if (typeAttr === 'checkbox' || typeAttr === 'radio') { // set the value
                         valueAttr = element.value;
                         curValues = curVal.toString().split(IMLib.nl_char);
-                        if (typeAttr == 'checkbox' && curValues.length > 1) {
+                        if (typeAttr === 'checkbox' && curValues.length > 1) {
                             for (i = 0; i < curValues.length; i++) {
                                 if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                                     if (INTERMediator.isIE) {
@@ -324,10 +337,10 @@ var IMLibElement = {
                     } else { // this node must be text field
                         element.value = curVal;
                     }
-                } else if (nodeTag == 'SELECT') {
+                } else if (nodeTag === 'SELECT') {
                     needPostValueSet = true;
                     element.value = curVal;
-                } else if (nodeTag == 'TEXTAREA') {
+                } else if (nodeTag === 'TEXTAREA') {
                     if (INTERMediator.defaultTargetInnerHTML) {
                         if (INTERMediator.isIE) { // for IE
                             curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
@@ -434,8 +447,7 @@ var IMLibElement = {
             }
             element.setAttribute('data-im-element', 'processed');
             return needPostValueSet;
-        }
-        ,
+        },
 
         getValueFromIMNode: function (element) {
             var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr, formatSpec;
@@ -489,8 +501,7 @@ var IMLibElement = {
                 }
             }
             return newValue;
-        }
-        ,
+        },
 
         deleteNodes: function (removeNodes) {
             var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;

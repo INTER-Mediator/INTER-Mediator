@@ -1,3 +1,8 @@
+dist: precise
+
+## for PHP 5.4 or later
+#dist: trusty
+
 sudo: false
 
 language:
@@ -5,6 +10,7 @@ language:
 
 os:
   - linux
+  #- osx
 
 php:
   - nightly
@@ -21,6 +27,10 @@ matrix:
     - php: nightly
     - os: osx
 
+## for Headless Chrome and trusty
+#addons:
+#  chrome: stable
+
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
@@ -31,6 +41,8 @@ before_script:
   - firefox http://localhost:1111/capture &
   - sleep 5
   - phantomjs node_modules/buster/script/phantom.js http://localhost:1111/capture &
+  ## Headless Chrome is available on trusty
+  #- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture &
   - sleep 5
   - mysql -u root < ./dist-docs/sample_schema_mysql.txt
   - sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
@@ -40,7 +52,8 @@ before_script:
   - cd ..
   - psql -c 'create database test_db;' -U postgres
   - psql -U postgres -f ./dist-docs/sample_schema_pgsql.txt test_db
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then composer require 'phpunit/phpunit=3.7.x'; composer install; fi"
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" && $TRAVIS_PHP_VERSION != "5.2" ]]; then composer require 'phpunit/phpunit=4.8.x'; composer install; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=5.7.x'; composer install; fi
 
 script:
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"

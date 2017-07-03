@@ -510,6 +510,20 @@ var IMLibContextPool = {
         contextObj.original = repeatersOriginal;
         contextObj.sequencing = true;
         return contextObj;
+    },
+
+    getPagingContext: function () {
+        var i, context, contextDef;
+        if (this.poolingContexts) {
+            for (i = 0; i < this.poolingContexts.length; i++) {
+                context = this.poolingContexts[i];
+                contextDef = context.getContextDef();
+                if (contextDef["paging"]) {
+                    return context;
+                }
+            }
+        }
+        return null;
     }
 };
 
@@ -728,14 +742,14 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
 
     var handleAsNullValue = ["0000-00-00", "0000-00-00 00:00:00"];
 
-    function checkSameValue(initialvalue, currentFieldVal) {
-        if (handleAsNullValue.indexOf(initialvalue)) {
-            initialvalue = "";
+    function checkSameValue(initialValue, currentFieldVal) {
+        if (handleAsNullValue.indexOf(initialValue)>=0) {
+            initialValue = "";
         }
-        if (handleAsNullValue.indexOf(currentFieldVal)) {
+        if (handleAsNullValue.indexOf(currentFieldVal)>=0) {
             currentFieldVal = "";
         }
-        return initialvalue != currentFieldVal;
+        return initialValue != currentFieldVal;
     }
 };
 
@@ -1665,8 +1679,8 @@ var IMLibLocalContext = {
                     break;
                 case 'condition':
                     var attrType = node.getAttribute("type");
-                    if (attrType && attrType == "text") {
-                        IMLibKeyEventDispatch.setExecuteByCode(idValue, 13, (function () {
+                    if (attrType && attrType === "text") {
+                        IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 13, (function () {
                             var contextName = params[1];
                             return function () {
                                 INTERMediator.startFrom = 0;
@@ -1674,7 +1688,7 @@ var IMLibLocalContext = {
                                 IMLibPageNavigation.navigationSetup();
                             };
                         })());
-                    } else if (attrType && (attrType == "checkbox" || attrType == "radio")) {
+                    } else if (attrType && (attrType === "checkbox" || attrType === "radio")) {
                         IMLibChangeEventDispatch.setExecute(idValue, (function () {
                             var contextName = params[1];
                             var targetIdValue = idValue;
@@ -1688,9 +1702,9 @@ var IMLibLocalContext = {
                     break;
                 case 'limitnumber':
                     IMLibChangeEventDispatch.setExecute(idValue, (function () {
-                        var contextName = params[1];
+                        var contextName = params[1], idValueCapt = idValue;
                         return function () {
-                            INTERMediator.pagedSize = document.getElementById(idValue).value;
+                            INTERMediator.pagedSize = document.getElementById(idValueCapt).value;
                             IMLibUI.eventUpdateHandler(contextName);
                             IMLibPageNavigation.navigationSetup();
                         };
@@ -1705,16 +1719,6 @@ var IMLibLocalContext = {
                 IMLibElement.setValueToIMNode(node, nodeInfo.target, value, true);
             }
         }
-        //
-        // function nextIdValue() {
-        //     INTERMediator.linkedElmCounter++;
-        //     return currentIdValue();
-        // }
-        //
-        // function currentIdValue() {
-        //     return 'IM' + INTERMediator.currentEncNumber + '-' + INTERMediator.linkedElmCounter;
-        // }
-
     },
 
     update: function (idValue) {

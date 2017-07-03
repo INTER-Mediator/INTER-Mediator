@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.5, Ubuntu Server 14.04, Ubuntu Server 16.04, CentOS 6.6 and CentOS 7
+# Recipe file of Itamae for Alpine Linux 3.5/3.6, Ubuntu Server 14.04/16.04, CentOS 6.6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -8,6 +8,7 @@
 
 if node[:platform] == 'alpine'
   WEBROOT = "/var/www/localhost/htdocs"
+  OLDWEBROOT = "/var/www/html"
 elsif node[:platform] == 'ubuntu' && node[:platform_version].to_f < 14
   WEBROOT = "/var/www"
 else
@@ -85,9 +86,10 @@ if node[:platform] == 'alpine'
   execute 'addgroup im-developer' do
     command 'addgroup im-developer'
   end
-  #execute 'usermod -a -G im-developer developer' do
-  #  command 'usermod -a -G im-developer developer'
-  #end
+  ## ToDo
+  execute 'usermod -a -G im-developer developer' do
+    command 'usermod -a -G im-developer developer'
+  end
 else
   execute 'groupadd im-developer' do
     command 'groupadd im-developer'
@@ -143,9 +145,9 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  #execute 'usermod -a -G im-developer apache' do
-  #  command 'usermod -a -G im-developer apache'
-  #end
+  execute 'usermod -a -G im-developer apache' do
+    command 'usermod -a -G im-developer apache'
+  end
 elsif node[:platform] == 'redhat'
   execute 'usermod -a -G im-developer apache' do
     command 'usermod -a -G im-developer apache'
@@ -175,15 +177,15 @@ elsif node[:platform] == 'redhat'
   end
 end
 if node[:platform] == 'alpine'
-  #execute 'yes im4135dev | sudo passwd postgres' do
-  #  command 'yes im4135dev | sudo passwd postgres'
-  #end
-  #execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
-  #  command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
-  #end
-  #service 'postgresql' do
-  #  action [ :enable, :start ]
-  #end
+  execute 'yes im4135dev | sudo passwd postgres' do
+    command 'yes im4135dev | sudo passwd postgres'
+  end
+  execute 'echo "im4135dev" | sudo /etc/init.d/postgresql setup' do
+    command 'echo "im4135dev" | sudo /etc/init.d/postgresql setup'
+  end
+  service 'postgresql' do
+    action [ :enable, :start ]
+  end
 else
   service 'postgresql' do
     action [ :enable, :start ]
@@ -571,13 +573,11 @@ if (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || node[:
     command 'update-alternatives --install /usr/bin/node node /usr/bin/nodejs 10'
   end
 end
-
 if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14
-  package 'nodejs-legacy' do
+  package 'nodejs' do
     action :install
   end
 end
-
 if node[:platform] == 'alpine'
   package 'nodejs-npm' do
     action :install
@@ -586,6 +586,20 @@ end
 if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
   package 'npm' do
     action :install
+  end
+end
+if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
+  execute 'npm install -g n' do
+    command 'npm install -g n'
+  end
+  execute 'n stable' do
+    command 'n stable'
+  end
+  execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
+    command 'ln -sf /usr/local/bin/node /usr/bin/node'
+  end
+  execute 'apt-get purge -y nodejs' do
+    command 'apt-get purge -y nodejs'
   end
 end
 
@@ -615,6 +629,10 @@ end
 
 package 'samba' do
   action :install
+end
+
+service 'samba' do
+  action [ :enable, :start ]
 end
 
 if node[:platform] == 'ubuntu'
@@ -827,6 +845,12 @@ end
 if node[:platform] == 'redhat'
   execute 'service httpd restart' do
     command 'service httpd restart'
+  end
+end
+
+if node[:platform] == 'alpine'
+  execute "ln -s \"#{WEBROOT}\" \"#{OLDWEBROOT}\"" do
+    command "ln -s \"#{WEBROOT}\" \"#{OLDWEBROOT}\""
   end
 end
 
@@ -1415,6 +1439,9 @@ file "#{SMBCONF}" do
 # Please note that you also need to set appropriate Unix permissions
 # to the drivers directory for these users to have write rights in it
 ;   write list = root, @lpadmin
+
+[global]
+   browseable = no
 
 [webroot]
    comment = Apache Root Directory

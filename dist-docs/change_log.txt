@@ -16,11 +16,22 @@ Ver.5.7 (in development)
 
 Ver.5.6 (in development)
 - Well-designed CSS files as the 'default' theme are added by Yuko Oki. She is web designer and a lecturer of
+
+
+Ver.5.6 (June 23, 2017)
+- Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of
   Kyoto University of Art and Design.
+- [CAUTION!] The default theme applies more CSS selectors than ever. If you don't want to apply new default theme
+  to your solution, you could set the "theme" keyed value to "least." It doesn't apply any CSS settings without
+  login panel and pagination control.
 - Themes can be retrieved from accessing the definition file as below:
   def_file.php?theme=default&type=css&name=style.css
-- The 'thosedays' theme are added for previous sample css style. The 'least' theme is just for pagenation,
+- The 'thosedays' theme are added for previous sample css style. The 'least' theme is just for pagination,
   login panel and so on, it means least definitions css.
+- Officially support MariaDB.
+- Update Vagrantfile, deploy.sh, dbupdate.sh, recipe.rb and sample_spec.rb for changing OS of 
+  INTER-Mediator-Server VM to reduce size of the VM file. Now the OS of INTER-Mediator-Server VM is
+  Alpine Linux 3.6 (instead of Ubuntu Server 14.04) and MariaDB is running on the new VM.
 - In the Post Only mode, radio buttons don't require to set the name attribute. The nodes having the
   same data-im attribute automatically set the appropriate name attributes.
 - New interleave method INTERMediatorOnPage.modifyPostOnlyContext is defined. The parameter is post only
@@ -30,7 +41,6 @@ Ver.5.6 (in development)
 - Added titles to almost all sample HTML files.
 - Update FX.php 6.10 for DB_FileMaker_FX class.
 - Add "CodeMirror" (CodeMirror 5.23.0) in "INTER-Mediator-Support" directory for INTER-Mediator-Server VM.
-- Update Vagrantfile, deploy.sh, recipe.rb and sample_spec.rb for changing OS of INTER-Mediator-Server VM.
 - The access privilege of directories and file of uploaded file set to 755. Previously it was 744, but
   a rental server which is limited feature tries to prevent to set all bits of group/other.
 - Updating and Creating record operations always return the records affected with its operations.
@@ -39,12 +49,12 @@ Ver.5.6 (in development)
 - The $altThemePath variable in params.php file can have the alternative theme directory path for adding
   solution specific theme.
 - The $themeName variable in params.php file can have the default theme name for all web pages.
-- JavaScript component "jsonformater" is added. Useage is: <div data-im-widget="jsonformater" data-im="t@f"></div>
+- JavaScript component "jsonformater" is added. Usage is: <div data-im-widget="jsonformater" data-im="t@f"></div>
 - The style named 'thosedays' applies CSS definitions as same as older version's sample files.
 - Checking the result of voting for target specifications, and show error message if the context which is specified
   in target specifications in page file doesn't exist.
 - Locale feature was refactored to support intl module both existing and not.
-- Application Locale and Currency Locale are supprted. The option parameters in IM_Entry function can have
+- Application Locale and Currency Locale are supported. The option parameters in IM_Entry function can have
   'app-locale' and 'app-currency' keyed values. The params.php file can have $appLocale and $appCurrency vars.
 - The count function for expression is added.
 - The default value of INTERMediatorOnPage.isSetDefaultStyle property set to false. This might be taken over
@@ -57,6 +67,8 @@ Ver.5.6 (in development)
 - FileMaker sample db "TestDB.fmp12" and "TestDB_clone.fmp12" didn't set the PHP API access privilege, and so on.
 - Update FileMaker sample DB ("TestDB.fmp12" and "TestDB_clone.fmp12") to set the REST API / PHP API access privilege, 
   and so on.
+- Use @-operator before exif_read_data() in MediaAccess.php to avoid outputting a warning in an error log file in case
+  of using PHP 5.6.
 - [SECURITY FIX] The resetpassword.php in Auth_Support/PasswordReset folder had security issues.
   If you use the resetpassword.php file in your solution. we'd like to replace the fixed version.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
@@ -81,7 +93,7 @@ Ver.5.6 (in development)
 - [BUG FIX] The tinymce widget support code bug fix.
 - [BUG FIX] Text field by input tag on IE prevent to use input method. This issue was fixed. The affected 
   versions are 5.4 and 5.5.
-- [BUG FIX] Qdsmtp couldn't send email with Gmail account for protocol stricting. The bundled Qdsmtp is patched.
+- [BUG FIX] Qdsmtp couldn't send email with Gmail account for strict protocol. The bundled Qdsmtp is patched.
 - [BUG FIX] Add including path for phpseclib.
 - [BUG FIX] Pagination bar wasn't updated when the search button which data-im is '_@update:xxx.'
 - [BUG FIX] In same case, the LIMIT parameter of non paging context set to the pagination length.
@@ -102,6 +114,7 @@ Ver.5.6 (in development)
 - [BUG FIX] Samples/Sample_asset has 'Return Today' button but it didn't work for missing view keyed value.
 - [BUG FIX] Fix URL of the CSS file in simplelist_MySQL.html/simplelist_FMS.html in Samples/Sample_Mobile directory.
 - [BUG FIX] Updating and processing from buttons are improved. They are serialized with IMUILib's object.
+- [BUG FIX] Fix updating db from web browser with optimistic locking. The affected version is 5.5 only.
 - [FYI] The file Samples/sample_memo_html5.html is removed. It wasn't working in long time.
 
 Ver.5.5 (October 13, 2016)
@@ -120,7 +133,7 @@ Ver.5.5 (October 13, 2016)
 - If nullable and numeric field is updated/created with "" value, write the value as NULL.
   This behavior requires to set blank in case of updating text field with no string.
 - The record to merge an e-mail is retrieved from the database class's instance. This means
-  if you want to add/modify fields for e-mail, you can describe codes in advisor classes, but
+  if you want to add/modify fields for e-mail, you can describe codes in adviser classes, but
   you have to use the setUpdatedRecord method to send values you modified to mail processor.
 - [BUG FIX] In case of the '#' target specification was placed on second or later item in data-im
   attribute, the field value wasn't shown in the node (Thanks to Tomomitsu Baba). The affected 
@@ -131,7 +144,7 @@ Ver.5.5 (October 13, 2016)
   doesn't affect to the mail...déjà vu ? or didn't finish yet? The affected version is 5.4 only.
 - [BUG FIX] FileMaker_FX class couldn't apply the "script" keyed value for "load" (or "read") 
   operation in a context definition when setting search criteria and using "-findquery" command
-  internnally. The affected version is 5.4 only.
+  internally. The affected version is 5.4 only.
 - [BUG FIX] Fix in expression parsing.
 - [BUG FIX] The id attribute value of "Detail" buttons on master/detail context is wrong
   spelling (_im_buttom_master_id). This id value is changed as correct one (_im_button_master_id.)
@@ -154,7 +167,7 @@ Ver.5.4 (August 24, 2016)
   require to the another id value, you can set it into params.php as the value "$nonSupportMessageId".
 - "IN" operator in SQL db can be accepted with DB_PDO class. The value should be an array of itemized
   values.
-- If the automatic calling to construct method doesn't requre, descirbe the below in doBeforeConstruct
+- If the automatic calling to construct method doesn't require, describe the below in doBeforeConstruct
   or prior to that: INTERMediatorOnPage.isAutoConstruct = false;
 - Creating Cross Table for PDO. It contains 3 contexts for column, row and value cells.
   See the sample Samples/Practices/crosstable.html.
@@ -166,7 +179,7 @@ Ver.5.4 (August 24, 2016)
 - The variable "$valuesForLocalContext" in params.php supplies initial values for local context.
   The value of this variable has to be an associated array with key and value.
 - Improve setting search criteria when using FileMaker Server 12 or later to use the same fields for
-  multiple values in the same "and" or "or" search criteria. (Use "-findquery" command internnally,
+  multiple values in the same "and" or "or" search criteria. (Use "-findquery" command internally,
   but compound find requests using both "and" and "or" search criteria is still not supported.)
 - Support the script parameters for FileMaker Server (controlled by 'parameter' key of 'script' key).
 - FileUploader can detect exceeding file size limit and returns valid error messages.
@@ -192,7 +205,7 @@ Ver.5.4 (August 24, 2016)
 - When the received json data is wrong, the server_access_async method calls the function for failing
   in the parameter.
 - DB_Logger class works as Signleton. The messages within advice definition classes can be returned.
-- In the FileUploader.php, file path to be stored in fielad was absolute one if no related table to store
+- In the FileUploader.php, file path to be stored in field was absolute one if no related table to store
   them. So it's not appropriate, all file paths are relative so far.
 - Update TestDB.fmp12 and TestDB_clone.fmp12 to modify the Serial Number setting of 'asset_id' field.
 - [SECURITY FIX] Address an issue with some SMTP servers that could lead to the Bcc email recipients 
@@ -224,7 +237,7 @@ Ver.5.4 (August 24, 2016)
   using Microsoft Edge or Internet Explorer.
 - [BUG FIX] Fix DB_FileMaker_FX class for DataConverter_FMDateTime class to handle the fields on
   the portal objects with portal access mode correctly.
-- [BUG FIX] The 'button-names' keyed values didn't affect to buttons on pagenation bar.
+- [BUG FIX] The 'button-names' keyed values didn't affect to buttons on pagination bar.
 - [BUG FIX] Fix displaying when the value of SELECT element is empty.
 - [BUG FIX] On the update and create operation, the recordset modified by adviser definition class doesn't
   affect to the mail.
@@ -240,7 +253,7 @@ Ver.5.3 (February 21, 2016)
   The Samples/Sample_Mobile folder includes some demos for mobile device.
 - SQL aggregation can be defined as a read-only context. The aggregation-select,
   aggregation-from, aggregation-group-by key are added.
-- The database update communucations (Create, Update, Delete, Copy) are working in asynchronous mode.
+- The database update communications (Create, Update, Delete, Copy) are working in asynchronous mode.
 - MediaAccess class can consider EXIF orientation in a JPEG file (require Exif and GD extension
   for PHP).
 - Generic enclosure/repeater mechanism is implemented. See Sample_forDebugging/genericrepeater.html
@@ -248,7 +261,7 @@ Ver.5.3 (February 21, 2016)
 - Update phpseclib to version 1.0.0.
 - The "source" key for data source of first parameter of IM_Entry function is introduced. Contexts that
   has same "source" key's value is going to be updated and re-constructed when insert/delete operation
-  is happend in one of them.
+  is happened in one of them.
 - The getNodeIdsHavingTargetFromNode method of INTERMediatorOnPage object accepts the array
   for the first parameter.
 - The credential for authentication can be stored in the sessionStorage.
@@ -295,10 +308,10 @@ Ver.5.3 (February 21, 2016)
   the value of $generatedPrivateKey in params.php for security reasons.
 - The email enrollment and resetting password are added in the Auth_Support folder.
 - Two methods are added in one of the interface. Any Database Class should aware of them.
-- The 'body-fields' keyed value can contain the stirng constant with start @.
+- The 'body-fields' keyed value can contain the string constant with start @.
   The value "@123,name" replaces @@1@@ to "123" and @@2@@ to the value of name field.
 - data-im-control attribute's value 'header', 'footer', 'separator' are supported.
-- In SQL statement, the table or view name in from clause is quoted by appropritate character
+- In SQL statement, the table or view name in from clause is quoted by appropriate character
 - The 'realname' field is added to sample schemas for MySQL/PostgreSQL/SQLite.
 - Update TestDB.fmp12, TestDB_clone.fmp12 and TestDB.fp7 to add 'realname' field and 'limitdt' field
   to 'authuser' table.
@@ -365,7 +378,7 @@ Ver.5.2 (August 24, 2015)
 - The sample with jQuery's DatePicker UI component on
   Samples/Sample_webpage/jquery_datepicker_MySQL.html.
 - The VM DB update script on dist-docs/vm-for-trial/dbupdate.sh. I'd like to ask you to use
-  the "source" commmand to execute it.
+  the "source" command to execute it.
 - Customized login panel can include the error messages with the im_login_message and
   the im_newpass_message class's DIV node.
 - Update smb.conf in INTER-Mediator Server Virtual Machine.

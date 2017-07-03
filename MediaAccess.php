@@ -403,7 +403,11 @@ class MediaAccess
                 if ($imageType === 'image/jpeg') {
                     $image = imagecreatefromstring($content);
                     if ($image !== false) {
-                        $exif = exif_read_data($tempPath);
+                        try {
+                            $exif = @exif_read_data($tempPath);
+                        } catch (Exception $ex) {
+                            $exif = false;
+                        }
                         if ($exif !== false && !empty($exif['Orientation'])) {
                             switch ($exif['Orientation']) {
                                 case 3:

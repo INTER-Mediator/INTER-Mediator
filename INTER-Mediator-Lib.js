@@ -92,7 +92,7 @@ var INTERMediatorLib = {
     },
     getParentRepeater: function (node) {
         var currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isRepeater(currentNode, true)) {
                 return currentNode;
             }
@@ -103,7 +103,7 @@ var INTERMediatorLib = {
 
     getParentEnclosure: function (node) {
         var currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isEnclosure(currentNode, true)) {
                 return currentNode;
             }
@@ -207,13 +207,13 @@ var INTERMediatorLib = {
     isLinkedElement: function (node) {
         var classInfo, matched, attr;
 
-        if (node != null && node.getAttribute) {
+        if (node !== null && node.getAttribute) {
             attr = node.getAttribute('data-im');
             if (attr) {
                 return true;
             }
             if (INTERMediator.titleAsLinkInfo) {
-                if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
+                if (node.getAttribute('TITLE') !== null && node.getAttribute('TITLE').length > 0) {
                     // IE: If the node doesn't have a title attribute, getAttribute
                     // doesn't return null.
                     // So it requrired check if it's empty string.
@@ -222,7 +222,7 @@ var INTERMediatorLib = {
             }
             if (INTERMediator.classAsLinkInfo) {
                 classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classInfo != null) {
+                if (classInfo !== null) {
                     matched = classInfo.match(/IM\[.*\]/);
                     if (matched) {
                         return true;
@@ -245,7 +245,7 @@ var INTERMediatorLib = {
                 return true;
             }
             classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
-            if (classInfo != null) {
+            if (classInfo !== null) {
                 matched = classInfo.match(/IM_WIDGET\[.*\]/);
                 if (matched) {
                     return true;
@@ -259,7 +259,7 @@ var INTERMediatorLib = {
                     return true;
                 }
                 classInfo = INTERMediatorLib.getClassAttributeFromNode(parentNode);
-                if (classInfo != null) {
+                if (classInfo !== null) {
                     matched = classInfo.match(/IM_WIDGET\[.*\]/);
                     if (matched) {
                         return true;
@@ -273,7 +273,7 @@ var INTERMediatorLib = {
     isNamedElement: function (node) {
         var nameInfo, matched;
 
-        if (node != null) {
+        if (node !== null) {
             nameInfo = node.getAttribute('data-im-group');
             if (nameInfo) {
                 return true;
@@ -300,7 +300,7 @@ var INTERMediatorLib = {
         var currentNode, detectedRepeater;
 
         currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isRepeater(currentNode, true)) {
                 detectedRepeater = currentNode;
             } else if (isRepeaterOfEnclosure(detectedRepeater, currentNode)) {
@@ -392,7 +392,7 @@ var INTERMediatorLib = {
                 }
                 return defs;
             }
-            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE') != null) {
+            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE') !== null) {
                 eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
                 for (i = 0; i < eachDefs.length; i++) {
                     defs.push(resolveAlias(eachDefs[i]));
@@ -415,7 +415,7 @@ var INTERMediatorLib = {
 
         function resolveAlias(def) {
             var aliases = INTERMediatorOnPage.getOptionsAliases();
-            if (aliases != null && aliases[def] != null) {
+            if (aliases !== null && aliases[def] !== null) {
                 return aliases[def];
             }
             return def;
@@ -481,10 +481,10 @@ var INTERMediatorLib = {
      */
 
     repeaterTagFromEncTag: function (tag) {
-        if (tag == 'TBODY') return 'TR';
-        else if (tag == 'SELECT') return 'OPTION';
-        else if (tag == 'UL') return 'LI';
-        else if (tag == 'OL') return 'LI';
+        if (tag === 'TBODY') return 'TR';
+        else if (tag === 'SELECT') return 'OPTION';
+        else if (tag === 'UL') return 'LI';
+        else if (tag === 'OL') return 'LI';
         //else if (tag == 'DIV') return 'DIV';
         //else if (tag == 'SPAN') return 'SPAN';
         return null;
@@ -506,11 +506,11 @@ var INTERMediatorLib = {
         tableName = '';
         fieldName = '';
         targetName = '';
-        if (comps.length == 3) {
+        if (comps.length === 3) {
             tableName = comps[0];
             fieldName = comps[1];
             targetName = comps[2];
-        } else if (comps.length == 2) {
+        } else if (comps.length === 2) {
             tableName = comps[0];
             fieldName = comps[1];
         } else {
@@ -521,7 +521,7 @@ var INTERMediatorLib = {
             'field': fieldName,
             'target': targetName,
             'tableindex': '_im_index_' + tableName,
-            'crossTable': INTERMediator.crossTableStage == 3
+            'crossTable': INTERMediator.crossTableStage === 3
         };
     },
 
@@ -556,11 +556,11 @@ var INTERMediatorLib = {
         tableName = '';
         fieldName = '';
         targetName = '';
-        if (comps.length == 3) {
+        if (comps.length === 3) {
             tableName = comps[0];
             fieldName = comps[1];
             targetName = comps[2];
-        } else if (comps.length == 2) {
+        } else if (comps.length === 2) {
             fieldName = comps[0];
             targetName = comps[1];
         } else {
@@ -596,6 +596,10 @@ var INTERMediatorLib = {
         }
     },
 
+    /*
+     INTER-Mediator supporting browser is over Ver.9 for IE. So this method is already deprecated.
+     The eventInfos property doesn't use other than below methods.
+     */
     eventInfos: [],
 
     addEvent: function (node, evt, func) {
@@ -619,22 +623,26 @@ var INTERMediatorLib = {
         }
     },
 
+    // - - - - -
+
     toNumber: function (str) {
         "use strict";
         var s = "", i, c;
         str = str.toString();
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
-            if ((c >= '0' && c <= '9') || c == '.' || c == '-' ||
-                c == INTERMediatorOnPage.localeInfo["mon_decimal_point"]) {
+            if ((c >= '0' && c <= '9') || c === '.' || c === '-' ||
+                c === INTERMediatorOnPage.localeInfo["mon_decimal_point"]) {
                 s += c;
+            } else if (c >= '０' && c <= '９') {
+                s += String.fromCharCode(c.charCodeAt(0) - '０'.charCodeAt(0) + '0'.charCodeAt(0));
             }
         }
         return parseFloat(s);
     },
 
     RoundHalfToEven: function (value, digit) {
-        return value;
+        throw "RoundHalfToEven method is NOT implemented.";
     },
 
     /**
@@ -660,8 +668,12 @@ var INTERMediatorLib = {
     /**
      * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point
      * with a thousands separator.
-     * @param {number} value The source value.
-     * @param {integer} digit Positive number means after the decimal point, and negative menas before it.
+     * @param {number} str The source value.
+     * @param {integer} digit Positive number means after the decimal point, and negative means before it.
+     * @param {string} decimalPoint
+     * @param {string} thousandsSep
+     * @param {string} currencySymbol
+     * @param {object} flags
      * @returns {string}
      */
     numberFormatImpl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
@@ -951,7 +963,7 @@ var INTERMediatorLib = {
         if (obj === null) {
             return 'null';
         }
-        if (typeof obj == 'object') {
+        if (typeof obj === 'object') {
             str = '';
             if (obj.constractor === Array) {
                 for (i = 0; i < obj.length; i++) {
@@ -970,14 +982,14 @@ var INTERMediatorLib = {
     },
 
     getTargetTableForRetrieve: function (element) {
-        if (element['view'] != null) {
+        if (element['view'] !== null) {
             return element['view'];
         }
         return element['name'];
     },
 
     getTargetTableForUpdate: function (element) {
-        if (element['table'] != null) {
+        if (element['table'] !== null) {
             return element['table'];
         }
         return element['name'];
@@ -987,7 +999,7 @@ var INTERMediatorLib = {
         var resultStr, counter;
 
         resultStr = tmpStr;
-        if (dataArray != null) {
+        if (dataArray !== null) {
             for (counter = 1; counter <= dataArray.length; counter++) {
                 resultStr = resultStr.replace('@' + counter + '@', dataArray[counter - 1]);
             }
@@ -1011,7 +1023,7 @@ var INTERMediatorLib = {
     getNamedObject: function (obj, key, named) {
         var index;
         for (index in obj) {
-            if (obj[index][key] == named) {
+            if (obj[index][key] === named) {
                 return obj[index];
             }
         }
@@ -1021,7 +1033,7 @@ var INTERMediatorLib = {
     getNamedObjectInObjectArray: function (ar, key, named) {
         var i;
         for (i = 0; i < ar.length; i++) {
-            if (ar[i][key] == named) {
+            if (ar[i][key] === named) {
                 return ar[i];
             }
         }
@@ -1031,7 +1043,7 @@ var INTERMediatorLib = {
     getNamedValueInObject: function (ar, key, named, retrieveKey) {
         var result = [], index;
         for (index in ar) {
-            if (ar[index][key] == named) {
+            if (ar[index][key] === named) {
                 result.push(ar[index][retrieveKey]);
             }
         }
@@ -1055,7 +1067,7 @@ var INTERMediatorLib = {
     getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
         var result = [], index;
         for (index in ar) {
-            if (ar.hasOwnProperty(index) && ar[index][key1] == named1 && ar[index][key2] == named2) {
+            if (ar.hasOwnProperty(index) && ar[index][key1] === named1 && ar[index][key2] === named2) {
                 result.push(ar[index][retrieveKey]);
             }
         }
