@@ -598,8 +598,11 @@ if node[:platform] == 'ubuntu' || (node[:platform] == 'redhat' && node[:platform
   execute 'ln -sf /usr/local/bin/node /usr/bin/node' do
     command 'ln -sf /usr/local/bin/node /usr/bin/node'
   end
-  execute 'apt-get purge -y nodejs' do
-    command 'apt-get purge -y nodejs'
+  execute 'ln -sf /usr/local/bin/npm /usr/bin/npm' do
+    command 'ln -sf /usr/local/bin/npm /usr/bin/npm'
+  end
+  execute 'apt-get purge -y nodejs npm' do
+    command 'apt-get purge -y nodejs npm'
   end
 end
 
