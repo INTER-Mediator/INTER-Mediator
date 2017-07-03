@@ -392,7 +392,7 @@ var INTERMediatorLib = {
                 }
                 return defs;
             }
-            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE') !== null) {
+            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE')) {
                 eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
                 for (i = 0; i < eachDefs.length; i++) {
                     defs.push(resolveAlias(eachDefs[i]));
@@ -415,7 +415,7 @@ var INTERMediatorLib = {
 
         function resolveAlias(def) {
             var aliases = INTERMediatorOnPage.getOptionsAliases();
-            if (aliases !== null && aliases[def] !== null) {
+            if (aliases != null && aliases[def] != null) {
                 return aliases[def];
             }
             return def;

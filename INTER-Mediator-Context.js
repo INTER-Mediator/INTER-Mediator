@@ -394,7 +394,7 @@ var IMLibContextPool = {
                     }
                 }
             }
-            IMLibCalc.recalculation(undefined, true);
+            IMLibCalc.recalculation();
         } else if (eventName == 'create') {
             for (i = 0; i < this.poolingContexts.length; i++) {
                 contextDef = this.getContextDef(this.poolingContexts[i].contextName);
@@ -415,7 +415,7 @@ var IMLibContextPool = {
                     this.poolingContexts[i].removeEntry(info.pkvalue);
                 }
             }
-            IMLibCalc.recalculation(undefined, true);
+            IMLibCalc.recalculation();
         }
     },
 

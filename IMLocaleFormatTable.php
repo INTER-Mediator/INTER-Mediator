@@ -28,6 +28,22 @@ class IMLocaleFormatTable
             'currency_symbol' => $locInfo[2],
             'positive_sign' => '',
             'negative_sign' => '-',
+            'int_frac_digits' => '0',
+            'frac_digits' => '0',
+            'p_cs_precedes' => '1',
+            'p_sep_by_space' => '0',
+            'n_cs_precedes' => '1',
+            'n_sep_by_space' => '0',
+            'p_sign_posn' => '1',
+            'n_sign_posn' => '4',
+            'grouping' => array(
+                '0' => '3',
+                '1' => '3'
+            ),
+            'mon_grouping' => array(
+                '0' => '3',
+                '1' => '3'
+            )
         );
     }
 

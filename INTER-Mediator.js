@@ -930,7 +930,7 @@ var INTERMediator = {
                         newNode = enclosureNode.appendChild(repeatersOriginal[i]);
 
                         // for compatibility with Firefox
-                        if (repeatersOriginal[i].getAttribute('selected') !== null) {
+                        if (repeatersOriginal[i].getAttribute('selected')) {
                             selectedNode = newNode;
                         }
                         if (selectedNode !== undefined) {
@@ -1196,7 +1196,7 @@ var INTERMediator = {
                     for (j = 0; j < linkInfoArray.length; j++) {
                         nInfo = INTERMediatorLib.getNodeInfoArray(linkInfoArray[j]);
                         curVal = targetRecordset[ix][nInfo['field']];
-                        if (!INTERMediator.isDBDataPreferable || curVal !== null) {
+                        if (!INTERMediator.isDBDataPreferable || curVal) {
                             IMLibCalc.updateCalculationInfo(
                                 contextObj, keyingValue, currentContextDef, nodeId, nInfo, targetRecordset[ix]);
                         }
@@ -1287,8 +1287,8 @@ var INTERMediator = {
                 IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue);
                 IMLibPageNavigation.setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix]);
 
-                if (Boolean(currentContextDef.portal) !== true ||
-                    (Boolean(currentContextDef.portal) === true && targetTotalCount > 0)) {
+                if (!Boolean(currentContextDef.portal) ||
+                    (Boolean(currentContextDef.portal) && targetTotalCount > 0)) {
                     newlyAddedNodes = [];
                     insertNode = null;
                     if (!contextObj.sequencing) {
@@ -1620,7 +1620,7 @@ var INTERMediator = {
             var linkDefs = [], nodeDefs, j, k;
             for (j = 0; j < linkedNodes.length; j++) {
                 nodeDefs = INTERMediatorLib.getLinkedElementInfo(linkedNodes[j]);
-                if (nodeDefs !== null) {
+                if (nodeDefs) {
                     for (k = 0; k < nodeDefs.length; k++) {
                         linkDefs.push(nodeDefs[k]);
                     }
@@ -1720,7 +1720,7 @@ var INTERMediator = {
             children = rootNode.childNodes; // Check all child node of the enclosure.
             for (i = 0; i < children.length; i++) {
                 r = getEnclosedNode(children[i], tableName, fieldName);
-                if (r !== null) {
+                if (r) {
                     return r;
                 }
             }

@@ -112,6 +112,9 @@ var IMLibCalc = {
                         hasReferes = false;
                     }
                 }
+                if (!hasReferes) {
+                    IMLibNodeGraph.addEdge(nodeId);
+                }
             }
         }
 
@@ -145,8 +148,8 @@ var IMLibCalc = {
                             } else {
                                 valueSeries.push(valuesArray[field][ix]);
                             }
-                            calcObject.values[field] = valueSeries;
                         }
+                        calcObject.values[field] = valueSeries;
                     }
                     IMLibElement.setValueToIMNode(targetNode, nInfo.target, Parser.evaluate(exp, valuesArray), true);
                 }
@@ -190,11 +193,6 @@ var IMLibCalc = {
                 }
             }
         }
-        // if (serverSideContexts.length > 0) {
-        //     for (i = 0; i < serverSideContexts.length; i++) {
-        //         INTERMediator.constructMain(serverSideContexts[i]);
-        //     }
-        // }
 
         do {
             leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
@@ -222,8 +220,8 @@ var IMLibCalc = {
                             } else {
                                 valueSeries.push(valuesArray[field][ix]);
                             }
-                            calcObject.values[field] = valueSeries;
                         }
+                        calcObject.values[field] = valueSeries;
                     }
                     if (isRecalcAll) {
                         newValueAdded = true;

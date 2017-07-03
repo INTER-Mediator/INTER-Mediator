@@ -58,8 +58,8 @@ class GenerateJSCode
         $oAuthRedirect = null;
         $themeName = "default";
         $dbClass = null;
-        $appLocale = 'ja_JP';
-        $appCurrency = 'JP';
+        $appLocale = 'null';
+        $appCurrency = 'null';
         $params = IMUtil::getFromParamsPHPFile(array(
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
@@ -376,9 +376,9 @@ class GenerateJSCode
         $content = '';
         $content .= file_get_contents($currentDir . 'INTER-Mediator.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
-        $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
