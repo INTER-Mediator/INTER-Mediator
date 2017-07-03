@@ -678,29 +678,24 @@ var INTERMediatorLib = {
      */
     numberFormatImpl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
         "use strict";
-        var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr,
+        var s, n, prefix, i, sign, tailSign = "", power, underDot, underNumStr, pstr,
             roundedNum, underDecimalNum, integerNum, formatted, numStr, j, isMinusValue,
             numerals, numbers;
-
         if (str === "" || str === null || str === undefined) {
             return "";
         }
-        if (String(str).substring(0, 1) === "-") {
-            prefix = "-";
-        }
+        prefix = (String(str).substring(0, 1) === "-")?"-":"";
         if (String(str).match(/[-]/)) {
             str = prefix + String(str).split("-").join("");
         }
-        str = INTERMediatorLib.normalizeNumerics(str);
-        n = this.toNumber(str);
+        //str = INTERMediatorLib.normalizeNumerics(str);
+        n = INTERMediatorLib.toNumber(str);
         if (isNaN(n)) {
             return "";
         }
-
         if (flags === undefined) {
             flags = {};
         }
-
         sign = INTERMediatorOnPage.localeInfo.positive_sign;
         isMinusValue = false;
         if (n < 0) {
@@ -854,28 +849,28 @@ var INTERMediatorLib = {
 
         if (currencySymbol) {
             if (!isMinusValue) {
-                if (INTERMediatorOnPage.localeInfo.p_cs_precedes === 1) {
-                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space === 1) {
+                if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {    // Stay operator "=="
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator "=="
                         formatted = currencySymbol + " " + formatted;
                     } else {
                         formatted = currencySymbol + formatted;
                     }
                 } else {
-                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space === 1) {
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator "=="
                         formatted = formatted + " " + currencySymbol;
                     } else {
                         formatted = formatted + currencySymbol;
                     }
                 }
             } else {
-                if (INTERMediatorOnPage.localeInfo.n_cs_precedes === 1) {
-                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space === 1) {
+                if (INTERMediatorOnPage.localeInfo.n_cs_precedes == 1) { // Stay operator "=="
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator "=="
                         formatted = currencySymbol + " " + formatted;
                     } else {
                         formatted = currencySymbol + formatted;
                     }
                 } else {
-                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space === 1) {
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator "=="
                         formatted = formatted + " " + currencySymbol;
                     } else {
                         formatted = formatted + currencySymbol;
@@ -924,6 +919,20 @@ var INTERMediatorLib = {
         return this.decimalFormat(str, digit, flags);
     },
 
+    percentFormat: function (str, digit, flags) {
+        "use strict";
+        if (typeof flags !== 'object'  )    {
+            flags ={};
+        }
+        flags["usePercentNotation"] = true;
+        return INTERMediatorLib.numberFormatImpl(str, digit,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+            false,
+            flags
+        );
+    },
+
     decimalFormat: function (str, digit, flags) {
         "use strict";
         return INTERMediatorLib.numberFormatImpl(str, digit,
@@ -944,8 +953,22 @@ var INTERMediatorLib = {
         );
     },
 
-    booleanFormat: function (str, trueString, falseString) {
+    booleanFormat: function (str, forms, flags) {
         "use strict";
+        var trueString = "true", falseString = "false", fmtStr;
+        var params = forms.split(",");
+        if (params[0])  {
+            fmtStr = params[0].trim();
+            if (fmtStr.length > 0)  {
+                trueString = fmtStr
+            }
+        }
+        if (params[1])  {
+            fmtStr = params[1].trim();
+            if (fmtStr.length > 0)  {
+                falseString = fmtStr
+            }
+        }
         if (str === "" || str === null) {
             return "";
         } else {

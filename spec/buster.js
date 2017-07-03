@@ -6,10 +6,10 @@ config['My tests'] = {
     rootPath: '../',
     sources: [
         'INTER-Mediator.js',
-        'INTER-Mediator-Page.js',
-        'INTER-Mediator-Element.js',
         'INTER-Mediator-Context.js',
         'INTER-Mediator-Lib.js',
+        'INTER-Mediator-Page.js',
+        'INTER-Mediator-Element.js',
         'INTER-Mediator-Calc.js',
         'INTER-Mediator-Parts.js',
         'INTER-Mediator-Navi.js',

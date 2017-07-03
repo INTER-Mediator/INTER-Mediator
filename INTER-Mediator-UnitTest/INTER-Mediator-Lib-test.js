@@ -4,8 +4,7 @@
  * [Preparation]
  * - Install Node.js locally.
  * - Set the current directory to the INTER-Mediator dirctory.
- * - Execute command "sudo npm install buster"
- *     The "node_modules" folder is going to create on the current folder.
+ * - Execute command "sudo npm install buster -g"
  *
  * [At the start of your development]
  * - Set the current directory to the INTER-Mediator dirctory.
@@ -105,11 +104,9 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         // A negative second parameter doesn't support so far.
     },
     "format string detection": function()   {
-        assert.equals(INTERMediatorOnPage.localeInfo, {
-            mon_decimal_point:'.',
-            mon_thousands_sep:',',
-            currency_symbol:'￥'
-        });
+        assert.equals(INTERMediatorOnPage.localeInfo.mon_decimal_point,'.');
+        assert.equals(INTERMediatorOnPage.localeInfo.mon_thousands_sep,',');
+        assert.equals(INTERMediatorOnPage.localeInfo.currency_symbol,'¥');
     }
 });
 
@@ -264,16 +261,16 @@ buster.testCase("INTERMediatorLib.decimalFormat() Test", {
 
 buster.testCase("INTERMediatorLib.booleanFormat() Test", {
     "should return \"\" if the first parameter is \"\"": function () {
-        assert.equals(INTERMediatorLib.booleanFormat("", "non-zeros", "zeros"), "");
+        assert.equals(INTERMediatorLib.booleanFormat("", "non-zeros, zeros", null), "");
     },
     "should return \"\" if the first parameter is null": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(null, "non-zeros", "zeros"), "");
+        assert.equals(INTERMediatorLib.booleanFormat(null, "non-zeros, zeros", null), "");
     },
     "should return \"non-zeros\" if the first parameter is 1": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(1, "non-zeros", "zeros"), "non-zeros");
+        assert.equals(INTERMediatorLib.booleanFormat(1, "non-zeros, zeros", null), "non-zeros");
     },
     "should return \"zeros\" if the first parameter is 0": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(0, "non-zeros", "zeros"), "zeros");
+        assert.equals(INTERMediatorLib.booleanFormat(0, "non-zeros, zeros", null), "zeros");
     }
 });
 
