@@ -1,0 +1,18 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: docker:1.13.1-git
+    working_directory: ~/INTER-Mediator
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: pwd
+      - run: ls -al
+      - run: |
+          docker build ./dist-docs/docker
+      - run: vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
+      - run: npm test
+      - run: BUNDLE_GEMFILE=dist-docs/docker/Gemfile bundle
+      - run: rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/container/container_spec.rb -f doc -c
+      - run: rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c

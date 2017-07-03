@@ -1,18 +1,11 @@
 /*
-
- *******************************************************
- *
- * ATTENTION! THIS FILE IS UNDER THE CONSTRUCTION.
- * THIS DOES NOT WORK SO FAR.
- * IF THIS WORKS FINE, IT WILL BE ANNOUNCED.
- *
- *******************************************************
-
  * INTER-Mediator
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- * 
- * This project started at the end of 2009.
- * 
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
 This schema file is for the sample of INTER-Mediator using SQLite3.
 
@@ -36,7 +29,8 @@ CREATE TABLE person	(
 	mail		TEXT,
 	category	INTEGER,
 	checking	INTEGER,
-	location	INTEGER
+	location	INTEGER,
+	memo		TEXT
 );
 CREATE UNIQUE INDEX person_id ON person (id);
 
@@ -325,8 +319,17 @@ CREATE TABLE authuser (
 	id					INTEGER PRIMARY KEY AUTOINCREMENT,
 	username			TEXT,
 	hashedpasswd		TEXT,
-	email               TEXT
+	email               TEXT,
+	realname			VARCHAR(20),
+    limitdt             DateTime
 );
+
+CREATE INDEX authuser_username
+  ON authuser (username);
+CREATE INDEX authuser_email
+  ON authuser (email);
+CREATE INDEX authuser_limitdt
+  ON authuser (limitdt);
 
 INSERT INTO authuser(id,username,hashedpasswd) VALUES(1,'user1','d83eefa0a9bd7190c94e7911688503737a99db0154455354');
 INSERT INTO authuser(id,username,hashedpasswd) VALUES(2,'user2','5115aba773983066bcf4a8655ddac8525c1d3c6354455354');
@@ -362,6 +365,13 @@ CREATE TABLE authcor (
 	privname			TEXT
 );
 
+CREATE INDEX authcor_user_id
+  ON authcor (user_id);
+CREATE INDEX authcor_group_id
+  ON authcor (group_id);
+CREATE INDEX authcor_dest_group_id
+  ON authcor (dest_group_id);
+
 INSERT INTO authcor(user_id,dest_group_id) VALUES(1,1);
 INSERT INTO authcor(user_id,dest_group_id) VALUES(2,1);
 INSERT INTO authcor(user_id,dest_group_id) VALUES(3,1);
@@ -378,6 +388,15 @@ CREATE TABLE issuedhash (
 	hash            TEXT,
 	expired			DateTime
 );
+
+CREATE INDEX issuedhash_user_id
+  ON issuedhash (user_id);
+CREATE INDEX issuedhash_expired
+  ON issuedhash (expired);
+CREATE INDEX issuedhash_clienthost
+  ON issuedhash (clienthost);
+CREATE INDEX issuedhash_user_id_clienthost
+  ON issuedhash (user_id, clienthost);
 
 /* # Sample Data */
 INSERT INTO product(name,id,category_id,unitprice,photofile,acknowledgement,ack_link)

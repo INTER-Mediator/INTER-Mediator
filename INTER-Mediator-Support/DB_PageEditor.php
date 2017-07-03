@@ -1,21 +1,29 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
-*
-*   This project started at the end of 2009.
-*   INTER-Mediator is supplied under MIT License.
-*/
 
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
 {
     private $recordCount;
+    private $isRequiredUpdated = false;
+    private $updatedRecord = null;
 
-    function getFromDB($dataSourceName)
+    function readFromDB()
     {
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getCriteriaValue('target');
-        if (substr_count ($filePath, '../') > 2)  {
+        if (substr_count($filePath, '../') > 2) {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
             return null;
         }
@@ -26,18 +34,24 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
             return null;
         }
         $this->recordCount = 1;
-        return array(array('content' => $fileContent));
+        return array(array('id' => 1, 'content' => $fileContent));
     }
 
-    function countQueryResult($dataSourceName)
+    function countQueryResult()
     {
         return $this->recordCount;
     }
 
-    function setToDB($dataSourceName)
+    function getTotalCount()
     {
+        return $this->recordCount;
+    }
+
+    function updateDB()
+    {
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');
-        if (substr_count ($filePath, '../') > 2)  {
+        if (substr_count($filePath, '../') > 2) {
             $this->logger->setErrorMessage("You can't access files in inhibit area: {$dataSourceName}.");
             return null;
         }
@@ -52,13 +66,16 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
             $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
             return null;
         }
+        $result = array(array('id' => 1, 'content' => $this->dbSettings->getValueOfField('content')));
+        $this->updatedRecord = $result;
+        return $result;
     }
 
-    function newToDB($dataSourceName, $bypassAuth)
+    function createInDB($bypassAuth)
     {
     }
 
-    function deleteFromDB($dataSourceName)
+    function deleteFromDB()
     {
     }
 
@@ -87,7 +104,7 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement authSupportRetrieveHashedPassword() method.
     }
 
-    function authSupportCreateUser($username, $hashedpassword)
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
         // TODO: Implement authSupportCreateUser() method.
     }
@@ -149,7 +166,7 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
 
     public function setupConnection()
     {
-        // TODO: Implement setupConnection() method.
+        return true;
     }
 
     public static function defaultKey()
@@ -172,14 +189,16 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement isPossibleOrderSpecifier() method.
     }
 
-    public function requireUpdatedRecord($value)
+    public
+    function requireUpdatedRecord($value)
     {
-        // TODO: Implement requireUpdatedRecord() method.
+        $this->isRequiredUpdated = $value;
     }
 
-    public function updatedRecord()
+    public
+    function updatedRecord()
     {
-        // TODO: Implement updatedRecord() method.
+        return $this->updatedRecord;
     }
 
     public function isContainingFieldName($fname, $fieldnames)
@@ -190,5 +209,35 @@ class DB_PageEditor extends DB_AuthCommon implements DB_Access_Interface
     public function isNullAcceptable()
     {
         // TODO: Implement isNullAcceptable() method.
+    }
+
+    public function softDeleteActivate($field, $value)
+    {
+        // TODO: Implement softDeleteActivate() method.
+    }
+
+    public function copyInDB()
+    {
+        return false;
+    }
+
+    public function isSupportAggregation()
+    {
+        return false;
+    }
+
+    public function authSupportUserEnrollmentStart($userid, $hash)
+    {
+        // TODO: Implement authSupportUserEnrollmentStart() method.
+    }
+
+    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
+    {
+        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
+    }
+
+    public function authSupportUserEnrollmentEnrollingUser($hash)
+    {
+        // TODO: Implement authSupportUserEnrollmentEnrollingUser() method.
     }
 }

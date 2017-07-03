@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <!--
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   by Masayuki Nii  msyk@msyk.net Copyright (c) 2012 Masayuki Nii, All rights reserved.
- *
- *   This project started at the end of 2009.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */  -->
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <link rel="stylesheet" type="text/css" href="sample.css"/>
-    <title>INTER-Mediator - Sample - Account Management System/MySQL</title>
+    <title>INTER-Mediator - Account</title>
     <script src="MySQL_contexts.php"></script>
     <script type="text/javascript">
         function setPassword(button){
@@ -28,11 +28,14 @@
 <h1 style="font-weight:bold;color:blueviolet">Account Management System</h1>
 New Password: <input id="inputpassword" type="text" />
 Set the new password and click "Set" button on each user.
-<!--<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>-->
+<div id="IM_NAVIGATOR">Navigation Controls by INTER-Mediator</div>
 <h2>User Accounts</h2>
 <table>
     <thead>
-    <tr><th>User Name</th><th>Hashed Password</th><th>Email</th><th>Groups</th><th>Belongings</th><th></th></tr>
+    <tr>
+        <th>User Name</th><th>Hashed Password</th><th>Email</th><th>Real Name</th>
+        <th>Groups</th><th>Belongings</th><th></th>
+    </tr>
     </thead>
     <tbody>
     <tr>
@@ -45,6 +48,9 @@ Set the new password and click "Set" button on each user.
         </td>
         <td>
             <input data-im="authuser@email" type="text" />
+        </td>
+        <td>
+            <input data-im="authuser@realname" type="text" size="10"/>
         </td>
         <td>
             <span data-im-control="enclosure">

@@ -1,12 +1,17 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   by Masayuki Nii  msyk@msyk.net Copyright (c) 2013 Masayuki Nii, All rights reserved.
-*
-*   This project started at the end of 2009.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 function IM_Dummy_Entry($datasource, $options, $dbspecification, $debug = false)
 {
@@ -33,6 +38,9 @@ function getValueFromArray($ar, $index1, $index2 = null, $index3 = null)
             $value = $ar[$index1];
         }
     }
+    if (is_array($value)) {
+        $value = implode(",", $value);
+    }
     if ($value === true) {
         $value = "true";
     }
@@ -55,15 +63,18 @@ function changeIncludeIMPath($src, $validStatement)
 
 class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
 {
-    var $recordCount;
+    private $recordCount;
+    private $isRequiredUpdated = false;
+    private $updatedRecord = null;
 
-    var $spacialValue = array('IM_TODAY');
+    private $spacialValue = array('IM_TODAY');
 
-    function getFromDB($dataSourceName)
+    function readFromDB()
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
         $result = array();
+        $dataSourceName = $this->dbSettings->getDataSourceName();
 
         $filePath = $this->dbSettings->getCriteriaValue('target');
         if (substr_count($filePath, '../') > 2) {
@@ -114,6 +125,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'protocol' => getValueFromArray($context, 'protocol'),
                         'datatype' => getValueFromArray($context, 'datatype'),
                         'cache' => getValueFromArray($context, 'cache'),
+                        'soft-delete' => getValueFromArray($context, 'soft-delete'),
                         'post-reconstruct' => getValueFromArray($context, 'post-reconstruct'),
                         'post-dismiss-message' => getValueFromArray($context, 'post-dismiss-message'),
                         'post-move-url' => getValueFromArray($context, 'post-move-url'),
@@ -121,6 +133,14 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'navi-control' => getValueFromArray($context, 'navi-control'),
                         'post-repeater' => getValueFromArray($context, 'post-repeater'),
                         'post-enclosure' => getValueFromArray($context, 'post-enclosure'),
+                        'aggregation-select' => getValueFromArray($context, 'aggregation-select'),
+                        'aggregation-from' => getValueFromArray($context, 'aggregation-from'),
+                        'aggregation-group-by' => getValueFromArray($context, 'aggregation-group-by'),
+                        'buttonnames-insert' => getValueFromArray($context, 'button-names', 'insert'),
+                        'buttonnames-delete' => getValueFromArray($context, 'button-names', 'delete'),
+                        'buttonnames-copy' => getValueFromArray($context, 'button-names', 'copy'),
+                        'buttonnames-navi-detail' => getValueFromArray($context, 'button-names', 'navi-detail'),
+                        'buttonnames-navi-back' => getValueFromArray($context, 'button-names', 'navi-back'),
                         'authentication-media-handling' => getValueFromArray($context, 'authentication', 'media-handling'),
                         'authentication-all-user' => getValueFromArray($context, 'authentication', 'all', 'user'),
                         'authentication-all-group' => getValueFromArray($context, 'authentication', 'all', 'group'),
@@ -142,6 +162,54 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         'authentication-delete-group' => getValueFromArray($context, 'authentication', 'delete', 'group'),
                         'authentication-delete-target' => getValueFromArray($context, 'authentication', 'delete', 'target'),
                         'authentication-delete-field' => getValueFromArray($context, 'authentication', 'delete', 'field'),
+                        'send-mail-load-from' => getValueFromArray($context, 'send-mail', 'load', 'from'),
+                        'send-mail-load-to' => getValueFromArray($context, 'send-mail', 'load', 'to'),
+                        'send-mail-load-cc' => getValueFromArray($context, 'send-mail', 'load', 'cc'),
+                        'send-mail-load-bcc' => getValueFromArray($context, 'send-mail', 'load', 'bcc'),
+                        'send-mail-load-subject' => getValueFromArray($context, 'send-mail', 'load', 'subject'),
+                        'send-mail-load-body' => getValueFromArray($context, 'send-mail', 'load', 'body'),
+                        'send-mail-load-from-constant' => getValueFromArray($context, 'send-mail', 'load', 'from-constant'),
+                        'send-mail-load-to-constant' => getValueFromArray($context, 'send-mail', 'load', 'to-constant'),
+                        'send-mail-load-cc-constant' => getValueFromArray($context, 'send-mail', 'load', 'cc-constant'),
+                        'send-mail-load-bcc-constant' => getValueFromArray($context, 'send-mail', 'load', 'bcc-constant'),
+                        'send-mail-load-subject-constant' => getValueFromArray($context, 'send-mail', 'load', 'subject-constant'),
+                        'send-mail-load-body-constant' => getValueFromArray($context, 'send-mail', 'load', 'body-constant'),
+                        'send-mail-load-body-template' => getValueFromArray($context, 'send-mail', 'load', 'body-template'),
+                        'send-mail-load-body-fields' => getValueFromArray($context, 'send-mail', 'load', 'body-fields'),
+                        'send-mail-load-f-option' => getValueFromArray($context, 'send-mail', 'load', 'f-option'),
+                        'send-mail-load-body-wrap' => getValueFromArray($context, 'send-mail', 'load', 'body-wrap'),
+                        'send-mail-edit-from' => getValueFromArray($context, 'send-mail', 'edit', 'from'),
+                        'send-mail-edit-to' => getValueFromArray($context, 'send-mail', 'edit', 'to'),
+                        'send-mail-edit-cc' => getValueFromArray($context, 'send-mail', 'edit', 'cc'),
+                        'send-mail-edit-bcc' => getValueFromArray($context, 'send-mail', 'edit', 'bcc'),
+                        'send-mail-edit-subject' => getValueFromArray($context, 'send-mail', 'edit', 'subject'),
+                        'send-mail-edit-body' => getValueFromArray($context, 'send-mail', 'edit', 'body'),
+                        'send-mail-edit-from-constant' => getValueFromArray($context, 'send-mail', 'edit', 'from-constant'),
+                        'send-mail-edit-to-constant' => getValueFromArray($context, 'send-mail', 'edit', 'to-constant'),
+                        'send-mail-edit-cc-constant' => getValueFromArray($context, 'send-mail', 'edit', 'cc-constant'),
+                        'send-mail-edit-bcc-constant' => getValueFromArray($context, 'send-mail', 'edit', 'bcc-constant'),
+                        'send-mail-edit-subject-constant' => getValueFromArray($context, 'send-mail', 'edit', 'subject-constant'),
+                        'send-mail-edit-body-constant' => getValueFromArray($context, 'send-mail', 'edit', 'body-constant'),
+                        'send-mail-edit-body-template' => getValueFromArray($context, 'send-mail', 'edit', 'body-template'),
+                        'send-mail-edit-body-fields' => getValueFromArray($context, 'send-mail', 'edit', 'body-fields'),
+                        'send-mail-edit-f-option' => getValueFromArray($context, 'send-mail', 'edit', 'f-option'),
+                        'send-mail-edit-body-wrap' => getValueFromArray($context, 'send-mail', 'edit', 'body-wrap'),
+                        'send-mail-new-from' => getValueFromArray($context, 'send-mail', 'new', 'from'),
+                        'send-mail-new-to' => getValueFromArray($context, 'send-mail', 'new', 'to'),
+                        'send-mail-new-cc' => getValueFromArray($context, 'send-mail', 'new', 'cc'),
+                        'send-mail-new-bcc' => getValueFromArray($context, 'send-mail', 'new', 'bcc'),
+                        'send-mail-new-subject' => getValueFromArray($context, 'send-mail', 'new', 'subject'),
+                        'send-mail-new-body' => getValueFromArray($context, 'send-mail', 'new', 'body'),
+                        'send-mail-new-from-constant' => getValueFromArray($context, 'send-mail', 'new', 'from-constant'),
+                        'send-mail-new-to-constant' => getValueFromArray($context, 'send-mail', 'new', 'to-constant'),
+                        'send-mail-new-cc-constant' => getValueFromArray($context, 'send-mail', 'new', 'cc-constant'),
+                        'send-mail-new-bcc-constant' => getValueFromArray($context, 'send-mail', 'new', 'bcc-constant'),
+                        'send-mail-new-subject-constant' => getValueFromArray($context, 'send-mail', 'new', 'subject-constant'),
+                        'send-mail-new-body-constant' => getValueFromArray($context, 'send-mail', 'new', 'body-constant'),
+                        'send-mail-new-body-template' => getValueFromArray($context, 'send-mail', 'new', 'body-template'),
+                        'send-mail-new-body-fields' => getValueFromArray($context, 'send-mail', 'new', 'body-fields'),
+                        'send-mail-new-f-option' => getValueFromArray($context, 'send-mail', 'new', 'f-option'),
+                        'send-mail-new-body-wrap' => getValueFromArray($context, 'send-mail', 'new', 'body-wrap'),
                     );
                     $seq++;
                 }
@@ -210,6 +278,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             'field' => getValueFromArray($rel, 'field'),
                             'rule' => getValueFromArray($rel, 'rule'),
                             'message' => getValueFromArray($rel, 'message'),
+                            'notify' => getValueFromArray($rel, 'notify'),
                         );
                         $seq++;
                     }
@@ -218,12 +287,13 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'script':
                 $contextID = $this->dbSettings->getForeignKeysValue('id');
                 if (isset($globalDataSource[$contextID]['script'])) {
-                    foreach ($globalDataSource[$contextID]['script'] as $rel) {
+                    foreach ($globalDataSource[$contextID]['script'] as $operation => $rel) {
                         $result[] = array(
                             'id' => $seq + $contextID * 10000,
                             'db-operation' => getValueFromArray($rel, 'db-operation'),
                             'situation' => getValueFromArray($rel, 'situation'),
                             'definition' => getValueFromArray($rel, 'definition'),
+                            'parameter' => getValueFromArray($rel, 'parameter'),
                         );
                         $seq++;
                     }
@@ -245,7 +315,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'global':
                 $contextID = $this->dbSettings->getForeignKeysValue('id');
                 if (isset($globalDataSource[$contextID]['global'])) {
-                    foreach ($globalDataSource[$contextID]['global'] as $rel) {
+                    foreach ($globalDataSource[$contextID]['global'] as $operation => $rel) {
                         $result[] = array(
                             'id' => $seq + $contextID * 10000,
                             'db-operation' => getValueFromArray($rel, 'db-operation'),
@@ -264,6 +334,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             'id' => $seq + $contextID * 10000,
                             'field' => getValueFromArray($rel, 'field'),
                             'context' => getValueFromArray($rel, 'context'),
+                            'container' => getValueFromArray($rel, 'container'),
                         );
                         $seq++;
                     }
@@ -272,6 +343,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'options':
                 $result[] = array(
                     'id' => $seq,
+                    'theme' => getValueFromArray($globalOptions, 'theme'),
                     'separator' => getValueFromArray($globalOptions, 'separator'),
                     'transaction' => getValueFromArray($globalOptions, 'transaction'),
                     'media-root-dir' => getValueFromArray($globalOptions, 'media-root-dir'),
@@ -288,8 +360,25 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         $globalOptions, 'authentication', 'authexpired'),
                     'authentication-realm' => getValueFromArray(
                         $globalOptions, 'authentication', 'realm'),
+                    'authentication-storing' => getValueFromArray(
+                        $globalOptions, 'authentication', 'storing'),
                     'authentication-email-as-username' => getValueFromArray(
                         $globalOptions, 'authentication', 'email-as-username'),
+                    'authentication-user' => getValueFromArray(
+                        $globalOptions, 'authentication', 'user'),
+                    'authentication-group' => getValueFromArray(
+                        $globalOptions, 'authentication', 'group'),
+                    'authentication-issuedhash-dsn' => getValueFromArray(
+                        $globalOptions, 'authentication', 'issuedhash-dsn'),
+                    'authentication-password-policy' => getValueFromArray(
+                        $globalOptions, 'authentication', 'password-policy'),
+                    'smtp-server' => getValueFromArray($globalOptions, 'smtp', 'server'),
+                    'smtp-port' => getValueFromArray($globalOptions, 'smtp', 'port'),
+                    'smtp-username' => getValueFromArray($globalOptions, 'smtp', 'username'),
+                    'smtp-password' => getValueFromArray($globalOptions, 'smtp', 'password'),
+                    'pusher-app_id' => getValueFromArray($globalOptions, 'pusher', 'app_id'),
+                    'pusher-key' => getValueFromArray($globalOptions, 'pusher', 'key'),
+                    'pusher-secret' => getValueFromArray($globalOptions, 'pusher', 'secret'),
                 );
                 $seq++;
                 break;
@@ -307,10 +396,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 break;
             case 'browser-compatibility':
                 if (isset($globalOptions['browser-compatibility'])) {
-                    foreach ($globalOptions['browser-compatibility'] as $rel) {
+                    foreach ($globalOptions['browser-compatibility'] as $agent => $vNum) {
                         $result[] = array(
                             'id' => $seq,
-                            'browserdef' => $rel,
+                            'agent' => $agent,
+                            'version' => $vNum,
                         );
                         $seq++;
                     }
@@ -324,6 +414,18 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                             'field' => getValueFromArray($rel, 'field'),
                             'converter-class' => getValueFromArray($rel, 'converter-class'),
                             'parameter' => getValueFromArray($rel, 'parameter'),
+                        );
+                        $seq++;
+                    }
+                }
+                break;
+            case 'local-context':
+                if (isset($globalOptions['local-context'])) {
+                    foreach ($globalOptions['local-context'] as $rel) {
+                        $result[] = array(
+                            'id' => $seq,
+                            'key' => getValueFromArray($rel, 'key'),
+                            'value' => getValueFromArray($rel, 'value'),
                         );
                         $seq++;
                     }
@@ -358,7 +460,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'debug':
                 $result[] = array(
                     'id' => 0,
-                    'debug' => $globalDebug
+                    'debug' => $globalDebug === false ? 'false' : $globalDebug
                 );
                 $seq++;
                 break;
@@ -367,15 +469,21 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         return $result;
     }
 
-    function countQueryResult($dataSourceName)
+    function countQueryResult()
     {
         return $this->recordCount;
     }
 
-    function setToDB($dataSourceName)
+    function getTotalCount()
+    {
+        return $this->recordCount;
+    }
+
+    function updateDB()
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');
         $contextID = $this->dbSettings->getCriteriaValue('id');
 
@@ -400,25 +508,42 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             'query' => array('field', 'value', 'operator'),
             'sort' => array('field', 'direction'),
             'default-values' => array('field', 'value'),
-            'validation' => array('field', 'rule', 'message'),
-            'script' => array('db-operation', 'situation', 'definition'),
+            'validation' => array('field', 'rule', 'message', 'notify'),
+            'script' => array('db-operation', 'situation', 'definition', 'parameter'),
             'global' => array('db-operation', 'field', 'value'),
             'calculation' => array('field', 'expression'),
-            'file-upload' => array('field', 'context'),
+            'file-upload' => array('field', 'context', 'container'),
+            'send-mail' => array('db-operation', 'from', 'to', 'cc', 'bcc', 'subject', 'body',
+                'from-constant', 'to-constant', 'cc-constant', 'bcc-constant', 'subject-constant',
+                'body-constant', 'body-template', 'body-fields', 'f-option', 'body-wrap'),
         );
         $allKeysOptions = array(
             'aliases' => array('alias', 'original'),
             'browser-compatibility' => array('browserdef'),
             'formatter' => array('field', 'converter-class', 'parameter'),
+            'local-context' => array('key', 'value'),
         );
 
         $keysShouldInteger = array(
-            'records', 'maxrecords',
+            'records', 'maxrecords', 'smtp-port',
+            'send-mail-load-body-wrap', 'send-mail-edit-body-wrap', 'send-mail-new-body-wrap',
         );
 
         $keysShouldBoolean = array(
             'paging', 'email-as-username', 'portal', 'media-handling', 'post-reconstruct',
+            'container', 'soft-delete', 'f-option',
         );
+
+        $keysShouldArray = array(
+            'protect-writing', 'protect-reading', 'authentication-all-user', 'authentication-all-group',
+            'authentication-load-user', 'authentication-load-group',
+            'authentication-update-user', 'authentication-update-group',
+            'authentication-new-user', 'authentication-new-group',
+            'authentication-delete-user', 'authentication-delete-group',
+        );
+
+        // $this->logger->setDebugMessage("dataSourceName={$dataSourceName}");
+        $result = null;
 
         switch ($dataSourceName) {
             case 'contexts':
@@ -427,8 +552,17 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (!isset($globalDataSource[$contextID]["authentication"])) {
                         $globalDataSource[$contextID]["authentication"] = array();
                     }
-                    $globalDataSource[$contextID]["authentication"]["media-handling"]
-                        = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (preg_match("/^false$/i", $setValue)) {
+                        $setValue = false;
+                    } else if (preg_match("/^true$/i", $setValue)) {
+                        $setValue = true;
+                    }
+                    if ($setValue === true || $setValue === false) {
+                        $globalDataSource[$contextID]["authentication"]["media-handling"] = $setValue;
+                    } else if (isset($globalDataSource[$contextID]["authentication"]["media-handling"])) {
+                        unset($globalDataSource[$contextID]["authentication"]["media-handling"]);
+                    }
                 } else if (strpos($theKey, "authentication-") === 0) {
                     $authKeyArray = explode("-", $theKey);
                     if (!isset($globalDataSource[$contextID][$authKeyArray[0]])) {
@@ -437,40 +571,135 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (!isset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]])) {
                         $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]] = array();
                     }
-                    $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]]
-                        = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldArray) !== false) {
+                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                    }
+                    if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
+                        || strlen($setValue) > 0
+                    ) {
+                        $globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]])) {
+                        unset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]][$authKeyArray[2]]);
+                        if (count($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]]) === 0) {
+                            unset($globalDataSource[$contextID][$authKeyArray[0]][$authKeyArray[1]]);
+                            if (count($globalDataSource[$contextID][$authKeyArray[0]]) === 0) {
+                                unset($globalDataSource[$contextID][$authKeyArray[0]]);
+                            }
+                        }
+                    }
+                } else if (strpos($theKey, "protect-") === 0) {
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldArray) !== false) {
+                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                    }
+                    if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
+                        || strlen($setValue) > 0
+                    ) {
+                        $globalDataSource[$contextID][$theKey] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$theKey])) {
+                        unset($globalDataSource[$contextID][$theKey]);
+                    }
+                } else if (strpos($theKey, "buttonnames-") === 0) {
+                    $firstKey = "button-names";
+                    $secondKey = substr($theKey, 12);
+                    if (!isset($globalDataSource[$contextID][$firstKey])) {
+                        $globalDataSource[$contextID][$firstKey] = array();
+                    }
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalDataSource[$contextID][$firstKey][$secondKey] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$firstKey][$secondKey])) {
+                        unset($globalDataSource[$contextID][$firstKey][$secondKey]);
+                        if (count($globalDataSource[$contextID][$firstKey]) === 0) {
+                            unset($globalDataSource[$contextID][$firstKey]);
+                        }
+                    }
+                } else if (strpos($theKey, "send-mail-") === 0) {
+                    $firstKey = "send-mail";
+                    $keyRest = substr($theKey, 10);
+                    $secondKey = substr($keyRest, 0, strpos($keyRest, "-"));
+                    $thirdKey = substr($keyRest, strpos($keyRest, "-") + 1);
+                    if (!isset($globalDataSource[$contextID][$firstKey])) {
+                        $globalDataSource[$contextID][$firstKey] = array();
+                    }
+                    if (!isset($globalDataSource[$contextID][$firstKey][$secondKey])) {
+                        $globalDataSource[$contextID][$firstKey][$secondKey] = array();
+                    }
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
+                    } else if (array_search($thirdKey, $keysShouldBoolean) !== false) {
+                        if (preg_match("/^false$/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/^true$/i", $setValue)) {
+                            $setValue = true;
+                        }
+                    }
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey] = $setValue;
+                    } else if (isset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey])) {
+                        unset($globalDataSource[$contextID][$firstKey][$secondKey][$thirdKey]);
+                        if (count($globalDataSource[$contextID][$firstKey][$secondKey]) === 0) {
+                            unset($globalDataSource[$contextID][$firstKey][$secondKey]);
+                            if (count($globalDataSource[$contextID][$firstKey]) === 0) {
+                                unset($globalDataSource[$contextID][$firstKey]);
+                            }
+                        }
+                    }
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
-                        $setValue = (int)$setValue;
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
                     } else if (array_search($theKey, $keysShouldBoolean) !== false) {
-                        $setValue = (boolean)$setValue;
+                        if (preg_match("/(false)/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/(true)/i", $setValue)) {
+                            $setValue = true;
+                        }
                     }
-                    if (strlen($setValue) > 0) {
+                    if (strlen($setValue) > 0 || $setValue === false) {
                         $globalDataSource[$contextID][$theKey] = $setValue;
                     } else if (isset($globalDataSource[$contextID][$theKey])) {
                         unset($globalDataSource[$contextID][$theKey]);
                     }
                 }
+                $result = array($globalDataSource[$contextID]);
                 break;
             case 'relation':
             case 'query':
             case 'sort':
             case 'default-values':
             case 'validation':
-            case 'global':
-            case 'script':
             case 'calculation':
             case 'file-upload':
-                $recordID = $contextID % 10000;
-                $contextID = floor($contextID / 10000);
+            case 'global':
+            case 'script':
+                $theKey = $this->dbSettings->getFieldOfIndex(1);
                 foreach ($allKeys[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
+                    if (array_search($key, $keysShouldInteger) !== false) {
+                        $fieldValue = ($fieldValue === '') ? '' : (int)$fieldValue;
+                    } else if (array_search($key, $keysShouldBoolean) !== false) {
+                        if (preg_match("/(false)/i", $fieldValue)) {
+                            $fieldValue = false;
+                        } else if (preg_match("/(true)/i", $fieldValue)) {
+                            $fieldValue = true;
+                        } else {
+                            $fieldValue = null;
+                        }
+                    }
+                    $contextIndex = floor($contextID / 10000);
+                    $itemIndex = $contextID % 10000;
                     if (!is_null($fieldValue)) {
-                        $globalDataSource[$contextID][$dataSourceName][$recordID][$key] = $fieldValue;
-                        break;
+                        $globalDataSource[$contextIndex][$dataSourceName][$itemIndex][$key] = $fieldValue;
+                    } else if ($key === $theKey &&
+                        isset($globalDataSource[$contextIndex][$dataSourceName][$itemIndex][$key])
+                    ) {
+                        unset($globalDataSource[$contextIndex][$dataSourceName][$itemIndex][$key]);
                     }
                 }
+                $result = array($globalDataSource[$contextIndex][$dataSourceName][$itemIndex]);
                 break;
             case 'options':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
@@ -479,25 +708,93 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     if (!isset($globalOptions["authentication"][$authKey])) {
                         $globalOptions["authentication"][$authKey] = array();
                     }
-                    $globalOptions["authentication"][$authKey]
-                        = $this->dbSettings->getValueOfField($theKey);
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if ($authKey === "email-as-username") {
+                        if (preg_match("/^false$/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/^true$/i", $setValue)) {
+                            $setValue = true;
+                        }
+                        if ($setValue === true || $setValue === false) {
+                            $globalOptions["authentication"]["email-as-username"] = $setValue;
+                        } else if (isset($globalOptions["authentication"]["email-as-username"])) {
+                            unset($globalOptions["authentication"]["email-as-username"]);
+                        }
+                    } else if ($authKey === "user" || $authKey === "group") {
+                        $setValue = explode(",", str_replace(" ", "", $setValue));
+                        if ((is_array($setValue) && count($setValue) > 0 && strlen($setValue[0]) > 0)
+                            || strlen($setValue) > 0
+                        ) {
+                            $globalOptions["authentication"][$authKey] = $setValue;
+                        } else if (isset($globalOptions["authentication"][$authKey])) {
+                            unset($globalOptions["authentication"][$authKey]);
+                        }
+                    } else {
+                        if (strlen($setValue) > 0 || $setValue === false) {
+                            $globalOptions["authentication"][$authKey] = $setValue;
+                        } else if (isset($globalOptions["authentication"][$authKey])) {
+                            unset($globalOptions["authentication"][$authKey]);
+                        }
+                    }
+                    if (count($globalOptions["authentication"]) === 0) {
+                        unset($globalOptions["authentication"]);
+                    }
+                } else if (strpos($theKey, "smtp-") === 0) {
+                    $authKey = substr($theKey, 5);
+                    if (!isset($globalOptions["smtp"][$authKey])) {
+                        $globalOptions["smtp"][$authKey] = array();
+                    }
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
+                    }
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalOptions["smtp"][$authKey] = $setValue;
+                    } else if (isset($globalOptions["smtp"][$authKey])) {
+                        unset($globalOptions["smtp"][$authKey]);
+                        if (count($globalOptions["smtp"]) === 0) {
+                            unset($globalOptions["smtp"]);
+                        }
+                    }
+                } else if (strpos($theKey, "pusher-") === 0) {
+                    $authKey = substr($theKey, 7);
+                    if (!isset($globalOptions["pusher"][$authKey])) {
+                        $globalOptions["pusher"][$authKey] = array();
+                    }
+                    $setValue = $this->dbSettings->getValueOfField($theKey);
+                    if (array_search($theKey, $keysShouldInteger) !== false) {
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
+                    }
+                    if (strlen($setValue) > 0 || $setValue === false) {
+                        $globalOptions["pusher"][$authKey] = $setValue;
+                    } else if (isset($globalOptions["pusher"][$authKey])) {
+                        unset($globalOptions["pusher"][$authKey]);
+                        if (count($globalOptions["pusher"]) === 0) {
+                            unset($globalOptions["pusher"]);
+                        }
+                    }
                 } else {
                     $setValue = $this->dbSettings->getValueOfField($theKey);
                     if (array_search($theKey, $keysShouldInteger) !== false) {
-                        $setValue = (int)$setValue;
+                        $setValue = ($setValue === '') ? '' : (int)$setValue;
                     } else if (array_search($theKey, $keysShouldBoolean) !== false) {
-                        $setValue = (boolean)$setValue;
+                        if (preg_match("/(false)/i", $setValue)) {
+                            $setValue = false;
+                        } else if (preg_match("/(true)/i", $setValue)) {
+                            $setValue = true;
+                        }
                     }
-                    if (strlen($setValue) > 0) {
+                    if (strlen($setValue) > 0 || $setValue === false) {
                         $globalOptions[$theKey] = $setValue;
                     } else if (isset($globalOptions[$theKey])) {
                         unset($globalOptions[$theKey]);
                     }
                 }
+                $result = array($globalOptions);
                 break;
             case 'aliases':
-            case 'browser-compatibility':
             case 'formatter':
+            case 'local-context':
                 $recordID = $contextID % 10000;
                 foreach ($allKeysOptions[$dataSourceName] as $key) {
                     $fieldValue = $this->dbSettings->getValueOfField($key);
@@ -506,10 +803,45 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                         break;
                     }
                 }
+                $result = array($globalOptions[$dataSourceName][$recordID]);
+                break;
+            case 'browser-compatibility':
+                $recordID = $contextID % 10000;
+                $key = $this->dbSettings->getFieldOfIndex(1);
+                $pValue = $this->dbSettings->getValueOfField($key);
+                // $this->logger->setDebugMessage("key={$key}, pValue={$pValue}");
+                if (!is_null($pValue)) {
+                    $currentAgents = array_keys($globalOptions[$dataSourceName]);
+                    $tempBCArray = array();
+                    if ($key == 'agent') {
+                        //$agentIndex = array_keys($currentAgents, $pValue);
+                        for ($i = 0; $i < count($currentAgents); $i++) {
+                            if ($i == $recordID) {
+                                $tempBCArray[$pValue]
+                                    = $globalOptions[$dataSourceName][$currentAgents[$i]];
+                            } else {
+                                $tempBCArray[$currentAgents[$i]]
+                                    = $globalOptions[$dataSourceName][$currentAgents[$i]];
+                            }
+                        }
+                    } else if ($key == 'version') {
+                        for ($i = 0; $i < count($currentAgents); $i++) {
+                            if ($i == $recordID) {
+                                $tempBCArray[$currentAgents[$i]] = $pValue;
+                            } else {
+                                $tempBCArray[$currentAgents[$i]]
+                                    = $globalOptions[$dataSourceName][$currentAgents[$i]];
+                            }
+                        }
+                    }
+                    $globalOptions[$dataSourceName] = $tempBCArray;
+                }
+                $result = array($globalOptions);
                 break;
             case 'dbsettings':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 $globalDBSpecs[$theKey] = $this->dbSettings->getValueOfField($theKey);
+                $result = array($globalDBSpecs);
                 break;
             case 'external-db':
                 $recordID = $contextID % 10000;
@@ -524,10 +856,13 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 $globalDBSpecs['external-db'][] = array(
                     'db' => '= new value =',
                 );
+                $result = array($globalDBSpecs['external-db']);
                 break;
             case 'debug':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
                 $globalDebug = $this->dbSettings->getValueOfField($theKey);
+                $globalDebug = ($globalDebug === 'false' || $globalDebug === '') ? false : intval($globalDebug);
+                $result = array(array('id' => 0, 'debug' => $globalDebug));
                 break;
             default:
                 break;
@@ -542,23 +877,25 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         $newFileContent .= var_export($globalDBSpecs, true);
         $newFileContent .= ",\n";
         $newFileContent .= var_export($globalDebug, true);
-        $newFileContent .= ");\n?>";
+        $newFileContent .= ");\n";
 
         $sq = "'";
         foreach ($this->spacialValue as $term) {
-            $newFileContent = str_replace($sq.$term.$sq, $term, $newFileContent);
+            $newFileContent = str_replace($sq . $term . $sq, $term, $newFileContent);
+            $fileWriteResult = file_put_contents($filePath, $newFileContent);
+            if ($fileWriteResult === false) {
+                $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
+                return null;
+            }
         }
-
-        $fileWriteResult = file_put_contents($filePath, $newFileContent);
-        if ($fileWriteResult === false) {
-            $this->logger->setErrorMessage("The file {$filePath} doesn't have the permission to write.");
-            return null;
-        }
+        $this->updatedRecord = $result;
+        return $result;
     }
 
-    function newToDB($dataSourceName, $bypassAuth)
+    function createInDB($bypassAuth)
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
+        $dataSourceName = $this->dbSettings->getDataSourceName();
 
         // $this->logger->setErrorMessage(var_export($this->dbSettings, true));
         $filePath = $this->dbSettings->getValueOfField('target');
@@ -640,6 +977,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'db-operation' => '= new value =',
                     'situation' => '= new value =',
                     'definition' => '= new value =',
+                    'parameter' => '= new value =',
                 );
                 break;
             case 'global':
@@ -668,6 +1006,7 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 $globalDataSource[$contextID]['file-upload'][] = array(
                     'field' => '= new value =',
                     'context' => '= new value =',
+                    'container' => true,
                 );
                 break;
             case 'options':
@@ -685,9 +1024,8 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 if (!isset($globalOptions['browser-compatibility'])) {
                     $globalOptions['browser-compatibility'] = array();
                 }
-                $globalOptions['browser-compatibility'][] = array(
-                    'browserdef' => '= new value =',
-                );
+                $index = count($globalOptions['browser-compatibility']);
+                $globalOptions['browser-compatibility']["agent{$index}"] = '= version =';
                 break;
             case 'formatter':
                 if (!isset($globalOptions['formatter'])) {
@@ -697,6 +1035,15 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                     'field' => '= new value =',
                     'converter-class' => '= new value =',
                     'parameter' => '= new value =',
+                );
+                break;
+            case 'local-context':
+                if (!isset($globalOptions['local-context'])) {
+                    $globalOptions['local-context'] = array();
+                }
+                $globalOptions['local-context'][] = array(
+                    'key' => '= new value =',
+                    'value' => '= new value =',
                 );
                 break;
             case 'dbsettings':
@@ -731,10 +1078,11 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    function deleteFromDB($dataSourceName)
+    function deleteFromDB()
     {
         global $globalDataSource, $globalOptions, $globalDBSpecs, $globalDebug;
 
+        $dataSourceName = $this->dbSettings->getDataSourceName();
         $filePath = $this->dbSettings->getValueOfField('target');
         $contextID = $this->dbSettings->getCriteriaValue('id');
 
@@ -763,10 +1111,18 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
             case 'sort':
             case 'default-values':
             case 'validation':
-            case 'global':
-            case 'script':
             case 'calculation':
             case 'file-upload':
+                $recordID = $contextID % 10000;
+                $contextID = floor($contextID / 10000);
+                if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
+                    unset($globalDataSource[$contextID][$dataSourceName]);
+                } else {
+                    unset($globalDataSource[$contextID][$dataSourceName][$recordID]);
+                }
+                break;
+            case 'global':
+            case 'script':
                 $recordID = $contextID % 10000;
                 $contextID = floor($contextID / 10000);
                 if (count($globalDataSource[$contextID][$dataSourceName]) < 2) {
@@ -789,10 +1145,21 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
                 }
                 break;
             case 'aliases':
-            case 'browser-compatibility':
             case 'formatter':
+            case 'local-context':
                 $recordID = $contextID % 10000;
                 unset($globalOptions[$dataSourceName][$recordID]);
+                if (count($globalOptions[$dataSourceName]) < 1) {
+                    unset($globalOptions[$dataSourceName]);
+                }
+                break;
+            case 'browser-compatibility':
+                $recordID = $contextID % 10000;
+                $keys = array_keys($globalOptions[$dataSourceName]);
+                unset($globalOptions[$dataSourceName][$keys[$recordID]]);
+                if (count($globalOptions[$dataSourceName]) < 1) {
+                    unset($globalOptions[$dataSourceName]);
+                }
                 break;
             case 'debug':
                 $theKey = $this->dbSettings->getFieldOfIndex(1);
@@ -820,133 +1187,193 @@ class DB_DefEditor extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
+    public
+    function getDefaultKey()
+    {
+        // TODO: Implement getDefaultKey() method.
+    }
+
+    public
+    function isPossibleOperator($operator)
+    {
+        // TODO: Implement isPossibleOperator() method.
+    }
+
+    public
+    function isPossibleOrderSpecifier($specifier)
+    {
+        // TODO: Implement isPossibleOrderSpecifier() method.
+    }
+
+    public
+    function requireUpdatedRecord($value)
+    {
+        $this->isRequiredUpdated = $value;
+    }
+
+    public
+    function updatedRecord()
+    {
+        return $this->updatedRecord;
+    }
+
+    public
+    function isContainingFieldName($fname, $fieldnames)
+    {
+        // TODO: Implement isContainingFieldName() method.
+    }
+
+    public
+    function isNullAcceptable()
+    {
+        // TODO: Implement isNullAcceptable() method.
+    }
+
+    public
+    function softDeleteActivate($field, $value)
+    {
+        // TODO: Implement softDeleteActivate() method.
+    }
+
+    public
+    function copyInDB()
+    {
+        return false;
+    }
+
+    public
+    function isSupportAggregation()
+    {
+        return false;
+
+    }
+
+    public
     function getFieldInfo($dataSourceName)
     {
         // TODO: Implement getFieldInfo() method.
     }
 
-    function authSupportStoreChallenge($username, $challenge, $clientId)
+    public
+    function setupConnection()
+    {
+        return true;
+    }
+
+    public
+    static function defaultKey()
+    {
+        // TODO: Implement defaultKey() method.
+    }
+
+    public
+    function authSupportStoreChallenge($uid, $challenge, $clientId)
     {
         // TODO: Implement authSupportStoreChallenge() method.
     }
 
+    public
     function authSupportRemoveOutdatedChallenges()
     {
         // TODO: Implement authSupportRemoveOutdatedChallenges() method.
     }
 
-    function authSupportRetrieveChallenge($username, $clientId, $isDelete = true)
+    public
+    function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
     {
         // TODO: Implement authSupportRetrieveChallenge() method.
     }
 
+    public
+    function authSupportCheckMediaToken($uid)
+    {
+        // TODO: Implement authSupportCheckMediaToken() method.
+    }
+
+    public
     function authSupportRetrieveHashedPassword($username)
     {
         // TODO: Implement authSupportRetrieveHashedPassword() method.
     }
 
-    function authSupportCreateUser($username, $hashedpassword)
+    public
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
         // TODO: Implement authSupportCreateUser() method.
     }
 
+    public
     function authSupportChangePassword($username, $hashednewpassword)
     {
         // TODO: Implement authSupportChangePassword() method.
     }
 
-    function authSupportCheckMediaToken($user)
-    {
-        // TODO: Implement authSupportCheckMediaToken() method.
-    }
-
+    public
     function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
     {
         // TODO: Implement authSupportCheckMediaPrivilege() method.
     }
 
+    public
     function authSupportGetUserIdFromEmail($email)
     {
         // TODO: Implement authSupportGetUserIdFromEmail() method.
     }
 
+    public
     function authSupportGetUserIdFromUsername($username)
     {
         // TODO: Implement authSupportGetUserIdFromUsername() method.
     }
 
+    public
     function authSupportGetUsernameFromUserId($userid)
     {
         // TODO: Implement authSupportGetUsernameFromUserId() method.
     }
 
+    public
     function authSupportGetGroupNameFromGroupId($groupid)
     {
         // TODO: Implement authSupportGetGroupNameFromGroupId() method.
     }
 
+    public
     function authSupportGetGroupsOfUser($user)
     {
         // TODO: Implement authSupportGetGroupsOfUser() method.
     }
 
+    public
     function authSupportUnifyUsernameAndEmail($username)
     {
         // TODO: Implement authSupportUnifyUsernameAndEmail() method.
     }
 
+    public
     function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
     {
         // TODO: Implement authSupportStoreIssuedHashForResetPassword() method.
     }
 
+    public
     function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
     {
         // TODO: Implement authSupportCheckIssuedHashForResetPassword() method.
     }
 
-    public function setupConnection()
+    public function authSupportUserEnrollmentStart($userid, $hash)
     {
-        // TODO: Implement setupConnection() method.
+        // TODO: Implement authSupportUserEnrollmentStart() method.
     }
 
-    public static function defaultKey()
+    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
     {
-        // TODO: Implement defaultKey() method.
+        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
     }
 
-    public function getDefaultKey()
+    public function authSupportUserEnrollmentEnrollingUser($hash)
     {
-        // TODO: Implement getDefaultKey() method.
-    }
-
-    public function isPossibleOperator($operator)
-    {
-        // TODO: Implement isPossibleOperator() method.
-    }
-
-    public function isPossibleOrderSpecifier($specifier)
-    {
-        // TODO: Implement isPossibleOrderSpecifier() method.
-    }
-
-    public function requireUpdatedRecord($value)
-    {
-        // TODO: Implement requireUpdatedRecord() method.
-    }
-
-    public function updatedRecord()
-    {
-        // TODO: Implement updatedRecord() method.
-    }
-
-    public function isContainingFieldName($fname, $fieldnames)
-    {
-        // TODO: Implement isContainingFieldName() method.
-    }
-
-    public function isNullAcceptable()
-    {
-        // TODO: Implement isNullAcceptable() method.
+        // TODO: Implement authSupportUserEnrollmentEnrollingUser() method.
     }
 }

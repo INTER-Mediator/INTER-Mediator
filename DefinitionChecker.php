@@ -1,13 +1,18 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
 
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 class DefinitionChecker
 {
 
@@ -37,7 +42,7 @@ class DefinitionChecker
 
     public function checkDefinition($definition, $prohibit)
     {
-        if ( $definition === NULL ) {
+        if ($definition === NULL) {
             return;
         }
         $this->message = '';
@@ -110,14 +115,27 @@ class DefinitionChecker
                 $closeParen = strpos(')', $endPoint);
                 $possibleString = substr($endPoint, $openParen + 1, $closeParen - $openParen - 1);
                 $possibleValues = explode("|", $possibleString);
+                $possibleWilds = array();
+                foreach ($possibleString as $str) {
+                    if (strpos($str, '*') !== false) {
+                        $possibleWilds[] = $str;
+                    }
+                }
                 if (in_array($items, $possibleValues)) {
                     $judge = true;
                 } else {
+                    foreach ($possibleWilds as $str) {
+                        if (preg_match($str, $items)) {
+                            $judge = true;
+                            break;
+                        }
+                    }
+                }
+                if (!$judge) {
                     $this->message = "$currentPath should be define as string within [$possibleString]. ";
                 }
             }
             if ($judge) {
-
             }
         }
     }
@@ -141,15 +159,22 @@ class DefinitionChecker
         'port' => 'string',
         'protocol' => 'string',
         'datatype' => 'string',
-        'external-db' => array( '#' => 'string' ),
+        'external-db' => array('#' => 'string'),
     );
     private
         $prohibitKeywordsForOption = array(
         'separator' => 'string',
         'formatter' => array(
-            '*' => array('field' => 'string',
+            '*' => array(
+                'field' => 'string',
                 'converter-class' => 'string',
-                'parameter' => 'string',
+                'parameter' => 'string|boolean',
+            ),
+        ),
+        'local-context' => array(
+            '*' => array(
+                'key' => 'string',
+                'value' => 'string|boolean|integer',
             ),
         ),
         'aliases' => array(
@@ -166,14 +191,15 @@ class DefinitionChecker
             'group-table' => 'string',
             'corresponding-table' => 'string',
             'challenge-table' => 'string',
-            'authexpired' => 'string',
-            'storing' => 'string',
+            'authexpired' => 'string|integer',
+            'storing' => 'string(cookie|cookie-domainwide|session-storage)',
             'realm' => 'string',
             'email-as-username' => 'boolean',
             'issuedhash-dsn' => 'string',
+            'password-policy' => 'string',
         ),
-        'media-root-dir'=> 'string',
-        'media-context'=> 'string',
+        'media-root-dir' => 'string',
+        'media-context' => 'string',
         'smtp' => array(
             'server' => 'string',
             'port' => 'integer',
@@ -185,7 +211,11 @@ class DefinitionChecker
             'key' => 'integer',
             'secret' => 'string',
             'channel' => 'string',
-        )
+        ),
+        'credit-including' => 'string',
+        'theme' => 'string',
+        'app-locale' => 'string',
+        'app-currency' => 'string',
     );
     private
         $prohibitKeywordsForDataSource = array(
@@ -193,6 +223,7 @@ class DefinitionChecker
             'name' => 'string',
             'table' => 'string',
             'view' => 'string',
+            'source' => 'string',
             'records' => 'integer',
             'maxrecords' => 'integer',
             'paging' => 'boolean',
@@ -225,8 +256,8 @@ class DefinitionChecker
                     'value' => 'scalar'
                 )
             ),
-            'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete)',
-            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom)',
+            'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete|copy|copy-*)',
+            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update)',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',
@@ -237,16 +268,18 @@ class DefinitionChecker
             ),
             'post-repeater' => 'string',
             'post-enclosure' => 'string',
+            'post-query-stored' => 'string',
             'script' => array(
                 '*' => array(
-                    'db-operation' => 'string(load|update|new|delete)',
+                    'db-operation' => 'string(load|read|update|new|create|delete)',
                     'situation' => 'string(pre|presort|post)',
-                    'definition' => 'string'
+                    'definition' => 'string',
+                    'parameter' => 'string',
                 )
             ),
             'global' => array(
                 '*' => array(
-                    'db-operation' => 'string(load|update|new|delete)',
+                    'db-operation' => 'string(load|read|update|new|create|delete)',
                     'field' => 'string',
                     'value' => 'scalar'
                 )
@@ -265,6 +298,12 @@ class DefinitionChecker
                     'target' => 'string(table|field-user|field-group)',
                     'field' => 'string'
                 ),
+                'read' => array(
+                    'user' => 'array',
+                    'group' => 'array',
+                    'target' => 'string(table|field-user|field-group)',
+                    'field' => 'string'
+                ),
                 'update' => array(
                     'user' => 'array',
                     'group' => 'array',
@@ -272,6 +311,12 @@ class DefinitionChecker
                     'field' => 'string'
                 ),
                 'new' => array(
+                    'user' => 'array',
+                    'group' => 'array',
+                    'target' => 'string(table|field-user|field-group)',
+                    'field' => 'string'
+                ),
+                'create' => array(
                     'user' => 'array',
                     'group' => 'array',
                     'target' => 'string(table|field-user|field-group)',
@@ -302,10 +347,14 @@ class DefinitionChecker
             'post-dismiss-message' => 'string',
             'post-move-url' => 'string',
             'soft-delete' => 'boolean|string',
+            'aggregation-select' => 'string',
+            'aggregation-from' => 'string',
+            'aggregation-group-by' => 'string',
             'file-upload' => array(
                 '*' => array(
                     'field' => 'string',
                     'context' => 'string',
+                    'container' => 'boolean',
                 )
             ),
             'calculation' => array(
@@ -313,6 +362,13 @@ class DefinitionChecker
                     'field' => 'string',
                     'expression' => 'string',
                 )
+            ),
+            'button-names' => array(
+                'insert' => 'string',
+                'delete' => 'string',
+                'navi-detail' => 'string',
+                'navi-back' => 'string',
+                'copy' => 'string',
             ),
             'send-mail' => array(
                 'load' => array(
@@ -333,7 +389,61 @@ class DefinitionChecker
                     'f-option' => 'boolean',
                     'body-wrap' => 'integer',
                 ),
+                'read' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
                 'new' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
+                'create' => array(
+                    'from' => 'string',
+                    'to' => 'string',
+                    'cc' => 'string',
+                    'bcc' => 'string',
+                    'subject' => 'string',
+                    'body' => 'string',
+                    'from-constant' => 'string',
+                    'to-constant' => 'string',
+                    'cc-constant' => 'string',
+                    'bcc-constant' => 'string',
+                    'subject-constant' => 'string',
+                    'body-constant' => 'string',
+                    'body-template' => 'string',
+                    'body-fields' => 'string',
+                    'f-option' => 'boolean',
+                    'body-wrap' => 'integer',
+                ),
+                'edit' => array(
                     'from' => 'string',
                     'to' => 'string',
                     'cc' => 'string',
@@ -370,7 +480,6 @@ class DefinitionChecker
                     'body-wrap' => 'integer',
                 ),
             )
-
         ),
     );
 

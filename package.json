@@ -1,25 +1,29 @@
 {
     "name" : "INTER-Mediator",
     "description" : "Web Development Framework",
-    "author" : "Masayuki Nii",
+    "author" : "INTER-Mediator Directive Committee",
     "contributors": [
+        {"name" : "Masayuki Nii"},
         {"name" : "Atsushi Matsuo"},
         {"name" : "Kiyonori Ito"},
-        {"name" : "Kentaro Suzuki"}
+        {"name" : "Kentaro Suzuki"},
+        {"name" : "Nobuo Hayashi"},
+        {"name" : "Kazuaki Osawa"},
+        {"name" : "Hiroko Oki"},
+        {"name" : "Tomomitsu Baba"}
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/msyk/INTER-Mediator.git"
+        "url": "https://github.com/INTER-Mediator/INTER-Mediator.git"
     },
     "scripts" : {
-        "test" : "node_modules/.bin/buster-test -r specification",
+        "test" : "node_modules/.bin/buster-test -r specification -c ./spec/buster.js",
         "test-local" : "/usr/local/bin/buster-test -r specification"
     },
     "devDependencies" : {
-        "buster" : "~0.7",
-        "phantomjs" : ">=1.0.0"
+        "buster" : "~0.7"
     },
     "engines" : {
-        "node" : "~0.10"
+        "node" : ">=6.11.0"
     }
 }

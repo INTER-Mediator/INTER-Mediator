@@ -1,12 +1,18 @@
 <?php
-/*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 IM_Entry(
@@ -64,10 +70,11 @@ IM_Entry(
         ),
         array(
             'name' => 'rentback',
+            'view' => 'rent',
             'table' => 'rent',
             'key' => 'rent_id',
             'query' => array(
-                array('field' => 'backdate', 'operator' => 'IS NULL'),
+                array('field' => 'backdate', 'operator' => '=', 'value' => ''),
             ),
         ),
         array(
@@ -85,6 +92,7 @@ IM_Entry(
         'formatter' => array(
             array('field' => 'asset@purchase', 'converter-class' => 'FMDateTime', 'parameter'=>'%y/%m/%d'),
             array('field' => 'asset@discard', 'converter-class' => 'FMDateTime'),
+            array('field' => 'rent@rentdate', 'converter-class' => 'FMDateTime', 'parameter'=>'%y/%m/%d'),
         ),
     ),
     array(

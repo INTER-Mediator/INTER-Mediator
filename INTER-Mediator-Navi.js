@@ -1,24 +1,40 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibPageNavigation class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 IMLibPageNavigation = {
     deleteInsertOnNavi: [],
+    previousModeDetail: null,
+
     /**
      * Create Navigation Bar to move previous/next page
      */
 
     navigationSetup: function () {
         var navigation, i, insideNav, navLabel, node, start, pageSize, allCount, disableClass, c_node,
-            prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction;
+            prevPageCount, nextPageCount, endPageCount, onNaviInsertFunction, onNaviDeleteFunction,
+            onNaviCopyFunction, contextName, contextDef, buttonLabel;
 
         navigation = document.getElementById('IM_NAVIGATOR');
-        if (navigation != null) {
+        if (navigation !== null) {
+            if (!IMLibContextPool.getPagingContext()) {
+                navigation.style.display = "none";
+                return;
+            }
             insideNav = navigation.childNodes;
             for (i = 0; i < insideNav.length; i++) {
                 navigation.removeChild(insideNav[i]);
@@ -33,7 +49,10 @@ IMLibPageNavigation = {
                 node.appendChild(document.createTextNode(
                     ((navLabel === null || navLabel[8] === null) ? INTERMediatorOnPage.getMessages()[2] : navLabel[8])));
                 node.setAttribute('class', 'IM_NAV_button');
-                INTERMediatorLib.addEvent(node, 'click', function () {
+                if (!node.id) {
+                    node.id = INTERMediator.nextIdValue();
+                }
+                IMLibMouseEventDispatch.setExecute(node.id, function () {
                     INTERMediator.initialize();
                     IMLibLocalContext.archive();
                     location.reload();
@@ -44,99 +63,105 @@ IMLibPageNavigation = {
                 start = Number(INTERMediator.startFrom);
                 pageSize = Number(INTERMediator.pagedSize);
                 allCount = Number(INTERMediator.pagedAllCount);
-                disableClass = " IM_NAV_disabled";
+                disableClass = ' IM_NAV_disabled';
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     ((navLabel === null || navLabel[4] === null) ?
-                        INTERMediatorOnPage.getMessages()[1] : navLabel[4]) + (start + 1)
-                        + ((Math.min(start + pageSize, allCount) - start > 1) ?
-                        (((navLabel === null || navLabel[5] === null) ? "-" : navLabel[5])
-                            + Math.min(start + pageSize, allCount)) : '')
-                        + ((navLabel === null || navLabel[6] === null) ? " / " : navLabel[6]) + (allCount)
-                        + ((navLabel === null || navLabel[7] === null) ? "" : navLabel[7])));
+                        INTERMediatorOnPage.getMessages()[1] : navLabel[4]) +
+                    (allCount === 0 ? 0 : start + 1) +
+                    ((Math.min(start + pageSize, allCount) - start > 1) ?
+                        (((navLabel === null || navLabel[5] === null) ? '-' : navLabel[5]) +
+                        Math.min(start + pageSize, allCount)) : '') +
+                    ((navLabel === null || navLabel[6] === null) ? ' / ' : navLabel[6]) + (allCount) +
+                    ((navLabel === null || navLabel[7] === null) ? '' : navLabel[7])));
                 node.setAttribute('class', 'IM_NAV_info');
             }
 
-            if (navLabel === null || navLabel[0] !== false) {
+            if ((navLabel === null || navLabel[0] !== false) && INTERMediator.pagination === true) {
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[0] === null) ? '<<' : navLabel[0]));
-                node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator_DBAdapter.unregister();
-                    INTERMediator.startFrom = 0;
-                    INTERMediator.constructMain(true);
+                node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ''));
+                if (!node.id) {
+                    node.id = INTERMediator.nextIdValue();
+                }
+                IMLibMouseEventDispatch.setExecute(node.id, function () {
+                    IMLibPageNavigation.moveRecordFromNavi("navimoving", 0);
                 });
 
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[1] === null) ? '<' : navLabel[1]));
-                node.setAttribute('class', 'IM_NAV_button' + (start == 0 ? disableClass : ""));
+                node.setAttribute('class', 'IM_NAV_button' + (start === 0 ? disableClass : ''));
                 prevPageCount = (start - pageSize > 0) ? start - pageSize : 0;
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator_DBAdapter.unregister();
-                    INTERMediator.startFrom = prevPageCount;
-                    INTERMediator.constructMain(true);
+                if (!node.id) {
+                    node.id = INTERMediator.nextIdValue();
+                }
+                IMLibMouseEventDispatch.setExecute(node.id, function () {
+                    IMLibPageNavigation.moveRecordFromNavi("navimoving", prevPageCount);
                 });
 
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[2] === null) ? '>' : navLabel[2]));
-                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                nextPageCount
-                    = (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator_DBAdapter.unregister();
-                    INTERMediator.startFrom = nextPageCount;
-                    INTERMediator.constructMain(true);
+                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ''));
+                nextPageCount =
+                    (start + pageSize < allCount) ? start + pageSize : ((allCount - pageSize > 0) ? start : 0);
+                if (!node.id) {
+                    node.id = INTERMediator.nextIdValue();
+                }
+                IMLibMouseEventDispatch.setExecute(node.id, function () {
+                    IMLibPageNavigation.moveRecordFromNavi("navimoving", nextPageCount);
                 });
 
                 node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(
                     (navLabel === null || navLabel[3] === null) ? '>>' : navLabel[3]));
-                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ""));
-                if (allCount % pageSize == 0) {
+                node.setAttribute('class', 'IM_NAV_button' + (start + pageSize >= allCount ? disableClass : ''));
+                if (allCount % pageSize === 0) {
                     endPageCount = allCount - (allCount % pageSize) - pageSize;
                 } else {
                     endPageCount = allCount - (allCount % pageSize);
                 }
-                INTERMediatorLib.addEvent(node, 'click', function () {
-                    INTERMediator_DBAdapter.unregister();
-                    INTERMediator.startFrom = (endPageCount > 0) ? endPageCount : 0;
-                    INTERMediator.constructMain(true);
+                if (!node.id) {
+                    node.id = INTERMediator.nextIdValue();
+                }
+                IMLibMouseEventDispatch.setExecute(node.id, function () {
+                    IMLibPageNavigation.moveRecordFromNavi("navimoving", (endPageCount > 0) ? endPageCount : 0);
                 });
 
                 // Get from http://agilmente.com/blog/2013/08/04/inter-mediator_pagenation_1/
-                node = document.createElement("SPAN");
+                node = document.createElement('SPAN');
                 navigation.appendChild(node);
                 node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[10]));
-                c_node = document.createElement("INPUT");
-                c_node.setAttribute("class", 'IM_NAV_JUMP');
-                c_node.setAttribute("type", 'text');
-                c_node.setAttribute("value", Math.ceil(INTERMediator.startFrom / pageSize + 1));
+                c_node = document.createElement('INPUT');
+                c_node.setAttribute('class', 'IM_NAV_JUMP');
+                c_node.setAttribute('type', 'text');
+                if (!c_node.id) {
+                    c_node.id = INTERMediator.nextIdValue();
+                }
+                c_node.setAttribute('value', Math.ceil(INTERMediator.startFrom / pageSize + 1));
                 node.appendChild(c_node);
                 node.appendChild(document.createTextNode(INTERMediatorOnPage.getMessages()[11]));
-                INTERMediatorLib.addEvent(
-                    c_node,
-                    "change",
-                    function () {
-                        if (this.value < 1) {
-                            this.value = 1;
-                        }
-                        var max_page = Math.ceil(allCount / pageSize);
-                        if (max_page < this.value) {
-                            this.value = max_page;
-                        }
-                        INTERMediator.startFrom = ( ~~this.value - 1 ) * pageSize;
-                        INTERMediator.construct(true);
-                    }
-                );
                 // ---------
+                IMLibChangeEventDispatch.setExecute(c_node.id, function () {
+                    var moveTo, max_page;
+                    moveTo = INTERMediatorLib.toNumber(c_node.value);
+                    if (moveTo < 1) {
+                        moveTo = 1;
+                    }
+                    max_page = Math.ceil(allCount / pageSize);
+                    if (max_page < moveTo) {
+                        moveTo = max_page;
+                    }
+                    INTERMediator.startFrom = ( moveTo - 1 ) * pageSize;
+                    INTERMediator.constructMain(true);
+                });
             }
 
             if (navLabel === null || navLabel[9] !== false) {
@@ -145,10 +170,14 @@ IMLibPageNavigation = {
                         case 'INSERT':
                             node = document.createElement('SPAN');
                             navigation.appendChild(node);
-                            node.appendChild(
-                                document.createTextNode(
-                                    INTERMediatorOnPage.getMessages()[3] + ': '
-                                        + IMLibPageNavigation.deleteInsertOnNavi[i]['name']));
+                            contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                            contextDef = IMLibContextPool.getContextDef(contextName);
+                            if (contextDef && contextDef['button-names'] && contextDef['button-names']['insert']) {
+                                buttonLabel = contextDef['button-names']['insert'];
+                            } else {
+                                buttonLabel = INTERMediatorOnPage.getMessages()[3] + ': ' + contextName;
+                            }
+                            node.appendChild(document.createTextNode(buttonLabel));
                             node.setAttribute('class', 'IM_NAV_button');
                             onNaviInsertFunction = function (a, b, c) {
                                 var contextName = a, keyValue = b, confirming = c;
@@ -156,22 +185,27 @@ IMLibPageNavigation = {
                                     IMLibPageNavigation.insertRecordFromNavi(contextName, keyValue, confirming);
                                 };
                             };
-                            INTERMediatorLib.addEvent(
-                                node,
-                                'click',
+                            if (!node.id) {
+                                node.id = INTERMediator.nextIdValue();
+                            }
+                            IMLibMouseEventDispatch.setExecute(node.id,
                                 onNaviInsertFunction(
                                     IMLibPageNavigation.deleteInsertOnNavi[i]['name'],
                                     IMLibPageNavigation.deleteInsertOnNavi[i]['key'],
-                                    IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false)
+                                    IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'])
                             );
                             break;
                         case 'DELETE':
                             node = document.createElement('SPAN');
                             navigation.appendChild(node);
-                            node.appendChild(
-                                document.createTextNode(
-                                    INTERMediatorOnPage.getMessages()[4] + ': '
-                                        + IMLibPageNavigation.deleteInsertOnNavi[i]['name']));
+                            contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                            contextDef = IMLibContextPool.getContextDef(contextName);
+                            if (contextDef && contextDef['button-names'] && contextDef['button-names']['delete']) {
+                                buttonLabel = contextDef['button-names']['delete'];
+                            } else {
+                                buttonLabel = INTERMediatorOnPage.getMessages()[4] + ': ' + contextName;
+                            }
+                            node.appendChild(document.createTextNode(buttonLabel));
                             node.setAttribute('class', 'IM_NAV_button');
                             onNaviDeleteFunction = function (a, b, c, d) {
                                 var contextName = a, keyName = b, keyValue = c, confirming = d;
@@ -186,13 +220,39 @@ IMLibPageNavigation = {
                                     IMLibPageNavigation.deleteInsertOnNavi[i]['name'],
                                     IMLibPageNavigation.deleteInsertOnNavi[i]['key'],
                                     IMLibPageNavigation.deleteInsertOnNavi[i]['value'],
-                                    IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'] ? true : false));
+                                    IMLibPageNavigation.deleteInsertOnNavi[i]['confirm']));
+                            break;
+                        case 'COPY':
+                            node = document.createElement('SPAN');
+                            navigation.appendChild(node);
+                            contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                            contextDef = IMLibContextPool.getContextDef(contextName);
+                            if (contextDef && contextDef['button-names'] && contextDef['button-names']['copy']) {
+                                buttonLabel = contextDef['button-names']['copy'];
+                            } else {
+                                buttonLabel = INTERMediatorOnPage.getMessages()[15] + ': ' + contextName;
+                            }
+                            node.appendChild(document.createTextNode(buttonLabel));
+                            node.setAttribute('class', 'IM_NAV_button');
+                            onNaviCopyFunction = function (a, b) {
+                                var contextDef = a, record = b;
+                                return function () {
+                                    IMLibPageNavigation.copyRecordFromNavi(contextDef, record);
+                                };
+                            };
+                            if (!node.id) {
+                                node.id = INTERMediator.nextIdValue();
+                            }
+                            IMLibMouseEventDispatch.setExecute(node.id,
+                                onNaviCopyFunction(
+                                    IMLibPageNavigation.deleteInsertOnNavi[i]['contextDef'],
+                                    IMLibPageNavigation.deleteInsertOnNavi[i]['keyValue']));
                             break;
                     }
                 }
             }
             if (navLabel === null || navLabel[10] !== false) {
-                if (INTERMediatorOnPage.getOptionsTransaction() == 'none') {
+                if (INTERMediatorOnPage.getOptionsTransaction() === 'none') {
                     node = document.createElement('SPAN');
                     navigation.appendChild(node);
                     node.appendChild(document.createTextNode(
@@ -216,7 +276,10 @@ IMLibPageNavigation = {
                         (navLabel === null || navLabel[11] === null) ?
                             INTERMediatorOnPage.getMessages()[9] : navLabel[11]));
                     node.setAttribute('class', 'IM_NAV_button');
-                    INTERMediatorLib.addEvent(node, 'click',
+                    if (!node.id) {
+                        node.id = INTERMediator.nextIdValue();
+                    }
+                    IMLibMouseEventDispatch.setExecute(node.id,
                         function () {
                             INTERMediatorOnPage.logout();
                             location.reload();
@@ -226,32 +289,87 @@ IMLibPageNavigation = {
         }
     },
 
+    moveRecordFromNavi: function (targetName, page) {
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var a = targetName, b = page;
+                return function () {
+                    IMLibPageNavigation.moveRecordFromNavi(a, b);
+                }
+            })(), 100);
+            return true;
+        }
+        IMLibUI.lockUIElement(targetName);
+
+        INTERMediator_DBAdapter.unregister();
+        INTERMediator.startFrom = page;
+        INTERMediator.constructMain(true);
+    },
+
     insertRecordFromNavi: function (targetName, keyField, isConfirm) {
-        var newId, conditions, fieldObj, contextDef, responseCreateRecord;
+        var conditions, restore, contextDef;
 
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
             }
         }
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var a = targetName, b = keyField, c = isConfirm;
+                return function () {
+                    IMLibPageNavigation.insertRecordFromNavi(a, b, c);
+                }
+            })(), 100);
+            return true;
+        }
+        IMLibUI.lockUIElement(targetName);
+
         INTERMediatorOnPage.showProgress();
-        contextDef = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), "name", targetName);
+        contextDef = INTERMediatorLib.getNamedObject(
+            INTERMediatorOnPage.getDataSources(), 'name', targetName);
         if (contextDef === null) {
-            alert("no targetname :" + targetName);
+            alert('no targetname :' + targetName);
             INTERMediatorOnPage.hideProgress();
             return;
         }
 
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            responseCreateRecord = INTERMediator_DBAdapter.db_createRecord({name: targetName, dataset: []});
-            newId = responseCreateRecord.newKeyValue;
+            INTERMediator_DBAdapter.db_createRecord_async({name: targetName, dataset: []},
+                function (response) {
+                    var newId = response.newRecordKeyValue;
+                    if (newId > -1) {
+                        restore = INTERMediator.additionalCondition;
+                        if (contextDef.records <= 1) {
+                            INTERMediator.startFrom = 0;
+                            INTERMediator.pagedAllCount = 1;
+                            conditions = INTERMediator.additionalCondition;
+                            conditions[targetName] = {field: keyField, value: newId};
+                            INTERMediator.additionalCondition = conditions;
+                            IMLibLocalContext.archive();
+                        } else {
+                            INTERMediator.pagedAllCount++;
+                        }
+                        IMLibUI.unlockUIElement(targetName);
+                        INTERMediator_DBAdapter.unregister();
+                        INTERMediator.constructMain(true);
+                        INTERMediator.additionalCondition = restore;
+                        IMLibPageNavigation.navigationSetup();
+                    }
+                    IMLibCalc.recalculation();
+                    INTERMediatorOnPage.hideProgress();
+                    INTERMediator.flushMessage();
+
+                }, null);
         } catch (ex) {
-            if (ex == "_im_requath_request_") {
+            IMLibUI.unlockUIElement(targetName);
+            if (ex == '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
-                        INTERMediatorOnPage.authChallenge = null;
-                        INTERMediatorOnPage.authHashedPassword = null;
+                        INTERMediatorOnPage.clearCredentials();
                         INTERMediatorOnPage.authenticating(function () {
                             IMLibPageNavigation.insertRecordFromNavi(targetName, keyField, isConfirm);
                         });
@@ -260,73 +378,155 @@ IMLibPageNavigation = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-5");
+                INTERMediator.setErrorMessage(ex, 'EXCEPTION-5');
             }
         }
 
-        if (newId > -1) {
-            restore = INTERMediator.additionalCondition;
-            INTERMediator.startFrom = 0;
-            if (contextDef.records <= 1) {
-                conditions = INTERMediator.additionalCondition;
-                conditions[targetName] = {field: keyField, value: newId};
-                INTERMediator.additionalCondition = conditions;
-                IMLibLocalContext.archive();
-            }
-            INTERMediator_DBAdapter.unregister();
-            INTERMediator.constructMain(true);
-            INTERMediator.additionalCondition = restore;
-        }
-        IMLibCalc.recalculation();
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
     },
 
     deleteRecordFromNavi: function (targetName, keyField, keyValue, isConfirm) {
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var a = targetName, b = keyField, c = keyValue, d = isConfirm;
+                return function () {
+                    IMLibPageNavigation.deleteRecordFromNavi(a, b, c, c);
+                }
+            })(), 100);
+            return true;
+        }
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                 return;
             }
         }
+        IMLibUI.lockUIElement(targetName);
         INTERMediatorOnPage.showProgress();
         try {
             INTERMediatorOnPage.retrieveAuthInfo();
-            INTERMediator_DBAdapter.db_delete({
-                name: targetName,
-                conditions: [
-                    {field: keyField, operator: '=', value: keyValue}
-                ]
-            });
+            INTERMediator_DBAdapter.db_delete_async(
+                {
+                    name: targetName,
+                    conditions: [{field: keyField, operator: '=', value: keyValue}]
+                },
+                (function () {
+                    var targetCapt = targetName;
+                    return function () {
+                        INTERMediator.pagedAllCount--;
+                        INTERMediator.totalRecordCount--;
+                        if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
+                            INTERMediator.startFrom--;
+                            if (INTERMediator.startFrom < 0) {
+                                INTERMediator.startFrom = 0;
+                            }
+                        }
+                        IMLibUI.unlockUIElement(targetCapt);
+                        INTERMediator.constructMain(true);
+                        INTERMediatorOnPage.hideProgress();
+                        INTERMediator.flushMessage();
+                    };
+                })(),
+                null
+            );
         } catch (ex) {
-            if (ex == "_im_requath_request_") {
-                INTERMediatorOnPage.authChallenge = null;
-                INTERMediatorOnPage.authHashedPassword = null;
-                INTERMediatorOnPage.authenticating(
-                    function () {
-                        IMLibPageNavigation.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);
-                    }
-                );
-                INTERMediator.flushMessage();
+            INTERMediator.setErrorMessage(ex, 'EXCEPTION-6');
+            IMLibUI.unlockUIElement(targetName);
+        }
+    },
+
+    copyRecordFromNavi: function (contextDef, keyValue) {
+        var assocDef, i, def, assocContexts, pStart, copyTerm, index, idValue;
+
+        if (contextDef['repeat-control'].match(/confirm-copy/)) {
+            if (!confirm(INTERMediatorOnPage.getMessages()[1041])) {
                 return;
-            } else {
-                INTERMediator.setErrorMessage(ex, "EXCEPTION-6");
             }
         }
 
-        if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 2) {
-            INTERMediator.startFrom--;
-            if (INTERMediator.startFrom < 0) {
-                INTERMediator.startFrom = 0;
-            }
+        idValue = contextDef["name"];
+        // Locking.
+        if (IMLibUI.isLockAnyUIElements()) {
+            setTimeout((function () {
+                var a = contextDef, b = keyValue;
+                return function () {
+                    IMLibPageNavigation.copyRecordFromNavi(a, b);
+                }
+            })(), 100);
+            return true;
         }
-        INTERMediator.constructMain(true);
-        INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage();
+        IMLibUI.lockUIElement(idValue);
+
+        INTERMediatorOnPage.showProgress();
+        try {
+            if (contextDef['relation']) {
+                for (index in contextDef['relation']) {
+                    if (contextDef['relation'][index]['portal'] == true) {
+                        contextDef['portal'] = true;
+                    }
+                }
+            }
+
+            assocDef = [];
+            if (contextDef['repeat-control'].match(/copy-/)) {
+                pStart = contextDef['repeat-control'].indexOf('copy-');
+                copyTerm = contextDef['repeat-control'].substr(pStart + 5);
+                if ((pStart = copyTerm.search(/\s/)) > -1) {
+                    copyTerm = copyTerm.substr(0, pStart);
+                }
+                assocContexts = copyTerm.split(',');
+                for (i = 0; i < assocContexts.length; i++) {
+                    def = IMLibContextPool.getContextDef(assocContexts[i]);
+                    if (def['relation'][0]['foreign-key']) {
+                        assocDef.push({
+                            name: def['name'],
+                            field: def['relation'][0]['foreign-key'],
+                            value: keyValue
+                        });
+                    }
+                }
+            }
+            INTERMediatorOnPage.retrieveAuthInfo();
+            INTERMediator_DBAdapter.db_copy_async(
+                {
+                    name: contextDef['name'],
+                    conditions: [{field: contextDef['key'], operator: '=', value: keyValue}],
+                    associated: assocDef.length > 0 ? assocDef : null
+                },
+                (function () {
+                    var contextDefCapt = contextDef, idCapt = idValue;
+                    return function (result) {
+                        var restore, conditions;
+                        var newId = result.newRecordKeyValue;
+                        IMLibUI.unlockUIElement(idCapt);
+                        if (newId > -1) {
+                            restore = INTERMediator.additionalCondition;
+                            INTERMediator.startFrom = 0;
+                            if (contextDefCapt.records <= 1) {
+                                conditions = INTERMediator.additionalCondition;
+                                conditions[contextDefCapt.name] = {field: contextDefCapt.key, value: newId};
+                                INTERMediator.additionalCondition = conditions;
+                                IMLibLocalContext.archive();
+                            }
+                            INTERMediator_DBAdapter.unregister();
+                            INTERMediator.constructMain(true);
+                            INTERMediator.additionalCondition = restore;
+                        }
+                        IMLibCalc.recalculation();
+                        INTERMediatorOnPage.hideProgress();
+                        INTERMediator.flushMessage();
+                    };
+                })(),
+                null
+            );
+        } catch (ex) {
+            INTERMediator.setErrorMessage(ex, 'EXCEPTION-43');
+            IMLibUI.unlockUIElement(idValue);
+        }
     },
 
     saveRecordFromNavi: function (dontUpdate) {
-        var contextName, keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i, initialValue,
-            currentVal, fieldArray, valueArray, diffrence, needUpdate = true, context, updateData;
+        var keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i, initialValue,
+            currentVal, fieldArray, valueArray, difference, needUpdate = true, context, updateData, response;
 
         INTERMediatorOnPage.showProgress();
         INTERMediatorOnPage.retrieveAuthInfo();
@@ -334,110 +534,115 @@ IMLibPageNavigation = {
             context = IMLibContextPool.poolingContexts[i];
             updateData = context.getModified();
             for (keying in updateData) {
-                fieldArray = [];
-                valueArray = [];
-                for (field in updateData[keying]) {
-                    fieldArray.push(field);
-                    valueArray.push({field: field, value: updateData[keying][field]});
-                }
-                if (!INTERMediator.ignoreOptimisticLocking) {
+                if (updateData.hasOwnProperty(keying)) {
+                    fieldArray = [];
+                    valueArray = [];
+                    for (field in updateData[keying]) {
+                        if (updateData[keying].hasOwnProperty(field)) {
+                            fieldArray.push(field);
+                            valueArray.push({field: field, value: updateData[keying][field]});
+                        }
+                    }
                     keyingComp = keying.split('=');
                     keyingField = keyingComp[0];
                     keyingComp.shift();
                     keyingValue = keyingComp.join('=');
-                    checkQueryParameter = {
-                        name: context.contextName,
-                        records: 1,
-                        paging: false,
-                        fields: fieldArray,
-                        parentkeyvalue: null,
-                        conditions: [
-                            {field: keyingField, operator: '=', value: keyingValue}
-                        ],
-                        useoffset: false,
-                        primaryKeyOnly: true
-                    };
+                    if (!INTERMediator.ignoreOptimisticLocking) {
+                        checkQueryParameter = {
+                            name: context.contextName,
+                            records: 1,
+                            paging: false,
+                            fields: fieldArray,
+                            parentkeyvalue: null,
+                            conditions: [
+                                {field: keyingField, operator: '=', value: keyingValue}
+                            ],
+                            useoffset: false,
+                            primaryKeyOnly: true
+                        };
+                        try {
+                            currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
+                        } catch (ex) {
+                            if (ex == '_im_requath_request_') {
+                                if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                                    INTERMediatorOnPage.clearCredentials();
+                                    INTERMediatorOnPage.authenticating(
+                                        (function () {
+                                            var qParam = checkQueryParameter;
+                                            return function () {
+                                                INTERMediator.db_query(qParam);
+                                            };
+                                        })()
+                                    );
+                                    return;
+                                }
+                            } else {
+                                INTERMediator.setErrorMessage(ex, 'EXCEPTION-28');
+                            }
+                        }
+
+                        if (currentVal.recordset === null ||
+                            currentVal.recordset[0] === null) {
+                            alert(INTERMediatorLib.getInsertedString(
+                                INTERMediatorOnPage.getMessages()[1003], [fieldArray.join(',')]));
+                            return;
+                        }
+                        if (currentVal.count > 1) {
+                            response = confirm(INTERMediatorOnPage.getMessages()[1024]);
+                            if (!response) {
+                                return;
+                            }
+                        }
+
+                        difference = false;
+                        for (field in updateData[keying]) {
+                            if (updateData[keying].hasOwnProperty(field)) {
+                                initialValue = context.getValue(keying, field);
+                                if (initialValue != currentVal.recordset[0][field]) {
+                                    difference += INTERMediatorLib.getInsertedString(
+                                        INTERMediatorOnPage.getMessages()[1035], [
+                                            field,
+                                            currentVal.recordset[0][field],
+                                            updateData[keying][field]
+                                        ]);
+                                }
+                            }
+                        }
+                        if (difference !== false) {
+                            if (!confirm(INTERMediatorLib.getInsertedString(
+                                    INTERMediatorOnPage.getMessages()[1034], [difference]))) {
+                                return;
+                            }
+                            INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
+                        }
+                    }
+
                     try {
-                        currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
+                        INTERMediator_DBAdapter.db_update({
+                            name: context.contextName,
+                            conditions: [
+                                {field: keyingField, operator: '=', value: keyingValue}
+                            ],
+                            dataset: valueArray
+                        });
+
                     } catch (ex) {
-                        if (ex == "_im_requath_request_") {
-                            if (INTERMediatorOnPage.requireAuthentication
-                                && !INTERMediatorOnPage.isComplementAuthData()) {
-                                INTERMediatorOnPage.authChallenge = null;
-                                INTERMediatorOnPage.authHashedPassword = null;
+                        if (ex == '_im_requath_request_') {
+                            if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
+                                INTERMediatorOnPage.clearCredentials();
                                 INTERMediatorOnPage.authenticating(
                                     function () {
-                                        INTERMediator.db_query(checkQueryParameter);
+                                        IMLibPageNavigation.saveRecordFromNavi(dontUpdate);
                                     }
                                 );
                                 return;
                             }
                         } else {
-                            INTERMediator.setErrorMessage(ex, "EXCEPTION-28");
+                            INTERMediator.setErrorMessage(ex, 'EXCEPTION-29');
                         }
                     }
-
-                    if (currentVal.recordset == null
-                        || currentVal.recordset[0] === null) {
-                        alert(INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1003], [fieldArray.join(',')]));
-                        return;
-                    }
-                    if (currentVal.count > 1) {
-                        response = confirm(INTERMediatorOnPage.getMessages()[1024]);
-                        if (!response) {
-                            return;
-                        }
-                    }
-
-                    diffrence = false;
-                    for (field in updateData[keying]) {
-                        initialValue = context.getValue(keying, field);
-                        if (initialValue != currentVal.recordset[0][field]) {
-                            diffrence += INTERMediatorLib.getInsertedString(
-                                INTERMediatorOnPage.getMessages()[1035], [
-                                    field,
-                                    currentVal.recordset[0][field],
-                                    updateData[keying][field]
-                                ]);
-                        }
-                    }
-                    if (diffrence !== false) {
-                        if (!confirm(INTERMediatorLib.getInsertedString(
-                            INTERMediatorOnPage.getMessages()[1034], [diffrence]))) {
-                            return;
-                        }
-                        INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
-                    }
+                    context.clearModified();
                 }
-
-                try {
-                    INTERMediator_DBAdapter.db_update({
-                        name: context.contextName,
-                        conditions: [
-                            {field: keyingField, operator: '=', value: keyingValue}
-                        ],
-                        dataset: valueArray
-                    });
-
-                } catch (ex) {
-                    if (ex == "_im_requath_request_") {
-                        if (INTERMediatorOnPage.requireAuthentication
-                            && !INTERMediatorOnPage.isComplementAuthData()) {
-                            INTERMediatorOnPage.authChallenge = null;
-                            INTERMediatorOnPage.authHashedPassword = null;
-                            INTERMediatorOnPage.authenticating(
-                                function () {
-                                    IMLibPageNavigation.deleteRecordFromNavi(targetName, keyField, keyValue, isConfirm);
-                                }
-                            );
-                            return;
-                        }
-                    } else {
-                        INTERMediator.setErrorMessage(ex, "EXCEPTION-29");
-                    }
-                }
-                context.clearModified();
             }
         }
         if (needUpdate && (dontUpdate !== true)) {
@@ -445,5 +650,647 @@ IMLibPageNavigation = {
         }
         INTERMediatorOnPage.hideProgress();
         INTERMediator.flushMessage();
+    },
+
+    setupCopyButton: function (encNodeTag, repNodeTag, repeaters, currentContext, currentRecord) {
+        // Handling Copy buttons
+        var buttonNode, thisId, tdNodes, tdNode, buttonName, currentContextDef;
+
+        currentContextDef = currentContext.getContextDef();
+        if (!currentContextDef['repeat-control']
+            || !currentContextDef['repeat-control'].match(/copy/i)) {
+            return;
+        }
+        if (currentContextDef['relation']
+            || currentContextDef['records'] === undefined
+            || !currentContextDef['paging']
+            || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) !== 1)) {
+            buttonNode = document.createElement('BUTTON');
+            INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Copy');
+            buttonName = INTERMediatorOnPage.getMessages()[14];
+            if (currentContextDef['button-names'] && currentContextDef['button-names']['copy']) {
+                buttonName = currentContextDef['button-names']['copy'];
+            }
+            buttonNode.appendChild(document.createTextNode(buttonName));
+            thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
+            buttonNode.setAttribute('id', thisId);
+            INTERMediator.buttonIdNum++;
+            IMLibMouseEventDispatch.setExecute(thisId, (function () {
+                var currentContextCapt = currentContext,
+                    currentRecordCapt = currentRecord[currentContextDef['key']];
+                return function () {
+                    IMLibUI.copyButton(currentContextCapt, currentRecordCapt);
+                };
+            })());
+            switch (encNodeTag) {
+                case 'TBODY':
+                    tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
+                    tdNode = tdNodes[tdNodes.length - 1];
+                    tdNode.appendChild(buttonNode);
+                    break;
+                case 'SELECT':
+                    break;
+                default:
+                    if (repeaters[0] && repeaters[0].childNodes) {
+                        repeaters[repeaters.length - 1].appendChild(buttonNode);
+                    } else {
+                        repeaters.push(buttonNode);
+                    }
+                    break;
+            }
+        } else {
+            IMLibPageNavigation.deleteInsertOnNavi.push({
+                kind: 'COPY',
+                name: currentContextDef['name'],
+                contextDef: currentContextDef,
+                keyValue: currentRecord[currentContextDef['key']]
+            });
+        }
+    },
+
+    /* --------------------------------------------------------------------
+
+     */
+    setupDeleteButton: function (encNodeTag, repeaters, currentContext, keyField, keyValue) {
+        // Handling Delete buttons
+        var buttonNode, thisId, deleteJSFunction, tdNodes, tdNode, buttonName, currentContextDef;
+
+        currentContextDef = currentContext.contextDefinition;
+        if (!currentContextDef['repeat-control']
+            || !currentContextDef['repeat-control'].match(/delete/i)) {
+            return;
+        }
+        if (currentContextDef['relation']
+            || currentContextDef['records'] === undefined
+            || !currentContextDef['paging']
+            || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) !== 1)) {
+
+            buttonNode = document.createElement('BUTTON');
+            INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Delete');
+            buttonName = INTERMediatorOnPage.getMessages()[6];
+            if (currentContextDef['button-names'] && currentContextDef['button-names']['delete']) {
+                buttonName = currentContextDef['button-names']['delete'];
+            }
+            buttonNode.appendChild(document.createTextNode(buttonName));
+            thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
+            buttonNode.setAttribute('id', thisId);
+            INTERMediator.buttonIdNum++;
+            IMLibMouseEventDispatch.setExecute(thisId, (function () {
+                var currentContextCapt = currentContext,
+                    keyFieldCapt = keyField,
+                    keyValueCapt = keyValue,
+                    confirmingCapt = currentContextDef['repeat-control'].match(/confirm-delete/i);
+                return function () {
+                    IMLibUI.deleteButton(currentContextCapt, keyFieldCapt, keyValueCapt, confirmingCapt);
+                };
+            })());
+            switch (encNodeTag) {
+                case 'TBODY':
+                    tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
+                    tdNode = tdNodes[tdNodes.length - 1];
+                    tdNode.appendChild(buttonNode);
+                    break;
+                case 'SELECT':
+                    // OPTION tag can't contain any other tags.
+                    break;
+                default:
+                    if (repeaters[0] && repeaters[0].childNodes) {
+                        repeaters[repeaters.length - 1].appendChild(buttonNode);
+                    } else {
+                        repeaters.push(buttonNode);
+                    }
+                    break;
+            }
+        } else {
+            IMLibPageNavigation.deleteInsertOnNavi.push({
+                kind: 'DELETE',
+                name: currentContextDef['name'],
+                key: keyField,
+                value: keyValue,
+                confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
+            });
+        }
+    },
+
+    /* --------------------------------------------------------------------
+
+     */
+    setupInsertButton: function (currentContext, keyValue, node, relationValue) {
+        var buttonNode, shouldRemove, enclosedNode, footNode, trNode, tdNode, liNode, divNode, insertJSFunction, i,
+            firstLevelNodes, targetNodeTag, existingButtons, keyField, thisId, encNodeTag,
+            buttonName, setTop, currentContextDef;
+
+        encNodeTag = node.tagName;
+        currentContextDef = currentContext.getContextDef();
+        if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
+            if (relationValue.length > 0 || !currentContextDef['paging'] || currentContextDef['paging'] === false) {
+                buttonNode = document.createElement('BUTTON');
+                INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Insert');
+                buttonName = INTERMediatorOnPage.getMessages()[5];
+                if (currentContextDef['button-names'] && currentContextDef['button-names']['insert']) {
+                    buttonName = currentContextDef['button-names']['insert'];
+                }
+                buttonNode.appendChild(document.createTextNode(buttonName));
+                thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
+                buttonNode.setAttribute('id', thisId);
+                INTERMediator.buttonIdNum++;
+                shouldRemove = [];
+                switch (encNodeTag) {
+                    case 'TBODY':
+                        setTop = false;
+                        targetNodeTag = 'TFOOT';
+                        if (currentContextDef['repeat-control'].match(/top/i)) {
+                            targetNodeTag = 'THEAD';
+                            setTop = true;
+                        }
+                        enclosedNode = node.parentNode;
+                        firstLevelNodes = enclosedNode.childNodes;
+                        footNode = null;
+                        for (i = 0; i < firstLevelNodes.length; i++) {
+                            if (firstLevelNodes[i].tagName === targetNodeTag) {
+                                footNode = firstLevelNodes[i];
+                                break;
+                            }
+                        }
+                        if (footNode === null) {
+                            footNode = document.createElement(targetNodeTag);
+                            enclosedNode.appendChild(footNode);
+                        }
+                        existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert');
+                        if (existingButtons.length == 0) {
+                            trNode = document.createElement('TR');
+                            INTERMediatorLib.setClassAttributeToNode(trNode, 'IM_Insert_TR');
+                            tdNode = document.createElement('TD');
+                            INTERMediatorLib.setClassAttributeToNode(tdNode, 'IM_Insert_TD');
+                            INTERMediator.setIdValue(trNode);
+                            if (setTop && footNode.childNodes) {
+                                footNode.insertBefore(trNode, footNode.childNodes[0]);
+                            } else {
+                                footNode.appendChild(trNode);
+                            }
+                            trNode.appendChild(tdNode);
+                            tdNode.appendChild(buttonNode);
+                            shouldRemove = [trNode.getAttribute('id')];
+                        }
+                        break;
+                    case 'UL':
+                    case 'OL':
+                        liNode = document.createElement('LI');
+                        existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert');
+                        if (existingButtons.length == 0) {
+                            liNode.appendChild(buttonNode);
+                            if (currentContextDef['repeat-control'].match(/top/i)) {
+                                node.insertBefore(liNode, node.firstChild);
+                            } else {
+                                node.appendChild(liNode);
+                            }
+                        }
+                        break;
+                    case 'SELECT':
+                        // Select enclosure can't include Insert button.
+                        break;
+                    default:
+                        divNode = document.createElement('DIV');
+                        existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
+                        if (existingButtons.length == 0) {
+                            divNode.appendChild(buttonNode);
+                            if (currentContextDef['repeat-control'].match(/top/i)) {
+                                node.insertBefore(divNode, node.firstChild);
+                            } else {
+                                node.appendChild(divNode);
+                            }
+                        }
+                        break;
+                }
+                IMLibMouseEventDispatch.setExecute(buttonNode.id, (function () {
+                    var context = currentContext,
+                        keyValueCapt = keyValue,
+                        relationValueCapt = relationValue,
+                        nodeId = node.getAttribute('id'),
+                        confirming = currentContextDef['repeat-control'].match(/confirm-insert/i);
+                    return function () {
+                        IMLibUI.insertButton(context, keyValueCapt, relationValueCapt, nodeId, confirming);
+                    };
+                })());
+            } else {
+                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+                    keyField = currentContextDef['key'] ? currentContextDef['key'] : '-recid';
+                } else {
+                    keyField = currentContextDef['key'] ? currentContextDef['key'] : 'id';
+                }
+                IMLibPageNavigation.deleteInsertOnNavi.push({
+                    kind: 'INSERT',
+                    name: currentContextDef['name'],
+                    key: keyField,
+                    confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
+                });
+            }
+        }
+    },
+
+    /* --------------------------------------------------------------------
+
+     */
+    setupNavigationButton: function (encNodeTag, repeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
+        // Handling Detail buttons
+        var buttonNode, thisId, tdNodes, tdNode, firstInNode, contextDef,
+            isHide, masterContext, detailContext, showingNode, isHidePageNavi, buttonName, i,
+            isTouchRepeater, moveToDetailFunc;
+
+        if (!currentContextDef['navi-control']
+            || !currentContextDef['navi-control'].match(/master/i)
+            || encNodeTag == 'SELECT') {
+            return;
+        }
+
+        isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
+        isHide = currentContextDef['navi-control'].match(/hide/i);
+        isHidePageNavi = isHide && (currentContextDef['paging'] == true);
+
+        if (INTERMediator.detailNodeOriginalDisplay) {
+            detailContext = IMLibContextPool.getDetailContext();
+            if (detailContext) {
+                showingNode = detailContext.enclosureNode;
+                if (showingNode.tagName == 'TBODY') {
+                    showingNode = showingNode.parentNode;
+                }
+                INTERMediator.detailNodeOriginalDisplay = showingNode.style.display;
+            }
+        }
+
+        buttonNode = document.createElement('BUTTON');
+        INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Master');
+        buttonName = INTERMediatorOnPage.getMessages()[12];
+        if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-detail']) {
+            buttonName = currentContextDef['button-names']['navi-detail'];
+        }
+        buttonNode.appendChild(document.createTextNode(buttonName));
+        thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
+        buttonNode.setAttribute('id', thisId);
+        INTERMediator.buttonIdNum++;
+        masterContext = IMLibContextPool.getMasterContext();
+        masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId);
+
+        if (isTouchRepeater) {
+            moveToDetailFunc = IMLibPageNavigation.moveToDetail(
+                encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi);
+            for (i = 0; i < repeaters.length; i++) {
+                var originalColor = repeaters[i].style.backgroundColor;
+                INTERMediator.eventListenerPostAdding.push({
+                    'id': repeaters[i].id,
+                    'event': 'touchstart',
+                    'todo': (function () {
+                        var targetNode = repeaters[i];
+                        return function () {
+                            IMLibEventResponder.touchEventCancel = false;
+                            targetNode.style.backgroundColor = IMLibUI.mobileSelectionColor;
+                        };
+                    })()
+                });
+                INTERMediator.eventListenerPostAdding.push({
+                    'id': repeaters[i].id,
+                    'event': 'touchend',
+                    'todo': (function () {
+                        var targetNode = repeaters[i];
+                        var orgColor = originalColor;
+                        return function () {
+                            targetNode.style.backgroundColor = orgColor;
+                            if (!IMLibEventResponder.touchEventCancel) {
+                                IMLibEventResponder.touchEventCancel = false;
+                                moveToDetailFunc();
+                            }
+                        };
+                    })()
+                });
+                INTERMediator.eventListenerPostAdding.push({
+                    'id': repeaters[i].id,
+                    'event': 'touchmove',
+                    'todo': (function () {
+                        return function () {
+                            IMLibEventResponder.touchEventCancel = true;
+                        };
+                    })()
+                });
+                INTERMediator.eventListenerPostAdding.push({
+                    'id': repeaters[i].id,
+                    'event': 'touchcancel',
+                    'todo': (function () {
+                        return function () {
+                            IMLibEventResponder.touchEventCancel = true;
+                        };
+                    })()
+                });
+            }
+        } else {
+            IMLibMouseEventDispatch.setExecute(thisId, (function () {
+                var a = encNodeTag, b = keyField, c = keyValue, d = foreignField,
+                    e = foreignValue, f = isHide, g = isHidePageNavi;
+                return IMLibPageNavigation.moveToDetail(a, b, c, d, e, f, g);
+                // moveToDetail method has own capturing codes, so it has to just call
+            })());
+            switch (encNodeTag) {
+                case 'TBODY':
+                    tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
+                    tdNode = tdNodes[0];
+                    firstInNode = tdNode.childNodes[0];
+                    if (firstInNode) {
+                        tdNode.insertBefore(buttonNode, firstInNode);
+                    } else {
+                        tdNode.appendChild(buttonNode);
+                    }
+                    break;
+                case 'SELECT':
+                    break;
+                default:
+                    firstInNode = repeaters[repeaters.length - 1].childNodes[0];
+                    if (firstInNode) {
+                        repeaters[repeaters.length - 1].insertBefore(buttonNode, firstInNode);
+                    } else {
+                        repeaters[repeaters.length - 1].appendChild(buttonNode);
+                    }
+                    break;
+            }
+        }
+    },
+
+    moveToDetail: function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi) {
+        var f = keyField, v = keyValue, ff = foreignField, fv = foreignValue;
+        var etag = encNodeTag, mh = isHide, pnh = isHidePageNavi;
+
+        return function () {
+            return IMLibPageNavigation.moveToDetailImpl(etag, f, v, ff, fv, mh, pnh);
+        }
+    },
+
+    moveToDetailImpl: function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi) {
+        var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node;
+
+        IMLibPageNavigation.previousModeDetail = {
+            encNodeTag: encNodeTag,
+            keyField: keyField,
+            keyValue: keyValue,
+            foreignField: foreignField,
+            foreignValue: foreignValue,
+            isHide: isHide,
+            isHidePageNavi: isHidePageNavi
+        };
+
+        masterContext = IMLibContextPool.getMasterContext();
+        detailContext = IMLibContextPool.getDetailContext();
+        if (detailContext) {
+            if (INTERMediatorOnPage.naviBeforeMoveToDetail) {
+                INTERMediatorOnPage.naviBeforeMoveToDetail(masterContext, detailContext);
+            }
+            contextDef = detailContext.getContextDef();
+            contextName = contextDef.name;
+            INTERMediator.clearCondition(contextName, "_imlabel_crosstable");
+            INTERMediator.addCondition(contextName, {
+                field: keyField,
+                operator: '=',
+                value: keyValue
+            }, undefined, "_imlabel_crosstable");
+            INTERMediator.constructMain(detailContext);
+            INTERMediator.clearCondition(contextName);
+            if (isHide) {
+                INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY};
+                window.scrollTo(0, 0);
+                masterEnclosure = masterContext.enclosureNode;
+                if (encNodeTag === 'TBODY') {
+                    masterEnclosure = masterEnclosure.parentNode;
+                }
+                INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display;
+                masterEnclosure.style.display = 'none';
+
+                detailEnclosure = detailContext.enclosureNode;
+                if (detailEnclosure.tagName === 'TBODY') {
+                    detailEnclosure = detailEnclosure.parentNode;
+                }
+                detailEnclosure.style.display = INTERMediator.detailNodeOriginalDisplay;
+            }
+            if (isHidePageNavi) {
+                document.getElementById('IM_NAVIGATOR').style.display = 'none';
+            }
+            if (IMLibUI.mobileNaviBackButtonId) {
+                node = document.getElementById(IMLibUI.mobileNaviBackButtonId);
+                node.style.display = 'inline-block';
+            }
+            if (INTERMediatorOnPage.naviAfterMoveToDetail) {
+                masterContext = IMLibContextPool.getMasterContext();
+                detailContext = IMLibContextPool.getDetailContext();
+                INTERMediatorOnPage.naviAfterMoveToDetail(masterContext, detailContext);
+            }
+        }
+    },
+
+    moveDetailOnceAgain: function () {
+        var p = IMLibPageNavigation.previousModeDetail;
+        IMLibPageNavigation.moveToDetailImpl(
+            p.encNodeTag, p.keyField, p.keyValue, p.foreignField, p.foreignValue, p.isHide, p.isHidePageNavi);
+    },
+
+
+    /* --------------------------------------------------------------------
+
+     */
+    setupBackNaviButton: function (currentContext, node) {
+        var buttonNode, divNode, i, masterContext, naviControlValue, currentContextDef, showingNode,
+            isHidePageNavi, isUpdateMaster, isTouchRepeater, aNode, nodes, isTop;
+
+        currentContextDef = currentContext.getContextDef();
+
+        if (!currentContextDef['navi-control']
+            || !currentContextDef['navi-control'].match(/detail/i)) {
+            return;
+        }
+
+        masterContext = IMLibContextPool.getMasterContext();
+        naviControlValue = masterContext.getContextDef()['navi-control'];
+        if (!naviControlValue
+            || (!naviControlValue.match(/hide/i))) {
+            return;
+        }
+        isHidePageNavi = masterContext.getContextDef()['paging'] == true;
+        isUpdateMaster = currentContextDef['navi-control'].match(/update/i);
+        isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
+        isTop = !(currentContextDef['navi-control'].match(/bottom/i));
+
+        showingNode = currentContext.enclosureNode;
+        if (showingNode.tagName == 'TBODY') {
+            showingNode = showingNode.parentNode;
+        }
+        if (INTERMediator.detailNodeOriginalDisplay) {
+            INTERMediator.detailNodeOriginalDisplay = showingNode.style.display;
+        }
+        showingNode.style.display = 'none';
+
+        if (isTouchRepeater) {
+            nodes = document.getElementsByClassName('IM_Button_BackNavi');
+            if (!nodes || nodes.length == 0) {
+                aNode = createBackButton('DIV', currentContextDef);
+                IMLibUI.mobileNaviBackButtonId = aNode.id;
+                aNode.style.display = 'none';
+                nodes = INTERMediatorLib.getElementsByAttributeValue(   // Check jQuery Mobile
+                    document.getElementsByTagName('BODY')[0], 'data-role', isTop ? 'header' : 'footer');
+                if (nodes && nodes[0]) {
+                    if (nodes[0].firstChild) {
+                        nodes[0].insertBefore(aNode, nodes[0].firstChild);
+                    } else {
+                        nodes[0].appendChild(aNode);
+                    }
+                } else {   // If the page doesn't use JQuery Mobile
+                    switch (node.tagName) {
+                        case 'TBODY':
+                            tbodyTargetNode(node, isTop, aNode);
+                            break;
+                        case 'UL':
+                        case 'OL':
+                            genericTargetNode(node, isTop, 'LI', aNode);
+                            break;
+                        case 'SELECT':
+                            break;
+                        default:
+                            genericTargetNode(node, isTop, 'DIV', aNode);
+                            break;
+                    }
+                }
+                if (!aNode.id) {
+                    aNode.id = INTERMediator.nextIdValue();
+                }
+                IMLibMouseEventDispatch.setExecute(aNode.id,
+                    moveToMaster(masterContext, currentContext, isHidePageNavi, isUpdateMaster)
+                );
+            }
+        } else {
+            buttonNode = createBackButton('BUTTON', currentContextDef);
+            switch (node.tagName) {
+                case 'TBODY':
+                    tbodyTargetNode(node, isTop, buttonNode);
+                    break;
+                case 'UL':
+                case 'OL':
+                    genericTargetNode(node, isTop, 'LI', buttonNode);
+                    break;
+                case 'SELECT':
+                    break;
+                default:
+                    genericTargetNode(node, isTop, 'DIV', buttonNode);
+                    break;
+            }
+            INTERMediatorLib.addEvent(
+                buttonNode,
+                'click',
+                moveToMaster(masterContext, currentContext, isHidePageNavi, isUpdateMaster)
+            );
+        }
+
+        function createBackButton(tagName, currentContextDef) {
+            var buttonNode, buttonName;
+            buttonNode = document.createElement(tagName);
+            INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_BackNavi');
+            buttonName = INTERMediatorOnPage.getMessages()[13];
+            if (currentContextDef['button-names'] && currentContextDef['button-names']['navi-back']) {
+                buttonName = currentContextDef['button-names']['navi-back'];
+            }
+            buttonNode.appendChild(document.createTextNode(buttonName));
+            setIdForIMButtons(buttonNode);
+            return buttonNode;
+        }
+
+        function setIdForIMButtons(node) {
+            var thisId;
+            thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
+            node.setAttribute('id', thisId);
+            INTERMediator.buttonIdNum++;
+        }
+
+        function tbodyTargetNode(node, isTop, buttonNode) {
+            var targetNodeTag, enclosedNode, firstLevelNodes, targetNode, existingButtons, trNode, tdNode;
+
+            targetNodeTag = isTop ? 'THEAD' : 'TFOOT';
+            enclosedNode = node.parentNode;
+            firstLevelNodes = enclosedNode.childNodes;
+            targetNode = null;
+            for (i = 0; i < firstLevelNodes.length; i++) {
+                if (firstLevelNodes[i].tagName === targetNodeTag) {
+                    targetNode = firstLevelNodes[i];
+                    break;
+                }
+            }
+            if (targetNode === null) {
+                targetNode = document.createElement(targetNodeTag);
+                INTERMediator.appendingNodesAtLast.push({
+                    targetNode: targetNode,
+                    parentNode: enclosedNode,
+                    siblingNode: (targetNodeTag == 'THEAD') ? enclosedNode.firstChild : null
+                });
+            }
+            existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi');
+            if (existingButtons.length == 0) {
+                trNode = document.createElement('TR');
+                INTERMediatorLib.setClassAttributeToNode(trNode, 'IM_NaviBack_TR');
+                tdNode = document.createElement('TD');
+                INTERMediatorLib.setClassAttributeToNode(tdNode, 'IM_NaviBack_TD');
+                INTERMediator.setIdValue(trNode);
+                targetNode.appendChild(trNode);
+                trNode.appendChild(tdNode);
+                tdNode.appendChild(buttonNode);
+            }
+        }
+
+        function genericTargetNode(node, isTop, naviEncTag, buttonNode) {
+            var newNode, existingButtons;
+            newNode = document.createElement(naviEncTag);
+            existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi');
+            if (existingButtons.length == 0) {
+                newNode.appendChild(buttonNode);
+                if (!isTop) {
+                    node.appendChild(newNode);
+                } else {
+                    node.insertBefore(newNode, node.firstChild);
+                }
+            }
+        }
+
+        function moveToMaster(a, b, c, d) {
+            var masterContextCL = a, detailContextCL = b, pageNaviShow = c, masterUpdate = d, node;
+            return function () {
+                var showingNode;
+                if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
+                    INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
+                }
+                showingNode = detailContextCL.enclosureNode;
+                if (showingNode.tagName == 'TBODY') {
+                    showingNode = showingNode.parentNode;
+                }
+                showingNode.style.display = 'none';
+
+                showingNode = masterContextCL.enclosureNode;
+                if (showingNode.tagName == 'TBODY') {
+                    showingNode = showingNode.parentNode;
+                }
+                showingNode.style.display = INTERMediator.masterNodeOriginalDisplay;
+
+                if (pageNaviShow) {
+                    document.getElementById('IM_NAVIGATOR').style.display = 'block';
+                }
+                if (masterUpdate) {
+                    INTERMediator.constructMain(masterContextCL);
+                }
+                if (IMLibUI.mobileNaviBackButtonId) {
+                    node = document.getElementById(IMLibUI.mobileNaviBackButtonId);
+                    node.style.display = 'none';
+                }
+                if (INTERMediatorOnPage.naviAfterMoveToMaster) {
+                    masterContextCL = IMLibContextPool.getMasterContext();
+                    detailContextCL = IMLibContextPool.getDetailContext();
+                    INTERMediatorOnPage.naviAfterMoveToMaster(masterContextCL, detailContextCL);
+                }
+                if (INTERMediatorOnPage.masterScrollPosition) {
+                    window.scrollTo(
+                        INTERMediatorOnPage.masterScrollPosition.x,
+                        INTERMediatorOnPage.masterScrollPosition.y);
+                }
+            };
+        }
     }
 };

@@ -1,29 +1,44 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+/**
+ * @fileoverview IMLibEventResponder class is defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 IMLibEventResponder = {
+    touchEventCancel: false,
+
     isSetup: false,
 
-    setup: function()   {
+    setup: function () {
         var body;
 
-        if (IMLibEventResponder.isSetup)    {
+        if (IMLibEventResponder.isSetup) {
             return;
         }
 
         IMLibEventResponder.isSetup = true;
         IMLibChangeEventDispatch = new IMLibEventDispatch();
-        IMLibKeyEventDispatch = new IMLibEventDispatch();
+        IMLibKeyDownEventDispatch = new IMLibEventDispatch();
+        IMLibKeyUpEventDispatch = new IMLibEventDispatch();
         IMLibMouseEventDispatch = new IMLibEventDispatch();
+        IMLibBlurEventDispatch = new IMLibEventDispatch();
+        IMLibInputEventDispatch = new IMLibEventDispatch();
         body = document.getElementsByTagName('BODY')[0];
-        INTERMediatorLib.addEvent(body, "change", function (e) {
-            //console.log("Event Dispatcher: change");
+
+        INTERMediatorLib.addEvent(body, 'change', function (e) {
+            //console.log('Event Dispatcher: change');
             var event = e ? e : window.event;
             if (!event) {
                 return;
@@ -45,8 +60,78 @@ IMLibEventResponder = {
             }
             executable(idValue);
         });
-        INTERMediatorLib.addEvent(body, "keydown", function (e) {
-            //console.log("Event Dispatcher: keydown");
+        INTERMediatorLib.addEvent(body, 'blur', function (e) {
+            var event = e ? e : window.event;
+            if (!event) {
+                return;
+            }
+            var target = event.target;
+            if (!target) {
+                target = event.srcElement;
+                if (!target) {
+                    return;
+                }
+            }
+            var idValue = target.id;
+            if (!idValue) {
+                return;
+            }
+            var executable = IMLibBlurEventDispatch.dispatchTable[idValue];
+            if (!executable) {
+                return;
+            }
+            executable(idValue);
+        });
+        INTERMediatorLib.addEvent(body, 'input', function (e) {
+            var event = e ? e : window.event;
+            if (!event) {
+                return;
+            }
+            var target = event.target;
+            if (!target) {
+                target = event.srcElement;
+                if (!target) {
+                    return;
+                }
+            }
+            var idValue = target.id;
+            if (!idValue) {
+                return;
+            }
+            var executable = IMLibInputEventDispatch.dispatchTable[idValue];
+            if (!executable) {
+                return;
+            }
+            executable(idValue);
+        });
+        INTERMediatorLib.addEvent(body, 'keydown', function (e) {
+            var event, target, idValue, keyCode;
+            event = e ? e : window.event;
+            if (!event) {
+                return;
+            }
+            keyCode = (window.event) ? e.which : e.keyCode;
+            target = event.target;
+            if (!target) {
+                target = event.srcElement;
+                if (!target) {
+                    return;
+                }
+            }
+            idValue = target.id;
+            if (!idValue) {
+                return;
+            }
+            if (!IMLibKeyDownEventDispatch.dispatchTable[idValue]) {
+                return;
+            }
+            var executable = IMLibKeyDownEventDispatch.dispatchTable[idValue][keyCode];
+            if (!executable) {
+                return;
+            }
+            executable(event);
+        });
+        INTERMediatorLib.addEvent(body, 'keyup', function (e) {
             var event, charCode, target, idValue;
             event = e ? e : window.event;
             if (event.charCode) {
@@ -68,17 +153,17 @@ IMLibEventResponder = {
             if (!idValue) {
                 return;
             }
-            if (!IMLibKeyEventDispatch.dispatchTable[idValue]) {
+            if (!IMLibKeyUpEventDispatch.dispatchTable[idValue]) {
                 return;
             }
-            var executable = IMLibKeyEventDispatch.dispatchTable[idValue][charCode];
+            var executable = IMLibKeyUpEventDispatch.dispatchTable[idValue][charCode];
             if (!executable) {
                 return;
             }
             executable(event);
         });
-        INTERMediatorLib.addEvent(body, "click", function (e) {
-            //console.log("Event Dispatcher: click");
+        INTERMediatorLib.addEvent(body, 'click', function (e) {
+            //console.log('Event Dispatcher: click');
             var event, target, idValue, executable, targetDefs, i, nodeInfo, value;
             event = e ? e : window.event;
             if (!event) {
@@ -115,45 +200,47 @@ IMLibEventResponder = {
                 }
             }
         });
-
-
     }
 };
 
 var IMLibChangeEventDispatch;
-var IMLibKeyEventDispatch;
+var IMLibKeyDownEventDispatch;
+var IMLibKeyUpEventDispatch;
+var IMLibInputEventDispatch;
 var IMLibMouseEventDispatch;
+var IMLibBlurEventDispatch;
 
 function IMLibEventDispatch() {
-    this.dispatchTable={};
-    this.dispatchTableTarget= {};
-
-    this.clearAll= function () {
-        this.dispatchTable = {};
-        this.dispatchTableTarget = {};
-    };
-
-    this.setExecute= function (idValue, exec) {
-        if (idValue && exec) {
-            this.dispatchTable[idValue] = exec;
-        }
-    };
-
-    this.setTargetExecute= function (targetValue, exec) {
-        if (targetValue && exec) {
-            this.dispatchTableTarget[targetValue] = exec;
-        }
-    };
-
-    this.setExecuteByCode= function (idValue, charCode, exec) {
-        if (idValue && charCode) {
-            if (!this.dispatchTable[idValue]) {
-                this.dispatchTable[idValue] = {};
-            }
-            this.dispatchTable[idValue][charCode] = exec;
-        }
-    };
+    this.dispatchTable = {};
+    this.dispatchTableTarget = {};
 }
+
+IMLibEventDispatch.prototype.clearAll = function () {
+    this.dispatchTable = {};
+    this.dispatchTableTarget = {};
+};
+
+IMLibEventDispatch.prototype.setExecute = function (idValue, exec) {
+    if (idValue && exec) {
+        this.dispatchTable[idValue] = exec;
+    }
+};
+
+IMLibEventDispatch.prototype.setTargetExecute = function (targetValue, exec) {
+    if (targetValue && exec) {
+        this.dispatchTableTarget[targetValue] = exec;
+    }
+};
+
+IMLibEventDispatch.prototype.setExecuteByCode = function (idValue, keyCode, exec) {
+    if (idValue && keyCode) {
+        if (!this.dispatchTable[idValue]) {
+            this.dispatchTable[idValue] = {};
+        }
+        this.dispatchTable[idValue][keyCode] = exec;
+    }
+};
+
 
 
 

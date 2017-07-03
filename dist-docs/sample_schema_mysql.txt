@@ -1,22 +1,27 @@
 /*
  * INTER-Mediator
- * by Masayuki Nii  msyk@msyk.net Copyright (c) 2010-2014 Masayuki Nii, All rights reserved.
- * 
- * This project started at the end of 2009.
- * 
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
 
 This schema file is for the sample of INTER-Mediator using MySQL, encoded by UTF-8.
 
 Example:
 $ mysql -u root -p < sample_schema_mysql.txt
-Enter password: 
+Enter password:
 
 */
 SET NAMES 'utf8mb4';
 
-GRANT USAGE ON *.* TO 'web'@'localhost';
-DROP USER 'web'@'localhost';
+# DROP USER 'web'@'localhost';
 CREATE USER 'web'@'localhost' IDENTIFIED BY 'password';
+# GRANT USAGE ON *.* TO 'web'@'localhost' IDENTIFIED BY 'password';
+
+# Grant to All operations for all objects with web account
+GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
 
 DROP DATABASE IF EXISTS test_db;
 CREATE DATABASE test_db
@@ -36,6 +41,7 @@ CREATE TABLE person	(
 	category		INT,
 	checking		INT,
 	location		INT,
+	memo		TEXT,
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
@@ -210,7 +216,7 @@ CREATE TABLE product (
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
-		ENGINE=InnoDB;	
+		ENGINE=InnoDB;
 
 CREATE VIEW item_display AS
     SELECT item.id, item.invoice_id, item.product_id, item.category_id, product.name, item.qty,
@@ -409,13 +415,22 @@ CREATE TABLE registeredpks (
 
 CREATE TABLE authuser (
 	id					INT  AUTO_INCREMENT,
-	username			VARCHAR(48),
+	username			VARCHAR(64),
 	hashedpasswd		VARCHAR(48),
+	realname			VARCHAR(20),
 	email               VARCHAR(100),
+	limitdt             DATETIME,
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4,
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
+
+CREATE INDEX authuser_username
+  ON authuser (username);
+CREATE INDEX authuser_email
+  ON authuser (email);
+CREATE INDEX authuser_limitdt
+  ON authuser (limitdt);
 
 INSERT authuser SET id=1,username='user1',hashedpasswd='d83eefa0a9bd7190c94e7911688503737a99db0154455354';
 INSERT authuser SET id=2,username='user2',hashedpasswd='5115aba773983066bcf4a8655ddac8525c1d3c6354455354';
@@ -457,6 +472,13 @@ CREATE TABLE authcor (
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
+CREATE INDEX authcor_user_id
+  ON authcor (user_id);
+CREATE INDEX authcor_group_id
+  ON authcor (group_id);
+CREATE INDEX authcor_dest_group_id
+  ON authcor (dest_group_id);
+
 INSERT authcor SET user_id=1,dest_group_id=1;
 INSERT authcor SET user_id=2,dest_group_id=1;
 INSERT authcor SET user_id=3,dest_group_id=1;
@@ -477,6 +499,15 @@ CREATE TABLE issuedhash (
 		COLLATE utf8mb4_unicode_ci
 		ENGINE=InnoDB;
 
+CREATE INDEX issuedhash_user_id
+  ON issuedhash (user_id);
+CREATE INDEX issuedhash_expired
+  ON issuedhash (expired);
+CREATE INDEX issuedhash_clienthost
+  ON issuedhash (clienthost);
+CREATE INDEX issuedhash_user_id_clienthost
+  ON issuedhash (user_id, clienthost);
+
 CREATE TABLE testtable (
     id INT AUTO_INCREMENT,
     num1 INT,
@@ -493,9 +524,13 @@ CREATE TABLE testtable (
 	PRIMARY KEY(id)
 )		CHARACTER SET utf8mb4, COLLATE utf8mb4_unicode_ci ENGINE=InnoDB;
 
-
-# Grant to All operations for all objects with web account
-GRANT SELECT, INSERT, DELETE, UPDATE ON TABLE test_db.* TO 'web'@'localhost';
+CREATE TABLE information (
+	id		  INT  AUTO_INCREMENT,
+	lastupdated	  DATE,
+	PRIMARY KEY(id)
+)		CHARACTER SET utf8mb4,
+		COLLATE utf8mb4_unicode_ci
+		ENGINE=InnoDB;
 
 # Sample Data
 INSERT product SET name="Apple",id=1,category_id=1,unitprice=340,photofile='mela-verde.png',acknowledgement='Image: djcodrin / FreeDigitalPhotos.net',ack_link='http://www.freedigitalphotos.net/images/view_photog.php?photogid=982';
@@ -5500,3 +5535,5 @@ INSERT saleslog SET dt=timestamp'2010-1-1 22:51:40',item='Shallots ',customer='
 INSERT saleslog SET dt=timestamp'2010-1-1 23:03:16',item='Carrot ',customer='Oriental loach Food, Co.',qty=9,item_id=10,customer_id=643,unitprice=460,total=4140;
 INSERT saleslog SET dt=timestamp'2010-1-1 23:29:13',item='Carrot ',customer='Cepalin Food, Co.',qty=5,item_id=10,customer_id=182,unitprice=460,total=2300;
 INSERT saleslog SET dt=timestamp'2010-1-1 23:52:34',item='Courgette ',customer='Snubnose parasitic eel Food, Co.',qty=5,item_id=15,customer_id=913,unitprice=251,total=1255;
+
+INSERT information SET id=1,lastupdated=CURDATE();

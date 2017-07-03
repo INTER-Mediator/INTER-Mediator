@@ -1,55 +1,73 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//"use strict"
+//'use strict';
+/**
+ * @fileoverview IMLib and INTERMediatorLib classes are defined here.
+ */
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
+var IMLib = {
+    nl_char: '\n',
+    cr_char: '\r',
+    tab_char: '\t',
+    singleQuote_char: '\'',
+    doubleQuote_char: '"',
+    backSlash_char: '\\',
 
+    get zerolength_str() {
+        return '';
+    },
+    set zerolength_str(value) {
+        // do nothing
+    },
+
+    get crlf_str() {
+        return '\r\n';
+    },
+    set crlf_str(value) {
+        // do nothing
+    }
+};
+
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * @constructor
+ */
 var INTERMediatorLib = {
 
-    ignoreEnclosureRepeaterClassName: "_im_ignore_enc_rep",
-    ignoreEnclosureRepeaterControlName: "ignore_enc_rep",
-    rollingRepeaterClassName: "_im_repeater",
-    rollingEnclosureClassName: "_im_enclosure",
-    rollingRepeaterDataControlName: "repeater",
-    rollingEnclosureDataControlName: "enclosure",
-    cachedDigitSeparator: null,
+    ignoreEnclosureRepeaterClassName: '_im_ignore_enc_rep',
+    ignoreEnclosureRepeaterControlName: 'ignore_enc_rep',
+    roleAsRepeaterClassName: '_im_repeater',
+    roleAsEnclosureClassName: '_im_enclosure',
+    roleAsRepeaterDataControlName: 'repeater',
+    roleAsEnclosureDataControlName: 'enclosure',
+    roleAsSeparatorDataControlName: 'separator',
+    roleAsHeaderDataControlName: 'header',
+    roleAsFooterDataControlName: 'footer',
+    roleAsNoResultDataControlName: 'noresult',
 
     initialize: function () {
-        var num, str, decimal, separator, digits;
-
-//            INTERMediator.startFrom = 0;
-//            INTERMediator.pagedSize = 0;
-//        INTERMediator.additionalCondition = {};
-//        INTERMediator.additionalSortKey = {};
-
-        // Initialize the cachedDigitSeparator property.
-        try {
-            num = new Number(1000.1);
-            str = num.toLocaleString();
-            decimal = str.substr(-2, 1);
-            str = str.substring(0, str.length - 2);
-            separator = str.match(/[^0-9]/)[0];
-            digits = str.length - str.indexOf(separator) - 1;
-            INTERMediatorLib.cachedDigitSeparator = [decimal, separator, digits];
-        } catch (ex) {
-            INTERMediatorLib.cachedDigitSeparator = [".", ",", 3];
-        }
-
         IMLibLocalContext.unarchive();
-
         return null;
     },
 
     setup: function () {
         if (window.addEventListener) {
-            window.addEventListener("load", this.initialize, false);
+            window.addEventListener('load', this.initialize, false);
         } else if (window.attachEvent) { // for IE
-            window.attachEvent("onload", this.initialize);
+            window.attachEvent('onload', this.initialize);
         } else {
             window.onload = this.initialize;
         }
@@ -57,15 +75,11 @@ var INTERMediatorLib = {
         return null;
     },
 
-    digitSeparator: function () {
-        return this.cachedDigitSeparator;
-    },
-
     generatePasswordHash: function (password) {
-        var numToHex, salt, saltHex, code, lowCode, highCode;
+        var numToHex, salt, saltHex, code, lowCode, highCode, i;
         numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
-        salt = "";
-        saltHex = "";
+        salt = '';
+        saltHex = '';
         for (i = 0; i < 4; i++) {
             code = Math.floor(Math.random() * (128 - 32) + 32);
             lowCode = code & 0xF;
@@ -78,7 +92,7 @@ var INTERMediatorLib = {
     },
     getParentRepeater: function (node) {
         var currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isRepeater(currentNode, true)) {
                 return currentNode;
             }
@@ -89,7 +103,7 @@ var INTERMediatorLib = {
 
     getParentEnclosure: function (node) {
         var currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isEnclosure(currentNode, true)) {
                 return currentNode;
             }
@@ -108,21 +122,20 @@ var INTERMediatorLib = {
         if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
             return false;
         }
-        controlAttr = node.getAttribute("data-im-control");
+        controlAttr = node.getAttribute('data-im-control');
         if (controlAttr && controlAttr.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterControlName) >= 0) {
             return false;
         }
         tagName = node.tagName;
-        if ((tagName === 'TBODY')
-            || (tagName === 'UL')
-            || (tagName === 'OL')
-            || (tagName === 'SELECT')
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && className
-            && className.indexOf(INTERMediatorLib.rollingEnclosureClassName) >= 0)
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && controlAttr
-            && controlAttr.indexOf(INTERMediatorLib.rollingEnclosureDataControlName) >= 0)) {
+        if ((tagName === 'TBODY') ||
+            (tagName === 'UL') ||
+            (tagName === 'OL') ||
+            (tagName === 'SELECT') ||
+            ((tagName === 'DIV' || tagName === 'SPAN') &&
+            className &&
+            className.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
+            (controlAttr &&
+            controlAttr.indexOf(INTERMediatorLib.roleAsEnclosureDataControlName) >= 0)) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -147,20 +160,19 @@ var INTERMediatorLib = {
         if (className && className.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterClassName) >= 0) {
             return false;
         }
-        controlAttr = node.getAttribute("data-im-control");
+        controlAttr = node.getAttribute('data-im-control');
         if (controlAttr && controlAttr.indexOf(INTERMediatorLib.ignoreEnclosureRepeaterControlName) >= 0) {
             return false;
         }
         tagName = node.tagName;
-        if ((tagName === 'TR')
-            || (tagName === 'LI')
-            || (tagName === 'OPTION')
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && className
-            && className.indexOf(INTERMediatorLib.rollingRepeaterClassName) >= 0)
-            || ((tagName === 'DIV' || tagName === 'SPAN' )
-            && controlAttr
-            && controlAttr.indexOf(INTERMediatorLib.rollingRepeaterDataControlName) >= 0)) {
+        if ((tagName === 'TR') || (tagName === 'LI') || (tagName === 'OPTION')
+            || (className && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0)
+            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)
+        ) {
             if (nodeOnly) {
                 return true;
             } else {
@@ -195,13 +207,13 @@ var INTERMediatorLib = {
     isLinkedElement: function (node) {
         var classInfo, matched, attr;
 
-        if (node != null) {
-            attr = node.getAttribute("data-im");
+        if (node !== null && node.getAttribute) {
+            attr = node.getAttribute('data-im');
             if (attr) {
                 return true;
             }
             if (INTERMediator.titleAsLinkInfo) {
-                if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
+                if (node.getAttribute('TITLE') !== null && node.getAttribute('TITLE').length > 0) {
                     // IE: If the node doesn't have a title attribute, getAttribute
                     // doesn't return null.
                     // So it requrired check if it's empty string.
@@ -210,7 +222,7 @@ var INTERMediatorLib = {
             }
             if (INTERMediator.classAsLinkInfo) {
                 classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classInfo != null) {
+                if (classInfo !== null) {
                     matched = classInfo.match(/IM\[.*\]/);
                     if (matched) {
                         return true;
@@ -228,12 +240,12 @@ var INTERMediatorLib = {
             return false;
         }
         if (INTERMediatorLib.getLinkedElementInfo(node)) {
-            attr = node.getAttribute("data-im-widget");
+            attr = node.getAttribute('data-im-widget');
             if (attr) {
                 return true;
             }
             classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
-            if (classInfo != null) {
+            if (classInfo !== null) {
                 matched = classInfo.match(/IM_WIDGET\[.*\]/);
                 if (matched) {
                     return true;
@@ -241,13 +253,13 @@ var INTERMediatorLib = {
             }
         } else {
             parentNode = node.parentNode;
-            if (!parentNode && INTERMediatorLib.getLinkedElementInfo(parentNode)) {
-                attr = parentNode.getAttribute("data-im-widget");
+            if (!parentNode && INTERMediatorLib.getLinkedElementInfoImpl(parentNode)) {
+                attr = parentNode.getAttribute('data-im-widget');
                 if (attr) {
                     return true;
                 }
                 classInfo = INTERMediatorLib.getClassAttributeFromNode(parentNode);
-                if (classInfo != null) {
+                if (classInfo !== null) {
                     matched = classInfo.match(/IM_WIDGET\[.*\]/);
                     if (matched) {
                         return true;
@@ -261,7 +273,7 @@ var INTERMediatorLib = {
     isNamedElement: function (node) {
         var nameInfo, matched;
 
-        if (node != null) {
+        if (node !== null) {
             nameInfo = node.getAttribute('data-im-group');
             if (nameInfo) {
                 return true;
@@ -288,7 +300,7 @@ var INTERMediatorLib = {
         var currentNode, detectedRepeater;
 
         currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isRepeater(currentNode, true)) {
                 detectedRepeater = currentNode;
             } else if (isRepeaterOfEnclosure(detectedRepeater, currentNode)) {
@@ -311,29 +323,37 @@ var INTERMediatorLib = {
             }
             repeaterTag = repeater.tagName;
             enclosureTag = enclosure.tagName;
-            if ((repeaterTag === 'TR' && enclosureTag === 'TBODY')
-                || (repeaterTag === 'OPTION' && enclosureTag === 'SELECT')
-                || (repeaterTag === 'LI' && enclosureTag === 'OL')
-                || (repeaterTag === 'LI' && enclosureTag === 'UL')) {
+            if ((repeaterTag === 'TR' && enclosureTag === 'TBODY') ||
+                (repeaterTag === 'OPTION' && enclosureTag === 'SELECT') ||
+                (repeaterTag === 'LI' && enclosureTag === 'OL') ||
+                (repeaterTag === 'LI' && enclosureTag === 'UL')) {
                 return true;
             }
-            if ((enclosureTag === 'DIV' || enclosureTag === 'SPAN' )) {
-                enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
-                enclosureDataAttr = enclosure.getAttribute("data-im-control");
-                if ((enclosureClass && enclosureClass.indexOf('_im_enclosure') >= 0)
-                    || (enclosureDataAttr && enclosureDataAttr == "enclosure")) {
-                    repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
-                    repeaterDataAttr = repeater.getAttribute("data-im-control");
-                    if ((repeaterTag === 'DIV' || repeaterTag === 'SPAN')
-                        && ((repeaterClass && repeaterClass.indexOf('_im_repeater') >= 0)
-                        || (repeaterDataAttr && repeaterDataAttr == "repeater"))) {
+            enclosureClass = INTERMediatorLib.getClassAttributeFromNode(enclosure);
+            enclosureDataAttr = enclosure.getAttribute('data-im-control');
+            if ((enclosureClass && enclosureClass.indexOf(INTERMediatorLib.roleAsEnclosureClassName) >= 0) ||
+                (enclosureDataAttr && enclosureDataAttr.indexOf('enclosure') >= 0)) {
+                repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
+                repeaterDataAttr = repeater.getAttribute('data-im-control');
+                if ((repeaterClass
+                    && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0 )
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0 )
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0 )
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0 )
+                    || (repeaterDataAttr
+                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0 )
+                ) {
+                    return true;
+                } else if (repeaterTag === 'INPUT') {
+                    repeaterType = repeater.getAttribute('type');
+                    if (repeaterType &&
+                        ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
                         return true;
-                    } else if (repeaterTag === 'INPUT') {
-                        repeaterType = repeater.getAttribute('type');
-                        if (repeaterType
-                            && ((repeaterType.indexOf('radio') >= 0 || repeaterType.indexOf('check') >= 0))) {
-                            return true;
-                        }
                     }
                 }
             }
@@ -348,9 +368,20 @@ var INTERMediatorLib = {
      */
 
     getLinkedElementInfo: function (node) {
+        var result = INTERMediatorLib.getLinkedElementInfoImpl(node)
+        if (result !== false) {
+            return result;
+        }
+        if (INTERMediatorLib.isWidgetElement(node.parentNode)) {
+            return INTERMediatorLib.getLinkedElementInfo(node.parentNode);
+        }
+        return false;
+    },
+
+    getLinkedElementInfoImpl: function (node) {
         var defs = [], eachDefs, reg, i, attr, matched;
         if (INTERMediatorLib.isLinkedElement(node)) {
-            attr = node.getAttribute("data-im");
+            attr = node.getAttribute('data-im');
             if (attr !== null && attr.length > 0) {
                 reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
                 eachDefs = attr.split(reg);
@@ -361,7 +392,7 @@ var INTERMediatorLib = {
                 }
                 return defs;
             }
-            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE') != null) {
+            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE')) {
                 eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
                 for (i = 0; i < eachDefs.length; i++) {
                     defs.push(resolveAlias(eachDefs[i]));
@@ -394,7 +425,7 @@ var INTERMediatorLib = {
     getWidgetInfo: function (node) {
         var defs = [], eachDefs, i, classAttr, matched, reg;
         if (INTERMediatorLib.isWidgetElement(node)) {
-            classAttr = node.getAttribute("data-im-widget");
+            classAttr = node.getAttribute('data-im-widget');
             if (classAttr && classAttr.length > 0) {
                 reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
                 eachDefs = classAttr.split(reg);
@@ -450,12 +481,12 @@ var INTERMediatorLib = {
      */
 
     repeaterTagFromEncTag: function (tag) {
-        if (tag == 'TBODY') return 'TR';
-        else if (tag == 'SELECT') return 'OPTION';
-        else if (tag == 'UL') return 'LI';
-        else if (tag == 'OL') return 'LI';
-        else if (tag == 'DIV') return 'DIV';
-        else if (tag == 'SPAN') return 'SPAN';
+        if (tag === 'TBODY') return 'TR';
+        else if (tag === 'SELECT') return 'OPTION';
+        else if (tag === 'UL') return 'LI';
+        else if (tag === 'OL') return 'LI';
+        //else if (tag == 'DIV') return 'DIV';
+        //else if (tag == 'SPAN') return 'SPAN';
         return null;
     },
 
@@ -467,16 +498,19 @@ var INTERMediatorLib = {
                 'table': null,
                 'field': null,
                 'target': null,
-                'tableindex': null
+                'tableindex': null,
+                'crossTable': false
             };
         }
         comps = nodeInfo.split(INTERMediator.separator);
-        tableName = '', fieldName = '', targetName = '';
-        if (comps.length == 3) {
+        tableName = '';
+        fieldName = '';
+        targetName = '';
+        if (comps.length === 3) {
             tableName = comps[0];
             fieldName = comps[1];
             targetName = comps[2];
-        } else if (comps.length == 2) {
+        } else if (comps.length === 2) {
             tableName = comps[0];
             fieldName = comps[1];
         } else {
@@ -486,33 +520,57 @@ var INTERMediatorLib = {
             'table': tableName,
             'field': fieldName,
             'target': targetName,
-            'tableindex': "_im_index_" + tableName
+            'tableindex': '_im_index_' + tableName,
+            'crossTable': INTERMediator.crossTableStage === 3
         };
     },
 
-    getCalcNodeInfoArray: function (nodeInfo) {
-        var comps, tableName, fieldName, targetName;
+    /**
+     * @typedef {Object} IMType_NodeInfo
+     * @property {string} field The field name.
+     * @property {string} table The context name defined in the relevant definition file.
+     * @property {string} target The target information which specified in the 3rd component of target spec.
+     * @property {string} tableidnex This is used for FileMaker database's portal expanding.
+     */
 
-        if (!nodeInfo) {
+    /**
+     * This method returns the IMType_NodeInfo object of the node specified with the parameter.
+     * @param idValue the id attribute of the linked node.
+     * @returns {IMType_NodeInfo}
+     */
+    getCalcNodeInfoArray: function (idValue) {
+        var comps, tableName, fieldName, targetName, node, attribute;
+
+        if (!idValue) {
             return null;
         }
-        comps = nodeInfo.split(INTERMediator.separator);
-        tableName = '', fieldName = '', targetName = '';
-        if (comps.length == 3) {
+        node = document.getElementById(idValue);
+        if (!node) {
+            return null;
+        }
+        attribute = node.getAttribute('data-im');
+        if (!attribute) {
+            return null;
+        }
+        comps = attribute.split(INTERMediator.separator);
+        tableName = '';
+        fieldName = '';
+        targetName = '';
+        if (comps.length === 3) {
             tableName = comps[0];
             fieldName = comps[1];
             targetName = comps[2];
-        } else if (comps.length == 2) {
+        } else if (comps.length === 2) {
             fieldName = comps[0];
             targetName = comps[1];
         } else {
-            fieldName = nodeInfo;
+            fieldName = attribute;
         }
         return {
             'table': tableName,
             'field': fieldName,
             'target': targetName,
-            'tableindex': "_im_index_" + tableName
+            'tableindex': '_im_index_' + tableName
         };
     },
 
@@ -538,28 +596,34 @@ var INTERMediatorLib = {
         }
     },
 
+    /*
+     INTER-Mediator supporting browser is over Ver.9 for IE. So this method is already deprecated.
+     The eventInfos property doesn't use other than below methods.
+     */
     eventInfos: [],
 
     addEvent: function (node, evt, func) {
         if (node.addEventListener) {
             node.addEventListener(evt, func, false);
-            this.eventInfos.push({"node": node, "event": evt, "function": func});
+            this.eventInfos.push({'node': node, 'event': evt, 'function': func});
             return this.eventInfos.length - 1;
         } else if (node.attachEvent) {
             node.attachEvent('on' + evt, func);
-            this.eventInfos.push({"node": node, "event": evt, "function": func});
+            this.eventInfos.push({'node': node, 'event': evt, 'function': func});
             return this.eventInfos.length - 1;
         }
         return -1;
     },
 
     removeEvent: function (serialId) {
-        if (eventInfos[serialId].node.removeEventListener) {
-            eventInfos[serialId].node.removeEventListener(eventInfos[serialId].evt, eventInfos[serialId].func, false);
-        } else if (eventInfos[serialId].node.detachEvent) {
-            eventInfos[serialId].node.detachEvent('on' + eventInfos[serialId].evt, eventInfos[serialId].func);
+        if (this.eventInfos[serialId].node.removeEventListener) {
+            this.eventInfos[serialId].node.removeEventListener(this.eventInfos[serialId].evt, this.eventInfos[serialId].func, false);
+        } else if (this.eventInfos[serialId].node.detachEvent) {
+            this.eventInfos[serialId].node.detachEvent('on' + this.eventInfos[serialId].evt, this.eventInfos[serialId].func);
         }
     },
+
+    // - - - - -
 
     toNumber: function (str) {
         "use strict";
@@ -567,52 +631,71 @@ var INTERMediatorLib = {
         str = str.toString();
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
-            if ((c >= "0" && c <= "9") || c === "." || c === "-" || c === this.cachedDigitSeparator[0]) {
+            if ((c >= '0' && c <= '9') || c === '.' || c === '-' ||
+                c === INTERMediatorOnPage.localeInfo["mon_decimal_point"]) {
                 s += c;
+            } else if (c >= '０' && c <= '９') {
+                s += String.fromCharCode(c.charCodeAt(0) - '０'.charCodeAt(0) + '0'.charCodeAt(0));
             }
         }
         return parseFloat(s);
     },
 
     RoundHalfToEven: function (value, digit) {
-        return value;
+        throw "RoundHalfToEven method is NOT implemented.";
     },
 
+    /**
+     * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point.
+     * @param {number} value The source value.
+     * @param {integer} digit Positive number means after the decimal point, and negative menas before it.
+     * @returns {number}
+     */
     Round: function (value, digit) {
         var powers = Math.pow(10, digit);
         return Math.round(value * powers) / powers;
     },
 
-    /*
-     digit should be a positive value. negative value doesn't support so far.
+    normalizeNumerics: function (value) {
+        var i;
+        for (i = 0; i < 10; i++) {
+            value = String(value).split(String.fromCharCode(65296 + i)).join(String(i));
+            // Full-width numeric characters start from 0xFF10(65296). This is convert to Full to ASCII char for numeric.
+        }
+        return value;
+    },
+
+    /**
+     * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point
+     * with a thousands separator.
+     * @param {number} str The source value.
+     * @param {integer} digit Positive number means after the decimal point, and negative means before it.
+     * @param {string} decimalPoint
+     * @param {string} thousandsSep
+     * @param {string} currencySymbol
+     * @param {object} flags
+     * @returns {string}
      */
     numberFormatImpl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
         "use strict";
-        var s, n, prefix = "", i, sign, tailSign = "", power, underDot, underNumStr, pstr,
+        var s, n, prefix, i, sign, tailSign = "", power, underDot, underNumStr, pstr,
             roundedNum, underDecimalNum, integerNum, formatted, numStr, j, isMinusValue,
             numerals, numbers;
-
         if (str === "" || str === null || str === undefined) {
             return "";
         }
-        if (String(str).substring(0, 1) === "-") {
-            prefix = "-";
-        }
+        prefix = (String(str).substring(0, 1) === "-")?"-":"";
         if (String(str).match(/[-]/)) {
             str = prefix + String(str).split("-").join("");
         }
-        for (i = 0; i < 10; i++) {
-            str = String(str).split(String.fromCharCode(65296 + i)).join(String(i));
-        }
-        n = this.toNumber(str);
+        //str = INTERMediatorLib.normalizeNumerics(str);
+        n = INTERMediatorLib.toNumber(str);
         if (isNaN(n)) {
             return "";
         }
-
         if (flags === undefined) {
             flags = {};
         }
-
         sign = INTERMediatorOnPage.localeInfo.positive_sign;
         isMinusValue = false;
         if (n < 0) {
@@ -642,15 +725,14 @@ var INTERMediatorLib = {
             n = n * 100;
         }
 
-        underDot = (digit === undefined) ?
-            INTERMediatorOnPage.localeInfo.frac_digits : this.toNumber(digit);
+        underDot = (digit === undefined) ? INTERMediatorOnPage.localeInfo.frac_digits : this.toNumber(digit);
         power = Math.pow(10, underDot);
         roundedNum = Math.round(n * power);
         underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
         integerNum = (roundedNum - underDecimalNum) / power;
         underNumStr = (underDot > 0) ? String(underDecimalNum) : "";
         while (underNumStr.length < underDot) {
-            underNumStr = "0" + underNumStr;
+            underNumStr = '0' + underNumStr;
         }
 
         if (flags.useSeparator === true) {
@@ -724,7 +806,6 @@ var INTERMediatorLib = {
                                 } else {
                                     formatted = pstr + formatted;
                                 }
-
                             }
                         }
                         i++;
@@ -768,28 +849,28 @@ var INTERMediatorLib = {
 
         if (currencySymbol) {
             if (!isMinusValue) {
-                if (INTERMediatorOnPage.localeInfo.p_cs_precedes === 1) {
-                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space === 1) {
+                if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {    // Stay operator "=="
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator "=="
                         formatted = currencySymbol + " " + formatted;
                     } else {
                         formatted = currencySymbol + formatted;
                     }
                 } else {
-                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space === 1) {
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator "=="
                         formatted = formatted + " " + currencySymbol;
                     } else {
                         formatted = formatted + currencySymbol;
                     }
                 }
             } else {
-                if (INTERMediatorOnPage.localeInfo.n_cs_precedes === 1) {
-                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space === 1) {
+                if (INTERMediatorOnPage.localeInfo.n_cs_precedes == 1) { // Stay operator "=="
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator "=="
                         formatted = currencySymbol + " " + formatted;
                     } else {
                         formatted = currencySymbol + formatted;
                     }
                 } else {
-                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space === 1) {
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator "=="
                         formatted = formatted + " " + currencySymbol;
                     } else {
                         formatted = formatted + currencySymbol;
@@ -804,14 +885,18 @@ var INTERMediatorLib = {
                     formatted = String(formatted).split(String(i)).join(String.fromCharCode(65296 + i));
                 }
             } else if (flags.charStyle === 2) {
-                numbers = { 0: "〇", 1: "一", 2: "二", 3: "三", 4: "四",
-                    5: "五", 6: "六", 7: "七", 8: "八", 9: "九"};
+                numbers = {
+                    0: "〇", 1: "一", 2: "二", 3: "三", 4: "四",
+                    5: "五", 6: "六", 7: "七", 8: "八", 9: "九"
+                };
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
                 }
             } else if (flags.charStyle === 3) {
-                numbers = { 0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四",
-                    5: "伍", 6: "六", 7: "七", 8: "八", 9: "九"};
+                numbers = {
+                    0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四",
+                    5: "伍", 6: "六", 7: "七", 8: "八", 9: "九"
+                };
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
                 }
@@ -834,11 +919,25 @@ var INTERMediatorLib = {
         return this.decimalFormat(str, digit, flags);
     },
 
+    percentFormat: function (str, digit, flags) {
+        "use strict";
+        if (typeof flags !== 'object'  )    {
+            flags ={};
+        }
+        flags["usePercentNotation"] = true;
+        return INTERMediatorLib.numberFormatImpl(str, digit,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+            false,
+            flags
+        );
+    },
+
     decimalFormat: function (str, digit, flags) {
         "use strict";
         return INTERMediatorLib.numberFormatImpl(str, digit,
-            INTERMediatorOnPage.localeInfo.decimal_point,
-            INTERMediatorOnPage.localeInfo.thousands_sep,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
             false,
             flags
         );
@@ -854,8 +953,22 @@ var INTERMediatorLib = {
         );
     },
 
-    booleanFormat: function (str, trueString, falseString) {
+    booleanFormat: function (str, forms, flags) {
         "use strict";
+        var trueString = "true", falseString = "false", fmtStr;
+        var params = forms.split(",");
+        if (params[0])  {
+            fmtStr = params[0].trim();
+            if (fmtStr.length > 0)  {
+                trueString = fmtStr
+            }
+        }
+        if (params[1])  {
+            fmtStr = params[1].trim();
+            if (fmtStr.length > 0)  {
+                falseString = fmtStr
+            }
+        }
         if (str === "" || str === null) {
             return "";
         } else {
@@ -867,41 +980,24 @@ var INTERMediatorLib = {
         }
     },
 
-    percentFormat: function (str, digit, flags) {
-        "use strict";
-        if (flags === undefined) {
-            flags = {};
-        }
-        flags.usePercentNotation = true;
-        if (digit === undefined) {
-            digit = 0;
-        }
-        return INTERMediatorLib.numberFormatImpl(str, digit,
-            INTERMediatorOnPage.localeInfo.decimal_point,
-            INTERMediatorOnPage.localeInfo.thousands_sep,
-            false,
-            flags
-        );
-    },
-
     objectToString: function (obj) {
         var str, i, key;
 
         if (obj === null) {
-            return "null";
+            return 'null';
         }
-        if (typeof obj == 'object') {
+        if (typeof obj === 'object') {
             str = '';
             if (obj.constractor === Array) {
                 for (i = 0; i < obj.length; i++) {
-                    str += INTERMediatorLib.objectToString(obj[i]) + ", ";
+                    str += INTERMediatorLib.objectToString(obj[i]) + ', ';
                 }
-                return "[" + str + "]";
+                return '[' + str + ']';
             } else {
                 for (key in obj) {
                     str += "'" + key + "':" + INTERMediatorLib.objectToString(obj[key]) + ", ";
                 }
-                return "{" + str + "}";
+                return '{' + str + '}';
             }
         } else {
             return "'" + obj + "'";
@@ -909,14 +1005,14 @@ var INTERMediatorLib = {
     },
 
     getTargetTableForRetrieve: function (element) {
-        if (element['view'] != null) {
+        if (element['view'] !== null) {
             return element['view'];
         }
         return element['name'];
     },
 
     getTargetTableForUpdate: function (element) {
-        if (element['table'] != null) {
+        if (element['table'] !== null) {
             return element['table'];
         }
         return element['name'];
@@ -926,21 +1022,22 @@ var INTERMediatorLib = {
         var resultStr, counter;
 
         resultStr = tmpStr;
-        if (dataArray != null) {
+        if (dataArray !== null) {
             for (counter = 1; counter <= dataArray.length; counter++) {
-                resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
+                resultStr = resultStr.replace('@' + counter + '@', dataArray[counter - 1]);
             }
         }
         return resultStr;
     },
 
     getInsertedStringFromErrorNumber: function (errNum, dataArray) {
-        var resultStr, counter;
+        var resultStr, counter, messageArray;
 
-        resultStr = INTERMediatorOnPage.getMessages()[errNum];
-        if (dataArray != null) {
+        messageArray = INTERMediatorOnPage.getMessages();
+        resultStr = messageArray ? messageArray[errNum] : 'Error:' + errNum;
+        if (dataArray) {
             for (counter = 1; counter <= dataArray.length; counter++) {
-                resultStr = resultStr.replace("@" + counter + "@", dataArray[counter - 1]);
+                resultStr = resultStr.replace('@' + counter + '@', dataArray[counter - 1]);
             }
         }
         return resultStr;
@@ -949,7 +1046,7 @@ var INTERMediatorLib = {
     getNamedObject: function (obj, key, named) {
         var index;
         for (index in obj) {
-            if (obj[index][key] == named) {
+            if (obj[index][key] === named) {
                 return obj[index];
             }
         }
@@ -959,7 +1056,7 @@ var INTERMediatorLib = {
     getNamedObjectInObjectArray: function (ar, key, named) {
         var i;
         for (i = 0; i < ar.length; i++) {
-            if (ar[i][key] == named) {
+            if (ar[i][key] === named) {
                 return ar[i];
             }
         }
@@ -969,7 +1066,7 @@ var INTERMediatorLib = {
     getNamedValueInObject: function (ar, key, named, retrieveKey) {
         var result = [], index;
         for (index in ar) {
-            if (ar[index][key] == named) {
+            if (ar[index][key] === named) {
                 result.push(ar[index][retrieveKey]);
             }
         }
@@ -993,7 +1090,7 @@ var INTERMediatorLib = {
     getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
         var result = [], index;
         for (index in ar) {
-            if (ar[index][key1] == named1 && ar[index][key2] == named2) {
+            if (ar.hasOwnProperty(index) && ar[index][key1] === named1 && ar[index][key2] === named2) {
                 result.push(ar[index][retrieveKey]);
             }
         }
@@ -1009,17 +1106,18 @@ var INTERMediatorLib = {
     getRecordsetFromFieldValueObject: function (obj) {
         var recordset = {}, index;
         for (index in obj) {
-            recordset[obj[index]['field']] = obj[index]['value'];
+            if (obj.hasOwnProperty(index)) {
+                recordset[obj[index]['field']] = obj[index]['value'];
+            }
         }
         return recordset;
     },
 
     getNodePath: function (node) {
-        var path = '';
         if (node.tagName === null) {
             return '';
         } else {
-            return INTERMediatorLib.getNodePath(node.parentNode) + "/" + node.tagName;
+            return INTERMediatorLib.getNodePath(node.parentNode) + '/' + node.tagName;
         }
     },
 
@@ -1027,33 +1125,78 @@ var INTERMediatorLib = {
         if (!element || !element.tagName) {
             return false;
         }
-        if (element.tagName == "SELECT") {
+        if (element.tagName == 'SELECT') {
             return true;
         }
         return false;
     },
 
     /*
-     If the cNode parameter is like '_im_post', this function will search data-im-control="post" elements.
+     If the cNode parameter is like '_im_post', this function will search data-im-control='post' elements.
      */
     getElementsByClassNameOrDataAttr: function (node, cName) {
+        var nodes = [], attrValue;
+
+        attrValue = (cName.match(/^_im_/)) ? cName.substr(4) : cName;
+        if (attrValue) {
+            checkNode(node);
+        }
+        return nodes;
+
+        function checkNode(target) {
+            var value, i, items;
+            if (target === undefined || target.nodeType !== 1) {
+                return;
+            }
+            value = INTERMediatorLib.getClassAttributeFromNode(target);
+            if (value) {
+                items = value.split('|');
+                for (i = 0; i < items.length; i++) {
+                    if (items[i] == attrValue) {
+                        nodes.push(target);
+                    }
+                }
+            }
+            value = target.getAttribute('data-im-control');
+            if (value) {
+                items = value.split(/[| ]/);
+                for (i = 0; i < items.length; i++) {
+                    if (items[i] == attrValue) {
+                        nodes.push(target);
+                    }
+                }
+            }
+            value = target.getAttribute('data-im');
+            if (value) {
+                items = value.split(/[| ]/);
+                for (i = 0; i < items.length; i++) {
+                    if (items[i] == attrValue) {
+                        nodes.push(target);
+                    }
+                }
+            }
+            for (i = 0; i < target.children.length; i++) {
+                checkNode(target.children[i]);
+            }
+        }
+    },
+
+    getElementsByAttributeValue: function (node, attribute, value) {
         var nodes = [];
-        var attrValue = (cName.length > 5) ? cName.substr(4) : null;
-        var reg = new RegExp(cName);
+        var reg = new RegExp(value);
         checkNode(node);
         return nodes;
 
         function checkNode(target) {
-            var className, attr;
-            if (target.nodeType != 1) {
+            var aValue, i;
+            if (target === undefined || target.nodeType !== 1) {
                 return;
             }
-            className = INTERMediatorLib.getClassAttributeFromNode(target);
-            attr = target.getAttribute("data-im-control");
-            if ((className && className.match(reg)) || (attr && attrValue && attr == attrValue)) {
+            aValue = target.getAttribute(attribute);
+            if (aValue && aValue.match(reg)) {
                 nodes.push(target);
             }
-            for (var i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i++) {
                 checkNode(target.children[i]);
             }
         }
@@ -1067,14 +1210,14 @@ var INTERMediatorLib = {
 
         function checkNode(target) {
             var className, i;
-            if (target.nodeType != 1) {
+            if (target === undefined || target.nodeType !== 1) {
                 return;
             }
             className = INTERMediatorLib.getClassAttributeFromNode(target);
             if (className && className.match(reg)) {
                 nodes.push(target);
             }
-            for (var i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i++) {
                 checkNode(target.children[i]);
             }
         }
@@ -1088,14 +1231,14 @@ var INTERMediatorLib = {
 
         function checkNode(target) {
             var nodeId, i;
-            if (target.nodeType != 1) {
+            if (target === undefined || target.nodeType !== 1) {
                 return;
             }
-            nodeId = target.getAttribute("id");
+            nodeId = target.getAttribute('id');
             if (nodeId && nodeId.match(reg)) {
                 nodes.push(target);
             }
-            for (var i = 0; i < target.children.length; i++) {
+            for (i = 0; i < target.children.length; i++) {
                 checkNode(target.children[i]);
             }
         }
@@ -1152,12 +1295,63 @@ var INTERMediatorLib = {
         return messageNode;
     },
 
+    removeChildNodes: function (node) {
+        if (node) {
+            while (node.childNodes.length > 0) {
+                node.removeChild(node.childNodes[0]);
+            }
+        }
+    },
+
     clearErrorMessage: function (node) {
         var errorMsgs, j;
-        errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');
-        for (j = 0; j < errorMsgs.length; j++) {
-            errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
+        if (node) {
+            errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');
+            for (j = 0; j < errorMsgs.length; j++) {
+                errorMsgs[j].parentNode.removeChild(errorMsgs[j]);
+            }
         }
+    },
+
+    dateTimeStringISO: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return dt.getFullYear() + '-'
+            + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '-'
+            + ('0' + dt.getDate()).substr(-2, 2) + ' '
+            + ('0' + dt.getHours()).substr(-2, 2) + ':'
+            + ('0' + dt.getMinutes()).substr(-2, 2) + ':'
+            + ('0' + dt.getSeconds()).substr(-2, 2);
+    },
+
+    dateTimeStringFileMaker: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/'
+            + ('0' + dt.getDate()).substr(-2, 2) + '/'
+            + dt.getFullYear() + ' '
+            + ('0' + dt.getHours()).substr(-2, 2) + ':'
+            + ('0' + dt.getMinutes()).substr(-2, 2) + ':'
+            + ('0' + dt.getSeconds()).substr(-2, 2);
+    },
+
+    dateStringISO: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return dt.getFullYear() + '-'
+            + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '-'
+            + ('0' + dt.getDate()).substr(-2, 2);
+    },
+
+    dateStringFileMaker: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/'
+            + ('0' + dt.getDate()).substr(-2, 2) + '/'
+            + dt.getFullYear();
+    },
+
+    timeString: function (dt) {
+        dt = (!dt) ? new Date() : dt;
+        return ('0' + dt.getHours()).substr(-2, 2) + ':'
+            + ('0' + dt.getMinutes()).substr(-2, 2) + ':'
+            + ('0' + dt.getSeconds()).substr(-2, 2);
     }
 };
 
@@ -1181,17 +1375,17 @@ INTERMediatorLib.initialize();
  x
 
  IMLibNodeGraph.clear();
- IMLibNodeGraph.addEdge("a","b");
- IMLibNodeGraph.addEdge("b","c");
- IMLibNodeGraph.addEdge("c","d");
- IMLibNodeGraph.addEdge("a","e");
- IMLibNodeGraph.addEdge("b","f");
- IMLibNodeGraph.addEdge("a","f");
- IMLibNodeGraph.addEdge("i","j");
- IMLibNodeGraph.addNode("x");
+ IMLibNodeGraph.addEdge('a','b');
+ IMLibNodeGraph.addEdge('b','c');
+ IMLibNodeGraph.addEdge('c','d');
+ IMLibNodeGraph.addEdge('a','e');
+ IMLibNodeGraph.addEdge('b','f');
+ IMLibNodeGraph.addEdge('a','f');
+ IMLibNodeGraph.addEdge('i','j');
+ IMLibNodeGraph.addNode('x');
 
- The first calling of the getLeafNodesWithRemoving method returns "d", "f", "e", "j", "x".
- The second calling does "c", "i". The third one does "b", the forth one does "a".
+ The first calling of the getLeafNodesWithRemoving method returns 'd', 'f', 'e', 'j', 'x'.
+ The second calling does 'c', 'i'. The third one does 'b', the forth one does 'a'.
  You can get the nodes from leaves to root as above.
 
  If the getLeafNodesWithRemoving method returns [] (no elements array), and the nodes property has any elements,
@@ -1261,7 +1455,7 @@ var IMLibNodeGraph = {
         }
         return dests;
     },
-    removeNode: function(node)  {
+    removeNode: function (node) {
         var i, newEdges = [];
         for (i = 0; i < this.edges.length; i++) {
             if (this.edges[i].to != node) {
@@ -1277,5 +1471,15 @@ var IMLibNodeGraph = {
             f(this.nodes[i]);
         }
 
+    },
+
+    decodeOpenIDToken: function ($token) {
+        var header, payload, cert, components = $token.split('.');
+        if (components.length != 3) {
+            return false;
+        }
+        header = Base64.decode(components[0]);
+        payload = Base64.decode(components[1]);
+        cert = Base64.decode(components[2]);
     }
 };

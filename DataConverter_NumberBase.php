@@ -1,44 +1,51 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 require_once('INTER-Mediator.php');
 
 class DataConverter_NumberBase
 {
-
     protected $decimalMark = null;
     protected $thSepMark = null;
     protected $currencyMark = null;
     protected $useMbstring;
+    protected $choosenLocale;
+    protected $formatter;
 
     public function __construct()
     {
-        $this->useMbstring = setLocaleAsBrowser(LC_ALL);
-        $locInfo = localeconv();
-        $this->decimalMark = $locInfo['mon_decimal_point'];
-        // @codeCoverageIgnoreStart
-        if (strlen($this->decimalMark) == 0) {
-            $this->decimalMark = '.';
+        IMLocale::setLocale(LC_ALL);
+        $this->choosenLocale = IMLocale::$choosenLocale;
+        $this->useMbstring = IMLocale::$useMbstring;
+        $nfClass = IMLocale::numberFormatterClassName();
+        $this->formatter = new $nfClass($this->choosenLocale, 2 /*NumberFormatter::CURRENCY*/);
+        if (!$this->formatter) {
+            return null;
         }
-        // @codeCoverageIgnoreEnd
-        $this->thSepMark = $locInfo['mon_thousands_sep'];
-        $this->currencyMark = $locInfo['currency_symbol'];
+        $this->decimalMark = $this->formatter->getSymbol(0 /*NumberFormatter::DECIMAL_SEPARATOR_SYMBOL*/);
+        $this->thSepMark = $this->formatter->getSymbol(1 /*NumberFormatter::GROUPING_SEPARATOR_SYMBOL*/);
+        $this->currencyMark = $this->formatter->getTextAttribute(5 /*NumberFormatter::CURRENCY_CODE*/);
     }
 
     public function converterFromUserToDB($str)
     {
+        $str = mb_convert_kana($str, "a");
         $comp = explode($this->decimalMark, $str);
         $intPart = intval(str_replace($this->thSepMark, '', $comp[0]));
         if (isset($comp[1])) {
-            $decimalPart = intval(str_replace($this->thSepMark, '', $comp[1]));
-            return floatval(strval($intPart) . '.' . strval($decimalPart));
+            return floatval(strval($intPart) . '.' . strval($comp[1]));
         } else {
             return $intPart;
         }

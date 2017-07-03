@@ -48,7 +48,7 @@ class MessageStrings_ja_Test extends PHPUnit_Framework_TestCase
         $message = $this->messagestrings->getMessageAs(7, array());
         $this->assertEquals($expected, $message);
         
-        $expected = 'ログインユーザ: ';
+        $expected = 'ログインユーザー: ';
         $message = $this->messagestrings->getMessageAs(8, array());
         $this->assertEquals($expected, $message);
         

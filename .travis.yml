@@ -1,34 +1,35 @@
+dist: precise
+
+## for PHP 5.4 or later
+#dist: trusty
+
 sudo: false
 
 language:
   - php
-  - node_js
 
 os:
   - linux
-  - osx
+  #- osx
 
 php:
-  - 7
+  - nightly
+  - 7.1
+  - 7.0
   - 5.6
   - 5.5
   - 5.4
   - 5.3
   - 5.2
 
-node_js:
-  - "0.10"
-
-#env:
-#  - DB=mysql
-#  - DB=sqlite3
-#  - DB=postgres
-
 matrix:
   allow_failures:
-    - php: 7
-#    - env: "DB=sqlite3"
-#    - env: "DB=postgres"
+    - php: nightly
+    - os: osx
+
+## for Headless Chrome and trusty
+#addons:
+#  chrome: stable
 
 before_script:
   - export DISPLAY=:99.0
@@ -40,23 +41,32 @@ before_script:
   - firefox http://localhost:1111/capture &
   - sleep 5
   - phantomjs node_modules/buster/script/phantom.js http://localhost:1111/capture &
+  ## Headless Chrome is available on trusty
+  #- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture &
   - sleep 5
   - mysql -u root < ./dist-docs/sample_schema_mysql.txt
   - sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
   - chmod 666 /tmp/sample.sq3
+  - cd INTER-Mediator-UnitTest
+  - cat DB_PDO-SQLite_Test.php | sed -e 's/sqlite:\/var\/db\/im\/sample.sq3/sqlite:\/tmp\/sample.sq3/' > DB_PDO-SQLite_Test.tmp; mv DB_PDO-SQLite_Test.tmp DB_PDO-SQLite_Test.php
+  - cd ..
   - psql -c 'create database test_db;' -U postgres
   - psql -U postgres -f ./dist-docs/sample_schema_pgsql.txt test_db
-#  - sh -c "if [ '$DB' = 'mysql' ]; then mysql -u root < ./dist-docs/sample_schema_mysql.txt; fi"
-#  - sh -c "if [ '$DB' = 'sqlite3' ]; then sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt; fi"
-#  - sh -c "if [ '$DB' = 'postgres' ]; then psql -c 'create database test_db;' -U postgres; fi"
-#  - sh -c "if [ '$DB' = 'postgres' ]; then psql -U postgres -f ./dist-docs/sample_schema_pgsql.txt test_db; fi"
-#  - cd INTER-Mediator-UnitTest
-#  - sh -c "if [ '$DB' = 'sqlite3' ]; then cat DB_PDO_Test.php | sed -e 's/mysql:dbname=test_db;host=127.0.0.1/sqlite:\/tmp\/sample.sq3/'; fi"
-#  - sh -c "if [ '$DB' = 'postgres' ]; then cat DB_PDO_Test.php | sed -e s/mysql\:dbname=test_db\;host=127.0.0.1/pgsql\:host=127.0.0.1\;port=5432\;dbname=test_db/ > DB_PDO_Test.tmp; mv DB_PDO_Test.tmp DB_PDO_Test.php; fi"
-#  - cd ..
-  - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then composer require 'phpunit/phpunit=3.7.x'; composer install; fi"
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "5" && $TRAVIS_PHP_VERSION != "5.2" ]]; then composer require 'phpunit/phpunit=4.8.x'; composer install; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:1} == "7" || $TRAVIS_PHP_VERSION == "nightly" ]]; then composer require 'phpunit/phpunit=5.7.x'; composer install; fi
 
 script:
   - sh -c "if [ '$TRAVIS_PHP_VERSION' = '5.2' ]; then phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
   - sh -c "if [ '$TRAVIS_PHP_VERSION' != '5.2' ]; then vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php; fi"
   - npm test
+
+notifications:
+  slack:
+    rooms:
+      - intermediator:INKkFZQWI94gsq6DYxRnaWeb#product
+    on_success: change
+    on_failure: always
+    on_start: change
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/ab3046b24c1b21df358d

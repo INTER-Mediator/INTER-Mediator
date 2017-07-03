@@ -4,7 +4,7 @@ Driven by INTER-Mediator Directive Committee (http://inter-mediator.org/)
 
 Thanks for your interest of this software.
 
-Product information: http://inter-mediator.com
+Product information: https://inter-mediator.com
 Online manual: http://inter-mediator.info
 
 Sample pages with this archived file are published at below.
@@ -32,10 +32,15 @@ Thanks for nice works.
 
 * tiny-sha1 (https://code.google.com/p/tiny-sha1/)
 
+* Constant-Time Encoding (https://paragonie.com/blog/2016/06/constant-time-encoding-boring-cryptography-rfc-4648-and-you)
+
+* CodeMirror (https://codemirror.net/)
+
 ==========================================
 Account Information for FileMaker Database
 ------------------------------------------
-The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" have the administrator account as:
+The FileMaker database files "TestDB.fmp12" and "TestDB.fp7" (Last updated: May 15, 2017)
+have the administrator account as:
 
  username: admin
  password: 1234

@@ -68,12 +68,8 @@ buster.testCase("Remote Context Test", {
         assert.equals(context1.getValue(2, 'test2'), 'value2');
         assert.equals(context1.getValue(3, 'test3'), 'value3');
 
-//        console.log(context);
-
         context1.setValue(1, 'test1', 'change1');
         context2.setValue(2, 'test2', 'change2');
-
-//       console.log(context);
 
         for (j = 0; j < 3; j++) {
             for (i = 1; i < 4; i++) {
@@ -85,6 +81,7 @@ buster.testCase("Remote Context Test", {
         }
     },
     "Remote-Context-Test3": function () {
+        /*
         Object.defineProperty(INTERMediator, 'startFrom', {
             get: function () {
                 return INTERMediator.getLocalProperty("_im_startFrom", 0);
@@ -125,7 +122,7 @@ buster.testCase("Remote Context Test", {
         if (!INTERMediator.additionalSortKey) {
             INTERMediator.additionalSortKey = {};
         }
-
+*/
 
         var context1 = new IMLibContext("test");
         context1.sequencing = true;

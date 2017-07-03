@@ -1,31 +1,41 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
-interface DB_Interface
+interface DB_Interface extends DB_Spec_Behavior
 {
-    public function getFromDB($dataSourceName);
-    public function countQueryResult($dataSourceName);
-    public function setToDB($dataSourceName);
-    public function newToDB($dataSourceName, $bypassAuth);
-    public function deleteFromDB($dataSourceName);
+    public function readFromDB();         // former getFromDB
+    public function countQueryResult();
+    public function getTotalCount();
+    public function updateDB();           // former setToDB
+    public function createInDB($bypassAuth);  // former newToDB
+    public function deleteFromDB();
+    public function copyInDB();
+}
+
+interface DB_Spec_Behavior
+{
     public function getFieldInfo($dataSourceName);
     public function setupConnection();
     public static function defaultKey();   // For PHP 5.3 or above
     public function getDefaultKey();   // For PHP 5.2
-    public function isPossibleOperator($operator);
-    public function isPossibleOrderSpecifier($specifier);
     public function requireUpdatedRecord($value);
     public function updatedRecord();
     public function isContainingFieldName($fname, $fieldnames);
     public function isNullAcceptable();
     public function softDeleteActivate($field, $value);
+    public function isSupportAggregation();
 }
 
 interface DB_Interface_Registering
@@ -41,57 +51,59 @@ interface DB_Interface_Registering
     public function removeFromRegisterd($clientId, $entity, $pkArray);
 }
 
-
 interface Auth_Interface_DB					// with using table for authentication/authorization
 {
-    function authSupportStoreChallenge($uid, $challenge, $clientId);	// issuedhash
-    function authSupportRemoveOutdatedChallenges();							// issuedhash
-    function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true);	// issuedhash
-    function authSupportCheckMediaToken($uid);								// issuedhash
-    function authSupportRetrieveHashedPassword($username);					// authuser
-    function authSupportCreateUser($username, $hashedpassword);				// authuser
-    function authSupportChangePassword($username, $hashednewpassword);		// authuser
-    function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue);	// (any table)
-    function authSupportGetUserIdFromEmail($email);							// authuser
-    function authSupportGetUserIdFromUsername($username);					// authuser
-    function authSupportGetUsernameFromUserId($userid);						// authuser
-    function authSupportGetGroupNameFromGroupId($groupid);					// authgroup
-    function authSupportGetGroupsOfUser($user);								// authcor
-    function authSupportUnifyUsernameAndEmail($username);					// authuser
-    function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash);	// issuedhash
-    function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash);		// issuedhash
+    public function authSupportStoreChallenge($uid, $challenge, $clientId);	// issuedhash
+    public function authSupportRemoveOutdatedChallenges();							// issuedhash
+    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true);	// issuedhash
+    public function authSupportCheckMediaToken($uid);								// issuedhash
+    public function authSupportRetrieveHashedPassword($username);					// authuser
+    public function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null);	// authuser
+    public function authSupportChangePassword($username, $hashednewpassword);		// authuser
+    public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue);	// (any table)
+    public function authSupportGetUserIdFromEmail($email);							// authuser
+    public function authSupportGetUserIdFromUsername($username);					// authuser
+    public function authSupportGetUsernameFromUserId($userid);						// authuser
+    public function authSupportGetGroupNameFromGroupId($groupid);					// authgroup
+    public function authSupportGetGroupsOfUser($user);								// authcor
+    public function authSupportUnifyUsernameAndEmail($username);					// authuser
+    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash);	// issuedhash
+    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash);		// issuedhash
+    public function authSupportUserEnrollmentStart($userid, $hash);             // issuedhash
+    public function authSupportUserEnrollmentEnrollingUser($hash);                     // issuedhash
+    public function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW);  // authuser
 }
 
 interface Auth_Interface_Communication
 {
     // The followings are used in DB_Proxy::processingRequest.
-    function generateClientId($prefix);
-    function generateChallenge();
-    function saveChallenge($username, $challenge, $clientId);
-    function checkAuthorization($username, $hashedvalue, $clientId);
-    function checkChallenge($challenge, $clientId);
-    function checkMediaToken($user, $token);
-    function addUser($username, $password);
-    function authSupportGetSalt($username);
-    function generateSalt();    // Use inside addUser
-    function changePassword($username, $newpassword);
+    public function generateClientId($prefix);
+    public function generateChallenge();
+    public function saveChallenge($username, $challenge, $clientId);
+    public function checkAuthorization($username, $hashedvalue, $clientId);
+    public function checkChallenge($challenge, $clientId);
+    public function checkMediaToken($user, $token);
+    public function addUser($username, $password);
+    public function authSupportGetSalt($username);
+    public function generateSalt();    // Use inside addUser
+    public function changePassword($username, $newpassword);
 }
 
 interface Auth_Interface_CommonDB
 {
-    function getFieldForAuthorization($operation);
-    function getTargetForAuthorization($operation);
-    function getAuthorizedUsers($operation = null);
-    function getAuthorizedGroups($operation = null);
+    public function getFieldForAuthorization($operation);
+    public function getTargetForAuthorization($operation);
+    public function getAuthorizedUsers($operation = null);
+    public function getAuthorizedGroups($operation = null);
 }
 
 /**
  * Interface for DB_Proxy
  */
 interface DB_Proxy_Interface extends DB_Interface, Auth_Interface_Communication {
-    function initialize($datasource, $options, $dbspec, $debug, $target = null);
-    function processingRequest($options, $access = null);
-    function finishCommunication();
+    public function initialize($datasource, $options, $dbspec, $debug, $target = null);
+    public function processingRequest($access = null, $bypassAuth = false);
+    public function finishCommunication();
 }
 
 /**
@@ -99,68 +111,60 @@ interface DB_Proxy_Interface extends DB_Interface, Auth_Interface_Communication 
  */
 interface DB_Access_Interface extends DB_Interface, Auth_Interface_DB {}
 
-interface Extending_Interface_BeforeGet
-{
-    function doBeforeGetFromDB($dataSourceName);
-}
-interface Extending_Interface_AfterGet
-{
-    function doAfterGetFromDB($dataSourceName, $result);
-}
-interface Extending_Interface_AfterGet_WithNavigation
-{
-    function doAfterGetFromDB($dataSourceName, $result);
-    function countQueryResult($dataSourceName);
-}
-interface Extending_Interface_BeforeSet
-{
-    function doBeforeSetToDB($dataSourceName);
-}
-interface Extending_Interface_AfterSet
-{
-    function doAfterSetToDB($dataSourceName, $result);
-}
-interface Extending_Interface_BeforeNew
-{
-    function doBeforeNewToDB($dataSourceName);
-}
-interface Extending_Interface_AfterNew
-{
-    function doAfterNewToDB($dataSourceName, $result);
-}
 interface Extending_Interface_BeforeDelete
 {
-    function doBeforeDeleteFromDB($dataSourceName);
+    public function doBeforeDeleteFromDB();
 }
+
 interface Extending_Interface_AfterDelete
 {
-    function doAfterDeleteFromDB($dataSourceName, $result);
+    public function doAfterDeleteFromDB($result);
 }
 
-interface DB_Interface_Previous
+
+interface Extending_Interface_BeforeRead
 {
-    // Data Access Object pattern.
-    /**
-     * @param $dataSourceName
-     * @return
-     */
-    function getFromDB($dataSourceName);
+    public function doBeforeReadFromDB();
+}
 
-    /**
-     * @param $dataSourceName
-     * @return
-     */
-    function setToDB($dataSourceName);
+interface Extending_Interface_AfterRead
+{
+    public function doAfterReadFromDB($result);
+}
 
-    /**
-     * @param $dataSourceName
-     * @return
-     */
-    function newToDB($dataSourceName);
+interface Extending_Interface_AfterRead_WithNavigation
+{
+    public function doAfterReadFromDB( $result);
+    public function countQueryResult();
+    public function getTotalCount();
+}
 
-    /**
-     * @param $dataSourceName
-     * @return
-     */
-    function deleteFromDB($dataSourceName);
+interface Extending_Interface_BeforeUpdate
+{
+    public function doBeforeUpdateDB();
+}
+
+interface Extending_Interface_AfterUpdate
+{
+    public function doAfterUpdateToDB($result);
+}
+
+interface Extending_Interface_BeforeCreate
+{
+    public function doBeforeCreateToDB();
+}
+
+interface Extending_Interface_AfterCreate
+{
+    public function doAfterCreateToDB($result);
+}
+
+interface Extending_Interface_BeforeCopy
+{
+    public function doBeforeCopyInDB();
+}
+
+interface Extending_Interface_AfterCopy
+{
+    public function doAfterCopyInDB($result);
 }

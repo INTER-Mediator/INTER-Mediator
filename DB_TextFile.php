@@ -1,19 +1,23 @@
 <?php
-/*
-* INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
-*
-*   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
-*
-*   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
-*   INTER-Mediator is supplied under MIT License.
-*/
-
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
+ *
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
+ *
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
+ */
 
 class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
 {
     private $recordCount;
 
-    function getFromDB($dataSourceName)
+    function readFromDB()
     {
         $textFormat = strtolower($this->dbSettings->getDbSpecDataType());
         if ($textFormat == "csv") {
@@ -53,7 +57,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
             $sortArray = $this->getSortClause();
             $sortKey = isset($sortArray[0]) ? $sortArray[0]["field"] : null;
             $sortDirection = isset($sortArray[0]) ? $sortArray[0]["direction"] : null;
-            $queryArray = $this->getWhereClause('load');
+            $queryArray = $this->getWhereClause('read');
 
             $crlfPosition = strpos($fileContent, "\r\n");
             $crlfPosition = $crlfPosition === false ? 999999 : $crlfPosition;
@@ -118,7 +122,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    public function countQueryResult($dataSourceName)
+    public function countQueryResult()
     {
         return $this->recordCount;
     }
@@ -214,13 +218,13 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
     }
 
     public
-    function setToDB($dataSourceName)
+    function updateDB()
     {
 
     }
 
     public
-    function deleteFromDB($dataSourceName)
+    function deleteFromDB()
     {
     }
 
@@ -249,7 +253,7 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement authSupportRetrieveHashedPassword() method.
     }
 
-    function authSupportCreateUser($username, $hashedpassword)
+    function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
         // TODO: Implement authSupportCreateUser() method.
     }
@@ -358,8 +362,38 @@ class DB_TextFile extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement isNullAcceptable() method.
     }
 
-    public function newToDB($dataSourceName, $bypassAuth)
+    public function createInDB($bypassAuth)
     {
         // TODO: Implement newToDB() method.
+    }
+
+    public function softDeleteActivate($field, $value)
+    {
+        // TODO: Implement softDeleteActivate() method.
+    }
+
+    public function copyInDB()
+    {
+        return false;
+    }
+
+    public function getTotalCount()
+    {
+        // TODO: Implement getTotalCount() method.
+    }
+
+    public function isSupportAggregation()
+    {
+        return false;
+    }
+
+    public function authSupportUserEnrollmentStart($userid, $hash)
+    {
+        // TODO: Implement authSupportUserEnrollmentStart() method.
+    }
+
+    public function authSupportUserEnrollmentActivateUser($hash, $password)
+    {
+        // TODO: Implement authSupportUserEnrollmentActivateUser() method.
     }
 }

@@ -1,0 +1,12 @@
+# Save as .codeclimate.yml (note leading .) in project root directory
+languages:
+  JavaScript: true
+  PHP: true
+exclude_paths:
+- "Auth_Support/*"
+- "INTER-Mediator-Support/*"
+- "INTER-Mediator-UnitTest/*"
+- "Samples/*"
+- "buster.js"
+- "lib/*"
+- "dist-docs/*"

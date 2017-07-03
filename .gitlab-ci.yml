@@ -1,0 +1,40 @@
+pages:
+  stage: deploy
+  script:
+  - export LANG=ja_JP.UTF-8
+  - uname -a
+  - apt-get update
+  - apt-get install -y zip git php5-cli
+  - mkdir public
+  - cd ..
+  - git clone https://github.com/matthiasmullie/minify
+  - cd -
+  - echo 2 | ./dist-docs/buildup.sh && cd ../im_build/ && zip -r INTER-Mediator-master.zip ./INTER-Mediator/ && mv INTER-Mediator-master.zip ../INTER-Mediator/public/
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
+
+#job:
+#  script:
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DB_Formatters_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DB_Settings_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_AppendPrefix_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_AppendSuffix_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_Currency_YenIM_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_FMDateTime_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_HTMLString_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_NullZeroString_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_MySQLDateTime_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_Number_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/DataConverter_NumberBase_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/GenerateJSCode_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/IMUtil_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/INTERMediator_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MediaAccess_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MessageStrings_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/MessageStrings_ja_Test.php
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/RSA_Test.php;
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/defedit_Test.php;
+#    - phpunit --no-configuration --verbose ./INTER-Mediator-UnitTest/pageedit_Test.php;

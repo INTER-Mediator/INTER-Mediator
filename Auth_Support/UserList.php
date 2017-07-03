@@ -6,13 +6,13 @@
  * Time: 7:28
  * To change this template use File | Settings | File Templates.
  */
-class UserList extends DB_UseSharedObjects implements Extending_Interface_AfterGet {
+class UserList extends DB_UseSharedObjects implements Extending_Interface_AfterRead {
 
-    function doAfterGetFromDB($dataSourceName, $result)
+    public function doAfterReadFromDB($result)
     {
         $resultArray = array();
         foreach( $result as $record )   {
-            $groups = $this->dbSettings->getCurrentDataAccess()->authSupportGetGroupsOfUser($record['username']);
+            $groups = $this->dbSettings->getCurrentDataAccess()->authTableGetGroupsOfUser($record['username']);
             sort($groups);
             $record['belonging'] = implode(', ', $groups);
             $resultArray[] = $record;

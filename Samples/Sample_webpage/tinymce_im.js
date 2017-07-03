@@ -1,10 +1,11 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
 tinymceOption = {
@@ -39,15 +40,18 @@ IMParts_Catalog["tinymce"] = {
         parentNode.appendChild(newNode);
         this.ids.push(newId);
 
-        parentNode._im_getComponentId = function () {
+        parentNode._im_getComponentId = (function () {
             var theId = newId;
-            return theId;
-        };
-
-        parentNode._im_setValue = function (str) {
-            var targetNode = newNode;
-            targetNode.innerHTML = str;
-        };
+            return function () {
+                return theId;
+            };
+        })();
+        parentNode._im_setValue = (function () {
+            var aNode = newNode;
+            return function (str) {
+                aNode.innerHTML = str;
+            };
+        })();
     },
     ids: [],
     finish: function (update) {
@@ -65,7 +69,7 @@ IMParts_Catalog["tinymce"] = {
                         if (updateRquired) {
                             IMLibUI.valueChange(ed.id);
                         }
-                    }
+                    };
                 })());
                 ed.on('keydown', function (ev) {
                     IMLibUI.keyDown(ev);
@@ -87,11 +91,11 @@ IMParts_Catalog["tinymce"] = {
                     var thisId = targetId;
                     return function () {
                         return tinymce.EditorManager.get(thisId).getContent();
-                    }
+                    };
                 })();
             }
         }
 
         this.ids = [];
     }
-}
+};

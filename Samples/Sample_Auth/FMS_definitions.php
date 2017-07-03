@@ -1,12 +1,18 @@
 <?php
-/*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+/**
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * @copyright     Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * @link          https://inter-mediator.com/
+ * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
 require_once('../../INTER-Mediator.php');
 
 IM_Entry(
@@ -20,6 +26,25 @@ IM_Entry(
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(
                 array('field' => 'id', 'direction' => 'ascend'
+                ),
+            ),
+            'button-names' => array(
+                'insert'=>'レコード追加',
+                'delete'=>'レコード削除',
+                'copy'=>'レコード複製',
+            ),
+            'authentication' => array(
+                'read' => array( /* load, update, new, delete*/
+                    'group' => array("group1","group2"),
+                ),
+                'update' => array( /* load, update, new, delete*/
+                    'group' => array("group2"),
+                ),
+                'create' => array( /* load, update, new, delete*/
+                    'group' => array("dummy"),
+                ),
+                'delete' => array( /* load, update, new, delete*/
+                    'group' => array("dummy"),
                 ),
             ),
         ),
@@ -58,7 +83,7 @@ IM_Entry(
             array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
         ),
         'authentication' => array( // table only, for all operations
-            'user' => array('user1'), // Itemize permitted users
+//            'user' => array('user1'), // Itemize permitted users
 //           'user' => array('database_native'), // Use DB-Native users.
 //            'group' => array('group2'), // Itemize permitted groups
 //            'user-table' => 'authuser', // Default value "authuser"
@@ -66,7 +91,8 @@ IM_Entry(
 //            'challenge-table' => 'issuedhash',
             'authexpired' => '3600', // Set as seconds.
             'email-as-username' => true,
-            'storing' => 'cookie-domainwide', // 'cookie'(default), 'cookie-domainwide', 'none'
+            'storing' => 'session-storage', // 'cookie'(default), 'cookie-domainwide', 'none'
+            'realm' => 'Sample_Auth/FMS_definitions', //
 //            'issuedhash-dsn' => 'sqlite:/var/db/im/sample.sq3',
         ),
     ),
@@ -78,5 +104,3 @@ IM_Entry(
     ),
     2
 );
-
-?>

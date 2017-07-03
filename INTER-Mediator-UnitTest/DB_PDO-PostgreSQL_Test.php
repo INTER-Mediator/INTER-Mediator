@@ -19,7 +19,12 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
 
     }
 
-    function dbProxySetupForAccess($contextName, $maxRecord)
+    public function testAggregation()
+    {
+        // The sample schema doesn't have a data to check this feature.
+    }
+
+    function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
     {
         $this->schemaName = "im_sample.";
         $seqName = ($contextName == "person") ? "im_sample.person_id_seq" : "im_sample.serial";
@@ -30,12 +35,25 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                 'view' => "{$this->schemaName}{$contextName}",
                 'table' => "{$this->schemaName}{$contextName}",
                 'key' => 'id',
+                'repeat-control' => is_null($subContextName) ? 'copy' : "copy-{$subContextName}",
                 'sort' => array(
                     array('field' => 'id', 'direction' => 'asc'),
                 ),
                 'sequence' => $seqName,
             )
         );
+        if (!is_null($subContextName)) {
+            $contexts[] = array(
+                'records' => $maxRecord,
+                'name' => $subContextName,
+                'key' => 'id',
+                'relation' => array(
+                    "foreign-key" => "{$contextName}_id",
+                    "join-field" => "id",
+                    "operator" => "=",
+                ),
+            );
+        }
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
@@ -53,7 +71,7 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
         $this->db_proxy->initialize(
             array(
                 array(
-                    'records' => 1,
+                    'records' => 1000,
                     'paging' => true,
                     'name' => 'person',
                     'key' => 'id',
@@ -81,6 +99,40 @@ class DB_PDO_PostgreSQL_Test extends DB_PDO_Test_Common
                 'user' => 'web',
                 'password' => 'password',
             ),
-            2);
+            2
+        );
+    }
+
+    function dbProxySetupForAggregation()
+    {
+        $this->db_proxy = new DB_Proxy(true);
+        $this->db_proxy->initialize(
+            array(
+                array(
+                    'name' => 'summary',
+                    'view' => 'saleslog',
+                    'query' => array(
+                        array('field' => 'dt', 'operator' => '>=', 'value' => '2010-01-01',),
+                        array('field' => 'dt', 'operator' => '<', 'value' => '2010-02-01',),
+                    ),
+                    'sort' => array(
+                        array('field' => 'total', 'direction' => 'desc'),
+                    ),
+                    'records' => 10,
+                    'aggregation-select' => "item_master.name as item_name,sum(total) as total",
+                    'aggregation-from' => "saleslog inner join item_master on saleslog.item_id=item_master.id",
+                    'aggregation-group-by' => "item_id",
+                ),
+            ),
+            null,
+            array(
+                'db-class' => 'PDO',
+                'dsn' => 'pgsql:host=localhost;port=5432;dbname=test_db',
+                'user' => 'web',
+                'password' => 'password',
+            ),
+            2,
+            "summary"
+        );
     }
 }

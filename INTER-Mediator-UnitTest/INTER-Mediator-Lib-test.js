@@ -4,8 +4,7 @@
  * [Preparation]
  * - Install Node.js locally.
  * - Set the current directory to the INTER-Mediator dirctory.
- * - Execute command "sudo npm link buster"
- *     The "node_modules" folder is going to create on the current folder.
+ * - Execute command "sudo npm install buster -g"
  *
  * [At the start of your development]
  * - Set the current directory to the INTER-Mediator dirctory.
@@ -31,15 +30,15 @@ buster.testCase("repeaterTagFromEncTag() Test", {
     "should return 'LI' if parameter is 'OL'": function () {
         assert.equals(INTERMediatorLib.repeaterTagFromEncTag("OL"), "LI");
     },
-    "should return 'DIV' if parameter is 'DIV'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("DIV"), "DIV");
-    },
-    "should return 'SPAN' if parameter is 'SPAN'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("SPAN"), "SPAN");
-    },
-    "should return null if parameter is 'BODY'": function () {
-        assert.equals(INTERMediatorLib.repeaterTagFromEncTag("BODY"), null);
-    }
+    //"should return 'DIV' if parameter is 'DIV'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("DIV"), "DIV");
+    //},
+    //"should return 'SPAN' if parameter is 'SPAN'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("SPAN"), "SPAN");
+    //},
+    //"should return null if parameter is 'BODY'": function () {
+    //    assert.equals(INTERMediatorLib.repeaterTagFromEncTag("BODY"), null);
+    //}
 });
 
 buster.testCase("INTERMediatorLib.generatePasswordHash() Test", {
@@ -104,8 +103,10 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         assert.equals(INTERMediatorLib.numberFormat(999999, -3), "1,000,000");
         // A negative second parameter doesn't support so far.
     },
-    "format string detection": function() {
-        assert.equals(INTERMediatorLib.digitSeparator(), [".", ",", 3]);
+    "format string detection": function()   {
+        assert.equals(INTERMediatorOnPage.localeInfo.mon_decimal_point,'.');
+        assert.equals(INTERMediatorOnPage.localeInfo.mon_thousands_sep,',');
+        assert.equals(INTERMediatorOnPage.localeInfo.currency_symbol,'¥');
     }
 });
 
@@ -260,16 +261,16 @@ buster.testCase("INTERMediatorLib.decimalFormat() Test", {
 
 buster.testCase("INTERMediatorLib.booleanFormat() Test", {
     "should return \"\" if the first parameter is \"\"": function () {
-        assert.equals(INTERMediatorLib.booleanFormat("", "non-zeros", "zeros"), "");
+        assert.equals(INTERMediatorLib.booleanFormat("", "non-zeros, zeros", null), "");
     },
     "should return \"\" if the first parameter is null": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(null, "non-zeros", "zeros"), "");
+        assert.equals(INTERMediatorLib.booleanFormat(null, "non-zeros, zeros", null), "");
     },
     "should return \"non-zeros\" if the first parameter is 1": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(1, "non-zeros", "zeros"), "non-zeros");
+        assert.equals(INTERMediatorLib.booleanFormat(1, "non-zeros, zeros", null), "non-zeros");
     },
     "should return \"zeros\" if the first parameter is 0": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(0, "non-zeros", "zeros"), "zeros");
+        assert.equals(INTERMediatorLib.booleanFormat(0, "non-zeros, zeros", null), "zeros");
     }
 });
 
@@ -359,5 +360,28 @@ buster.testCase("INTERMediatorLib.Round() Test", {
 buster.testCase("IMLibElement.getValueFromIMNode() Test", {
     "should return '' if parameter is null.": function () {
         assert.equals(IMLibElement.getValueFromIMNode(null), "");
+    }
+});
+
+buster.testCase("IMLib Date/Time String Test", {
+    "should return the valid date time string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateTimeStringISO(dt), "2015-08-25 12:43:51");
+    },
+    "should return the valid date time string(2)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateTimeStringFileMaker(dt), "08/25/2015 12:43:51");
+    },
+    "should return the valid date string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateStringISO(dt), "2015-08-25");
+    },
+    "should return the valid date string(2)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.dateStringFileMaker(dt), "08/25/2015");
+    },
+    "should return the valid time string(1)": function () {
+        var dt = new Date(2015, 7, 25, 12, 43, 51);
+        assert.equals(INTERMediatorLib.timeString(dt), "12:43:51");
     }
 });

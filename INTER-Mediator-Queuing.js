@@ -1,78 +1,107 @@
 /*
- * INTER-Mediator Ver.@@@@2@@@@ Released @@@@1@@@@
+ * INTER-Mediator
+ * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
+ * This project started at the end of 2009 by Masayuki Nii msyk@msyk.net.
  *
- *   Copyright (c) 2010-2015 INTER-Mediator Directive Committee, All rights reserved.
- *
- *   This project started at the end of 2009 by Masayuki Nii  msyk@msyk.net.
- *   INTER-Mediator is supplied under MIT License.
+ * INTER-Mediator is supplied under MIT License.
+ * Please see the full license for details:
+ * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-/*
- http://stackoverflow.com/questions/17718673/how-is-a-promise-defer-library-implemented
+/**
+ * @fileoverview IMLibQueue class is defined here.
  */
-var INTERMediatorQueue = {
-    tasks: {},
-    dependency: [],
-    asyncTasks: [],
-    previousData: {},
+/**
+ *
+ * Usually you don't have to instanciate this class with new operator.
+ * Thanks for nice idea from: http://stackoverflow.com/questions/17718673/how-is-a-promise-defer-library-implemented
+ * @constructor
+ */
+var IMLibQueue = {
+    tasks: [],
     isExecute: false,
-    counter: 0,
+    dataStore: {},
+    dsLabel: 0,
+    readyTo: false,
+
+    getNewLabel: function () {
+        IMLibQueue.dsLabel++;
+        return IMLibQueue.dsLabel;
+    },
+
+    getDataStore: function (label, key) {
+        if (!IMLibQueue.dataStore[label]) {
+            IMLibQueue.dataStore[label] = {};
+        }
+        return IMLibQueue.dataStore[label][key];
+    },
+
+    setDataStore: function (label, key, value) {
+        if (!IMLibQueue.dataStore[label]) {
+            IMLibQueue.dataStore[label] = {};
+        }
+        return IMLibQueue.dataStore[label][key] = value;
+    },
 
     setTask: function (aTask, startHere) {
         if (startHere) {
-            INTERMediatorQueue.isExecute = true;
-            aTask(function () {});
-            INTERMediatorQueue.isExecute = false;
+            IMLibQueue.isExecute = true;
+            aTask(function () {
+            });
+            IMLibQueue.isExecute = false;
         } else {
-            var serial = INTERMediatorQueue.counter++;
-            INTERMediatorQueue.tasks[serial] = aTask;
-            setTimeout(INTERMediatorQueue.startNextTask, 0);
-        }
-    },
-
-    setSequencialTasks: function (tasksArray) {
-        var i;
-        for (i = 0; i < tasksArray.length; i++) {
-            var serial = INTERMediatorQueue.counter++;
-            INTERMediatorQueue.tasks[serial] = tasksArray[i];
-            if (i > 0) {
-                INTERMediatorQueue.dependency.push(serial);
+            IMLibQueue.tasks.push(aTask);
+            if (!IMLibQueue.readyTo) {
+                setTimeout(IMLibQueue.startNextTask, 0);
+                IMLibQueue.readyTo = true;
             }
-            INTERMediatorQueue.asyncTasks.push(serial);
         }
-        setTimeout(INTERMediatorQueue.startNextTask, 0);
     },
 
-    setData: function (key, data) {
-        INTERMediatorQueue.previousData[key] = data;
+    setPriorTask: function (aTask) {
+        IMLibQueue.tasks.unshift(aTask);
+        if (!IMLibQueue.readyTo) {
+            setTimeout(IMLibQueue.startNextTask, 0);
+            IMLibQueue.readyTo = true;
+        }
     },
 
-    takeData: function (key) {
-        var data = INTERMediatorQueue.previousData[key];
-        delete INTERMediatorQueue.previousData[key];
-        return data;
+    setSequentialTasks: function (tasksArray) {
+        Array.prototype.push.apply(IMLibQueue.tasks, tasksArray);
+        if (!IMLibQueue.readyTo) {
+            setTimeout(IMLibQueue.startNextTask, 0);
+            IMLibQueue.readyTo = true;
+        }
+    },
+
+    setSequentialPriorTasks: function (tasksArray) {
+        Array.prototype.push.apply(tasksArray, IMLibQueue.tasks);
+        IMLibQueue.tasks = tasksArray;
+        if (!IMLibQueue.readyTo) {
+            setTimeout(IMLibQueue.startNextTask, 0);
+            IMLibQueue.readyTo = true;
+        }
     },
 
     startNextTask: function () {
-        if (INTERMediatorQueue.isExecute || INTERMediatorQueue.tasks.length == 0) {
+        if (IMLibQueue.isExecute) {
+            if (IMLibQueue.tasks.length > 0) {
+                setTimeout(IMLibQueue.startNextTask, 0);
+                IMLibQueue.readyTo = true;
+            }
             return;
         }
-        for (var taskId in INTERMediatorQueue.tasks) {
-            var aTask = INTERMediatorQueue.tasks[taskId];
-            if (INTERMediatorQueue.dependency.indexOf(taskId) < 0
-                || (   !(INTERMediatorQueue.dependency.indexOf(taskId) < 0)
-                    && INTERMediatorQueue.asyncTasks.indexOf(taskId-1) < 0)) {
-                INTERMediatorQueue.isExecute = true;
-                aTask(function () {
-                    var serial = taskId;
-                    delete INTERMediatorQueue.tasks[serial];
-                    INTERMediatorQueue.isExecute = false;
-                    setTimeout(INTERMediatorQueue.startNextTask, 0);
-                });
-            } else {
-                setTimeout(INTERMediatorQueue.startNextTask, 0);
-            }
-            break;
+        if (IMLibQueue.tasks.length > 0) {
+            var aTask = IMLibQueue.tasks.shift();
+            IMLibQueue.isExecute = true;
+            IMLibQueue.readyTo = false;
+            aTask(function () {
+                IMLibQueue.isExecute = false;
+                if (IMLibQueue.tasks.length > 0) {
+                    setTimeout(IMLibQueue.startNextTask, 0);
+                    IMLibQueue.readyTo = true;
+                }
+            });
         }
     }
 };
