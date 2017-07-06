@@ -86,7 +86,7 @@ class RetrieveFXMySQLData extends RetrieveFXSQLData {
                 $theResult = mysql_query($this->FX->dataQuery);
                 if ($theResult === false) {
                     return new FX_Error('Invalid query: ' . mysql_error());
-                } elseif ($theResult !== true) {
+            } elseif (!$theResult) {
                     // we got the found count above for generated SELECT queries, so get the residue here
                     if ($action == '-sqlquery') {
                         $this->FX->foundCount = mysql_num_rows($theResult);

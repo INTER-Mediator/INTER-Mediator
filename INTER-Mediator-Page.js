@@ -72,7 +72,7 @@ var INTERMediatorOnPage = {
     metadata: null,
     isLDAP: null,
     appLocale: null,
-    localInfo: {
+    localeInfo: {
         mon_decimal_point: '.',
         mon_thousands_sep: ',',
         currency_symbol: '￥'
@@ -1098,6 +1098,7 @@ var INTERMediatorOnPage = {
         } else {
             frontPanel.style.transitionDuration = "0";
             frontPanel.style.opacity = 1.0;
+            frontPanel.style.display = "flex";
         }
     },
 

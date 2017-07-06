@@ -121,17 +121,17 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 //                $this->logger->setDebugMessage("The method 'doBeforeGetFromDB' of the class '{$className}' is calling.", 2);
 //                $this->userExpanded->doBeforeGetFromDB();
 //            }
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeReadFromDB")) {
+            if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeReadFromDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeReadFromDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeReadFromDB();
             }
 
-            if ($this->dbClass !== null) {
+            if ($this->dbClass) {
                 //$this->logger->setDebugMessage("The method 'getFromDB' of the class '{$className}' is calling.", 2);
                 $tableInfo = $this->dbSettings->getDataSourceTargetArray();
                 if (isset($tableInfo['soft-delete'])) {
                     $delFlagField = 'delete';
-                    if ($tableInfo['soft-delete'] !== true) {
+                    if (!$tableInfo['soft-delete']) {
                         $delFlagField = $tableInfo['soft-delete'];
                     }
                     $this->dbClass->softDeleteActivate($delFlagField, 1);
@@ -145,7 +145,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 //                $this->logger->setDebugMessage("The method 'doAfterGetFromDB' of the class '{$className}' is calling.", 2);
 //                $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
 //            }
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterReadFromDB")) {
+            if ($this->userExpanded && method_exists($this->userExpanded, "doAfterReadFromDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterReadFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterReadFromDB($result);
             }
@@ -171,7 +171,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $dataSource,
                     $result,
                     $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true) {
+                if (!$mailResult) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -190,11 +190,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function countQueryResult()
     {
         $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "countQueryResult")) {
+        if ($this->userExpanded && method_exists($this->userExpanded, "countQueryResult")) {
             $this->logger->setDebugMessage("The method 'countQueryResult' of the class '{$className}' is calling.", 2);
             return $result = $this->userExpanded->countQueryResult();
         }
-        if ($this->dbClass !== null) {
+        if ($this->dbClass) {
             return $result = $this->dbClass->countQueryResult();
         }
     }
@@ -206,11 +206,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function getTotalCount()
     {
         $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
-        if ($this->userExpanded !== null && method_exists($this->userExpanded, "getTotalCount")) {
+        if ($this->userExpanded && method_exists($this->userExpanded, "getTotalCount")) {
             $this->logger->setDebugMessage("The method 'getTotalCount' of the class '{$className}' is calling.", 2);
             return $result = $this->userExpanded->getTotalCount();
         }
-        if ($this->dbClass !== null) {
+        if ($this->dbClass) {
             return $result = $this->dbClass->getTotalCount();
         }
     }
@@ -224,15 +224,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
             $className = get_class($this->userExpanded);
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
+            if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeUpdateDB();
             }
-            if ($this->dbClass !== null) {
+            if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Get Updated Record
                 $result = $this->dbClass->updateDB();
             }
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
+            if ($this->userExpanded && method_exists($this->userExpanded, "doAfterUpdateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterUpdateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterUpdateToDB($result);
             }
@@ -267,7 +267,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $dataSource,
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true) {
+                if (!$mailResult) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -288,16 +288,16 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
             $className = get_class($this->userExpanded);
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeCreateToDB")) {
+            if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCreateToDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeCreateToDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeCreateToDB();
             }
-            if ($this->dbClass !== null) {
+            if ($this->dbClass) {
                 $this->dbClass->requireUpdatedRecord(true); // Always Requred Created Record
                 $resultOfCreate = $this->dbClass->createInDB($bypassAuth);
                 $result = $this->dbClass->updatedRecord();
             }
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCreateToDB")) {
+            if ($this->userExpanded && method_exists($this->userExpanded, "doAfterCreateToDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterCreateToDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCreateToDB($result);
             }
@@ -331,7 +331,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $dataSource,
                     $this->dbClass->updatedRecord(),
                     $this->dbSettings->getSmtpConfiguration());
-                if ($mailResult !== true) {
+                if (!$mailResult) {
                     $this->logger->setErrorMessage("Mail sending error: $mailResult");
                 }
             }
@@ -351,15 +351,15 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         try {
             $className = get_class($this->userExpanded);
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
+            if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeDeleteFromDB();
             }
-            if ($this->dbClass !== null) {
+            if ($this->dbClass) {
                 $tableInfo = $this->dbSettings->getDataSourceTargetArray();
                 if (isset($tableInfo['soft-delete'])) {
                     $delFlagField = 'delete';
-                    if ($tableInfo['soft-delete'] !== true) {
+                    if (!$tableInfo['soft-delete']) {
                         $delFlagField = $tableInfo['soft-delete'];
                     }
                     $this->logger->setDebugMessage(
@@ -370,7 +370,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                     $result = $this->dbClass->deleteFromDB();
                 }
             }
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
+            if ($this->userExpanded && method_exists($this->userExpanded, "doAfterDeleteFromDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterDeleteFromDB($result);
             }
@@ -405,14 +405,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         try {
             $className = get_class($this->userExpanded);
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeCopyInDB")) {
+            if ($this->userExpanded  && method_exists($this->userExpanded, "doBeforeCopyInDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeCopyInDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeCopyInDB();
             }
-            if ($this->dbClass !== null) {
+            if ($this->dbClass ) {
                 $result = $this->dbClass->copyInDB();
             }
-            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterCopyInDB")) {
+            if ($this->userExpanded  && method_exists($this->userExpanded, "doAfterCopyInDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterCopyInDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterCopyInDB($result);
             }
@@ -445,7 +445,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
      */
     function getFieldInfo($dataSourceName)
     {
-        if ($this->dbClass !== null) {
+        if ($this->dbClass ) {
             $result = $this->dbClass->getFieldInfo($dataSourceName);
         }
         return $result;
@@ -453,14 +453,14 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
     public function requireUpdatedRecord($value)
     {
-        if ($this->dbClass !== null) {
+        if ($this->dbClass ) {
             $this->dbClass->requireUpdatedRecord($value);
         }
     }
 
     public function updatedRecord()
     {
-        if ($this->dbClass !== null) {
+        if ($this->dbClass ) {
             return $this->dbClass->updatedRecord();
         }
         return null;

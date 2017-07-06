@@ -6,7 +6,7 @@
 #  2012/6/29
 #
 
-COUNT=10;
+COUNT=20;
 
 while [ "${COUNT}" \> 0 ]
 do
@@ -31,14 +31,16 @@ do
     HASH=`echo -n "${PASS}${SOLT}" | openssl sha1 -sha1`
     SOLTHEX=`echo -n "${SOLT}" | xxd -ps`
     UNUM=`expr 1000 + ${COUNT}`
-    echo -n "INSERT INTO authuser(id,username,initialpass,hashedpasswd) "
-    echo "VALUES(${UNUM},'ios${UNUM}', '${PASS}', '${HASH}${SOLTHEX}');"
-    echo "INSERT INTO authcor(user_id,dest_group_id) VALUES(${UNUM},102);"
+#    echo -n "INSERT INTO authuser(id,username,initialpass,hashedpasswd) "
+#    echo "VALUES(${UNUM},'ios${UNUM}', '${PASS}', '${HASH}${SOLTHEX}');"
+#    echo "INSERT INTO authcor(user_id,dest_group_id) VALUES(${UNUM},102);"
+
+echo "${PASS},${HASH}${SOLTHEX}"
 
     COUNT=`expr ${COUNT} - 1`
 done
 
 #admin, thirdparty422
-echo "INSERT INTO authuser(id,username,hashedpasswd) VALUE(101,'admin','af2f5abf4091e53559adcb96278937bc281b930654455354');"
-echo "INSERT INTO authgroup(id,groupname) VALUE(101,'admin');"
-echo "INSERT INTO authgroup(id,groupname) VALUE(102,'iosreader');"
+#echo "INSERT INTO authuser(id,username,hashedpasswd) VALUE(101,'admin','af2f5abf4091e53559adcb96278937bc281b#930654455354');"
+#echo "INSERT INTO authgroup(id,groupname) VALUE(101,'admin');"
+#echo "INSERT INTO authgroup(id,groupname) VALUE(102,'iosreader');"

@@ -51,6 +51,7 @@ var IMLibCalc = {
         var calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
             calcDefField, atPos, fieldLength;
 
+
         calcDef = currentContext['calculation'];
         for (index in calcDef) {
             atPos = calcDef[index]['field'].indexOf(INTERMediator.separator);
@@ -192,6 +193,7 @@ var IMLibCalc = {
                 }
             }
         }
+
         do {
             leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
             for (i = 0; i < leafNodes.length; i++) {
@@ -226,11 +228,13 @@ var IMLibCalc = {
                     } else {
                         newValueAdded = false;
                         for (field in calcObject.referes) {
-                            for (ix = 0; ix < calcObject.referes[field].length; ix++) {
-                                cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix]);
-                                if (cachedIndex >= 0) {
-                                    calcObject.values[field][ix] = updateNodeValues[cachedIndex];
-                                    newValueAdded = true;
+                            if (calcObject.referes.hasOwnProperty(field)) {
+                                for (ix = 0; ix < calcObject.referes[field].length; ix++) {
+                                    cachedIndex = updatedNodeIds.indexOf(calcObject.referes[field][ix]);
+                                    if (cachedIndex >= 0) {
+                                        calcObject.values[field][ix] = updateNodeValues[cachedIndex];
+                                        newValueAdded = true;
+                                    }
                                 }
                             }
                         }
