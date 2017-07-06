@@ -92,7 +92,7 @@ var INTERMediatorLib = {
     },
     getParentRepeater: function (node) {
         var currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isRepeater(currentNode, true)) {
                 return currentNode;
             }
@@ -103,7 +103,7 @@ var INTERMediatorLib = {
 
     getParentEnclosure: function (node) {
         var currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isEnclosure(currentNode, true)) {
                 return currentNode;
             }
@@ -207,13 +207,13 @@ var INTERMediatorLib = {
     isLinkedElement: function (node) {
         var classInfo, matched, attr;
 
-        if (node != null && node.getAttribute) {
+        if (node !== null && node.getAttribute) {
             attr = node.getAttribute('data-im');
             if (attr) {
                 return true;
             }
             if (INTERMediator.titleAsLinkInfo) {
-                if (node.getAttribute('TITLE') != null && node.getAttribute('TITLE').length > 0) {
+                if (node.getAttribute('TITLE') !== null && node.getAttribute('TITLE').length > 0) {
                     // IE: If the node doesn't have a title attribute, getAttribute
                     // doesn't return null.
                     // So it requrired check if it's empty string.
@@ -222,7 +222,7 @@ var INTERMediatorLib = {
             }
             if (INTERMediator.classAsLinkInfo) {
                 classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
-                if (classInfo != null) {
+                if (classInfo !== null) {
                     matched = classInfo.match(/IM\[.*\]/);
                     if (matched) {
                         return true;
@@ -245,7 +245,7 @@ var INTERMediatorLib = {
                 return true;
             }
             classInfo = INTERMediatorLib.getClassAttributeFromNode(node);
-            if (classInfo != null) {
+            if (classInfo !== null) {
                 matched = classInfo.match(/IM_WIDGET\[.*\]/);
                 if (matched) {
                     return true;
@@ -259,7 +259,7 @@ var INTERMediatorLib = {
                     return true;
                 }
                 classInfo = INTERMediatorLib.getClassAttributeFromNode(parentNode);
-                if (classInfo != null) {
+                if (classInfo !== null) {
                     matched = classInfo.match(/IM_WIDGET\[.*\]/);
                     if (matched) {
                         return true;
@@ -273,7 +273,7 @@ var INTERMediatorLib = {
     isNamedElement: function (node) {
         var nameInfo, matched;
 
-        if (node != null) {
+        if (node !== null) {
             nameInfo = node.getAttribute('data-im-group');
             if (nameInfo) {
                 return true;
@@ -300,7 +300,7 @@ var INTERMediatorLib = {
         var currentNode, detectedRepeater;
 
         currentNode = node;
-        while (currentNode != null) {
+        while (currentNode !== null) {
             if (INTERMediatorLib.isRepeater(currentNode, true)) {
                 detectedRepeater = currentNode;
             } else if (isRepeaterOfEnclosure(detectedRepeater, currentNode)) {
@@ -392,7 +392,7 @@ var INTERMediatorLib = {
                 }
                 return defs;
             }
-            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE') != null) {
+            if (INTERMediator.titleAsLinkInfo && node.getAttribute('TITLE')) {
                 eachDefs = node.getAttribute('TITLE').split(INTERMediator.defDivider);
                 for (i = 0; i < eachDefs.length; i++) {
                     defs.push(resolveAlias(eachDefs[i]));
@@ -556,11 +556,11 @@ var INTERMediatorLib = {
         tableName = '';
         fieldName = '';
         targetName = '';
-        if (comps.length == 3) {
+        if (comps.length === 3) {
             tableName = comps[0];
             fieldName = comps[1];
             targetName = comps[2];
-        } else if (comps.length == 2) {
+        } else if (comps.length === 2) {
             fieldName = comps[0];
             targetName = comps[1];
         } else {
@@ -626,14 +626,13 @@ var INTERMediatorLib = {
     // - - - - -
 
     toNumber: function (str) {
-        var s = '', i, c;
+        "use strict";
+        var s = "", i, c;
         str = str.toString();
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
-            if ((c >= '0' && c <= '9') ||
-                c === '.' ||
-                c === '-' ||
-                c === INTERMediatorOnPage.localInfo["mon_decimal_point"]) {
+            if ((c >= '0' && c <= '9') || c === '.' || c === '-' ||
+                c === INTERMediatorOnPage.localeInfo["mon_decimal_point"]) {
                 s += c;
             } else if (c >= '０' && c <= '９') {
                 s += String.fromCharCode(c.charCodeAt(0) - '０'.charCodeAt(0) + '0'.charCodeAt(0));
@@ -657,49 +656,328 @@ var INTERMediatorLib = {
         return Math.round(value * powers) / powers;
     },
 
+    normalizeNumerics: function (value) {
+        var i;
+        for (i = 0; i < 10; i++) {
+            value = String(value).split(String.fromCharCode(65296 + i)).join(String(i));
+            // Full-width numeric characters start from 0xFF10(65296). This is convert to Full to ASCII char for numeric.
+        }
+        return value;
+    },
+
     /**
      * This method returns the rounded value of the 1st parameter to the 2nd parameter from decimal point
      * with a thousands separator.
-     * @param {number} value The source value.
-     * @param {integer} digit Positive number means after the decimal point, and negative menas before it.
+     * @param {number} str The source value.
+     * @param {integer} digit Positive number means after the decimal point, and negative means before it.
+     * @param {string} decimalPoint
+     * @param {string} thousandsSep
+     * @param {string} currencySymbol
+     * @param {object} flags
      * @returns {string}
      */
-    numberFormat: function (str, digit) {
-        var s, n, sign, power, underDot, underNumStr, pstr, roundedNum, underDecimalNum, integerNum;
-
-        n = this.toNumber(str);
-        sign = '';
-        if (n < 0) {
-            sign = '-';
-            n = -n;
+    numberFormatImpl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
+        "use strict";
+        var s, n, prefix, i, sign, tailSign = "", power, underDot, underNumStr, pstr,
+            roundedNum, underDecimalNum, integerNum, formatted, numStr, j, isMinusValue,
+            numerals, numbers;
+        if (str === "" || str === null || str === undefined) {
+            return "";
         }
-        underDot = (digit === undefined) ? 0 : this.toNumber(digit);
+        prefix = (String(str).substring(0, 1) === "-")?"-":"";
+        if (String(str).match(/[-]/)) {
+            str = prefix + String(str).split("-").join("");
+        }
+        //str = INTERMediatorLib.normalizeNumerics(str);
+        n = INTERMediatorLib.toNumber(str);
+        if (isNaN(n)) {
+            return "";
+        }
+        if (flags === undefined) {
+            flags = {};
+        }
+        sign = INTERMediatorOnPage.localeInfo.positive_sign;
+        isMinusValue = false;
+        if (n < 0) {
+            sign = INTERMediatorOnPage.localeInfo.negative_sign;
+            if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {
+                sign = "-";
+            } else if (flags.negativeStyle === 2) {
+                sign = "(";
+                tailSign = ")";
+            } else if (flags.negativeStyle === 3) {
+                sign = "<";
+                tailSign = ">";
+            } else if (flags.negativeStyle === 4) {
+                sign = " CR";
+            } else if (flags.negativeStyle === 5) {
+                sign = "▲";
+            }
+            n = -n;
+            isMinusValue = true;
+        }
+
+        if (flags.blankIfZero === true && n === 0) {
+            return "";
+        }
+
+        if (flags.usePercentNotation) {
+            n = n * 100;
+        }
+
+        underDot = (digit === undefined) ? INTERMediatorOnPage.localeInfo.frac_digits : this.toNumber(digit);
         power = Math.pow(10, underDot);
         roundedNum = Math.round(n * power);
         underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
         integerNum = (roundedNum - underDecimalNum) / power;
-        underNumStr = (underDot > 0) ? new String(underDecimalNum) : '';
+        underNumStr = (underDot > 0) ? String(underDecimalNum) : "";
         while (underNumStr.length < underDot) {
             underNumStr = '0' + underNumStr;
         }
-        n = integerNum;
-        s = [];
-        for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
-            if (n >= 1000) {
-                pstr = '000' + (n % 1000).toString();
-                s.push(pstr.substr(pstr.length - 3));
+
+        if (flags.useSeparator === true) {
+            if (n === 0) {
+                formatted = "0";
             } else {
-                s.push(n);
+                n = integerNum;
+                s = [];
+                if (flags.kanjiSeparator === 1 || flags.kanjiSeparator === 2) {
+                    numerals = ["万", "億", "兆", "京", "垓", "𥝱", "穣", "溝",
+                        "澗", "正", "載", "極", "恒河沙", "阿僧祇", "那由他",
+                        "不可思議", "無量大数"];
+                    i = 0;
+                    formatted = "";
+                    for (n = Math.floor(n); n > 0; n = Math.floor(n / 10000)) {
+                        if (n >= 10000) {
+                            pstr = "0000" + (n % 10000).toString();
+                        } else {
+                            pstr = (n % 10000).toString();
+                        }
+                        if (flags.kanjiSeparator === 1) {
+                            if (n >= 10000) {
+                                if (pstr.substr(pstr.length - 4) !== "0000") {
+                                    formatted = numerals[i] +
+                                        Number(pstr.substr(pstr.length - 4)) +
+                                        formatted;
+                                } else {
+                                    if (numerals[i - 1] !== formatted.charAt(0)) {
+                                        formatted = numerals[i] + formatted;
+                                    } else {
+                                        formatted = numerals[i] + formatted.slice(1);
+                                    }
+                                }
+                            } else {
+                                formatted = n + formatted;
+                            }
+                        } else if (flags.kanjiSeparator === 2) {
+                            numStr = pstr.substr(pstr.length - 4);
+                            pstr = "";
+                            if (numStr === "0001") {
+                                pstr = "1";
+                            } else if (numStr !== "0000") {
+                                for (j = 0; j < numStr.length; j++) {
+                                    if (numStr.charAt(j) > 1) {
+                                        pstr = pstr + numStr.charAt(j);
+                                    }
+                                    if (numStr.charAt(j) > 0) {
+                                        if (numStr.length - j === 4) {
+                                            pstr = pstr + "千";
+                                        } else if (numStr.length - j === 3) {
+                                            pstr = pstr + "百";
+                                        } else if (numStr.length - j === 2) {
+                                            pstr = pstr + "十";
+                                        }
+                                    }
+                                }
+                            }
+                            if (n >= 10000) {
+                                if (pstr.length > 0) {
+                                    formatted = numerals[i] + pstr + formatted;
+                                } else {
+                                    if (numerals[i - 1] !== formatted.charAt(0)) {
+                                        formatted = numerals[i] + formatted;
+                                    } else {
+                                        formatted = numerals[i] + formatted.slice(1);
+                                    }
+                                }
+                            } else {
+                                if (numStr.length === 1) {
+                                    formatted = n + formatted;
+                                } else {
+                                    formatted = pstr + formatted;
+                                }
+                            }
+                        }
+                        i++;
+                    }
+                    formatted = formatted +
+                        (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                } else {
+                    for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
+                        if (n >= 1000) {
+                            pstr = "000" + (n % 1000).toString();
+                            s.push(pstr.substr(pstr.length - 3));
+                        } else {
+                            s.push(n);
+                        }
+                    }
+                    formatted = s.reverse().join(thousandsSep) +
+                        (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                }
+                if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
+                    formatted = sign + formatted;
+                } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {
+                    formatted = formatted + sign;
+                } else if (flags.negativeStyle === 2 || flags.negativeStyle === 3) {
+                    formatted = sign + formatted + tailSign;
+                } else {
+                    formatted = sign + formatted;
+                }
+            }
+        } else {
+            formatted = integerNum + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+            if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
+                formatted = sign + formatted;
+            } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {
+                formatted = formatted + sign;
+            } else if (flags.negativeStyle === 2 || flags.negativeStyle === 3) {
+                formatted = sign + formatted + tailSign;
+            } else {
+                formatted = sign + formatted;
             }
         }
-        s = s.length < 1 ? ["0"] : s;
-        return sign + s.reverse().join(INTERMediatorOnPage.localInfo["mon_thousands_sep"])
-            + (underNumStr == '' ? '' : INTERMediatorOnPage.localInfo["mon_decimal_point"] + underNumStr);
+
+        if (currencySymbol) {
+            if (!isMinusValue) {
+                if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {    // Stay operator "=="
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator "=="
+                        formatted = currencySymbol + " " + formatted;
+                    } else {
+                        formatted = currencySymbol + formatted;
+                    }
+                } else {
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator "=="
+                        formatted = formatted + " " + currencySymbol;
+                    } else {
+                        formatted = formatted + currencySymbol;
+                    }
+                }
+            } else {
+                if (INTERMediatorOnPage.localeInfo.n_cs_precedes == 1) { // Stay operator "=="
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator "=="
+                        formatted = currencySymbol + " " + formatted;
+                    } else {
+                        formatted = currencySymbol + formatted;
+                    }
+                } else {
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator "=="
+                        formatted = formatted + " " + currencySymbol;
+                    } else {
+                        formatted = formatted + currencySymbol;
+                    }
+                }
+            }
+        }
+
+        if (flags.charStyle) {
+            if (flags.charStyle === 1) {
+                for (i = 0; i < 10; i++) {
+                    formatted = String(formatted).split(String(i)).join(String.fromCharCode(65296 + i));
+                }
+            } else if (flags.charStyle === 2) {
+                numbers = {
+                    0: "〇", 1: "一", 2: "二", 3: "三", 4: "四",
+                    5: "五", 6: "六", 7: "七", 8: "八", 9: "九"
+                };
+                for (i = 0; i < 10; i++) {
+                    formatted = String(formatted).split(String(i)).join(String(numbers[i]));
+                }
+            } else if (flags.charStyle === 3) {
+                numbers = {
+                    0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四",
+                    5: "伍", 6: "六", 7: "七", 8: "八", 9: "九"
+                };
+                for (i = 0; i < 10; i++) {
+                    formatted = String(formatted).split(String(i)).join(String(numbers[i]));
+                }
+            }
+        }
+
+        if (flags.usePercentNotation === true && formatted !== "") {
+            formatted = formatted + "%";
+        }
+
+        return formatted;
     },
 
-    currencyFormat: function (str, digit) {
-        return INTERMediatorOnPage.localInfo["currency_symbol"] +
-            INTERMediatorLib.numberFormat(str, digit);
+    numberFormat: function (str, digit, flags) {
+        "use strict";
+        if (flags === undefined) {
+            flags = {};
+        }
+        flags.useSeparator = true;    // for compatibility
+        return this.decimalFormat(str, digit, flags);
+    },
+
+    percentFormat: function (str, digit, flags) {
+        "use strict";
+        if (typeof flags !== 'object'  )    {
+            flags ={};
+        }
+        flags["usePercentNotation"] = true;
+        return INTERMediatorLib.numberFormatImpl(str, digit,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+            false,
+            flags
+        );
+    },
+
+    decimalFormat: function (str, digit, flags) {
+        "use strict";
+        return INTERMediatorLib.numberFormatImpl(str, digit,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+            false,
+            flags
+        );
+    },
+
+    currencyFormat: function (str, digit, flags) {
+        "use strict";
+        return INTERMediatorLib.numberFormatImpl(str, digit,
+            INTERMediatorOnPage.localeInfo.mon_decimal_point,
+            INTERMediatorOnPage.localeInfo.mon_thousands_sep,
+            INTERMediatorOnPage.localeInfo.currency_symbol,
+            flags
+        );
+    },
+
+    booleanFormat: function (str, forms, flags) {
+        "use strict";
+        var trueString = "true", falseString = "false", fmtStr;
+        var params = forms.split(",");
+        if (params[0])  {
+            fmtStr = params[0].trim();
+            if (fmtStr.length > 0)  {
+                trueString = fmtStr
+            }
+        }
+        if (params[1])  {
+            fmtStr = params[1].trim();
+            if (fmtStr.length > 0)  {
+                falseString = fmtStr
+            }
+        }
+        if (str === "" || str === null) {
+            return "";
+        } else {
+            if (parseInt(str, 10) !== 0) {
+                return trueString;
+            } else {
+                return falseString;
+            }
+        }
     },
 
     objectToString: function (obj) {
@@ -708,7 +986,7 @@ var INTERMediatorLib = {
         if (obj === null) {
             return 'null';
         }
-        if (typeof obj == 'object') {
+        if (typeof obj === 'object') {
             str = '';
             if (obj.constractor === Array) {
                 for (i = 0; i < obj.length; i++) {
@@ -727,14 +1005,14 @@ var INTERMediatorLib = {
     },
 
     getTargetTableForRetrieve: function (element) {
-        if (element['view'] != null) {
+        if (element['view'] !== null) {
             return element['view'];
         }
         return element['name'];
     },
 
     getTargetTableForUpdate: function (element) {
-        if (element['table'] != null) {
+        if (element['table'] !== null) {
             return element['table'];
         }
         return element['name'];
@@ -744,7 +1022,7 @@ var INTERMediatorLib = {
         var resultStr, counter;
 
         resultStr = tmpStr;
-        if (dataArray != null) {
+        if (dataArray !== null) {
             for (counter = 1; counter <= dataArray.length; counter++) {
                 resultStr = resultStr.replace('@' + counter + '@', dataArray[counter - 1]);
             }
@@ -768,7 +1046,7 @@ var INTERMediatorLib = {
     getNamedObject: function (obj, key, named) {
         var index;
         for (index in obj) {
-            if (obj[index][key] == named) {
+            if (obj[index][key] === named) {
                 return obj[index];
             }
         }
@@ -778,7 +1056,7 @@ var INTERMediatorLib = {
     getNamedObjectInObjectArray: function (ar, key, named) {
         var i;
         for (i = 0; i < ar.length; i++) {
-            if (ar[i][key] == named) {
+            if (ar[i][key] === named) {
                 return ar[i];
             }
         }
@@ -788,7 +1066,7 @@ var INTERMediatorLib = {
     getNamedValueInObject: function (ar, key, named, retrieveKey) {
         var result = [], index;
         for (index in ar) {
-            if (ar[index][key] == named) {
+            if (ar[index][key] === named) {
                 result.push(ar[index][retrieveKey]);
             }
         }
@@ -812,7 +1090,7 @@ var INTERMediatorLib = {
     getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
         var result = [], index;
         for (index in ar) {
-            if (ar.hasOwnProperty(index) && ar[index][key1] == named1 && ar[index][key2] == named2) {
+            if (ar.hasOwnProperty(index) && ar[index][key1] === named1 && ar[index][key2] === named2) {
                 result.push(ar[index][retrieveKey]);
             }
         }
@@ -1176,6 +1454,16 @@ var IMLibNodeGraph = {
             this.nodes.splice(this.nodes.indexOf(dests[i]), 1);
         }
         return dests;
+    },
+    removeNode: function (node) {
+        var i, newEdges = [];
+        for (i = 0; i < this.edges.length; i++) {
+            if (this.edges[i].to != node) {
+                newEdges.push(this.edges[i]);
+            }
+        }
+        this.edges = newEdges;
+        this.nodes.splice(this.nodes.indexOf(node), 1);
     },
     applyToAllNodes: function (f) {
         var i;

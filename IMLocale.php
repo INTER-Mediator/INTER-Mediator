@@ -57,7 +57,7 @@ class IMLocale
             $lstr = $appLocale;
         }
         if (!is_null($appCurrency)) {
-            IMLocale::$currencyCode = IMLocaleCurrencyTable::getContoryCurrencyCode($appCurrency);
+            IMLocale::$currencyCode = IMLocaleCurrencyTable::getCountryCurrencyCode($appCurrency);
             $isSetCurrency = true;
         }
         if (!$isSetLocale) {

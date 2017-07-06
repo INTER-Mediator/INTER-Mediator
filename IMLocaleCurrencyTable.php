@@ -33,7 +33,7 @@ class IMLocaleCurrencyTable
         return $locInfo;
     }
 
-    public static function getContoryCurrencyCode($cCode)
+    public static function getCountryCurrencyCode($cCode)
     {
         if ($cCode == 'JP') {
             return "JPY";
