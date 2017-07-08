@@ -88,7 +88,6 @@ class IMLocale
         if (!$isSetCurrency) {
             IMLocale::$currencyCode = IMLocaleCurrencyTable::getCurrencyCode(IMLocale::$choosenLocale);
         }
-        echo "locale=" . IMLocale::$choosenLocale . "(" . IMLocale::$localForTest . ")(" . $appCurrency . ")(" . $appLocale . ")(" . $isSetCurrency . ")/";
     }
 
     /**
