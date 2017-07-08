@@ -37,7 +37,7 @@ class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($string));
 
         if (getenv('TRAVIS') === 'true') {
-            $expected = '01/05/00 12:34:56';  // for Travis CI
+            $expected = '05/01/00 12:34:56';  // for Travis CI
         } else {
             $expected = strftime('%x %H:%M:%S', strtotime('01/05/00 12:34:56'));
         }
@@ -45,7 +45,7 @@ class DataConverter_MySQLDateTime_Test extends PHPUnit_Framework_TestCase
         $this->assertSame($expected, $this->dataconverter->converterFromDBtoUser($datetimeString));
 
         if (getenv('TRAVIS') === 'true') {
-            $expected = '01/05/00';  // for Travis CI
+            $expected = '05/01/00';  // for Travis CI
         } else {
             $expected = strftime('%x', strtotime('01/05/00'));
         }
