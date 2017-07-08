@@ -1691,6 +1691,7 @@ var IMLibLocalContext = {
                     } else if (attrType && (attrType === "checkbox" || attrType === "radio")) {
                         IMLibChangeEventDispatch.setExecute(idValue, (function () {
                             var contextName = params[1];
+                            var targetIdValue = idValue;
                             return function () {
                                 INTERMediator.startFrom = 0;
                                 IMLibUI.eventUpdateHandler(contextName);

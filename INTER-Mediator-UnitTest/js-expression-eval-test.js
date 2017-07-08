@@ -128,6 +128,34 @@ buster.testCase("Operators Test2", {
 });
 
 buster.testCase("Functions Test", {
+    setUp: function () {
+        INTERMediatorOnPage.localeInfo = {
+            'decimal_point': '.',
+            'thousands_sep': ',',
+            'int_curr_symbol': 'JPY ',
+            'currency_symbol': '¥',
+            'mon_decimal_point': '.',
+            'mon_thousands_sep': ',',
+            'positive_sign': '',
+            'negative_sign': '-',
+            'int_frac_digits': '0',
+            'frac_digits': '0',
+            'p_cs_precedes': '1',
+            'p_sep_by_space': '0',
+            'n_cs_precedes': '1',
+            'n_sep_by_space': '0',
+            'p_sign_posn': '1',
+            'n_sign_posn': '4',
+            'grouping': {
+                '0': '3',
+                '1': '3'
+            },
+            'mon_grouping': {
+                '0': '3',
+                '1': '3'
+            }
+        };
+    },
     "should be equal to": function () {
         var x;
         assert.equals(Math.round(Parser.evaluate("sin(PI/4)") * 100), 71);
@@ -277,16 +305,42 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
     },
     "Wrong expression.1": function () {
         assert.exception(function () {
-            Parser.evaluate("(a + b", {'a': [20], 'b': [2]})
+            Parser.evaluate("(a + b", {'a': [20], 'b': [2]});
         });
     },
     "Wrong expression.2": function () {
         assert.exception(function () {
-            Parser.evaluate("a + b + malfunction(a)", {'a': [20], 'b': [2]})
+            Parser.evaluate("a + b + malfunction(a)", {'a': [20], 'b': [2]});
         });
     },
 
     "each 3-digits should be devided.": function () {
+        INTERMediatorOnPage.localeInfo = {
+            'decimal_point': '.',
+            'thousands_sep': ',',
+            'int_curr_symbol': 'JPY ',
+            'currency_symbol': '¥',
+            'mon_decimal_point': '.',
+            'mon_thousands_sep': ',',
+            'positive_sign': '',
+            'negative_sign': '-',
+            'int_frac_digits': '0',
+            'frac_digits': '0',
+            'p_cs_precedes': '1',
+            'p_sep_by_space': '0',
+            'n_cs_precedes': '1',
+            'n_sep_by_space': '0',
+            'p_sign_posn': '1',
+            'n_sign_posn': '4',
+            'grouping': {
+                '0': '3',
+                '1': '3'
+            },
+            'mon_grouping': {
+                '0': '3',
+                '1': '3'
+            }
+        };
         assert.equals(Parser.evaluate("format(999, 0)"), "999");
         assert.equals(Parser.evaluate("format(1000, 0)"), "1,000");
         assert.equals(Parser.evaluate("format(999999, 0)"), "999,999");
@@ -303,18 +357,44 @@ buster.testCase("INTER-Mediator Specific Calculation Test: ", {
     },
 
     "each 3-digits should be devided with currency.": function () {
-        assert.equals(Parser.evaluate("currency(999, 0)"), "￥999");
-        assert.equals(Parser.evaluate("currency(1000, 0)"), "￥1,000");
-        assert.equals(Parser.evaluate("currency(999999, 0)"), "￥999,999");
-        assert.equals(Parser.evaluate("currency(1000000, 0)"), "￥1,000,000");
-        assert.equals(Parser.evaluate("currency(1000000.678, 1)"), "￥1,000,000.7");
-        assert.equals(Parser.evaluate("currency(1000000.678, 2)"), "￥1,000,000.68");
-        assert.equals(Parser.evaluate("currency(1000000.678, 3)"), "￥1,000,000.678");
-        assert.equals(Parser.evaluate("currency(1000000.678, 4)"), "￥1,000,000.6780");
-        assert.equals(Parser.evaluate("currency(-1000000.678, 1)"), "￥-1,000,000.7");
-        assert.equals(Parser.evaluate("currency(-1000000.678, 2)"), "￥-1,000,000.68");
-        assert.equals(Parser.evaluate("currency(-1000000.678, 3)"), "￥-1,000,000.678");
-        assert.equals(Parser.evaluate("currency(999999, -1)"), "￥1,000,000");
+        INTERMediatorOnPage.localeInfo = {
+            'decimal_point': '.',
+            'thousands_sep': ',',
+            'int_curr_symbol': 'JPY ',
+            'currency_symbol': '¥',
+            'mon_decimal_point': '.',
+            'mon_thousands_sep': ',',
+            'positive_sign': '',
+            'negative_sign': '-',
+            'int_frac_digits': '0',
+            'frac_digits': '0',
+            'p_cs_precedes': '1',
+            'p_sep_by_space': '0',
+            'n_cs_precedes': '1',
+            'n_sep_by_space': '0',
+            'p_sign_posn': '1',
+            'n_sign_posn': '4',
+            'grouping': {
+                '0': '3',
+                '1': '3'
+            },
+            'mon_grouping': {
+                '0': '3',
+                '1': '3'
+            }
+        };
+        assert.equals(Parser.evaluate("currency(999, 0)"), "¥999");
+        assert.equals(Parser.evaluate("currency(1000, 0)"), "¥1,000");
+        assert.equals(Parser.evaluate("currency(999999, 0)"), "¥999,999");
+        assert.equals(Parser.evaluate("currency(1000000, 0)"), "¥1,000,000");
+        assert.equals(Parser.evaluate("currency(1000000.678, 1)"), "¥1,000,000.7");
+        assert.equals(Parser.evaluate("currency(1000000.678, 2)"), "¥1,000,000.68");
+        assert.equals(Parser.evaluate("currency(1000000.678, 3)"), "¥1,000,000.678");
+        assert.equals(Parser.evaluate("currency(1000000.678, 4)"), "¥1,000,000.6780");
+        assert.equals(Parser.evaluate("currency(-1000000.678, 1)"), "¥-1,000,000.7");
+        assert.equals(Parser.evaluate("currency(-1000000.678, 2)"), "¥-1,000,000.68");
+        assert.equals(Parser.evaluate("currency(-1000000.678, 3)"), "¥-1,000,000.678");
+        assert.equals(Parser.evaluate("currency(999999, -1)"), "¥1,000,000");
         // A negative second parameter doesn't support so far.
     },
 
