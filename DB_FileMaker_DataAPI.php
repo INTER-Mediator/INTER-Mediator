@@ -14,11 +14,13 @@
  */
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'FMDataAPI.php');
 
-class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
+class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
 {
-    private $fmData = null;
-    private $fmDataAuth = null;
-    private $fmDataAlt = null;
+    private $fmData = null;     // FMDataAPI class's instance
+    private $fmDataAuth = null; // FMDataAPI class's instance
+    private $fmDataAlt = null;  // FMDataAPI class's instance
+    private $authHandler = null;
+    private $notifyHandler = null;
     private $targetLayout = null;
     private $recordCount = null;
     private $mainTableCount = 0;
@@ -27,33 +29,15 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
 
     private $isRequiredUpdated = false;
     private $updatedRecord = null;
-    private $queriedEntity = null;
-    private $queriedCondition = null;
-    private $queriedPrimaryKeys = null;
     private $softDeleteField = null;
     private $softDeleteValue = null;
-
-    public function queriedEntity()
-    {
-        return $this->queriedEntity;
-    }
-
-    public function queriedCondition()
-    {
-        return $this->queriedCondition;
-    }
-
-    public function queriedPrimaryKeys()
-    {
-        return $this->queriedPrimaryKeys;
-    }
 
     /**
      * @param $str
      */
     private function errorMessageStore($str)
     {
-        $this->logger->setErrorMessage("Query Error: [{$str}] Error Code={$this->fmData->lastErrorCode}");
+        $this->logger->setErrorMessage("Query Error: [{$str}] Error Code={$this->fmData->errorCode()}");
     }
 
     public function setupConnection()
@@ -125,6 +109,8 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
             $this->dbSettings->getDbSpecProtocol()
         );
         $fmDataObj->setCertValidating(true);
+        $this->authHandler = new DB_PDO_Auth_Handler($this);
+        $this->notifyHandler = new DB_PDO_Notification_Handler($this);
         return $fmDataObj;
     }
 
@@ -147,240 +133,6 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
     private function unifyCRLF($str)
     {
         return str_replace("\n", "\r", str_replace("\r\n", "\r", $str));
-    }
-    public function isExistRequiredTable()
-    {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
-        if ($regTable == null) {
-            $this->errorMessageStore("The table doesn't specified.");
-            return false;
-        }
-
-        $this->setupFMDataAPIforDB($regTable, 1);
-        $this->fmDataResult = $this->fmData->DoFxAction('show_all', TRUE, TRUE, 'full');
-        if ($this->fmDataResult['errorCode'] != 0 && $this->fmDataResult['errorCode'] != 401) {
-            $this->errorMessageStore("The table '{$regTable}' doesn't exist in the database.");
-            return false;
-        }
-        return true;
-    }
-
-    public function register($clientId, $entity, $condition, $pkArray)
-    {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
-        $currentDT = new DateTime();
-        $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        $this->setupFMDataAPIforDB($regTable, 1);
-        $this->fmData->AddDBParam('clientid', $clientId);
-        $this->fmData->AddDBParam('entity', $entity);
-        $this->fmData->AddDBParam('conditions', $condition);
-        $this->fmData->AddDBParam('registereddt', $currentDTFormat);
-        $result = $this->fmData->DoFxAction('new', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at insert action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"));
-            return false;
-        }
-        $newContextId = null;
-        foreach ($result['data'] as $recmodid => $recordData) {
-            foreach ($recordData as $field => $value) {
-                if ($field == 'id') {
-                    $newContextId = $value[0];
-                }
-            }
-        }
-        if (is_array($pkArray)) {
-            foreach ($pkArray as $pk) {
-                $this->setupFMDataAPIforDB($pksTable, 1);
-                $this->fmData->AddDBParam('context_id', $newContextId);
-                $this->fmData->AddDBParam('pk', $pk);
-                $result = $this->fmData->DoFxAction('new', TRUE, TRUE, 'full');
-                if (!is_array($result)) {
-                    $this->logger->setDebugMessage(
-                        $this->stringWithoutCredential("FX reports error at insert action: " .
-                            "code={$result['errorCode']}, url={$result['URL']}"));
-                    $this->errorMessageStore(
-                        $this->stringWithoutCredential("FX reports error at insert action: " .
-                            "code={$result['errorCode']}, url={$result['URL']}"));
-                    return false;
-                }
-            }
-        }
-        return $newContextId;
-    }
-
-    public function unregister($clientId, $tableKeys)
-    {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
-
-        $this->setupFMDataAPIforDB($regTable, 'all');
-        $this->fmData->AddDBParam('clientid', $clientId, 'eq');
-        if ($tableKeys) {
-            $subCriteria = array();
-            foreach ($tableKeys as $regId) {
-                $this->fmData->AddDBParam('id', $regId, 'eq');
-            }
-        }
-        $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-
-        if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-            $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"));
-            return false;
-        } else {
-            if ($result['foundCount'] > 0) {
-                $this->setupFMDataAPIforDB($regTable, '');
-                foreach ($result['data'] as $key => $row) {
-                    $recId = substr($key, 0, strpos($key, '.'));
-                    $this->fmData->SetRecordID($recId);
-                    $this->fmData->DoFxAction('delete', TRUE, TRUE, 'full');
-                }
-            }
-        }
-
-        return true;
-    }
-
-    public function matchInRegisterd($clientId, $entity, $pkArray)
-    {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
-        $originPK = $pkArray[0];
-        $this->setupFMDataAPIforDB($regTable, 'all');
-        $this->fmData->AddDBParam('clientid', $clientId, 'neq');
-        $this->fmData->AddDBParam('entity', $entity, 'eq');
-        $this->fmData->AddSortParam('clientid');
-        $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        $contextIds = array();
-        $targetClients = array();
-        if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-            $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"));
-        } else {
-            if ($result['foundCount'] > 0) {
-                foreach ($result['data'] as $recmodid => $recordData) {
-                    foreach ($recordData as $field => $value) {
-                        if ($field == 'id') {
-                            $targetId = $value[0];
-                        }
-                        if ($field == 'clientid') {
-                            $targetClient = $value[0];
-                        }
-                    }
-                    $contextIds[] = array($targetId, $targetClient);
-                }
-            }
-        }
-
-        foreach ($contextIds as $key => $context) {
-            $this->setupFMDataAPIforDB($pksTable, '1');
-            $this->fmData->AddDBParam('context_id', $context[0], 'eq');
-            $this->fmData->AddDBParam('pk', $originPK, 'eq');
-            $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-            if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-                $this->errorMessageStore(
-                    $this->stringWithoutCredential("FX reports error at find action: " .
-                        "code={$result['errorCode']}, url={$result['URL']}"));
-            } else {
-                if ($result['foundCount'] > 0) {
-                    $targetClients[] = $context[1];
-                }
-            }
-        }
-
-        return array_unique($targetClients);
-    }
-
-    public function appendIntoRegisterd($clientId, $entity, $pkArray)
-    {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
-
-        $this->setupFMDataAPIforDB($regTable, 'all');
-        $this->fmData->AddDBParam('entity', $entity, 'eq');
-        $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        $targetClients = array();
-        if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-            $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"));
-            return false;
-        } else {
-            if ($result['foundCount'] > 0) {
-                foreach ($result['data'] as $recmodid => $recordData) {
-                    foreach ($recordData as $field => $value) {
-                        if ($field == 'id') {
-                            $targetId = $value[0];
-                        }
-                        if ($field == 'clientid') {
-                            $targetClients[] = $value[0];
-                        }
-                    }
-                    $this->setupFMDataAPIforDB($pksTable, 1);
-                    $this->fmData->AddDBParam('context_id', $targetId);
-                    $this->fmData->AddDBParam('pk', $pkArray[0]);
-                    $result = $this->fmData->DoFxAction('new', TRUE, TRUE, 'full');
-                    if (!is_array($result)) {
-                        $this->errorMessageStore(
-                            $this->stringWithoutCredential("FX reports error at insert action: " .
-                                "code={$result['errorCode']}, url={$result['URL']}"));
-                        return false;
-                    }
-                    $this->logger->setDebugMessage("Inserted count: " . $result['foundCount'], 2);
-                }
-            }
-        }
-        return array_values(array_diff(array_unique($targetClients), array($clientId)));
-    }
-
-    public function removeFromRegisterd($clientId, $entity, $pkArray)
-    {
-        $regTable = $this->dbSettings->registerTableName;
-        $pksTable = $this->dbSettings->registerPKTableName;
-        $this->setupFMDataAPIforDB($regTable, 'all');
-        $this->fmData->AddDBParam('entity', $entity, 'eq');
-        $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        $this->logger->setDebugMessage(var_export($result, true));
-        $targetClients = array();
-        if ($result['errorCode'] != 0 && $result['errorCode'] != 401) {
-            $this->errorMessageStore(
-                $this->stringWithoutCredential("FX reports error at find action: " .
-                    "code={$result['errorCode']}, url={$result['URL']}"));
-            return false;
-        } else {
-            if ($result['foundCount'] > 0) {
-                foreach ($result['data'] as $recmodid => $recordData) {
-                    foreach ($recordData as $field => $value) {
-                        if ($field == 'id') {
-                            $targetId = $value[0];
-                        }
-                        if ($field == 'clientid') {
-                            $targetClients[] = $value[0];
-                        }
-                    }
-                    $this->setupFMDataAPIforDB($pksTable, 'all');
-                    $this->fmData->AddDBParam('context_id', $targetId, 'eq');
-                    $this->fmData->AddDBParam('pk', $pkArray[0], 'eq');
-                    $resultForRemove = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-                    if ($resultForRemove['foundCount'] > 0) {
-                        $this->setupFMDataAPIforDB($pksTable, '');
-                        foreach ($resultForRemove['data'] as $key => $row) {
-                            $recId = substr($key, 0, strpos($key, '.'));
-                            $this->fmData->SetRecordID($recId);
-                            $this->fmData->DoFxAction('delete', TRUE, TRUE, 'full');
-                        }
-                    }
-                    $this->logger->setDebugMessage("Deleted count: " . $resultForRemove['foundCount'], 2);
-                }
-            }
-        }
-        return array_values(array_diff(array_unique($targetClients), array($clientId)));
     }
 
 
@@ -512,24 +264,6 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         $tableName = $this->dbSettings->getEntityForRetrieve();
         $dataSourceName = $this->dbSettings->getDataSourceName();
 
-        $usePortal = false;
-        if (count($this->dbSettings->getForeignFieldAndValue()) > 0) {
-            foreach ($context['relation'] as $relDef) {
-                if (isset($relDef['portal']) && $relDef['portal']) {
-                    $usePortal = true;
-                    $context['records'] = 1;
-                    $context['paging'] = true;
-                    $this->dbSettings->setDbSpecDataType(
-                        str_replace('fmpro', 'fmalt', strtolower($this->dbSettings->getDbSpecDataType())));
-                }
-            }
-        }
-        if ($this->dbSettings->getPrimaryKeyOnly()) {
-            $this->dbSettings->setDbSpecDataType(
-                str_replace('fmpro', 'fmalt',
-                    strtolower($this->dbSettings->getDbSpecDataType())));
-        }
-
         $limitParam = 100000000;
         if (isset($context['maxrecords'])) {
             if (intval($context['maxrecords']) < $this->dbSettings->getRecordCount()) {
@@ -549,9 +283,8 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
             }
         }
         $this->setupFMDataAPIforDB($this->dbSettings->getEntityForRetrieve(), $limitParam);
-
-        $this->fmData->FMSkipRecords(
-            (isset($context['paging']) and $context['paging'] === true) ? $this->dbSettings->getStart() : 0);
+        $layout = $this->targetLayout;
+        $skip = (isset($context['paging']) and $context['paging'] === true) ? $this->dbSettings->getStart() : 0;
 
         $searchConditions = array();
         $neqConditions = array();
@@ -589,41 +322,6 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
                     }
                 }
             }
-        } elseif ($usePortal && isset($context['view'])) {
-            $this->dbSettings->setDataSourceName($context['view']);
-            $parentTable = $this->dbSettings->getDataSourceTargetArray();
-            if (isset($parentTable['query'])) {
-                foreach ($parentTable['query'] as $condition) {
-                    if ($condition['field'] == '__operation__' && $condition['operator'] == 'or') {
-                        $this->fmData->SetLogicalOR();
-                        $useOrOperation = true;
-                    } else {
-                        if (isset($condition['operator'])) {
-                            $condition = $this->normalizedCondition($condition);
-                            if (!$this->isPossibleOperator($condition['operator'])) {
-                                throw new Exception("Invalid Operator.: {$condition['operator']}");
-                            }
-                            $this->fmData->AddDBParam($condition['field'], $condition['value'], $condition['operator']);
-                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                                $condition['field'], $condition['value'], $condition['operator']);
-                        } else {
-                            $this->fmData->AddDBParam($condition['field'], $condition['value']);
-                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                                $condition['field'], $condition['value']);
-                        }
-                        $hasFindParams = true;
-
-                        $queryValues[] = 'q' . $qNum;
-                        $qNum++;
-                        if (isset($condition['operator']) && $condition['operator'] === 'neq') {
-                            $neqConditions[] = TRUE;
-                        } else {
-                            $neqConditions[] = FALSE;
-                        }
-                    }
-                }
-            }
-            $this->dbSettings->setDataSourceName($context['name']);
         }
 
         $childRecordId = null;
@@ -663,12 +361,6 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
                     if ($condition['field'] == $this->getDefaultKey()) {
                         $this->fmData->FMSkipRecords(0);
                     }
-                    if ($usePortal) {
-                        if (strpos($condition['field'], '::') !== false) {
-                            $childRecordId = $condition['field'];
-                            $childRecordIdValue = $condition['value'];
-                        }
-                    }
                 }
             }
         }
@@ -683,25 +375,23 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
                         $foreignOperator = isset($relDef['operator']) ? $relDef['operator'] : 'eq';
                         $formattedValue = $this->formatter->formatterToDB(
                             "{$tableName}{$this->dbSettings->getSeparator()}{$foreignField}", $foreignValue);
-                        if (!$usePortal) {
-                            if (!$this->isPossibleOperator($foreignOperator)) {
-                                throw new Exception("Invalid Operator.: {$condition['operator']}");
-                            }
-                            if ($useOrOperation) {
-                                throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
-                            }
-                            $this->fmData->AddDBParam($foreignField, $formattedValue, $foreignOperator);
-                            $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                                $foreignField, $formattedValue, $foreignOperator);
-                            $hasFindParams = true;
+                        if (!$this->isPossibleOperator($foreignOperator)) {
+                            throw new Exception("Invalid Operator.: {$condition['operator']}");
+                        }
+                        if ($useOrOperation) {
+                            throw new Exception("Condition Incompatible.: The OR operation and foreign key can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                        }
+                        $this->fmData->AddDBParam($foreignField, $formattedValue, $foreignOperator);
+                        $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                            $foreignField, $formattedValue, $foreignOperator);
+                        $hasFindParams = true;
 
-                            $queryValues[] = 'q' . $qNum;
-                            $qNum++;
-                            if (isset($foreignOperator) && $foreignOperator === 'neq') {
-                                $neqConditions[] = TRUE;
-                            } else {
-                                $neqConditions[] = FALSE;
-                            }
+                        $queryValues[] = 'q' . $qNum;
+                        $qNum++;
+                        if (isset($foreignOperator) && $foreignOperator === 'neq') {
+                            $neqConditions[] = TRUE;
+                        } else {
+                            $neqConditions[] = FALSE;
                         }
                     }
                 }
@@ -734,36 +424,25 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
                     $qNum++;
                     $neqConditions[] = FALSE;
                 }
-            } else if ($authInfoTarget == 'field-group') {
-                $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-                if (strlen($this->dbSettings->getCurrentUser()) == 0 || count($belongGroups) == 0) {
-                    $authFailure = true;
-                } else {
-                    if ($useOrOperation) {
-                        throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
-                    }
-                    $this->fmData->AddDBParam($authInfoField, $belongGroups[0], 'eq');
-                    $searchConditions[] = $this->setSearchConditionsForCompoundFound(
-                        $authInfoField, $belongGroups[0], 'eq');
-                    $hasFindParams = true;
+            } else
+                if ($authInfoTarget == 'field-group') {
+                    $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
+                    if (strlen($this->dbSettings->getCurrentUser()) == 0 || count($belongGroups) == 0) {
+                        $authFailure = true;
+                    } else {
+                        if ($useOrOperation) {
+                            throw new Exception("Condition Incompatible.: The authorization for each record and OR operation can't set both on the query. This is the limitation of the Custom Web of FileMaker Server.");
+                        }
+                        $this->fmData->AddDBParam($authInfoField, $belongGroups[0], 'eq');
+                        $searchConditions[] = $this->setSearchConditionsForCompoundFound(
+                            $authInfoField, $belongGroups[0], 'eq');
+                        $hasFindParams = true;
 
-                    $queryValues[] = 'q' . $qNum;
-                    $qNum++;
-                    $neqConditions[] = FALSE;
+                        $queryValues[] = 'q' . $qNum;
+                        $qNum++;
+                        $neqConditions[] = FALSE;
+                    }
                 }
-//            } else {
-//                if ($this->dbSettings->isDBNative()) {
-//                } else {
-//                    $authorizedUsers = $this->getAuthorizedUsers("load");
-//                    $authorizedGroups = $this->getAuthorizedGroups("load");
-//                    $belongGroups = $this->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
-//                    if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
-//                        && count(array_intersect($belongGroups, $authorizedGroups)) == 0
-//                    ) {
-//                        $authFailure = true;
-//                    }
-//                }
-            }
             if ($authFailure) {
                 $this->logger->setErrorMessage("Authorization Error.");
                 return null;
@@ -795,23 +474,6 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
                     $this->fmData->AddSortParam($condition['field']);
                 }
             }
-        } elseif ($usePortal && isset($context['view'])) {
-            $this->dbSettings->setDataSourceName($context['view']);
-            $parentTable = $this->dbSettings->getDataSourceTargetArray();
-            if (isset($parentTable['sort'])) {
-                foreach ($parentTable['sort'] as $condition) {
-                    if (isset($condition['direction'])) {
-                        if (!$this->isPossibleOrderSpecifier($condition['direction'])) {
-                            throw new Exception("Invalid Sort Specifier.");
-                        }
-                        $this->fmData->AddSortParam(
-                            $condition['field'], $this->_adjustSortDirection($condition['direction']));
-                    } else {
-                        $this->fmData->AddSortParam($condition['field']);
-                    }
-                }
-            }
-            $this->dbSettings->setDataSourceName($context['name']);
         }
 
         if (count($this->dbSettings->getExtraSortKey()) > 0) {
@@ -980,9 +642,7 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
                     if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
                         $record = $data['resultset']['record'];
                     }
-                    if (!$usePortal) {
-                        $dataArray = array($this->getDefaultKey() => $record['@attributes']['record-id']);
-                    }
+                    $dataArray = array($this->getDefaultKey() => $record['@attributes']['record-id']);
                     if ($keyField == $this->getDefaultKey()) {
                         $this->queriedPrimaryKeys[] = $record['@attributes']['record-id'];
                     }
@@ -1005,11 +665,7 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
                                 $this->queriedPrimaryKeys[] = $field['data'];
                             }
                         }
-                        if (!$usePortal) {
-                            $dataArray = $dataArray + array(
-                                    $fieldName => $fieldValue
-                                );
-                        }
+                        $dataArray = $dataArray + array($fieldName => $fieldValue);
                         if ($multiFields === false) {
                             break;
                         }
@@ -1079,13 +735,7 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
                     foreach ($relatedsetArray as $j => $relatedset) {
                         $dataArray = $dataArray + array($j => $relatedset);
                     }
-                    if ($usePortal) {
-                        $recordArray = $dataArray;
-                        $this->mainTableCount = count($recordArray);
-                        break;
-                    } else {
-                        array_push($recordArray, $dataArray);
-                    }
+                    array_push($recordArray, $dataArray);
                     if (intval($data['resultset']['@attributes']['fetch-size']) == 1) {
                         break;
                     }
@@ -1105,15 +755,14 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         }
         $this->logger->setDebugMessage($queryString);
 
-        if (!$usePortal) {
-            $this->mainTableCount = intval($data['resultset']['@attributes']['count']);
-            $this->mainTableTotalCount = intval($data['datasource']['@attributes']['total-count']);
-        }
+        $this->mainTableCount = intval($data['resultset']['@attributes']['count']);
+        $this->mainTableTotalCount = intval($data['datasource']['@attributes']['total-count']);
 
         return $recordArray;
     }
 
-    private function createRecordset($resultData, $dataSourceName, $usePortal, $childRecordId, $childRecordIdValue)
+    private
+    function createRecordset($resultData, $dataSourceName, $usePortal, $childRecordId, $childRecordIdValue)
     {
         $isFirstRecord = true;
         $returnArray = array();
@@ -1199,17 +848,20 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         return $returnArray;
     }
 
-    public function countQueryResult()
+    public
+    function countQueryResult()
     {
         return $this->mainTableCount;
     }
 
-    public function getTotalCount()
+    public
+    function getTotalCount()
     {
         return $this->mainTableTotalCount;
     }
 
-    public function updateDB()
+    public
+    function updateDB()
     {
         $this->fieldInfo = null;
         $dataSourceName = $this->dbSettings->getDataSourceName();
@@ -1412,7 +1064,8 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    public function createInDB($bypassAuth)
+    public
+    function createInDB($bypassAuth)
     {
         $this->fieldInfo = null;
 
@@ -1538,7 +1191,8 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         return $keyValue;
     }
 
-    public function deleteFromDB()
+    public
+    function deleteFromDB()
     {
         $this->fieldInfo = null;
 
@@ -1676,12 +1330,14 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         return true;
     }
 
-    public function copyInDB()
+    public
+    function copyInDB()
     {
         $this->errorMessage[] = "Copy operation is not implemented so far.";
     }
 
-    private function getFieldForFormatter($entity, $field)
+    private
+    function getFieldForFormatter($entity, $field)
     {
         if (strpos($field, "::") === false) {
             return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
@@ -1704,578 +1360,7 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         return "{$entity}{$this->dbSettings->getSeparator()}{$field}";
     }
 
-    public function authSupportStoreChallenge($uid, $challenge, $clientId)
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
-            return false;
-        }
-        if ($uid < 1) {
-            $uid = 0;
-        }
-        $this->setupFMDataAPIforAuth($hashTable, 1);
-        $this->fmDataAuth->AddDBParam('user_id', $uid, 'eq');
-        $this->fmDataAuth->AddDBParam('clienthost', $clientId, 'eq');
-        $result = $this->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        $currentDT = new DateTime();
-        $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        foreach ($result['data'] as $key => $row) {
-            $recId = substr($key, 0, strpos($key, '.'));
-            $this->setupFMDataAPIforAuth($hashTable, 1);
-            $this->fmDataAuth->SetRecordID($recId);
-            $this->fmDataAuth->AddDBParam('hash', $challenge);
-            $this->fmDataAuth->AddDBParam('expired', $currentDTFormat);
-            $this->fmDataAuth->AddDBParam('clienthost', $clientId);
-            $this->fmDataAuth->AddDBParam('user_id', $uid);
-            $result = $this->fmDataAuth->DoFxAction("update", TRUE, TRUE, 'full');
-            if (!is_array($result)) {
-                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                return false;
-            }
-            $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-            return true;
-        }
-        $this->setupFMDataAPIforAuth($hashTable, 1);
-        $this->fmDataAuth->AddDBParam('hash', $challenge);
-        $this->fmDataAuth->AddDBParam('expired', $currentDTFormat);
-        $this->fmDataAuth->AddDBParam('clienthost', $clientId);
-        $this->fmDataAuth->AddDBParam('user_id', $uid);
-        $result = $this->fmDataAuth->DoFxAction("new", TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        return true;
-    }
 
-    public function authSupportCheckMediaToken($uid)
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
-            return false;
-        }
-        if ($uid < 1) {
-            $uid = 0;
-        }
-        $this->setupFMDataAPIforAuth($hashTable, 1);
-        $this->fmDataAuth->AddDBParam('user_id', $uid, 'eq');
-        $this->fmDataAuth->AddDBParam('clienthost', '_im_media', 'eq');
-        $result = $this->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            $expiredDT = new DateTime($row['expired'][0]);
-            $hashValue = $row['hash'][0];
-            $currentDT = new DateTime();
-            $seconds = $currentDT->format("U") - $expiredDT->format("U");
-            if ($seconds > $this->dbSettings->getExpiringSeconds()) { // Judge timeout.
-                return false;
-            }
-            return $hashValue;
-        }
-        return false;
-    }
-
-    public function authSupportRetrieveChallenge($uid, $clientId, $isDelete = true)
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
-            return false;
-        }
-        if ($uid < 1) {
-            $uid = 0;
-        }
-        $this->setupFMDataAPIforAuth($hashTable, 1);
-        $this->fmDataAuth->AddDBParam('user_id', $uid, 'eq');
-        $this->fmDataAuth->AddDBParam('clienthost', $clientId, 'eq');
-        $result = $this->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            $recId = substr($key, 0, strpos($key, '.'));
-            $hashValue = $row['hash'][0];
-            if ($isDelete) {
-                $this->setupFMDataAPIforAuth($hashTable, 1);
-                $this->fmDataAuth->SetRecordID($recId);
-                $result = $this->fmDataAuth->DoFxAction("delete", TRUE, TRUE, 'full');
-                if (!is_array($result)) {
-                    $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                    return false;
-                }
-            }
-            return $hashValue;
-        }
-        return false;
-    }
-
-    public function authSupportRemoveOutdatedChallenges()
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
-            return false;
-        }
-
-        $currentDT = new DateTime();
-        $timeValue = $currentDT->format("U");
-
-        $this->setupFMDataAPIforAuth($hashTable, 100000000);
-        $this->fmDataAuth->AddDBParam('expired', date('m/d/Y H:i:s', $timeValue - $this->dbSettings->getExpiringSeconds()), 'lt');
-        $result = $this->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            $recId = substr($key, 0, strpos($key, '.'));
-
-            $this->setupFMDataAPIforAuth($hashTable, 1);
-            $this->fmDataAuth->SetRecordID($recId);
-            $result = $this->fmDataAuth->DoFxAction("delete", TRUE, TRUE, 'full');
-            if (!is_array($result)) {
-                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public function authSupportRetrieveHashedPassword($username)
-    {
-        $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
-            return false;
-        }
-
-        $this->setupFMDataAPIforDB($userTable, 1);
-        $this->fmData->AddDBParam('username', str_replace("@", "\\@", $username), 'eq');
-        $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        if ((!is_array($result) || $result['foundCount'] < 1) && $this->dbSettings->getEmailAsAccount()) {
-            $this->setupFMDataAPIforDB($userTable, 1);
-            $this->fmData->AddDBParam('email', str_replace("@", "\\@", $username), 'eq');
-            $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-            $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        }
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        foreach ($result['data'] as $key => $row) {
-            return $row['hashedpasswd'][0];
-        }
-        return false;
-    }
-
-    public function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
-    {
-        if ($this->authSupportRetrieveHashedPassword($username) !== false) {
-            $this->logger->setErrorMessage('User Already exist: ' . $username);
-            return false;
-        }
-        $userTable = $this->dbSettings->getUserTable();
-        $this->setupFMDataAPIforDB($userTable, 1);
-        $this->fmData->AddDBParam('username', $username);
-        $this->fmData->AddDBParam('hashedpasswd', $hashedpassword);
-        $result = $this->fmData->DoFxAction('new', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        return true;
-    }
-
-    public function authSupportChangePassword($username, $hashednewpassword)
-    {
-        $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
-            return false;
-        }
-
-        $this->setupFMDataAPIforDB($userTable, 1);
-        $username = $this->authSupportUnifyUsernameAndEmail($username);
-        $this->fmData->AddDBParam('username', str_replace("@", "\\@", $username), 'eq');
-        $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if ((!is_array($result) || count($result['data']) < 1) && $this->dbSettings->getEmailAsAccount()) {
-            $this->setupFMDataAPIforDB($userTable, 1);
-            $this->fmData->AddDBParam('email', str_replace("@", "\\@", $username), 'eq');
-            $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-            if (!is_array($result)) {
-                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                return false;
-            }
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            $recId = substr($key, 0, strpos($key, '.'));
-
-            $this->setupFMDataAPIforDB($userTable, 1);
-            $this->fmData->SetRecordID($recId);
-            $this->fmData->AddDBParam("hashedpasswd", $hashednewpassword);
-            $result = $this->fmData->DoFxAction("update", TRUE, TRUE, 'full');
-            if (!is_array($result)) {
-                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-                return false;
-            }
-            break;
-        }
-        return true;
-    }
-
-    public function authSupportGetUserIdFromUsername($username)
-    {
-        $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
-            return false;
-        }
-        if ($username === 0) {
-            return 0;
-        }
-
-        $username = $this->authSupportUnifyUsernameAndEmail($username);
-
-        $this->setupFMDataAPIforDB_Alt($userTable, 1);
-        $this->fmDataAlt->AddDBParam('username', str_replace("@", "\\@", $username), "eq");
-        $result = $this->fmDataAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $row) {
-            return $row['id'][0];
-        }
-        return false;
-    }
-
-    public function authSupportGetUsernameFromUserId($userid)
-    {
-        $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
-            return false;
-        }
-        if ($userid === 0) {
-            return 0;
-        }
-
-        $this->setupFMDataAPIforDB($userTable, 1);
-        $this->fmData->AddDBParam('id', $userid, "eq");
-        $result = $this->fmData->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $row) {
-            return $row['username'][0];
-        }
-        return false;
-    }
-
-    public function authSupportGetUserIdFromEmail($email)
-    {
-        $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null) {
-            return false;
-        }
-        if ($email === 0) {
-            return 0;
-        }
-
-        $this->setupFMDataAPIforDB_Alt($userTable, 1);
-        $this->fmDataAlt->AddDBParam('email', str_replace("@", "\\@", $email), "eq");
-        $result = $this->fmDataAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $row) {
-            return $row['id'][0];
-        }
-        return false;
-    }
-
-    public function authSupportUnifyUsernameAndEmail($username)
-    {
-        if (!$this->dbSettings->getEmailAsAccount() || $this->dbSettings->isDBNative()) {
-            return $username;
-        }
-
-        $userTable = $this->dbSettings->getUserTable();
-        if ($userTable == null || is_null($username) || $username === 0 || $username === '') {
-            return false;
-        }
-
-        $this->setupFMDataAPIforDB_Alt($userTable, 55555);
-        $this->fmDataAlt->AddDBParam('username', str_replace("@", "\\@", $username), "eq");
-        $this->fmDataAlt->AddDBParam('email', str_replace("@", "\\@", $username), "eq");
-        $this->fmDataAlt->SetLogicalOR();
-        $result = $this->fmDataAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        $usernameCandidate = '';
-        foreach ($result['data'] as $row) {
-            if ($row['username'][0] == $username) {
-                $usernameCandidate = $username;
-            }
-            if ($row['email'][0] == $username) {
-                $usernameCandidate = $row['username'][0];
-            }
-        }
-        return $usernameCandidate;
-    }
-
-    public function authSupportGetGroupNameFromGroupId($groupid)
-    {
-        $groupTable = $this->dbSettings->getGroupTable();
-        if ($groupTable == null) {
-            return null;
-        }
-
-        $this->setupFMDataAPIforDB_Alt($groupTable, 1);
-        $this->fmDataAlt->AddDBParam('id', $groupid);
-        $result = $this->fmDataAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            return $row['groupname'][0];
-        }
-        return false;
-    }
-
-    public function authSupportGetGroupsOfUser($user)
-    {
-        $corrTable = $this->dbSettings->getCorrTable();
-        if ($corrTable == null) {
-            return array();
-        }
-
-        $userid = $this->authSupportGetUserIdFromUsername($user);
-        if ($userid === false) {
-            $userid = $this->authSupportGetUserIdFromEmail($user);
-        }
-        $this->firstLevel = true;
-        $this->belongGroups = array();
-        $this->resolveGroup($userid);
-        $this->candidateGroups = array();
-        foreach ($this->belongGroups as $groupid) {
-            $this->candidateGroups[] = $this->authSupportGetGroupNameFromGroupId($groupid);
-        }
-        return $this->candidateGroups;
-    }
-
-    private $candidateGroups;
-    private $belongGroups;
-    private $firstLevel;
-
-    private function resolveGroup($groupid)
-    {
-        $this->setupFMDataAPIforDB_Alt($this->dbSettings->getCorrTable(), 1);
-        if ($this->firstLevel) {
-            $this->fmDataAlt->AddDBParam('user_id', $groupid);
-            $this->firstLevel = false;
-        } else {
-            $this->fmDataAlt->AddDBParam('group_id', $groupid);
-            $this->belongGroups[] = $groupid;
-        }
-        $result = $this->fmDataAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            if (!in_array($row['dest_group_id'][0], $this->belongGroups)) {
-                if (!$this->resolveGroup($row['dest_group_id'][0])) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    public function authSupportStoreIssuedHashForResetPassword($userid, $clienthost, $hash)
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
-            return false;
-        }
-        $currentDT = new DateTime();
-        $currentDTFormat = $currentDT->format('m/d/Y H:i:s');
-        $this->setupFMDataAPIforAuth($hashTable, 1);
-        $this->fmDataAuth->AddDBParam('hash', $hash);
-        $this->fmDataAuth->AddDBParam('expired', $currentDTFormat);
-        $this->fmDataAuth->AddDBParam('clienthost', $clienthost);
-        $this->fmDataAuth->AddDBParam('user_id', $userid);
-        $result = $this->fmDataAuth->DoFxAction("new", TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        return true;
-    }
-
-    public function authSupportCheckIssuedHashForResetPassword($userid, $randdata, $hash)
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
-            return false;
-        }
-        $this->setupFMDataAPIforAuth($hashTable, 1);
-        $this->fmDataAuth->AddDBParam('user_id', $userid, 'eq');
-        $this->fmDataAuth->AddDBParam('clienthost', $randdata, 'eq');
-        $result = $this->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            $hashValue = $row['hash'][0];
-            $expiredDT = $row['expired'][0];
-
-            $expired = strptime($expiredDT, "%m/%d/%Y %H:%M:%S");
-            $expiredValue = mktime($expired['tm_hour'], $expired['tm_min'], $expired['tm_sec'],
-                $expired['tm_mon'] + 1, $expired['tm_mday'], $expired['tm_year'] + 1900);
-            $currentDT = new DateTime();
-            $timeValue = $currentDT->format("U");
-            if ($timeValue > $expiredValue + 3600) {
-                return false;
-            }
-            if ($hash == $hashValue) {
-                return true;
-            }
-            return false;
-        }
-        return false;
-    }
-
-    public function authSupportCheckMediaPrivilege($tableName, $userField, $user, $keyField, $keyValue)
-    {
-        $user = $this->authSupportUnifyUsernameAndEmail($user);
-
-        $this->setupFMDataAPIforAuth($tableName, 1);
-        $this->fmDataAuth->AddDBParam($userField, $user, 'eq');
-        $this->fmDataAuth->AddDBParam($keyField, $keyValue, 'eq');
-        $result = $this->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $array = array();
-        foreach ($result['data'] as $key => $row) {
-            $keyExpode = explode(".", $key);
-            $record = array("-recid" => $keyExpode[0], "-modid" => $keyExpode[1]);
-            foreach ($row as $field => $value) {
-                $record[$field] = implode("\n", $value);
-            }
-            $array[] = $record;
-        }
-        return $array;
-    }
-
-    public function authSupportUserEnrollmentStart($userid, $hash)
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        if ($hashTable == null) {
-            return false;
-        }
-        $this->setupFMDataAPIforAuth($hashTable, 1);
-        $this->fmDataAuth->AddDBParam("hash", $hash);
-        $this->fmDataAuth->AddDBParam("expired", $this->currentDTString());
-        $this->fmDataAuth->AddDBParam("user_id", $userid);
-        $result = $this->fmDataAuth->DoFxAction('new', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        return true;
-    }
-
-    public
-    function authSupportUserEnrollmentEnrollingUser($hash)
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        $userTable = $this->dbSettings->getUserTable();
-        if ($hashTable == null || $userTable == null) {
-            return false;
-        }
-        $this->setupFMDataAPIforAuth($hashTable, 1);
-        $this->fmDataAuth->AddDBParam("hash", $hash, "eq");
-        $this->fmDataAuth->AddDBParam("clienthost", "", "eq");
-        $this->fmDataAuth->AddDBParam("expired", $this->currentDTString(3600), "gt");
-        $result = $this->fmDataAuth->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($result)) {
-            $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-        foreach ($result['data'] as $key => $row) {
-            $userID = $row['user_id'][0];
-            return $userID;
-        }
-        return false;
-
-    }
-
-    public
-    function authSupportUserEnrollmentActivateUser($userID, $password, $rawPWField, $rawPW)
-    {
-        $hashTable = $this->dbSettings->getHashTable();
-        $userTable = $this->dbSettings->getUserTable();
-        if ($hashTable == null || $userTable == null) {
-            return false;
-        }
-        $this->setupFMDataAPIforDB_Alt($userTable, 1);
-        $this->fmDataAlt->AddDBParam('id', $userID);
-        $resultUser = $this->fmDataAlt->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        if (!is_array($resultUser)) {
-            $this->logger->setDebugMessage(get_class($resultUser) . ': ' . $resultUser->toString());
-            return false;
-        }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($resultUser['URL']));
-        foreach ($resultUser['data'] as $ukey => $urow) {
-            $recId = substr($ukey, 0, strpos($ukey, '.'));
-            $this->setupFMDataAPIforDB_Alt($userTable, 1);
-            $this->fmDataAlt->SetRecordID($recId);
-            $this->fmDataAlt->AddDBParam('hashedpasswd', $password);
-            if ($rawPWField !== false) {
-                $this->fmDataAlt->AddDBParam($rawPWField, $rawPW);
-            }
-            $result = $this->fmDataAlt->DoFxAction('update', TRUE, TRUE, 'full');
-            if (!is_array($result)) {
-                $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
-                return false;
-            }
-            $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
-            return $userID;
-        }
-    }
 
     private
     function currentDTString($addSeconds = 0)
@@ -2291,19 +1376,22 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         return $currentDTStr;
     }
 
-    public function isPossibleOperator($operator)
+    public
+    function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
                 'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR',
             )));
     }
 
-    public function isPossibleOrderSpecifier($specifier)
+    public
+    function isPossibleOrderSpecifier($specifier)
     {
         return !(array_search(strtoupper($specifier), array('ASCEND', 'DESCEND', 'ASC', 'DESC')) === FALSE);
     }
 
-    public function normalizedCondition($condition)
+    public
+    function normalizedCondition($condition)
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -2373,7 +1461,8 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         }
     }
 
-    protected function _adjustSortDirection($direction)
+    protected
+    function _adjustSortDirection($direction)
     {
         if (strtoupper($direction) == 'ASC') {
             $direction = 'ascend';
@@ -2384,7 +1473,8 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         return $direction;
     }
 
-    public function isContainingFieldName($fname, $fieldnames)
+    public
+    function isContainingFieldName($fname, $fieldnames)
     {
         if (in_array($fname, $fieldnames)) {
             return true;
@@ -2404,12 +1494,14 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         return false;
     }
 
-    public function isNullAcceptable()
+    public
+    function isNullAcceptable()
     {
         return false;
     }
 
-    public function queryForTest($table, $conditions = null)
+    public
+    function queryForTest($table, $conditions = null)
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
@@ -2450,7 +1542,8 @@ class DB_FileMaker_DataAPI extends DB_AuthCommon implements DB_Access_Interface
         // TODO: Implement removeOutdatedChallenges() method.
     }
 
-    public function isSupportAggregation()
+    public
+    function isSupportAggregation()
     {
         return false;
     }
