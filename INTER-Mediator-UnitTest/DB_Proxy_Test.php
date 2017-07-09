@@ -83,7 +83,7 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 
     function testAuthGroup()
     {
-        $aGroup = $this->db_proxy->dbClass->getAuthorizedGroups("read");
+        $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedGroups("read");
         $this->assertContains('group1', $aGroup);
         $this->assertContains('group2', $aGroup);
         $this->assertNotContains('group3', $aGroup);
@@ -91,7 +91,7 @@ class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 
     function testAuthUser()
     {
-        $aGroup = $this->db_proxy->dbClass->getAuthorizedUsers("read");
+        $aGroup = $this->db_proxy->dbClass->authHandler->getAuthorizedUsers("read");
         $this->assertContains('user1', $aGroup);
         $this->assertNotContains('user2', $aGroup);
         $this->assertNotContains('user3', $aGroup);
