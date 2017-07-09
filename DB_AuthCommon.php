@@ -13,6 +13,11 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
+/*
+ * This file is obsoleted in Ver.5.7-dev. All functions are moved to DB_Support/DB_Auth_Common.php
+ * Masayuki Nii, 2017-07-09
+ */
 abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interface_CommonDB
 {
 

@@ -13,50 +13,26 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
-class DB_PDO_Notification_Handler implements DB_Interface_Registering
+class DB_Notification_Handler_PDO
+    extends DB_Notification_Common
+    implements DB_Interface_Registering
 {
-    private $queriedEntity = null;
-    private $queriedCondition = null;
-    private $queriedPrimaryKeys = null;
-
-
-    public function queriedEntity()
-    {
-        return $this->queriedEntity;
-    }
-
-    public function queriedCondition()
-    {
-        return $this->queriedCondition;
-    }
-
-    public function requireUpdatedRecord($value)
-    {
-        $this->isRequiredUpdated = $value;
-    }
-
-    public function queriedPrimaryKeys()
-    {
-        return $this->queriedPrimaryKeys;
-    }
-
     public function isExistRequiredTable()
     {
-        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
         if ($regTable == null) {
-            $this->errorMessageStore("The table doesn't specified.");
+            $this->dbClass->errorMessageStore("The table doesn't specified.");
             return false;
         }
-        if (!$this->setupConnection()) { //Establish the connection
-            $this->errorMessageStore("Can't open db connection.");
+        if (!$this->dbClass->setupConnection()) { //Establish the connection
+            $this->dbClass->errorMessageStore("Can't open db connection.");
             return false;
         }
         $sql = "SELECT id FROM {$regTable} LIMIT 1";
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
+        $result = $this->dbClass->link->query($sql);
         if ($result === false) {
-            $this->errorMessageStore("The table '{$regTable}' doesn't exist in the database.");
+            $this->dbClass->errorMessageStore("The table '{$regTable}' doesn't exist in the database.");
             return false;
         }
         return true;
@@ -65,45 +41,45 @@ class DB_PDO_Notification_Handler implements DB_Interface_Registering
 
     public function register($clientId, $entity, $condition, $pkArray)
     {
-        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
-        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
-        if (!$this->setupConnection()) { //Establish the connection
+        $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
+        if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
         $currentDTFormat = IMUtil::currentDTString();
-        $sql = "{$this->handler->sqlINSERTCommand()}{$regTable} (clientid,entity,conditions,registereddt) VALUES("
+        $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$regTable} (clientid,entity,conditions,registereddt) VALUES("
             . implode(',', array(
-                $this->link->quote($clientId),
-                $this->link->quote($entity),
-                $this->link->quote($condition),
-                $this->link->quote($currentDTFormat),
+                $this->dbClass->link->quote($clientId),
+                $this->dbClass->link->quote($entity),
+                $this->dbClass->link->quote($condition),
+                $this->dbClass->link->quote($currentDTFormat),
             )) . ')';
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->exec($sql);
+        $result = $this->dbClass->link->exec($sql);
         if ($result !== 1) {
-            $this->errorMessageStore('Insert:' . $sql);
+            $this->dbClass->errorMessageStore('Insert:' . $sql);
             return false;
         }
-        $newContextId = $this->link->lastInsertId("registeredcontext_id_seq");
+        $newContextId = $this->dbClass->link->lastInsertId("registeredcontext_id_seq");
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
             // SQLite supports multiple records inserting, but it reported error.
             // PDO driver doesn't recognize it, does it ?
             foreach ($pkArray as $pk) {
-                $qPk = $this->link->quote($pk);
-                $sql = "{$this->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES ({$newContextId},{$qPk})";
+                $qPk = $this->dbClass->link->quote($pk);
+                $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES ({$newContextId},{$qPk})";
                 $this->logger->setDebugMessage($sql);
-                $result = $this->link->exec($sql);
+                $result = $this->dbClass->link->exec($sql);
                 if ($result < 1) {
-                    $this->logger->setDebugMessage($this->link->errorInfo());
-                    $this->errorMessageStore('Insert:' . $sql);
+                    $this->logger->setDebugMessage($this->dbClass->link->errorInfo());
+                    $this->dbClass->errorMessageStore('Insert:' . $sql);
                     return false;
                 }
             }
         } else {
-            $sql = "{$this->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES ";
+            $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES ";
             $isFirstRow = true;
             foreach ($pkArray as $pk) {
-                $qPk = $this->link->quote($pk);
+                $qPk = $this->dbClass->link->quote($pk);
                 if (!$isFirstRow) {
                     $sql .= ",";
                 }
@@ -111,10 +87,10 @@ class DB_PDO_Notification_Handler implements DB_Interface_Registering
                 $isFirstRow = false;
             }
             $this->logger->setDebugMessage($sql);
-            $result = $this->link->exec($sql);
+            $result = $this->dbClass->link->exec($sql);
             if ($result < 1) {
-                $this->logger->setDebugMessage($this->link->errorInfo());
-                $this->errorMessageStore('Insert:' . $sql);
+                $this->logger->setDebugMessage($this->dbClass->link->errorInfo());
+                $this->dbClass->errorMessageStore('Insert:' . $sql);
                 return false;
             }
         }
@@ -123,17 +99,17 @@ class DB_PDO_Notification_Handler implements DB_Interface_Registering
 
     public function unregister($clientId, $tableKeys)
     {
-        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
-        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
-        if (!$this->setupConnection()) { //Establish the connection
+        $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
+        if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
 
-        $criteria = array("clientid=" . $this->link->quote($clientId));
+        $criteria = array("clientid=" . $this->dbClass->link->quote($clientId));
         if ($tableKeys) {
             $subCriteria = array();
             foreach ($tableKeys as $regId) {
-                $subCriteria[] = "id=" . $this->link->quote($regId);
+                $subCriteria[] = "id=" . $this->dbClass->link->quote($regId);
             }
             $criteria[] = "(" . implode(" OR ", $subCriteria) . ")";
         }
@@ -146,18 +122,18 @@ class DB_PDO_Notification_Handler implements DB_Interface_Registering
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
             $sql = "PRAGMA foreign_keys = ON";
             $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
+            $result = $this->dbClass->link->query($sql);
             if ($result === false) {
-                $this->errorMessageStore('Pragma:' . $sql);
+                $this->dbClass->errorMessageStore('Pragma:' . $sql);
                 return false;
             }
             $versionSign = explode('.', phpversion());
             if ($versionSign[0] <= 5 && $versionSign[1] <= 2) {
                 $sql = "SELECT id FROM {$regTable} WHERE {$criteriaString}";
                 $this->logger->setDebugMessage($sql);
-                $result = $this->link->query($sql);
+                $result = $this->dbClass->link->query($sql);
                 if ($result === false) {
-                    $this->errorMessageStore('Select:' . $sql);
+                    $this->dbClass->errorMessageStore('Select:' . $sql);
                     return false;
                 }
                 foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -165,20 +141,20 @@ class DB_PDO_Notification_Handler implements DB_Interface_Registering
                 }
             }
         }
-        $sql = "{$this->handler->sqlDELETECommand()}FROM {$regTable} WHERE {$criteriaString}";
+        $sql = "{$this->dbClass->handler->sqlDELETECommand()}FROM {$regTable} WHERE {$criteriaString}";
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->exec($sql);
+        $result = $this->dbClass->link->exec($sql);
         if ($result === false) {
-            $this->errorMessageStore('Delete:' . $sql);
+            $this->dbClass->errorMessageStore('Delete:' . $sql);
             return false;
         }
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0 && count($contextIds) > 0) {
             foreach ($contextIds as $cId) {
-                $sql = "{$this->handler->sqlDELETECommand()}FROM {$pksTable} WHERE context_id=" . $this->link->quote($cId);
+                $sql = "{$this->dbClass->handler->sqlDELETECommand()}FROM {$pksTable} WHERE context_id=" . $this->dbClass->link->quote($cId);
                 $this->logger->setDebugMessage($sql);
-                $result = $this->link->exec($sql);
+                $result = $this->dbClass->link->exec($sql);
                 if ($result === false) {
-                    $this->errorMessageStore('Delete:' . $sql);
+                    $this->dbClass->errorMessageStore('Delete:' . $sql);
                     return false;
                 }
             }
@@ -188,21 +164,21 @@ class DB_PDO_Notification_Handler implements DB_Interface_Registering
 
     public function matchInRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
-        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
-        if (!$this->setupConnection()) { //Establish the connection
+        $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
+        if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
         $originPK = $pkArray[0];
         $sql = "SELECT DISTINCT clientid FROM " . $pksTable . "," . $regTable . " WHERE " .
-            "context_id = id AND clientid <> " . $this->link->quote($clientId) .
-            " AND entity = " . $this->link->quote($entity) .
-            " AND pk = " . $this->link->quote($originPK) .
+            "context_id = id AND clientid <> " . $this->dbClass->link->quote($clientId) .
+            " AND entity = " . $this->dbClass->link->quote($entity) .
+            " AND pk = " . $this->dbClass->link->quote($originPK) .
             " ORDER BY clientid";
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
+        $result = $this->dbClass->link->query($sql);
         if ($result === false) {
-            $this->errorMessageStore('Select:' . $sql);
+            $this->dbClass->errorMessageStore('Select:' . $sql);
             return false;
         }
         $targetClients = array();
@@ -214,27 +190,27 @@ class DB_PDO_Notification_Handler implements DB_Interface_Registering
 
     public function appendIntoRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
-        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
-        if (!$this->setupConnection()) { //Establish the connection
+        $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
+        if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->link->quote($entity);
+        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
+        $result = $this->dbClass->link->query($sql);
         if ($result === false) {
-            $this->errorMessageStore('Select:' . $sql);
+            $this->dbClass->errorMessageStore('Select:' . $sql);
             return false;
         }
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $sql = "{$this->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES(" . $this->link->quote($row['id']) .
-                "," . $this->link->quote($pkArray[0]) . ")";
+            $sql = "{$this->dbClass->handler->sqlINSERTCommand()}{$pksTable} (context_id,pk) VALUES(" . $this->dbClass->link->quote($row['id']) .
+                "," . $this->dbClass->link->quote($pkArray[0]) . ")";
             $this->logger->setDebugMessage($sql);
-            $result = $this->link->query($sql);
+            $result = $this->dbClass->link->query($sql);
             if ($result === false) {
-                $this->errorMessageStore('Insert:' . $sql);
+                $this->dbClass->errorMessageStore('Insert:' . $sql);
                 return false;
             }
             $this->logger->setDebugMessage("Inserted count: " . $result->rowCount(), 2);
@@ -244,28 +220,28 @@ class DB_PDO_Notification_Handler implements DB_Interface_Registering
 
     public function removeFromRegisterd($clientId, $entity, $pkArray)
     {
-        $regTable = $this->handler->quotedEntityName($this->dbSettings->registerTableName);
-        $pksTable = $this->handler->quotedEntityName($this->dbSettings->registerPKTableName);
-        if (!$this->setupConnection()) { //Establish the connection
+        $regTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerTableName);
+        $pksTable = $this->dbClass->handler->quotedEntityName($this->dbSettings->registerPKTableName);
+        if (!$this->dbClass->setupConnection()) { //Establish the connection
             return false;
         }
-        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->link->quote($entity);
+        $sql = "SELECT id,clientid FROM {$regTable} WHERE entity = " . $this->dbClass->link->quote($entity);
         $this->logger->setDebugMessage($sql);
-        $result = $this->link->query($sql);
+        $result = $this->dbClass->link->query($sql);
         $this->logger->setDebugMessage(var_export($result, true));
         if ($result === false) {
-            $this->errorMessageStore('Select:' . $sql);
+            $this->dbClass->errorMessageStore('Select:' . $sql);
             return false;
         }
         $targetClients = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             $targetClients[] = $row['clientid'];
-            $sql = "{$this->handler->sqlDELETECommand()}FROM {$pksTable} WHERE context_id = " . $this->link->quote($row['id']) .
-                " AND pk = " . $this->link->quote($pkArray[0]);
+            $sql = "{$this->dbClass->handler->sqlDELETECommand()}FROM {$pksTable} WHERE context_id = " . $this->dbClass->link->quote($row['id']) .
+                " AND pk = " . $this->dbClass->link->quote($pkArray[0]);
             $this->logger->setDebugMessage($sql);
-            $resultDelete = $this->link->query($sql);
+            $resultDelete = $this->dbClass->link->query($sql);
             if ($resultDelete === false) {
-                $this->errorMessageStore('Delete:' . $sql);
+                $this->dbClass->errorMessageStore('Delete:' . $sql);
                 return false;
             }
             $this->logger->setDebugMessage("Deleted count: " . $resultDelete->rowCount(), 2);

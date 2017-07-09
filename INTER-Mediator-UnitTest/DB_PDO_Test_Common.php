@@ -11,7 +11,6 @@
 //require_once('PHPUnit/Framework/TestCase.php');
 require_once(dirname(__FILE__) . '/../DB_Interfaces.php');
 require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
-require_once(dirname(__FILE__) . '/../DB_AuthCommon.php');
 require_once(dirname(__FILE__) . '/../DB_PDO.php');
 require_once(dirname(__FILE__) . '/../DB_Settings.php');
 require_once(dirname(__FILE__) . '/../DB_Formatters.php');
@@ -204,7 +203,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $username = 'user1';
         $expectedPasswd = 'd83eefa0a9bd7190c94e7911688503737a99db0154455354';
 
-        $retrievedPasswd = $this->db_proxy->dbClass->authSupportRetrieveHashedPassword($username);
+        $retrievedPasswd = $this->db_proxy->dbClass->authHandler->authSupportRetrieveHashedPassword($username);
         $this->assertEquals($expectedPasswd, $retrievedPasswd, $testName);
     }
 
@@ -225,17 +224,17 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $testName = "Generate Challenge and Retrieve it";
         $username = 'user1';
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-        $retrieved = $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST");
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
+        $retrieved = $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST");
         $this->assertEquals($challenge, $retrieved, $testName);
 
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
 
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($username, $challenge, "TEST");
-        $this->assertEquals($challenge, $this->db_proxy->dbClass->authSupportRetrieveChallenge($username, "TEST"), $testName);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
+        $this->assertEquals($challenge, $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST"), $testName);
     }
 
     public function testAuthUser5()
@@ -245,12 +244,12 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $testName = "Simulation of Authentication";
         $username = 'user1';
         $password = 'user1'; //'d83eefa0a9bd7190c94e7911688503737a99db0154455354';
-        $uid = $this->db_proxy->dbClass->authSupportGetUserIdFromUsername($username);
+        $uid = $this->db_proxy->dbClass->authHandler->authSupportGetUserIdFromUsername($username);
 
         $challenge = $this->db_proxy->generateChallenge();
-        $this->db_proxy->dbClass->authSupportStoreChallenge($uid, $challenge, "TEST");
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($uid, $challenge, "TEST");
 
-        //        $challenge = $this->db_pdo->authSupportRetrieveChallenge($username, "TEST");
+        //        $challenge = $this->db_pdo->authHandler->authSupportRetrieveChallenge($username, "TEST");
         $retrievedHexSalt = $this->db_proxy->authSupportGetSalt($username);
         $retrievedSalt = pack('N', hexdec($retrievedHexSalt));
 
@@ -356,7 +355,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAuth();
 
         $testName = "Resolve containing group";
-        $groupArray = $this->db_proxy->dbClass->authSupportGetGroupsOfUser('user1');
+        $groupArray = $this->db_proxy->dbClass->authHandler->authSupportGetGroupsOfUser('user1');
 //        echo var_export($groupArray);
         $this->assertTrue(count($groupArray) > 0, $testName);
     }
@@ -370,7 +369,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 
         $challenge = $this->db_proxy->generateChallenge();
 //        echo "\ngenerated=", $challenge;
-        $this->db_proxy->dbClass->authSupportStoreChallenge(0, $challenge, $cliendId);
+        $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge(0, $challenge, $cliendId);
 
         $this->assertTrue(
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
@@ -388,7 +387,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     {
         $this->dbProxySetupForAccess("person", 1);
 
-        $value = $this->db_proxy->dbClass->getDefaultKey();
+        $value = $this->db_proxy->dbClass->specHandler->getDefaultKey();
         $this->assertEquals('id', $value);
     }
 
@@ -396,7 +395,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     {
         $testName = "Tables for storing the context and ids should be existing.";
         $this->dbProxySetupForAuth();
-        $this->assertTrue($this->db_proxy->dbClass->isExistRequiredTable(), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifhHandler->isExistRequiredTable(), $testName);
     }
 
     public function testMultiClientSyncRegisterAndUnregister()
@@ -410,7 +409,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $pkArray = array(1001, 2001, 3003, 4004);
 
         $entity = "table1";
-        $registResult = $this->db_proxy->dbClass->register($clientId, $entity, $condition, $pkArray);
+        $registResult = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
         //var_export($this->db_proxy->logger->getDebugMessage());
         $this->assertTrue($registResult !== false, "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
@@ -534,18 +533,18 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $clientId2 = "ZZYYEEDDFF39887";
         $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
 
-        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(3003));
+        $result = $this->db_proxy->dbClass->notifyHandler->matchInRegisterd($clientId2, $entity, array(3003));
         $this->assertTrue(count($result) == 1, "Count matching");
         $this->assertTrue($result[0] == $clientId1, "Matched client id");
 
-        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(2001));
+        $result = $this->db_proxy->dbClass->notifyHandler->matchInRegisterd($clientId2, $entity, array(2001));
         $this->assertTrue(count($result) == 1, "Count matching");
         $this->assertTrue($result[0] == $clientId1, "Matched client id");
 
-        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(4567));
+        $result = $this->db_proxy->dbClass->notifyHandler->matchInRegisterd($clientId2, $entity, array(4567));
         $this->assertTrue(count($result) == 0, "Count matching");
 
-        $result = $this->db_proxy->dbClass->matchInRegisterd($clientId2, $entity, array(8001));
+        $result = $this->db_proxy->dbClass->notifyHandler->matchInRegisterd($clientId2, $entity, array(8001));
         $this->assertTrue(count($result) == 0, "Count matching");
 
         $this->assertTrue($this->db_proxy->dbClass->unregister($clientId1, null) !== false, $testName);
@@ -574,17 +573,17 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $clientId3 = "555588888DDDDDD";
         $this->assertTrue($this->db_proxy->dbClass->register($clientId3, "table2", $condition, $pkArray2) !== false, $testName);
 
-        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId1, $entity, array(101));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegisterd($clientId1, $entity, array(101));
         $this->assertTrue($result[0] == $clientId2, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 101));
         $this->assertTrue(count($recSet) == 2, $testName);
 
-        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId2, $entity, array(102));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegisterd($clientId2, $entity, array(102));
         $this->assertTrue($result[0] == $clientId1, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 102));
         $this->assertTrue(count($recSet) == 2, $testName);
 
-        $result = $this->db_proxy->dbClass->appendIntoRegisterd($clientId3, "table2", array(103));
+        $result = $this->db_proxy->dbClass->notifyHandler->appendIntoRegisterd($clientId3, "table2", array(103));
         $this->assertTrue(count($result) == 0, $testName);
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 103));
         $this->assertTrue(count($recSet) == 1, $testName);
@@ -597,7 +596,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks");
         $this->assertTrue(count($recSet) == 0, "Count pk values");
 
-        //$reult = $this->db_proxy->dbClass->removeFromRegisterd($clientId, $entity, $pkArray);
+        //$reult = $this->db_proxy->dbClass->notifyHandler->removeFromRegisterd($clientId, $entity, $pkArray);
 
     }
 
@@ -618,7 +617,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->assertTrue($this->db_proxy->dbClass->register($clientId2, $entity, $condition, $pkArray2) !== false, $testName);
         $clientId3 = "555588888DDDDDD";
 
-        $result = $this->db_proxy->dbClass->removeFromRegisterd($clientId1, $entity, array(3003));
+        $result = $this->db_proxy->dbClass->notifyHandler->removeFromRegisterd($clientId1, $entity, array(3003));
         $this->assertTrue($result[0] == $clientId2, $testName);
 
         $recSet = $this->db_proxy->dbClass->queryForTest("registeredpks", array("pk" => 3003));

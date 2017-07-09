@@ -13,10 +13,8 @@ Also the Migration Guide (Japanese) might be informative:
 Ver.5.7 (in development)
 - The "data-im-format" attribute is introduced.
 - Get started to adapt to the FileMaker Data API.
-
-Ver.5.6 (in development)
-- Well-designed CSS files as the 'default' theme are added by Yuko Oki. She is web designer and a lecturer of
-
+- Database classes are widely refactored. So they had too much long codes, they are divided into some classes
+  in DB_Support directory.
 
 Ver.5.6 (June 23, 2017)
 - Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of

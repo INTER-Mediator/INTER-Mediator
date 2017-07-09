@@ -7,7 +7,6 @@ require_once(dirname(__FILE__) . '/../DB_Settings.php');
 require_once(dirname(__FILE__) . '/../DB_UseSharedObjects.php');
 require_once(dirname(__FILE__) . '/../DB_Proxy.php');
 require_once(dirname(__FILE__) . '/../DB_Formatters.php');
-require_once(dirname(__FILE__) . '/../DB_AuthCommon.php');
 
 class DB_Proxy_Test extends PHPUnit_Framework_TestCase
 {

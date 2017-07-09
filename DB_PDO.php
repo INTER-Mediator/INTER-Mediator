@@ -17,15 +17,15 @@
  * Class DB_PDO
  */
 require_once("DB_Support/DB_PDO_Handler.php");
-require_once("DB_Support/DB_PDO_Auth_Handler.php");
-require_once("DB_Support/DB_PDO_Notification_Handler.php");
+require_once("DB_Support/DB_Auth_Common.php");
+require_once("DB_Support/DB_Notification_Common.php");
+require_once("DB_Support/DB_Auth_Handler_PDO.php");
+require_once("DB_Support/DB_Notification_Handler_PDO.php");
+require_once("DB_Support/DB_Spec_Handler_PDO.php");
 
 class DB_PDO extends DB_UseSharedObjects implements DB_Interface
 {
     public $link = null;       // Connection with PDO's link
-    private $handler = null;    // Handle for each database engine.
-    private $authHandler = null;
-    private $notifyHandler = null;
     private $mainTableCount = 0;
     private $mainTableTotalCount = 0;
     private $fieldInfo = null;
@@ -45,17 +45,16 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $this->updatedRecord[$index][$field] = $value;
     }
 
+    public function requireUpdatedRecord($value)
+    {
+        $this->isRequiredUpdated = $value;
+    }
+
     public function softDeleteActivate($field, $value)
     {
         $this->softDeleteField = $field;
         $this->softDeleteValue = $value;
     }
-
-    public function __constract()
-    {
-
-    }
-
 
     /**
      * @param $str
@@ -83,10 +82,6 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                 $this->dbSettings->getDbSpecUser(),
                 $this->dbSettings->getDbSpecPassword(),
                 is_array($this->dbSettings->getDbSpecOption()) ? $this->dbSettings->getDbSpecOption() : array());
-            $this->handler = DB_PDO_Handler::generateHandler($this, $this->dbSettings->getDbSpecDSN());
-            $this->handler->optionalOperationInSetup();
-            $this->authHandler = new DB_PDO_Auth_Handler($this);
-            $this->notifyHandler = new DB_PDO_Notification_Handler($this);
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() .
                 ", DSN=" . $this->dbSettings->getDbSpecDSN() .
@@ -97,6 +92,17 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         return true;
     }
 
+    public function setupHandlers()
+    {
+        if (! is_null($this->dbSettings)) {
+            $this->handler = DB_PDO_Handler::generateHandler($this, $this->dbSettings->getDbSpecDSN());
+            $this->handler->optionalOperationInSetup();
+        }
+        $this->authHandler = new DB_Auth_Handler_PDO($this);
+        $this->notifyHandler = new DB_Notification_Handler_PDO($this);
+        $this->specHandler = new DB_Spec_Handler_PDO();
+    }
+
     public function setupWithDSN($dsnString)
     {
         if ($this->isAlreadySetup) {
@@ -104,44 +110,12 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         }
         try {
             $this->link = new PDO($dsnString);
-            $this->handler = DB_PDO_Handler::generateHandler($this, $dsnString);
         } catch (PDOException $ex) {
             $this->logger->setErrorMessage('Connection Error: ' . $ex->getMessage() . ", DSN=" . $dsnString);
             return false;
         }
         $this->isAlreadySetup = true;
         return true;
-    }
-
-    public static function defaultKey()
-    {
-        return "id";
-    }
-
-    public function getDefaultKey()
-    {
-        return "id";
-    }
-
-    public function isSupportAggregation()
-    {
-        return true;
-    }
-    private function getKeyFieldOfContext($context)
-    {
-        if (isset($context) && isset($context['key'])) {
-            return $context['key'];
-        }
-        return $this->getDefaultKey();
-    }
-
-    /**
-     * @param $fname
-     * @return mixed
-     */
-    private function sanitizeFieldName($fname)
-    {
-        return $fname;
     }
 
     /*
@@ -179,7 +153,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
                             $condition = $this->normalizedCondition($condition);
-                            if (!$this->handler->isPossibleOperator($condition['operator'])) {
+                            if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
                                 throw new Exception("Invalid Operator.: {$condition['operator']}");
                             }
                             $queryClauseArray[$chunkCount][]
@@ -189,7 +163,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                                 = "{$escapedField} = {$escapedValue}";
                         }
                     } else {
-                        if (!$this->handler->isPossibleOperator($condition['operator'])) {
+                        if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
                             throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $queryClauseArray[$chunkCount][]
@@ -212,7 +186,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             $outsideOp = ' OR ';
             foreach ($this->dbSettings->getExtraCriteria() as $condition) {
                 if ($condition['field'] == $primaryKey && isset($condition['value'])) {
-                    $this->queriedPrimaryKeys = array($condition['value']);
+                    $this->notifyHandler->setQueriedPrimaryKeys(array($condition['value']));
                 }
                 if ($condition['field'] == '__operation__') {
                     $chunkCount++;
@@ -226,7 +200,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                         $condition = $this->normalizedCondition($condition);
                         $escapedValue = $this->link->quote($condition['value']);
                         if (isset($condition['operator'])) {
-                            if (!$this->handler->isPossibleOperator($condition['operator'])) {
+                            if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
                                 throw new Exception("Invalid Operator.");
                             }
                             if (strtoupper(trim($condition['operator'])) == "IN") {
@@ -245,7 +219,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                                 = "{$escapedField} = {$escapedValue}";
                         }
                     } else {
-                        if (!$this->handler->isPossibleOperator($condition['operator'])) {
+                        if (!$this->specHandler->isPossibleOperator($condition['operator'])) {
                             throw new Exception("Invalid Operator.: {$condition['operator']}");
                         }
                         $queryClauseArray[$chunkCount][]
@@ -267,7 +241,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                         $escapedField = $this->handler->quotedEntityName($relDef['foreign-key']);
                         $escapedValue = $this->link->quote($foreignDef['value']);
                         $op = isset($relDef['operator']) ? $relDef['operator'] : '=';
-                        if (!$this->handler->isPossibleOperator($op)) {
+                        if (!$this->specHandler->isPossibleOperator($op)) {
                             throw new Exception("Invalid Operator.");
                         }
                         $queryClause = (($queryClause != '') ? "({$queryClause}) AND " : '')
@@ -282,8 +256,8 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             && ((isset($tableInfo['authentication']['all'])
                 || isset($tableInfo['authentication'][$keywordAuth])))
         ) {
-            $authInfoField = $this->getFieldForAuthorization($keywordAuth);
-            $authInfoTarget = $this->getTargetForAuthorization($keywordAuth);
+            $authInfoField = $this->authHandler->getFieldForAuthorization($keywordAuth);
+            $authInfoTarget = $this->authHandler->getTargetForAuthorization($keywordAuth);
             if ($authInfoTarget == 'field-user') {
                 if (strlen($signedUser) == 0) {
                     $queryClause = 'FALSE';
@@ -292,7 +266,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                         . "({$authInfoField}=" . $this->link->quote($signedUser) . ")";
                 }
             } else if ($authInfoTarget == 'field-group') {
-                $belongGroups = $this->authSupportGetGroupsOfUser($signedUser);
+                $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                 $groupCriteria = array();
                 foreach ($belongGroups as $oneGroup) {
                     $groupCriteria[] = "{$authInfoField}=" . $this->link->quote($oneGroup);
@@ -306,7 +280,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             } else {
                 $authorizedUsers = $this->getAuthorizedUsers($keywordAuth);
                 $authorizedGroups = $this->getAuthorizedGroups($keywordAuth);
-                $belongGroups = $this->authSupportGetGroupsOfUser($signedUser);
+                $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                 if (count($authorizedUsers) > 0 || count($authorizedGroups) > 0) {
                     if (!in_array($signedUser, $authorizedUsers)
                         && count(array_intersect($belongGroups, $authorizedGroups)) == 0
@@ -341,7 +315,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             foreach ($this->dbSettings->getExtraSortKey() as $condition) {
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
                 if (isset($condition['direction'])) {
-                    if (!$this->handler->isPossibleOrderSpecifier($condition['direction'])) {
+                    if (!$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
                         throw new Exception("Invalid Sort Specifier.");
                     }
                     $sortClause[] = "{$escapedField} {$condition['direction']}";
@@ -352,7 +326,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         }
         if (isset($tableInfo['sort'])) {
             foreach ($tableInfo['sort'] as $condition) {
-                if (isset($condition['direction']) && !$this->handler->isPossibleOrderSpecifier($condition['direction'])) {
+                if (isset($condition['direction']) && !$this->specHandler->isPossibleOrderSpecifier($condition['direction'])) {
                     throw new Exception("Invalid Sort Specifier.");
                 }
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
@@ -373,7 +347,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $this->mainTableTotalCount = 0;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForRetrieve();
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -470,8 +444,8 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} {$sortClause} "
             . " LIMIT {$limitParam} {$offset}";
         $this->logger->setDebugMessage($sql);
-        $this->queriedEntity = $viewOrTableName;
-        $this->queriedCondition = "{$queryClause} {$sortClause} LIMIT {$limitParam} {$offset}";
+        $this->notifyHandler->setQueriedEntity($viewOrTableName);
+        $this->notifyHandler->setQueriedCondition("{$queryClause} {$sortClause} LIMIT {$limitParam} {$offset}");
 
         // Query
         $result = $this->link->query($sql);
@@ -479,7 +453,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             $this->errorMessageStore('Select:' . $sql);
             return array();
         }
-        $this->queriedPrimaryKeys = array();
+        $this->notifyHandler->setQueriedPrimaryKeys(array());
         $keyField = $this->getKeyFieldOfContext($tableInfo);
         $sqlResult = array();
         $isFirstRow = true;
@@ -494,7 +468,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             }
             $sqlResult[] = $rowArray;
             if ($keyField && isset($rowArray[$keyField])) {
-                $this->queriedPrimaryKeys[] = $rowArray[$keyField];
+                $this->notifyHandler->addQueriedPrimaryKeys($rowArray[$keyField]);
             }
             $isFirstRow = false;
         }
@@ -522,19 +496,9 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
 
     /**
      * @param $dataSourceName
-     * @return null
-     */
-    function getFieldInfo($dataSourceName)
-    {
-        return $this->fieldInfo;
-    }
-
-    /**
-     * @param $dataSourceName
      * @return int
      */
-    public
-    function countQueryResult()
+public     function countQueryResult()
     {
         return $this->mainTableCount;
     }
@@ -543,8 +507,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
      * @param $dataSourceName
      * @return int
      */
-    public
-    function getTotalCount()
+public     function getTotalCount()
     {
         return $this->mainTableTotalCount;
     }
@@ -559,7 +522,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -607,7 +570,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         }
         $sql = "{$this->handler->sqlUPDATECommand()}{$tableName} SET {$setClause} {$queryClause}";
         $prepSQL = $this->link->prepare($sql);
-        $this->queriedEntity = $tableName;
+        $this->notifyHandler->setQueriedEntity($tableName);
 
         $this->logger->setDebugMessage(
             $prepSQL->queryString . " with " . str_replace("\n", " ", var_export($setParameter, true)));
@@ -626,7 +589,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             if ($result === false) {
                 $this->errorMessageStore('Select:' . $sql);
             } else {
-                $this->queriedPrimaryKeys = array();
+                $this->notifyHandler->setQueriedPrimaryKeys(array());
                 $keyField = $this->getKeyFieldOfContext($tableInfo);
                 $sqlResult = array();
                 $isFirstRow = true;
@@ -640,7 +603,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                         $rowArray[$field] = $this->formatter->formatterFromDB($filedInForm, $val);
                     }
                     $sqlResult[] = $rowArray;
-                    $this->queriedPrimaryKeys[] = $rowArray[$keyField];
+                    $this->notifyHandler->addQueriedPrimaryKeys($rowArray[$keyField]);
                     $isFirstRow = false;
                 }
                 $this->updatedRecord = $sqlResult;
@@ -668,8 +631,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
      * @param $bypassAuth
      * @return bool
      */
-    public
-    function createInDB($bypassAuth)
+public     function createInDB($bypassAuth)
     {
         $this->fieldInfo = null;
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
@@ -678,7 +640,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $viewName = $this->handler->quotedEntityName($this->dbSettings->getEntityForRetrieve());
 
         if (!$bypassAuth && isset($tableInfo['authentication'])) {
-            $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+            $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
         }
 
         $setColumnNames = array();
@@ -739,7 +701,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                 $setValues[] = $this->link->quote(
                     strlen($signedUser) == 0 ? randomString(10) : $signedUser);
             } else if ($authInfoTarget == 'field-group') {
-                $belongGroups = $this->authSupportGetGroupsOfUser($signedUser);
+                $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
                     strlen($belongGroups[0]) == 0 ? randomString(10) : $belongGroups[0]);
@@ -758,8 +720,8 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $seqObject = isset($tableInfo['sequence']) ? $tableInfo['sequence'] : $tableName;
         $lastKeyValue = $this->link->lastInsertId($seqObject);
 
-        $this->queriedPrimaryKeys = array($lastKeyValue);
-        $this->queriedEntity = $tableName;
+        $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
+        $this->notifyHandler->setQueriedEntity($tableName);
 
         if ($this->isRequiredUpdated) {
             $sql = "SELECT * FROM " . $viewName
@@ -814,7 +776,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->handler->quotedEntityName($this->dbSettings->getEntityForUpdate());
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -845,7 +807,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             $this->errorMessageStore('Delete Error:' . $sql);
             return false;
         }
-        $this->queriedEntity = $tableName;
+        $this->notifyHandler->setQueriedEntity($tableName);
 
         if (isset($tableInfo['script'])) {
             foreach ($tableInfo['script'] as $condition) {
@@ -868,7 +830,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         $this->fieldInfo = null;
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
         $tableName = $this->dbSettings->getEntityForUpdate();
-        $signedUser = $this->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
+        $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
 
         if (!$this->setupConnection()) { //Establish the connection
             return false;
@@ -897,8 +859,8 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         if ($lastKeyValue === false) {
             return false;
         }
-        $this->queriedPrimaryKeys = array($lastKeyValue);
-        $this->queriedEntity = $tableName;
+        $this->notifyHandler->setQueriedPrimaryKeys(array($lastKeyValue));
+        $this->notifyHandler->setQueriedEntity($tableName);
         //======
         $assocArray = $this->dbSettings->getAssociated();
         if ($assocArray) {
@@ -951,9 +913,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         return $lastKeyValue;
     }
 
-
-    public
-    function normalizedCondition($condition)
+    public function normalizedCondition($condition)
     {
         if (!isset($condition['field'])) {
             $condition['field'] = '';
@@ -984,20 +944,24 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         return $condition;
     }
 
-    public
-    function isContainingFieldName($fname, $fieldnames)
+    private function getKeyFieldOfContext($context)
     {
-        return in_array($fname, $fieldnames);
+        if (isset($context) && isset($context['key'])) {
+            return $context['key'];
+        }
+        return $this->specHandler->getDefaultKey();
     }
 
-    public
-    function isNullAcceptable()
+    /**
+     * @param $dataSourceName
+     * @return null
+     */
+    function getFieldInfo($dataSourceName)
     {
-        return true;
+        return $this->fieldInfo;
     }
 
-    public
-    function queryForTest($table, $conditions = null)
+    public function queryForTest($table, $conditions = null)
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");
@@ -1036,8 +1000,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         return $recordSet;
     }
 
-    public
-    function deleteForTest($table, $conditions = null)
+    public function deleteForTest($table, $conditions = null)
     {
         if ($table == null) {
             $this->errorMessageStore("The table doesn't specified.");

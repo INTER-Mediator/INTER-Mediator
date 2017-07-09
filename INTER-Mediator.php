@@ -21,7 +21,6 @@ require_once('DB_Interfaces.php');
 require_once('DB_Logger.php');
 require_once('DB_Settings.php');
 require_once('DB_UseSharedObjects.php');
-require_once('DB_AuthCommon.php');
 require_once('DB_Proxy.php');
 require_once('IMUtil.php');
 
@@ -150,7 +149,7 @@ function loadClass($className)
         if ($className === 'NumberFormatter' && !class_exists($className)) {
             $className = 'IMNumberFormatter';
         }
-        $result = include_once $className . '.php';
+        $result = require_once("{$className}.php");
         if (!$result) {
             $errorGenerator = new GenerateJSCode();
             if (strpos($className, "MessageStrings_") !== 0) {

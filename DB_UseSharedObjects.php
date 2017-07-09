@@ -1,4 +1,5 @@
 <?php
+
 /**
  * INTER-Mediator
  * Copyright (c) INTER-Mediator Directive Committee (http://inter-mediator.org)
@@ -12,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 abstract class DB_UseSharedObjects
 {
     public $dbSettings = null;
@@ -20,10 +20,14 @@ abstract class DB_UseSharedObjects
     public $formatter = null;
     public $dbClass = null;
     public $proxyObject = null;
+    public $handler = null;    // Handle for each database engine. Uses just PDO.
+    public $authHandler = null;
+    public $notifyHandler = null;
+    public $specHandler = null;
 
-    public function setUpSharedObjects( $obj = null )
+    public function setUpSharedObjects($obj = null)
     {
-        if ( $obj === null )    {
+        if ($obj === null) {
             $this->setSettings(new DB_Settings());
             $this->setLogger(DB_Logger::getInstance());
             $this->setFormatter(new DB_Formatters());
@@ -33,6 +37,7 @@ abstract class DB_UseSharedObjects
             $this->setFormatter($obj->formatter);
             $this->dbClass = $obj->dbClass;
             $this->proxyObject = $obj;
+            //$this->dbClass->setupHandlers();
         }
     }
 

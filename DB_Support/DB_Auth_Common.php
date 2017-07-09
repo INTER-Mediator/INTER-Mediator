@@ -15,14 +15,16 @@
  */
 abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
-    private $dbSettings = null;
-    private $dbClass = null;
+    protected $dbSettings = null;
+    protected $dbClass = null;
+    protected $logger = null;
 
     public function __construct($parent)
     {
         if ($parent) {
             $this->dbClass = $parent;
             $this->dbSettings = $parent->dbSettings;
+            $this->logger = $parent->logger;
         } else {
             trigger_error("Misuse of constructor.", E_USER_ERROR);
         }
@@ -101,7 +103,6 @@ abstract class DB_Auth_Common implements Auth_Interface_CommonDB
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-//        $this->logger->setDebugMessage("tableInfo=" . var_export($tableInfo, true), 2);
         $groupsArray = array();
         if ($this->dbSettings->getAuthenticationItem('group')) {
             $groupsArray = array_merge($groupsArray, $this->dbSettings->getAuthenticationItem('group'));
