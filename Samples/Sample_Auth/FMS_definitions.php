@@ -102,5 +102,5 @@ IM_Entry(
 //            'issuedhash' => 'sqlite:/var/db/im/sample.sq3',
 //        ),
     ),
-    2
+    false
 );

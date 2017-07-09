@@ -21,9 +21,9 @@ require_once("DB_Support/DB_Notification_Handler_FileMaker_FX.php");
 
 class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
 {
-    private $fx = null;
-    private $fxAuth = null;
-    private $fxAlt = null;
+    public $fx = null;
+    public $fxAuth = null;
+    public $fxAlt = null;
     private $mainTableCount = 0;
     private $mainTableTotalCount = 0;
     private $fieldInfo = null;
@@ -67,21 +67,21 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         $this->softDeleteValue = $value;
     }
 
-    private function setupFXforAuth($layoutName, $recordCount)
+    public function setupFXforAuth($layoutName, $recordCount)
     {
         $this->fx = null;
         $this->fxAuth = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getDbSpecUser(), $this->dbSettings->getDbSpecPassword());
     }
 
-    private function setupFXforDB($layoutName, $recordCount)
+    public function setupFXforDB($layoutName, $recordCount)
     {
         $this->fxAuth = null;
         $this->fx = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
     }
 
-    private function setupFXforDB_Alt($layoutName, $recordCount)
+    public function setupFXforDB_Alt($layoutName, $recordCount)
     {
         $this->fxAlt = $this->setupFX_Impl($layoutName, $recordCount,
             $this->dbSettings->getAccessUser(), $this->dbSettings->getAccessPassword());
@@ -124,7 +124,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         $this->specHandler = new DB_Spec_Handler_FileMaker_FX();
     }
 
-    private function stringWithoutCredential($str)
+    public function stringWithoutCredential($str)
     {
         if (is_null($this->fx)) {
             $str = str_replace($this->dbSettings->getDbSpecUser(), "********", $str);
@@ -476,8 +476,8 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                 || isset($context['authentication']["load"])))
         ) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization("read");
-            $authInfoTarget = $this->getTargetForAuthorization("read");
+            $authInfoField = $this->authHandler->getFieldForAuthorization("read");
+            $authInfoTarget = $this->authHandler->getTargetForAuthorization("read");
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;

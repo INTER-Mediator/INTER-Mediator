@@ -148,7 +148,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
 
@@ -173,17 +173,17 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         $this->dbClass->setupFXforDB($userTable, 1);
         $this->dbClass->fx->AddDBParam('username', str_replace("@", "\\@", $username), 'eq');
         $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
-        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         if ((!is_array($result) || $result['foundCount'] < 1) && $this->dbSettings->getEmailAsAccount()) {
             $this->dbClass->setupFXforDB($userTable, 1);
             $this->dbClass->fx->AddDBParam('email', str_replace("@", "\\@", $username), 'eq');
             $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
-            $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         }
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
             return $row['hashedpasswd'][0];
         }
