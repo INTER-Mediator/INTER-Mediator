@@ -775,7 +775,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     {
         $testName = "Tables for storing the context and ids should be existing.";
         $this->dbProxySetupForAuth();
-        $this->assertTrue($this->db_proxy->dbClass->notifhHandler->isExistRequiredTable(), $testName);
+        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->isExistRequiredTable(), $testName);
     }
 
     public function testMultiClientSyncRegisterAndUnregister()

@@ -279,7 +279,7 @@ class DB_Auth_Handler_PDO extends DB_Auth_Common implements Auth_Interface_DB
     {
         $userTable = $this->dbSettings->getUserTable();
         if ($isLDAP !== true) {
-            if ($this->authHandler->authSupportRetrieveHashedPassword($username) !== false) {
+            if ($this->authSupportRetrieveHashedPassword($username) !== false) {
                 $this->logger->setErrorMessage('User Already exist: ' . $username);
                 return false;
             }

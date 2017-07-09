@@ -27,7 +27,7 @@ class NotifyServer
         $this->clientId = $clientId;
         if (is_null($dbClass) || is_null($dbSettings) || is_null($clientId)
             || !is_subclass_of($dbClass, 'DB_Interface_Registering')
-            || !$dbClass->notifhHandler->isExistRequiredTable()
+            || !$dbClass->notifyHandler->isExistRequiredTable()
             || is_null($dbSettings->pusherAppId) || strlen($dbSettings->pusherAppId) < 1
             || is_null($dbSettings->pusherKey) || strlen($dbSettings->pusherKey) < 1
             || is_null($dbSettings->pusherSecret) || strlen($dbSettings->pusherSecret) < 1
