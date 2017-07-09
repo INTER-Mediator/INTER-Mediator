@@ -15,6 +15,10 @@ Ver.5.7 (in development)
 - Get started to adapt to the FileMaker Data API.
 - Database classes are widely refactored. So they had too much long codes, they are divided into some classes
   in DB_Support directory.
+- The locale for number and currency format follows the server-side setting of "intl.default_locale" key in php.ini.
+  It can be overridden by params.php file's $appLocale valuable.
+- [WIP] Update TestDB.fmp12, TestDB_clone.fmp12, TestDB.fp7 and TestDBSchemeForFMS.xlsx to add "total" field to the 
+  "invoice" table for the server side calculation sample.
 
 Ver.5.6 (June 23, 2017)
 - Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of
@@ -62,7 +66,6 @@ Ver.5.6 (June 23, 2017)
 - The addCondition and clearCondition method of INTERMediator class has "label" property for stabilizing.
 - Progress information is changed as more simple gear style icon and gray background.
 - Some functions are moved to INTER-Mediator-Navi, and refactored them.
-- FileMaker sample db "TestDB.fmp12" and "TestDB_clone.fmp12" didn't set the PHP API access privilege, and so on.
 - Update FileMaker sample DB ("TestDB.fmp12" and "TestDB_clone.fmp12") to set the REST API / PHP API access privilege, 
   and so on.
 - Use @-operator before exif_read_data() in MediaAccess.php to avoid outputting a warning in an error log file in case
@@ -106,8 +109,6 @@ Ver.5.6 (June 23, 2017)
 - [BUG FIX] The pagination size popup menu didn't work as we expected.
 - [BUG FIX] On the batch save mode without lock, the update operation didn't work.
 - [BUG FIX] On the batch save mode, the context wasn't updated.
-- [SECURITY FIX] The resetpassword.php in Auth_Support/PasswordReset folder had security issues.
-  If you use the resetpassword.php file in your solution. we'd like to replace the fixed version.
 - [BUG FIX] The MediaAccess class didn't detect context name in case of class:// url ends with /.
 - [BUG FIX] Samples/Sample_asset has 'Return Today' button but it didn't work for missing view keyed value.
 - [BUG FIX] Fix URL of the CSS file in simplelist_MySQL.html/simplelist_FMS.html in Samples/Sample_Mobile directory.
@@ -437,10 +438,6 @@ Ver.5.1 (May 22, 2015)
 - Avoid using the @-operator for error suppression in NotifyServer.php to reduce bug risk.
 - Eliminate die() in INTER-Mediator.php to reduce bug risk.
 - Remove duplication in MessageStrings_ja.php and modify MessageStrings.php.
-- The locale for number and currency format follows the server-side setting of "intl.default_locale" key in php.ini.
-  It can be overridden by params.php file's $appLocale valuable.
-- Update TestDB.fmp12, TestDB_clone.fmp12, TestDB.fp7 and TestDBSchemeForFMS.xlsx to add "total" field to the 
-  "invoice" table for the server side calculation sample.
 - Add the 'memo' field in sample databases.
 - The script to build the VM contains installation of samba and sharing the web root.
 - Update Vagrantfile for the INTER-Mediator-Server virtual machine to use a box file 
