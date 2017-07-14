@@ -9,8 +9,9 @@ jobs:
       - setup_remote_docker
       - run: pwd
       - run: ls -al
-      - run: |
-          docker build ./dist-docs/docker
+      - run:
+          command: docker build ./dist-docs/docker
+          no_output_timeout: 1800
       - run: vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
       - run: npm test
       - run: BUNDLE_GEMFILE=dist-docs/docker/Gemfile bundle
