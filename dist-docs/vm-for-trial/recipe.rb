@@ -871,8 +871,8 @@ if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform
     end
   end
 
-  execute 'npm install -g phantomjs' do
-    command 'npm install -g phantomjs'
+  execute 'npm install -g phantomjs-prebuilt' do
+    command 'npm install -g phantomjs-prebuilt'
   end
 end
 
