@@ -43,8 +43,6 @@ class GenerateJSCode
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
-    private $defaultsArray;
-
     public function generateInitialJSCode($datasource, $options, $dbspecification, $debug)
     {
         $q = '"';
@@ -131,13 +129,10 @@ class GenerateJSCode
         } else {
             require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
         }
-        if (((float)phpversion()) < 5.3) {
-            $dbInstance = new $dbClassName();
-            if ($dbInstance != null) {
-                $defaultKey = $dbInstance->getDefaultKey();
-            }
-        } else {
-            $defaultKey = call_user_func(array($dbClassName, 'defaultKey'));
+        $dbInstance = new $dbClassName();
+        $dbInstance->setupHandlers();
+        if ($dbInstance != null) {
+            $defaultKey = $dbInstance->specHandler->getDefaultKey();
         }
         if ($defaultKey !== null) {
             $items = array();

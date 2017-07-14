@@ -28,6 +28,19 @@ class IMUtil
         return $currentDTStr;
     }
 
+    public static function currentDTStringFMS($addSeconds = 0)
+    {
+//        $currentDT = new DateTime();
+//        $timeValue = $currentDT->format("U");
+//        $currentDTStr = $this->link->quote($currentDT->format('Y-m-d H:i:s'));
+
+        // For 5.2
+        $timeValue = time();
+        $currentDTStr = date('m/d/Y H:i:s', $timeValue - $addSeconds);
+        // End of for 5.2
+        return $currentDTStr;
+    }
+
     public static function secondsFromNow($dtStr)
     {
 //        $currentDT = new DateTime();

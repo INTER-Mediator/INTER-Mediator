@@ -13,7 +13,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-require_once('../../INTER-Mediator.php');
+require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 
 IM_Entry(
     array(
@@ -33,25 +33,11 @@ IM_Entry(
                 'delete'=>'レコード削除',
                 'copy'=>'レコード複製',
             ),
-            'authentication' => array(
-                'read' => array( /* load, update, new, delete*/
-                    'group' => array("group1","group2"),
-                ),
-                'update' => array( /* load, update, new, delete*/
-                    'group' => array("group2"),
-                ),
-                'create' => array( /* load, update, new, delete*/
-                    'group' => array("dummy"),
-                ),
-                'delete' => array( /* load, update, new, delete*/
-                    'group' => array("dummy"),
-                ),
-            ),
         ),
         array(
             'name' => 'contact_to',
             'key' => 'id',
-            'repeat-control' => 'confirm-delete confirm-insert',
+            'repeat-control' => 'confirm-delete insert',
             'relation' => array(
                 array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq')
             ),
@@ -78,29 +64,14 @@ IM_Entry(
     ),
     array(
         'formatter' => array(
-            array('field' => 'contact_to@datetime', 'converter-class' => 'FMDateTime'),
             array('field' => 'history_to@startdate', 'converter-class' => 'FMDateTime'),
+            array('field' => 'contact_to@datetime', 'converter-class' => 'FMDateTime'),
             array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
-        ),
-        'authentication' => array( // table only, for all operations
-//            'user' => array('user1'), // Itemize permitted users
-//           'user' => array('database_native'), // Use DB-Native users.
-//            'group' => array('group2'), // Itemize permitted groups
-//            'user-table' => 'authuser', // Default value "authuser"
-//            'group-table' => '', //'authgroup',
-//            'challenge-table' => 'issuedhash',
-            'authexpired' => '3600', // Set as seconds.
-            'email-as-username' => true,
-            'storing' => 'session-storage', // 'cookie'(default), 'cookie-domainwide', 'none'
-            'realm' => 'Sample_Auth/FMS_definitions', //
-//            'issuedhash-dsn' => 'sqlite:/var/db/im/sample.sq3',
         ),
     ),
     array(
-        'db-class' => 'FileMaker_FX',
-//        'external-db' => array(
-//            'issuedhash' => 'sqlite:/var/db/im/sample.sq3',
-//        ),
+        'db-class' => 'FileMaker_DataAPI',
+        'server' => 'localserver',
     ),
     false
 );

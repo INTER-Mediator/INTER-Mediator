@@ -13,13 +13,22 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
-/*
- * This file is obsoleted in Ver.5.7-dev. All functions are moved to DB_Support/DB_Auth_Common.php
- * Masayuki Nii, 2017-07-09
- */
-abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interface_CommonDB
+abstract class DB_Auth_Common implements Auth_Interface_CommonDB
 {
+    protected $dbSettings = null;
+    protected $dbClass = null;
+    protected $logger = null;
+
+    public function __construct($parent)
+    {
+        if ($parent) {
+            $this->dbClass = $parent;
+            $this->dbSettings = $parent->dbSettings;
+            $this->logger = $parent->logger;
+        } else {
+            trigger_error("Misuse of constructor.", E_USER_ERROR);
+        }
+    }
 
     private function getOperationSeries($operation)
     {
@@ -94,7 +103,6 @@ abstract class DB_AuthCommon extends DB_UseSharedObjects implements Auth_Interfa
     {
         $operations = $this->getOperationSeries($operation);
         $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-//        $this->logger->setDebugMessage("tableInfo=" . var_export($tableInfo, true), 2);
         $groupsArray = array();
         if ($this->dbSettings->getAuthenticationItem('group')) {
             $groupsArray = array_merge($groupsArray, $this->dbSettings->getAuthenticationItem('group'));

@@ -258,7 +258,7 @@ class MediaAccess
                 }
                 $dbProxyInstance->dbSettings->setDataSourceName($contextName);
                 $tableName = $dbProxyInstance->dbSettings->getEntityForRetrieve();
-                $this->contextRecord = $dbProxyInstance->dbClass->authSupportCheckMediaPrivilege(
+                $this->contextRecord = $dbProxyInstance->dbClass->authHandler->authSupportCheckMediaPrivilege(
                     $tableName, $authInfoField, $_COOKIE[$cookieNameUser], $keyField, $keyValue);
                 if ($this->contextRecord === false) {
                     $this->exitAsError(401);
@@ -282,13 +282,13 @@ class MediaAccess
 //                if (in_array($_COOKIE[$cookieNameUser], $authorizedUsers)) {
 //                    return;
 //                }
-                $belongGroups = $dbProxyInstance->dbClass->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
+                $belongGroups = $dbProxyInstance->dbClass->authHandler->authSupportGetGroupsOfUser($_COOKIE[$cookieNameUser]);
                 if (!in_array($_COOKIE[$cookieNameUser], $authorizedUsers)
                     && count(array_intersect($belongGroups, $authorizedGroups)) == 0
                 ) {
                     $this->exitAsError(400);
                 }
-               $endOfPath = strpos($target, "?");
+                $endOfPath = strpos($target, "?");
                 $endOfPath = ($endOfPath === false) ? strlen($target) : $endOfPath;
                 $pathComponents = explode('/', substr($target, 0, $endOfPath));
                 $indexKeying = -1;
@@ -326,7 +326,7 @@ class MediaAccess
                     $keyField = $fieldComponents[0];
                     $keyValue = $fieldComponents[1];
                     $dbProxyInstance->dbSettings->addExtraCriteria($keyField, "=", $keyValue);
-                    $contextName = $pathComponents[$index-1];
+                    $contextName = $pathComponents[$index - 1];
                 }
             }
             if ($indexKeying == -1) {
