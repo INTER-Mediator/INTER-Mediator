@@ -861,8 +861,8 @@ end
 # Install npm packages
 
 if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 14) || (node[:platform] == 'redhat' && node[:platform_version].to_f >= 6)
-  execute 'npm install -g buster' do
-    command 'npm install -g buster'
+  execute 'npm install -g buster --unsafe-perm' do
+    command 'npm install -g buster --unsafe-perm'
   end
 
   if node[:platform] == 'redhat' && node[:platform_version].to_f >= 7
@@ -871,8 +871,8 @@ if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform
     end
   end
 
-  execute 'npm install -g phantomjs' do
-    command 'npm install -g phantomjs'
+  execute 'npm install -g phantomjs-prebuilt --unsafe-perm' do
+    command 'npm install -g phantomjs-prebuilt --unsafe-perm'
   end
 end
 
@@ -1643,8 +1643,8 @@ elsif node[:platform] == 'ubuntu'
   package 'chromium-browser' do
     action :install
   end
-  execute 'npm install -g chromedriver' do
-    command 'npm install -g chromedriver'
+  execute 'npm install -g chromedriver --unsafe-perm' do
+      command 'npm install -g chromedriver --unsafe-perm'
   end
 end
 
