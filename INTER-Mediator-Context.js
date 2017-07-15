@@ -1119,8 +1119,8 @@ IMLibContext.prototype.checkOrder = function (oneRecord, isDebug) {
         }
     }
     if (isDebug === true) {
-        console.log('#lower=' + lower + ',upper=' + upper + ',index=' + index +
-            ',contextValue=' + contextValue + ',checkingValue=' + checkingValue);
+        //console.log('#lower=' + lower + ',upper=' + upper + ',index=' + index +
+        //    ',contextValue=' + contextValue + ',checkingValue=' + checkingValue);
     }
     return index;
 };
