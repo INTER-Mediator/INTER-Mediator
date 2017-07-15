@@ -1,3 +1,23 @@
+stages:
+  - deploy
+  - test
+
+image: docker:latest
+
+variables:
+  DOCKER_DRIVER: overlay
+
+services:
+- docker:dind
+
+before_script:
+  - docker info
+
+test:
+  script:
+    - docker build -t ubuntu ./dist-docs/docker
+    - docker run ubuntu vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php  
+
 pages:
   stage: deploy
   script:
