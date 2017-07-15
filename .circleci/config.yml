@@ -10,10 +10,13 @@ jobs:
       - run: pwd
       - run: ls -al
       - run:
-          command: docker build ./dist-docs/docker
+          command: docker build -t ubuntu ./dist-docs/docker
           no_output_timeout: 1800
-      - run: vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php
-      - run: npm test
-      - run: BUNDLE_GEMFILE=dist-docs/docker/Gemfile bundle
-      - run: rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/container/container_spec.rb -f doc -c
-      - run: rspec --default-path=dist-docs/docker/spec dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
+      - run: docker image list
+      - run: docker run -d --name ubuntu -it ubuntu /bin/bash
+      - run: docker ps -a
+      - run: docker exec -it ubuntu phpunit --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
+      - run: docker exec -it ubuntu npm test
+      - run: docker exec -it ubuntu -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile bundle
+      - run: docker exec -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
+      - run: docker exec -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
