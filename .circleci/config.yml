@@ -15,10 +15,9 @@ jobs:
       - run: docker image list
       - run: docker run -d --name ubuntu -it ubuntu /bin/bash
       - run: docker ps -a
-      - run: set +e
       - run: docker run -it ubuntu phpunit --debug --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
-      - run: set -e
-      - run: docker run -it ubuntu npm test
-      - run: docker run -it ubuntu -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile bundle
-      - run: docker run -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
-      - run: docker run -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
+      - run: docker run -it ubuntu php -v
+      #- run: docker run -it ubuntu npm test
+      #- run: docker run -it ubuntu -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile bundle
+      #- run: docker run -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
+      #- run: docker run -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c

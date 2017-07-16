@@ -26,9 +26,9 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DataConverter_Currency_PoundIM_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_PoundIntl_Test.php');
         $suite->addTestFile($folder . 'DB_Formatters_Test.php');
-        $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
-        $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
-        $suite->addTestFile($folder . 'DB_PDO-SQLite_Test.php');
+        //$suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
+        //$suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
+        //$suite->addTestFile($folder . 'DB_PDO-SQLite_Test.php');
         //$suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
         $suite->addTestFile($folder . 'DB_Proxy_Test.php');
         $suite->addTestFile($folder . 'DB_Settings_Test.php');
