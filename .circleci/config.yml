@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: docker:1.13.1-git
+      - image: docker:17.06.1-ce-git
     working_directory: ~/INTER-Mediator
     steps:
       - checkout
@@ -15,8 +15,9 @@ jobs:
       - run: docker image list
       - run: docker run -d --name ubuntu -it ubuntu /bin/bash
       - run: docker ps -a
-      - run: docker exec -it ubuntu phpunit --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
-      - run: docker exec -it ubuntu npm test
-      - run: docker exec -it ubuntu -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile bundle
-      - run: docker exec -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
-      - run: docker exec -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
+      - run: docker run -it ubuntu phpunit --debug --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
+      - run: docker run -it ubuntu php -v
+      #- run: docker run -it ubuntu npm test
+      #- run: docker run -it ubuntu -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile bundle
+      #- run: docker run -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
+      #- run: docker run -it ubuntu rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
