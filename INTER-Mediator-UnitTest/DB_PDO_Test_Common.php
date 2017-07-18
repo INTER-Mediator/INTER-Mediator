@@ -19,6 +19,11 @@ require_once(dirname(__FILE__) . '/../DB_Logger.php');
 require_once(dirname(__FILE__) . '/../MessageStrings.php');
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
 require_once(dirname(__FILE__) . '/../OAuthAuth.php');
+require_once(dirname(__FILE__) . '/../DB_Support/DB_Auth_Common.php');
+require_once(dirname(__FILE__) . '/../DB_Support/DB_Auth_Handler_PDO.php');
+require_once(dirname(__FILE__) . '/../DB_Support/DB_Notification_Handler_PDO.php');
+require_once(dirname(__FILE__) . '/../DB_Support/DB_PDO_Handler.php');
+require_once(dirname(__FILE__) . '/../DB_Support/DB_Spec_Handler_PDO.php');
 
 abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
 {
