@@ -1,13 +1,6 @@
 require 'spec_helper'
 
-if ENV['CIRCLECI']
-  class Docker::Container
-    def remove(options={}); end
-    alias_method :delete, :remove
-  end
-end
-
-#describe package('ruby'), :if => os[:virtualization][:system] == 'docker' do
+#describe package('ruby2.0'), :if => os[:virtualization][:system] == 'docker' do
 #  it { should be_installed }
 #end
 
