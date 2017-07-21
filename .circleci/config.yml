@@ -7,8 +7,10 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - run: uname -a
       - run: pwd
       - run: ls -al
+      - run: ls -al /usr/bin/
       - run:
           command: docker build -t ubuntu ./dist-docs/docker
           no_output_timeout: 1800
@@ -17,12 +19,11 @@ jobs:
       - run: docker ps -a
       - run: docker run -it ubuntu phpunit --debug --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
       - run: docker run -it ubuntu php -v
-      #- run: docker run -it ubuntu sudo npm install -g kew es6-promise fs-extra extract-zip progress request-progress phantomjs-prebuilt
-      #- run: docker run -it ubuntu sudo /etc/rc.local &
+      - run: docker run -it ubuntu sudo ps ax
       #- run: docker run -it ubuntu /usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js
-      - run: docker run -it ubuntu sudo gem2.0 install bundler
-      - run: docker run -it ubuntu sudo apt -y install ruby2.0-dev firefox
+      - run: docker run -it ubuntu ls -al /usr/bin/
       - run: docker run -it ubuntu ls -al /usr/local/bin/
       #- run: docker run -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -it ubuntu bundle
-      #- run: /usr/local/bin/rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
-      #- run: /usr/local/bin/rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
+      - run: gem install rspec --no-doc
+      #- run: rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
+      - run: rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
