@@ -1,6 +1,6 @@
 stages:
-  - deploy
   - test
+  - deploy
 
 image: docker:latest
 
@@ -16,15 +16,19 @@ before_script:
 test:
   script:
     - docker build -t ubuntu ./dist-docs/docker
-    - docker run ubuntu vendor/bin/phpunit --configuration ./INTER-Mediator-UnitTest/phpunit.xml ./INTER-Mediator-UnitTest/INTERMediator_AllTests.php  
+    - docker image list
+    - docker run -d --name ubuntu -it ubuntu /bin/bash
+    - docker ps -a
+    - docker run -it ubuntu phpunit --debug --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
 
 pages:
   stage: deploy
   script:
   - export LANG=ja_JP.UTF-8
   - uname -a
-  - apt-get update
-  - apt-get install -y zip git php5-cli
+  - apk update
+  - apk add --no-cache php7
+  - apk add --no-cache git
   - mkdir public
   - cd ..
   - git clone https://github.com/matthiasmullie/minify
