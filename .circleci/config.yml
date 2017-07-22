@@ -23,7 +23,7 @@ jobs:
       #- run: docker run -it ubuntu /usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js
       - run: docker run -it ubuntu ls -al /usr/bin/
       - run: docker run -it ubuntu ls -al /usr/local/bin/
-      #- run: docker run -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -it ubuntu bundle
-      - run: gem install rspec --no-doc
+      - run: docker run -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -it ubuntu bundle
+      #- run: gem install rspec --no-doc
       #- run: rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
-      - run: rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
+      #- run: rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/trainingcourse/trainingcourse_spec.rb -f doc -c
