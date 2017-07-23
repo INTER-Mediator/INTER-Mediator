@@ -1620,6 +1620,9 @@ elsif node[:platform] == 'ubuntu'
     execute 'gem2.0 install rspec --no-ri --no-rdoc' do
       command 'gem2.0 install rspec --no-ri --no-rdoc'
     end
+    execute 'gem2.0 install bundler --no-ri --no-rdoc' do
+      command 'gem2.0 install bundler --no-ri --no-rdoc'
+    end
     execute 'gem2.0 install selenium-webdriver --no-ri --no-rdoc' do
       command 'gem2.0 install selenium-webdriver --no-ri --no-rdoc'
     end
@@ -1632,6 +1635,9 @@ elsif node[:platform] == 'ubuntu'
     end
     execute 'gem2.3 install rspec --no-ri --no-rdoc' do
       command 'gem2.3 install rspec --no-ri --no-rdoc'
+    end
+    execute 'gem2.3 install bundler --no-ri --no-rdoc' do
+      command 'gem2.3 install bundler --no-ri --no-rdoc'
     end
     execute 'gem2.3 install selenium-webdriver --no-ri --no-rdoc' do
       command 'gem2.3 install selenium-webdriver --no-ri --no-rdoc'
@@ -1654,5 +1660,10 @@ if node[:platform] == 'alpine'
   end
   execute 'poweroff' do
     command 'poweroff'
+  end
+end
+if node[:platform] == 'ubuntu'
+  execute 'sudo /etc/rc.local &' do
+      command 'sudo /etc/rc.local &'
   end
 end

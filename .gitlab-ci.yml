@@ -19,7 +19,7 @@ test:
     - docker image list
     - docker run -d --name ubuntu -it ubuntu /bin/bash
     - docker ps -a
-    - docker run -it ubuntu phpunit --debug --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
+    - docker run -i ubuntu phpunit --debug --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php
 
 pages:
   stage: deploy
