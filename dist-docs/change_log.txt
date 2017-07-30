@@ -17,8 +17,9 @@ Ver.5.7 (in development)
   in DB_Support directory.
 - The locale for number and currency format follows the server-side setting of "intl.default_locale" key in php.ini.
   It can be overridden by params.php file's $appLocale valuable.
-- [WIP] Update TestDB.fmp12, TestDB_clone.fmp12, TestDB.fp7 and TestDBSchemeForFMS.xlsx to add "total" field to the 
-  "invoice" table for the server side calculation sample.
+- Update TestDB.fp7 to add "total" field to the "invoice" table for the server side calculation sample and add 
+  tables ("saleslog", "item_master", "customer").
+- Update TestDBSchemeForFMS.xlsx in "dist-docs" directory.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 
 Ver.5.6 (June 23, 2017)
