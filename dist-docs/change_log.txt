@@ -19,6 +19,7 @@ Ver.5.7 (in development)
   It can be overridden by params.php file's $appLocale valuable.
 - Update TestDB.fp7 to add "total" field to the "invoice" table for the server side calculation sample and add 
   tables ("saleslog", "item_master", "customer").
+- Update TestDBSchemeForFMS.xlsx in "dist-docs" directory.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 
 Ver.5.6 (June 23, 2017)
