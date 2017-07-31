@@ -131,7 +131,7 @@ class GenerateJSCode
         }
         $dbInstance = new $dbClassName();
         $dbInstance->setupHandlers();
-        if ($dbInstance != null) {
+        if ($dbInstance != null && $dbInstance->specHandler != null) {
             $defaultKey = $dbInstance->specHandler->getDefaultKey();
         }
         if ($defaultKey !== null) {

@@ -17,6 +17,8 @@ if (function_exists('mb_internal_encoding')) {
     mb_internal_encoding('UTF-8');
 }
 
+spl_autoload_register('loadClass');
+
 require_once('DB_Interfaces.php');
 require_once('DB_Logger.php');
 require_once('DB_Settings.php');
@@ -38,15 +40,14 @@ if (isset($defaultTimezone)) {
 } else if (ini_get('date.timezone') == null) {
     date_default_timezone_set('UTC');
 }
+IMLocale::setLocale(LC_ALL);
 
 define("IM_TODAY", strftime('%Y-%m-%d'));
 $g_dbInstance = null;
 
-spl_autoload_register('loadClass');
-
 function IM_Entry($datasource, $options, $dbspecification, $debug = false)
 {
-    global $g_dbInstance, $g_serverSideCall;
+//    global $g_dbInstance, $g_serverSideCall;
 
     // check required PHP extensions
     $requiredFunctions = array(
@@ -88,11 +89,11 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
     if (isset($_GET['theme'])) {
         $themeManager = new Theme();
         $themeManager->processing();
-    } else if (isset($g_serverSideCall) && $g_serverSideCall) {
-        $dbInstance = new DB_Proxy();
-        $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-        $dbInstance->processingRequest("NON");
-        $g_dbInstance = $dbInstance;
+//    } else if (isset($g_serverSideCall) && $g_serverSideCall) {
+//        $dbInstance = new DB_Proxy();
+//        $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
+//        $dbInstance->processingRequest("NON");
+//        $g_dbInstance = $dbInstance;
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();

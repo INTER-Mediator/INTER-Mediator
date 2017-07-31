@@ -88,8 +88,8 @@ var INTERMediatorLib = {
             saltHex += numToHex[highCode] + numToHex[lowCode];
         }
         return encodeURIComponent(SHA1(password + salt) + saltHex);
-
     },
+
     getParentRepeater: function (node) {
         var currentNode = node;
         while (currentNode !== null) {
@@ -684,7 +684,7 @@ var INTERMediatorLib = {
         if (str === "" || str === null || str === undefined) {
             return "";
         }
-        prefix = (String(str).substring(0, 1) === "-")?"-":"";
+        prefix = (String(str).substring(0, 1) === "-") ? "-" : "";
         if (String(str).match(/[-]/)) {
             str = prefix + String(str).split("-").join("");
         }
@@ -921,8 +921,8 @@ var INTERMediatorLib = {
 
     percentFormat: function (str, digit, flags) {
         "use strict";
-        if (typeof flags !== 'object'  )    {
-            flags ={};
+        if (typeof flags !== 'object') {
+            flags = {};
         }
         flags["usePercentNotation"] = true;
         return INTERMediatorLib.numberFormatImpl(str, digit,
@@ -957,15 +957,15 @@ var INTERMediatorLib = {
         "use strict";
         var trueString = "true", falseString = "false", fmtStr;
         var params = forms.split(",");
-        if (params[0])  {
+        if (params[0]) {
             fmtStr = params[0].trim();
-            if (fmtStr.length > 0)  {
+            if (fmtStr.length > 0) {
                 trueString = fmtStr
             }
         }
-        if (params[1])  {
+        if (params[1]) {
             fmtStr = params[1].trim();
-            if (fmtStr.length > 0)  {
+            if (fmtStr.length > 0) {
                 falseString = fmtStr
             }
         }
@@ -978,6 +978,111 @@ var INTERMediatorLib = {
                 return falseString;
             }
         }
+    },
+
+    datetimeFormat: function (str, params) {
+        "use strict";
+        return INTERMediatorLib.datetimeFormatImpl(str, params, "datetime");
+    },
+
+    dateFormat: function (str, params) {
+        "use strict";
+        return INTERMediatorLib.datetimeFormatImpl(str, params, "time");
+    },
+
+    timeFormat: function (str, params) {
+        "use strict";
+        return INTERMediatorLib.datetimeFormatImpl(str, params, "time");
+    },
+
+    placeHolder: {
+        '%Y': Date.prototype.getFullYear, //
+        '%y': Date.prototype.getYear, //	西暦2桁	17
+        '%g': function() {return '';}, //	ロカールによる年数	平成29年
+        '%M': Date.prototype.getMonth, //	月2桁	07
+        '%m': Date.prototype.getMonth, //	月数値	7
+        '%b': Date.prototype.getMonth, //	短縮月名	Jul
+        '%B': Date.prototype.getMonth, //	月名	July
+        '%D': Date.prototype.getDate, //	日2桁	12
+        '%d': Date.prototype.getDate, //	日数値	12
+        '%a': Date.prototype.getDay, //	英語短縮曜日名	Mon
+        '%A': Date.prototype.getDay, //	英語曜日名	Monday
+        '%w': Date.prototype.getDay, //	ロカールによる短縮曜日名	月
+        '%W': Date.prototype.getDay, //	ロカールによる曜日名	月曜日
+        '%H': Date.prototype.getHours, //	時2桁	09
+        '%h': Date.prototype.getHours, //	時数値	9
+        '%I': Date.prototype.getMinutes, //	分2桁	05
+        '%i': Date.prototype.getMunutes, //	分数値	5
+        '%S': Date.prototype.getSeconds, //	秒2桁	00
+        '%s': Date.prototype.getSeconds, //	秒数値	0
+        '%P': Date.prototype.getFullYear, //	AM/PM	AM
+        '%p': Date.prototype.getFullYear, //	am/pm	am
+        '%Z': Date.prototype.getTimezoneOffset, //	タイムゾーン省略名	JST
+        '%z': Date.prototype.getTimezoneOffset, //	タイムゾーンオフセット	+0900
+        '%%': function() {return '%';} //	パーセント	%
+    },
+
+    tweDigitsNumber: function(n)    {
+        var v = parseInt(n);
+        return ('0' + v.toString()).substr(-2, 2);
+    },
+
+    datetimeFormatImpl: function (str, params, flags) {
+        "use strict";
+        var paramStr = params.trim(), dt = new Date(str.replace(/-/g, '/')), c, result = "";
+        console.log(str,dt);
+        switch (paramStr) {
+            case "short":
+                switch (flags) {
+                    case "date":
+                        result = dt.toDateString();
+                        break;
+                    case "time":
+                        result = dt.toTimeString();
+                        break;
+                    default:
+                        result = dt.toString();
+                }
+            case "middle":
+                switch (flags) {
+                    case "date":
+                        result = dt.toDateString();
+                        break;
+                    case "time":
+                        result = dt.toTimeString();
+                        break;
+                    default:
+                        result = dt.toString();
+                }
+                break;
+            case "long":
+                switch (flags) {
+                    case "date":
+                        result = dt.toDateString();
+                        break;
+                    case "time":
+                        result = dt.toTimeString();
+                        break;
+                    default:
+                        result = dt.getFullYear() + '年'
+                            + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '月'
+                            + ('0' + dt.getDate()).substr(-2, 2) + '日 '
+                            + ('0' + dt.getHours()).substr(-2, 2) + '時'
+                            + ('0' + dt.getMinutes()).substr(-2, 2) + '分'
+                            + ('0' + dt.getSeconds()).substr(-2, 2) + '秒';
+                }
+                break;
+            default:
+                c = 0;
+                for (c = 0; c < str.length; c++) {
+                    if ((c + 1) < str.length && INTERMediatorLib.placeHolder[str.substr(c, 2)]) {
+                        result += INTERMediatorLib.placeHolder[str.substr(c, 2)].apply(dt);
+                    } else {
+                        result += c;
+                    }
+                }
+        }
+        return result;
     },
 
     objectToString: function (obj) {

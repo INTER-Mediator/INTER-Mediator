@@ -736,7 +736,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $isSelect = $this->dbSettings->getAggregationSelect();
         $isFrom = $this->dbSettings->getAggregationFrom();
         $isGroupBy = $this->dbSettings->getAggregationGroupBy();
-        $isDBSupport = $this->dbClass->specHandler->isSupportAggregation();
+        $isDBSupport = false;
+        if ($this->dbClass->specHandler) {
+            $isDBSupport = $this->dbClass->specHandler->isSupportAggregation();
+        }
         if (!$isDBSupport && ($isSelect || $isFrom || $isGroupBy)) {
             $this->logger->setErrorMessage($messageClass->getMessageAs(1042));
             $access = "do nothing";
@@ -970,7 +973,10 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
 
         $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
         $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
-        $this->outputOfProcessing['usenull'] = $this->dbClass->specHandler->isNullAcceptable();
+        $this->outputOfProcessing['usenull'] = false;
+        if ($this->dbClass->specHandler) {
+            $this->outputOfProcessing['usenull'] = $this->dbClass->specHandler->isNullAcceptable();
+        }
         $this->outputOfProcessing['notifySupport']
             = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
         if ($notFinish || !$this->dbSettings->getRequireAuthorization()) {
