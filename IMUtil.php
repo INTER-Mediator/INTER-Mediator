@@ -189,6 +189,7 @@ class IMUtil
                 'phpseclib\Crypt\Rijndael',
                 'phpseclib\Crypt\AES',
                 'phpseclib\Math\BigInteger',
+                'phpseclib\Crypt\Hash',
             );
         } else {
             return array(
