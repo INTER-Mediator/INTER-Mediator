@@ -40,7 +40,7 @@ if (isset($defaultTimezone)) {
 } else if (ini_get('date.timezone') == null) {
     date_default_timezone_set('UTC');
 }
-IMLocale::setLocale(LC_ALL);
+//IMLocale::setLocale(LC_ALL);
 
 define("IM_TODAY", strftime('%Y-%m-%d'));
 $g_dbInstance = null;
