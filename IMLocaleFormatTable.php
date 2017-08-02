@@ -43,11 +43,12 @@ class IMLocaleFormatTable
             'mon_grouping' => array(
                 '0' => '3',
                 '1' => '3'
-            )
+            ),
         );
     }
 
-    private static $localeFormatTable = array(
+    private
+    static $localeFormatTable = array(
         'ja' => array('.', ',', '￥'),
         'ja_JP' => array('.', ',', '￥'),
         'en_US' => array('.', ',', '$'),

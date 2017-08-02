@@ -183,8 +183,8 @@ class IMUtil
     {
         if (IMUtil::phpVersion() < 6) {
             return array(
-                'phpseclib\Crypt\RSA',
                 'phpseclib\Crypt\Hash',
+                'phpseclib\Crypt\RSA',
                 'phpseclib\Crypt\Base',
                 'phpseclib\Crypt\Rijndael',
                 'phpseclib\Crypt\AES',
