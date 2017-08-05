@@ -246,6 +246,7 @@ span.IM_POSTMESSAGE {
     /*transition-property: opacity;*/
     /*transition-duration: 0.2s;*/
     pointer-events: none;
+
 }
 
 /* INTER-Mediator specific style definitions === Authentication Panel and background */

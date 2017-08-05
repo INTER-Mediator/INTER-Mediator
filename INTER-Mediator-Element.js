@@ -196,7 +196,11 @@ var IMLibElement = {
                 originalValue = element.getAttribute("data-im-original-" + curTarget);
                 if (curTarget === 'innerHTML') {
                     currentValue = originalValue ? originalValue : element.innerHTML;
-                     element.innerHTML = currentValue.replace('$', curVal);
+                    curVal = currentValue.replace('$', curVal);
+                    if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
+                    element.innerHTML = curVal
                 } else if (curTarget === 'textNode' || curTarget === 'script') {
                     currentValue = originalValue ? originalValue : element.textContent;
                     element.textContent = currentValue.replace('$', curVal);
@@ -222,7 +226,10 @@ var IMLibElement = {
                 if (INTERMediatorLib.isWidgetElement(element)) {
                     element._im_setValue(curVal);
                 } else if (curTarget === 'innerHTML') { // Setting
-                   element.innerHTML = curVal;
+                    if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
+                    element.innerHTML = curVal;
                 } else if (curTarget === 'textNode') {
                     textNode = document.createTextNode(curVal);
                     element.appendChild(textNode);
@@ -243,6 +250,9 @@ var IMLibElement = {
                         element.style[styleName] = curVal;
                     }
                 } else {
+                    if (INTERMediator.isIE && INTERMediator.ieVersion < 10 && element.tagName === 'TEXTAREA') { // for IE
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
                     element.setAttribute(curTarget, curVal);
                 }
             }
@@ -285,6 +295,9 @@ var IMLibElement = {
                 element.value = curVal;
             } else if (element.tagName === 'TEXTAREA') {
                 if (INTERMediator.defaultTargetInnerHTML) {
+                    if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
                     element.innerHTML = curVal;
                 } else {
                     element.value = curVal;
@@ -417,7 +430,11 @@ var IMLibElement = {
         } else if (nodeTag === 'SELECT') {
             newValue = element.value;
         } else if (nodeTag === 'TEXTAREA') {
-            newValue = element.value;
+            if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
+                newValue = element.innerHTML.replace(/<br[\/]{0,1}>/g, "\n");
+            } else {
+                newValue = element.value;
+            }
         } else {
             newValue = element.innerHTML;
         }
