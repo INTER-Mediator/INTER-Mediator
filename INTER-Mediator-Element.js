@@ -196,7 +196,11 @@ var IMLibElement = {
                 originalValue = element.getAttribute("data-im-original-" + curTarget);
                 if (curTarget === 'innerHTML') {
                     currentValue = originalValue ? originalValue : element.innerHTML;
-                     element.innerHTML = currentValue.replace('$', curVal);
+                    curVal = currentValue.replace('$', curVal);
+                    if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
+                    element.innerHTML = curVal
                 } else if (curTarget === 'textNode' || curTarget === 'script') {
                     currentValue = originalValue ? originalValue : element.textContent;
                     element.textContent = currentValue.replace('$', curVal);
@@ -222,7 +226,10 @@ var IMLibElement = {
                 if (INTERMediatorLib.isWidgetElement(element)) {
                     element._im_setValue(curVal);
                 } else if (curTarget === 'innerHTML') { // Setting
-                   element.innerHTML = curVal;
+                    if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
+                    element.innerHTML = curVal;
                 } else if (curTarget === 'textNode') {
                     textNode = document.createTextNode(curVal);
                     element.appendChild(textNode);
@@ -243,6 +250,9 @@ var IMLibElement = {
                         element.style[styleName] = curVal;
                     }
                 } else {
+                    if (INTERMediator.isIE && INTERMediator.ieVersion < 10 && element.tagName === 'TEXTAREA') { // for IE
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
                     element.setAttribute(curTarget, curVal);
                 }
             }
@@ -285,6 +295,9 @@ var IMLibElement = {
                 element.value = curVal;
             } else if (element.tagName === 'TEXTAREA') {
                 if (INTERMediator.defaultTargetInnerHTML) {
+                    if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
+                        curVal = curVal.replace(/\r\n/g, "\r").replace(/\n/g, "\r").replace(/\r/g, "<br/>");
+                    }
                     element.innerHTML = curVal;
                 } else {
                     element.value = curVal;
@@ -335,7 +348,7 @@ var IMLibElement = {
         if ((element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA')
             && !isReplaceOrAppend
             && (!imControl || imControl.indexOf('unbind') > 0 )) {
-            if (!element.dataset.imbluradded) {
+            if (!element.getAttribute("data-imbluradded")) {
                 IMLibBlurEventDispatch.setExecute(element.id, (function () {
                     var idValue = element.id;
                     var elementCapt = element;
@@ -345,9 +358,9 @@ var IMLibElement = {
                         }
                     }
                 })());
-                element.dataset.imbluradded = "set";
+                element.setAttribute("data-imbluradded","set");
             }
-            if (!element.dataset.imchangeadded) {
+            if (!element.getAttribute("data-imchangeadded")) {
                 IMLibChangeEventDispatch.setExecute(element.id, (function () {
                     var idValue = element.id;
                     var elementCapt = element;
@@ -357,9 +370,9 @@ var IMLibElement = {
                         }
                     }
                 })());
-                element.dataset.imchangeadded = "set";
+                element.setAttribute("data-imchangeadded", "set");
             }
-            if ((INTERMediator.isTrident || INTERMediator.isEdge) && !element.dataset.iminputadded) {
+            if ((INTERMediator.isTrident || INTERMediator.isEdge) && !element.getAttribute("data-iminputadded")) {
                 IMLibInputEventDispatch.setExecute(element.id, (function () {
                     var idValue = element.id;
                     var elementCapt = element;
@@ -371,7 +384,7 @@ var IMLibElement = {
                         }
                     }
                 })());
-                element.dataset.iminputadded = "set";
+                element.setAttribute("data-iminputadded", "set");
             }
         }
         element.setAttribute('data-im-element', 'processed');
@@ -417,7 +430,11 @@ var IMLibElement = {
         } else if (nodeTag === 'SELECT') {
             newValue = element.value;
         } else if (nodeTag === 'TEXTAREA') {
-            newValue = element.value;
+            if (INTERMediator.isIE && INTERMediator.ieVersion < 10) { // for IE
+                newValue = element.innerHTML.replace(/<br[\/]{0,1}>/g, "\n");
+            } else {
+                newValue = element.value;
+            }
         } else {
             newValue = element.innerHTML;
         }
@@ -430,8 +447,22 @@ var IMLibElement = {
             }
         }
         return newValue;
-    }
-    ,
+    },
+
+    /*
+    <<Multiple lines in TEXTAREA before IE 10>> 2017-08-05, Masayuki Nii
+
+    Most of modern browsers can handle the 'next line(\n)' character as the line separator.
+    Otherwise IE 9 requires special handling for multiple line strings.
+
+      - If such a strings sets to value property, it shows just a single line.
+      - To prevent the above situation, it has to replace the line sparating characters to <br>,
+        and set it to innerHTML property.
+      - The value property of multi-line strings doesn't contain any line sparating characters.
+      - The innerHTML property of multi-line strings contains <br> for line sparators.
+      - If the value of TEXTAREA can be get with repaceing <br> to \n from the innerHTML property.
+
+     */
 
     deleteNodes: function (removeNodes) {
         var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;

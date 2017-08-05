@@ -1709,7 +1709,7 @@ var IMLibLocalContext = {
                             IMLibPageNavigation.navigationSetup();
                         };
                     })());
-                    node.dataset.imchangeadded = "set";
+                    node.setAttribute("data-imchangeadded", "set");
                     break;
                 default:
                     IMLibChangeEventDispatch.setExecute(idValue, IMLibLocalContext.update);
