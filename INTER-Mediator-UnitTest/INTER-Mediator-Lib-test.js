@@ -415,3 +415,12 @@ buster.testCase("INTERMediatorLib.getLocalYear() Test", {
     }
 });
 
+buster.testCase("INTERMediatorLib.getKanjiNumber() Test", {
+    "should return the kanji numbers.": function () {
+        assert.equals(INTERMediatorLib.getKanjiNumber(0), "〇");
+        assert.equals(INTERMediatorLib.getKanjiNumber(3), "三");
+        assert.equals(INTERMediatorLib.getKanjiNumber(45), "四十五");
+        assert.equals(INTERMediatorLib.getKanjiNumber(2345), "二千三百四十五");
+    }
+});
+

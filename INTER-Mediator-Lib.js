@@ -910,6 +910,16 @@ var INTERMediatorLib = {
         return formatted;
     },
 
+    getKanjiNumber: function (n) {
+        var s = [], count = 0;
+        String(n).split('').reverse().forEach(function (c) {
+            s.push(INTERMediatorLib.kanjiDigit[count]);
+            count++;
+            s.push(INTERMediatorLib.kanjiNumbers[parseInt(c)]);
+        });
+        return s.reverse().join('');
+    },
+
     numberFormat: function (str, digit, flags) {
         "use strict";
         if (flags === undefined) {
@@ -987,7 +997,7 @@ var INTERMediatorLib = {
 
     dateFormat: function (str, params) {
         "use strict";
-        return INTERMediatorLib.datetimeFormatImpl(str, params, "time");
+        return INTERMediatorLib.datetimeFormatImpl(str, params, "date");
     },
 
     timeFormat: function (str, params) {
@@ -997,44 +1007,106 @@ var INTERMediatorLib = {
 
     placeHolder: {
         '%Y': Date.prototype.getFullYear, //
-        '%y': function() {return INTERMediatorLib.tweDigitsNumber(this.getFullYear());}, //	西暦2桁	17
-        '%g': function() {return INTERMediatorLib.getLocalYear(this);}, //	ロカールによる年数	平成29年
-        '%M': function() {return INTERMediatorLib.tweDigitsNumber(this.getMonth() + 1);}, //	月2桁	07
-        '%m': function() {return this.getMonth() + 1;}, //	月数値	7
-        '%b': function() {return INTERMediatorOnPage.localeInfo["ABMON"][this.getMonth()];}, //	短縮月名	Jul
-        '%B': function() {return INTERMediatorOnPage.localeInfo["MON"][this.getMonth()];}, //	月名	July
+        '%y': function () {
+            return INTERMediatorLib.tweDigitsNumber(this.getFullYear());
+        }, //	西暦2桁	17
+        '%g': function () {
+            return INTERMediatorLib.getLocalYear(this, 1);
+        }, //	ロカールによる年数	平成29年
+        '%G': function () {
+            return INTERMediatorLib.getLocalYear(this, 2);
+        }, //	ロカールによる年数	平成二十九年
+        '%M': function () {
+            return INTERMediatorLib.tweDigitsNumber(this.getMonth() + 1);
+        }, //	月2桁	07
+        '%m': function () {
+            return this.getMonth() + 1;
+        }, //	月数値	7
+        '%b': function () {
+            return INTERMediatorOnPage.localeInfo["ABMON"][this.getMonth()];
+        }, //	短縮月名	Jul
+        '%B': function () {
+            return INTERMediatorOnPage.localeInfo["MON"][this.getMonth()];
+        }, //	月名	July
+        '%t': function () {
+            return INTERMediatorLib.eMonAbbr[this.getMonth()];
+        }, //	短縮月名	Jul
+        '%T': function () {
+            return INTERMediatorLib.eMonName[this.getMonth()];
+        }, //	月名	July
         '%D': Date.prototype.getDate, //	日2桁	12
         '%d': Date.prototype.getDate, //	日数値	12
-        '%a': function() {return INTERMediatorLib.eDayAbbr[this.getDay()];}, //	英語短縮曜日名	Mon
-        '%A': function() {return INTERMediatorLib.eDayName[this.getDay()];}, //	英語曜日名	Monday
-        '%w': function() {return INTERMediatorOnPage.localeInfo["ABDAY"][this.getDay()];}, //	ロカールによる短縮曜日名	月
-        '%W': function() {return INTERMediatorOnPage.localeInfo["DAY"][this.getDay()];}, //	ロカールによる曜日名	月曜日
-        '%H': function() {return INTERMediatorLib.tweDigitsNumber(this.getHours());}, //	時2桁	09
+        '%a': function () {
+            return INTERMediatorLib.eDayAbbr[this.getDay()];
+        }, //	英語短縮曜日名	Mon
+        '%A': function () {
+            return INTERMediatorLib.eDayName[this.getDay()];
+        }, //	英語曜日名	Monday
+        '%w': function () {
+            return INTERMediatorOnPage.localeInfo["ABDAY"][this.getDay()];
+        }, //	ロカールによる短縮曜日名	月
+        '%W': function () {
+            return INTERMediatorOnPage.localeInfo["DAY"][this.getDay()];
+        }, //	ロカールによる曜日名	月曜日
+        '%H': function () {
+            return INTERMediatorLib.tweDigitsNumber(this.getHours());
+        }, //	時2桁	09
         '%h': Date.prototype.getHours, //	時数値	9
-        '%I': function() {return INTERMediatorLib.tweDigitsNumber(this.getMinutes());}, //	分2桁	05
+        '%J': function () {
+            return INTERMediatorLib.tweDigitsNumber(this.getHours() % 12);
+        }, //	12時間制時2桁	09
+        '%j': function () {
+            return this.getHours() % 12;
+        }, //	12時間制時数値	9
+        '%K': function () {
+            var n = this.getHours() % 12;
+            return INTERMediatorLib.tweDigitsNumber(n === 0 ? 12 : n);
+        }, //	12時間制時2桁	09
+        '%k': function () {
+            var n = this.getHours() % 12;
+            return n === 0 ? 12 : n;
+        }, //	12時間制時数値	9
+        '%I': function () {
+            return INTERMediatorLib.tweDigitsNumber(this.getMinutes());
+        }, //	分2桁	05
         '%i': Date.prototype.getMinutes, //	分数値	5
-        '%S': function() {return INTERMediatorLib.tweDigitsNumber(this.getSeconds());}, //	秒2桁	00
+        '%S': function () {
+            return INTERMediatorLib.tweDigitsNumber(this.getSeconds());
+        }, //	秒2桁	00
         '%s': Date.prototype.getSeconds, //	秒数値	0
-        '%P': Date.prototype.getFullYear, //	AM/PM	AM
-        '%p': Date.prototype.getFullYear, //	am/pm	am
-        '%Z': Date.prototype.getTimezoneOffset, //	タイムゾーン省略名	JST
-        '%z': Date.prototype.getTimezoneOffset, //	タイムゾーンオフセット	+0900
-        '%%': function() {return '%';} //	パーセント	%
+        '%P': function () {
+            return Math.floor(this.getHours() / 12) === 0 ? "AM" : "PM";
+        }, //	AM/PM	AM
+        '%p': function () {
+            return Math.floor(this.getHours() / 12) === 0 ? "am" : "pm";
+        }, //	am/pm	am
+        '%N': function () {
+            return Math.floor(this.getHours() / 12) === 0 ?
+                INTERMediatorOnPage.localeInfo["AM_STR"] : INTERMediatorOnPage.localeInfo["PM_STR"];
+        }, //	am/pm	am
+        // '%Z': Date.prototype.getTimezoneOffset, //	タイムゾーン省略名	JST
+        // '%z': Date.prototype.getTimezoneOffset, //	タイムゾーンオフセット	+0900
+        '%%': function () {
+            return '%';
+        } //	パーセント	%
     },
 
-    tweDigitsNumber: function(n)    {
+    tweDigitsNumber: function (n) {
         var v = parseInt(n);
         return ('0' + v.toString()).substr(-2, 2);
     },
 
-    jYearStartDate : {'1989/1/8': '平成', '1926/12/25': '昭和', '1912/7/30': '大正', '1868/1/25': '明治'},
-    eDayName : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    eDayAbbr:["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    jYearStartDate: {'1989/1/8': '平成', '1926/12/25': '昭和', '1912/7/30': '大正', '1868/1/25': '明治'},
+    eDayName: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    eDayAbbr: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    eMonName: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    eMonAbbr: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    kanjiNumbers: ["〇", "一", "二", "三", "四", "五", "六", "七", "八", "九"],
+    kanjiDigit: ["", "十", "百", "千", "万"],
 
-
-    getLocalYear: function(dt)   {
+    getLocalYear: function (dt, fmt) {
         var gengoName, gengoYear, startDateStr, dtStart;
-        if (!dt)    {
+        if (!dt) {
             return "";
         }
         gengoName = '';
@@ -1045,7 +1117,7 @@ var INTERMediatorLib = {
                 if (dt > dtStart) {
                     gengoName = INTERMediatorLib.jYearStartDate[startDateStr];
                     gengoYear = dt.getFullYear() - dtStart.getFullYear() + 1;
-                    gengoYear = ((gengoYear === 1) ? '元' : gengoYear);
+                    gengoYear = ((gengoYear === 1) ? '元' : (fmt === 2 ? INTERMediatorLib.getKanjiNumber(gengoYear) : gengoYear));
                     break;
                 }
             }
@@ -1055,55 +1127,23 @@ var INTERMediatorLib = {
 
     datetimeFormatImpl: function (str, params, flags) {
         "use strict";
-        var paramStr = params.trim(), dt = new Date(str.replace(/-/g, '/')), c, result = "", replaced;
-        switch (paramStr) {
-            case "short":
-                switch (flags) {
-                    case "date":
-                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_SHORT"];
-                        break;
-                    case "time":
-                        paramStr = INTERMediatorOnPage.localeInfo["T_FMT_SHORT"];
-                        break;
-                    default:
-                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_SHORT"] +
-                            " " + INTERMediatorOnPage.localeInfo["T_FMT_SHORT"];
-                }
-                break;
-            case "middle":
-                switch (flags) {
-                    case "date":
-                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_MIDDLE"];
-                        break;
-                    case "time":
-                        paramStr = INTERMediatorOnPage.localeInfo["T_FMT_MIDDLE"];
-                        break;
-                    default:
-                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_MIDDLE"] +
-                            " " + INTERMediatorOnPage.localeInfo["T_FMT_MIDDLE"];
-                }
-                break;
-            case "long":
-                switch (flags) {
-                    case "date":
-                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_LONG"];
-                        break;
-                    case "time":
-                        paramStr = INTERMediatorOnPage.localeInfo["T_FMT_LONG"];
-                        break;
-                    default:
-                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_LONG"] +
-                            " " + INTERMediatorOnPage.localeInfo["T_FMT_LONG"];
-                }
-                break;
+        var paramStr = params.trim().toUpperCase();
+        var kind = flags.trim().toUpperCase();
+        var key = kind.substr(0, 1) + "_FMT_" + paramStr;
+        if (INTERMediatorOnPage.localeInfo[key]) {
+            params = INTERMediatorOnPage.localeInfo[key];
+            if (kind==='DATETIME'){
+                params += " " + INTERMediatorOnPage.localeInfo["T_FMT_" + paramStr];
+            }
         }
-        for (c = 0; c < paramStr.length; c++) {
-            if ((c + 1) < paramStr.length && INTERMediatorLib.placeHolder[paramStr.substr(c, 2)]) {
-                replaced = (INTERMediatorLib.placeHolder[paramStr.substr(c, 2)]).apply(dt);
+        var dt = new Date(str.replace(/-/g, '/')), c, result = "", replaced;
+        for (c = 0; c < params.length; c++) {
+            if ((c + 1) < params.length && INTERMediatorLib.placeHolder[params.substr(c, 2)]) {
+                replaced = (INTERMediatorLib.placeHolder[params.substr(c, 2)]).apply(dt);
                 result += replaced;
                 c++;
             } else {
-                result += paramStr.substr(c, 1);
+                result += params.substr(c, 1);
             }
         }
         return result;

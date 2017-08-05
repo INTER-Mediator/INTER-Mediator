@@ -12,6 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.5.7 (in development)
 - The "data-im-format" attribute is introduced.
+  See the web site http://inter-mediator.info/ja/for-developers/format.html.
 - Get started to adapt to the FileMaker Data API.
 - Database classes are widely refactored. So they had too much long codes, they are divided into some classes
   in DB_Support directory.

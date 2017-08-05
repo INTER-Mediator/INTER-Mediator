@@ -23,65 +23,65 @@ class IMLocaleFormatTable
         } else {
             $info = array_merge($info, IMLocaleFormatTable::$localeInfoTableAdditional["en"]);
         }
-        if (IMUtil::isPHPExecutingWindows()) {
-            if (isset(IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale])) {
-                $info = array_merge($info, IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale]);
-            } else {
-                $info = array_merge($info, IMLocaleFormatTable::$localeInfoTable["en"]);
-            }
+        if (isset(IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale])) {
+            $info = array_merge($info, IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale]);
         } else {
-            $info["ABDAY"] = array(
-                nl_langinfo(ABDAY_1),
-                nl_langinfo(ABDAY_2),
-                nl_langinfo(ABDAY_3),
-                nl_langinfo(ABDAY_4),
-                nl_langinfo(ABDAY_5),
-                nl_langinfo(ABDAY_6),
-                nl_langinfo(ABDAY_7));
-            $info["DAY"] = array(
-                nl_langinfo(DAY_1),
-                nl_langinfo(DAY_2),
-                nl_langinfo(DAY_3),
-                nl_langinfo(DAY_4),
-                nl_langinfo(DAY_5),
-                nl_langinfo(DAY_6),
-                nl_langinfo(DAY_7));
-            $info["ABMON"] = array(
-                nl_langinfo(ABMON_1),
-                nl_langinfo(ABMON_2),
-                nl_langinfo(ABMON_3),
-                nl_langinfo(ABMON_4),
-                nl_langinfo(ABMON_5),
-                nl_langinfo(ABMON_6),
-                nl_langinfo(ABMON_7),
-                nl_langinfo(ABMON_8),
-                nl_langinfo(ABMON_9),
-                nl_langinfo(ABMON_10),
-                nl_langinfo(ABMON_11),
-                nl_langinfo(ABMON_12));
-            $info["MON"] = array(
-                nl_langinfo(MON_1),
-                nl_langinfo(MON_2),
-                nl_langinfo(MON_3),
-                nl_langinfo(MON_4),
-                nl_langinfo(MON_5),
-                nl_langinfo(MON_6),
-                nl_langinfo(MON_7),
-                nl_langinfo(MON_8),
-                nl_langinfo(MON_9),
-                nl_langinfo(MON_10),
-                nl_langinfo(MON_11),
-                nl_langinfo(MON_12));
-            $info["AM_STR"] = nl_langinfo(AM_STR);
-            $info["PM_STR"] = nl_langinfo(PM_STR);
-            $info["D_T_FMT"] = nl_langinfo(D_T_FMT);
-            $info["D_FMT"] = nl_langinfo(D_FMT);
-            $info["T_FMT"] = nl_langinfo(T_FMT);
-            $info["T_FMT_AMPM"] = nl_langinfo(T_FMT_AMPM);
-            $info["ERA"] = nl_langinfo(ERA);
-            $info["ERA_D_T_FMT"] = nl_langinfo(ERA_D_T_FMT);
-            $info["ERA_D_FMT"] = nl_langinfo(ERA_D_FMT);
-            $info["ERA_T_FMT"] = nl_langinfo(ERA_T_FMT);
+            if (IMUtil::isPHPExecutingWindows()) {
+                $info = array_merge($info, IMLocaleFormatTable::$localeInfoTable["en"]);
+            } else {
+                $info["ABDAY"] = array(
+                    nl_langinfo(ABDAY_1),
+                    nl_langinfo(ABDAY_2),
+                    nl_langinfo(ABDAY_3),
+                    nl_langinfo(ABDAY_4),
+                    nl_langinfo(ABDAY_5),
+                    nl_langinfo(ABDAY_6),
+                    nl_langinfo(ABDAY_7));
+                $info["DAY"] = array(
+                    nl_langinfo(DAY_1),
+                    nl_langinfo(DAY_2),
+                    nl_langinfo(DAY_3),
+                    nl_langinfo(DAY_4),
+                    nl_langinfo(DAY_5),
+                    nl_langinfo(DAY_6),
+                    nl_langinfo(DAY_7));
+                $info["ABMON"] = array(
+                    nl_langinfo(ABMON_1),
+                    nl_langinfo(ABMON_2),
+                    nl_langinfo(ABMON_3),
+                    nl_langinfo(ABMON_4),
+                    nl_langinfo(ABMON_5),
+                    nl_langinfo(ABMON_6),
+                    nl_langinfo(ABMON_7),
+                    nl_langinfo(ABMON_8),
+                    nl_langinfo(ABMON_9),
+                    nl_langinfo(ABMON_10),
+                    nl_langinfo(ABMON_11),
+                    nl_langinfo(ABMON_12));
+                $info["MON"] = array(
+                    nl_langinfo(MON_1),
+                    nl_langinfo(MON_2),
+                    nl_langinfo(MON_3),
+                    nl_langinfo(MON_4),
+                    nl_langinfo(MON_5),
+                    nl_langinfo(MON_6),
+                    nl_langinfo(MON_7),
+                    nl_langinfo(MON_8),
+                    nl_langinfo(MON_9),
+                    nl_langinfo(MON_10),
+                    nl_langinfo(MON_11),
+                    nl_langinfo(MON_12));
+                $info["AM_STR"] = nl_langinfo(AM_STR);
+                $info["PM_STR"] = nl_langinfo(PM_STR);
+                $info["D_T_FMT"] = nl_langinfo(D_T_FMT);
+                $info["D_FMT"] = nl_langinfo(D_FMT);
+                $info["T_FMT"] = nl_langinfo(T_FMT);
+                $info["T_FMT_AMPM"] = nl_langinfo(T_FMT_AMPM);
+                $info["ERA"] = nl_langinfo(ERA);
+                $info["ERA_D_T_FMT"] = nl_langinfo(ERA_D_T_FMT);
+                $info["ERA_D_FMT"] = nl_langinfo(ERA_D_FMT);
+                $info["ERA_T_FMT"] = nl_langinfo(ERA_T_FMT);
+            }
         }
         return $info;
     }
@@ -126,10 +126,6 @@ class IMLocaleFormatTable
             "ABMON" => array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
             "AM_STR" => "AM",
             "PM_STR" => "PM",
-            "D_FMT" => "%m/%d/%Y",
-            "D_T_FMT" => "%a %b %e %X %Y",
-            "T_FMT" => "%H:%M:%S",
-            "T_FMT_AMPM" => "%I:%M:%S %p",
         ),
         'en_US' => array(  // Default
             "DAY" => array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
@@ -138,22 +134,14 @@ class IMLocaleFormatTable
             "ABMON" => array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
             "AM_STR" => "AM",
             "PM_STR" => "PM",
-            "D_FMT" => "%m/%d/%Y",
-            "D_T_FMT" => "%a %b %e %X %Y",
-            "T_FMT" => "%H:%M:%S",
-            "T_FMT_AMPM" => "%I:%M:%S %p",
         ),
         'ja_JP' => array(
             "DAY" => array("日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"),
             "ABDAY" => array("日", "月", "火", "水", "木", "金", "土"),
-            "MON" => array("1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"),
-            "ABMON" => array(" 1", " 2", " 3", " 4", " 5", " 6", " 7", " 8", " 9", "10", "11", "12"),
-            "AM_STR" => "AM",
-            "PM_STR" => "PM",
-            "D_FMT" => "%Y/%m/%d",
-            "D_T_FMT" => "%a %b/%e %T %Y",
-            "T_FMT" => "%H時%M分%S秒",
-            "T_FMT_AMPM" => "%I:%M:%S %p",
+            "MON" => array("睦月", "如月", "弥生", "卯月", "皐月", "水無月", "文月", "葉月", "長月", "神無月", "霜月", "師走"),
+            "ABMON" => array("一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"),
+            "AM_STR" => "午前",
+            "PM_STR" => "午後",
         ),
     );
 
@@ -175,12 +163,12 @@ class IMLocaleFormatTable
             "T_FMT_SHORT" => "%H:%M",
         ),
         'ja_JP' => array(
-            "D_FMT_LONG" => "%Y年%m月%d日 %W",
-            "T_FMT_LONG" => "%H時%M分%S秒 %Z",
-            "D_FMT_MIDDLE" => "%Y/%m/%d(%w)",
-            "T_FMT_MIDDLE" => "%H:%M:%S",
+            "D_FMT_LONG" => "%Y年%M月%D日 %W",
+            "T_FMT_LONG" => "%H時%I分%S秒 %Z",
+            "D_FMT_MIDDLE" => "%Y/%M/%D(%w)",
+            "T_FMT_MIDDLE" => "%H:%I:%S",
             "D_FMT_SHORT" => "%Y/%m/%d",
-            "T_FMT_SHORT" => "%H:%M",
+            "T_FMT_SHORT" => "%H:%I",
         ),
     );
 
