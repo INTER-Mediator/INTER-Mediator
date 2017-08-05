@@ -20,6 +20,7 @@ Ver.5.7 (in development)
 - [WIP] Update TestDB.fmp12, TestDB_clone.fmp12, TestDB.fp7 and TestDBSchemeForFMS.xlsx to add "total" field to the 
   "invoice" table for the server side calculation sample.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
+- [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 
 Ver.5.6 (June 23, 2017)
 - Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of

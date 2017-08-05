@@ -997,23 +997,23 @@ var INTERMediatorLib = {
 
     placeHolder: {
         '%Y': Date.prototype.getFullYear, //
-        '%y': Date.prototype.getYear, //	西暦2桁	17
-        '%g': function() {return '';}, //	ロカールによる年数	平成29年
-        '%M': Date.prototype.getMonth, //	月2桁	07
-        '%m': Date.prototype.getMonth, //	月数値	7
-        '%b': Date.prototype.getMonth, //	短縮月名	Jul
-        '%B': Date.prototype.getMonth, //	月名	July
+        '%y': function() {return INTERMediatorLib.tweDigitsNumber(this.getFullYear());}, //	西暦2桁	17
+        '%g': function() {return INTERMediatorLib.getLocalYear(this);}, //	ロカールによる年数	平成29年
+        '%M': function() {return INTERMediatorLib.tweDigitsNumber(this.getMonth() + 1);}, //	月2桁	07
+        '%m': function() {return this.getMonth() + 1;}, //	月数値	7
+        '%b': function() {return INTERMediatorOnPage.localeInfo["ABMON"][this.getMonth()];}, //	短縮月名	Jul
+        '%B': function() {return INTERMediatorOnPage.localeInfo["MON"][this.getMonth()];}, //	月名	July
         '%D': Date.prototype.getDate, //	日2桁	12
         '%d': Date.prototype.getDate, //	日数値	12
-        '%a': Date.prototype.getDay, //	英語短縮曜日名	Mon
-        '%A': Date.prototype.getDay, //	英語曜日名	Monday
-        '%w': Date.prototype.getDay, //	ロカールによる短縮曜日名	月
-        '%W': Date.prototype.getDay, //	ロカールによる曜日名	月曜日
-        '%H': Date.prototype.getHours, //	時2桁	09
+        '%a': function() {return INTERMediatorLib.eDayAbbr[this.getDay()];}, //	英語短縮曜日名	Mon
+        '%A': function() {return INTERMediatorLib.eDayName[this.getDay()];}, //	英語曜日名	Monday
+        '%w': function() {return INTERMediatorOnPage.localeInfo["ABDAY"][this.getDay()];}, //	ロカールによる短縮曜日名	月
+        '%W': function() {return INTERMediatorOnPage.localeInfo["DAY"][this.getDay()];}, //	ロカールによる曜日名	月曜日
+        '%H': function() {return INTERMediatorLib.tweDigitsNumber(this.getHours());}, //	時2桁	09
         '%h': Date.prototype.getHours, //	時数値	9
-        '%I': Date.prototype.getMinutes, //	分2桁	05
-        '%i': Date.prototype.getMunutes, //	分数値	5
-        '%S': Date.prototype.getSeconds, //	秒2桁	00
+        '%I': function() {return INTERMediatorLib.tweDigitsNumber(this.getMinutes());}, //	分2桁	05
+        '%i': Date.prototype.getMinutes, //	分数値	5
+        '%S': function() {return INTERMediatorLib.tweDigitsNumber(this.getSeconds());}, //	秒2桁	00
         '%s': Date.prototype.getSeconds, //	秒数値	0
         '%P': Date.prototype.getFullYear, //	AM/PM	AM
         '%p': Date.prototype.getFullYear, //	am/pm	am
@@ -1027,60 +1027,84 @@ var INTERMediatorLib = {
         return ('0' + v.toString()).substr(-2, 2);
     },
 
+    jYearStartDate : {'1989/1/8': '平成', '1926/12/25': '昭和', '1912/7/30': '大正', '1868/1/25': '明治'},
+    eDayName : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    eDayAbbr:["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+
+
+    getLocalYear: function(dt)   {
+        var gengoName, gengoYear, startDateStr, dtStart;
+        if (!dt)    {
+            return "";
+        }
+        gengoName = '';
+        gengoYear = 0;
+        for (startDateStr in INTERMediatorLib.jYearStartDate) {
+            if (INTERMediatorLib.jYearStartDate.hasOwnProperty(startDateStr)) {
+                dtStart = new Date(startDateStr);
+                if (dt > dtStart) {
+                    gengoName = INTERMediatorLib.jYearStartDate[startDateStr];
+                    gengoYear = dt.getFullYear() - dtStart.getFullYear() + 1;
+                    gengoYear = ((gengoYear === 1) ? '元' : gengoYear);
+                    break;
+                }
+            }
+        }
+        return gengoName + gengoYear + '年';
+    },
+
     datetimeFormatImpl: function (str, params, flags) {
         "use strict";
-        var paramStr = params.trim(), dt = new Date(str.replace(/-/g, '/')), c, result = "";
-        console.log(str,dt);
+        var paramStr = params.trim(), dt = new Date(str.replace(/-/g, '/')), c, result = "", replaced;
         switch (paramStr) {
             case "short":
                 switch (flags) {
                     case "date":
-                        result = dt.toDateString();
+                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_SHORT"];
                         break;
                     case "time":
-                        result = dt.toTimeString();
+                        paramStr = INTERMediatorOnPage.localeInfo["T_FMT_SHORT"];
                         break;
                     default:
-                        result = dt.toString();
+                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_SHORT"] +
+                            " " + INTERMediatorOnPage.localeInfo["T_FMT_SHORT"];
                 }
+                break;
             case "middle":
                 switch (flags) {
                     case "date":
-                        result = dt.toDateString();
+                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_MIDDLE"];
                         break;
                     case "time":
-                        result = dt.toTimeString();
+                        paramStr = INTERMediatorOnPage.localeInfo["T_FMT_MIDDLE"];
                         break;
                     default:
-                        result = dt.toString();
+                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_MIDDLE"] +
+                            " " + INTERMediatorOnPage.localeInfo["T_FMT_MIDDLE"];
                 }
                 break;
             case "long":
                 switch (flags) {
                     case "date":
-                        result = dt.toDateString();
+                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_LONG"];
                         break;
                     case "time":
-                        result = dt.toTimeString();
+                        paramStr = INTERMediatorOnPage.localeInfo["T_FMT_LONG"];
                         break;
                     default:
-                        result = dt.getFullYear() + '年'
-                            + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '月'
-                            + ('0' + dt.getDate()).substr(-2, 2) + '日 '
-                            + ('0' + dt.getHours()).substr(-2, 2) + '時'
-                            + ('0' + dt.getMinutes()).substr(-2, 2) + '分'
-                            + ('0' + dt.getSeconds()).substr(-2, 2) + '秒';
+                        paramStr = INTERMediatorOnPage.localeInfo["D_FMT_LONG"] +
+                            " " + INTERMediatorOnPage.localeInfo["T_FMT_LONG"];
                 }
                 break;
-            default:
-                c = 0;
-                for (c = 0; c < str.length; c++) {
-                    if ((c + 1) < str.length && INTERMediatorLib.placeHolder[str.substr(c, 2)]) {
-                        result += INTERMediatorLib.placeHolder[str.substr(c, 2)].apply(dt);
-                    } else {
-                        result += c;
-                    }
-                }
+        }
+        for (c = 0; c < paramStr.length; c++) {
+            if ((c + 1) < paramStr.length && INTERMediatorLib.placeHolder[paramStr.substr(c, 2)]) {
+                replaced = (INTERMediatorLib.placeHolder[paramStr.substr(c, 2)]).apply(dt);
+                result += replaced;
+                c++;
+            } else {
+                result += paramStr.substr(c, 1);
+            }
         }
         return result;
     },

@@ -257,7 +257,7 @@ class GenerateJSCode
         if (!is_null($appLocale)) {
             $this->generateAssignJS("INTERMediatorOnPage.appLocale", "{$q}{$appLocale}{$q}");
             $this->generateAssignJS("INTERMediatorOnPage.localeInfo",
-                "JSON.parse('" . json_encode(IMLocaleFormatTable::getLocaleFormat($appLocale)) . "')");
+                "JSON.parse('" . json_encode(IMLocaleFormatTable::getCurrentLocaleFormat()) . "')");
         }
         if (!is_null($appCurrency)) {
             $this->generateAssignJS("INTERMediatorOnPage.appCurrency", "{$q}{$appCurrency}{$q}");
