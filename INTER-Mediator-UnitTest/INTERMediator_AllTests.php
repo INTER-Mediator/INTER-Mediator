@@ -25,34 +25,34 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DataConverter_Currency_DollerIntl_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_PoundIM_Test.php');
         $suite->addTestFile($folder . 'DataConverter_Currency_PoundIntl_Test.php');
-        if (!getenv('CIRCLECI') === 'true') {
-            $suite->addTestFile($folder . 'DB_Formatters_Test.php');
-            $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
-            $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
-            $suite->addTestFile($folder . 'DB_PDO-SQLite_Test.php');
-        }
+        //if (!getenv('CIRCLECI') === 'true') {
+        $suite->addTestFile($folder . 'DB_Formatters_Test.php');
+        $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
+        $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
+        $suite->addTestFile($folder . 'DB_PDO-SQLite_Test.php');
+        //}
         //$suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
-        if (!getenv('CIRCLECI') === 'true') {
-            $suite->addTestFile($folder . 'DB_Proxy_Test.php');
-        }
+        //if (!getenv('CIRCLECI') === 'true') {
+        $suite->addTestFile($folder . 'DB_Proxy_Test.php');
+        //}
         $suite->addTestFile($folder . 'DB_Settings_Test.php');
         $suite->addTestFile($folder . 'DataConverter_AppendPrefix_Test.php');
         $suite->addTestFile($folder . 'DataConverter_AppendSuffix_Test.php');
         $suite->addTestFile($folder . 'DataConverter_FMDateTime_Test.php');
         $suite->addTestFile($folder . 'DataConverter_HTMLString_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NullZeroString_Test.php');
-        if (!getenv('CIRCLECI') === 'true') {
-            $suite->addTestFile($folder . 'DataConverter_MySQLDateTime_Test.php');
-        }
+        //if (!getenv('CIRCLECI') === 'true') {
+        $suite->addTestFile($folder . 'DataConverter_MySQLDateTime_Test.php');
+        //}
         $suite->addTestFile($folder . 'DataConverter_Number_Test.php');
         $suite->addTestFile($folder . 'DataConverter_NumberBase_Test.php');
         $suite->addTestFile($folder . 'GenerateJSCode_Test.php');
         $suite->addTestFile($folder . 'IMUtil_Test.php');
         $suite->addTestFile($folder . 'INTERMediator_Test.php');
         $suite->addTestFile($folder . 'LDAPAuth_Test.php');
-        if (!getenv('CIRCLECI') === 'true') {
-            $suite->addTestFile($folder . 'MediaAccess_Test.php');
-        }
+        //if (!getenv('CIRCLECI') === 'true') {
+        $suite->addTestFile($folder . 'MediaAccess_Test.php');
+        //}
         $suite->addTestFile($folder . 'MessageStrings_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_ja_Test.php');
         //$suite->addTestFile($folder . 'OME_Test.php');
