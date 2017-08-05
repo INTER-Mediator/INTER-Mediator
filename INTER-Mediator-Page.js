@@ -1045,6 +1045,7 @@ var INTERMediatorOnPage = {
             } else {
                 frontPanel.style.transitionDuration = "0.3s";
                 frontPanel.style.opacity = 0;
+                frontPanel.style.zIndex = -9999;
             }
         }
     },
@@ -1099,6 +1100,7 @@ var INTERMediatorOnPage = {
             frontPanel.style.transitionDuration = "0";
             frontPanel.style.opacity = 1.0;
             frontPanel.style.display = "flex";
+            frontPanel.style.zIndex = 9999;
         }
     },
 

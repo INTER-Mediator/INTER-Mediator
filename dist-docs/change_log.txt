@@ -12,6 +12,7 @@ Also the Migration Guide (Japanese) might be informative:
 
 Ver.5.7 (in development)
 - The "data-im-format" attribute is introduced.
+  See the web site http://inter-mediator.info/ja/for-developers/format.html.
 - Get started to adapt to the FileMaker Data API.
 - Database classes are widely refactored. So they had too much long codes, they are divided into some classes
   in DB_Support directory.
@@ -21,6 +22,8 @@ Ver.5.7 (in development)
   tables ("saleslog", "item_master", "customer").
 - Update TestDBSchemeForFMS.xlsx in "dist-docs" directory.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
+- [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
+- [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.
 
 Ver.5.6 (June 23, 2017)
 - Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of
