@@ -1034,7 +1034,9 @@ var INTERMediatorLib = {
         '%T': function () {
             return INTERMediatorLib.eMonName[this.getMonth()];
         }, //	月名	July
-        '%D': Date.prototype.getDate, //	日2桁	12
+        '%D': function () {
+            return INTERMediatorLib.tweDigitsNumber(this.getDate());
+        }, //	日2桁	12
         '%d': Date.prototype.getDate, //	日数値	12
         '%a': function () {
             return INTERMediatorLib.eDayAbbr[this.getDay()];

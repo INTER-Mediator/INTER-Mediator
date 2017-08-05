@@ -18,11 +18,6 @@ class IMLocaleFormatTable
     public static function getCurrentLocaleFormat()
     {
         $info = localeconv();
-        if (isset(IMLocaleFormatTable::$localeInfoTableAdditional[IMLocale::$choosenLocale])) {
-            $info = array_merge($info, IMLocaleFormatTable::$localeInfoTableAdditional[IMLocale::$choosenLocale]);
-        } else {
-            $info = array_merge($info, IMLocaleFormatTable::$localeInfoTableAdditional["en"]);
-        }
         if (isset(IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale])) {
             $info = array_merge($info, IMLocaleFormatTable::$localeInfoTable[IMLocale::$choosenLocale]);
         } else {
@@ -126,6 +121,12 @@ class IMLocaleFormatTable
             "ABMON" => array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
             "AM_STR" => "AM",
             "PM_STR" => "PM",
+            "D_FMT_LONG" => "%M/%D/%Y %W",
+            "T_FMT_LONG" => "%H:%M:%S",
+            "D_FMT_MIDDLE" => "%M/%D/%Y",
+            "T_FMT_MIDDLE" => "%H:%M:%S",
+            "D_FMT_SHORT" => "%m/%d/%Y",
+            "T_FMT_SHORT" => "%H:%M",
         ),
         'en_US' => array(  // Default
             "DAY" => array("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"),
@@ -134,6 +135,12 @@ class IMLocaleFormatTable
             "ABMON" => array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
             "AM_STR" => "AM",
             "PM_STR" => "PM",
+            "D_FMT_LONG" => "%M/%D/%Y %W",
+            "T_FMT_LONG" => "%H:%M:%S",
+            "D_FMT_MIDDLE" => "%M/%D/%Y",
+            "T_FMT_MIDDLE" => "%H:%M:%S",
+            "D_FMT_SHORT" => "%m/%d/%Y",
+            "T_FMT_SHORT" => "%H:%M",
         ),
         'ja_JP' => array(
             "DAY" => array("日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"),
@@ -142,29 +149,8 @@ class IMLocaleFormatTable
             "ABMON" => array("一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"),
             "AM_STR" => "午前",
             "PM_STR" => "午後",
-        ),
-    );
-
-    private static $localeInfoTableAdditional = array(
-        'en' => array(  // Default
-            "D_FMT_LONG" => "%m/%d/%Y %W",
-            "T_FMT_LONG" => "%H:%M:%S %Z",
-            "D_FMT_MIDDLE" => "%m/%d/%Y",
-            "T_FMT_MIDDLE" => "%H:%M:%S",
-            "D_FMT_SHORT" => "%m/%d/%Y",
-            "T_FMT_SHORT" => "%H:%M",
-        ),
-        'en_US' => array(  // Default
-            "D_FMT_LONG" => "%m/%d/%Y %W",
-            "T_FMT_LONG" => "%H:%M:%S %Z",
-            "D_FMT_MIDDLE" => "%m/%d/%Y",
-            "T_FMT_MIDDLE" => "%H:%M:%S",
-            "D_FMT_SHORT" => "%m/%d/%Y",
-            "T_FMT_SHORT" => "%H:%M",
-        ),
-        'ja_JP' => array(
             "D_FMT_LONG" => "%Y年%M月%D日 %W",
-            "T_FMT_LONG" => "%H時%I分%S秒 %Z",
+            "T_FMT_LONG" => "%H時%I分%S秒",
             "D_FMT_MIDDLE" => "%Y/%M/%D(%w)",
             "T_FMT_MIDDLE" => "%H:%I:%S",
             "D_FMT_SHORT" => "%Y/%m/%d",
