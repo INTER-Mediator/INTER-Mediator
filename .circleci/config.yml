@@ -17,7 +17,7 @@ jobs:
       - run: docker image list
       - run: docker run -d --name ubuntu -it ubuntu /bin/bash
       - run: docker ps -a
-      - run: docker run -it ubuntu sh -c "/etc/init.d/mysql start && /etc/init.d/postgresql start && phpunit --debug --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
+      - run: docker run -it ubuntu sh -c "/etc/init.d/mysql start && /etc/init.d/postgresql start && mysqladmin -u root password "im4135dev" && echo 'y' | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh && mysql -u root -pim4135dev -e 'select user,host from mysql.user;' test_db && mysql -u web -ppassword -e 'select * from person;' test_db && phpunit --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php"
       - run: docker run -it ubuntu php -v
       - run: docker run -it ubuntu sh -c "/etc/rc.local && /usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js"
       - run: docker run -it ubuntu ls -al /usr/bin/
