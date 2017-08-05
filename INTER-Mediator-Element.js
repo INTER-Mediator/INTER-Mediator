@@ -447,8 +447,22 @@ var IMLibElement = {
             }
         }
         return newValue;
-    }
-    ,
+    },
+
+    /*
+    <<Multiple lines in TEXTAREA before IE 10>> 2017-08-05, Masayuki Nii
+
+    Most of modern browsers can handle the 'next line(\n)' character as the line separator.
+    Otherwise IE 9 requires special handling for multiple line strings.
+
+      - If such a strings sets to value property, it shows just a single line.
+      - To prevent the above situation, it has to replace the line sparating characters to <br>,
+        and set it to innerHTML property.
+      - The value property of multi-line strings doesn't contain any line sparating characters.
+      - The innerHTML property of multi-line strings contains <br> for line sparators.
+      - If the value of TEXTAREA can be get with repaceing <br> to \n from the innerHTML property.
+
+     */
 
     deleteNodes: function (removeNodes) {
         var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;
