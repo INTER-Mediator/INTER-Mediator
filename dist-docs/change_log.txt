@@ -18,6 +18,7 @@ Ver.5.7 (in development)
   in DB_Support directory.
 - The locale for number and currency format follows the server-side setting of "intl.default_locale" key in php.ini.
   It can be overridden by params.php file's $appLocale valuable.
+- Check HTTP_ACCEPT_LANGUAGE HTTP header in getLocaleFromBrowser() of IMLocale class.
 - Update TestDB.fp7 to add "total" field to the "invoice" table for the server side calculation sample and add 
   tables ("saleslog", "item_master", "customer").
 - Update TestDBSchemeForFMS.xlsx in "dist-docs" directory.

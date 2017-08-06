@@ -97,7 +97,11 @@ class IMLocale
      */
     public static function getLocaleFromBrowser($localeString = '')
     {
-        $lstr = ($localeString != '') ? $localeString : strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        $lstr = $localeString;
+        if ($localeString === '') {
+            $lstr = isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']) : 'en';
+        }
+        
         // Extracting first item and cutting the priority infos.
         if (strpos($lstr, ',') !== false) $lstr = substr($lstr, 0, strpos($lstr, ','));
         if (strpos($lstr, ';') !== false) $lstr = substr($lstr, 0, strpos($lstr, ';'));
