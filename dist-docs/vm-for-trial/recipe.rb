@@ -259,6 +259,9 @@ EOF
   service 'mysql' do
     action [ :enable, :start ]
   end
+  execute 'mysqladmin -u root password "im4135dev"' do
+    command 'mysqladmin -u root password "im4135dev"'
+  end
 elsif node[:platform] == 'redhat'
   if node[:platform_version].to_f < 7
     package 'mysql-server' do
