@@ -12,11 +12,18 @@ require_once('DB_PDO_Test_Common.php');
 
 class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
 {
+    protected $dsn;
     function setUp()
     {
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
+        $this->dsn = 'mysql:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';
+        if (getenv('TRAVIS') === 'true') {
+            $this->dsn = 'mysql:dbname=test_db;host=127.0.0.1';
+        } else if (file_exists('/etc/alpine-release')) {
+            $this->dsn = 'mysql:unix_socket=/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';
+        }
     }
 
     function dbProxySetupForAccess($contextName, $maxRecord, $subContextName = null)
@@ -52,7 +59,7 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
         $options = null;
         $dbSettings = array(
             'db-class' => 'PDO',
-            'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+            'dsn' => $this->dsn,
             'user' => 'web',
             'password' => 'password',
         );
@@ -89,7 +96,7 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             ),
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+                'dsn' => $this->dsn,
                 'user' => 'web',
                 'password' => 'password',
             ),
@@ -121,7 +128,7 @@ class DB_PDO_MySQL_Test extends DB_PDO_Test_Common
             null,
             array(
                 'db-class' => 'PDO',
-                'dsn' => 'mysql:dbname=test_db;host=127.0.0.1',
+                'dsn' => $this->dsn,
                 'user' => 'web',
                 'password' => 'password',
             ),

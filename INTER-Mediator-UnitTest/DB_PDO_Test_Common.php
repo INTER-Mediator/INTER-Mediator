@@ -45,6 +45,9 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     public function testAggregation()
     {
         $this->dbProxySetupForAggregation();
+        //var_export($this->db_proxy);
+        //var_export($this->db_proxy->logger->getErrorMessages());
+        //var_export($this->db_proxy->logger->getDebugMessages());
         $result = $this->db_proxy->readFromDB("summary");
         $recordCount = $this->db_proxy->countQueryResult("summary");
         $this->assertEquals(is_array($result) ? count($result) : -1, 10, "After the query, 10 records should be retrieved.");
