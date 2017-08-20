@@ -20,11 +20,11 @@ if (function_exists('mb_internal_encoding')) {
 spl_autoload_register('loadClass');
 
 require_once('DB_Interfaces.php');
-require_once('DB_Logger.php');
-require_once('DB_Settings.php');
-require_once('DB_UseSharedObjects.php');
-require_once('DB_Proxy.php');
-require_once('IMUtil.php');
+require_once('IMUtil.php'); //
+//require_once('DB_Logger.php');
+//require_once('DB_Settings.php');
+//require_once('DB_UseSharedObjects.php');
+//require_once('DB_Proxy.php');
 
 IMUtil::includeLibClasses(IMUtil::phpSecLibRequiredClasses());
 
@@ -150,7 +150,31 @@ function loadClass($className)
         if ($className === 'NumberFormatter' && !class_exists($className)) {
             $className = 'IMNumberFormatter';
         }
-        $result = require_once("{$className}.php");
+        $imClassPath = array("", "DB_Support" . DIRECTORY_SEPARATOR, "Data_Converter" . DIRECTORY_SEPARATOR);
+        $incSeparator = IMUtil::isPHPExecutingWindows() ? ";" : ":";
+        $incPath = explode($incSeparator, get_include_path());
+        $isFileExists = false;
+        foreach ($incPath as $path) {
+            if (strlen($path)>0) {
+                foreach ($imClassPath as $imPath) {
+                    $classPath = $path . DIRECTORY_SEPARATOR . $imPath;
+                    if (IMUtil::isPHPExecutingWindows() ?
+                        (substr($classPath, 1, 1) !== ':') :
+                        (substr($classPath, 0, 1) !== '/'))   {
+                        $classPath = dirname(__FILE__) . DIRECTORY_SEPARATOR . $classPath;
+                    }
+                    if (file_exists("{$classPath}{$className}.php")) {
+                        $isFileExists = true;
+                        break 2;
+                    }
+                }
+            }
+        }
+        if ($isFileExists) {
+            $result = require_once("{$classPath}{$className}.php");
+        } else {
+            $result = require_once("{$className}.php");
+        }
         if (!$result) {
             $errorGenerator = new GenerateJSCode();
             if (strpos($className, "MessageStrings_") !== 0) {

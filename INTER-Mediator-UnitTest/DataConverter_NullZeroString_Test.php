@@ -3,7 +3,7 @@
  * DataConverter_NullZeroString_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DataConverter_NullZeroString.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_NullZeroString.php');
 
 class DataConverter_NullZeroString_Test extends PHPUnit_Framework_TestCase
 {

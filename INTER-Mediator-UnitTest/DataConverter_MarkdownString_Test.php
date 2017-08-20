@@ -3,8 +3,8 @@
  * DataConverter_HTMLString_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DataConverter_HTMLString.php');
-require_once(dirname(__FILE__) . '/../DataConverter_MarkdownString.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_HTMLString.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_MarkdownString.php');
 
 class DataConverter_MarkdownString_Test extends PHPUnit_Framework_TestCase
 {

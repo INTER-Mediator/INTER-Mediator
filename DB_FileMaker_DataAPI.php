@@ -12,11 +12,11 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-require_once("DB_Support/DB_Auth_Common.php");
-require_once("DB_Support/DB_Notification_Common.php");
-require_once("DB_Support/DB_Auth_Handler_FileMaker_DataAPI.php");
-require_once("DB_Support/DB_Notification_Handler_FileMaker_DataAPI.php");
-require_once("DB_Support/DB_Spec_Handler_FileMaker_DataAPI.php");
+//require_once("DB_Support/DB_Auth_Common.php");
+//require_once("DB_Support/DB_Notification_Common.php");
+//require_once("DB_Support/DB_Auth_Handler_FileMaker_DataAPI.php");
+//require_once("DB_Support/DB_Notification_Handler_FileMaker_DataAPI.php");
+//require_once("DB_Support/DB_Spec_Handler_FileMaker_DataAPI.php");
 require_once("lib/FMDataAPI.php");
 
 class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
@@ -93,7 +93,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
     {
         $this->targetLayout = $layoutName;
         $this->recordCount = $recordCount;
-        $fmDataObj = new FMDataAPI(
+        $fmDataObj = new \INTERMediator\FileMakerServer\RESTAPI\FMDataAPI(
             $this->dbSettings->getDbSpecDatabase(),
             $user,
             $password,
@@ -109,7 +109,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
     {
         $this->authHandler = new DB_Auth_Handler_FileMaker_DataAPI($this);
         $this->notifyHandler = new DB_Notification_Handler_FileMaker_DataAPI($this);
-        $this->specHandler = new DB_Spec_Handler_FilrMaker_DataAPI();
+        $this->specHandler = new DB_Spec_Handler_FileMaker_DataAPI();
     }
 
     private function stringWithoutCredential($str)

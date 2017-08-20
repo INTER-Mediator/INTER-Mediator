@@ -3,7 +3,7 @@
  * DataConverter_FMDateTime_Test file
  */
 require_once(dirname(__FILE__) . '/../INTER-Mediator.php');
-require_once(dirname(__FILE__) . '/../DataConverter_FMDateTime.php');
+require_once(dirname(__FILE__) . '/../Data_Converter/DataConverter_FMDateTime.php');
 
 class DataConverter_FMDateTime_Test extends PHPUnit_Framework_TestCase
 {
