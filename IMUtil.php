@@ -279,11 +279,14 @@ class IMUtil
         $val = trim($val);
         switch (strtolower($val[strlen($val) - 1])) {
             case 'g':
-                $val *= (1024 * 1024 * 1024);
+                $val = intval($val) * (1024 * 1024 * 1024);
+                break;
             case 'm':
-                $val *= (1024 * 1024);
+                $val = intval($val) * (1024 * 1024);
+                break;
             case 'k':
-                $val *= 1024;
+                $val = intval($val) * 1024;
+                break;
         }
         return $val;
     }

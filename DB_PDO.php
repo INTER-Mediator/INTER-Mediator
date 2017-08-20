@@ -16,12 +16,12 @@
 /**
  * Class DB_PDO
  */
-require_once(dirname(__FILE__) . '/DB_Support/DB_PDO_Handler.php');
-require_once(dirname(__FILE__) . '/DB_Support/DB_Auth_Common.php');
-require_once(dirname(__FILE__) . '/DB_Support/DB_Notification_Common.php');
-require_once(dirname(__FILE__) . '/DB_Support/DB_Auth_Handler_PDO.php');
-require_once(dirname(__FILE__) . '/DB_Support/DB_Notification_Handler_PDO.php');
-require_once(dirname(__FILE__) . '/DB_Support/DB_Spec_Handler_PDO.php');
+//require_once(dirname(__FILE__) . '/DB_Support/DB_PDO_Handler.php');
+//require_once(dirname(__FILE__) . '/DB_Support/DB_Auth_Common.php');
+//require_once(dirname(__FILE__) . '/DB_Support/DB_Notification_Common.php');
+//require_once(dirname(__FILE__) . '/DB_Support/DB_Auth_Handler_PDO.php');
+//require_once(dirname(__FILE__) . '/DB_Support/DB_Notification_Handler_PDO.php');
+//require_once(dirname(__FILE__) . '/DB_Support/DB_Spec_Handler_PDO.php');
 
 class DB_PDO extends DB_UseSharedObjects implements DB_Interface
 {
@@ -330,7 +330,8 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                     throw new Exception("Invalid Sort Specifier.");
                 }
                 $escapedField = $this->handler->quotedEntityName($condition['field']);
-                $sortClause[] = "{$escapedField} {$condition['direction']}";
+                $direction = isset($condition['direction']) ? $condition['direction'] : "";
+                $sortClause[] = "{$escapedField} {$direction}";
             }
         }
         return implode(',', $sortClause);

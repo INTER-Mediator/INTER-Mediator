@@ -1151,6 +1151,49 @@ var INTERMediatorLib = {
         return result;
     },
 
+    convertNumeric: function (value) {
+        value = value.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, "g"), "");
+        value = INTERMediatorLib.normalizeNumerics(value);
+        if (value !== "") {
+            value = parseFloat(value);
+        }
+        return value;
+    },
+
+    convertBoolean: function (value, forms) {
+        var trueString = "true", falseString = "false", fmtStr;
+        value = value.trim();
+        var params = forms.split(",");
+        if (params[0]) {
+            fmtStr = params[0].trim();
+            if (fmtStr.length > 0) {
+                trueString = fmtStr
+            }
+        }
+        if (params[1]) {
+            fmtStr = params[1].trim();
+            if (fmtStr.length > 0) {
+                falseString = fmtStr
+            }
+        }
+        if (value === trueString) {
+            return true;
+        } else if (value === falseString) {
+            return false;
+        }
+        return null;
+    },
+
+    convertPercent: function (value) {
+        value = value.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, "g"), "");
+        value = value.replace("%", "");
+        value = INTERMediatorLib.normalizeNumerics(value);
+        if (value !== "") {
+            value = parseFloat(value)/100;
+        }
+        return value;
+    },
+
     objectToString: function (obj) {
         var str, i, key;
 

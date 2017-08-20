@@ -13,7 +13,7 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
-require_once('DataConverter_NumberBase.php');
+//require_once('DataConverter_NumberBase.php');
 
 class DataConverter_Number extends DataConverter_NumberBase
 {

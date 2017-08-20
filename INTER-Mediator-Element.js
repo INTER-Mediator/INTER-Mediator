@@ -358,7 +358,7 @@ var IMLibElement = {
                         }
                     }
                 })());
-                element.setAttribute("data-imbluradded","set");
+                element.setAttribute("data-imbluradded", "set");
             }
             if (!element.getAttribute("data-imchangeadded")) {
                 IMLibChangeEventDispatch.setExecute(element.id, (function () {
@@ -391,8 +391,41 @@ var IMLibElement = {
         return needPostValueSet;
     },
 
+    //
+    unformattersformatters: {
+        number: INTERMediatorLib.convertNumeric,
+        currency: INTERMediatorLib.convertNumeric,
+        boolean: INTERMediatorLib.convertBoolean,
+        percent: INTERMediatorLib.convertPercent,
+        date: INTERMediatorLib.dateFormat,
+        datetime: INTERMediatorLib.datetimeFormat,
+        time: INTERMediatorLib.timeFormat
+    },
+
+    getUnformattedValue: function (element, value) {
+        var formatSpec, unformatFunc, parsed, params, convertedValue;
+        formatSpec = element.getAttribute("data-im-format");
+        if (!formatSpec) {
+            return null;
+        }
+        unformatFunc = IMLibElement.unformatters[formatSpec.trim().toLocaleLowerCase()];  // in case of no parameters in attribute
+        if (!unformatFunc) {
+            parsed = formatSpec.match(/[^a-zA-Z]*([a-zA-Z]+).*[\(]([^\(]*)[\)]/);
+            unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()];
+            params = parsed[2];
+            if (parsed[2].length === 0) { // in case of parameter is just ().
+                params = 0
+            }
+        }
+        if (unformatFunc) {
+            convertedValue = unformatFunc(value, params);
+        }
+        return convertedValue;
+
+    },
+
     getValueFromIMNode: function (element) {
-        var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr, formatSpec;
+        var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr, formatSpec, convertedValue;
 
         if (element) {
             nodeTag = element.tagName;
@@ -400,6 +433,7 @@ var IMLibElement = {
         } else {
             return '';
         }
+
         if (INTERMediatorLib.isWidgetElement(element) ||
             (INTERMediatorLib.isWidgetElement(element.parentNode))) {
             newValue = element._im_getValue();
@@ -438,29 +472,31 @@ var IMLibElement = {
         } else {
             newValue = element.innerHTML;
         }
-        formatSpec = element.getAttribute("data-im-format");
-        if (formatSpec) {
-            newValue = newValue.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, "g"), "");
-            newValue = INTERMediatorLib.normalizeNumerics(newValue);
-            if (newValue !== "") {
-                newValue = parseFloat(newValue);
-            }
-        }
+        convertedValue = IMLibElement.getUnformattedValue(element, newValue);
+        newValue = convertedValue ? convertedValue : newValue;
+        // formatSpec = element.getAttribute("data-im-format");
+        // if (formatSpec) {
+        //     newValue = newValue.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, "g"), "");
+        //     newValue = INTERMediatorLib.normalizeNumerics(newValue);
+        //     if (newValue !== "") {
+        //         newValue = parseFloat(newValue);
+        //     }
+        // }
         return newValue;
     },
 
     /*
-    <<Multiple lines in TEXTAREA before IE 10>> 2017-08-05, Masayuki Nii
+     <<Multiple lines in TEXTAREA before IE 10>> 2017-08-05, Masayuki Nii
 
-    Most of modern browsers can handle the 'next line(\n)' character as the line separator.
-    Otherwise IE 9 requires special handling for multiple line strings.
+     Most of modern browsers can handle the 'next line(\n)' character as the line separator.
+     Otherwise IE 9 requires special handling for multiple line strings.
 
-      - If such a strings sets to value property, it shows just a single line.
-      - To prevent the above situation, it has to replace the line sparating characters to <br>,
-        and set it to innerHTML property.
-      - The value property of multi-line strings doesn't contain any line sparating characters.
-      - The innerHTML property of multi-line strings contains <br> for line sparators.
-      - If the value of TEXTAREA can be get with repaceing <br> to \n from the innerHTML property.
+     - If such a strings sets to value property, it shows just a single line.
+     - To prevent the above situation, it has to replace the line sparating characters to <br>,
+     and set it to innerHTML property.
+     - The value property of multi-line strings doesn't contain any line sparating characters.
+     - The innerHTML property of multi-line strings contains <br> for line sparators.
+     - If the value of TEXTAREA can be get with repaceing <br> to \n from the innerHTML property.
 
      */
 
