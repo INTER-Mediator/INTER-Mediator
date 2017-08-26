@@ -126,6 +126,10 @@ fi
 echo "PROCESSING: ${originalPath}/DB_Support"
 cp -prf "${originalPath}/DB_Support" "${buildPath}"
 
+# Copy "Data_Converter" directory.
+echo "PROCESSING: ${originalPath}/Data_Converter"
+cp -prf "${originalPath}/Data_Converter" "${buildPath}"
+
 # Copy "lib" path php contents.
 echo "PROCESSING: ${originalPath}/lib"
 mkdir -p "${buildPath}/lib/bi2php"
