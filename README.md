@@ -27,6 +27,7 @@ You don't have to deploy the samples if you just want to see this at a glance.
 - Kazuaki Osawa
 - Hiroko Oki
 - Tomomitsu Baba
+- Motofuni Iijima
 
 ## Special Thanks to:
 - Candy
