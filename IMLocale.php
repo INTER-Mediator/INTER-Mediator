@@ -13,6 +13,12 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
+
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleCurrencyTable.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleFormatTable.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMLocaleStringTable.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'IMUtil.php');
+
 class IMLocale
 {
     public static function numberFormatterClassName()
