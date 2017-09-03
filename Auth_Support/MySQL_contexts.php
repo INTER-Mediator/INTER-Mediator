@@ -22,7 +22,6 @@ IM_Entry(
             'sort' => array(
                 array('field' => 'id', 'direction' => 'ASC'),
             ),
-            'extending-class'=>"UserList",
         ),
         array(
             'name' => 'belonggroup',
