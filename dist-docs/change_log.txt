@@ -28,6 +28,7 @@ Ver.5.7 (in development)
 - Add the result of Hand-On Session 1 to Samples/Hands-on directory.
 - In the 'send-mail' feature, the "subject-constant" and "body-constant" fields can contain the field reference
   as like "...@field@@...". These fields have to contain the result of context.
+- The "datatype" can be eliminated, and it means "FMPro12."
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 - [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.

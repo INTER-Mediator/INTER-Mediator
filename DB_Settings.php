@@ -399,7 +399,7 @@ class DB_Settings
 
     public function getDbSpecDataType()
     {
-        return $this->dbSpecDataType;
+        return is_null($this->dbSpecDataType) ? "FMPro12" : $this->dbSpecDataType;
     }
 
     public function setDbSpecDatabase($str)
@@ -759,11 +759,11 @@ class DB_Settings
         if ($this->dataSource == null) {
             return null;
         }
-            foreach ($this->dataSource as $record) {
-                if ($record['name'] == $this->dataSourceName) {
-                    return $record;
-                }
+        foreach ($this->dataSource as $record) {
+            if ($record['name'] == $this->dataSourceName) {
+                return $record;
             }
+        }
         return null;
     }
 
