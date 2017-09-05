@@ -26,10 +26,13 @@ Ver.5.7 (in development)
   tables ("saleslog", "item_master", "customer").
 - Update TestDBSchemeForFMS.xlsx in "dist-docs" directory.
 - Add the result of Hand-On Session 1 to Samples/Hands-on directory.
+- In the 'send-mail' feature, the "subject-constant" and "body-constant" fields can contain the field reference
+  as like "...@field@@...". These fields have to contain the result of context.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 - [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.
 - [BUG FIX] Fix to disappear text and button name in the tag with data-im="_@update:..." or "_@addorder:...".
+- [BUG FIX] The Auth_Manager sample in Auth_Support folder didn't work. So the UserList.php is removed.
 
 Ver.5.6 (June 23, 2017)
 - Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of
