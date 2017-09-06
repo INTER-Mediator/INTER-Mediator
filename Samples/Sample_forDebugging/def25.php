@@ -47,6 +47,5 @@ array (
   'server' => '127.0.0.1',
   'port' => '80',
   'protocol' => 'http',
-  'datatype' => 'fmpro12',
 ),
 false);
