@@ -1082,6 +1082,31 @@ IMLibPageNavigation = {
         }
     },
 
+    setupDetailAreaToFirstRecord: function (currentContextDef, masterContext) {
+        var i, key, comp;
+        if (currentContextDef['navi-control']
+            && currentContextDef['navi-control'].match(/master/i)) {
+            var contextDefs = INTERMediatorOnPage.getDataSources();
+            for (i in contextDefs) {
+                if (contextDefs.hasOwnProperty(i) &&
+                    contextDefs[i] &&
+                    contextDefs[i]["name"] &&
+                    contextDefs[i]["navi-control"] &&
+                    contextDefs[i]["navi-control"].match(/detail/i)) {
+                    if (Object.keys(masterContext.store).length > 0) {
+                        comp = Object.keys(masterContext.store)[0].split("=");
+                        if (comp.length > 1) {
+                            INTERMediator.clearCondition(contextDefs[i]["name"], "_imlabel_crosstable");
+                            INTERMediator.addCondition(contextDefs[i]["name"],
+                                {field: comp[0], operator: "=", value: comp[1]}, undefined, "_imlabel_crosstable"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    },
+
     moveDetailOnceAgain: function () {
         var p = IMLibPageNavigation.previousModeDetail;
         IMLibPageNavigation.moveToDetailImpl(
@@ -1160,7 +1185,7 @@ IMLibPageNavigation = {
                     'id': aNode.id,
                     'event': 'touchstart',
                     'todo': moveToMaster(
-                                masterContext, currentContext, isHidePageNavi, isUpdateMaster)
+                        masterContext, currentContext, isHidePageNavi, isUpdateMaster)
                 });
                 //
                 //
