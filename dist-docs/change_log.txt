@@ -34,6 +34,7 @@ Ver.5.7 (in development)
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.
 - [BUG FIX] Fix to disappear text and button name in the tag with data-im="_@update:..." or "_@addorder:...".
 - [BUG FIX] The Auth_Manager sample in Auth_Support folder didn't work. So the UserList.php is removed.
+- [BUG FIX] Master/Detail interface in mobile phone didn't return the master page from the detail page.
 
 Ver.5.6 (June 23, 2017)
 - Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of
