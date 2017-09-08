@@ -22,7 +22,7 @@ IM_Entry(
             'name' => 'productlist',
             'view' => 'product',
             'key' => 'id',
-            'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
+            'sort' => array(array('field' => 'unitprice', 'direction' => 'ASC'),),
             'navi-control' => 'master',
 //            'repeat-control' => 'insert delete',
 //            'paging' => true,

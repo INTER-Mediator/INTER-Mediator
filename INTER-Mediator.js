@@ -1335,6 +1335,9 @@ var INTERMediator = {
                 }
                 contextObj.rearrangePendingOrder();
             }
+
+            IMLibPageNavigation.setupDetailAreaToFirstRecord(currentContextDef, contextObj);
+
             repeatersOneRec = cloneEveryNodes(repeatersOriginal);
             for (i = 0; i < repeatersOneRec.length; i++) {
                 newNode = repeatersOneRec[i];

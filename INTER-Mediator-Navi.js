@@ -460,7 +460,7 @@ IMLibPageNavigation = {
         try {
             if (contextDef['relation']) {
                 for (index in contextDef['relation']) {
-                    if (contextDef['relation'][index]['portal'] == true) {
+                    if (contextDef['relation'][index]['portal'] === true) {
                         contextDef['portal'] = true;
                     }
                 }
@@ -817,7 +817,7 @@ IMLibPageNavigation = {
                             enclosedNode.appendChild(footNode);
                         }
                         existingButtons = INTERMediatorLib.getElementsByClassName(footNode, 'IM_Button_Insert');
-                        if (existingButtons.length == 0) {
+                        if (existingButtons.length === 0) {
                             trNode = document.createElement('TR');
                             INTERMediatorLib.setClassAttributeToNode(trNode, 'IM_Insert_TR');
                             tdNode = document.createElement('TD');
@@ -837,7 +837,7 @@ IMLibPageNavigation = {
                     case 'OL':
                         liNode = document.createElement('LI');
                         existingButtons = INTERMediatorLib.getElementsByClassName(liNode, 'IM_Button_Insert');
-                        if (existingButtons.length == 0) {
+                        if (existingButtons.length === 0) {
                             liNode.appendChild(buttonNode);
                             if (currentContextDef['repeat-control'].match(/top/i)) {
                                 node.insertBefore(liNode, node.firstChild);
@@ -852,7 +852,7 @@ IMLibPageNavigation = {
                     default:
                         divNode = document.createElement('DIV');
                         existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_Insert');
-                        if (existingButtons.length == 0) {
+                        if (existingButtons.length === 0) {
                             divNode.appendChild(buttonNode);
                             if (currentContextDef['repeat-control'].match(/top/i)) {
                                 node.insertBefore(divNode, node.firstChild);
@@ -899,19 +899,19 @@ IMLibPageNavigation = {
 
         if (!currentContextDef['navi-control']
             || !currentContextDef['navi-control'].match(/master/i)
-            || encNodeTag == 'SELECT') {
+            || encNodeTag === 'SELECT') {
             return;
         }
 
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
         isHide = currentContextDef['navi-control'].match(/hide/i);
-        isHidePageNavi = isHide && (currentContextDef['paging'] == true);
+        isHidePageNavi = isHide && (currentContextDef['paging'] === true);
 
         if (INTERMediator.detailNodeOriginalDisplay) {
             detailContext = IMLibContextPool.getDetailContext();
             if (detailContext) {
                 showingNode = detailContext.enclosureNode;
-                if (showingNode.tagName == 'TBODY') {
+                if (showingNode.tagName === 'TBODY') {
                     showingNode = showingNode.parentNode;
                 }
                 INTERMediator.detailNodeOriginalDisplay = showingNode.style.display;
@@ -1082,6 +1082,31 @@ IMLibPageNavigation = {
         }
     },
 
+    setupDetailAreaToFirstRecord: function (currentContextDef, masterContext) {
+        var i, key, comp;
+        if (currentContextDef['navi-control']
+            && currentContextDef['navi-control'].match(/master/i)) {
+            var contextDefs = INTERMediatorOnPage.getDataSources();
+            for (i in contextDefs) {
+                if (contextDefs.hasOwnProperty(i) &&
+                    contextDefs[i] &&
+                    contextDefs[i]["name"] &&
+                    contextDefs[i]["navi-control"] &&
+                    contextDefs[i]["navi-control"].match(/detail/i)) {
+                    if (Object.keys(masterContext.store).length > 0) {
+                        comp = Object.keys(masterContext.store)[0].split("=");
+                        if (comp.length > 1) {
+                            INTERMediator.clearCondition(contextDefs[i]["name"], "_imlabel_crosstable");
+                            INTERMediator.addCondition(contextDefs[i]["name"],
+                                {field: comp[0], operator: "=", value: comp[1]}, undefined, "_imlabel_crosstable"
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    },
+
     moveDetailOnceAgain: function () {
         var p = IMLibPageNavigation.previousModeDetail;
         IMLibPageNavigation.moveToDetailImpl(
@@ -1109,13 +1134,13 @@ IMLibPageNavigation = {
             || (!naviControlValue.match(/hide/i))) {
             return;
         }
-        isHidePageNavi = masterContext.getContextDef()['paging'] == true;
+        isHidePageNavi = (masterContext.getContextDef()['paging'] === true);
         isUpdateMaster = currentContextDef['navi-control'].match(/update/i);
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
         isTop = !(currentContextDef['navi-control'].match(/bottom/i));
 
         showingNode = currentContext.enclosureNode;
-        if (showingNode.tagName == 'TBODY') {
+        if (showingNode.tagName === 'TBODY') {
             showingNode = showingNode.parentNode;
         }
         if (INTERMediator.detailNodeOriginalDisplay) {
@@ -1125,7 +1150,7 @@ IMLibPageNavigation = {
 
         if (isTouchRepeater) {
             nodes = document.getElementsByClassName('IM_Button_BackNavi');
-            if (!nodes || nodes.length == 0) {
+            if (!nodes || nodes.length === 0) {
                 aNode = createBackButton('DIV', currentContextDef);
                 IMLibUI.mobileNaviBackButtonId = aNode.id;
                 aNode.style.display = 'none';
@@ -1156,9 +1181,17 @@ IMLibPageNavigation = {
                 if (!aNode.id) {
                     aNode.id = INTERMediator.nextIdValue();
                 }
-                IMLibMouseEventDispatch.setExecute(aNode.id,
-                    moveToMaster(masterContext, currentContext, isHidePageNavi, isUpdateMaster)
-                );
+                INTERMediator.eventListenerPostAdding.push({
+                    'id': aNode.id,
+                    'event': 'touchstart',
+                    'todo': moveToMaster(
+                        masterContext, currentContext, isHidePageNavi, isUpdateMaster)
+                });
+                //
+                //
+                // IMLibMouseEventDispatch.setExecute(aNode.id,
+                //     moveToMaster(masterContext, currentContext, isHidePageNavi, isUpdateMaster)
+                // );
             }
         } else {
             buttonNode = createBackButton('BUTTON', currentContextDef);
@@ -1221,11 +1254,11 @@ IMLibPageNavigation = {
                 INTERMediator.appendingNodesAtLast.push({
                     targetNode: targetNode,
                     parentNode: enclosedNode,
-                    siblingNode: (targetNodeTag == 'THEAD') ? enclosedNode.firstChild : null
+                    siblingNode: (targetNodeTag === 'THEAD') ? enclosedNode.firstChild : null
                 });
             }
             existingButtons = INTERMediatorLib.getElementsByClassName(targetNode, 'IM_Button_BackNavi');
-            if (existingButtons.length == 0) {
+            if (existingButtons.length === 0) {
                 trNode = document.createElement('TR');
                 INTERMediatorLib.setClassAttributeToNode(trNode, 'IM_NaviBack_TR');
                 tdNode = document.createElement('TD');
@@ -1241,7 +1274,7 @@ IMLibPageNavigation = {
             var newNode, existingButtons;
             newNode = document.createElement(naviEncTag);
             existingButtons = INTERMediatorLib.getElementsByClassName(divNode, 'IM_Button_BackNavi');
-            if (existingButtons.length == 0) {
+            if (existingButtons.length === 0) {
                 newNode.appendChild(buttonNode);
                 if (!isTop) {
                     node.appendChild(newNode);
@@ -1259,13 +1292,13 @@ IMLibPageNavigation = {
                     INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
                 }
                 showingNode = detailContextCL.enclosureNode;
-                if (showingNode.tagName == 'TBODY') {
+                if (showingNode.tagName === 'TBODY') {
                     showingNode = showingNode.parentNode;
                 }
                 showingNode.style.display = 'none';
 
                 showingNode = masterContextCL.enclosureNode;
-                if (showingNode.tagName == 'TBODY') {
+                if (showingNode.tagName === 'TBODY') {
                     showingNode = showingNode.parentNode;
                 }
                 showingNode.style.display = INTERMediator.masterNodeOriginalDisplay;
