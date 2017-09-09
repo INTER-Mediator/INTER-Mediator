@@ -684,8 +684,8 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-execute "cd \"#{WEBROOT}\" && git clone https://github.com/matsuo/INTER-Mediator.git && cd INTER-Mediator && git checkout update-test && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
-  command "cd \"#{WEBROOT}\" && git clone https://github.com/matsuo/INTER-Mediator.git && cd INTER-Mediator && git checkout update-test && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
+execute "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git" do
+  command "cd \"#{WEBROOT}\" && git clone https://github.com/INTER-Mediator/INTER-Mediator.git && cd INTER-Mediator && git checkout master && git remote add upstream https://github.com/INTER-Mediator/INTER-Mediator.git"
 end
 
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
@@ -1583,6 +1583,9 @@ if node[:platform] == 'alpine'
     action :install
   end
 elsif node[:platform] == 'ubuntu'
+  package 'curl' do
+    action :install
+  end
   package 'x11-xkb-utils' do
     action :install
   end
@@ -1648,6 +1651,9 @@ elsif node[:platform] == 'ubuntu'
   end
   package 'firefox' do
     action :install
+  end
+  execute 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz > /tmp/geckodriver-v0.18.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.18.0-linux64.tar.gz' do
+    command 'curl -L https://github.com/mozilla/geckodriver/releases/download/v0.18.0/geckodriver-v0.18.0-linux64.tar.gz > /tmp/geckodriver-v0.18.0-linux64.tar.gz; cd /usr/bin/; tar xzvf /tmp/geckodriver-v0.18.0-linux64.tar.gz'
   end
   package 'chromium-browser' do
     action :install
