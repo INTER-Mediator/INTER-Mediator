@@ -1134,7 +1134,7 @@ var INTERMediatorLib = {
         var key = kind.substr(0, 1) + "_FMT_" + paramStr;
         if (INTERMediatorOnPage.localeInfo[key]) {
             params = INTERMediatorOnPage.localeInfo[key];
-            if (kind==='DATETIME'){
+            if (kind === 'DATETIME') {
                 params += " " + INTERMediatorOnPage.localeInfo["T_FMT_" + paramStr];
             }
         }
@@ -1189,9 +1189,118 @@ var INTERMediatorLib = {
         value = value.replace("%", "");
         value = INTERMediatorLib.normalizeNumerics(value);
         if (value !== "") {
-            value = parseFloat(value)/100;
+            value = parseFloat(value) / 100;
         }
         return value;
+    },
+
+    convertDate: function (value, params, flags) {
+        return INTERMediatorLib.convertDateTimeImpl(value, params, "date");
+    },
+    convertTime: function (value, params, flags) {
+        return INTERMediatorLib.convertDateTimeImpl(value, params, "time");
+    },
+    convertDateTime: function (value, params, flags) {
+        return INTERMediatorLib.convertDateTimeImpl(value, params, "datetime");
+    },
+
+    convertDateTimeImpl: function (value, params, flags) {
+        var c, result, replacement = [], regexp = "";
+        var r, matched, y, m, d, h, i, s, paramStr, kind, key;
+
+        paramStr = params.trim().toUpperCase();
+        kind = flags.trim().toUpperCase();
+        key = kind.substr(0, 1) + "_FMT_" + paramStr;
+        if (INTERMediatorOnPage.localeInfo[key]) {
+            params = INTERMediatorOnPage.localeInfo[key];
+            if (kind === 'DATETIME') {
+                params += " " + INTERMediatorOnPage.localeInfo["T_FMT_" + paramStr];
+            }
+        }
+        for (c = 0; c < params.length; c++) {
+            if ((c + 1) < params.length && INTERMediatorLib.reverseRegExp[params.substr(c, 2)]) {
+                regexp += INTERMediatorLib.reverseRegExp[params.substr(c, 2)];
+                replacement.push(params.substr(c, 2));
+                c++;
+            } else {
+                regexp += params.substr(c, 1);
+            }
+        }
+        r = new RegExp(regexp);
+        matched = r.exec(value);
+        result = value;
+        if (matched) {
+            for (c = 0; c < replacement.length; c++) {
+                switch (replacement[c]) {
+                    case '%Y':
+                    case '%y':
+                        y = matched[c + 1];
+                        break;
+                    case '%M':
+                    case '%m':
+                        m = matched[c + 1];
+                        break;
+                    case '%D':
+                    case '%d':
+                        d = matched[c + 1];
+                        break;
+                    case '%H':
+                    case '%h':
+                        h = matched[c + 1];
+                        break;
+                    case '%I':
+                    case '%i':
+                        i = matched[c + 1];
+                        break;
+                    case '%S':
+                    case '%s':
+                        s = matched[c + 1];
+                        break;
+                }
+            }
+            if (y && m && d && h && i && s) {
+                result = y + "-" + m + "-" + d + " " + h + ":" + i + ":" + s;
+            } else if (y && m && d) {
+                result = y + "-" + m + "-" + d;
+            } else if (h && i && s) {
+                result = h + ":" + i + ":" + s;
+            }
+        }
+        return result;
+
+    },
+
+    reverseRegExp: {
+        '%Y': "([\\d]{4})", //
+        '%y': "([\\d]{2})", //	西暦2桁	17
+        '%g': "(明治|大正|昭和|平成)(元|[\\d]{1,2})年", //	ロカールによる年数	平成29年
+        '%G': "(明治|大正|昭和|平成)(.+)年", //	ロカールによる年数	平成二十九年
+        '%M': "([\\d]{1,2})", //	月2桁	07
+        '%m': "([\\d]{1,2})", //	月数値	7
+        '%b': "(.+)", //	短縮月名	Jul
+        '%B': "(.+)", //	月名	July
+        '%t': "(.+)", //	短縮月名	Jul
+        '%T': "(.+)", //	月名	July
+        '%D': "([\\d]{1,2})", //	日2桁	12
+        '%d': "([\\d]{1,2})", //	日数値	12
+        '%a': "(.+)", //	英語短縮曜日名	Mon
+        '%A': "(.+)", //	英語曜日名	Monday
+        '%w': "(.+)", //	ロカールによる短縮曜日名	月
+        '%W': "(.+)", //	ロカールによる曜日名	月曜日
+        '%H': "([\\d]{1,2})", //	時2桁	09
+        '%h': "([\\d]{1,2})", //	時数値	9
+        '%J': "([\\d]{1,2})", //	12時間制時2桁	09
+        '%j': "([\\d]{1,2})", //	12時間制時数値	9
+        '%K': "([\\d]{1,2})", //	12時間制時2桁	09
+        '%k': "([\\d]{1,2})", //	12時間制時数値	9
+        '%I': "([\\d]{1,2})", //	分2桁	05
+        '%i': "([\\d]{1,2})", //	分数値	5
+        '%S': "([\\d]{1,2})", //	秒2桁	00
+        '%s': "([\\d]{1,2})", //	秒数値	0
+        '%P': "(AM|PM)", //	AM/PM	AM
+        '%p': "(am|pm)", //	am/pm	am
+        '%N': "(" + INTERMediatorOnPage.localeInfo["AM_STR"] + "|" + INTERMediatorOnPage.localeInfo["PM_STR"] + ")", //	am/pm	am
+        '%%': "[\%]" //	パーセント	%
     },
 
     objectToString: function (obj) {

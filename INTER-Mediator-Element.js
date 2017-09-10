@@ -28,6 +28,16 @@ var IMLibElement = {
         time: INTERMediatorLib.timeFormat
     },
 
+    unformatters: {
+        number: INTERMediatorLib.convertNumeric,
+        currency: INTERMediatorLib.convertNumeric,
+        boolean: INTERMediatorLib.convertBoolean,
+        percent: INTERMediatorLib.convertPercent,
+        date: INTERMediatorLib.convertDate,
+        datetime: INTERMediatorLib.convertDateTime,
+        time: INTERMediatorLib.convertTime
+    },
+
     formatOptions: {
         "useseparator": {useSeparator: true},
         "blankifzero": {blankIfZero: true}
@@ -68,8 +78,8 @@ var IMLibElement = {
 // Formatting values
 //
     getFormattedValue: function (element, curVal) {
-        var flags, formatSpec, formatOption, negativeColor, negativeStyle, charStyle,
-            kanjiSeparator, param1, formattedValue = null, params, persed, formatFunc;
+        var flags, formatSpec, formatOption, negativeStyle, charStyle,
+            kanjiSeparator, formattedValue = null, params, formatFunc;
 
         formatSpec = element.getAttribute("data-im-format");
         if (!formatSpec) {
@@ -84,7 +94,6 @@ var IMLibElement = {
         };
         formatOption = element.getAttribute("data-im-format-options");
         flags = IMLibElement.appendObject(flags, IMLibElement.formatOptions[formatOption]);
-        //negativeColor = element.getAttribute("data-im-format-negative-color");
         negativeStyle = element.getAttribute("data-im-format-negative-style");
         flags = IMLibElement.appendObject(flags, IMLibElement.formatNegativeStyle[negativeStyle]);
         charStyle = element.getAttribute("data-im-format-numeral-type");
@@ -105,6 +114,28 @@ var IMLibElement = {
             formattedValue = formatFunc(curVal, params, flags);
         }
         return formattedValue;
+    },
+
+    getUnformattedValue: function (element, value) {
+        var formatSpec, unformatFunc, parsed, params, convertedValue,flags = undefined;
+        formatSpec = element.getAttribute("data-im-format");
+        if (!formatSpec) {
+            return null;
+        }
+        unformatFunc = IMLibElement.unformatters[formatSpec.trim().toLocaleLowerCase()];  // in case of no parameters in attribute
+        if (!unformatFunc) {
+            parsed = formatSpec.match(/[^a-zA-Z]*([a-zA-Z]+).*[\(]([^\(]*)[\)]/);
+            unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()];
+            params = parsed[2];
+            if (parsed[2].length === 0) { // in case of parameter is just ().
+                params = 0
+            }
+        }
+        if (unformatFunc) {
+            convertedValue = unformatFunc(value, params, flags);
+        }
+        return convertedValue;
+
     },
 
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
@@ -389,39 +420,6 @@ var IMLibElement = {
         }
         element.setAttribute('data-im-element', 'processed');
         return needPostValueSet;
-    },
-
-    //
-    unformattersformatters: {
-        number: INTERMediatorLib.convertNumeric,
-        currency: INTERMediatorLib.convertNumeric,
-        boolean: INTERMediatorLib.convertBoolean,
-        percent: INTERMediatorLib.convertPercent,
-        date: INTERMediatorLib.dateFormat,
-        datetime: INTERMediatorLib.datetimeFormat,
-        time: INTERMediatorLib.timeFormat
-    },
-
-    getUnformattedValue: function (element, value) {
-        var formatSpec, unformatFunc, parsed, params, convertedValue;
-        formatSpec = element.getAttribute("data-im-format");
-        if (!formatSpec) {
-            return null;
-        }
-        unformatFunc = IMLibElement.unformatters[formatSpec.trim().toLocaleLowerCase()];  // in case of no parameters in attribute
-        if (!unformatFunc) {
-            parsed = formatSpec.match(/[^a-zA-Z]*([a-zA-Z]+).*[\(]([^\(]*)[\)]/);
-            unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()];
-            params = parsed[2];
-            if (parsed[2].length === 0) { // in case of parameter is just ().
-                params = 0
-            }
-        }
-        if (unformatFunc) {
-            convertedValue = unformatFunc(value, params);
-        }
-        return convertedValue;
-
     },
 
     getValueFromIMNode: function (element) {

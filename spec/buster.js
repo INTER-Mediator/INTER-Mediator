@@ -6,10 +6,11 @@ config['My tests'] = {
     rootPath: '../',
     sources: [
         'INTER-Mediator.js',
+        'INTER-Mediator-Page.js',
         'INTER-Mediator-Context.js',
         'INTER-Mediator-Lib.js',
-        'INTER-Mediator-Page.js',
         'INTER-Mediator-Element.js',
+        'lib/js_lib/js-expression-eval-parser.js',
         'INTER-Mediator-Calc.js',
         'INTER-Mediator-Parts.js',
         'INTER-Mediator-Navi.js',
@@ -21,7 +22,6 @@ config['My tests'] = {
         'lib/bi2php/biRSA.js',
         'Adapter_DBServer.js',
         'INTER-Mediator-Events.js',
-        'lib/js_lib/js-expression-eval-parser.js',
         'INTER-Mediator-DoOnStart.js'
     ],
     tests: [
