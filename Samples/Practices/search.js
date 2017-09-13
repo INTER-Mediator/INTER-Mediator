@@ -15,7 +15,7 @@ INTERMediatorOnPage.doBeforeConstruct = function () {
 };
 
 INTERMediatorOnPage.doAfterConstruct = function () {
-    IMLibKeyEventDispatch.setExecuteByCode('condition', 13, function () {
+    IMLibKeyDownEventDispatch.setExecuteByCode('condition', 13, function () {
         doSearch();
     });
     IMLibChangeEventDispatch.setExecute("number", function () {
