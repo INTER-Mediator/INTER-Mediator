@@ -30,6 +30,7 @@ Ver.5.7 (in development)
   as like "...@field@@...". These fields have to contain the result of context.
 - The "datatype" can be eliminated, and it means "FMPro12."
 - On the Master/Detail UI, the detail area shows the first record of master area.
+- Update .gitlab-ci.yml and rename trainingcourse_spec.rb to examples_spec.rb for starting E2E testing.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 - [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.
