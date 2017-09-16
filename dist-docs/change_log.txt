@@ -11,7 +11,7 @@ Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
 Ver.5.7 (in development)
-- Mr. Motofuni Iijima is added as a contributor. He published contents for novices with Qiita document and
+- Mr. Motofumi Iijima is added as a contributor. He published contents for novices with Qiita document and
   YouTube movies.
 - The "data-im-format" attribute is introduced.
   See the web site http://inter-mediator.info/ja/for-developers/format.html.
