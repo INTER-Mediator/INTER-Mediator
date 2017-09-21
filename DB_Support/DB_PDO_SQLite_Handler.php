@@ -98,7 +98,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
       7           memo        TEXT        0                       0
        */
 
-    protected function getFieldLists($tableName, $keyField, $assocField, $assocValue)
+    protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -113,6 +113,9 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             } else if ($assocField === $row['name']) {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
+            } else if (isset($defaultValues[$row['name']])) {
+                $fieldArray[] = $this->quotedEntityName($row['name']);
+                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['name']]);
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->quotedEntityName($row['name']);

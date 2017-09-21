@@ -53,12 +53,12 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlSETClause($setColumnNames, $keyField, $setValues);
 
-    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue)
+    public function copyRecords($tableInfo, $queryClause, $assocField, $assocValue, $defaultValues)
     {
         $tableName = isset($tableInfo["table"]) ? $tableInfo["table"] : $tableInfo["name"];
         try {
-            list($fieldList, $listList) = $this->getFieldLists(
-                $tableName, $tableInfo['key'], $assocField, $assocValue);
+            list($fieldList, $listList) = $this->getFieldListsForCopy(
+                $tableName, $tableInfo['key'], $assocField, $assocValue, $defaultValues);
             $sql = "{$this->sqlINSERTCommand()}{$tableName} ({$fieldList}) " .
                 "SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
             $this->dbClassObj->logger->setDebugMessage($sql);
@@ -83,5 +83,6 @@ abstract class DB_PDO_Handler
 
     protected abstract function getTableInfo($tableName);
 
-    protected abstract function getFieldLists($tableName, $keyField, $assocField, $assocValue);
+    protected abstract function getFieldListsForCopy(
+        $tableName, $keyField, $assocField, $assocValue, $defaultValues);
 }
