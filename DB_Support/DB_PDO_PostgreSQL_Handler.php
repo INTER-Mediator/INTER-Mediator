@@ -108,7 +108,7 @@ test_db       | im_sample    | person     | memo        |
  */
 
 
-    protected function getFieldLists($tableName, $keyField, $assocField, $assocValue)
+    protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -123,6 +123,9 @@ test_db       | im_sample    | person     | memo        |
             } else if ($assocField === $row['column_name']) {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
+            } else if (isset($defaultValues[$row['column_name']])) {
+                $fieldArray[] = $this->quotedEntityName($row['column_name']);
+                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['Field']]);
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['column_name']);
                 $listArray[] = $this->quotedEntityName($row['column_name']);

@@ -148,7 +148,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $recId = substr($key, 0, strpos($key, '.'));
 
@@ -178,7 +178,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->dbClass->setupFXforDB($userTable, 1);
             $this->dbClass->fx->AddDBParam('email', str_replace("@", "\\@", $username), 'eq');
             $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
-            $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         }
         if (!is_array($result)) {
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
@@ -192,7 +192,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
 
     public function authSupportCreateUser($username, $hashedpassword, $isLDAP = false, $ldapPassword = null)
     {
-        if ($this->authHandler->authSupportRetrieveHashedPassword($username) !== false) {
+        if ($this->authSupportRetrieveHashedPassword($username) !== false) {
             $this->logger->setErrorMessage('User Already exist: ' . $username);
             return false;
         }
@@ -205,7 +205,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->dbClassstringWithoutCredential($result['URL']));
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         return true;
     }
 
@@ -524,7 +524,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         return true;
     }
 
@@ -544,7 +544,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $userID = $row['user_id'][0];
             return $userID;
@@ -581,7 +581,7 @@ class DB_Auth_Handler_FileMaker_DataAPI extends DB_Auth_Common implements Auth_I
                 $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
                 return false;
             }
-            $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
             return $userID;
         }
     }

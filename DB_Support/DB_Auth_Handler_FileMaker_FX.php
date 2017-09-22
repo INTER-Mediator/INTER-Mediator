@@ -205,7 +205,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         return true;
     }
 
@@ -524,7 +524,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         return true;
     }
 
@@ -544,7 +544,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
             $this->logger->setDebugMessage(get_class($result) . ': ' . $result->getDebugInfo());
             return false;
         }
-        $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+        $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
         foreach ($result['data'] as $key => $row) {
             $userID = $row['user_id'][0];
             return $userID;
@@ -581,7 +581,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
                 $this->logger->setDebugMessage(get_class($result) . ': ' . $result->toString());
                 return false;
             }
-            $this->logger->setDebugMessage($this->stringWithoutCredential($result['URL']));
+            $this->logger->setDebugMessage($this->dbClass->stringWithoutCredential($result['URL']));
             return $userID;
         }
     }
