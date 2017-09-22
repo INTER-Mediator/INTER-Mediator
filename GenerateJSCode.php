@@ -56,8 +56,6 @@ class GenerateJSCode
         $oAuthRedirect = null;
         $themeName = "default";
         $dbClass = null;
-        $appLocale = 'null';
-        $appCurrency = 'null';
         $params = IMUtil::getFromParamsPHPFile(array(
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",

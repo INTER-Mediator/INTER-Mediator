@@ -217,7 +217,7 @@ class DB_Auth_Handler_FileMaker_FX extends DB_Auth_Common implements Auth_Interf
         }
 
         $this->dbClass->setupFXforDB($userTable, 1);
-        $username = $this->dbClass->authSupportUnifyUsernameAndEmail($username);
+        $username = $this->authSupportUnifyUsernameAndEmail($username);
         $this->dbClass->fx->AddDBParam('username', str_replace("@", "\\@", $username), 'eq');
         $result = $this->dbClass->fx->DoFxAction('perform_find', TRUE, TRUE, 'full');
         if ((!is_array($result) || count($result['data']) < 1) && $this->dbSettings->getEmailAsAccount()) {
