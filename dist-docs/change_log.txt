@@ -10,8 +10,8 @@ Please check: https://github.com/INTER-Mediator/INTER-Mediator
 Also the Migration Guide (Japanese) might be informative:
   http://inter-mediator.info/ja/for-developers/migration.html
 
-Ver.5.7 (in development)
-- Mr. Motofuni Iijima is added as a contributor. He published contents for novices with Qiita document and
+Ver.5.7-dev (in development)
+- Mr. Motofumi Iijima is added as a contributor. He published contents for novices with Qiita document and
   YouTube movies.
 - The "data-im-format" attribute is introduced.
   See the web site http://inter-mediator.info/ja/for-developers/format.html.
@@ -31,6 +31,7 @@ Ver.5.7 (in development)
 - The "datatype" can be eliminated, and it means "FMPro12."
 - On the Master/Detail UI, the detail area shows the first record of master area.
 - Apply the default-values data on copy operation.
+- Update .gitlab-ci.yml and rename trainingcourse_spec.rb to samples_spec.rb for starting E2E testing.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 - [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.
@@ -39,6 +40,9 @@ Ver.5.7 (in development)
 - [BUG FIX] Master/Detail interface in mobile phone didn't return the master page from the detail page.
 - [BUG FIX] Password couldn't change on FileMaker Server from refactoring DB_Support directory.
 
+Ver.5.6.1 (September 16, 2017)
+- Fix loading the page of the Practice "search (using JavaScript)".
+ 
 Ver.5.6 (June 23, 2017)
 - Well-designed CSS files as the 'default' theme are added by Hiroko Oki. She is web designer and a lecturer of
   Kyoto University of Art and Design.
