@@ -94,7 +94,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
 
     public function setupHandlers()
     {
-        if (!is_null($this->dbSettings)) {
+        if (! is_null($this->dbSettings)) {
             $this->handler = DB_PDO_Handler::generateHandler($this, $this->dbSettings->getDbSpecDSN());
             $this->handler->optionalOperationInSetup();
         }
@@ -499,7 +499,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
      * @param $dataSourceName
      * @return int
      */
-    public function countQueryResult()
+public     function countQueryResult()
     {
         return $this->mainTableCount;
     }
@@ -508,7 +508,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
      * @param $dataSourceName
      * @return int
      */
-    public function getTotalCount()
+public     function getTotalCount()
     {
         return $this->mainTableTotalCount;
     }
@@ -632,7 +632,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
      * @param $bypassAuth
      * @return bool
      */
-    public function createInDB($bypassAuth)
+public     function createInDB($bypassAuth)
     {
         $this->fieldInfo = null;
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
@@ -850,19 +850,13 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                 }
             }
         }
-        $defaultValues = array();
-        if (isset($tableInfo['default-values'])) {
-            foreach ($tableInfo['default-values'] as $itemDef) {
-                $defaultValues[$itemDef['field']] = $itemDef['value'];
-            }
-        }
         //======
         $queryClause = $this->getWhereClause('delete', false, true, $signedUser);
         if ($queryClause == '') {
             $this->errorMessageStore('Don\'t copy with no ciriteria.');
             return false;
         }
-        $lastKeyValue = $this->handler->copyRecords($tableInfo, $queryClause, null, null, $defaultValues);
+        $lastKeyValue = $this->handler->copyRecords($tableInfo, $queryClause, null, null);
         if ($lastKeyValue === false) {
             return false;
         }
@@ -873,16 +867,9 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         if ($assocArray) {
             foreach ($assocArray as $assocInfo) {
                 $assocContextDef = $this->dbSettings->getDataSourceDefinition($assocInfo['name']);
-                $defaultValues = array();
-                if (isset($assocContextDef['default-values'])) {
-                    foreach ($assocContextDef['default-values'] as $itemDef) {
-                        $defaultValues[$itemDef['field']] = $itemDef['value'];
-                    }
-                }
                 $queryClause = $this->handler->quotedEntityName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
-                $this->handler->copyRecords(
-                    $assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue, $defaultValues);
+                $this->handler->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue);
             }
         }
         //======

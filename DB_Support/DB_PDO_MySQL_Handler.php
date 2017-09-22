@@ -98,7 +98,7 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
 4 rows in set (0.00 sec)
     */
 
-    protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
+    protected function getFieldLists($tableName, $keyField, $assocField, $assocValue)
     {
         try {
             $result = $this->getTableInfo($tableName);
@@ -113,9 +113,6 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
             } else if ($assocField === $row['Field']) {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
-            } else if (isset($defaultValues[$row['Field']])) {
-                $fieldArray[] = $this->quotedEntityName($row['Field']);
-                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['Field']]);
             } else {
                 $fieldArray[] = $this->quotedEntityName($row['Field']);
                 $listArray[] = $this->quotedEntityName($row['Field']);
