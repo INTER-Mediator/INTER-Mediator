@@ -129,9 +129,19 @@ if node[:platform] == 'ubuntu'
   end
 end
 
+if node[:platform] == 'alpine'
+  package 'curl' do
+    action :install
+  end
+end
 if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
   package 'apache2' do
     action :install
+  end
+  if node[:platform] == 'alpine'
+    package 'apache2-proxy' do
+      action :install
+    end
   end
   service 'apache2' do
     action [ :enable, :start ]
@@ -784,7 +794,7 @@ $browserCompatibility = array(
     'Safari' => '4+',
     'Trident' => '5+',
 );
-$dbServer = '192.168.56.1';
+$dbServer = '127.0.0.1';
 $dbPort = '80';
 $dbDataType = 'FMPro12';
 $dbDatabase = 'TestDB';
@@ -1162,6 +1172,18 @@ file '/home/developer/.viminfo' do
 end
 execute 'chown -R developer:developer /home/developer' do
   command 'chown -R developer:developer /home/developer'
+end
+
+if node[:platform] == 'alpine'
+  file '/etc/apache2/conf.d/im.conf' do
+    content <<-EOF
+LoadModule rewrite_module modules/mod_rewrite.so
+LoadModule slotmem_shm_module modules/mod_slotmem_shm.so
+RewriteEngine on
+RewriteRule ^/fmi/rest/(.*) http://192.168.56.1/fmi/rest/$1 [P,L]
+RewriteRule ^/fmi/xml/(.*)  http://192.168.56.1/fmi/xml/$1 [P,L]
+EOF
+  end
 end
   
 if node[:platform] == 'alpine'
