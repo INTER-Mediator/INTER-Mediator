@@ -18,13 +18,13 @@ end
 #  it { should be_installed }
 #end
 
-describe package('curl'), :if => os[:family] == 'alpine'
+describe package('curl'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('apache2'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
   it { should be_installed }
 end
-describe package('apache2-proxy'), :if => os[:family] == 'alpine'
+describe package('apache2-proxy'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('httpd'), :if => os[:family] == 'redhat' do
@@ -629,8 +629,8 @@ describe file('/etc/apache2/conf.d/im.conf'), :if => os[:family] == 'alpine' do
   its(:content) { should match /LoadModule rewrite_module modules\/mod_rewrite.so/ }
   its(:content) { should match /LoadModule slotmem_shm_module modules\/mod_slotmem_shm.so/ }
   its(:content) { should match /RewriteEngine on/ }
-  its(:content) { should match /RewriteRule \^\/fmi\/rest\// }
-  its(:content) { should match /RewriteRule \^\/fmi\/xml\// }
+  its(:content) { should match /RewriteRule \^\/fmi\/rest\/\(\.\*\) http:\/\/192.168.56.1\/fmi\/rest\/\$1/ }
+  its(:content) { should match /RewriteRule \^\/fmi\/xml\/\(\.\*\)  http:\/\/192.168.56.1\/fmi\/xml\/\$1/ }
 end
 
 describe file('/etc/php7/php.ini'), :if => os[:family] == 'alpine' do
