@@ -138,7 +138,7 @@ var IMLibUI = {
                 return true;
             }
 
-          if (!contextInfo) {
+            if (!contextInfo) {
                 throw "unfinished";
             }
             newValue = IMLibElement.getValueFromIMNode(changedObj);
