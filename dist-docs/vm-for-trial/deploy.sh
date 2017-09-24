@@ -297,8 +297,8 @@ if [ $OS = 'alpine' ] ; then
     echo "LoadModule rewrite_module modules/mod_rewrite.so" > /etc/apache2/conf.d/im.conf
     echo "LoadModule slotmem_shm_module modules/mod_slotmem_shm.so" >> /etc/apache2/conf.d/im.conf
     echo "RewriteEngine on" >> /etc/apache2/conf.d/im.conf
-    echo "RewriteRule ^/fmi/rest/(.*) http://192.168.56.1/fmi/rest/$1 [P,L]" >> /etc/apache2/conf.d/im.conf
-    echo "RewriteRule ^/fmi/xml/(.*)  http://192.168.56.1/fmi/xml/$1 [P,L]" >> /etc/apache2/conf.d/im.conf
+    echo "RewriteRule ^/fmi/rest/(.*) http://192.168.56.1/fmi/rest/\$1 [P,L]" >> /etc/apache2/conf.d/im.conf
+    echo "RewriteRule ^/fmi/xml/(.*)  http://192.168.56.1/fmi/xml/\$1 [P,L]" >> /etc/apache2/conf.d/im.conf
 fi
 
 # Modify php.ini
