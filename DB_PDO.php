@@ -16,13 +16,6 @@
 /**
  * Class DB_PDO
  */
-//require_once(dirname(__FILE__) . '/DB_Support/DB_PDO_Handler.php');
-//require_once(dirname(__FILE__) . '/DB_Support/DB_Auth_Common.php');
-//require_once(dirname(__FILE__) . '/DB_Support/DB_Notification_Common.php');
-//require_once(dirname(__FILE__) . '/DB_Support/DB_Auth_Handler_PDO.php');
-//require_once(dirname(__FILE__) . '/DB_Support/DB_Notification_Handler_PDO.php');
-//require_once(dirname(__FILE__) . '/DB_Support/DB_Spec_Handler_PDO.php');
-
 class DB_PDO extends DB_UseSharedObjects implements DB_Interface
 {
     public $link = null;       // Connection with PDO's link
@@ -94,7 +87,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
 
     public function setupHandlers()
     {
-        if (! is_null($this->dbSettings)) {
+        if (!is_null($this->dbSettings)) {
             $this->handler = DB_PDO_Handler::generateHandler($this, $this->dbSettings->getDbSpecDSN());
             $this->handler->optionalOperationInSetup();
         }
@@ -499,7 +492,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
      * @param $dataSourceName
      * @return int
      */
-public     function countQueryResult()
+    public function countQueryResult()
     {
         return $this->mainTableCount;
     }
@@ -508,7 +501,7 @@ public     function countQueryResult()
      * @param $dataSourceName
      * @return int
      */
-public     function getTotalCount()
+    public function getTotalCount()
     {
         return $this->mainTableTotalCount;
     }
@@ -632,7 +625,7 @@ public     function getTotalCount()
      * @param $bypassAuth
      * @return bool
      */
-public     function createInDB($bypassAuth)
+    public function createInDB($bypassAuth)
     {
         $this->fieldInfo = null;
         $fieldInfos = $this->handler->getNullableNumericFields($this->dbSettings->getEntityForUpdate());
@@ -856,7 +849,13 @@ public     function createInDB($bypassAuth)
             $this->errorMessageStore('Don\'t copy with no ciriteria.');
             return false;
         }
-        $lastKeyValue = $this->handler->copyRecords($tableInfo, $queryClause, null, null);
+        $defaultValues = array();
+        if (isset($tableInfo['default-values'])) {
+            foreach ($tableInfo['default-values'] as $itemDef) {
+                $defaultValues[$itemDef['field']] = $itemDef['value'];
+            }
+        }
+        $lastKeyValue = $this->handler->copyRecords($tableInfo, $queryClause, null, null, $defaultValues);
         if ($lastKeyValue === false) {
             return false;
         }
@@ -869,7 +868,13 @@ public     function createInDB($bypassAuth)
                 $assocContextDef = $this->dbSettings->getDataSourceDefinition($assocInfo['name']);
                 $queryClause = $this->handler->quotedEntityName($assocInfo["field"]) . "=" .
                     $this->link->quote($assocInfo["value"]);
-                $this->handler->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue);
+                $defaultValues = array();
+                if (isset($assocContextDef['default-values'])) {
+                    foreach ($assocContextDef['default-values'] as $itemDef) {
+                        $defaultValues[$itemDef['field']] = $itemDef['value'];
+                    }
+                }
+                $this->handler->copyRecords($assocContextDef, $queryClause, $assocInfo["field"], $lastKeyValue, $defaultValues);
             }
         }
         //======
