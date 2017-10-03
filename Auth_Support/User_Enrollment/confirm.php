@@ -16,6 +16,7 @@ if (count($_GET) > 0) {
         $ermessage .= '接続するときのURLが正しくありません。途中で欠けた文字で接続していないか確認してください。';
     } else {
 
+        // Generate an initial password. You can modify here to adapt your requirement for password.
         $seed = '234578ABDEFGHJLMNPRTUYadefghprty';
         $password = '';
         for ($i = 0; $i < 6; $i++) {
@@ -74,7 +75,7 @@ header('Content-Type: text/html;charset="UTF-8"');
 <!DOCTYPE html>
 <head>
     <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
-    <title>登録確認</title>
+    <title>登録確認 - INTER-Mediator</title>
 <body>
 <h1>登録確認</h1>
 <p style="color:black;font-weight:900"><?php echo $message ?></p>
