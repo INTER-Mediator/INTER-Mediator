@@ -18,7 +18,13 @@ end
 #  it { should be_installed }
 #end
 
+describe package('curl'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('apache2'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+describe package('apache2-proxy'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
 describe package('httpd'), :if => os[:family] == 'redhat' do
@@ -508,8 +514,9 @@ describe file(WEBROOT + '/params.php') do
   it { should be_file }
   its(:content) { should match /\$dbUser = 'web';/ }
   its(:content) { should match /\$dbOption = array\(\);/ }
-  its(:content) { should match /\$dbServer = '192.168.56.1';/ }
+  its(:content) { should match /\$dbServer = '127.0.0.1';/ }
   its(:content) { should match /\$generatedPrivateKey = <<<EOL/ }
+  its(:content) { should_not match /\$dbDataType = 'FMPro12';/ }
 end
 describe file(WEBROOT + '/params.php'), :if => os[:family] == 'alpine' do
   its(:content) { should match /\$dbDSN = 'mysql:unix_socket=\/run\/mysqld\/mysqld.sock;dbname=test_db;charset=utf8mb4';/ }
@@ -615,6 +622,15 @@ describe file('/home/developer') do
   it { should be_directory }
   it { should be_owned_by 'developer' }
   it { should be_grouped_into 'developer' }
+end
+
+describe file('/etc/apache2/conf.d/im.conf'), :if => os[:family] == 'alpine' do
+  it { should be_file }
+  its(:content) { should match /LoadModule rewrite_module modules\/mod_rewrite.so/ }
+  its(:content) { should match /LoadModule slotmem_shm_module modules\/mod_slotmem_shm.so/ }
+  its(:content) { should match /RewriteEngine on/ }
+  its(:content) { should match /RewriteRule \^\/fmi\/rest\/\(\.\*\) http:\/\/192.168.56.1\/fmi\/rest\/\$1/ }
+  its(:content) { should match /RewriteRule \^\/fmi\/xml\/\(\.\*\)  http:\/\/192.168.56.1\/fmi\/xml\/\$1/ }
 end
 
 describe file('/etc/php7/php.ini'), :if => os[:family] == 'alpine' do
