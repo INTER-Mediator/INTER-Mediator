@@ -9,7 +9,7 @@
 require_once "LineDivider.php";
 require_once "FieldDivider.php";
 
-class LineFieldDividerTest extends PHPUnit\Framework\TestCase
+class LineFieldDividerTest extends PHPUnit_Framework_TestCase
 {
 
     private function checkLines($d)
