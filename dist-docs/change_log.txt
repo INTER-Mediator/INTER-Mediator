@@ -96,6 +96,9 @@ Ver.5.6 (June 23, 2017)
   and so on.
 - Use @-operator before exif_read_data() in MediaAccess.php to avoid outputting a warning in an error log file in case
   of using PHP 5.6.
+- Global variable IMLibKeyEventDispatch is removed, and added IMLibKeyDownEventDispatch and
+  IMLibKeyUpEventDispatch.
+- The event handling global variable IMLibBlurEventDispatch and IMLibInputEventDispatch added.
 - [SECURITY FIX] The resetpassword.php in Auth_Support/PasswordReset folder had security issues.
   If you use the resetpassword.php file in your solution. we'd like to replace the fixed version.
 - [BUG FIX] IMLibContext class's getDataAtLastRecord method had a bug (wrong parameters for getValue).
