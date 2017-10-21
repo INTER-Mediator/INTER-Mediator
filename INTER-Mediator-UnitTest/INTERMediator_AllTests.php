@@ -47,7 +47,7 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'MediaAccess_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_Test.php');
         $suite->addTestFile($folder . 'MessageStrings_ja_Test.php');
-        $suite->addTestFile($folder . 'Line_Field_Divider_Test.php\');
+        $suite->addTestFile($folder . 'Line_Field_Divider_Test.php');
         //$suite->addTestFile($folder . 'OME_Test.php');
         /*
          * Travis CI can't test the SMTP communication. Is that no wander?
