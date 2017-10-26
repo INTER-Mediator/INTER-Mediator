@@ -116,18 +116,13 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = get_class($this->userExpanded);
-//            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doBeforeGetFromDB")) {
-//                $this->logger->setDebugMessage("The method 'doBeforeGetFromDB' of the class '{$className}' is calling.", 2);
-//                $this->userExpanded->doBeforeGetFromDB();
-//            }
+            $className = is_null($this->userExpanded) ? null : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeReadFromDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeReadFromDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeReadFromDB();
             }
 
             if ($this->dbClass) {
-                //$this->logger->setDebugMessage("The method 'getFromDB' of the class '{$className}' is calling.", 2);
                 $tableInfo = $this->dbSettings->getDataSourceTargetArray();
                 if (isset($tableInfo['soft-delete'])) {
                     $delFlagField = 'delete';
@@ -140,11 +135,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
                 }
                 $result = $this->dbClass->readFromDB();
             }
-
-//            if ($this->userExpanded !== null && method_exists($this->userExpanded, "doAfterGetFromDB")) {
-//                $this->logger->setDebugMessage("The method 'doAfterGetFromDB' of the class '{$className}' is calling.", 2);
-//                $result = $this->userExpanded->doAfterGetFromDB($dataSourceName, $result);
-//            }
             if ($this->userExpanded && method_exists($this->userExpanded, "doAfterReadFromDB")) {
                 $this->logger->setDebugMessage("The method 'doAfterReadFromDB' of the class '{$className}' is calling.", 2);
                 $result = $this->userExpanded->doAfterReadFromDB($result);

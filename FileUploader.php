@@ -27,9 +27,10 @@ class FileUploader
 
     */
 
-    private function justfyPathComponent($str, $mode = "default")    {
+    private function justfyPathComponent($str, $mode = "default")
+    {
         $jStr = $str;
-        switch($mode)   {
+        switch ($mode) {
             case "assjis":
                 $jStr = mb_convert_encoding($jStr, "SJIS", "UTF-8");
                 $jStr = mb_convert_encoding($jStr, "UTF-8", "SJIS");
@@ -45,7 +46,7 @@ class FileUploader
                 break;
         }
         return $jStr;
-}
+    }
 
     public function processingAsError($datasource, $options, $dbspec, $debug)
     {
@@ -157,7 +158,7 @@ class FileUploader
         }
         foreach ($_FILES as $fn => $fileInfo) {
         }
-        if (is_array($fileInfo['name']))    {   // JQuery File Upload Style
+        if (is_array($fileInfo['name'])) {   // JQuery File Upload Style
             $fileInfoName = $fileInfo['name'][0];
             $fileInfoTemp = $fileInfo['tmp_name'][0];
         } else {
@@ -166,152 +167,158 @@ class FileUploader
         }
         $filePathInfo = pathinfo(IMUtil::removeNull(basename($fileInfoName)));
 
-        if ($useContainer) {
-            // for uploading to FileMaker's container field
-            $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
-            $tmpDir = ini_get('upload_tmp_dir');
-            if ($tmpDir === '') {
-                $tmpDir = sys_get_temp_dir();
-            }
-            if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
-                $filePath = $tmpDir . $fileName;
-            } else {
-                $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
-            }
-        } else {
-            $fileRoot = $options['media-root-dir'];
-            if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
-                $fileRoot .= '/';
-            }
+        if ($_POST["_im_field"] != "_im_csv_upload") {
+            // file uploading or FM's container
+            if ($useContainer) {
+                // for uploading to FileMaker's container field
+                $fileName = $filePathInfo['filename'] . '.' . $filePathInfo['extension'];
+                $tmpDir = ini_get('upload_tmp_dir');
+                if ($tmpDir === '') {
+                    $tmpDir = sys_get_temp_dir();
+                }
+                if (mb_substr($tmpDir, 1) === DIRECTORY_SEPARATOR) {
+                    $filePath = $tmpDir . $fileName;
+                } else {
+                    $filePath = $tmpDir . DIRECTORY_SEPARATOR . $fileName;
+                }
+            } else { // for normal file uploading
+                $fileRoot = $options['media-root-dir'];
+                if (substr($fileRoot, strlen($fileRoot) - 1, 1) != '/') {
+                    $fileRoot .= '/';
+                }
 
-            $uploadFilePathMode = null;
-            $params = IMUtil::getFromParamsPHPFile(array("uploadFilePathMode",), true);
-            $uploadFilePathMode = $params["uploadFilePathMode"];
+                $uploadFilePathMode = null;
+                $params = IMUtil::getFromParamsPHPFile(array("uploadFilePathMode",), true);
+                $uploadFilePathMode = $params["uploadFilePathMode"];
 
-            $dirPath =
-                $this->justfyPathComponent($_POST["_im_contextname"], $uploadFilePathMode) . DIRECTORY_SEPARATOR
-                . $this->justfyPathComponent($_POST["_im_keyfield"], $uploadFilePathMode) . "="
-                . $this->justfyPathComponent($_POST["_im_keyvalue"], $uploadFilePathMode) . DIRECTORY_SEPARATOR
-                . $this->justfyPathComponent($_POST["_im_field"], $uploadFilePathMode);
-            $rand4Digits = rand(1000, 9999);
-            $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
-                . $rand4Digits . '.' . $filePathInfo['extension'];
-            $filePath = $fileRoot . $filePartialPath;
-            if (strpos($filePath, $fileRoot) !== 0) {
-                $dbProxyInstance->logger->setErrorMessage("Invalid Path Error.");
-                $dbProxyInstance->processingRequest("noop");
-                $dbProxyInstance->finishCommunication();
-                $dbProxyInstance->exportOutputDataAsJSON();
-                return;
-            }
-
-            if (!file_exists($fileRoot . $dirPath)) {
-                $result = mkdir($fileRoot . $dirPath, 0755, true);
-                if (!$result) {
-                    $dbProxyInstance->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
+                $dirPath =
+                    $this->justfyPathComponent($_POST["_im_contextname"], $uploadFilePathMode) . DIRECTORY_SEPARATOR
+                    . $this->justfyPathComponent($_POST["_im_keyfield"], $uploadFilePathMode) . "="
+                    . $this->justfyPathComponent($_POST["_im_keyvalue"], $uploadFilePathMode) . DIRECTORY_SEPARATOR
+                    . $this->justfyPathComponent($_POST["_im_field"], $uploadFilePathMode);
+                $rand4Digits = rand(1000, 9999);
+                $filePartialPath = $dirPath . '/' . $filePathInfo['filename'] . '_'
+                    . $rand4Digits . '.' . $filePathInfo['extension'];
+                $filePath = $fileRoot . $filePartialPath;
+                if (strpos($filePath, $fileRoot) !== 0) {
+                    $dbProxyInstance->logger->setErrorMessage("Invalid Path Error.");
                     $dbProxyInstance->processingRequest("noop");
                     $dbProxyInstance->finishCommunication();
                     $dbProxyInstance->exportOutputDataAsJSON();
                     return;
                 }
+
+                if (!file_exists($fileRoot . $dirPath)) {
+                    $result = mkdir($fileRoot . $dirPath, 0755, true);
+                    if (!$result) {
+                        $dbProxyInstance->logger->setErrorMessage("Can't make directory. [{$dirPath}]");
+                        $dbProxyInstance->processingRequest("noop");
+                        $dbProxyInstance->finishCommunication();
+                        $dbProxyInstance->exportOutputDataAsJSON();
+                        return;
+                    }
+                }
+                //exec("chmod -R o+x " . escapeshellcmd($fileRoot));
             }
-            //exec("chmod -R o+x " . escapeshellcmd($fileRoot));
-        }
-        $result = move_uploaded_file(IMUtil::removeNull($fileInfoTemp), $filePath);
-        if (!$result) {
-            if (!is_null($url)) {
-                header('Location: ' . $url);
+            $result = move_uploaded_file(IMUtil::removeNull($fileInfoTemp), $filePath);
+            if (!$result) {
+                if (!is_null($url)) {
+                    header('Location: ' . $url);
+                } else {
+                    $dbProxyInstance->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
+                    $dbProxyInstance->processingRequest("noop");
+                    $dbProxyInstance->finishCommunication();
+                    $dbProxyInstance->exportOutputDataAsJSON();
+                }
+                return;
+            }
+
+            $targetFieldName = $_POST["_im_field"];
+            if ($useContainer === FALSE) {
+                $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
+                if (isset($dbProxyContext['file-upload'])) {
+                    foreach ($dbProxyContext['file-upload'] as $item) {
+                        if (isset($item['field']) && !isset($item['context'])) {
+                            $targetFieldName = $item['field'];
+                        }
+                    }
+                }
+            }
+
+            $dbKeyValue = $_POST["_im_keyvalue"];
+            $dbProxyInstance = new DB_Proxy();
+            $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
+            $dbProxyInstance->dbSettings->addExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
+            $dbProxyInstance->dbSettings->setFieldsRequired(array($targetFieldName));
+
+            // If the file content is base64 encoded url starting with 'data:,', decode it and store a file.
+            $fileContent = file_get_contents($filePath, false, null, 0, 30);
+            $headerTop = strpos($fileContent, "data:");
+            $endOfHeader = strpos($fileContent, ",");
+            if ($headerTop === 0 && $endOfHeader > 0) {
+                $tempFilePath = $filePath . ".temp";
+                rename($filePath, $tempFilePath);
+                $step = 1024;
+                if (strpos($fileContent, ";base64") !== false) {
+                    $fw = fopen($filePath, "w");
+                    $fp = fopen($tempFilePath, "r");
+                    fread($fp, $endOfHeader + 1);
+                    while ($str = fread($fp, $step)) {
+                        fwrite($fw, base64_decode($str));
+                    }
+                    fclose($fp);
+                    fclose($fw);
+                    unlink($tempFilePath);
+                }
+            }
+
+            if ($useContainer === FALSE) {
+                $dbProxyInstance->dbSettings->setValue(array($filePartialPath));
             } else {
-                $dbProxyInstance->logger->setErrorMessage("Fail to move the uploaded file in the media folder.");
-                $dbProxyInstance->processingRequest("noop");
-                $dbProxyInstance->finishCommunication();
-                $dbProxyInstance->exportOutputDataAsJSON();
+                $dbProxyInstance->dbSettings->setValue(array($fileName . "\n" . base64_encode(file_get_contents($filePath))));
             }
-            return;
-        }
 
-        $targetFieldName = $_POST["_im_field"];
-        if ($useContainer === FALSE) {
-            $dbProxyContext = $dbProxyInstance->dbSettings->getDataSourceTargetArray();
-            if (isset($dbProxyContext['file-upload'])) {
-                foreach ($dbProxyContext['file-upload'] as $item) {
-                    if (isset($item['field']) && !isset($item['context'])) {
-                        $targetFieldName = $item['field'];
+            $dbProxyInstance->processingRequest("update");
+
+            $relatedContext = null;
+            if ($useContainer === FALSE) {
+                if (isset($dbProxyContext['file-upload'])) {
+                    foreach ($dbProxyContext['file-upload'] as $item) {
+                        if ($item['field'] == $_POST["_im_field"]) {
+                            $relatedContext = new DB_Proxy();
+                            $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
+                            $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
+                            $fields = array();
+                            $values = array();
+                            if (isset($relatedContextInfo["query"])) {
+                                foreach ($relatedContextInfo["query"] as $cItem) {
+                                    if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+                                        $fields[] = $cItem['field'];
+                                        $values[] = $cItem['value'];
+                                    }
+                                }
+                            }
+                            if (isset($relatedContextInfo["relation"])) {
+                                foreach ($relatedContextInfo["relation"] as $cItem) {
+                                    if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
+                                        $fields[] = $cItem['foreign-key'];
+                                        $values[] = $dbKeyValue;
+                                    }
+                                }
+                            }
+                            $fields[] = "path";
+                            $values[] = $filePartialPath;
+                            $relatedContext->dbSettings->setFieldsRequired($fields);
+                            $relatedContext->dbSettings->setValue($values);
+                            $relatedContext->processingRequest("create", true);
+                            //    $relatedContext->finishCommunication(true);
+                            //    $relatedContext->exportOutputDataAsJSON();
+                        }
                     }
                 }
             }
-        }
+        } else {    // CSV File uploading
 
-        $dbKeyValue = $_POST["_im_keyvalue"];
-        $dbProxyInstance = new DB_Proxy();
-        $dbProxyInstance->initialize($datasource, $options, $dbspec, $debug, $_POST["_im_contextname"]);
-        $dbProxyInstance->dbSettings->addExtraCriteria($_POST["_im_keyfield"], "=", $dbKeyValue);
-        $dbProxyInstance->dbSettings->setFieldsRequired(array($targetFieldName));
-
-        $fileContent = file_get_contents($filePath, false, null, 0, 30);
-        $headerTop = strpos($fileContent, "data:");
-        $endOfHeader = strpos($fileContent, ",");
-        if ($headerTop === 0 && $endOfHeader > 0) {
-            $tempFilePath = $filePath . ".temp";
-            rename($filePath, $tempFilePath);
-            $step = 1024;
-            if (strpos($fileContent, ";base64") !== false) {
-                $fw = fopen($filePath, "w");
-                $fp = fopen($tempFilePath, "r");
-                fread($fp, $endOfHeader + 1);
-                while ($str = fread($fp, $step)) {
-                    fwrite($fw, base64_decode($str));
-                }
-                fclose($fp);
-                fclose($fw);
-                unlink($tempFilePath);
-            }
-        }
-
-        if ($useContainer === FALSE) {
-            $dbProxyInstance->dbSettings->setValue(array($filePartialPath));
-        } else {
-            $dbProxyInstance->dbSettings->setValue(array($fileName . "\n" . base64_encode(file_get_contents($filePath))));
-        }
-
-        $dbProxyInstance->processingRequest("update");
-
-        $relatedContext = null;
-        if ($useContainer === FALSE) {
-            if (isset($dbProxyContext['file-upload'])) {
-                foreach ($dbProxyContext['file-upload'] as $item) {
-                    if ($item['field'] == $_POST["_im_field"]) {
-                        $relatedContext = new DB_Proxy();
-                        $relatedContext->initialize($datasource, $options, $dbspec, $debug, isset($item['context']) ? $item['context'] : null);
-                        $relatedContextInfo = $relatedContext->dbSettings->getDataSourceTargetArray();
-                        $fields = array();
-                        $values = array();
-                        if (isset($relatedContextInfo["query"])) {
-                            foreach ($relatedContextInfo["query"] as $cItem) {
-                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-                                    $fields[] = $cItem['field'];
-                                    $values[] = $cItem['value'];
-                                }
-                            }
-                        }
-                        if (isset($relatedContextInfo["relation"])) {
-                            foreach ($relatedContextInfo["relation"] as $cItem) {
-                                if ($cItem['operator'] == "=" || $cItem['operator'] == "eq") {
-                                    $fields[] = $cItem['foreign-key'];
-                                    $values[] = $dbKeyValue;
-                                }
-                            }
-                        }
-                        $fields[] = "path";
-                        $values[] = $filePartialPath;
-                        $relatedContext->dbSettings->setFieldsRequired($fields);
-                        $relatedContext->dbSettings->setValue($values);
-                        $relatedContext->processingRequest("create", true);
-                        //    $relatedContext->finishCommunication(true);
-                        //    $relatedContext->exportOutputDataAsJSON();
-                    }
-                }
-            }
         }
 
         if ($useContainer === FALSE) {
