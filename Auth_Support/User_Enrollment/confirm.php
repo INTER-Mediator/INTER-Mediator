@@ -33,7 +33,7 @@ if (count($_GET) > 0) {
             'send-mail' => array(
                 'read' => array(
                     'to' => 'email',
-                    'bcc' => 'info@msyk.net',
+                    'bcc-constant' => 'info@msyk.net',
                     'subject-constant' => 'ユーザ登録を完了しました',
                     'from-constant' => 'Masayuki Nii <info@msyk.net>',
                     'body-template' => 'confirmmail.txt',

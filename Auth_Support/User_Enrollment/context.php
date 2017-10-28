@@ -45,7 +45,7 @@ IM_Entry(
             'send-mail' => array(
                 'create' => array(
                     'to' => 'email',
-                    'bcc' => 'info@msyk.net',
+                    'bcc-constant' => 'info@msyk.net',
                     'subject-constant' => 'ユーザ登録を受け付けました',
                     'from-constant' => 'Masayuki Nii <info@msyk.net>',
                     'body-template' => 'enrollmail.txt',
