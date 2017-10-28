@@ -37,55 +37,56 @@
     <div class="container">
         <h1>JavaScript Component Test for jQuery File Upload</h1>
         <p>This sample requires jQuery File Upload and Bootstrap.</p>
-        <span class="btn btn-success fileinput-button">
-        <i class="glyphicon glyphicon-plus"></i>
-        <span>ファイル選択...</span>
-            <!-- The file input field used as target for the file upload widget -->
-        <input id="fileupload" type="file" name="files[]" multiple>
-    </span>
-        <span id="filenamelabel" style="display:none">選択ファイル: </span>
-        <span id="filename" style="display:none"></span>
-        <span id="uploadarea" class="btn btn-primary" style="display:none">
-        <i class="glyphicon"></i>
-         <span>アップロード</span>
-    </span>
-        <!-- The global progress bar -->
-        <div id="progress" class="progress" style="margin-top: 6px;">
-            <div class="bar" style="width: 0%;"></div>
-        </div>
+        <!--<span class="btn btn-success fileinput-button">-->
+        <!--<i class="glyphicon glyphicon-plus"></i>-->
+        <!--<span>ファイル選択...</span>-->
+            <!--&lt;!&ndash; The file input field used as target for the file upload widget &ndash;&gt;-->
+        <!--<input id="fileupload" type="file" name="files[]" multiple>-->
+    <!--</span>-->
+        <!--<span id="filenamelabel" style="display:none">選択ファイル: </span>-->
+        <!--<span id="filename" style="display:none"></span>-->
+        <!--<span id="uploadarea" class="btn btn-primary" style="display:none">-->
+        <!--<i class="glyphicon"></i>-->
+         <!--<span>アップロード</span>-->
+    <!--</span>-->
+        <!--&lt;!&ndash; The global progress bar &ndash;&gt;-->
+        <!--<div id="progress" class="progress" style="margin-top: 6px;">-->
+            <!--<div class="bar" style="width: 0%;"></div>-->
+        <!--</div>-->
 
         <!--<input id="fileupload" type="file" name="files[]" data-url="server/php/" multiple>-->
         <!--<div id="progress">-->
         <!--<div class="bar" style="width: 0%;"></div>-->
         <!--</div>-->
-        <script>
-            $(function () {
-                $('#fileupload').fileupload({
-                    dataType: 'json',
-                    url: "jQuery-File-Upload/server/php/index.php",
-                    add: function (e, data) {
-                        $('#filename').text(data.files[0].name);
-                        $('#filenamelabel').css('display', 'inline');
-                        $('#filename').css('display', 'inline');
-                        $('#uploadarea').css('display', 'inline');
-                        $('#uploadarea').click(function () {
-                            data.submit();
-                        });
-                    },
-                    done: function (e, data) {
+        <!--<script>-->
+            <!--$(function () {-->
+                <!--$('#fileupload').fileupload({-->
+                    <!--dataType: 'json',-->
+                    <!--url: "jQuery-File-Upload/server/php/index.php",-->
+                    <!--add: function (e, data) {-->
+                        <!--$('#filename').text(data.files[0].name);-->
+                        <!--$('#filenamelabel').css('display', 'inline');-->
+                        <!--$('#filename').css('display', 'inline');-->
+                        <!--$('#uploadarea').css('display', 'inline');-->
+                        <!--$('#uploadarea').click(function () {-->
+                            <!--data.submit();-->
+                        <!--});-->
+                    <!--},-->
+                    <!--done: function (e, data) {-->
 
-                    },
-                    fail: function (e, data) {
-                        window.alert(data.textStatus);
-                    },
-                    progressall: function (e, data) {
-                        var progress = parseInt(data.loaded / data.total * 100, 10);
-                        $('#progress .bar').css('width', progress + '%');
-                    }
-                });
-            });
-        </script>
+                    <!--},-->
+                    <!--fail: function (e, data) {-->
+                        <!--window.alert(data.textStatus);-->
+                    <!--},-->
+                    <!--progressall: function (e, data) {-->
+                        <!--var progress = parseInt(data.loaded / data.total * 100, 10);-->
+                        <!--$('#progress .bar').css('width', progress + '%');-->
+                    <!--}-->
+                <!--});-->
+            <!--});-->
+        <!--</script>-->
 
+        <div data-im-control="testtable@_im_csv_upload" data-im-widget="jquery_fileupload"></div>
         <table>
             <thead>
             <tr>

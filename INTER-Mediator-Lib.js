@@ -1585,7 +1585,7 @@ var INTERMediatorLib = {
         return {linkedNode: linkedNodesCollection, widgetNode: widgetNodesCollection};
 
         function seekLinkedElement(node) {
-            var nType, currentEnclosure, children, detectedEnclosure, i;
+            var nType, currentEnclosure, children, i;
             nType = node.nodeType;
             if (nType === 1) {
                 if (INTERMediatorLib.isLinkedElement(node)) {
@@ -1606,7 +1606,7 @@ var INTERMediatorLib = {
                 }
                 children = node.childNodes;
                 for (i = 0; i < children.length; i++) {
-                    detectedEnclosure = seekLinkedElement(children[i]);
+                    seekLinkedElement(children[i]);
                 }
             }
             return null;
