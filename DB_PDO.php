@@ -52,7 +52,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
     /**
      * @param $str
      */
-    private function errorMessageStore($str)
+    public function errorMessageStore($str)
     {
         if ($this->link) {
             $errorInfo = var_export($this->link->errorInfo(), true);
@@ -366,8 +366,13 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             $queryClause = "WHERE {$queryClause}";
         }
         $sortClause = $this->getSortClause();
-        if ($sortClause != '') {
-            $sortClause = "ORDER BY {$sortClause}";
+        if ($sortClause == '') {
+            if ($tableInfo["key"]) {
+                $sortClause = $tableInfo["key"];
+            } else if (count($this->dbSettings->getFieldsRequired()) > 0) {
+                $fields = $this->dbSettings->getFieldsRequired();
+                $sortClause = $fields[0];
+            }
         }
 
         $isAggregate = ($this->dbSettings->getAggregationSelect() != null);
@@ -405,13 +410,13 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                 implode(',', array_unique($this->dbSettings->getFieldsRequired())) : "*");
         $groupBy = ($isAggregate && $this->dbSettings->getAggregationGroupBy())
             ? ("GROUP BY " . $this->dbSettings->getAggregationGroupBy()) : "";
-        $offset = "OFFSET {$skipParam}";
+        $offset = $skipParam;
 
         if ($isAggregate && !$isPaging) {
             $offset = '';
         } else {
             // Count all records matched with the condtions
-            $sql = "SELECT count(*) FROM {$viewOrTableName} {$queryClause} {$groupBy}";
+            $sql = "{$this->handler->sqlSelectCommand()}count(*) FROM {$viewOrTableName} {$queryClause} {$groupBy}";
             $this->logger->setDebugMessage($sql);
             $result = $this->link->query($sql);
             if ($result === false) {
@@ -424,7 +429,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                 $this->mainTableTotalCount = $this->mainTableCount;
             } else {
                 // Count all records
-                $sql = "SELECT count(*) FROM {$viewOrTableName} {$groupBy}";
+                $sql = "{$this->handler->sqlSELECTCommand()}count(*) FROM {$viewOrTableName} {$groupBy}";
                 $this->logger->setDebugMessage($sql);
                 $result = $this->link->query($sql);
                 if ($result === false) {
@@ -435,11 +440,11 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             }
         }
 
-        $sql = "SELECT {$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} {$sortClause} "
-            . " LIMIT {$limitParam} {$offset}";
+        $sql = "{$this->handler->sqlSELECTCommand()}{$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} "
+            . $this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset);
         $this->logger->setDebugMessage($sql);
         $this->notifyHandler->setQueriedEntity($viewOrTableName);
-        $this->notifyHandler->setQueriedCondition("{$queryClause} {$sortClause} LIMIT {$limitParam} {$offset}");
+        $this->notifyHandler->setQueriedCondition("{$queryClause} {$this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset)}");
 
         // Query
         $result = $this->link->query($sql);
