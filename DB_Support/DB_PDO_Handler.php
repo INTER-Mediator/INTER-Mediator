@@ -39,6 +39,10 @@ abstract class DB_PDO_Handler
             $instance = new DB_PDO_SQLite_Handler();
             $instance->dbClassObj = $dbObj;
             return $instance;
+        } else if (strpos($dsn, 'sqlsvr:') === 0) {
+            $instance = new DB_PDO_SQLServer_Handler();
+            $instance->dbClassObj = $dbObj;
+            return $instance;
         }
         return null;
     }
