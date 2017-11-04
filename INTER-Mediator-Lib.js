@@ -1139,6 +1139,9 @@ var INTERMediatorLib = {
             }
         }
         var dt = new Date(str.replace(/-/g, '/')), c, result = "", replaced;
+        if(dt.toString() === "Invalid Date")    {
+            return "";
+        }
         for (c = 0; c < params.length; c++) {
             if ((c + 1) < params.length && INTERMediatorLib.placeHolder[params.substr(c, 2)]) {
                 replaced = (INTERMediatorLib.placeHolder[params.substr(c, 2)]).apply(dt);

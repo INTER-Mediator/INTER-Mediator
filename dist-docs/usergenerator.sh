@@ -1,4 +1,4 @@
-#!/sh/bin
+#!/bin/sh
 #
 # The sample shell script to create many accounts. For MySQL
 #
@@ -28,8 +28,8 @@ do
     ST="echo chr(${CODE1}).chr(${CODE2}).chr(${CODE3}).chr(${CODE4}).chr(${CODE5}).chr(${CODE6}).chr(${CODE7}).chr(${CODE8});"
     PASS=`php -r "${ST}" `
 
-    HASH=`echo -n "${PASS}${SOLT}" | openssl sha1 -sha1`
-    SOLTHEX=`echo -n "${SOLT}" | xxd -ps`
+    HASH=`/bin/echo -n "${PASS}${SOLT}" | openssl sha1 -sha1`
+    SOLTHEX=`/bin/echo -n "${SOLT}" | xxd -ps`
     UNUM=`expr 1000 + ${COUNT}`
 #    echo -n "INSERT INTO authuser(id,username,initialpass,hashedpasswd) "
 #    echo "VALUES(${UNUM},'ios${UNUM}', '${PASS}', '${HASH}${SOLTHEX}');"
