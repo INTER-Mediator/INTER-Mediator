@@ -20,6 +20,23 @@ class DB_PDO_MySQL_Handler extends DB_PDO_Handler
         return "SELECT ";
     }
 
+    public function sqlOrderByCommand($sortClause, $limit, $offset)
+    {
+        return "ORDER BY {$sortClause} " .
+            (strlen($limit) > 0 ? "LIMIT {$limit} " : "") .
+            (strlen($offset) > 0 ? "OFFSET {$offset}" : "");
+    }
+
+    public function sqlLimitCommand($param)
+    {
+        return "LIMIT {$param}";
+    }
+
+    public function sqlOffsetCommand($param)
+    {
+        return "OFFSET {$param}";
+    }
+
     public function sqlDELETECommand()
     {
         return "DELETE ";

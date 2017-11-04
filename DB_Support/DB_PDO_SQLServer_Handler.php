@@ -20,6 +20,13 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         return "SELECT ";
     }
 
+    public function sqlOrderByCommand($sortClause, $limit, $offset)
+    {
+        return "ORDER BY {$sortClause} "
+            .(strlen($offset) > 0 ? "OFFSET {$offset} ROWS " : "")
+            .(strlen($offset) > 0 ? "FETCH NEXT {$limit} ROWS ONLY" : "");
+    }
+
     public function sqlDELETECommand()
     {
         return "DELETE ";
@@ -27,17 +34,17 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 
     public function sqlUPDATECommand()
     {
-        return "UPDATE IGNORE ";
+        return "UPDATE ";
     }
 
     public function sqlINSERTCommand()
     {
-        return "INSERT IGNORE INTO ";
+        return "INSERT INTO ";
     }
 
     public function sqlSETClause($setColumnNames, $keyField, $setValues)
     {
-        return (count($setColumnNames) == 0) ? "SET {$keyField}=DEFAULT" :
+        return (count($setColumnNames) == 0) ? "DEFAULT VALUES" :
             '(' . implode(',', $setColumnNames) . ') VALUES(' . implode(',', $setValues) . ')';
     }
 
@@ -48,13 +55,13 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         } catch (Exception $ex) {
             throw $ex;
         }
-        $fieldNameForField = 'Field';
-        $fieldNameForNullable = 'Null';
-        $fieldNameForType = 'Type';
+        $fieldNameForField = 'name';
+        $fieldNameForNullable = 'is_nullable';
+        $fieldNameForType = 'type';
         $fieldArray = array();
-        $numericFieldTypes = array('int', 'integer', 'numeric', 'smallint', 'tinyint', 'mediumint',
-            'bigint', 'decimal', 'float', 'double', 'bit', 'dec', 'fixed', 'double percision',
-            'date', 'datetime', 'timestamp', 'time', 'year',);
+        $numericFieldTypes = array('bigint', 'bit', 'date', 'datetime', 'datetime2', 'decimal',
+            'float', 'hierarchyid', 'int', 'money', 'numeric', 'real', 'smalldatetime', 'smallint',
+            'smallmoney', 'time', 'timestamp', 'tinyint',);
         $matches = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             preg_match("/[a-z]+/", strtolower($row[$fieldNameForType]), $matches);
@@ -72,7 +79,10 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     protected function getTableInfo($tableName)
     {
         if (!isset($this->tableInfo[$tableName])) {
-            $sql = "SHOW COLUMNS FROM " . $this->quotedEntityName($tableName);
+            $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
+                "c.is_identity, c.default_object_id, c.is_computed, c.collation_name";
+            $sql = "SELECT {$fields} FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id " .
+                "WHERE object_id = object_id('{$this->quotedEntityName($tableName)}')";
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
             $this->tableInfo[$tableName] = $result;
@@ -86,16 +96,60 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
     }
 
     /*
-      * mysql> show columns from func;
-+-------+------------------------------+------+-----+---------+-------+
-| Field | Type                         | Null | Key | Default | Extra |
-+-------+------------------------------+------+-----+---------+-------+
-| name  | char(64)                     | NO   | PRI |         |       |
-| ret   | tinyint(1)                   | NO   |     | 0       |       |
-| dl    | char(128)                    | NO   |     |         |       |
-| type  | enum('function','aggregate') | NO   |     | NULL    |       |
-+-------+------------------------------+------+-----+---------+-------+
-4 rows in set (0.00 sec)
+SELECT c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, c.is_identity, c.default_object_id, c.is_computed, c.collation_name FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id WHERE object_id = object_id('person')
+GO
+name       type     max_length precision scale is_nullable is_identity default_object_id is_computed collation_name
+---------- -------- ---------- --------- ----- ----------- ----------- ----------------- ----------- -----------------------------
+memo       text             16         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+id         int               4        10     0           0           1                 0           0 NULL
+category   int               4        10     0           1           0                 0           0 NULL
+checking   int               4        10     0           1           0                 0           0 NULL
+location   int               4        10     0           1           0                 0           0 NULL
+name       varchar          20         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+address    varchar          40         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+mail       varchar          40         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+
+(8 rows affected)
+
+1> select name from sys.types;
+2> GO
+name
+-----------------
+bigint
+binary
+bit
+char
+date
+datetime
+datetime2
+datetimeoffset
+decimal 
+float 
+geography
+geometry
+hierarchyid
+image 
+int
+money 
+nchar 
+ntext 
+numeric 
+nvarchar
+real
+smalldatetime
+smallint
+smallmoney 
+sql_variant
+sysname 
+text
+time
+timestamp
+tinyint 
+uniqueidentifier
+varbinary
+varchar 
+xml
+
     */
 
     protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
@@ -108,17 +162,17 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
         $fieldArray = array();
         $listArray = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if ($keyField === $row['Field'] || !is_null($row['Default'])) {
-                // skip key field to asing value.
-            } else if ($assocField === $row['Field']) {
-                $fieldArray[] = $this->quotedEntityName($row['Field']);
+            if ($keyField === $row['name'] || $row['is_identity'] === 1) {
+                // skip key field to asign value.
+            } else if ($assocField === $row['name']) {
+                $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
-            } else if (isset($defaultValues[$row['Field']])) {
-                $fieldArray[] = $this->quotedEntityName($row['Field']);
-                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['Field']]);
+            } else if (isset($defaultValues[$row['name']])) {
+                $fieldArray[] = $this->quotedEntityName($row['name']);
+                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['name']]);
             } else {
-                $fieldArray[] = $this->quotedEntityName($row['Field']);
-                $listArray[] = $this->quotedEntityName($row['Field']);
+                $fieldArray[] = $this->quotedEntityName($row['name']);
+                $listArray[] = $this->quotedEntityName($row['name']);
             }
         }
         return array(implode(',', $fieldArray), implode(',', $listArray));
@@ -127,19 +181,10 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 
     public function quotedEntityName($entityName)
     {
-        if (strpos($entityName, ".") !== false) {
-            $components = explode(".", $entityName);
-            $quotedName = array();
-            foreach ($components as $item) {
-                $quotedName[] = "`{$item}`";
-            }
-            return implode(".", $quotedName);
-        }
-        return "`{$entityName}`";
+        return "{$entityName}";
     }
 
     public function optionalOperationInSetup()
     {
-        $this->dbClassObj->link->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
     }
 }
