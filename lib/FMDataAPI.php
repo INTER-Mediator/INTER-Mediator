@@ -295,7 +295,7 @@ class FileMakerLayout
                 $request["query"] = $condition;
                 $this->restAPI->callRestAPI("find", $this->layout, true, "POST", $request);
             } else {
-                $this->restAPI->callRestAPI("record", $this->layout, true);
+                $this->restAPI->callRestAPI("record", $this->layout, true, "GET", $request);
             }
             $this->restAPI->storeToProperties();
             $result = $this->restAPI->responseBody;
@@ -982,6 +982,9 @@ class CommunicationProvider
         if ($methodLower == 'get' && !is_null($request)) {
             $url .= '?';
             foreach ($request as $key => $value) {
+                if (key($request) !== $key) {
+                    $url .= '&';
+                }
                 $url .= $key . '=' . (is_array($value) ? json_encode($value) : $value);
             }
         }

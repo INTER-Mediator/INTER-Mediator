@@ -13,8 +13,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
-class DB_PDO_SQLite_Handler extends DB_PDO_Handler
+class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 {
     public function sqlSELECTCommand()
     {
@@ -23,19 +22,9 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     public function sqlOrderByCommand($sortClause, $limit, $offset)
     {
-        return "ORDER BY {$sortClause} " .
-            (strlen($limit) > 0 ? "LIMIT {$limit} " : "") .
-            (strlen($offset) > 0 ? "OFFSET {$offset}" : "");
-    }
-
-    public function sqlLimitCommand($param)
-    {
-        return "LIMIT {$param}";
-    }
-
-    public function sqlOffsetCommand($param)
-    {
-        return "OFFSET {$param}";
+        return "ORDER BY {$sortClause} "
+            .(strlen($offset) > 0 ? "OFFSET {$offset} ROWS " : "")
+            .(strlen($offset) > 0 ? "FETCH NEXT {$limit} ROWS ONLY" : "");
     }
 
     public function sqlDELETECommand()
@@ -67,16 +56,16 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             throw $ex;
         }
         $fieldNameForField = 'name';
-        $fieldNameForNullable = 'notnull';
+        $fieldNameForNullable = 'is_nullable';
         $fieldNameForType = 'type';
         $fieldArray = array();
-        $numericFieldTypes = array('integer', 'real', 'numeric',
-            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2','int8',
-            'double', 'double precision', 'float', 'decimal','boolean','date','datetime',);
+        $numericFieldTypes = array('bigint', 'bit', 'date', 'datetime', 'datetime2', 'decimal',
+            'float', 'hierarchyid', 'int', 'money', 'numeric', 'real', 'smalldatetime', 'smallint',
+            'smallmoney', 'time', 'timestamp', 'tinyint',);
         $matches = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            preg_match("/[a-z ]+/", strtolower($row[$fieldNameForType]), $matches);
-            if (! $row[$fieldNameForNullable] &&
+            preg_match("/[a-z]+/", strtolower($row[$fieldNameForType]), $matches);
+            if ($row[$fieldNameForNullable] &&
                 in_array($matches[0], $numericFieldTypes)
             ) {
                 $fieldArray[] = $row[$fieldNameForField];
@@ -89,10 +78,14 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     protected function getTableInfo($tableName)
     {
-        if (! isset($this->tableInfo[$tableName])) {
-            $sql = "PRAGMA table_info({$tableName})";
+        if (!isset($this->tableInfo[$tableName])) {
+            $fields = "c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, " .
+                "c.is_identity, c.default_object_id, c.is_computed, c.collation_name";
+            $sql = "SELECT {$fields} FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id " .
+                "WHERE object_id = object_id('{$this->quotedEntityName($tableName)}')";
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
+            $this->tableInfo[$tableName] = $result;
             if (!$result) {
                 throw new Exception('INSERT Error:' . $sql);
             }
@@ -101,19 +94,63 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         }
         return $result;
     }
+
     /*
-      sqlite> PRAGMA table_info(person);
-      cid         name        type        notnull     dflt_value  pk
-      ----------  ----------  ----------  ----------  ----------  ----------
-      0           id          INTEGER     0                       1
-      1           name        TEXT        0                       0
-      2           address     TEXT        0                       0
-      3           mail        TEXT        0                       0
-      4           category    INTEGER     0                       0
-      5           checking    INTEGER     0                       0
-      6           location    INTEGER     0                       0
-      7           memo        TEXT        0                       0
-       */
+SELECT c.name, t.name type, c.max_length, c.precision, c.scale, c.is_nullable, c.is_identity, c.default_object_id, c.is_computed, c.collation_name FROM sys.columns c INNER JOIN sys.types t ON c. system_type_id = t. system_type_id WHERE object_id = object_id('person')
+GO
+name       type     max_length precision scale is_nullable is_identity default_object_id is_computed collation_name
+---------- -------- ---------- --------- ----- ----------- ----------- ----------------- ----------- -----------------------------
+memo       text             16         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+id         int               4        10     0           0           1                 0           0 NULL
+category   int               4        10     0           1           0                 0           0 NULL
+checking   int               4        10     0           1           0                 0           0 NULL
+location   int               4        10     0           1           0                 0           0 NULL
+name       varchar          20         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+address    varchar          40         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+mail       varchar          40         0     0           1           0                 0           0 SQL_Latin1_General_CP1_CI_AS
+
+(8 rows affected)
+
+1> select name from sys.types;
+2> GO
+name
+-----------------
+bigint
+binary
+bit
+char
+date
+datetime
+datetime2
+datetimeoffset
+decimal 
+float 
+geography
+geometry
+hierarchyid
+image 
+int
+money 
+nchar 
+ntext 
+numeric 
+nvarchar
+real
+smalldatetime
+smallint
+smallmoney 
+sql_variant
+sysname 
+text
+time
+timestamp
+tinyint 
+uniqueidentifier
+varbinary
+varchar 
+xml
+
+    */
 
     protected function getFieldListsForCopy($tableName, $keyField, $assocField, $assocValue, $defaultValues)
     {
@@ -125,8 +162,8 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         $fieldArray = array();
         $listArray = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
-            if ($keyField === $row['name'] || !is_null($row['dflt_value'])) {
-
+            if ($keyField === $row['name'] || $row['is_identity'] === 1) {
+                // skip key field to asign value.
             } else if ($assocField === $row['name']) {
                 $fieldArray[] = $this->quotedEntityName($row['name']);
                 $listArray[] = $this->dbClassObj->link->quote($assocValue);
@@ -141,45 +178,13 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
 
-    public function isPossibleOperator($operator)
-    {
-        return !(FALSE === array_search(strtoupper($operator), array(
-                '||',
-                '*', '/', '%',
-                '+', '-',
-                '<<', '>>', '&', '|',
-                '<', '<=', '>', '>=',
-                '=', '==', '!=', '<>', 'IS', 'IS NOT', 'IN', 'LIKE', 'GLOB', 'MATCH', 'REGEXP',
-                'AND',
-                'IS NULL', //NULL value test
-                'OR',
-                'IN',
-                '-', '+', '~', 'NOT',
-            )));
-    }
-
-    public function isPossibleOrderSpecifier($specifier)
-    {
-        return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
-    }
 
     public function quotedEntityName($entityName)
     {
-        $q = '"';
-        if (strpos($entityName, ".") !== false) {
-            $components = explode(".", $entityName);
-            $quotedName = array();
-            foreach ($components as $item) {
-                $quotedName[] = $q . str_replace($q, $q . $q, $item) . $q;
-            }
-            return implode(".", $quotedName);
-        }
-        return $q . str_replace($q, $q . $q, $entityName) . $q;
-
+        return "{$entityName}";
     }
 
     public function optionalOperationInSetup()
     {
     }
-
 }

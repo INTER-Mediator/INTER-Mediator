@@ -39,11 +39,17 @@ abstract class DB_PDO_Handler
             $instance = new DB_PDO_SQLite_Handler();
             $instance->dbClassObj = $dbObj;
             return $instance;
+        } else if (strpos($dsn, 'sqlsrv:') === 0) {
+            $instance = new DB_PDO_SQLServer_Handler();
+            $instance->dbClassObj = $dbObj;
+            return $instance;
         }
         return null;
     }
 
     public abstract function sqlSELECTCommand();
+
+    public abstract function sqlOrderByCommand($sortClause, $limit, $offset);
 
     public abstract function sqlDELETECommand();
 
@@ -60,7 +66,7 @@ abstract class DB_PDO_Handler
             list($fieldList, $listList) = $this->getFieldListsForCopy(
                 $tableName, $tableInfo['key'], $assocField, $assocValue, $defaultValues);
             $sql = "{$this->sqlINSERTCommand()}{$tableName} ({$fieldList}) " .
-                "SELECT {$listList} FROM {$tableName} WHERE {$queryClause}";
+                "{$this->sqlSELECTCommand()}{$listList} FROM {$tableName} WHERE {$queryClause}";
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
             if (!$result) {
