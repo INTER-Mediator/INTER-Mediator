@@ -693,8 +693,8 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             }
         }
         if (!$bypassAuth && isset($tableInfo['authentication'])) {
-            $authInfoField = $this->getFieldForAuthorization("create");
-            $authInfoTarget = $this->getTargetForAuthorization("create");
+            $authInfoField = $this->authHandler->getFieldForAuthorization("create");
+            $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
                 $setColumnNames[] = $authInfoField;
                 $setValues[] = $this->link->quote(
