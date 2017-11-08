@@ -888,9 +888,9 @@ var INTERMediator = {
                 currentContextObj.contextName &&
                 currentRecord &&
                 currentRecord[currentContextObj.contextName] &&
-                currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid']) {
+                currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::' + INTERMediatorOnPage.defaultKeyName]) {
                 // for FileMaker portal access mode
-                recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::-recid'];
+                recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::' + INTERMediatorOnPage.defaultKeyName];
                 currentRecord = currentRecord[currentContextObj.contextName][recId];
             }
 
@@ -953,7 +953,7 @@ var INTERMediator = {
                     if (currentContextDef.relation && currentContextDef.relation[0] &&
                         Boolean(currentContextDef.relation[0].portal) === true) {
                         currentContextDef['currentrecord'] = currentRecord;
-                        keyValue = currentRecord['-recid'];
+                        keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName];
                     }
                     if (procBeforeRetrieve) {
                         procBeforeRetrieve(contextObj);

@@ -3,7 +3,7 @@
 /**
  * Object-oriented class for the REST API in FileMaker Server 16/Cloud.
  *
- * @version 1.0 1.0
+ * @version 4.0
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
@@ -16,7 +16,7 @@ namespace INTERMediator\FileMakerServer\RESTAPI;
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
  * @property-read FileMakerLayout $<<layout_name>> FileMakerLayout object named as the property name.
  *    If the layout doesn't exist, no error arises here. Any errors might arise on methods of FileMakerLayout class.
- * @version 3
+ * @version 4
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
@@ -176,7 +176,7 @@ namespace INTERMediator\FileMakerServer\RESTAPI\Supporting;
  *
  * @package INTER-Mediator\FileMakerServer\RESTAPI
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
- * @version 3
+ * @version 4
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
@@ -443,7 +443,7 @@ class FileMakerLayout
  * @property string $<<field_name>> The field value named as the property name.
  * @property FileMakerRelation $<<portal_name>> FileMakerRelation object associated with the property name.
  *    The table occurrence name of the portal can be the 'portal_name,' and also the object name of the portal.
- * @version 3
+ * @version 4
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
@@ -553,22 +553,37 @@ class FileMakerRelation implements \Iterator
     }
 
     /**
+     *
      * @return array List of field name
      */
     public function getFieldNames()
     {
         $list = array();
-        if (isset($this->data)
-            && isset($this->data[$this->pointer])
-            && isset($this->data[$this->pointer]->fieldData)) {
-            foreach($this->data[$this->pointer]->fieldData as $key => $val) {
-                array_push($list, $key);
+        if (isset($this->data)) {
+            switch ($this->result) {
+                case 'OK':
+                    if (isset($this->data[$this->pointer])
+                        && isset($this->data[$this->pointer]->fieldData)) {
+                        foreach($this->data[$this->pointer]->fieldData as $key => $val) {
+                            array_push($list, $key);
+                        }
+                    }
+                    break;
+                case 'PORTAL':
+                    if (isset($this->data[$this->pointer])) {
+                        foreach($this->data[$this->pointer] as $key => $val) {
+                            array_push($list, $key);
+                        }
+                    }
+                    break;
+                default:
             }
         }
         return $list;
     }
 
     /**
+     * Return the array of portal names.
      * @return array List of portal name
      */
     public function getPortalNames()
@@ -765,7 +780,7 @@ class FileMakerRelation implements \Iterator
  *
  * @package INTER-Mediator\FileMakerServer\RESTAPI
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
- * @version 3
+ * @version 4
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */
@@ -1145,7 +1160,7 @@ class CommunicationProvider
  *
  * @package INTER-Mediator\FileMakerServer\RESTAPI
  * @link https://github.com/msyk/FMDataAPI GitHub Repository
- * @version 3
+ * @version 4
  * @author Masayuki Nii <nii@msyk.net>
  * @copyright 2017 Masayuki Nii (FileMaker is registered trademarks of FileMaker, Inc. in the U.S. and other countries.)
  */

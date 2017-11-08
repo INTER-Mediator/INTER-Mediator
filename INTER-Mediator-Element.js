@@ -437,7 +437,8 @@ var IMLibElement = {
             newValue = element._im_getValue();
         } else if (nodeTag === 'INPUT') {
             if (typeAttr === 'checkbox') {
-                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX'
+                    || INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
                     mergedValues = [];
                     targetNodes = element.parentNode.getElementsByTagName('INPUT');
                     for (k = 0; k < targetNodes.length; k++) {
