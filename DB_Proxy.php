@@ -899,7 +899,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             case 'new':
             case 'create':
                 $this->logger->setDebugMessage("[processingRequest] start create processing", 2);
-                $result = $this->createInDB($this->dbSettings->getDataSourceName(), $bypassAuth);
+                $result = $this->createInDB($bypassAuth);
                 $this->outputOfProcessing['newRecordKeyValue'] = $result;
                 $this->outputOfProcessing['dbresult'] = $this->dbClass->updatedRecord();
                 break;
