@@ -275,7 +275,8 @@ var IMLibContextPool = {
                 }
             }
 
-            if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+            if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX'
+                || INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
                 // for FileMaker portal access mode
                 parentKeying = Object.keys(contextAndKey.context.binding)[0];
                 relatedId = targetKeying.split('=')[1];
@@ -325,14 +326,15 @@ var IMLibContextPool = {
                                     }
                                 }
 
-                                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+                                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX'
+                                    || INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
                                     // for FileMaker portal access mode
                                     for (foreignKey in IMLibContextPool.poolingContexts[i].binding[keying][field]) {
                                         for (j = 0; j < IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey].length; j++) {
                                             if (repeaterIdValue == IMLibContextPool.poolingContexts[i].binding[keying][field][foreignKey][j].id) {
                                                 return ({
                                                     context: IMLibContextPool.poolingContexts[i],
-                                                    key: '-recid=' + foreignKey
+                                                    key: INTERMediatorOnPage.defaultKeyName + '=' + foreignKey
                                                 });
                                             }
                                         }
@@ -667,12 +669,16 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
                     }
                     if (targetContextCapt.isPortal) {
                         for (var i = 0; i < recordset.length; i++) {
-                            if (recordset[i]['-recid'] === contextInfo['record'].split('=')[1]) {
+                            if (recordset[i][INTERMediatorOnPage.defaultKeyName] === contextInfo['record'].split('=')[1]) {
                                 currentFieldVal = recordset[i][targetFieldCapt];
                                 break;
                             }
                         }
-                        initialvalue = targetContextCapt.getValue(Object.keys(parentContext.store)[0], targetFieldCapt, '-recid=' + recordset[i]['-recid']);
+                        initialvalue = targetContextCapt.getValue(
+                            Object.keys(parentContext.store)[0],
+                            targetFieldCapt,
+                            INTERMediatorOnPage.defaultKeyName + '=' + recordset[i][INTERMediatorOnPage.defaultKeyName]
+                        );
                     } else {
                         currentFieldVal = recordset[0][targetFieldCapt];
                         initialvalue = targetContextCapt.getValue(contextInfoCapt.record, targetFieldCapt);
@@ -755,11 +761,12 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
 
 IMLibContext.prototype.getKeyField = function () {
     var keyField;
-    if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
+    if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX'
+        || INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
         if (this.isPortal) {
-            keyField = '-recid';
+            keyField = INTERMediatorOnPage.defaultKeyName;
         } else {
-            keyField = this.contextDefinition['key'] ? this.contextDefinition['key'] : '-recid';
+            keyField = this.contextDefinition['key'] ? this.contextDefinition['key'] : INTERMediatorOnPage.defaultKeyName;
         }
     } else {
         keyField = this.contextDefinition['key'] ? this.contextDefinition['key'] : 'id';
@@ -882,7 +889,7 @@ IMLibContext.prototype.setRelationWithParent = function (currentRecord, parentOb
                 for (index in relationDef) {
                     if (Boolean(relationDef[index].portal) === true) {
                         this.isPortal = true;
-                        this.potalContainingRecordKV = '-recid=' + currentRecord['-recid'];
+                        this.potalContainingRecordKV = INTERMediatorOnPage.defaultKeyName + '=' + currentRecord[INTERMediatorOnPage.defaultKeyName];
                     }
                     joinField = relationDef[index]['join-field'];
                     this.addForeignValue(joinField, currentRecord[joinField]);

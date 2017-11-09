@@ -15,7 +15,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>INTER-Mediator - Sample - Form Style/FileMaker Server</title>
     <link rel="stylesheet" type="text/css" href="form.css">
-    <script type="text/javascript" src="include_FMS2.php"></script>
+    <script type="text/javascript" src="include_FMS_DataAPI2.php"></script>
     <script type="text/javascript" src="form.js"></script>
     <style>
         .width300 {
@@ -81,7 +81,7 @@
             </td>
         </tr>
         <tr>
-            <th>location</th>
+            <th class="width300">location</th>
             <td>
                 <input type="radio" name="radio1" data-im="person_layout@location" value="201">Domestic
                 <input type="radio" name="radio1" data-im="person_layout@location" value="202">International
@@ -90,7 +90,7 @@
             </td>
         </tr>
         <tr>
-            <th>memo</th>
+            <th class="width300">memo</th>
             <td><textarea data-im="person_layout@memo"></textarea></td>
         </tr>
         <tr>
@@ -118,18 +118,20 @@
                     <tr>
                         <td colspan="2">
                             <input type="checkbox" data-im="contact_to@contact_to::important" value="1">important | way:
-                            <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="4">Direct
-                            <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="5">Indirect
-                            <input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="6">Others
+                            <label><input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="4"> Direct</label>
+                            <label><input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="5"> Indirect</label>
+                            <label><input type="radio" name="radio1" data-im="contact_to@contact_to::way" value="6"> Others</label>
                         </td>
                         <td>
                             <select data-im="contact_to@contact_to::way">
                                 <option class="contactway"
-                                        data-im="contact_way@id@value contact_way@name@innerHTML"
+                                        data-im="contact_way@id@value|contact_way@name@innerHTML"
                                         value=""></option>
                             </select>
                             <select data-im="contact_to@contact_to::kind">
-                                <option class="IM[cor_way_kind@kind_id@value|cor_way_kind@contact_kind::name@innerHTML] contactkind"
+                                <option class="contactkind"
+                                        data-im="cor_way_kind@kind_id@value
+                                    cor_way_kind@contact_kind::name@innerHTML"
                                         value=""></option>
                             </select>
                         </td>
@@ -152,12 +154,12 @@
         </tr>
         </tbody>
     </table>
+    <!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
+    <!--<input type="text" id="startdate">-->
+    <!--<button onclick="test()">テスト</button>-->
 </div>
 <footer>
     <small>INTER-Mediator ©2017</small>
 </footer>
-<!--<button onclick="INTERMediator.saveRecordFromNavi()">Save</button>-->
-<!--<input type="text" id="startdate">-->
-<!--<button onclick="test()">テスト</button>-->
 </body>
 </html>
