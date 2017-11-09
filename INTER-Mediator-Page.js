@@ -67,6 +67,7 @@ var INTERMediatorOnPage = {
     getOptionsAliases: null,
     getOptionsTransaction: null,
     dbClassName: null,
+    defaultKeyName: null,
     browserCompatibility: null,
     clientNotificationIdentifier: null,
     metadata: null,

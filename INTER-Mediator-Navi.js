@@ -873,8 +873,9 @@ IMLibPageNavigation = {
                     };
                 })());
             } else {
-                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX') {
-                    keyField = currentContextDef['key'] ? currentContextDef['key'] : '-recid';
+                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX'
+                    || INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
+                    keyField = currentContextDef['key'] ? currentContextDef['key'] : INTERMediatorOnPage.defaultKeyName;
                 } else {
                     keyField = currentContextDef['key'] ? currentContextDef['key'] : 'id';
                 }

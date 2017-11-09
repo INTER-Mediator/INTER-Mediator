@@ -612,7 +612,7 @@ var IMLibUI = {
                         records: 1,
                         conditions: [
                             {
-                                field: currentContext['key'] ? currentContext['key'] : '-recid',
+                                field: currentContext['key'] ? currentContext['key'] : INTERMediatorOnPage.defaultKeyName,
                                 operator: '=',
                                 value: keyValue
                             }
@@ -620,7 +620,7 @@ var IMLibUI = {
                     }
                 );
                 for (portalField in targetRecord['recordset'][0][0]) {
-                    if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::-recid') {
+                    if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
                         existRelated = true;
                         targetPortalField = portalField;
                         if (portalField === targetName + '::' + recordSet[0]['field']) {
@@ -641,7 +641,7 @@ var IMLibUI = {
                             records: 0,
                             conditions: [
                                 {
-                                    field: currentContext['key'] ? currentContext['key'] : '-recid',
+                                    field: currentContext['key'] ? currentContext['key'] : INTERMediatorOnPage.defaultKeyName,
                                     operator: '=',
                                     value: keyValue
                                 }
@@ -649,7 +649,7 @@ var IMLibUI = {
                         }
                     );
                     for (portalField in targetRecord['recordset']) {
-                        if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::-recid') {
+                        if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
                             targetPortalField = portalField;
                             if (portalField === targetName + '::' + recordSet[0]['field']) {
                                 targetPortalValue = recordSet[0]['value'];
@@ -696,7 +696,7 @@ var IMLibUI = {
                         var keyField, newRecordId, associatedContext, conditions, createdRecord,
                             i, sameOriginContexts;
                         newRecordId = result.newRecordKeyValue;
-                        keyField = currentContextCapt['key'] ? currentContextCapt['key'] : '-recid';
+                        keyField = currentContextCapt['key'] ? currentContextCapt['key'] : INTERMediatorOnPage.defaultKeyName;
                         associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt);
                         IMLibUI.unlockUIElement(idCapt);
                         if (associatedContext) {

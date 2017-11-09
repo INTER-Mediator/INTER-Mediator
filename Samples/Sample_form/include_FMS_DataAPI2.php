@@ -21,6 +21,7 @@ IM_Entry(
             'records' => 1,
             'paging' => true,
             'name' => 'person_layout',
+            'key' => 'recordId',
             'repeat-control' => 'confirm-delete confirm-insert',
             'query' => array( /* array( 'field'=>'id', 'value'=>'5', 'operator'=>'eq' ),*/),
             'sort' => array(
@@ -34,15 +35,13 @@ IM_Entry(
             ),
         ),
         array(
-            'name' => 'contact_to',  // related table occurrence name
+            'name' => 'contact_to',
             'view' => 'person_layout',
+            'key' => 'recordId',
             'repeat-control' => 'confirm-delete insert',
             'relation' => array(
-                array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq', 'portal' => true),
+                array('foreign-key' => 'person_id', 'join-field' => 'id', 'operator' => 'eq', 'portal' => true)
             ),
-            //'default-values' => array(
-            //    array('field'=>'summary', 'value'=> 'test'),
-            //),
         ),
         array(
             'name' => 'contact_way',
@@ -66,11 +65,14 @@ IM_Entry(
     ),
     array(
         'formatter' => array(
-            array('field' => 'history_to@startdate', 'converter-class' => 'FMDateTime'),
+            array('field' => 'history_to@history_to::startdate', 'converter-class' => 'FMDateTime'),
             array('field' => 'contact_to@contact_to::datetime', 'converter-class' => 'FMDateTime'),
-            array('field' => 'history_to@enddate', 'converter-class' => 'FMDateTime'),
+            array('field' => 'history_to@history_to::enddate', 'converter-class' => 'FMDateTime'),
         ),
     ),
-    array('db-class' => 'FileMaker_FX'),
+    array(
+        'db-class' => 'FileMaker_DataAPI',
+        'server' => 'localserver',
+    ),
     false
 );
