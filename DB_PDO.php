@@ -366,17 +366,7 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
             $queryClause = "WHERE {$queryClause}";
         }
         $sortClause = $this->getSortClause();
-        if ($sortClause == '') {
-            if ($tableInfo["key"]) {
-                $sortClause = $tableInfo["key"];
-            } else if (count($this->dbSettings->getFieldsRequired()) > 0) {
-                $fields = $this->dbSettings->getFieldsRequired();
-                $sortClause = $fields[0];
-            }
-        }
-
         $isAggregate = ($this->dbSettings->getAggregationSelect() != null);
-
         $viewOrTableName = $isAggregate ? $this->dbSettings->getAggregationFrom()
             : $this->handler->quotedEntityName(isset($tableInfo['view']) ? $tableInfo['view'] : $tableName);
 
