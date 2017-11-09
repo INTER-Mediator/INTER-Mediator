@@ -45,7 +45,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     public function testAggregation()
     {
         $this->dbProxySetupForAggregation();
-        //var_export($this->db_proxy);
         //var_export($this->db_proxy->logger->getErrorMessages());
         //var_export($this->db_proxy->logger->getDebugMessages());
         $result = $this->db_proxy->readFromDB("summary");
