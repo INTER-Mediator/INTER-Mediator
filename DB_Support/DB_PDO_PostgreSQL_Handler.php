@@ -13,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
 {
     public function sqlSELECTCommand()
