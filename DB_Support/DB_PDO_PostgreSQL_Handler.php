@@ -21,13 +21,6 @@ class DB_PDO_PostgreSQL_Handler extends DB_PDO_Handler
         return "SELECT ";
     }
 
-    public function sqlOrderByCommand($sortClause, $limit, $offset)
-    {
-        return "ORDER BY {$sortClause} " .
-            (strlen($limit) > 0 ? "LIMIT {$limit} " : "") .
-            (strlen($offset) > 0 ? "OFFSET {$offset}" : "");
-    }
-
     public function sqlLimitCommand($param)
     {
         return "LIMIT {$param}";

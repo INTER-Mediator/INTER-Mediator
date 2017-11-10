@@ -22,9 +22,18 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
 
     public function sqlOrderByCommand($sortClause, $limit, $offset)
     {
+        if ($sortClause == '') {
+            $tableInfo = $this->dbClassObj->dbSettings->getDataSourceTargetArray();
+            if ($tableInfo["key"]) {
+                $sortClause = $tableInfo["key"];
+            } else if (count($this->dbClassObj->dbSettings->getFieldsRequired()) > 0) {
+                $fields = $this->dbClassObj->dbSettings->getFieldsRequired();
+                $sortClause = $fields[0];
+            }
+        }
         return "ORDER BY {$sortClause} "
             .(strlen($offset) > 0 ? "OFFSET {$offset} ROWS " : "")
-            .(strlen($offset) > 0 ? "FETCH NEXT {$limit} ROWS ONLY" : "");
+            .(strlen($offset) > 0 ? "FETCH NEXT {$limit} ROWS ONLY " : "");
     }
 
     public function sqlDELETECommand()
