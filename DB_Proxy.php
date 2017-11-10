@@ -1327,36 +1327,6 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // TODO: Implement setupConnection() method.
     }
 
-    public function isPossibleOperator($operator)
-    {
-        // TODO: Implement isPossibleOperator() method.
-    }
-
-    public function isPossibleOrderSpecifier($specifier)
-    {
-        // TODO: Implement isPossibleOrderSpecifier() method.
-    }
-
-    public function isContainingFieldName($fname, $fieldnames)
-    {
-        return null;
-    }
-
-    public function isNullAcceptable()
-    {
-        return true;
-    }
-
-    public function softDeleteActivate($field, $value)
-    {
-
-    }
-
-    public function isSupportAggregation()
-    {
-        // TODO: Implement isSupportAggregation() method.
-    }
-
     public function setupHandlers()
     {
         // TODO: Implement setupHandlers() method.
@@ -1365,6 +1335,11 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     public function normalizedCondition($condition)
     {
         // TODO: Implement normalizedCondition() method.
+    }
+
+    public function softDeleteActivate($field, $value)
+    {
+        // TODO: Implement softDeleteActivate() method.
     }
 
     public function setUpdatedRecord($field, $value, $index = 0)
