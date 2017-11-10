@@ -13,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 {
     public function sqlSELECTCommand()
@@ -23,7 +22,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     public function sqlOrderByCommand($sortClause, $limit, $offset)
     {
-        return "ORDER BY {$sortClause} " .
+        return (strlen($sortClause) > 0 ? "ORDER BY {$sortClause} " : "") .
             (strlen($limit) > 0 ? "LIMIT {$limit} " : "") .
             (strlen($offset) > 0 ? "OFFSET {$offset}" : "");
     }
