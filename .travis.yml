@@ -1,7 +1,4 @@
-dist: precise
-
-## for PHP 5.4 or later
-#dist: trusty
+dist: trusty
 
 sudo: false
 
@@ -20,18 +17,25 @@ php:
   - 5.6
   - 5.5
   - 5.4
-  - 5.3
-  - 5.2
 
 matrix:
+  include:
+    - php: 5.3
+      dist: precise
+    - php: 5.2
+      dist: precise
   allow_failures:
     - php: nightly
     - php: 7.2
     - os: osx
 
 ## for Headless Chrome and trusty
-#addons:
-#  chrome: stable
+addons:
+  chrome: stable
+  firefox: "latest-esr"
+  apt:
+    packages:
+      - dbus-x11
 
 before_script:
   - export DISPLAY=:99.0
@@ -43,8 +47,8 @@ before_script:
   - firefox http://localhost:1111/capture &
   - sleep 5
   - phantomjs node_modules/buster/script/phantom.js http://localhost:1111/capture &
-  ## Headless Chrome is available on trusty
-  #- google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture &
+  # Headless Chrome is available on trusty
+  - if [[ $TRAVIS_PHP_VERSION != "5.2" && $TRAVIS_PHP_VERSION != "5.3" ]]; then google-chrome-stable --headless --disable-gpu --remote-debugging-port=9222 http://localhost:1111/capture & fi
   - sleep 5
   - mysql -u root < ./dist-docs/sample_schema_mysql.txt
   - sqlite3 /tmp/sample.sq3 < ./dist-docs/sample_schema_sqlite.txt
