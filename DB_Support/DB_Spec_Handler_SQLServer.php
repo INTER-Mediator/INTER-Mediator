@@ -13,7 +13,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class DB_Spec_Handler_PDO implements DB_Spec_Behavior
+class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
 {
     protected $dbClassObj = null;
 
@@ -70,47 +70,31 @@ class DB_Spec_Handler_PDO implements DB_Spec_Behavior
     public function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
-                'AND', '&&', //Logical AND
-                '=', //Assign a value (as part of a SET statement, or as part of the SET clause in an UPDATE statement)
-                ':=', //Assign a value
-                'BETWEEN', //Check whether a value is within a range of values
-                'BINARY', //Cast a string to a binary string
-                '&', //Bitwise AND
-                '~', //Invert bits
-                '|', //Bitwise OR
-                '^', //Bitwise XOR
-                'CASE', //Case operator
-                'DIV', //Integer division
-                '/', //Division operator
-                '<=>', //NULL-safe equal to operator
-                '=', //Equal operator
-                '>=', //Greater than or equal operator
-                '>', //Greater than operator
-                'IS NOT NULL', //	NOT NULL value test
-                'IS NOT', //Test a value against a boolean
-                'IS NULL', //NULL value test
-                'IS', //Test a value against a boolean
-                '<<', //Left shift
-                '<=', //Less than or equal operator
-                '<', //Less than operator
-                'LIKE', //Simple pattern matching
-                '-', //Minus operator
-                '%', 'MOD', //Modulo operator
-                'NOT BETWEEN', //Check whether a value is not within a range of values
-                '!=', '<>', //Not equal operator
-                'NOT LIKE', //Negation of simple pattern matching
-                'NOT REGEXP', //Negation of REGEXP
-                'NOT', '!', //Negates value
-                '||', 'OR', //Logical OR
-                '+', //Addition operator
-                'REGEXP', //Pattern matching using regular expressions
-                '>>', //Right shift
-                'RLIKE', //Synonym for REGEXP
-                'SOUNDS LIKE', //Compare sounds
-                '*', //Multiplication operator
-                '-', //Change the sign of the argument
-                'XOR', //Logical XOR
-                'IN',
+                '&',// (Bitwise AND)
+                '&=',// (Bitwise AND EQUALS)
+                '|',// (Bitwise OR)
+                '|=',// (Bitwise OR EQUALS)
+                '^',// (Bitwise Exclusive OR)
+                '^=',// (Bitwise Exclusive OR EQUALS)
+                '~',// (Bitwise NOT)
+                '=',// (Equals)	Equal to
+                '>',// (Greater Than)	Greater than
+                '<',// (Less Than)	Less than
+                '>=',// (Greater Than or Equal To)	Greater than or equal to
+                '<=',// (Less Than or Equal To)	Less than or equal to
+                '<>',// (Not Equal To)	Not equal to
+                '!=',// (Not Equal To)	Not equal to (not ISO standard)
+                '!<',// (Not Less Than)	Not less than (not ISO standard)
+                '!>',// (Not Greater Than)	Not greater than (not ISO standard)
+                'ALL',//	TRUE if all of a set of comparisons are TRUE.
+                'AND',//	TRUE if both Boolean expressions are TRUE.
+                'ANY',//	TRUE if any one of a set of comparisons are TRUE.
+                'BETWEEN',//	TRUE if the operand is within a range.
+                'EXISTS',//	TRUE if a subquery contains any rows.
+                'IN',//	TRUE if the operand is equal to one of a list of expressions.
+                'LIKE',//	TRUE if the operand matches a pattern.
+                'NOT',//	Reverses the value of any other Boolean operator.
+                'OR',//	TRUE if either Boolean expression is TRUE.
             )));
     }
 

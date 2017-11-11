@@ -13,7 +13,7 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-class DB_Spec_Handler_PDO implements DB_Spec_Behavior
+class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
 {
     protected $dbClassObj = null;
 

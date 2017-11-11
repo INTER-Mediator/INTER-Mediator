@@ -63,12 +63,12 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         $fieldNameForType = 'type';
         $fieldArray = array();
         $numericFieldTypes = array('integer', 'real', 'numeric',
-            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2','int8',
-            'double', 'double precision', 'float', 'decimal','boolean','date','datetime',);
+            'tinyint', 'smallint', 'mediumint', 'bigint', 'unsigned big int', 'int2', 'int8',
+            'double', 'double precision', 'float', 'decimal', 'boolean', 'date', 'datetime',);
         $matches = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
             preg_match("/[a-z ]+/", strtolower($row[$fieldNameForType]), $matches);
-            if (! $row[$fieldNameForNullable] &&
+            if (!$row[$fieldNameForNullable] &&
                 in_array($matches[0], $numericFieldTypes)
             ) {
                 $fieldArray[] = $row[$fieldNameForField];
@@ -81,7 +81,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     protected function getTableInfo($tableName)
     {
-        if (! isset($this->tableInfo[$tableName])) {
+        if (!isset($this->tableInfo[$tableName])) {
             $sql = "PRAGMA table_info({$tableName})";
             $this->dbClassObj->logger->setDebugMessage($sql);
             $result = $this->dbClassObj->link->query($sql);
@@ -93,6 +93,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
         }
         return $result;
     }
+
     /*
       sqlite> PRAGMA table_info(person);
       cid         name        type        notnull     dflt_value  pk
@@ -131,28 +132,6 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
             }
         }
         return array(implode(',', $fieldArray), implode(',', $listArray));
-    }
-
-    public function isPossibleOperator($operator)
-    {
-        return !(FALSE === array_search(strtoupper($operator), array(
-                '||',
-                '*', '/', '%',
-                '+', '-',
-                '<<', '>>', '&', '|',
-                '<', '<=', '>', '>=',
-                '=', '==', '!=', '<>', 'IS', 'IS NOT', 'IN', 'LIKE', 'GLOB', 'MATCH', 'REGEXP',
-                'AND',
-                'IS NULL', //NULL value test
-                'OR',
-                'IN',
-                '-', '+', '~', 'NOT',
-            )));
-    }
-
-    public function isPossibleOrderSpecifier($specifier)
-    {
-        return !(array_search(strtoupper($specifier), array('ASC', 'DESC')) === FALSE);
     }
 
     public function quotedEntityName($entityName)
