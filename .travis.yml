@@ -32,6 +32,10 @@ matrix:
 ## for Headless Chrome and trusty
 addons:
   chrome: stable
+  firefox: "latest-esr"
+  apt:
+    packages:
+      - dbus-x11
 
 before_script:
   - export DISPLAY=:99.0
