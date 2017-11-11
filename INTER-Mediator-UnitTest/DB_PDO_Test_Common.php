@@ -45,10 +45,15 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     public function testAggregation()
     {
         $this->dbProxySetupForAggregation();
-        //var_export($this->db_proxy->logger->getErrorMessages());
-        //var_export($this->db_proxy->logger->getDebugMessages());
+
+//        $this->db_proxy->logger->clearLogs();
+
         $result = $this->db_proxy->readFromDB("summary");
         $recordCount = $this->db_proxy->countQueryResult("summary");
+
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+
         $this->assertEquals(is_array($result) ? count($result) : -1, 10, "After the query, 10 records should be retrieved.");
         $this->assertEquals($recordCount, 10, "The aggregation didn't count real record, and should match with records key");
         $cStr = "Onion";
@@ -131,6 +136,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     public function testCopySingleRecord()
     {
         $this->dbProxySetupForAccess("person", 1000000);
+//        $this->db_proxy->logger->clearLogs();
         $result = $this->db_proxy->readFromDB("person");
         $recordCount = $this->db_proxy->countQueryResult("person");
 
@@ -228,11 +234,17 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     {
         $this->dbProxySetupForAuth();
 
+//        $this->db_proxy->logger->clearLogs();
+
         $testName = "Generate Challenge and Retrieve it";
         $username = 'user1';
         $challenge = $this->db_proxy->generateChallenge();
         $this->db_proxy->dbClass->authHandler->authSupportStoreChallenge($username, $challenge, "TEST");
         $retrieved = $this->db_proxy->dbClass->authHandler->authSupportRetrieveChallenge($username, "TEST");
+
+//        var_export($this->db_proxy->logger->getErrorMessages());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+
         $this->assertEquals($challenge, $retrieved, $testName);
 
         $challenge = $this->db_proxy->generateChallenge();
@@ -351,7 +363,6 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->db_proxy->saveChallenge($username, $challenge, $clientId);
 
         $hashedvalue = sha1($password . $retrievedSalt) . bin2hex($retrievedSalt);
-
         $this->assertTrue(
             $this->db_proxy->checkAuthorization($username, hash_hmac('sha256', $hashedvalue, $challenge), $clientId),
             $testName);
@@ -402,7 +413,16 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
     {
         $testName = "Tables for storing the context and ids should be existing.";
         $this->dbProxySetupForAuth();
-        $this->assertTrue($this->db_proxy->dbClass->notifyHandler->isExistRequiredTable(), $testName);
+        //$this->db_proxy->logger->clearLogs();
+        $result = $this->db_proxy->dbClass->notifyHandler->isExistRequiredTable();
+        //var_export($this->db_proxy->logger->getErrorMessages());
+        //var_export($this->db_proxy->logger->getDebugMessages());
+        $this->assertTrue($result, $testName);
+    }
+
+    protected function getSampleComdition()
+    {
+        return "WHERE id=1001 ORDER BY xdate LIMIT 10";
     }
 
     public function testMultiClientSyncRegisterAndUnregister()
@@ -411,13 +431,15 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
         $this->db_proxy->dbClass->deleteForTest("registeredpks");
+//               $this->db_proxy->logger->clearLogs();
         $clientId = "123456789ABCDEF";
-        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $condition = $this->getSampleComdition();
         $pkArray = array(1001, 2001, 3003, 4004);
 
         $entity = "table1";
         $registResult = $this->db_proxy->dbClass->notifyHandler->register($clientId, $entity, $condition, $pkArray);
-        //var_export($this->db_proxy->logger->getDebugMessage());
+//        var_export($this->db_proxy->logger->getDebugMessages());
+//        var_export($this->db_proxy->logger->getErrorMessages());
         $this->assertTrue($registResult !== false, "Register table1");
         $recSet = $this->db_proxy->dbClass->queryForTest(
             "registeredcontext",
@@ -485,7 +507,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
         $this->db_proxy->dbClass->deleteForTest("registeredpks");
         $clientId = "123456789ABCDEF";
-        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $condition = $this->getSampleComdition();
         $pkArray = array(1001, 2001, 3003, 4004);
 
         $entity = "table1";
@@ -530,7 +552,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
         $this->db_proxy->dbClass->deleteForTest("registeredpks");
-        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $condition = $this->getSampleComdition();
         $pkArray1 = array(1001, 2001, 3003, 4004);
         $pkArray2 = array(9001, 8001, 3003, 4004);
 
@@ -613,7 +635,7 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
         $this->dbProxySetupForAuth();
         $this->db_proxy->dbClass->deleteForTest("registeredcontext");
         $this->db_proxy->dbClass->deleteForTest("registeredpks");
-        $condition = "WHERE id=1001 ORDER BY xdate LIMIT 10";
+        $condition = $this->getSampleComdition();
         $pkArray1 = array(1001, 2001, 3003, 4004);
         $pkArray2 = array(9001, 8001, 3003, 4004);
 

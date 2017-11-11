@@ -28,7 +28,9 @@ class DB_Notification_Handler_PDO
             $this->dbClass->errorMessageStore("Can't open db connection.");
             return false;
         }
-        $sql = "SELECT id FROM {$regTable} LIMIT 1";
+        $sql = $this->dbClass->handler->sqlSELECTCommand() . "id FROM {$regTable} " .
+            $this->dbClass->handler->sqlOrderByCommand("id", 1, 0);
+        //$sql = "SELECT id FROM {$regTable} LIMIT 1";
         $this->logger->setDebugMessage($sql);
         $result = $this->dbClass->link->query($sql);
         if ($result === false) {
@@ -60,7 +62,11 @@ class DB_Notification_Handler_PDO
             $this->dbClass->errorMessageStore('Insert:' . $sql);
             return false;
         }
-        $newContextId = $this->dbClass->link->lastInsertId("registeredcontext_id_seq");
+        if (strpos($this->dbSettings->getDbSpecDSN(), 'pgsql:') === 0) {
+            $newContextId = $this->dbClass->link->lastInsertId("registeredcontext_id_seq");
+        } else {
+            $newContextId = $this->dbClass->link->lastInsertId();
+        }
         if (strpos($this->dbSettings->getDbSpecDSN(), 'sqlite:') === 0) {
             // SQLite supports multiple records inserting, but it reported error.
             // PDO driver doesn't recognize it, does it ?

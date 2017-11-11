@@ -49,7 +49,13 @@ abstract class DB_PDO_Handler
 
     public abstract function sqlSELECTCommand();
 
-    public abstract function sqlOrderByCommand($sortClause, $limit, $offset);
+    public function sqlOrderByCommand($sortClause, $limit, $offset)
+    {
+        return
+            (strlen($sortClause) > 0 ? "ORDER BY {$sortClause} " : "") .
+            (strlen($limit) > 0 ? "LIMIT {$limit} " : "") .
+            (strlen($offset) > 0 ? "OFFSET {$offset} " : "");
+    }
 
     public abstract function sqlDELETECommand();
 
