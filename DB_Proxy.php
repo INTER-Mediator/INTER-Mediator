@@ -213,7 +213,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = get_class($this->userExpanded);
+            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeUpdateDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeUpdateDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeUpdateDB();
@@ -277,7 +277,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     {
         $currentDataSource = $this->dbSettings->getDataSourceTargetArray();
         try {
-            $className = get_class($this->userExpanded);
+            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCreateToDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeCreateToDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeCreateToDB();
@@ -340,7 +340,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function deleteFromDB()
     {
         try {
-            $className = get_class($this->userExpanded);
+            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeDeleteFromDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeDeleteFromDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeDeleteFromDB();
