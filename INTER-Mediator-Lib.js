@@ -165,13 +165,13 @@ var INTERMediatorLib = {
             return false;
         }
         tagName = node.tagName;
-        if ((tagName === 'TR') || (tagName === 'LI') || (tagName === 'OPTION')
-            || (className && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
-            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0)
-            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0)
-            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0)
-            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0)
-            || (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)
+        if ((tagName === 'TR') || (tagName === 'LI') || (tagName === 'OPTION') ||
+            (className && className.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) ||
+            (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0) ||
+            (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0) ||
+            (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0) ||
+            (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0) ||
+            (controlAttr && controlAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0)
         ) {
             if (nodeOnly) {
                 return true;
@@ -335,18 +335,12 @@ var INTERMediatorLib = {
                 (enclosureDataAttr && enclosureDataAttr.indexOf('enclosure') >= 0)) {
                 repeaterClass = INTERMediatorLib.getClassAttributeFromNode(repeater);
                 repeaterDataAttr = repeater.getAttribute('data-im-control');
-                if ((repeaterClass
-                    && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0)
-                    || (repeaterDataAttr
-                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0 )
-                    || (repeaterDataAttr
-                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0 )
-                    || (repeaterDataAttr
-                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0 )
-                    || (repeaterDataAttr
-                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0 )
-                    || (repeaterDataAttr
-                    && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0 )
+                if ((repeaterClass && repeaterClass.indexOf(INTERMediatorLib.roleAsRepeaterClassName) >= 0) ||
+                    (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsRepeaterDataControlName) >= 0 ) ||
+                    (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsSeparatorDataControlName) >= 0 ) ||
+                    (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsFooterDataControlName) >= 0 ) ||
+                    (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsHeaderDataControlName) >= 0 ) ||
+                    (repeaterDataAttr && repeaterDataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) >= 0 )
                 ) {
                     return true;
                 } else if (repeaterTag === 'INPUT') {
@@ -383,7 +377,7 @@ var INTERMediatorLib = {
         if (INTERMediatorLib.isLinkedElement(node)) {
             attr = node.getAttribute('data-im');
             if (attr !== null && attr.length > 0) {
-                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+');
                 eachDefs = attr.split(reg);
                 for (i = 0; i < eachDefs.length; i++) {
                     if (eachDefs[i] && eachDefs[i].length > 0) {
@@ -427,7 +421,7 @@ var INTERMediatorLib = {
         if (INTERMediatorLib.isWidgetElement(node)) {
             classAttr = node.getAttribute('data-im-widget');
             if (classAttr && classAttr.length > 0) {
-                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+');
                 eachDefs = classAttr.split(reg);
                 for (i = 0; i < eachDefs.length; i++) {
                     if (eachDefs[i] && eachDefs[i].length > 0) {
@@ -454,7 +448,7 @@ var INTERMediatorLib = {
         if (INTERMediatorLib.isNamedElement(node)) {
             nameAttr = node.getAttribute('data-im-group');
             if (nameAttr && nameAttr.length > 0) {
-                reg = new RegExp("[\\s" + INTERMediator.defDivider + "]+");
+                reg = new RegExp('[\\s' + INTERMediator.defDivider + ']+');
                 eachDefs = nameAttr.split(reg);
                 for (i = 0; i < eachDefs.length; i++) {
                     if (eachDefs[i] && eachDefs[i].length > 0) {
@@ -481,10 +475,18 @@ var INTERMediatorLib = {
      */
 
     repeaterTagFromEncTag: function (tag) {
-        if (tag === 'TBODY') return 'TR';
-        else if (tag === 'SELECT') return 'OPTION';
-        else if (tag === 'UL') return 'LI';
-        else if (tag === 'OL') return 'LI';
+        if (tag === 'TBODY') {
+            return 'TR';
+        }
+        else if (tag === 'SELECT') {
+            return 'OPTION';
+        }
+        else if (tag === 'UL') {
+            return 'LI';
+        }
+        else if (tag === 'OL') {
+            return 'LI';
+        }
         //else if (tag == 'DIV') return 'DIV';
         //else if (tag == 'SPAN') return 'SPAN';
         return null;
@@ -578,7 +580,9 @@ var INTERMediatorLib = {
 
     getClassAttributeFromNode: function (node) {
         var str = '';
-        if (node === null) return '';
+        if (node === null) {
+            return '';
+        }
         if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
             str = node.getAttribute('className');
         } else {
@@ -588,7 +592,9 @@ var INTERMediatorLib = {
     },
 
     setClassAttributeToNode: function (node, className) {
-        if (node === null) return;
+        if (node === null) {
+            return;
+        }
         if (INTERMediator.isIE && INTERMediator.ieVersion < 8) {
             node.setAttribute('className', className);
         } else {
@@ -626,13 +632,13 @@ var INTERMediatorLib = {
     // - - - - -
 
     toNumber: function (str) {
-        "use strict";
-        var s = "", i, c;
+        'use strict';
+        var s = '', i, c;
         str = str.toString();
         for (i = 0; i < str.length; i++) {
             c = str.charAt(i);
             if ((c >= '0' && c <= '9') || c === '.' || c === '-' ||
-                c === INTERMediatorOnPage.localeInfo["mon_decimal_point"]) {
+                c === INTERMediatorOnPage.localeInfo['mon_decimal_point']) {
                 s += c;
             } else if (c >= '０' && c <= '９') {
                 s += String.fromCharCode(c.charCodeAt(0) - '０'.charCodeAt(0) + '0'.charCodeAt(0));
@@ -642,7 +648,7 @@ var INTERMediatorLib = {
     },
 
     RoundHalfToEven: function (value, digit) {
-        throw "RoundHalfToEven method is NOT implemented.";
+        throw 'RoundHalfToEven method is NOT implemented.';
     },
 
     /**
@@ -677,21 +683,21 @@ var INTERMediatorLib = {
      * @returns {string}
      */
     numberFormatImpl: function (str, digit, decimalPoint, thousandsSep, currencySymbol, flags) {
-        "use strict";
-        var s, n, prefix, i, sign, tailSign = "", power, underDot, underNumStr, pstr,
+        'use strict';
+        var s, n, prefix, i, sign, tailSign = '', power, underDot, underNumStr, pstr,
             roundedNum, underDecimalNum, integerNum, formatted, numStr, j, isMinusValue,
             numerals, numbers;
-        if (str === "" || str === null || str === undefined) {
-            return "";
+        if (str === '' || str === null || str === undefined) {
+            return '';
         }
-        prefix = (String(str).substring(0, 1) === "-") ? "-" : "";
+        prefix = (String(str).substring(0, 1) === '-') ? '-' : '';
         if (String(str).match(/[-]/)) {
-            str = prefix + String(str).split("-").join("");
+            str = prefix + String(str).split('-').join('');
         }
         //str = INTERMediatorLib.normalizeNumerics(str);
         n = INTERMediatorLib.toNumber(str);
         if (isNaN(n)) {
-            return "";
+            return '';
         }
         if (flags === undefined) {
             flags = {};
@@ -701,24 +707,24 @@ var INTERMediatorLib = {
         if (n < 0) {
             sign = INTERMediatorOnPage.localeInfo.negative_sign;
             if (flags.negativeStyle === 0 || flags.negativeStyle === 1) {
-                sign = "-";
+                sign = '-';
             } else if (flags.negativeStyle === 2) {
-                sign = "(";
-                tailSign = ")";
+                sign = '(';
+                tailSign = ')';
             } else if (flags.negativeStyle === 3) {
-                sign = "<";
-                tailSign = ">";
+                sign = '<';
+                tailSign = '>';
             } else if (flags.negativeStyle === 4) {
-                sign = " CR";
+                sign = ' CR';
             } else if (flags.negativeStyle === 5) {
-                sign = "▲";
+                sign = '▲';
             }
             n = -n;
             isMinusValue = true;
         }
 
         if (flags.blankIfZero === true && n === 0) {
-            return "";
+            return '';
         }
 
         if (flags.usePercentNotation) {
@@ -730,7 +736,7 @@ var INTERMediatorLib = {
         roundedNum = Math.round(n * power);
         underDecimalNum = (underDot > 0) ? roundedNum % power : 0;
         integerNum = (roundedNum - underDecimalNum) / power;
-        underNumStr = (underDot > 0) ? String(underDecimalNum) : "";
+        underNumStr = (underDot > 0) ? String(underDecimalNum) : '';
         while (underNumStr.length < underDot) {
             underNumStr = '0' + underNumStr;
         }
@@ -742,20 +748,20 @@ var INTERMediatorLib = {
                 n = integerNum;
                 s = [];
                 if (flags.kanjiSeparator === 1 || flags.kanjiSeparator === 2) {
-                    numerals = ["万", "億", "兆", "京", "垓", "𥝱", "穣", "溝",
-                        "澗", "正", "載", "極", "恒河沙", "阿僧祇", "那由他",
-                        "不可思議", "無量大数"];
+                    numerals = ['万', '億', '兆', '京', '垓', '𥝱', '穣', '溝',
+                        '澗', '正', '載', '極', '恒河沙', '阿僧祇', '那由他',
+                        '不可思議', '無量大数'];
                     i = 0;
-                    formatted = "";
+                    formatted = '';
                     for (n = Math.floor(n); n > 0; n = Math.floor(n / 10000)) {
                         if (n >= 10000) {
-                            pstr = "0000" + (n % 10000).toString();
+                            pstr = '0000' + (n % 10000).toString();
                         } else {
                             pstr = (n % 10000).toString();
                         }
                         if (flags.kanjiSeparator === 1) {
                             if (n >= 10000) {
-                                if (pstr.substr(pstr.length - 4) !== "0000") {
+                                if (pstr.substr(pstr.length - 4) !== '0000') {
                                     formatted = numerals[i] +
                                         Number(pstr.substr(pstr.length - 4)) +
                                         formatted;
@@ -771,21 +777,21 @@ var INTERMediatorLib = {
                             }
                         } else if (flags.kanjiSeparator === 2) {
                             numStr = pstr.substr(pstr.length - 4);
-                            pstr = "";
-                            if (numStr === "0001") {
-                                pstr = "1";
-                            } else if (numStr !== "0000") {
+                            pstr = '';
+                            if (numStr === '0001') {
+                                pstr = '1';
+                            } else if (numStr !== '0000') {
                                 for (j = 0; j < numStr.length; j++) {
                                     if (numStr.charAt(j) > 1) {
                                         pstr = pstr + numStr.charAt(j);
                                     }
                                     if (numStr.charAt(j) > 0) {
                                         if (numStr.length - j === 4) {
-                                            pstr = pstr + "千";
+                                            pstr = pstr + '千';
                                         } else if (numStr.length - j === 3) {
-                                            pstr = pstr + "百";
+                                            pstr = pstr + '百';
                                         } else if (numStr.length - j === 2) {
-                                            pstr = pstr + "十";
+                                            pstr = pstr + '十';
                                         }
                                     }
                                 }
@@ -811,18 +817,18 @@ var INTERMediatorLib = {
                         i++;
                     }
                     formatted = formatted +
-                        (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                        (underNumStr === '' ? '' : decimalPoint + underNumStr);
                 } else {
                     for (n = Math.floor(n); n > 0; n = Math.floor(n / 1000)) {
                         if (n >= 1000) {
-                            pstr = "000" + (n % 1000).toString();
+                            pstr = '000' + (n % 1000).toString();
                             s.push(pstr.substr(pstr.length - 3));
                         } else {
                             s.push(n);
                         }
                     }
                     formatted = s.reverse().join(thousandsSep) +
-                        (underNumStr === "" ? "" : decimalPoint + underNumStr);
+                        (underNumStr === '' ? '' : decimalPoint + underNumStr);
                 }
                 if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
                     formatted = sign + formatted;
@@ -835,7 +841,7 @@ var INTERMediatorLib = {
                 }
             }
         } else {
-            formatted = integerNum + (underNumStr === "" ? "" : decimalPoint + underNumStr);
+            formatted = integerNum + (underNumStr === '' ? '' : decimalPoint + underNumStr);
             if (flags.negativeStyle === 0 || flags.negativeStyle === 5) {
                 formatted = sign + formatted;
             } else if (flags.negativeStyle === 1 || flags.negativeStyle === 4) {
@@ -851,13 +857,13 @@ var INTERMediatorLib = {
             if (!isMinusValue) {
                 if (INTERMediatorOnPage.localeInfo.p_cs_precedes == 1) {    // Stay operator "=="
                     if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator "=="
-                        formatted = currencySymbol + " " + formatted;
+                        formatted = currencySymbol + ' ' + formatted;
                     } else {
                         formatted = currencySymbol + formatted;
                     }
                 } else {
-                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator "=="
-                        formatted = formatted + " " + currencySymbol;
+                    if (INTERMediatorOnPage.localeInfo.p_sep_by_space == 1) { // Stay operator '=='
+                        formatted = formatted + ' ' + currencySymbol;
                     } else {
                         formatted = formatted + currencySymbol;
                     }
@@ -865,13 +871,13 @@ var INTERMediatorLib = {
             } else {
                 if (INTERMediatorOnPage.localeInfo.n_cs_precedes == 1) { // Stay operator "=="
                     if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator "=="
-                        formatted = currencySymbol + " " + formatted;
+                        formatted = currencySymbol + ' ' + formatted;
                     } else {
                         formatted = currencySymbol + formatted;
                     }
                 } else {
-                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator "=="
-                        formatted = formatted + " " + currencySymbol;
+                    if (INTERMediatorOnPage.localeInfo.n_sep_by_space == 1) { // Stay operator '=='
+                        formatted = formatted + ' ' + currencySymbol;
                     } else {
                         formatted = formatted + currencySymbol;
                     }
@@ -886,16 +892,16 @@ var INTERMediatorLib = {
                 }
             } else if (flags.charStyle === 2) {
                 numbers = {
-                    0: "〇", 1: "一", 2: "二", 3: "三", 4: "四",
-                    5: "五", 6: "六", 7: "七", 8: "八", 9: "九"
+                    0: '〇', 1: '一', 2: '二', 3: '三', 4: '四',
+                    5: '五', 6: '六', 7: '七', 8: '八', 9: '九'
                 };
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
                 }
             } else if (flags.charStyle === 3) {
                 numbers = {
-                    0: "〇", 1: "壱", 2: "弐", 3: "参", 4: "四",
-                    5: "伍", 6: "六", 7: "七", 8: "八", 9: "九"
+                    0: '〇', 1: '壱', 2: '弐', 3: '参', 4: '四',
+                    5: '伍', 6: '六', 7: '七', 8: '八', 9: '九'
                 };
                 for (i = 0; i < 10; i++) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
@@ -903,8 +909,8 @@ var INTERMediatorLib = {
             }
         }
 
-        if (flags.usePercentNotation === true && formatted !== "") {
-            formatted = formatted + "%";
+        if (flags.usePercentNotation === true && formatted !== '') {
+            formatted = formatted + '%';
         }
 
         return formatted;
@@ -921,7 +927,7 @@ var INTERMediatorLib = {
     },
 
     numberFormat: function (str, digit, flags) {
-        "use strict";
+        'use strict';
         if (flags === undefined) {
             flags = {};
         }
@@ -930,11 +936,11 @@ var INTERMediatorLib = {
     },
 
     percentFormat: function (str, digit, flags) {
-        "use strict";
+        'use strict';
         if (typeof flags !== 'object') {
             flags = {};
         }
-        flags["usePercentNotation"] = true;
+        flags['usePercentNotation'] = true;
         return INTERMediatorLib.numberFormatImpl(str, digit,
             INTERMediatorOnPage.localeInfo.mon_decimal_point,
             INTERMediatorOnPage.localeInfo.mon_thousands_sep,
@@ -944,7 +950,7 @@ var INTERMediatorLib = {
     },
 
     decimalFormat: function (str, digit, flags) {
-        "use strict";
+        'use strict';
         return INTERMediatorLib.numberFormatImpl(str, digit,
             INTERMediatorOnPage.localeInfo.mon_decimal_point,
             INTERMediatorOnPage.localeInfo.mon_thousands_sep,
@@ -954,7 +960,7 @@ var INTERMediatorLib = {
     },
 
     currencyFormat: function (str, digit, flags) {
-        "use strict";
+        'use strict';
         return INTERMediatorLib.numberFormatImpl(str, digit,
             INTERMediatorOnPage.localeInfo.mon_decimal_point,
             INTERMediatorOnPage.localeInfo.mon_thousands_sep,
@@ -964,23 +970,23 @@ var INTERMediatorLib = {
     },
 
     booleanFormat: function (str, forms, flags) {
-        "use strict";
-        var trueString = "true", falseString = "false", fmtStr;
-        var params = forms.split(",");
+        'use strict';
+        var trueString = 'true', falseString = 'false', fmtStr;
+        var params = forms.split(',');
         if (params[0]) {
             fmtStr = params[0].trim();
             if (fmtStr.length > 0) {
-                trueString = fmtStr
+                trueString = fmtStr;
             }
         }
         if (params[1]) {
             fmtStr = params[1].trim();
             if (fmtStr.length > 0) {
-                falseString = fmtStr
+                falseString = fmtStr;
             }
         }
-        if (str === "" || str === null) {
-            return "";
+        if (str === '' || str === null) {
+            return '';
         } else {
             if (parseInt(str, 10) !== 0) {
                 return trueString;
@@ -991,18 +997,18 @@ var INTERMediatorLib = {
     },
 
     datetimeFormat: function (str, params) {
-        "use strict";
-        return INTERMediatorLib.datetimeFormatImpl(str, params, "datetime");
+        'use strict';
+        return INTERMediatorLib.datetimeFormatImpl(str, params, 'datetime');
     },
 
     dateFormat: function (str, params) {
-        "use strict";
-        return INTERMediatorLib.datetimeFormatImpl(str, params, "date");
+        'use strict';
+        return INTERMediatorLib.datetimeFormatImpl(str, params, 'date');
     },
 
     timeFormat: function (str, params) {
-        "use strict";
-        return INTERMediatorLib.datetimeFormatImpl(str, params, "time");
+        'use strict';
+        return INTERMediatorLib.datetimeFormatImpl(str, params, 'time');
     },
 
     placeHolder: {
@@ -1099,17 +1105,17 @@ var INTERMediatorLib = {
     },
 
     jYearStartDate: {'1989/1/8': '平成', '1926/12/25': '昭和', '1912/7/30': '大正', '1868/1/25': '明治'},
-    eDayName: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-    eDayAbbr: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    eMonName: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-    eMonAbbr: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-    kanjiNumbers: ["〇", "一", "二", "三", "四", "五", "六", "七", "八", "九"],
-    kanjiDigit: ["", "十", "百", "千", "万"],
+    eDayName: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    eDayAbbr: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+    eMonName: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    eMonAbbr: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    kanjiNumbers: ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九'],
+    kanjiDigit: ['', '十', '百', '千', '万'],
 
     getLocalYear: function (dt, fmt) {
         var gengoName, gengoYear, startDateStr, dtStart;
         if (!dt) {
-            return "";
+            return '';
         }
         gengoName = '';
         gengoYear = 0;
@@ -1128,19 +1134,19 @@ var INTERMediatorLib = {
     },
 
     datetimeFormatImpl: function (str, params, flags) {
-        "use strict";
+        'use strict';
         var paramStr = params.trim().toUpperCase();
         var kind = flags.trim().toUpperCase();
-        var key = kind.substr(0, 1) + "_FMT_" + paramStr;
+        var key = kind.substr(0, 1) + '_FMT_' + paramStr;
         if (INTERMediatorOnPage.localeInfo[key]) {
             params = INTERMediatorOnPage.localeInfo[key];
             if (kind === 'DATETIME') {
-                params += " " + INTERMediatorOnPage.localeInfo["T_FMT_" + paramStr];
+                params += ' ' + INTERMediatorOnPage.localeInfo['T_FMT_' + paramStr];
             }
         }
-        var dt = new Date(str.replace(/-/g, '/')), c, result = "", replaced;
-        if(dt.toString() === "Invalid Date")    {
-            return "";
+        var dt = new Date(str.replace(/-/g, '/')), c, result = '', replaced;
+        if (dt.toString() === 'Invalid Date') {
+            return '';
         }
         for (c = 0; c < params.length; c++) {
             if ((c + 1) < params.length && INTERMediatorLib.placeHolder[params.substr(c, 2)]) {
@@ -1155,28 +1161,28 @@ var INTERMediatorLib = {
     },
 
     convertNumeric: function (value) {
-        value = value.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, "g"), "");
+        value = value.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, 'g'), '');
         value = INTERMediatorLib.normalizeNumerics(value);
-        if (value !== "") {
+        if (value !== '') {
             value = parseFloat(value);
         }
         return value;
     },
 
     convertBoolean: function (value, forms) {
-        var trueString = "true", falseString = "false", fmtStr;
+        var trueString = 'true', falseString = 'false', fmtStr;
         value = value.trim();
-        var params = forms.split(",");
+        var params = forms.split(',');
         if (params[0]) {
             fmtStr = params[0].trim();
             if (fmtStr.length > 0) {
-                trueString = fmtStr
+                trueString = fmtStr;
             }
         }
         if (params[1]) {
             fmtStr = params[1].trim();
             if (fmtStr.length > 0) {
-                falseString = fmtStr
+                falseString = fmtStr;
             }
         }
         if (value === trueString) {
@@ -1188,38 +1194,39 @@ var INTERMediatorLib = {
     },
 
     convertPercent: function (value) {
-        value = value.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, "g"), "");
-        value = value.replace("%", "");
+        value = value.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, 'g'), '');
+        value = value.replace('%', '');
         value = INTERMediatorLib.normalizeNumerics(value);
-        if (value !== "") {
+        if (value !== '') {
             value = parseFloat(value) / 100;
         }
         return value;
     },
 
-    convertDate: function (value, params, flags) {
-        return INTERMediatorLib.convertDateTimeImpl(value, params, "date");
+    convertDate: function (value, params) {
+        return INTERMediatorLib.convertDateTimeImpl(value, params, 'date');
     },
-    convertTime: function (value, params, flags) {
-        return INTERMediatorLib.convertDateTimeImpl(value, params, "time");
+    convertTime: function (value, params) {
+        return INTERMediatorLib.convertDateTimeImpl(value, params, 'time');
     },
-    convertDateTime: function (value, params, flags) {
-        return INTERMediatorLib.convertDateTimeImpl(value, params, "datetime");
+    convertDateTime: function (value, params) {
+        return INTERMediatorLib.convertDateTimeImpl(value, params, 'datetime');
     },
 
     convertDateTimeImpl: function (value, params, flags) {
-        var c, result, replacement = [], regexp = "";
-        var r, matched, y, m, d, h, i, s, paramStr, kind, key;
+        var c, result, replacement = [], regexp = '';
+        var r, matched, y, m, d, h, i, s, paramStr, kind, key, mon;
 
         paramStr = params.trim().toUpperCase();
         kind = flags.trim().toUpperCase();
-        key = kind.substr(0, 1) + "_FMT_" + paramStr;
+        key = kind.substr(0, 1) + '_FMT_' + paramStr;
         if (INTERMediatorOnPage.localeInfo[key]) {
             params = INTERMediatorOnPage.localeInfo[key];
             if (kind === 'DATETIME') {
-                params += " " + INTERMediatorOnPage.localeInfo["T_FMT_" + paramStr];
+                params += ' ' + INTERMediatorOnPage.localeInfo['T_FMT_' + paramStr];
             }
         }
+        params = params.replace(/([\(\)])/g, '\\$1');
         for (c = 0; c < params.length; c++) {
             if ((c + 1) < params.length && INTERMediatorLib.reverseRegExp[params.substr(c, 2)]) {
                 regexp += INTERMediatorLib.reverseRegExp[params.substr(c, 2)];
@@ -1235,38 +1242,44 @@ var INTERMediatorLib = {
         if (matched) {
             for (c = 0; c < replacement.length; c++) {
                 switch (replacement[c]) {
-                    case '%Y':
-                    case '%y':
-                        y = matched[c + 1];
-                        break;
-                    case '%M':
-                    case '%m':
-                        m = matched[c + 1];
-                        break;
-                    case '%D':
-                    case '%d':
-                        d = matched[c + 1];
-                        break;
-                    case '%H':
-                    case '%h':
-                        h = matched[c + 1];
-                        break;
-                    case '%I':
-                    case '%i':
-                        i = matched[c + 1];
-                        break;
-                    case '%S':
-                    case '%s':
-                        s = matched[c + 1];
-                        break;
+                case '%Y':
+                case '%y':
+                    y = matched[c + 1];
+                    break;
+                case '%M':
+                case '%m':
+                    m = matched[c + 1];
+                    break;
+                case '%T':
+                case '%t':
+                    mon = matched[c + 1];
+                    m = INTERMediatorLib.eMonAbbr.indexOf(mon.substr(0, 1).toUpperCase() + mon.substr(1, 2).toLowerCase());
+                    m++;
+                    break;
+                case '%D':
+                case '%d':
+                    d = matched[c + 1];
+                    break;
+                case '%H':
+                case '%h':
+                    h = matched[c + 1];
+                    break;
+                case '%I':
+                case '%i':
+                    i = matched[c + 1];
+                    break;
+                case '%S':
+                case '%s':
+                    s = matched[c + 1];
+                    break;
                 }
             }
             if (y && m && d && h && i && s) {
-                result = y + "-" + m + "-" + d + " " + h + ":" + i + ":" + s;
+                result = y + '-' + m + '-' + d + ' ' + h + ':' + i + ':' + s;
             } else if (y && m && d) {
-                result = y + "-" + m + "-" + d;
+                result = y + '-' + m + '-' + d;
             } else if (h && i && s) {
-                result = h + ":" + i + ":" + s;
+                result = h + ':' + i + ':' + s;
             }
         }
         return result;
@@ -1274,59 +1287,60 @@ var INTERMediatorLib = {
     },
 
     reverseRegExp: {
-        '%Y': "([\\d]{4})", //
-        '%y': "([\\d]{2})", //	西暦2桁	17
-        '%g': "(明治|大正|昭和|平成)(元|[\\d]{1,2})年", //	ロカールによる年数	平成29年
-        '%G': "(明治|大正|昭和|平成)(.+)年", //	ロカールによる年数	平成二十九年
-        '%M': "([\\d]{1,2})", //	月2桁	07
-        '%m': "([\\d]{1,2})", //	月数値	7
-        '%b': "(.+)", //	短縮月名	Jul
-        '%B': "(.+)", //	月名	July
-        '%t': "(.+)", //	短縮月名	Jul
-        '%T': "(.+)", //	月名	July
-        '%D': "([\\d]{1,2})", //	日2桁	12
-        '%d': "([\\d]{1,2})", //	日数値	12
-        '%a': "(.+)", //	英語短縮曜日名	Mon
-        '%A': "(.+)", //	英語曜日名	Monday
-        '%w': "(.+)", //	ロカールによる短縮曜日名	月
-        '%W': "(.+)", //	ロカールによる曜日名	月曜日
-        '%H': "([\\d]{1,2})", //	時2桁	09
-        '%h': "([\\d]{1,2})", //	時数値	9
-        '%J': "([\\d]{1,2})", //	12時間制時2桁	09
-        '%j': "([\\d]{1,2})", //	12時間制時数値	9
-        '%K': "([\\d]{1,2})", //	12時間制時2桁	09
-        '%k': "([\\d]{1,2})", //	12時間制時数値	9
-        '%I': "([\\d]{1,2})", //	分2桁	05
-        '%i': "([\\d]{1,2})", //	分数値	5
-        '%S': "([\\d]{1,2})", //	秒2桁	00
-        '%s': "([\\d]{1,2})", //	秒数値	0
-        '%P': "(AM|PM)", //	AM/PM	AM
-        '%p': "(am|pm)", //	am/pm	am
-        '%N': "(" + INTERMediatorOnPage.localeInfo["AM_STR"] + "|" + INTERMediatorOnPage.localeInfo["PM_STR"] + ")", //	am/pm	am
-        '%%': "[\%]" //	パーセント	%
+        '%Y': '([\\d]{4})', //
+        '%y': '([\\d]{2})', //	西暦2桁	17
+        '%g': '(明治|大正|昭和|平成)(元|[\\d]{1,2})年', //	ロカールによる年数	平成29年
+        '%G': '(明治|大正|昭和|平成)(.+)年', //	ロカールによる年数	平成二十九年
+        '%M': '([\\d]{1,2})', //	月2桁	07
+        '%m': '([\\d]{1,2})', //	月数値	7
+        '%b': '(.+)', //	短縮月名	Jul
+        '%B': '(.+)', //	月名	July
+        '%t': '(.+)', //	短縮月名	Jul
+        '%T': '(.+)', //	月名	July
+        '%D': '([\\d]{1,2})', //	日2桁	12
+        '%d': '([\\d]{1,2})', //	日数値	12
+        '%a': '(.+)', //	英語短縮曜日名	Mon
+        '%A': '(.+)', //	英語曜日名	Monday
+        '%w': '(.+)', //	ロカールによる短縮曜日名	月
+        '%W': '(.+)', //	ロカールによる曜日名	月曜日
+        '%H': '([\\d]{1,2})', //	時2桁	09
+        '%h': '([\\d]{1,2})', //	時数値	9
+        '%J': '([\\d]{1,2})', //	12時間制時2桁	09
+        '%j': '([\\d]{1,2})', //	12時間制時数値	9
+        '%K': '([\\d]{1,2})', //	12時間制時2桁	09
+        '%k': '([\\d]{1,2})', //	12時間制時数値	9
+        '%I': '([\\d]{1,2})', //	分2桁	05
+        '%i': '([\\d]{1,2})', //	分数値	5
+        '%S': '([\\d]{1,2})', //	秒2桁	00
+        '%s': '([\\d]{1,2})', //	秒数値	0
+        '%P': '(AM|PM)', //	AM/PM	AM
+        '%p': '(am|pm)', //	am/pm	am
+        '%N': '(' + INTERMediatorOnPage.localeInfo['AM_STR'] + '|' + INTERMediatorOnPage.localeInfo['PM_STR'] + ')', //	am/pm	am
+        '%%': '[\%]' //	パーセント	%
     },
 
     objectToString: function (obj) {
-        var str, i, key;
+        var str, i, key, sq;
 
         if (obj === null) {
             return 'null';
         }
         if (typeof obj === 'object') {
             str = '';
-            if (obj.constractor === Array) {
+            sq = String.fromCharCode(39);
+            if (obj.constructor === Array) {
                 for (i = 0; i < obj.length; i++) {
                     str += INTERMediatorLib.objectToString(obj[i]) + ', ';
                 }
                 return '[' + str + ']';
             } else {
                 for (key in obj) {
-                    str += "'" + key + "':" + INTERMediatorLib.objectToString(obj[key]) + ", ";
+                    str += sq + key + sq + ':' + INTERMediatorLib.objectToString(obj[key]) + ', ';
                 }
                 return '{' + str + '}';
             }
         } else {
-            return "'" + obj + "'";
+            return sq + obj + sq;
         }
     },
 
@@ -1798,14 +1812,14 @@ var IMLibNodeGraph = {
         }
 
     },
-
-    decodeOpenIDToken: function ($token) {
-        var header, payload, cert, components = $token.split('.');
-        if (components.length != 3) {
-            return false;
-        }
-        header = Base64.decode(components[0]);
-        payload = Base64.decode(components[1]);
-        cert = Base64.decode(components[2]);
-    }
+    //
+    // decodeOpenIDToken: function ($token) {
+    //     var header, payload, cert, components = $token.split('.');
+    //     if (components.length != 3) {
+    //         return false;
+    //     }
+    //     header = Base64.decode(components[0]);
+    //     payload = Base64.decode(components[1]);
+    //     cert = Base64.decode(components[2]);
+    // }
 };
