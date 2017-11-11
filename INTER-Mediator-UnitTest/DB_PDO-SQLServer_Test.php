@@ -18,11 +18,11 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
         mb_internal_encoding('UTF-8');
         date_default_timezone_set('Asia/Tokyo');
 
-        $this->dsn = 'sqlsvr:unix_socket=/var/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';
+        $this->dsn = 'sqlsrv:server=localhost;database=test_db';
         if (getenv('TRAVIS') === 'true') {
-            $this->dsn = 'sqlsvr:dbname=test_db;host=127.0.0.1';
+            $this->dsn = 'sqlsrv:database=test_db;server=localhost';
         } else if (file_exists('/etc/alpine-release')) {
-            $this->dsn = 'sqlsvr:unix_socket=/run/mysqld/mysqld.sock;dbname=test_db;charset=utf8mb4';
+            $this->dsn = 'sqlsrv:server=localhost;database=test_db';
         }
     }
 
@@ -122,7 +122,7 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
                     'records' => 10,
                     'aggregation-select' => "item_master.name as item_name,sum(total) as total",
                     'aggregation-from' => "saleslog inner join item_master on saleslog.item_id=item_master.id",
-                    'aggregation-group-by' => "item_id",
+                    'aggregation-group-by' => "item_id, item_master.name",
                 ),
             ),
             null,
@@ -135,5 +135,9 @@ class DB_PDO_SQLServer_Test extends DB_PDO_Test_Common
             2,
             "summary"
         );
+    }
+
+    protected function getSampleComdition() {
+        return "WHERE id=1001 ORDER BY xdate OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY";;
     }
 }

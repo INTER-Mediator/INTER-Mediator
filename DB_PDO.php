@@ -429,7 +429,6 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                 $this->mainTableTotalCount = $isAggregate ? $result->rowCount() : $result->fetchColumn(0);
             }
         }
-
         $sql = "{$this->handler->sqlSELECTCommand()}{$fields} FROM {$viewOrTableName} {$queryClause} {$groupBy} "
             . $this->handler->sqlOrderByCommand($sortClause, $limitParam, $offset);
         $this->logger->setDebugMessage($sql);

@@ -15,7 +15,7 @@
  */
 class DB_Spec_Handler_PDO implements DB_Spec_Behavior
 {
-    protected $dbClassObj = null;
+    public $dbClassObj = null;
 
     public static function generateHandler($dbObj, $dsn)
     {

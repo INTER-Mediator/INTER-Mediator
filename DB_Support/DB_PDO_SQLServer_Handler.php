@@ -32,8 +32,8 @@ class DB_PDO_SQLServer_Handler extends DB_PDO_Handler
             }
         }
         return "ORDER BY {$sortClause} "
-            .(strlen($offset) > 0 ? "OFFSET {$offset} ROWS " : "")
-            .(strlen($offset) > 0 ? "FETCH NEXT {$limit} ROWS ONLY " : "");
+            . (strlen($offset) > 0 ? "OFFSET {$offset} ROWS " : "OFFSET 0 ROWS ")
+            . (strlen($limit) > 0 ? "FETCH NEXT {$limit} ROWS ONLY " : "");
     }
 
     public function sqlDELETECommand()
@@ -171,22 +171,28 @@ xml
         $fieldArray = array();
         $listArray = array();
         foreach ($result->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $quatedFieldName = $this->quotedEntityName($row['name']);
             if ($keyField === $row['name'] || $row['is_identity'] === 1) {
                 // skip key field to asign value.
             } else if ($assocField === $row['name']) {
-                $fieldArray[] = $this->quotedEntityName($row['name']);
-                $listArray[] = $this->dbClassObj->link->quote($assocValue);
+                if (array_search($quatedFieldName, $fieldArray)===FALSE) {
+                    $fieldArray[] = $quatedFieldName;
+                    $listArray[] = $this->dbClassObj->link->quote($assocValue);
+                }
             } else if (isset($defaultValues[$row['name']])) {
-                $fieldArray[] = $this->quotedEntityName($row['name']);
-                $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['name']]);
+                if (array_search($quatedFieldName, $fieldArray) === FALSE) {
+                    $fieldArray[] = $quatedFieldName;
+                    $listArray[] = $this->dbClassObj->link->quote($defaultValues[$row['name']]);
+                }
             } else {
-                $fieldArray[] = $this->quotedEntityName($row['name']);
-                $listArray[] = $this->quotedEntityName($row['name']);
+                if (array_search($quatedFieldName, $fieldArray) === FALSE) {
+                    $fieldArray[] = $quatedFieldName;
+                    $listArray[] = $this->quotedEntityName($row['name']);
+                }
             }
         }
         return array(implode(',', $fieldArray), implode(',', $listArray));
     }
-
 
     public function quotedEntityName($entityName)
     {

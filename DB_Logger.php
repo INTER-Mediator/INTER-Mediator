@@ -34,6 +34,12 @@ class DB_Logger
     {
     }
 
+    public function clearLogs()
+    {
+        $this->errorMessage = array();
+        $this->debugMessage = array();
+    }
+
     public function setDebugMessage($str, $level = 1)
     {
         if ($this->debugLevel !== false && $this->debugLevel >= $level) {

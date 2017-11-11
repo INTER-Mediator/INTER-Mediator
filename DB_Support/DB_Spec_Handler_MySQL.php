@@ -15,33 +15,6 @@
  */
 class DB_Spec_Handler_MySQL extends DB_Spec_Handler_PDO
 {
-    protected $dbClassObj = null;
-
-    public static function generateHandler($dbObj, $dsn)
-    {
-        if (is_null($dbObj)) {
-            return null;
-        }
-        if (strpos($dsn, 'mysql:') === 0) {
-            $instance = new DB_Spec_Handler_MySQL();
-            $instance->dbClassObj = $dbObj;
-            return $instance;
-        } else if (strpos($dsn, 'pgsql:') === 0) {
-            $instance = new DB_Spec_Handler_PostgreSQL();
-            $instance->dbClassObj = $dbObj;
-            return $instance;
-        } else if (strpos($dsn, 'sqlite:') === 0) {
-            $instance = new DB_Spec_Handler_SQLite();
-            $instance->dbClassObj = $dbObj;
-            return $instance;
-        } else if (strpos($dsn, 'sqlsrv:') === 0) {
-            $instance = new DB_Spec_Handler_SQLServer();
-            $instance->dbClassObj = $dbObj;
-            return $instance;
-        }
-        return null;
-    }
-
     public static function defaultKey()
     {
         return "id";
