@@ -384,7 +384,7 @@ var IMLibElement = {
                     var idValue = element.id;
                     var elementCapt = element;
                     return function() {
-                        if (IMLibUI.valueChange(idValue, true)) {
+                        if (!IMLibUI.valueChange(idValue, true)) {
                             elementCapt.focus();
                         }
                     };
