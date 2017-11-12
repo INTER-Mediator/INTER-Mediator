@@ -1120,8 +1120,7 @@ var INTERMediator = {
         function setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue) {
             var currentWidgetNodes, currentLinkedNodes, nInfo, currentContextDef, j, keyField, k, nodeId,
                 curVal, replacedNode, typeAttr, children, wInfo, nameTable, idValuesForFieldName = {},
-                nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget,
-                delNodes = [], targetFirstChar, imControl;
+                nodeTag, linkInfoArray, nameTableKey, nameNumber, nameAttr, isContext = false, curTarget;
 
             currentContextDef = contextObj.getContextDef();
             try {
@@ -1230,7 +1229,7 @@ var INTERMediator = {
         function expandRepeaters(contextObj, node, targetRecords) {
             var newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
                 repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
-                insertNode, countRecord, setupResult, linkedElements, keyingValue, keyField, keyValue,
+                insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
                 idValuesForFieldName;
 
             encNodeTag = node.tagName;

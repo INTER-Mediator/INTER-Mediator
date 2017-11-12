@@ -380,15 +380,16 @@ var IMLibElement = {
             && !isReplaceOrAppend
             && (!imControl || imControl.indexOf('unbind') > 0 )) {
             if (!element.getAttribute("data-imbluradded")) {
-                IMLibBlurEventDispatch.setExecute(element.id, (function () {
+                INTERMediatorLib.addEvent(element, 'blur', (function (event) {
                     var idValue = element.id;
                     var elementCapt = element;
-                    return function (event) {
-                        if (!IMLibUI.valueChange(idValue, true)) {
+                    return function() {
+                        if (IMLibUI.valueChange(idValue, true)) {
                             elementCapt.focus();
                         }
-                    }
+                    };
                 })());
+                // blur event is NOT excited on other elements, so we can't use IMLibBlurEventDispatch.setExecute.
                 element.setAttribute("data-imbluradded", "set");
             }
             if (!element.getAttribute("data-imchangeadded")) {
@@ -399,7 +400,7 @@ var IMLibElement = {
                         if (!IMLibUI.valueChange(idValue, false)) {
                             elementCapt.focus();
                         }
-                    }
+                    };
                 })());
                 element.setAttribute("data-imchangeadded", "set");
             }

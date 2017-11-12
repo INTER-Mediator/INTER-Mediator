@@ -45,6 +45,7 @@ Ver.5.7-dev (in development)
 - [BUG FIX] The Auth_Manager sample in Auth_Support folder didn't work. So the UserList.php is removed.
 - [BUG FIX] Master/Detail interface in mobile phone didn't return the master page from the detail page.
 - [BUG FIX] Record create method under authentication prevented the 'target' setting, and it is fiexed.
+- [BUG FIX] Sometimes validation wasn't work, for example, blank text field.
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".
