@@ -759,7 +759,7 @@ class DB_FMS_Test_Common extends PHPUnit_Framework_TestCase
     {
         $this->dbProxySetupForAccess('person_layout', 1);
 
-        $className = get_class($this->db_proxy->dbClass);
+        $className = get_class($this->db_proxy->dbClass->specHandler);
         $this->assertEquals('-recid', call_user_func(array($className, 'defaultKey')));
     }
 

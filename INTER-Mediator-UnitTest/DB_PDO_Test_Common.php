@@ -393,13 +393,13 @@ abstract class DB_PDO_Test_Common extends PHPUnit_Framework_TestCase
             $this->db_proxy->checkChallenge($challenge, $cliendId), $testName);
     }
 
-//    public function testDefaultKey()
-//    {
-//        $this->dbProxySetupForAccess("person", 1);
-//
-//        $className = get_class($this->db_proxy->dbClass);
-//        $this->assertEquals('id', call_user_func(array($className, 'defaultKey')));
-//    }
+    public function testDefaultKey()
+    {
+        $this->dbProxySetupForAccess("person", 1);
+
+        $className = get_class($this->db_proxy->dbClass->specHandler);
+        $this->assertEquals('id', call_user_func(array($className, 'defaultKey')));
+    }
 
     public function testGetDefaultKey()
     {
