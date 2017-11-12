@@ -940,7 +940,7 @@ var INTERMediatorLib = {
         if (typeof flags !== 'object') {
             flags = {};
         }
-        flags['usePercentNotation'] = true;
+        flags.usePercentNotation = true;
         return INTERMediatorLib.numberFormatImpl(str, digit,
             INTERMediatorOnPage.localeInfo.mon_decimal_point,
             INTERMediatorOnPage.localeInfo.mon_thousands_sep,
@@ -969,7 +969,7 @@ var INTERMediatorLib = {
         );
     },
 
-    booleanFormat: function (str, forms, flags) {
+    booleanFormat: function (str, forms) {
         'use strict';
         var trueString = 'true', falseString = 'false', fmtStr;
         var params = forms.split(',');
