@@ -6,8 +6,8 @@
  * Date: 2017/10/08
  * Time: 0:18
  */
-require_once "LineDivider.php";
-require_once "FieldDivider.php";
+require_once(dirname(__FILE__) . '/../LineDivider.php');
+require_once(dirname(__FILE__) . '/../FieldDivider.php');
 
 class LineFieldDividerTest extends PHPUnit_Framework_TestCase
 {
