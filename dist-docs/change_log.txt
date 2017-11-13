@@ -38,6 +38,17 @@ Ver.5.7-dev (in development)
 - IMLibPageNavigation.moveDetailOnceAgain() can re-move to current detail view. If you want to update datail area
   just current record, this API might be suitable.
 - Authenticated user generating script is added as dist-docs/passwdgen.sh. See the usege in it.
+- Locking methos ex. IMLibUI.lockUIElement are replaced to the queue based serialized processing.
+  Following methods are serialized with queue. You have to set your codes into queue with IMLibQueue.setTask.
+    IMLibUI.valueChange
+    IMLibUI.copyButton
+    IMLibUI.deleteButton
+    IMLibUI.insertButton
+    IMLibContext.prototype.setDataAtLastRecord
+    IMLibContext.prototype.setDataWithKey
+    IMLibPageNavigation.copyRecordFromNavi
+    IMLibPageNavigation.deleteRecordFromNavi
+    IMLibPageNavigation.insertRecordFromNavi
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 - [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.
