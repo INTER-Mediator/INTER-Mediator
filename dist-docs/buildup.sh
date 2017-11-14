@@ -89,6 +89,7 @@ cat "${originalPath}/lib/bi2php/biBigInt.js"                  >> "${buildPath}/t
 cat "${originalPath}/lib/bi2php/biMontgomery.js"              >> "${buildPath}/temp.js"
 cat "${originalPath}/lib/bi2php/biRSA.js"                     >> "${buildPath}/temp.js"
 cat "${originalPath}/Adapter_DBServer.js"                     >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Queuing.js"               >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Events.js"                >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-DoOnStart.js"             >> "${buildPath}/temp.js"
 

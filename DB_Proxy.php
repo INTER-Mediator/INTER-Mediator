@@ -394,7 +394,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
     function copyInDB()
     {
         try {
-            $className = get_class($this->userExpanded);
+            $className = is_null($this->userExpanded) ? "" : get_class($this->userExpanded);
             if ($this->userExpanded && method_exists($this->userExpanded, "doBeforeCopyInDB")) {
                 $this->logger->setDebugMessage("The method 'doBeforeCopyInDB' of the class '{$className}' is calling.", 2);
                 $this->userExpanded->doBeforeCopyInDB();

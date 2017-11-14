@@ -659,8 +659,6 @@ var INTERMediator = {
         INTERMediatorOnPage.isFinishToConstruct = false;
         INTERMediator.partialConstructing = true;
         INTERMediatorOnPage.hideProgress();
-
-        IMLibUI.clearLockInfo();
         INTERMediator.flushMessage(); // Show messages
 
         /* --------------------------------------------------------------------

@@ -705,7 +705,6 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
                     IMLibContextPool.updateContext(idValueCapt, nodeInfoCapt.target);
                     newValue = IMLibElement.getValueFromIMNode(changedObjectCapt);
                     if (newValue != null) {
-                        INTERMediatorOnPage.retrieveAuthInfo();
                         if (targetContextCapt.isPortal) {
                             criteria = targetContextCapt.potalContainingRecordKV.split('=');
                             INTERMediator_DBAdapter.db_update_async(
@@ -737,8 +736,7 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
                     }
                 };
             })(),
-            function
-                () {
+            function () {
                 INTERMediatorOnPage.hideProgress();
                 INTERMediator.setErrorMessage('Error in valueChange method.', 'EXCEPTION-1');
                 IMLibUI.clearLockInfo();
@@ -749,10 +747,10 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
     var handleAsNullValue = ["0000-00-00", "0000-00-00 00:00:00"];
 
     function checkSameValue(initialValue, currentFieldVal) {
-        if (handleAsNullValue.indexOf(initialValue)>=0) {
+        if (handleAsNullValue.indexOf(initialValue) >= 0) {
             initialValue = "";
         }
-        if (handleAsNullValue.indexOf(currentFieldVal)>=0) {
+        if (handleAsNullValue.indexOf(currentFieldVal) >= 0) {
             currentFieldVal = "";
         }
         return initialValue != currentFieldVal;
@@ -1210,13 +1208,19 @@ IMLibContext.prototype.setDataAtLastRecord = function (key, value) {
         lastKey = storekeys[storekeys.length - 1];
         this.setValue(lastKey, key, value);
         keyAndValue = lastKey.split('=');
-        INTERMediator_DBAdapter.db_update({
-            name: this.contextName,
-            conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
-            dataset: [{field: key, value: value}]
-        });
-        IMLibCalc.recalculation();
-        INTERMediator.flushMessage();
+        IMLibQueue.setTask((function () {
+            var params = {
+                name: this.contextName,
+                conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
+                dataset: [{field: key, value: value}]
+            };
+            return function (completeTask) {
+                INTERMediator_DBAdapter.db_update(params);
+                IMLibCalc.recalculation();
+                INTERMediator.flushMessage();
+                completeTask();
+            };
+        })());
     }
 };
 
@@ -1230,12 +1234,18 @@ IMLibContext.prototype.setDataWithKey = function (pkValue, key, value) {
     storeElements = this.store[targetKey];
     if (storeElements) {
         this.setValue(targetKey, key, value);
-        INTERMediator_DBAdapter.db_update({
-            name: this.contextName,
-            conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
-            dataset: [{field: key, value: value}]
-        });
-        INTERMediator.flushMessage();
+        IMLibQueue.setTask((function () {
+            var params = {
+                name: this.contextName,
+                conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
+                dataset: [{field: key, value: value}]
+            };
+            return function (completeTask) {
+                INTERMediator_DBAdapter.db_update(params);
+                INTERMediator.flushMessage();
+                completeTask();
+            };
+        })());
     }
 };
 

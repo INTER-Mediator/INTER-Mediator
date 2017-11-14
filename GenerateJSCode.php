@@ -387,6 +387,7 @@ class GenerateJSCode
         $content .= file_get_contents($bi2phpDir . 'biRSA.js');
         $content .= file_get_contents($currentDir . 'Adapter_DBServer.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Events.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Queuing.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-DoOnStart.js');
 
         return $content;

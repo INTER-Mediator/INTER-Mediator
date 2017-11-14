@@ -116,7 +116,7 @@ IMParts_Catalog['fileupload'] = {
             inputNode.setAttribute('accept', '*/*');
             inputNode.setAttribute('name', '_im_uploadfile');
             inputNode.className = '_im_uploadfile';
-            inputNode.addEventListener('change',function(){
+            inputNode.addEventListener('change', function () {
                 if (this.files[0].size > 0) {
                     this.nextSibling.removeAttribute('disabled');
                 }
@@ -136,7 +136,7 @@ IMParts_Catalog['fileupload'] = {
             buttonNode.setAttribute('type', 'submit');
             buttonNode.setAttribute('disabled', '');
             buttonNode.appendChild(document.createTextNode(this.uploadButtonLabel));
-            if (!newNode.id)   {
+            if (!newNode.id) {
                 newNode.id = INTERMediator.nextIdValue();
             }
             IMLibMouseEventDispatch.setExecute(newNode.id, function (event) {
@@ -148,10 +148,10 @@ IMParts_Catalog['fileupload'] = {
                     }
                 }
             }, true);
-            if (!cancelButtonWrapper.id)   {
+            if (!cancelButtonWrapper.id) {
                 cancelButtonWrapper.id = INTERMediator.nextIdValue();
             }
-            IMLibMouseEventDispatch.setExecute(cancelButtonWrapper.id, function(c) {
+            IMLibMouseEventDispatch.setExecute(cancelButtonWrapper.id, function (c) {
                 this.parentNode.style.display = 'none';
             });
             divNode.appendChild(cancelButtonWrapper);
@@ -247,52 +247,73 @@ IMParts_Catalog['fileupload'] = {
                                         'upload_frame.php?up_id=' + uploadId + iframeId);
                                 });
                             }
-                            INTERMediator_DBAdapter.uploadFile(
-                                '&_im_contextname=' + encodeURIComponent(updateInfo.context.contextName) +
+                            IMLibQueue.setTask((function () {
+                                var uploadData = '&_im_contextname=' + encodeURIComponent(updateInfo.context.contextName) +
                                     '&_im_field=' + encodeURIComponent(updateInfo.field) +
                                     '&_im_keyfield=' + encodeURIComponent(updateInfo.record.split('=')[0]) +
                                     '&_im_keyvalue=' + encodeURIComponent(updateInfo.record.split('=')[1]) +
                                     '&_im_contextnewrecord=' + encodeURIComponent('uploadfile') +
                                     (isProgressing ?
-                                        ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : ''),
-                                {
+                                        ('&APC_UPLOAD_PROGRESS=' + encodeURIComponent(uploadId + iframeId)) : '');
+                                var uploadSpec = {
                                     fileName: file.name,
                                     content: file
-                                },
-                                function (dbresult) {
-                                    var contextObj, contextInfo, contextObjects = null, fvalue, i, context;
-                                    context = IMLibContextPool.getContextDef(updateInfo.context.contextName);
-                                    if (context['file-upload']) {
-                                        var relatedContextName = '';
-                                        for (var index in context['file-upload']) {
-                                            if (context['file-upload'][index]['field'] == updateInfo.field) {
-                                                relatedContextName = context['file-upload'][index]['context'];
-                                                break;
+                                };
+                                var contextName = updateInfo.context.contextName;
+                                var updateField = updateInfo.field;
+                                var targetIdCapt = tagetId;
+                                var targetNodeCapt = targetNode;
+                                var finishFunc = (function () {
+                                    var infoFrameCapt = infoFrame;
+                                    var fileNameNodeCapt = fileNameNode;
+                                    return function () {
+                                        infoFrameCapt.setAttribute('src', '');
+                                        fileNameNodeCapt.parentNode.removeChild(fileNameNodeCapt);
+                                    };
+                                })();
+                                return function (completeTask) {
+                                    INTERMediator_DBAdapter.uploadFile(
+                                        uploadData, uploadSpec,
+                                        function (dbresult) {
+                                            var contextObj, contextInfo, contextObjects = null, fvalue, i, context,
+                                                relatedContextName = '', index;
+                                            context = IMLibContextPool.getContextDef(contextName);
+                                            if (context['file-upload']) {
+                                                for (index in context['file-upload']) {
+                                                    if (context['file-upload'][index]['field'] == updateField) {
+                                                        relatedContextName = context['file-upload'][index]['context'];
+                                                        break;
+                                                    }
+                                                }
+                                                fvalue = IMLibContextPool.getKeyFieldValueFromId(targetIdCapt, '');
+                                                contextObjects = IMLibContextPool.getContextsFromNameAndForeignValue(
+                                                    relatedContextName, fvalue, context.key);
+                                            } else {
+                                                contextObjects = IMLibContextPool.getContextFromName(contextName);
                                             }
-                                        }
-                                        fvalue = IMLibContextPool.getKeyFieldValueFromId(tagetId, '');
-                                        contextObjects = IMLibContextPool.getContextsFromNameAndForeignValue(
-                                            relatedContextName, fvalue, context.key);
-                                    } else {
-                                        contextObjects = IMLibContextPool.getContextFromName(updateInfo.context.contextName);
-                                    }
-                                    contextInfo = IMLibContextPool.getContextInfoFromId(tagetId, '');
-                                    contextInfo.context.setValue(contextInfo.record, contextInfo.field, dbresult);
-                                    if (contextObjects) {
-                                        for (i = 0; i < contextObjects.length; i++) {
-                                            contextObj = contextObjects[i];
-                                            INTERMediator.construct(contextObj);
-                                        }
-                                    }
-                                    INTERMediator.flushMessage();
-                                    if (targetNode.getAttribute('data-im-widget-reload') === 'true') {
-                                        INTERMediator.construct();
-                                    }
-                                    event.target.style.backgroundColor = '#AAAAAA';
-                                },
-                                function () {
-                                    event.target.style.backgroundColor = '#AAAAAA';
-                                });
+                                            contextInfo = IMLibContextPool.getContextInfoFromId(targetIdCapt, '');
+                                            contextInfo.context.setValue(contextInfo.record, contextInfo.field, dbresult);
+                                            if (contextObjects) {
+                                                for (i = 0; i < contextObjects.length; i++) {
+                                                    contextObj = contextObjects[i];
+                                                    INTERMediator.construct(contextObj);
+                                                }
+                                            }
+                                            INTERMediator.flushMessage();
+                                            if (targetNodeCapt.getAttribute('data-im-widget-reload') === 'true') {
+                                                INTERMediator.construct();
+                                            }
+                                            event.target.style.backgroundColor = '#AAAAAA';
+                                            finishFunc();
+                                            completeTask();
+                                        },
+                                        function () {
+                                            event.target.style.backgroundColor = '#AAAAAA';
+                                            finishFunc();
+                                            completeTask();
+                                        });
+                                };
+                            })());
                         };
                     })());
                 }
@@ -382,7 +403,6 @@ IMParts_Catalog['fileupload'] = {
                         INTERMediatorLib.addEvent(formNode, 'submit', (function () {
                             var iframeId = i;
                             return function (event) {
-
                                 var iframeNode = document.getElementById('upload_frame' + iframeId);
                                 iframeNode.style.display = 'block';
                                 setTimeout(function () {
@@ -413,26 +433,26 @@ IMParts_Catalog['fileupload'] = {
     }
 };
 
-IMParts_Catalog["jsonformat"] = {
+IMParts_Catalog['jsonformat'] = {
     instanciate: function (parentNode) {
         var newId = parentNode.getAttribute('id') + '-jsonf';
         var newNode = document.createElement('pre');
         newNode.setAttribute('id', newId);
         parentNode.appendChild(newNode);
-        IMParts_Catalog["jsonformat"].ids.push(newId);
+        IMParts_Catalog['jsonformat'].ids.push(newId);
 
         parentNode._im_getComponentId = (function () {
             var theId = newId;
             return function () {
                 return theId;
-            }
+            };
         })();
 
         parentNode._im_setValue = (function () {
             var theId = newId;
             return function (str) {
-                IMParts_Catalog["jsonformat"].initialValues[theId]
-                    = str ? JSON.stringify(JSON.parse(str), null, '    ') : "";
+                IMParts_Catalog['jsonformat'].initialValues[theId]
+                    = str ? JSON.stringify(JSON.parse(str), null, '    ') : '';
             };
         })();
     },
@@ -441,14 +461,14 @@ IMParts_Catalog["jsonformat"] = {
     initialValues: {},
 
     finish: function () {
-        for (var i = 0; i < IMParts_Catalog["jsonformat"].ids.length; i++) {
-            var targetId = IMParts_Catalog["jsonformat"].ids[i];
+        for (var i = 0; i < IMParts_Catalog['jsonformat'].ids.length; i++) {
+            var targetId = IMParts_Catalog['jsonformat'].ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
-                targetNode.appendChild(document.createTextNode(IMParts_Catalog["jsonformat"].initialValues[targetId]));
+                targetNode.appendChild(document.createTextNode(IMParts_Catalog['jsonformat'].initialValues[targetId]));
             }
         }
-        IMParts_Catalog["jsonformat"].ids = [];
-        IMParts_Catalog["jsonformat"].initialValues = {};
+        IMParts_Catalog['jsonformat'].ids = [];
+        IMParts_Catalog['jsonformat'].initialValues = {};
     }
 };
