@@ -26,7 +26,6 @@ matrix:
       dist: precise
   allow_failures:
     - php: nightly
-    - php: 7.2
     - os: osx
 
 ## for Headless Chrome and trusty
