@@ -16,7 +16,7 @@ All information can be available at:
 Sample pages within this repository are published at below,
 and anyone can see sample pages working with database.
 You don't have to deploy the samples if you just want to see this at a glance.
-- http://msyk.dyndns.org/im-sample.html
+- http://msyk.dyndns.org/INTER-Mediator/Samples/
 
 ## Documentation
 
