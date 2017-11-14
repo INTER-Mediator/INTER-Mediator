@@ -21,6 +21,7 @@ config['My tests'] = {
         'lib/bi2php/biMontgomery.js',
         'lib/bi2php/biRSA.js',
         'Adapter_DBServer.js',
+        'INTER-Mediator-Queuing',
         'INTER-Mediator-Events.js',
         'INTER-Mediator-DoOnStart.js'
     ],
