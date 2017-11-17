@@ -29,6 +29,7 @@ class INTERMediator_AllTests extends PHPUnit_Framework_TestCase
         $suite->addTestFile($folder . 'DB_PDO-MySQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-PostgreSQL_Test.php');
         $suite->addTestFile($folder . 'DB_PDO-SQLite_Test.php');
+        //$suite->addTestFile($folder . 'DB_FMS_DataAPI_Test.php');
         //$suite->addTestFile($folder . 'DB_FMS_FX_Test.php');
         $suite->addTestFile($folder . 'DB_Proxy_Test.php');
         $suite->addTestFile($folder . 'DB_Settings_Test.php');
