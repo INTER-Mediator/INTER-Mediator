@@ -51,12 +51,12 @@ abstract class DB_Notification_Common
 
     public function setQueriedEntity($name)
     {
-        $this->queriedCondition = $name;
+        $this->queriedEntity = $name;
     }
 
     public function setQueriedCondition($name)
     {
-        $this->queriedEntity = $name;
+        $this->queriedCondition = $name;
     }
 
     public function setQueriedPrimaryKeys($name)
