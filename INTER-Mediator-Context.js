@@ -1202,15 +1202,16 @@ IMLibContext.prototype.getDataAtLastRecord = function (key) {
 // setData____ methods are for storing data both the model and the database.
 //
 IMLibContext.prototype.setDataAtLastRecord = function (key, value) {
-    var lastKey, keyAndValue;
+    var lastKey, keyAndValue, contextName;
     var storekeys = Object.keys(this.store);
     if (storekeys.length > 0) {
         lastKey = storekeys[storekeys.length - 1];
         this.setValue(lastKey, key, value);
+        contextName = this.contextName;
         keyAndValue = lastKey.split('=');
         IMLibQueue.setTask((function () {
             var params = {
-                name: this.contextName,
+                name: contextName,
                 conditions: [{field: keyAndValue[0], operator: '=', value: keyAndValue[1]}],
                 dataset: [{field: key, value: value}]
             };
@@ -1225,7 +1226,7 @@ IMLibContext.prototype.setDataAtLastRecord = function (key, value) {
 };
 
 IMLibContext.prototype.setDataWithKey = function (pkValue, key, value) {
-    var targetKey, contextDef, storeElements;
+    var targetKey, contextDef, storeElements, contextName;
     contextDef = this.getContextDef();
     if (!contextDef) {
         return;
@@ -1234,9 +1235,10 @@ IMLibContext.prototype.setDataWithKey = function (pkValue, key, value) {
     storeElements = this.store[targetKey];
     if (storeElements) {
         this.setValue(targetKey, key, value);
+        contextName = this.contextName;
         IMLibQueue.setTask((function () {
             var params = {
-                name: this.contextName,
+                name: contextName,
                 conditions: [{field: contextDef.key, operator: '=', value: pkValue}],
                 dataset: [{field: key, value: value}]
             };
