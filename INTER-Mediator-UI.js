@@ -608,7 +608,7 @@ var IMLibUI = {
             targetName = currentObj.contextName;
             currentContext = currentObj.getContextDef();
             isPortal = currentObj.isPortal;
-            parentContextName = currentObj.parentContext.contextName;
+            parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null;
 // idValue = currentContext['name'];
             // Locking.
             // if (IMLibUI.isLockAnyUIElements()) {
