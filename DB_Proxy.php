@@ -556,23 +556,24 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         }
 
         /* Setup Database Class's Object */
-        require_once("{$dbClassName}.php");
-        $this->dbClass = new $dbClassName();
-        if ($this->dbClass == null) {
-            $this->logger->setErrorMessage("The database class [{$dbClassName}] that you specify is not valid.");
-            echo implode('', $this->logger->getMessagesForJS());
-            return false;
+        if (is_null($this->dbClass)) {
+            require_once("{$dbClassName}.php");
+            $this->dbClass = new $dbClassName();
+            if ($this->dbClass == null) {
+                $this->logger->setErrorMessage("The database class [{$dbClassName}] that you specify is not valid.");
+                echo implode('', $this->logger->getMessagesForJS());
+                return false;
+            }
+            $this->dbClass->setUpSharedObjects($this);
+            if (!$this->dbClass->setupConnection()) {
+                return false;
+            }
+            $this->dbClass->setupHandlers();
+            if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
+                $this->logger->setDebugMode($debug);
+            }
+            $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
         }
-        $this->dbClass->setUpSharedObjects($this);
-        if (!$this->dbClass->setupConnection()) {
-            return false;
-        }
-        $this->dbClass->setupHandlers();
-        if ((!isset($prohibitDebugMode) || !$prohibitDebugMode) && $debug) {
-            $this->logger->setDebugMode($debug);
-        }
-        $this->logger->setDebugMessage("The class '{$dbClassName}' was instanciated.", 2);
-
         $this->dbSettings->setAggregationSelect(
             isset($context['aggregation-select']) ? $context['aggregation-select'] : null);
         $this->dbSettings->setAggregationFrom(
