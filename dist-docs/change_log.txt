@@ -50,6 +50,7 @@ Ver.5.7-dev (in development)
     IMLibPageNavigation.deleteRecordFromNavi
     IMLibPageNavigation.insertRecordFromNavi
 - The DB_Proxy instance can reuse.
+- Japanese new era name is going to start on May 1, 2019. The entry for era name tables are added.
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 - [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.
