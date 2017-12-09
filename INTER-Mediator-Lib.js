@@ -1104,7 +1104,7 @@ var INTERMediatorLib = {
         return ('0' + v.toString()).substr(-2, 2);
     },
 
-    jYearStartDate: {'1989/1/8': '平成', '1926/12/25': '昭和', '1912/7/30': '大正', '1868/1/25': '明治'},
+    jYearStartDate: {'2019/5/1': '(新元号)', '1989/1/8': '平成', '1926/12/25': '昭和', '1912/7/30': '大正', '1868/1/25': '明治'},
     eDayName: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     eDayAbbr: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     eMonName: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],

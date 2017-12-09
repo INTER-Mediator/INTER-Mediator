@@ -13,11 +13,11 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'lib' . DIRECTORY_SEPARATOR . 'CWPKit' . DIRECTORY_SEPARATOR . 'CWPKit.php');
-//require_once("DB_Support/DB_Spec_Handler_FileMaker_FX.php");
-//require_once("DB_Support/DB_Auth_Common.php");
-//require_once("DB_Support/DB_Notification_Common.php");
-//require_once("DB_Support/DB_Auth_Handler_FileMaker_FX.php");
-//require_once("DB_Support/DB_Notification_Handler_FileMaker_FX.php");
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Spec_Handler_FileMaker_FX.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Common.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Common.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Auth_Handler_FileMaker_FX.php');
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'DB_Support' . DIRECTORY_SEPARATOR . 'DB_Notification_Handler_FileMaker_FX.php');
 
 class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
 {
