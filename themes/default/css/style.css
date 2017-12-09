@@ -352,3 +352,65 @@ span.IM_POSTMESSAGE {
 ._im_alertmessage {
     color: red;
 }
+
+/* Widget Pop-up Panel */
+._im_widget_popup_panelback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 8000;
+}
+
+._im_widget_popup {
+    padding-right: 20px;
+    position: relative;
+}
+
+._im_widget_popup_panel {
+    display: none;
+    position: absolute;
+    top: 24px;
+    left: 10px;
+    max-height: 300px;
+    overflow: scroll;
+    background-color: #dbdbdb;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.4);
+    z-index: 9001;
+}
+
+._im_widget_popup_value {
+    display: inline-block;
+    border: 1px solid lightslategray;
+    border-radius: 5px;
+    padding: 3px 6px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    position: relative;
+}
+
+._im_widget_popup_close {
+    float: right;
+    width: 30px;
+    text-align: center;
+    border-bottom-left-radius: 50%;
+    background-color: #323246;
+    color: #ffffff;
+    z-index: 9002;
+    cursor: pointer;
+}
+
+._im_widget_popup_value:after {
+    content: " ⊕";
+}
+
+._im_widget_popup_selection {
+    display: block;
+    margin: 4px;
+    cursor: pointer;
+}
+
+._im_widget_popup_selected {
+    background-color: #7c7caa;;
+
+}
