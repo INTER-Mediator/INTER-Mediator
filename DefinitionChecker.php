@@ -257,7 +257,7 @@ class DefinitionChecker
                 )
             ),
             'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete|copy|copy-*)',
-            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update)',
+            'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update|step|step-hide)',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',
@@ -269,6 +269,7 @@ class DefinitionChecker
             'post-repeater' => 'string',
             'post-enclosure' => 'string',
             'post-query-stored' => 'string',
+            'before-move-nextstep' => 'string',
             'script' => array(
                 '*' => array(
                     'db-operation' => 'string(load|read|update|new|create|delete)',

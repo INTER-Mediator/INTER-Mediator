@@ -508,7 +508,7 @@ IMParts_Catalog['popupselector'] = {
                 return function () {
                     IMParts_Catalog['popupselector'].clearSelection();
                     IMParts_Catalog['popupselector'].clickValue(selRoot);
-                }
+                };
             })());
             parentNode.appendChild(valueNode);
 
