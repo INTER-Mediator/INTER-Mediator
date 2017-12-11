@@ -126,6 +126,7 @@ var IMLibUI = {
                     if (targetSpec && targetSpec.split(INTERMediator.separator)[0] == IMLibLocalContext.contextName) {
                         IMLibLocalContext.updateFromNodeValue(idValue);
                         IMLibCalc.recalculation();
+                        completeTask();
                         return true;
                     }
                     throw 'unfinished';
@@ -133,6 +134,7 @@ var IMLibUI = {
 
                 objType = changedObj.getAttribute('type');
                 if (objType === 'radio' && !changedObj.checked) {
+                    completeTask();
                     return true;
                 }
 

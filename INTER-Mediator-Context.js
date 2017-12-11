@@ -464,7 +464,7 @@ var IMLibContextPool = {
             isPortal = false;
             if (contextDef['relation']) {
                 for (rKey in contextDef['relation']) {
-                    if (contextDef['relation'][rKey][portal]) {
+                    if (contextDef['relation'][rKey]['portal']) {
                         isPortal = true;
                     }
                 }

@@ -19,6 +19,9 @@
 IMLibPageNavigation = {
     deleteInsertOnNavi: [],
     previousModeDetail: null,
+    stepNavigation: [],
+    stepCurrentContextName: null,
+    stepStartContextName: null,
 
     /**
      * Create Navigation Bar to move previous/next page
@@ -290,18 +293,6 @@ IMLibPageNavigation = {
     },
 
     moveRecordFromNavi: function (targetName, page) {
-        // Locking.
-        // if (IMLibUI.isLockAnyUIElements()) {
-        //     setTimeout((function () {
-        //         var a = targetName, b = page;
-        //         return function () {
-        //             IMLibPageNavigation.moveRecordFromNavi(a, b);
-        //         }
-        //     })(), 100);
-        //     return true;
-        // }
-        // IMLibUI.lockUIElement(targetName);
-
         INTERMediator_DBAdapter.unregister();
         INTERMediator.startFrom = page;
         INTERMediator.constructMain(true);
@@ -315,18 +306,6 @@ IMLibPageNavigation = {
                 return;
             }
         }
-        // Locking.
-        // if (IMLibUI.isLockAnyUIElements()) {
-        //     setTimeout((function () {
-        //         var a = targetName, b = keyField, c = isConfirm;
-        //         return function () {
-        //             IMLibPageNavigation.insertRecordFromNavi(a, b, c);
-        //         }
-        //     })(), 100);
-        //     return true;
-        // }
-        // IMLibUI.lockUIElement(targetName);
-
         INTERMediatorOnPage.showProgress();
         contextDef = INTERMediatorLib.getNamedObject(
             INTERMediatorOnPage.getDataSources(), 'name', targetName);
@@ -361,7 +340,6 @@ IMLibPageNavigation = {
                                 } else {
                                     INTERMediator.pagedAllCount++;
                                 }
-                                // IMLibUI.unlockUIElement(targetNameCapt);
                                 completeTask();
                                 INTERMediator_DBAdapter.unregister();
                                 INTERMediator.constructMain(true);
@@ -376,7 +354,6 @@ IMLibPageNavigation = {
                         completeTask
                     );
                 } catch (ex) {
-                    // IMLibUI.unlockUIElement(targetName);
                     completeTask();
                     if (ex == '_im_requath_request_') {
                         if (INTERMediatorOnPage.requireAuthentication) {
@@ -399,22 +376,11 @@ IMLibPageNavigation = {
     },
 
     deleteRecordFromNavi: function (targetName, keyField, keyValue, isConfirm) {
-        // Locking.
-        // if (IMLibUI.isLockAnyUIElements()) {
-        //     setTimeout((function () {
-        //         var a = targetName, b = keyField, c = keyValue, d = isConfirm;
-        //         return function () {
-        //             IMLibPageNavigation.deleteRecordFromNavi(a, b, c, c);
-        //         }
-        //     })(), 100);
-        //     return true;
-        // }
         if (isConfirm) {
             if (!confirm(INTERMediatorOnPage.getMessages()[1025])) {
                 return;
             }
         }
-        // IMLibUI.lockUIElement(targetName);
         IMLibQueue.setTask((function () {
             var deleteArgs = {
                 name: targetName,
@@ -427,7 +393,6 @@ IMLibPageNavigation = {
                     INTERMediator_DBAdapter.db_delete_async(
                         deleteArgs,
                         (function () {
-                            // var targetCapt = targetNameCapt;
                             return function () {
                                 INTERMediator.pagedAllCount--;
                                 INTERMediator.totalRecordCount--;
@@ -437,7 +402,6 @@ IMLibPageNavigation = {
                                         INTERMediator.startFrom = 0;
                                     }
                                 }
-                                // IMLibUI.unlockUIElement(targetCapt);
                                 completeTask();
                                 INTERMediator.constructMain(true);
                                 INTERMediatorOnPage.hideProgress();
@@ -449,7 +413,6 @@ IMLibPageNavigation = {
                 } catch (ex) {
                     INTERMediator.setErrorMessage(ex, 'EXCEPTION-6');
                     completeTask();
-                    // IMLibUI.unlockUIElement(targetNameCapt);
                 }
             };
         })());
@@ -461,20 +424,6 @@ IMLibPageNavigation = {
                 return;
             }
         }
-
-        // idValue = contextDef['name'];
-        // Locking.
-        // if (IMLibUI.isLockAnyUIElements()) {
-        //     setTimeout((function () {
-        //         var a = contextDef, b = keyValue;
-        //         return function () {
-        //             IMLibPageNavigation.copyRecordFromNavi(a, b);
-        //         }
-        //     })(), 100);
-        //     return true;
-        // }
-        // IMLibUI.lockUIElement(idValue);
-
         IMLibQueue.setTask((function () {
             var contextDefCapt = contextDef;
             var keyValueCapt = keyValue;
@@ -521,7 +470,6 @@ IMLibPageNavigation = {
                                 var restore, conditions;
                                 var newId = result.newRecordKeyValue;
                                 completeTask();
-                                // IMLibUI.unlockUIElement(idCapt);
                                 if (newId > -1) {
                                     restore = INTERMediator.additionalCondition;
                                     INTERMediator.startFrom = 0;
@@ -545,7 +493,6 @@ IMLibPageNavigation = {
                 } catch (ex) {
                     INTERMediator.setErrorMessage(ex, 'EXCEPTION-43');
                     completeTask();
-                    // IMLibUI.unlockUIElement(idValue);
                 }
             };
         })());
@@ -918,23 +865,25 @@ IMLibPageNavigation = {
     /* --------------------------------------------------------------------
 
      */
-    setupNavigationButton: function (encNodeTag, repeaters, currentContextDef, keyField, keyValue, foreignField, foreignValue) {
+    setupNavigationButton: function (encNodeTag, repeaters, currentContextDef, keyField, keyValue, contextObj) {
         // Handling Detail buttons
-        var buttonNode, thisId, tdNodes, tdNode, firstInNode,
-            isHide, masterContext, detailContext, showingNode, isHidePageNavi, buttonName, i,
-            isTouchRepeater, moveToDetailFunc;
+        var buttonNode, thisId, tdNodes, tdNode, firstInNode, isMasterDetail, isStep, isHide, masterContext,
+            detailContext, showingNode, isHidePageNavi, buttonName, i, isTouchRepeater, moveToDetailFunc;
 
-        if (!currentContextDef['navi-control']
-            || !currentContextDef['navi-control'].match(/master/i)
-            || encNodeTag === 'SELECT') {
+        if (!currentContextDef['navi-control'] ||
+            (!currentContextDef['navi-control'].match(/master/i) &&
+            !currentContextDef['navi-control'].match(/step/i)) ||
+            encNodeTag === 'SELECT') {
             return;
         }
 
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
         isHide = currentContextDef['navi-control'].match(/hide/i);
         isHidePageNavi = isHide && (currentContextDef['paging'] === true);
+        isMasterDetail = currentContextDef['navi-control'].match(/master/i);
+        isStep = currentContextDef['navi-control'].match(/step/i);
 
-        if (INTERMediator.detailNodeOriginalDisplay) {
+        if (isMasterDetail && INTERMediator.detailNodeOriginalDisplay) {
             detailContext = IMLibContextPool.getDetailContext();
             if (detailContext) {
                 showingNode = detailContext.enclosureNode;
@@ -955,12 +904,18 @@ IMLibPageNavigation = {
         thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
         buttonNode.setAttribute('id', thisId);
         INTERMediator.buttonIdNum++;
-        masterContext = IMLibContextPool.getMasterContext();
-        masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId);
-
-        if (isTouchRepeater) {
+        if (isMasterDetail) {
+            masterContext = IMLibContextPool.getMasterContext();
+            masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId);
+        }
+        if (isMasterDetail) {
             moveToDetailFunc = IMLibPageNavigation.moveToDetail(
-                encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi);
+                encNodeTag, keyField, keyValue, isHide, isHidePageNavi);
+        }
+        if (isStep) {
+            moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue);
+        }
+        if (isTouchRepeater) {
             for (i = 0; i < repeaters.length; i++) {
                 var originalColor = repeaters[i].style.backgroundColor;
                 INTERMediator.eventListenerPostAdding.push({
@@ -1009,12 +964,7 @@ IMLibPageNavigation = {
                 });
             }
         } else {
-            IMLibMouseEventDispatch.setExecute(thisId, (function () {
-                var a = encNodeTag, b = keyField, c = keyValue, d = foreignField,
-                    e = foreignValue, f = isHide, g = isHidePageNavi;
-                return IMLibPageNavigation.moveToDetail(a, b, c, d, e, f, g);
-                // moveToDetail method has own capturing codes, so it has to just call
-            })());
+            IMLibMouseEventDispatch.setExecute(thisId, moveToDetailFunc);
             switch (encNodeTag) {
             case 'TBODY':
                 tdNodes = repeaters[repeaters.length - 1].getElementsByTagName('TD');
@@ -1040,24 +990,115 @@ IMLibPageNavigation = {
         }
     },
 
-    moveToDetail: function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi) {
-        var f = keyField, v = keyValue, ff = foreignField, fv = foreignValue;
-        var etag = encNodeTag, mh = isHide, pnh = isHidePageNavi;
+    getStepLastSelectedRecord: function () {
+        var lastSelection = IMLibPageNavigation.stepNavigation[IMLibPageNavigation.stepNavigation.length - 1];
+        return lastSelection.context.store[lastSelection.key];
+    },
 
+    isNotExpandingContext: function (contextDef) {
+        if (!IMLibPageNavigation.stepCurrentContextName) {
+            return false;
+        }
+        return IMLibPageNavigation.stepCurrentContextName !== contextDef['name'];
+    },
+
+    initializeStepInfo: function () {
+        var key, dataSrcs, cDef, nodes, i;
+        IMLibPageNavigation.stepNavigation = [];
+        IMLibPageNavigation.stepCurrentContextName = null;
+        dataSrcs = INTERMediatorOnPage.getDataSources();
+        for (key in dataSrcs) {
+            cDef = dataSrcs[key];
+            if (cDef['navi-control'] && cDef['navi-control'].match(/step/i) && !cDef['navi-control'].match(/hide/i)) {
+                IMLibPageNavigation.stepCurrentContextName = cDef['name'];
+                IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName;
+                nodes = document.getElementsByClassName('IM_Button_StepBack');
+                for (i = 0; i < nodes.length; i++) {
+                    nodes[i].style.display = 'none';
+                    INTERMediatorLib.addEvent(nodes[i], 'click', function () {
+                        IMLibPageNavigation.backToPreviousStep();
+                    });
+                }
+                return;
+            }
+        }
+    },
+
+    moveToNextStep: function (contextObj, keyField, keyValue) {
+        var context = contextObj, keying = keyField + '=' + keyValue;
         return function () {
-            return IMLibPageNavigation.moveToDetailImpl(etag, f, v, ff, fv, mh, pnh);
+            return IMLibPageNavigation.moveToNextSteplImpl(context, keying);
         };
     },
 
-    moveToDetailImpl: function (encNodeTag, keyField, keyValue, foreignField, foreignValue, isHide, isHidePageNavi) {
+    moveToNextSteplImpl: function (contextObj, keying) {
+        var key, cDef, dataSrcs, nodes, i, contextDef, isAfterCurrent = false;
+        // IMLibPageNavigation.stepCurrentContextName = null;
+        contextDef = contextObj.getContextDef();
+        dataSrcs = INTERMediatorOnPage.getDataSources();
+        for (key in dataSrcs) {
+            cDef = dataSrcs[key];
+            if (cDef['name'] === contextDef.name) {
+                isAfterCurrent = true;
+            } else if (isAfterCurrent && cDef['navi-control'].match(/step/i)) {
+                IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying});
+                if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
+                    INTERMediatorOnPage[contextDef['before-move-nextstep']]();
+                }
+                IMLibPageNavigation.stepCurrentContextName = cDef['name'];
+                if (contextObj.enclosureNode.tagName === 'TBODY') {
+                    contextObj.enclosureNode.parentNode.style.display = 'none';
+                } else {
+                    contextObj.enclosureNode.style.display = 'none';
+                }
+                INTERMediator.constructMain(IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName));
+                nodes = document.getElementsByClassName('IM_Button_StepBack');
+                for (i = 0; i < nodes.length; i++) {
+                    nodes[i].style.display = '';
+                }
+                return;
+            }
+        }
+        if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
+            INTERMediatorOnPage[contextDef['before-move-nextstep']]();
+        }
+    },
+
+    backToPreviousStep: function () {
+        var nodes, i, currentContext, prevInfo;
+        currentContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName);
+        prevInfo = IMLibPageNavigation.stepNavigation.pop();
+        IMLibPageNavigation.stepCurrentContextName = prevInfo.context.contextName;
+        if (prevInfo.context.enclosureNode.tagName === 'TBODY') {
+            prevInfo.context.enclosureNode.parentNode.style.display = '';
+        } else {
+            prevInfo.context.enclosureNode.style.display = '';
+        }
+        if (IMLibPageNavigation.stepStartContextName === IMLibPageNavigation.stepCurrentContextName) {
+            nodes = document.getElementsByClassName('IM_Button_StepBack');
+            for (i = 0; i < nodes.length; i++) {
+                nodes[i].style.display = 'none';
+            }
+        }
+        INTERMediator.constructMain(currentContext);
+        INTERMediator.constructMain(prevInfo.context);
+    },
+
+    moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+        var f = keyField, v = keyValue, etag = encNodeTag, mh = isHide, pnh = isHidePageNavi;
+
+        return function () {
+            return IMLibPageNavigation.moveToDetailImpl(etag, f, v, mh, pnh);
+        };
+    },
+
+    moveToDetailImpl: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
         var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node, contextDef;
 
         IMLibPageNavigation.previousModeDetail = {
             encNodeTag: encNodeTag,
             keyField: keyField,
             keyValue: keyValue,
-            foreignField: foreignField,
-            foreignValue: foreignValue,
             isHide: isHide,
             isHidePageNavi: isHidePageNavi
         };
@@ -1125,7 +1166,7 @@ IMLibPageNavigation = {
                         if (comp.length > 1) {
                             INTERMediator.clearCondition(contextDefs[i]['name'], '_imlabel_crosstable');
                             INTERMediator.addCondition(contextDefs[i]['name'],
-                                {field: comp[0], operator: '=', value: comp[1]}, 
+                                {field: comp[0], operator: '=', value: comp[1]},
                                 undefined, '_imlabel_crosstable'
                             );
                         }
@@ -1138,7 +1179,7 @@ IMLibPageNavigation = {
     moveDetailOnceAgain: function () {
         var p = IMLibPageNavigation.previousModeDetail;
         IMLibPageNavigation.moveToDetailImpl(
-            p.encNodeTag, p.keyField, p.keyValue, p.foreignField, p.foreignValue, p.isHide, p.isHidePageNavi);
+            p.encNodeTag, p.keyField, p.keyValue, p.isHide, p.isHidePageNavi);
     },
 
 

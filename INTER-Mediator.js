@@ -263,17 +263,17 @@ var INTERMediator = {
      * @param level The level of message.
      */
     setDebugMessage: function (message, level) {
+        'use strict';
         if (level === undefined) {
             level = 1;
         }
         if (INTERMediator.debugMode >= level) {
             INTERMediator.debugMessages.push(message);
-            if (typeof console != 'undefined') {
+            if (typeof console !== 'undefined') {
                 console.log('INTER-Mediator[DEBUG:%s]: %s', new Date(), message);
             }
         }
-    }
-    ,
+    },
 
     setErrorMessage: function (ex, moreMessage) {
         moreMessage = moreMessage === undefined ? '' : (' - ' + moreMessage);
@@ -283,27 +283,26 @@ var INTERMediator = {
                 (ex + moreMessage) : INTERMediator.errorMessageOnAlert);
         }
 
-        if ((typeof ex == 'string' || ex instanceof String)) {
+        if ((typeof ex === 'string' || ex instanceof String)) {
             INTERMediator.errorMessages.push(ex + moreMessage);
-            if (typeof console != 'undefined') {
+            if (typeof console !== 'undefined') {
                 console.error('INTER-Mediator[ERROR]: %s', ex + moreMessage);
             }
         } else {
             if (ex.message) {
                 INTERMediator.errorMessages.push(ex.message + moreMessage);
-                if (typeof console != 'undefined') {
+                if (typeof console !== 'undefined') {
                     console.error('INTER-Mediator[ERROR]: %s', ex.message + moreMessage);
                 }
             }
-            if (ex.stack && typeof console != 'undefined') {
+            if (ex.stack && typeof console !== 'undefined') {
                 console.error(ex.stack);
             }
         }
-    }
-    ,
+    },
 
     flushMessage: function () {
-        var debugNode, title, body, i, j, lines, clearButton, tNode, target;
+        var debugNode, title, body, i, j, lines, clearButton, tNode;
 
         if (INTERMediator.errorMessageByAlert) {
             INTERMediator.supressErrorMessageOnPage = true;
@@ -390,8 +389,7 @@ var INTERMediator = {
         }
         INTERMediator.errorMessages = [];
         INTERMediator.debugMessages = [];
-    }
-    ,
+    },
 
 // Detect Internet Explorer and its version.
     propertyIETridentSetup: function () {
@@ -430,8 +428,7 @@ var INTERMediator = {
                 }
             }
         }
-    }
-    ,
+    },
 
 // Referred from https://w3g.jp/blog/js_browser_sniffing2015
     propertyW3CUserAgentSetup: function () {
@@ -451,8 +448,7 @@ var INTERMediator = {
             || (u.indexOf('android') > -1 && u.indexOf('mobile') > -1)
             || (u.indexOf('firefox') > -1 && u.indexOf('mobile') > -1)
             || u.indexOf('blackberry') > -1;
-    }
-    ,
+    },
 
     initialize: function () {
         INTERMediatorOnPage.removeCookie('_im_localcontext');
@@ -493,8 +489,7 @@ var INTERMediator = {
             };
         }
         setTimeout(timerTask, 0);
-    }
-    ,
+    },
 
     /**
      * This method is page generation main method. This will be called with one of the following
@@ -555,6 +550,7 @@ var INTERMediator = {
         try {
             if (updateRequiredContext === true || updateRequiredContext === undefined) {
                 IMLibPageNavigation.deleteInsertOnNavi = [];
+                IMLibPageNavigation.initializeStepInfo();
                 INTERMediator.partialConstructing = false;
                 INTERMediator.buttonIdNum = 1;
                 IMLibContextPool.clearAll();
@@ -837,12 +833,12 @@ var INTERMediator = {
                                 var idValue = node.id;
                                 IMLibUI.valueChange(idValue, true);
                             });
-                            if (node.tagName == "INPUT" && node.getAttribute("type") == "radio") {
+                            if (node.tagName == 'INPUT' && node.getAttribute('type') == 'radio') {
                                 if (!radioName[target]) {
-                                    radioName[target] = "Name-" + nameSerial;
+                                    radioName[target] = 'Name-' + nameSerial;
                                     nameSerial++;
                                 }
-                                node.setAttribute("name", radioName[target]);
+                                node.setAttribute('name', radioName[target]);
                             }
                         }
 
@@ -891,7 +887,6 @@ var INTERMediator = {
                 recId = currentRecord[currentContextObj.contextName][currentContextObj.contextName + '::' + INTERMediatorOnPage.defaultKeyName];
                 currentRecord = currentRecord[currentContextObj.contextName][recId];
             }
-
             if (imControl && imControl.match(/cross-table/)) {   // Cross Table
                 expandCrossTableEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
             } else {    // Enclosure Processing as usual.
@@ -910,7 +905,7 @@ var INTERMediator = {
                                          procBeforeRetrieve,
                                          customExpandRepeater) {
                 var linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
-                    newNode, keyValue, selectedNode, calcDef, calcFields, contextObj = null;
+                    newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null;
 
                 repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
                 linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
@@ -934,10 +929,10 @@ var INTERMediator = {
                         if (selectedNode !== undefined) {
                             selectedNode.selected = true;
                         }
-
                         seekEnclosureNode(newNode, null, enclosureNode, currentContextObj);
                     }
                 } else {
+                    isExpanding = !IMLibPageNavigation.isNotExpandingContext(currentContextDef);
                     contextObj = IMLibContextPool.generateContextObject(
                         currentContextDef, enclosureNode, repeaters, repeatersOriginal);
                     calcFields = contextObj.getCalculationFields();
@@ -956,7 +951,11 @@ var INTERMediator = {
                     if (procBeforeRetrieve) {
                         procBeforeRetrieve(contextObj);
                     }
-                    targetRecords = retrieveDataForEnclosure(contextObj, fieldList, contextObj.foreignValue);
+                    if (isExpanding) {
+                        targetRecords = retrieveDataForEnclosure(contextObj, fieldList, contextObj.foreignValue);
+                    } else {
+                        targetRecords = [];
+                    }
                     contextObj.storeRecords(targetRecords);
                     callbackForAfterQueryStored(currentContextDef, contextObj);
                     if (customExpandRepeater === undefined) {
@@ -971,7 +970,7 @@ var INTERMediator = {
                         customExpandRepeater(contextObj, targetRecords);
                     }
                     contextObj.sequencing = false;
-                }
+               }
                 return contextObj;
             }
 
@@ -1044,19 +1043,19 @@ var INTERMediator = {
                     node, [targetRepeater], null, parentObjectInfo, currentContextObj,
                     function (context) {
                         var currentContextDef = context.getContextDef();
-                        INTERMediator.clearCondition(currentContextDef.name, "_imlabel_crosstable");
+                        INTERMediator.clearCondition(currentContextDef.name, '_imlabel_crosstable');
                         INTERMediator.addCondition(currentContextDef.name, {
                             field: currentContextDef['relation'][0]['foreign-key'],
                             operator: 'IN',
                             value: colArray,
                             onetime: true
-                        }, undefined, "_imlabel_crosstable");
+                        }, undefined, '_imlabel_crosstable');
                         INTERMediator.addCondition(currentContextDef.name, {
                             field: currentContextDef['relation'][1]['foreign-key'],
                             operator: 'IN',
                             value: rowArray,
                             onetime: true
-                        }, undefined, "_imlabel_crosstable");
+                        }, undefined, '_imlabel_crosstable');
                     },
                     function (contextObj, targetRecords) {
                         var dataKeyColumn, dataKeyRow, currentContextDef, ix,
@@ -1281,7 +1280,7 @@ var INTERMediator = {
                 }
                 idValuesForFieldName = setupLinkedNode(linkedElements, contextObj, targetRecordset, ix, keyingValue);
                 IMLibPageNavigation.setupDeleteButton(encNodeTag, repeatersOneRec, contextObj, keyField, keyValue);
-                IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue);
+                IMLibPageNavigation.setupNavigationButton(encNodeTag, repeatersOneRec, currentContextDef, keyField, keyValue, contextObj);
                 IMLibPageNavigation.setupCopyButton(encNodeTag, repNodeTag, repeatersOneRec, contextObj, targetRecordset[ix]);
 
                 if (!Boolean(currentContextDef.portal) ||
@@ -1454,8 +1453,8 @@ var INTERMediator = {
                 if (INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef['name']]) {
                     INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef['name']](node);
                     INTERMediator.setDebugMessage(
-                        "Call the post enclosure method 'INTERMediatorOnPage.additionalExpandingRecordFinish["
-                        + currentContextDef['name'] + "] with the context.", 2);
+                        'Call the post enclosure method INTERMediatorOnPage.additionalExpandingRecordFinish['
+                        + currentContextDef['name'] + '] with the context.', 2);
                 }
             } catch (ex) {
                 if (ex == '_im_requath_request_') {
@@ -1469,15 +1468,15 @@ var INTERMediator = {
                 if (INTERMediatorOnPage.expandingRecordFinish != null) {
                     INTERMediatorOnPage.expandingRecordFinish(currentContextDef['name'], newlyAddedNodes);
                     INTERMediator.setDebugMessage(
-                        "Call INTERMediatorOnPage.expandingRecordFinish with the context: "
+                        'Call INTERMediatorOnPage.expandingRecordFinish with the context: '
                         + currentContextDef['name'], 2);
                 }
 
                 if (currentContextDef['post-repeater']) {
                     INTERMediatorOnPage[currentContextDef['post-repeater']](newlyAddedNodes);
 
-                    INTERMediator.setDebugMessage("Call the post repeater method 'INTERMediatorOnPage."
-                        + currentContextDef['post-repeater'] + "' with the context: "
+                    INTERMediator.setDebugMessage('Call the post repeater method INTERMediatorOnPage.'
+                        + currentContextDef['post-repeater'] + ' with the context: '
                         + currentContextDef['name'], 2);
                 }
             } catch (ex) {
@@ -1498,8 +1497,8 @@ var INTERMediator = {
                 if (INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef['name']]) {
                     INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef['name']](node);
                     INTERMediator.setDebugMessage(
-                        "Call the post enclosure method 'INTERMediatorOnPage.additionalExpandingEnclosureFinish["
-                        + currentContextDef['name'] + "] with the context.", 2);
+                        'Call the post enclosure method INTERMediatorOnPage.additionalExpandingEnclosureFinish['
+                        + currentContextDef['name'] + '] with the context.', 2);
                 }
             } catch (ex) {
                 if (ex == '_im_requath_request_') {
@@ -1527,8 +1526,8 @@ var INTERMediator = {
                 if (currentContextDef['post-enclosure']) {
                     INTERMediatorOnPage[currentContextDef['post-enclosure']](node);
                     INTERMediator.setDebugMessage(
-                        "Call the post enclosure method 'INTERMediatorOnPage." + currentContextDef['post-enclosure']
-                        + "' with the context: " + currentContextDef['name'], 2);
+                        'Call the post enclosure method INTERMediatorOnPage.' + currentContextDef['post-enclosure']
+                        + ' with the context: ' + currentContextDef['name'], 2);
                 }
             } catch (ex) {
                 if (ex == '_im_requath_request_') {
@@ -1548,8 +1547,8 @@ var INTERMediator = {
                 if (currentContextDef['post-query-stored']) {
                     INTERMediatorOnPage[currentContextDef['post-query-stored']](context);
                     INTERMediator.setDebugMessage(
-                        "Call the post query stored method 'INTERMediatorOnPage." + currentContextDef['post-enclosure']
-                        + "' with the context: " + currentContextDef['name'], 2);
+                        'Call the post query stored method INTERMediatorOnPage.' + currentContextDef['post-enclosure']
+                        + ' with the context: ' + currentContextDef['name'], 2);
                 }
             } catch (ex) {
                 if (ex == '_im_requath_request_') {
@@ -1680,8 +1679,8 @@ var INTERMediator = {
                     INTERMediatorLib.getInsertedStringFromErrorNumber(1046, [maxTableName]));
             }
             for (j = 0; j < linkDefs.length; j++) {
-                if (linkDefs[j].indexOf(maxTableName) !== 0 && linkDefs[j].indexOf("_@") !== 0) {
-                    restDefs.push(linkDefs[j])
+                if (linkDefs[j].indexOf(maxTableName) !== 0 && linkDefs[j].indexOf('_@') !== 0) {
+                    restDefs.push(linkDefs[j]);
                 }
             }
             if (linkDefs.length > 0 && context && restDefs.length > 0) {
@@ -1893,7 +1892,7 @@ var INTERMediator = {
         else {
             if (value[contextName]) {
                 for (i = 0; i < value[contextName].length; i++) {
-                    if (value[contextName][i]["label"] == label) {
+                    if (value[contextName][i]['label'] == label) {
                         value[contextName].splice(i, 1);
                         i--;
                     }
