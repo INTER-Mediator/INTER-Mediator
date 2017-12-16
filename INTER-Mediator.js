@@ -550,7 +550,6 @@ var INTERMediator = {
         try {
             if (updateRequiredContext === true || updateRequiredContext === undefined) {
                 IMLibPageNavigation.deleteInsertOnNavi = [];
-                IMLibPageNavigation.initializeStepInfo();
                 INTERMediator.partialConstructing = false;
                 INTERMediator.buttonIdNum = 1;
                 IMLibContextPool.clearAll();
@@ -680,6 +679,7 @@ var INTERMediator = {
             }
             postSetFields = [];
             INTERMediatorOnPage.setReferenceToTheme();
+            IMLibPageNavigation.initializeStepInfo(false);
 
             try {
                 seekEnclosureNode(bodyNode, null, null, null);
@@ -955,6 +955,11 @@ var INTERMediator = {
                         targetRecords = retrieveDataForEnclosure(contextObj, fieldList, contextObj.foreignValue);
                     } else {
                         targetRecords = [];
+                        if (enclosureNode.tagName === 'TBODY') {
+                            enclosureNode.parentNode.style.display = 'none';
+                        } else {
+                            enclosureNode.style.display = 'none';
+                        }
                     }
                     contextObj.storeRecords(targetRecords);
                     callbackForAfterQueryStored(currentContextDef, contextObj);
@@ -970,7 +975,7 @@ var INTERMediator = {
                         customExpandRepeater(contextObj, targetRecords);
                     }
                     contextObj.sequencing = false;
-               }
+                }
                 return contextObj;
             }
 
@@ -1354,6 +1359,17 @@ var INTERMediator = {
 
             if (Boolean(contextObj.contextDefinition.cache) === true) {
                 targetRecords = retrieveDataFromCache(contextObj.contextDefinition, relationValue);
+            } else if (contextObj.contextDefinition.data) {
+                var recordset = [], key;
+                for (key in contextObj.contextDefinition.data)  {
+                    recordset.push(contextObj.contextDefinition.data[key]);
+                }
+                targetRecords = {
+                    'recordset': recordset,
+                    'count': recordset.length,
+                    'totalCount': recordset.length,
+                    'nullAcceptable': true
+                };
             } else {   // cache is not active.
                 try {
                     targetRecords = contextObj.getPortalRecords();
