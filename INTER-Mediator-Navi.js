@@ -996,30 +996,49 @@ IMLibPageNavigation = {
     },
 
     isNotExpandingContext: function (contextDef) {
-        if (!IMLibPageNavigation.stepCurrentContextName) {
-            return false;
+        if (contextDef['navi-control'] && contextDef['navi-control'].match(/step/i)) {
+            return IMLibPageNavigation.stepCurrentContextName !== contextDef['name'];
         }
-        return IMLibPageNavigation.stepCurrentContextName !== contextDef['name'];
+        return false;
     },
 
-    initializeStepInfo: function () {
-        var key, dataSrcs, cDef, nodes, i;
+    startStep: function () {
+        IMLibPageNavigation.initializeStepInfo(true);
+        INTERMediator.constructMain(IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName));
+    },
+
+    initializeStepInfo: function (includeHide) {
+        var key, dataSrcs, cDef, judgeHide, isDetected = false;
         IMLibPageNavigation.stepNavigation = [];
         IMLibPageNavigation.stepCurrentContextName = null;
+        IMLibPageNavigation.stepStartContextName = null;
+        IMLibPageNavigation.setupStepReturnButton('none');
         dataSrcs = INTERMediatorOnPage.getDataSources();
         for (key in dataSrcs) {
             cDef = dataSrcs[key];
-            if (cDef['navi-control'] && cDef['navi-control'].match(/step/i) && !cDef['navi-control'].match(/hide/i)) {
-                IMLibPageNavigation.stepCurrentContextName = cDef['name'];
-                IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName;
-                nodes = document.getElementsByClassName('IM_Button_StepBack');
-                for (i = 0; i < nodes.length; i++) {
-                    nodes[i].style.display = 'none';
-                    INTERMediatorLib.addEvent(nodes[i], 'click', function () {
-                        IMLibPageNavigation.backToPreviousStep();
-                    });
+            if (cDef['navi-control']) {
+                judgeHide = includeHide || (!includeHide && !cDef['navi-control'].match(/hide/i));
+                if (cDef['navi-control'] && cDef['navi-control'].match(/step/i)) {
+                    if (judgeHide && !isDetected) {
+                        IMLibPageNavigation.stepCurrentContextName = cDef['name'];
+                        IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName;
+                        isDetected = true;
+                    }
                 }
-                return;
+            }
+        }
+    },
+
+    setupStepReturnButton: function (style) {
+        var nodes, i;
+        nodes = document.getElementsByClassName('IM_Button_StepBack');
+        for (i = 0; i < nodes.length; i++) {
+            nodes[i].style.display = style;
+            if (!INTERMediatorLib.isProcessed(nodes[i])) {
+                INTERMediatorLib.addEvent(nodes[i], 'click', function () {
+                    IMLibPageNavigation.backToPreviousStep();
+                });
+                INTERMediatorLib.markProcessed(nodes[i]);
             }
         }
     },
@@ -1032,40 +1051,51 @@ IMLibPageNavigation = {
     },
 
     moveToNextSteplImpl: function (contextObj, keying) {
-        var key, cDef, dataSrcs, nodes, i, contextDef, isAfterCurrent = false;
-        // IMLibPageNavigation.stepCurrentContextName = null;
+        var key, cDef, dataSrcs, contextDef, isAfterCurrent = false, control = null, hasNextContext = false,
+            nextContext;
         contextDef = contextObj.getContextDef();
-        dataSrcs = INTERMediatorOnPage.getDataSources();
-        for (key in dataSrcs) {
-            cDef = dataSrcs[key];
-            if (cDef['name'] === contextDef.name) {
-                isAfterCurrent = true;
-            } else if (isAfterCurrent && cDef['navi-control'].match(/step/i)) {
-                IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying});
-                if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
-                    INTERMediatorOnPage[contextDef['before-move-nextstep']]();
+        IMLibPageNavigation.stepNavigation.push({context: contextObj, key: keying});
+        if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
+            control = INTERMediatorOnPage[contextDef['before-move-nextstep']]();
+        }
+        if (control === false) {
+            IMLibPageNavigation.stepNavigation.pop();
+            return;
+        } else if (control) {
+            IMLibPageNavigation.stepCurrentContextName = control;
+        } else {
+            dataSrcs = INTERMediatorOnPage.getDataSources();
+            for (key in dataSrcs) {
+                cDef = dataSrcs[key];
+                if (cDef['name'] === contextDef.name) {
+                    isAfterCurrent = true;
+                } else if (isAfterCurrent && cDef['navi-control'].match(/step/i)) {
+                    IMLibPageNavigation.stepCurrentContextName = cDef['name'];
+                    hasNextContext = true;
+                    break;
                 }
-                IMLibPageNavigation.stepCurrentContextName = cDef['name'];
-                if (contextObj.enclosureNode.tagName === 'TBODY') {
-                    contextObj.enclosureNode.parentNode.style.display = 'none';
-                } else {
-                    contextObj.enclosureNode.style.display = 'none';
-                }
-                INTERMediator.constructMain(IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName));
-                nodes = document.getElementsByClassName('IM_Button_StepBack');
-                for (i = 0; i < nodes.length; i++) {
-                    nodes[i].style.display = '';
-                }
-                return;
+            }
+            if (!hasNextContext) {
+                return; // Do nothing on the last step context
             }
         }
-        if (INTERMediatorOnPage[contextDef['before-move-nextstep']]) {
-            INTERMediatorOnPage[contextDef['before-move-nextstep']]();
+        if (contextObj.enclosureNode.tagName === 'TBODY') {
+            contextObj.enclosureNode.parentNode.style.display = 'none';
+        } else {
+            contextObj.enclosureNode.style.display = 'none';
         }
+        nextContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName);
+        if (nextContext.enclosureNode.tagName === 'TBODY') {
+            nextContext.enclosureNode.parentNode.style.display = '';
+        } else {
+            nextContext.enclosureNode.style.display = '';
+        }
+        INTERMediator.constructMain(nextContext);
+        IMLibPageNavigation.setupStepReturnButton('');
     },
 
     backToPreviousStep: function () {
-        var nodes, i, currentContext, prevInfo;
+        var currentContext, prevInfo;
         currentContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName);
         prevInfo = IMLibPageNavigation.stepNavigation.pop();
         IMLibPageNavigation.stepCurrentContextName = prevInfo.context.contextName;
@@ -1075,10 +1105,8 @@ IMLibPageNavigation = {
             prevInfo.context.enclosureNode.style.display = '';
         }
         if (IMLibPageNavigation.stepStartContextName === IMLibPageNavigation.stepCurrentContextName) {
-            nodes = document.getElementsByClassName('IM_Button_StepBack');
-            for (i = 0; i < nodes.length; i++) {
-                nodes[i].style.display = 'none';
-            }
+            IMLibPageNavigation.setupStepReturnButton('none');
+
         }
         INTERMediator.constructMain(currentContext);
         INTERMediator.constructMain(prevInfo.context);
@@ -1396,4 +1424,5 @@ IMLibPageNavigation = {
             };
         }
     }
-};
+}
+;

@@ -75,6 +75,14 @@ var INTERMediatorLib = {
         return null;
     },
 
+    markProcessed: function (node) {
+        node.setAttribute('data-im-element', 'processed');
+    },
+
+    isProcessed: function (node) {
+        return node.getAttribute('data-im-element') === 'processed'
+    },
+
     generatePasswordHash: function (password) {
         var numToHex, salt, saltHex, code, lowCode, highCode, i;
         numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
@@ -1135,6 +1143,7 @@ var INTERMediatorLib = {
 
     datetimeFormatImpl: function (str, params, flags) {
         'use strict';
+        var dt, c, result = '', replaced;
         var paramStr = params.trim().toUpperCase();
         var kind = flags.trim().toUpperCase();
         var key = kind.substr(0, 1) + '_FMT_' + paramStr;
@@ -1144,7 +1153,13 @@ var INTERMediatorLib = {
                 params += ' ' + INTERMediatorOnPage.localeInfo['T_FMT_' + paramStr];
             }
         }
-        var dt = new Date(str.replace(/-/g, '/')), c, result = '', replaced;
+        dt = new Date(str);
+        if (dt.toString() === 'Invalid Date') {
+            dt = new Date(str.replace(/-/g, '/'));
+        }
+        if (dt.toString() === 'Invalid Date') {
+            dt = new Date('1970/01/01 ' + str);
+        }
         if (dt.toString() === 'Invalid Date') {
             return '';
         }

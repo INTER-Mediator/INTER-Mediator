@@ -98,7 +98,7 @@ var IMLibElement = {
     },
 
     getFormattedValue: function (element, curVal) {
-        var flags, formatSpec, parsed, formattedValue = null, params, formatFunc;
+        var flags, formatSpec, parsed, formattedValue = null, params, formatFunc, firstParen, lastParen;
 
         formatSpec = element.getAttribute('data-im-format');
         if (!formatSpec) {
@@ -108,10 +108,12 @@ var IMLibElement = {
         params = 0;
         formatFunc = IMLibElement.formatters[formatSpec.trim().toLocaleLowerCase()];  // in case of no parameters in attribute
         if (!formatFunc) {
-            parsed = formatSpec.match(/[^a-zA-Z]*([a-zA-Z]+).*[\(]([^\(]*)[\)]/);
+            firstParen = formatSpec.indexOf('(');
+            lastParen = formatSpec.lastIndexOf(')');
+            parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/);
             formatFunc = IMLibElement.formatters[parsed[1].toLocaleLowerCase()];
-            params = parsed[2];
-            if (parsed[2].length === 0) { // in case of parameter is just ().
+            params = formatSpec.substring(firstParen+1, lastParen);
+            if (params.length === 0) { // in case of parameter is just ().
                 params = 0;
             }
         }
