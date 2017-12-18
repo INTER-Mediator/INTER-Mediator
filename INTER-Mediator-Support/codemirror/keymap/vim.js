@@ -460,7 +460,7 @@
       }
     }
 
-    defineOption('filetype', undefined, 'string', .ft, function(name, cm) {
+    defineOption('filetype', undefined, 'string', ['ft'], function(name, cm) {
       // Option is local. Do nothing for global.
       if (cm === undefined) {
         return;
@@ -840,7 +840,7 @@
                 cm.state.vim = undefined;
                 maybeInitVimState(cm);
                 if (!CodeMirror.Vim.suppressErrorLogging) {
-                  console.log(e);
+                  console['log'](e);
                 }
                 throw e;
               }
@@ -4793,7 +4793,7 @@
     CodeMirror.keyMap['vim-insert'] = {
       // TODO: override navigation keys so that Esc will cancel automatic
       // indentation from o, O, i_<CR>
-      fallthrough: .default,
+      fallthrough: ['default'],
       attach: attachVimMap,
       detach: detachVimMap,
       call: cmKey
