@@ -1360,17 +1360,17 @@ var INTERMediatorLib = {
     },
 
     getTargetTableForRetrieve: function (element) {
-        if (element['view'] !== null) {
-            return element['view'];
+        if (element.view !== null) {
+            return element.view;
         }
-        return element['name'];
+        return element.name;
     },
 
     getTargetTableForUpdate: function (element) {
-        if (element['table'] !== null) {
-            return element['table'];
+        if (element.table !== null) {
+            return element.table;
         }
-        return element['name'];
+        return element.name;
     },
 
     getInsertedString: function (tmpStr, dataArray) {
@@ -1462,7 +1462,7 @@ var INTERMediatorLib = {
         var recordset = {}, index;
         for (index in obj) {
             if (obj.hasOwnProperty(index)) {
-                recordset[obj[index]['field']] = obj[index]['value'];
+                recordset[obj[index].field] = obj[index].value;
             }
         }
         return recordset;

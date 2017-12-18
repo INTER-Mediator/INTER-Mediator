@@ -140,7 +140,7 @@ var IMLibContextPool = {
         value = IMLibElement.getValueFromIMNode(document.getElementById(idValue));
         if (contextInfo) {
             contextInfo.context.setValue(
-                contextInfo['record'], contextInfo.field, value, false, target, contextInfo.portal);
+                contextInfo.record, contextInfo.field, value, false, target, contextInfo.portal);
         }
     },
 
@@ -353,9 +353,9 @@ var IMLibContextPool = {
         var i, contexts = [], contextDef, isPortal = false;
 
         contextDef = IMLibContextPool.getContextDef(originalContext.contextName);
-        if (contextDef && contextDef['relation']) {
-            for (i in contextDef['relation']) {
-                if (contextDef['relation'].hasOwnProperty(i) && contextDef['relation'][i]['portal']) {
+        if (contextDef && contextDef.relation) {
+            for (i in contextDef.relation) {
+                if (contextDef.relation.hasOwnProperty(i) && contextDef.relation[i].portal) {
                     isPortal = true;
                     break;
                 }
@@ -462,9 +462,9 @@ var IMLibContextPool = {
             context = this.poolingContexts[i];
             contextDef = context.getContextDef();
             isPortal = false;
-            if (contextDef['relation']) {
-                for (rKey in contextDef['relation']) {
-                    if (contextDef['relation'][rKey]['portal']) {
+            if (contextDef.relation) {
+                for (rKey in contextDef.relation) {
+                    if (contextDef.relation[rKey].portal) {
                         isPortal = true;
                     }
                 }
@@ -505,7 +505,7 @@ var IMLibContextPool = {
     },
 
     generateContextObject: function (contextDef, enclosure, repeaters, repeatersOriginal) {
-        var contextObj = new IMLibContext(contextDef['name']);
+        var contextObj = new IMLibContext(contextDef.name);
         contextObj.contextDefinition = contextDef;
         contextObj.enclosureNode = enclosure;
         contextObj.repeaterNodes = repeaters;
@@ -613,9 +613,9 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
     } else {
         var targetContext = contextInfo.context;
         var parentContext = targetContext.parentContext;
-        var targetField = contextInfo['field'];
+        var targetField = contextInfo.field;
         var keyingComp
-            = (targetContext.isPortal ? targetContext.potalContainingRecordKV : contextInfo['record']).split('=');
+            = (targetContext.isPortal ? targetContext.potalContainingRecordKV : contextInfo.record).split('=');
         var keyingField = keyingComp[0];
         keyingComp.shift();
         var keyingValue = keyingComp.join('=');
@@ -624,7 +624,7 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
                 name: targetContext.isPortal ? parentContext.contextName : targetContext.contextName,
                 records: 1,
                 paging: false,
-                fields: [contextInfo['field']],
+                fields: [contextInfo.field],
                 parentkeyvalue: null,
                 conditions: [
                     {field: keyingField, operator: '=', value: keyingValue}
@@ -669,7 +669,7 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
                     }
                     if (targetContextCapt.isPortal) {
                         for (var i = 0; i < recordset.length; i++) {
-                            if (recordset[i][INTERMediatorOnPage.defaultKeyName] === contextInfo['record'].split('=')[1]) {
+                            if (recordset[i][INTERMediatorOnPage.defaultKeyName] === contextInfo.record.split('=')[1]) {
                                 currentFieldVal = recordset[i][targetFieldCapt];
                                 break;
                             }
@@ -764,20 +764,20 @@ IMLibContext.prototype.getKeyField = function () {
         if (this.isPortal) {
             keyField = INTERMediatorOnPage.defaultKeyName;
         } else {
-            keyField = this.contextDefinition['key'] ? this.contextDefinition['key'] : INTERMediatorOnPage.defaultKeyName;
+            keyField = this.contextDefinition.key ? this.contextDefinition.key : INTERMediatorOnPage.defaultKeyName;
         }
     } else {
-        keyField = this.contextDefinition['key'] ? this.contextDefinition['key'] : 'id';
+        keyField = this.contextDefinition.key ? this.contextDefinition.key : 'id';
     }
     return keyField;
 };
 
 IMLibContext.prototype.getCalculationFields = function () {
-    var calcDef = this.contextDefinition['calculation'];
+    var calcDef = this.contextDefinition.calculation;
     var calcFields = [], ix;
     for (ix in calcDef) {
         if (calcDef.hasOwnProperty(ix)) {
-            calcFields.push(calcDef[ix]['field']);
+            calcFields.push(calcDef[ix].field);
         }
     }
     return calcFields;
@@ -785,7 +785,7 @@ IMLibContext.prototype.getCalculationFields = function () {
 
 IMLibContext.prototype.isUseLimit = function () {
     var useLimit = false;
-    if (this.contextDefinition['records'] && this.contextDefinition['paging']) {
+    if (this.contextDefinition.records && this.contextDefinition.paging) {
         useLimit = true;
     }
     return useLimit;
@@ -882,7 +882,7 @@ IMLibContext.prototype.setRelationWithParent = function (currentRecord, parentOb
 
     if (currentRecord) {
         try {
-            relationDef = this.contextDefinition['relation'];
+            relationDef = this.contextDefinition.relation;
             if (relationDef) {
                 for (index in relationDef) {
                     if (Boolean(relationDef[index].portal) === true) {
@@ -990,11 +990,11 @@ IMLibContext.prototype.setTable = function (context) {
     }
     contextDef = this.getContextDef();
     if (contextDef) {
-        this.viewName = contextDef['view'] ? contextDef['view'] : contextDef['name'];
-        this.tableName = contextDef['table'] ? contextDef['table'] : contextDef['name'];
-        this.sourceName = (contextDef['source'] ? contextDef['source']
-            : (contextDef['table'] ? contextDef['table']
-                : (contextDef['view'] ? contextDef['view'] : contextDef['name'])));
+        this.viewName = contextDef.view ? contextDef.view : contextDef.name;
+        this.tableName = contextDef.table ? contextDef.table : contextDef.name;
+        this.sourceName = (contextDef.source ? contextDef.source
+            : (contextDef.table ? contextDef.table
+                : (contextDef.view ? contextDef.view : contextDef.name)));
     }
 };
 
@@ -1177,7 +1177,7 @@ IMLibContext.prototype.storeRecords = function (records) {
     var ix, record, field, keyField, keyValue;
     var contextDef = contextDef = INTERMediatorLib.getNamedObject(
         INTERMediatorOnPage.getDataSources(), 'name', this.contextName);
-    keyField = contextDef['key'] ? contextDef['key'] : 'id';
+    keyField = contextDef.key ? contextDef.key : 'id';
     if (records.recordset) {
         for (ix = 0; ix < records.recordset.length; ix++) {
             record = records.recordset[ix];

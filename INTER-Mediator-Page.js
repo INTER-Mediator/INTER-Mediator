@@ -117,7 +117,7 @@ var INTERMediatorOnPage = {
         var dataSources, index;
         dataSources = INTERMediatorOnPage.getDataSources();
         for (index in dataSources) {
-            if (dataSources.hasOwnProperty(index) && dataSources[index].name == contextName) {
+            if (dataSources.hasOwnProperty(index) && dataSources[index].name === contextName) {
                 return dataSources[index];
             }
         }
