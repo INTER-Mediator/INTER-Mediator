@@ -14,7 +14,12 @@ IM_Entry(
             'maxrecords' => 10000,
             'key' => 'pref_id',
             'navi-control' => 'step',
-            'before-move-nextstep'=>'doAfterPrefSelection'
+            'before-move-nextstep'=>'doAfterPrefSelection',
+            'appending-data'=>array(
+                array('pref_id'=>101, 'pref'=>'埼玉県'),
+                array('pref_id'=>102, 'pref'=>'神奈川県'),
+                array('pref_id'=>103, 'pref'=>'千葉県'),
+            )
         ),
         array(
             'name' => 'city',

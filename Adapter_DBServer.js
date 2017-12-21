@@ -404,7 +404,7 @@ var INTERMediator_DBAdapter = {
                 var valueset = params[i].split('=');
                 fd.append(valueset[0], decodeURIComponent(valueset[1]));
             }
-            fd.append('_im_uploadfile', uploadingFile['content']);
+            fd.append('_im_uploadfile', uploadingFile.content);
             myRequest.onreadystatechange = function () {
                 switch (myRequest.readyState) {
                 case 3:
@@ -670,24 +670,24 @@ var INTERMediator_DBAdapter = {
             }
         }
 
-        if (args['primaryKeyOnly']) {
+        if (args.primaryKeyOnly) {
             params += '&pkeyonly=true';
         }
 
-        if (args['fields']) {
-            for (i = 0; i < args['fields'].length; i++) {
-                params += '&field_' + i + '=' + encodeURIComponent(args['fields'][i]);
+        if (args.fields) {
+            for (i = 0; i < args.fields.length; i++) {
+                params += '&field_' + i + '=' + encodeURIComponent(args.fields[i]);
             }
         }
         counter = 0;
-        if (args['parentkeyvalue']) {
+        if (args.parentkeyvalue) {
             //noinspection JSDuplicatedDeclaration
-            for (index in args['parentkeyvalue']) {
-                if (args['parentkeyvalue'].hasOwnProperty(index)) {
+            for (index in args.parentkeyvalue) {
+                if (args.parentkeyvalue.hasOwnProperty(index)) {
                     params += '&foreign' + counter +
                         'field=' + encodeURIComponent(index);
                     params += '&foreign' + counter +
-                        'value=' + encodeURIComponent(args['parentkeyvalue'][index]);
+                        'value=' + encodeURIComponent(args.parentkeyvalue[index]);
                     counter++;
                 }
             }
@@ -697,49 +697,49 @@ var INTERMediator_DBAdapter = {
         }
         extCount = 0;
         conditions = [];
-        while (args['conditions'] && args['conditions'][extCount]) {
-            conditionSign = args['conditions'][extCount]['field'] + '#' +
-                args['conditions'][extCount]['operator'] + '#' +
-                args['conditions'][extCount]['value'];
+        while (args.conditions && args.conditions[extCount]) {
+            conditionSign = args.conditions[extCount].field + '#' +
+                args.conditions[extCount].operator + '#' +
+                args.conditions[extCount].value;
             if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
                 params += '&condition' + extCount;
-                params += 'field=' + encodeURIComponent(args['conditions'][extCount]['field']);
+                params += 'field=' + encodeURIComponent(args.conditions[extCount].field);
                 params += '&condition' + extCount;
-                params += 'operator=' + encodeURIComponent(args['conditions'][extCount]['operator']);
+                params += 'operator=' + encodeURIComponent(args.conditions[extCount].operator);
                 params += '&condition' + extCount;
-                params += 'value=' + encodeURIComponent(args['conditions'][extCount]['value']);
+                params += 'value=' + encodeURIComponent(args.conditions[extCount].value);
                 conditions.push(conditionSign);
             }
             extCount++;
         }
-        criteriaObject = INTERMediator.additionalCondition[args['name']];
+        criteriaObject = INTERMediator.additionalCondition[args.name];
         if (criteriaObject) {
-            if (criteriaObject['field']) {
+            if (criteriaObject.field) {
                 criteriaObject = [criteriaObject];
             }
             for (index = 0; index < criteriaObject.length; index++) {
-                if (criteriaObject[index] && criteriaObject[index]['field']) {
-                    if (criteriaObject[index]['value'] || criteriaObject[index]['field'] == '__operation__') {
+                if (criteriaObject[index] && criteriaObject[index].field) {
+                    if (criteriaObject[index].value || criteriaObject[index].field == '__operation__') {
                         conditionSign =
-                            criteriaObject[index]['field'] + '#' +
-                            ((criteriaObject[index]['operator'] !== undefined) ? criteriaObject[index]['operator'] : '') + '#' +
-                            ((criteriaObject[index]['value'] !== undefined) ? criteriaObject[index]['value'] : '' );
+                            criteriaObject[index].field + '#' +
+                            ((criteriaObject[index].operator !== undefined) ? criteriaObject[index].operator : '') + '#' +
+                            ((criteriaObject[index].value !== undefined) ? criteriaObject[index].value : '' );
                         if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
                             params += '&condition' + extCount;
-                            params += 'field=' + encodeURIComponent(criteriaObject[index]['field']);
-                            if (criteriaObject[index]['operator'] !== undefined) {
+                            params += 'field=' + encodeURIComponent(criteriaObject[index].field);
+                            if (criteriaObject[index].operator !== undefined) {
                                 params += '&condition' + extCount;
-                                params += 'operator=' + encodeURIComponent(criteriaObject[index]['operator']);
+                                params += 'operator=' + encodeURIComponent(criteriaObject[index].operator);
                             }
-                            if (criteriaObject[index]['value'] !== undefined) {
+                            if (criteriaObject[index].value !== undefined) {
                                 params += '&condition' + extCount;
-                                value = criteriaObject[index]['value'];
+                                value = criteriaObject[index].value;
                                 if (Array.isArray(value)) {
                                     value = JSON.stringify(value);
                                 }
                                 params += 'value=' + encodeURIComponent(value);
                             }
-                            if (criteriaObject[index]['field'] != '__operation__') {
+                            if (criteriaObject[index].field != '__operation__') {
                                 conditions.push(conditionSign);
                             } else {
                                 //conditions = [];
@@ -748,7 +748,7 @@ var INTERMediator_DBAdapter = {
                         extCount++;
                     }
                 }
-                if (criteriaObject[index] && criteriaObject[index]['onetime']) {
+                if (criteriaObject[index] && criteriaObject[index].onetime) {
                     removeIndice.push = index;
                 }
             }
@@ -759,22 +759,22 @@ var INTERMediator_DBAdapter = {
                         modifyConditions.push(criteriaObject[index]);
                     }
                 }
-                INTERMediator.additionalCondition[args['name']] = modifyConditions;
+                INTERMediator.additionalCondition[args.name] = modifyConditions;
                 IMLibLocalContext.archive();
             }
         }
 
         extCountSort = 0;
-        sortkeyObject = INTERMediator.additionalSortKey[args['name']];
+        sortkeyObject = INTERMediator.additionalSortKey[args.name];
         if (sortkeyObject) {
-            if (sortkeyObject['field']) {
+            if (sortkeyObject.field) {
                 sortkeyObject = [sortkeyObject];
             }
             for (index = 0; index < sortkeyObject.length; index++) {
                 params += '&sortkey' + extCountSort;
-                params += 'field=' + encodeURIComponent(sortkeyObject[index]['field']);
+                params += 'field=' + encodeURIComponent(sortkeyObject[index].field);
                 params += '&sortkey' + extCountSort;
-                params += 'direction=' + encodeURIComponent(sortkeyObject[index]['direction']);
+                params += 'direction=' + encodeURIComponent(sortkeyObject[index].direction);
                 extCountSort++;
             }
         }
@@ -784,7 +784,7 @@ var INTERMediator_DBAdapter = {
             if (IMLibLocalContext.store.hasOwnProperty(key)) {
                 value = String(IMLibLocalContext.store[key]);
                 keyParams = key.split(':');
-                if (keyParams && keyParams.length > 1 && keyParams[1].trim() == args['name'] && value.length > 0) {
+                if (keyParams && keyParams.length > 1 && keyParams[1].trim() == args.name && value.length > 0) {
                     if (keyParams[0].trim() == 'condition' && keyParams.length >= 4) {
                         fields = keyParams[2].split(',');
                         operator = keyParams[3].trim();
@@ -867,17 +867,17 @@ var INTERMediator_DBAdapter = {
     db_updateChecking: function (args) {
         var noError = true, contextDef;
 
-        if (args['name'] === null) {
+        if (args.name === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
             noError = false;
         }
-        contextDef = IMLibContextPool.getContextDef(args['name']);
-        if (!contextDef['key']) {
+        contextDef = IMLibContextPool.getContextDef(args.name);
+        if (!contextDef.key) {
             INTERMediator.setErrorMessage(
-                INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args['name']]));
+                INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]));
             noError = false;
         }
-        if (args['dataset'] === null) {
+        if (args.dataset === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1011));
             noError = false;
         }
@@ -886,42 +886,42 @@ var INTERMediator_DBAdapter = {
 
     db_updateParameters: function (args) {
         var params, extCount, counter, index, addedObject;
-        params = 'access=update&name=' + encodeURIComponent(args['name']);
+        params = 'access=update&name=' + encodeURIComponent(args.name);
         counter = 0;
         if (INTERMediator.additionalFieldValueOnUpdate
-            && INTERMediator.additionalFieldValueOnUpdate[args['name']]) {
-            addedObject = INTERMediator.additionalFieldValueOnUpdate[args['name']];
-            if (addedObject['field']) {
+            && INTERMediator.additionalFieldValueOnUpdate[args.name]) {
+            addedObject = INTERMediator.additionalFieldValueOnUpdate[args.name];
+            if (addedObject.field) {
                 addedObject = [addedObject];
             }
             for (index in addedObject) {
                 if (addedObject.hasOwnProperty(index)) {
                     var oneDefinition = addedObject[index];
-                    params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition['field']);
-                    params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition['value']);
+                    params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition.field);
+                    params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition.value);
                     counter++;
                 }
             }
         }
 
-        if (args['conditions'] != null) {
-            for (extCount = 0; extCount < args['conditions'].length; extCount++) {
+        if (args.conditions != null) {
+            for (extCount = 0; extCount < args.conditions.length; extCount++) {
                 params += '&condition' + extCount + 'field=';
-                params += encodeURIComponent(args['conditions'][extCount]['field']);
+                params += encodeURIComponent(args.conditions[extCount].field);
                 params += '&condition' + extCount + 'operator=';
-                params += encodeURIComponent(args['conditions'][extCount]['operator']);
-                if (args['conditions'][extCount]['value']) {
+                params += encodeURIComponent(args.conditions[extCount].operator);
+                if (args.conditions[extCount].value) {
                     params += '&condition' + extCount + 'value=';
-                    params += encodeURIComponent(args['conditions'][extCount]['value']);
+                    params += encodeURIComponent(args.conditions[extCount].value);
                 }
             }
         }
-        for (extCount = 0; extCount < args['dataset'].length; extCount++) {
-            params += '&field_' + (counter + extCount) + '=' + encodeURIComponent(args['dataset'][extCount]['field']);
+        for (extCount = 0; extCount < args.dataset.length; extCount++) {
+            params += '&field_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].field);
             if (INTERMediator.isTrident && INTERMediator.ieVersion == 8) {
-                params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args['dataset'][extCount]['value'].replace(/\n/g, ''));
+                params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value.replace(/\n/g, ''));
             } else {
-                params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args['dataset'][extCount]['value']);
+                params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value);
             }
         }
         return params;
@@ -1002,17 +1002,17 @@ var INTERMediator_DBAdapter = {
     db_deleteChecking: function (args) {
         var noError = true, contextDef;
 
-        if (args['name'] === null) {
+        if (args.name === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
             noError = false;
         }
-        contextDef = IMLibContextPool.getContextDef(args['name']);
-        if (!contextDef['key']) {
+        contextDef = IMLibContextPool.getContextDef(args.name);
+        if (!contextDef.key) {
             INTERMediator.setErrorMessage(
-                INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args['name']]));
+                INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]));
             noError = false;
         }
-        if (args['conditions'] === null) {
+        if (args.conditions === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
             noError = false;
         }
@@ -1021,28 +1021,28 @@ var INTERMediator_DBAdapter = {
 
     db_deleteParameters: function (args) {
         var params, i, counter, index, addedObject;
-        params = 'access=delete&name=' + encodeURIComponent(args['name']);
+        params = 'access=delete&name=' + encodeURIComponent(args.name);
         counter = 0;
         if (INTERMediator.additionalFieldValueOnDelete
-            && INTERMediator.additionalFieldValueOnDelete[args['name']]) {
-            addedObject = INTERMediator.additionalFieldValueOnDelete[args['name']];
-            if (addedObject['field']) {
+            && INTERMediator.additionalFieldValueOnDelete[args.name]) {
+            addedObject = INTERMediator.additionalFieldValueOnDelete[args.name];
+            if (addedObject.field) {
                 addedObject = [addedObject];
             }
             for (index in addedObject) {
                 if (addedObject.hasOwnProperty(index)) {
                     var oneDefinition = addedObject[index];
-                    params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition['field']);
-                    params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition['value']);
+                    params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition.field);
+                    params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition.value);
                     counter++;
                 }
             }
         }
 
-        for (i = 0; i < args['conditions'].length; i++) {
-            params += '&condition' + i + 'field=' + encodeURIComponent(args['conditions'][i]['field']);
-            params += '&condition' + i + 'operator=' + encodeURIComponent(args['conditions'][i]['operator']);
-            params += '&condition' + i + 'value=' + encodeURIComponent(args['conditions'][i]['value']);
+        for (i = 0; i < args.conditions.length; i++) {
+            params += '&condition' + i + 'field=' + encodeURIComponent(args.conditions[i].field);
+            params += '&condition' + i + 'operator=' + encodeURIComponent(args.conditions[i].operator);
+            params += '&condition' + i + 'value=' + encodeURIComponent(args.conditions[i].value);
         }
         return params;
     },
@@ -1155,49 +1155,49 @@ var INTERMediator_DBAdapter = {
     db_createParameters: function (args) {
         var params, i, index, addedObject, counter, targetKey, ds, key, contextDef;
 
-        if (args['name'] === null) {
+        if (args.name === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return false;
         }
-        contextDef = IMLibContextPool.getContextDef(args['name']);
-        if (!contextDef['key']) {
+        contextDef = IMLibContextPool.getContextDef(args.name);
+        if (!contextDef.key) {
             INTERMediator.setErrorMessage(
-                INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args['name']]));
+                INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]));
             return false;
         }
         ds = INTERMediatorOnPage.getDataSources(); // Get DataSource parameters
         targetKey = null;
         for (key in ds) { // Search this table from DataSource
-            if (ds.hasOwnProperty(key) && ds[key]['name'] == args['name']) {
+            if (ds.hasOwnProperty(key) && ds[key].name == args.name) {
                 targetKey = key;
                 break;
             }
         }
         if (targetKey === null) {
-            INTERMediator.setErrorMessage('no targetname :' + args['name']);
+            INTERMediator.setErrorMessage('no targetname :' + args.name);
             return false;
         }
-        params = 'access=create&name=' + encodeURIComponent(args['name']);
+        params = 'access=create&name=' + encodeURIComponent(args.name);
         counter = 0;
         if (INTERMediator.additionalFieldValueOnNewRecord
-            && INTERMediator.additionalFieldValueOnNewRecord[args['name']]) {
-            addedObject = INTERMediator.additionalFieldValueOnNewRecord[args['name']];
-            if (addedObject['field']) {
+            && INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
+            addedObject = INTERMediator.additionalFieldValueOnNewRecord[args.name];
+            if (addedObject.field) {
                 addedObject = [addedObject];
             }
             for (index in addedObject) {
                 if (addedObject.hasOwnProperty(index)) {
                     var oneDefinition = addedObject[index];
-                    params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition['field']);
-                    params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition['value']);
+                    params += '&field_' + counter + '=' + encodeURIComponent(oneDefinition.field);
+                    params += '&value_' + counter + '=' + encodeURIComponent(oneDefinition.value);
                     counter++;
                 }
             }
         }
 
-        for (i = 0; i < args['dataset'].length; i++) {
-            params += '&field_' + counter + '=' + encodeURIComponent(args['dataset'][i]['field']);
-            params += '&value_' + counter + '=' + encodeURIComponent(args['dataset'][i]['value']);
+        for (i = 0; i < args.dataset.length; i++) {
+            params += '&field_' + counter + '=' + encodeURIComponent(args.dataset[i].field);
+            params += '&value_' + counter + '=' + encodeURIComponent(args.dataset[i].value);
             counter++;
         }
         return params;
@@ -1212,7 +1212,7 @@ var INTERMediator_DBAdapter = {
      field: Field name, operator: '=', value: Field Value : of the source record
      }],
      associated: Associated Record info.
-     [{name: assocDef['name'], field: fKey, value: fValue}]
+     [{name: assocDef.name, field: fKey, value: fValue}]
      }
      {   name:<Name of the Context>
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
@@ -1284,11 +1284,11 @@ var INTERMediator_DBAdapter = {
     db_copyParameters: function (args) {
         var noError = true, params, i;
 
-        if (args['name'] === null) {
+        if (args.name === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
             noError = false;
         }
-        if (args['conditions'] === null) {
+        if (args.conditions === null) {
             INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
             noError = false;
         }
@@ -1296,17 +1296,17 @@ var INTERMediator_DBAdapter = {
             return false;
         }
 
-        params = 'access=copy&name=' + encodeURIComponent(args['name']);
-        for (i = 0; i < args['conditions'].length; i++) {
-            params += '&condition' + i + 'field=' + encodeURIComponent(args['conditions'][i]['field']);
-            params += '&condition' + i + 'operator=' + encodeURIComponent(args['conditions'][i]['operator']);
-            params += '&condition' + i + 'value=' + encodeURIComponent(args['conditions'][i]['value']);
+        params = 'access=copy&name=' + encodeURIComponent(args.name);
+        for (i = 0; i < args.conditions.length; i++) {
+            params += '&condition' + i + 'field=' + encodeURIComponent(args.conditions[i].field);
+            params += '&condition' + i + 'operator=' + encodeURIComponent(args.conditions[i].operator);
+            params += '&condition' + i + 'value=' + encodeURIComponent(args.conditions[i].value);
         }
-        if (args['associated']) {
-            for (i = 0; i < args['associated'].length; i++) {
-                params += '&assoc' + i + '=' + encodeURIComponent(args['associated'][i]['name']);
-                params += '&asfield' + i + '=' + encodeURIComponent(args['associated'][i]['field']);
-                params += '&asvalue' + i + '=' + encodeURIComponent(args['associated'][i]['value']);
+        if (args.associated) {
+            for (i = 0; i < args.associated.length; i++) {
+                params += '&assoc' + i + '=' + encodeURIComponent(args.associated[i].name);
+                params += '&asfield' + i + '=' + encodeURIComponent(args.associated[i].field);
+                params += '&asvalue' + i + '=' + encodeURIComponent(args.associated[i].value);
             }
         }
         return params;

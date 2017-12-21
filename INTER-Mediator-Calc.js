@@ -52,15 +52,15 @@ var IMLibCalc = {
             calcDefField, atPos, fieldLength;
 
 
-        calcDef = currentContext['calculation'];
+        calcDef = currentContext.calculation;
         for (index in calcDef) {
-            atPos = calcDef[index]['field'].indexOf(INTERMediator.separator);
-            fieldLength = calcDef[index]['field'].length;
-            calcDefField = calcDef[index]['field'].substring(0, atPos >= 0 ? atPos : fieldLength);
-            if (calcDefField == nInfo['field']) {
+            atPos = calcDef[index].field.indexOf(INTERMediator.separator);
+            fieldLength = calcDef[index].field.length;
+            calcDefField = calcDef[index].field.substring(0, atPos >= 0 ? atPos : fieldLength);
+            if (calcDefField == nInfo.field) {
                 try {
-                    exp = calcDef[index]['expression'];
-                    field = calcDef[index]['field'];
+                    exp = calcDef[index].expression;
+                    field = calcDef[index].field;
                     elements = Parser.parse(exp).variables();
                     objectKey = nodeId +
                         (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : '');

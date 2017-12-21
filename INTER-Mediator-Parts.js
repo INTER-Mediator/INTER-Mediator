@@ -19,7 +19,7 @@
  */
 var IMParts_Catalog = {};
 
-IMParts_Catalog['fileupload'] = {
+IMParts_Catalog.fileupload = {
     html5DDSuported: false,
     progressSupported: false,   // see http://www.johnboyproductions.com/php-upload-progress-bar/
     forceOldStyleForm: false,
@@ -280,8 +280,8 @@ IMParts_Catalog['fileupload'] = {
                                             context = IMLibContextPool.getContextDef(contextName);
                                             if (context['file-upload']) {
                                                 for (index in context['file-upload']) {
-                                                    if (context['file-upload'][index]['field'] == updateField) {
-                                                        relatedContextName = context['file-upload'][index]['context'];
+                                                    if (context['file-upload'][index].field == updateField) {
+                                                        relatedContextName = context['file-upload'][index].context;
                                                         break;
                                                     }
                                                 }
@@ -433,13 +433,13 @@ IMParts_Catalog['fileupload'] = {
     }
 };
 
-IMParts_Catalog['jsonformat'] = {
+IMParts_Catalog.jsonformat = {
     instanciate: function (parentNode) {
         var newId = parentNode.getAttribute('id') + '-jsonf';
         var newNode = document.createElement('pre');
         newNode.setAttribute('id', newId);
         parentNode.appendChild(newNode);
-        IMParts_Catalog['jsonformat'].ids.push(newId);
+        IMParts_Catalog.jsonformat.ids.push(newId);
 
         parentNode._im_getComponentId = (function () {
             var theId = newId;
@@ -451,7 +451,7 @@ IMParts_Catalog['jsonformat'] = {
         parentNode._im_setValue = (function () {
             var theId = newId;
             return function (str) {
-                IMParts_Catalog['jsonformat'].initialValues[theId]
+                IMParts_Catalog.jsonformat.initialValues[theId]
                     = str ? JSON.stringify(JSON.parse(str), null, '    ') : '';
             };
         })();
@@ -461,29 +461,29 @@ IMParts_Catalog['jsonformat'] = {
     initialValues: {},
 
     finish: function () {
-        for (var i = 0; i < IMParts_Catalog['jsonformat'].ids.length; i++) {
-            var targetId = IMParts_Catalog['jsonformat'].ids[i];
+        for (var i = 0; i < IMParts_Catalog.jsonformat.ids.length; i++) {
+            var targetId = IMParts_Catalog.jsonformat.ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
-                targetNode.appendChild(document.createTextNode(IMParts_Catalog['jsonformat'].initialValues[targetId]));
+                targetNode.appendChild(document.createTextNode(IMParts_Catalog.jsonformat.initialValues[targetId]));
             }
         }
-        IMParts_Catalog['jsonformat'].ids = [];
-        IMParts_Catalog['jsonformat'].initialValues = {};
+        IMParts_Catalog.jsonformat.ids = [];
+        IMParts_Catalog.jsonformat.initialValues = {};
     }
 };
 
-IMParts_Catalog['popupselector'] = {
+IMParts_Catalog.popupselector = {
     instanciate: function (parentNode) {
         var widgetId, node, inNode, valueNode;
         if (parentNode.getAttribute('class') !== '_im_widget_popup') {
             parentNode.setAttribute('class', '_im_widget_popup');
-            parentNode.style.zIndex = (IMParts_Catalog['popupselector'].zIndex--);
+            parentNode.style.zIndex = (IMParts_Catalog.popupselector.zIndex--);
             node = document.createElement('SPAN');
             node.setAttribute('data-im-control', 'enclosure');
             node.setAttribute('class', '_im_widget_popup_panel');
             parentNode.appendChild(node);
-            IMParts_Catalog['popupselector'].selectionRoots.push(node);
+            IMParts_Catalog.popupselector.selectionRoots.push(node);
             inNode = document.createElement('SPAN');
             inNode.setAttribute('data-im-control', 'repeater');
             inNode.setAttribute('data-im', parentNode.getAttribute('data-im-popup'));
@@ -495,19 +495,19 @@ IMParts_Catalog['popupselector'] = {
             INTERMediatorLib.addEvent(inNode, 'click', (function () {
                 var selRoot = node;
                 return function () {
-                    IMParts_Catalog['popupselector'].clearSelection();
+                    IMParts_Catalog.popupselector.clearSelection();
                 }
             })());
             widgetId = parentNode.getAttribute('id');
-            IMParts_Catalog['popupselector'].ids.push(widgetId);
+            IMParts_Catalog.popupselector.ids.push(widgetId);
 
             valueNode = document.createElement('span');
             valueNode.setAttribute('class', '_im_widget_popup_value');
             INTERMediatorLib.addEvent(valueNode, 'click', (function () {
                 var selRoot = node;
                 return function () {
-                    IMParts_Catalog['popupselector'].clearSelection();
-                    IMParts_Catalog['popupselector'].clickValue(selRoot);
+                    IMParts_Catalog.popupselector.clearSelection();
+                    IMParts_Catalog.popupselector.clickValue(selRoot);
                 };
             })());
             parentNode.appendChild(valueNode);
@@ -522,7 +522,7 @@ IMParts_Catalog['popupselector'] = {
             parentNode._im_setValue = (function () {
                 var theId = widgetId;
                 return function (str) {
-                    IMParts_Catalog['popupselector'].initialValues[theId] = str;
+                    IMParts_Catalog.popupselector.initialValues[theId] = str;
                 };
             })();
         }
@@ -535,11 +535,11 @@ IMParts_Catalog['popupselector'] = {
 
     finish: function () {
         var i, targetId, targetNode, j, nodes, selectionRoot, nodeValue, displayValue, innodes, k;
-        for (i = 0; i < IMParts_Catalog['popupselector'].ids.length; i++) {
-            targetId = IMParts_Catalog['popupselector'].ids[i];
+        for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i++) {
+            targetId = IMParts_Catalog.popupselector.ids[i];
             targetNode = document.getElementById(targetId);
-            selectionRoot = IMParts_Catalog['popupselector'].selectionRoots[i];
-            nodeValue = IMParts_Catalog['popupselector'].initialValues[targetId];
+            selectionRoot = IMParts_Catalog.popupselector.selectionRoots[i];
+            nodeValue = IMParts_Catalog.popupselector.initialValues[targetId];
             if (selectionRoot) {
                 displayValue = null;
                 nodes = selectionRoot.childNodes;
@@ -556,8 +556,8 @@ IMParts_Catalog['popupselector'] = {
                             // Execute on clicking the selection
                             var node = nodes[j];
                             return function () {
-                                IMParts_Catalog['popupselector'].clearSelection();
-                                IMParts_Catalog['popupselector'].setData(node);
+                                IMParts_Catalog.popupselector.clearSelection();
+                                IMParts_Catalog.popupselector.setData(node);
                             };
                         })());
                     }
@@ -583,7 +583,7 @@ IMParts_Catalog['popupselector'] = {
         panelBack.style.width = body.clientWidth + 'px';
         panelBack.style.height = body.clientHeight + 'px';
         IMLibMouseEventDispatch.setExecute('_im_widget_popup_panelback', function () {
-            IMParts_Catalog['popupselector'].clearSelection();
+            IMParts_Catalog.popupselector.clearSelection();
         });
     },
 
@@ -594,8 +594,8 @@ IMParts_Catalog['popupselector'] = {
         if (targetNode) {
             body.removeChild(targetNode);
         }
-        for (i = 0; i < IMParts_Catalog['popupselector'].ids.length; i++) {
-            selectionRoot = IMParts_Catalog['popupselector'].selectionRoots[i];
+        for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i++) {
+            selectionRoot = IMParts_Catalog.popupselector.selectionRoots[i];
             if (selectionRoot) {
                 selectionRoot.style.display = "none";
             }

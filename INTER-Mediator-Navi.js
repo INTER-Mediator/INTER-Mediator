@@ -169,14 +169,14 @@ IMLibPageNavigation = {
 
             if (navLabel === null || navLabel[9] !== false) {
                 for (i = 0; i < IMLibPageNavigation.deleteInsertOnNavi.length; i++) {
-                    switch (IMLibPageNavigation.deleteInsertOnNavi[i]['kind']) {
+                    switch (IMLibPageNavigation.deleteInsertOnNavi[i].kind) {
                     case 'INSERT':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
-                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i].name;
                         contextDef = IMLibContextPool.getContextDef(contextName);
-                        if (contextDef && contextDef['button-names'] && contextDef['button-names']['insert']) {
-                            buttonLabel = contextDef['button-names']['insert'];
+                        if (contextDef && contextDef['button-names'] && contextDef['button-names'].insert) {
+                            buttonLabel = contextDef['button-names'].insert;
                         } else {
                             buttonLabel = INTERMediatorOnPage.getMessages()[3] + ': ' + contextName;
                         }
@@ -193,18 +193,18 @@ IMLibPageNavigation = {
                         }
                         IMLibMouseEventDispatch.setExecute(node.id,
                             onNaviInsertFunction(
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['name'],
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['key'],
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['confirm'])
+                                IMLibPageNavigation.deleteInsertOnNavi[i].name,
+                                IMLibPageNavigation.deleteInsertOnNavi[i].key,
+                                IMLibPageNavigation.deleteInsertOnNavi[i].confirm)
                         );
                         break;
                     case 'DELETE':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
-                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i].name;
                         contextDef = IMLibContextPool.getContextDef(contextName);
-                        if (contextDef && contextDef['button-names'] && contextDef['button-names']['delete']) {
-                            buttonLabel = contextDef['button-names']['delete'];
+                        if (contextDef && contextDef['button-names'] && contextDef['button-names'].delete) {
+                            buttonLabel = contextDef['button-names'].delete;
                         } else {
                             buttonLabel = INTERMediatorOnPage.getMessages()[4] + ': ' + contextName;
                         }
@@ -220,18 +220,18 @@ IMLibPageNavigation = {
                             node,
                             'click',
                             onNaviDeleteFunction(
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['name'],
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['key'],
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['value'],
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['confirm']));
+                                IMLibPageNavigation.deleteInsertOnNavi[i].name,
+                                IMLibPageNavigation.deleteInsertOnNavi[i].key,
+                                IMLibPageNavigation.deleteInsertOnNavi[i].value,
+                                IMLibPageNavigation.deleteInsertOnNavi[i].confirm));
                         break;
                     case 'COPY':
                         node = document.createElement('SPAN');
                         navigation.appendChild(node);
-                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i]['name'];
+                        contextName = IMLibPageNavigation.deleteInsertOnNavi[i].name;
                         contextDef = IMLibContextPool.getContextDef(contextName);
-                        if (contextDef && contextDef['button-names'] && contextDef['button-names']['copy']) {
-                            buttonLabel = contextDef['button-names']['copy'];
+                        if (contextDef && contextDef['button-names'] && contextDef['button-names'].copy) {
+                            buttonLabel = contextDef['button-names'].copy;
                         } else {
                             buttonLabel = INTERMediatorOnPage.getMessages()[15] + ': ' + contextName;
                         }
@@ -248,8 +248,8 @@ IMLibPageNavigation = {
                         }
                         IMLibMouseEventDispatch.setExecute(node.id,
                             onNaviCopyFunction(
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['contextDef'],
-                                IMLibPageNavigation.deleteInsertOnNavi[i]['keyValue']));
+                                IMLibPageNavigation.deleteInsertOnNavi[i].contextDef,
+                                IMLibPageNavigation.deleteInsertOnNavi[i].keyValue));
                         break;
                     }
                 }
@@ -431,10 +431,10 @@ IMLibPageNavigation = {
                 var assocDef, i, def, assocContexts, pStart, copyTerm, index;
                 INTERMediatorOnPage.showProgress();
                 try {
-                    if (contextDefCapt['relation']) {
-                        for (index in contextDefCapt['relation']) {
-                            if (contextDefCapt['relation'][index]['portal'] === true) {
-                                contextDefCapt['portal'] = true;
+                    if (contextDefCapt.relation) {
+                        for (index in contextDefCapt.relation) {
+                            if (contextDefCapt.relation[index].portal === true) {
+                                contextDefCapt.portal = true;
                             }
                         }
                     }
@@ -448,10 +448,10 @@ IMLibPageNavigation = {
                         assocContexts = copyTerm.split(',');
                         for (i = 0; i < assocContexts.length; i++) {
                             def = IMLibContextPool.getContextDef(assocContexts[i]);
-                            if (def['relation'][0]['foreign-key']) {
+                            if (def.relation[0]['foreign-key']) {
                                 assocDef.push({
-                                    name: def['name'],
-                                    field: def['relation'][0]['foreign-key'],
+                                    name: def.name,
+                                    field: def.relation[0]['foreign-key'],
                                     value: keyValueCapt
                                 });
                             }
@@ -460,8 +460,8 @@ IMLibPageNavigation = {
                     INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_copy_async(
                         {
-                            name: contextDefCapt['name'],
-                            conditions: [{field: contextDefCapt['key'], operator: '=', value: keyValueCapt}],
+                            name: contextDefCapt.name,
+                            conditions: [{field: contextDefCapt.key, operator: '=', value: keyValueCapt}],
                             associated: assocDef.length > 0 ? assocDef : null
                         },
                         (function () {
@@ -635,15 +635,15 @@ IMLibPageNavigation = {
             || !currentContextDef['repeat-control'].match(/copy/i)) {
             return;
         }
-        if (currentContextDef['relation']
-            || currentContextDef['records'] === undefined
-            || !currentContextDef['paging']
-            || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) !== 1)) {
+        if (currentContextDef.relation
+            || currentContextDef.records === undefined
+            || !currentContextDef.paging
+            || (currentContextDef.records > 1 && Number(INTERMediator.pagedSize) !== 1)) {
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Copy');
             buttonName = INTERMediatorOnPage.getMessages()[14];
-            if (currentContextDef['button-names'] && currentContextDef['button-names']['copy']) {
-                buttonName = currentContextDef['button-names']['copy'];
+            if (currentContextDef['button-names'] && currentContextDef['button-names'].copy) {
+                buttonName = currentContextDef['button-names'].copy;
             }
             buttonNode.appendChild(document.createTextNode(buttonName));
             thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
@@ -651,7 +651,7 @@ IMLibPageNavigation = {
             INTERMediator.buttonIdNum++;
             IMLibMouseEventDispatch.setExecute(thisId, (function () {
                 var currentContextCapt = currentContext,
-                    currentRecordCapt = currentRecord[currentContextDef['key']];
+                    currentRecordCapt = currentRecord[currentContextDef.key];
                 return function () {
                     IMLibUI.copyButton(currentContextCapt, currentRecordCapt);
                 };
@@ -675,9 +675,9 @@ IMLibPageNavigation = {
         } else {
             IMLibPageNavigation.deleteInsertOnNavi.push({
                 kind: 'COPY',
-                name: currentContextDef['name'],
+                name: currentContextDef.name,
                 contextDef: currentContextDef,
-                keyValue: currentRecord[currentContextDef['key']]
+                keyValue: currentRecord[currentContextDef.key]
             });
         }
     },
@@ -694,16 +694,16 @@ IMLibPageNavigation = {
             || !currentContextDef['repeat-control'].match(/delete/i)) {
             return;
         }
-        if (currentContextDef['relation']
-            || currentContextDef['records'] === undefined
-            || !currentContextDef['paging']
-            || (currentContextDef['records'] > 1 && Number(INTERMediator.pagedSize) !== 1)) {
+        if (currentContextDef.relation
+            || currentContextDef.records === undefined
+            || !currentContextDef.paging
+            || (currentContextDef.records > 1 && Number(INTERMediator.pagedSize) !== 1)) {
 
             buttonNode = document.createElement('BUTTON');
             INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Delete');
             buttonName = INTERMediatorOnPage.getMessages()[6];
-            if (currentContextDef['button-names'] && currentContextDef['button-names']['delete']) {
-                buttonName = currentContextDef['button-names']['delete'];
+            if (currentContextDef['button-names'] && currentContextDef['button-names'].delete) {
+                buttonName = currentContextDef['button-names'].delete;
             }
             buttonNode.appendChild(document.createTextNode(buttonName));
             thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
@@ -738,7 +738,7 @@ IMLibPageNavigation = {
         } else {
             IMLibPageNavigation.deleteInsertOnNavi.push({
                 kind: 'DELETE',
-                name: currentContextDef['name'],
+                name: currentContextDef.name,
                 key: keyField,
                 value: keyValue,
                 confirm: currentContextDef['repeat-control'].match(/confirm-delete/i)
@@ -757,12 +757,12 @@ IMLibPageNavigation = {
         encNodeTag = node.tagName;
         currentContextDef = currentContext.getContextDef();
         if (currentContextDef['repeat-control'] && currentContextDef['repeat-control'].match(/insert/i)) {
-            if (relationValue.length > 0 || !currentContextDef['paging'] || currentContextDef['paging'] === false) {
+            if (relationValue.length > 0 || !currentContextDef.paging || currentContextDef.paging === false) {
                 buttonNode = document.createElement('BUTTON');
                 INTERMediatorLib.setClassAttributeToNode(buttonNode, 'IM_Button_Insert');
                 buttonName = INTERMediatorOnPage.getMessages()[5];
-                if (currentContextDef['button-names'] && currentContextDef['button-names']['insert']) {
-                    buttonName = currentContextDef['button-names']['insert'];
+                if (currentContextDef['button-names'] && currentContextDef['button-names'].insert) {
+                    buttonName = currentContextDef['button-names'].insert;
                 }
                 buttonNode.appendChild(document.createTextNode(buttonName));
                 thisId = 'IM_Button_' + INTERMediator.buttonIdNum;
@@ -848,13 +848,13 @@ IMLibPageNavigation = {
             } else {
                 if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX'
                     || INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
-                    keyField = currentContextDef['key'] ? currentContextDef['key'] : INTERMediatorOnPage.defaultKeyName;
+                    keyField = currentContextDef.key ? currentContextDef.key : INTERMediatorOnPage.defaultKeyName;
                 } else {
-                    keyField = currentContextDef['key'] ? currentContextDef['key'] : 'id';
+                    keyField = currentContextDef.key ? currentContextDef.key : 'id';
                 }
                 IMLibPageNavigation.deleteInsertOnNavi.push({
                     kind: 'INSERT',
-                    name: currentContextDef['name'],
+                    name: currentContextDef.name,
                     key: keyField,
                     confirm: currentContextDef['repeat-control'].match(/confirm-insert/i)
                 });
@@ -879,7 +879,7 @@ IMLibPageNavigation = {
 
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
         isHide = currentContextDef['navi-control'].match(/hide/i);
-        isHidePageNavi = isHide && (currentContextDef['paging'] === true);
+        isHidePageNavi = isHide && (currentContextDef.paging === true);
         isMasterDetail = currentContextDef['navi-control'].match(/master/i);
         isStep = currentContextDef['navi-control'].match(/step/i);
 
@@ -997,7 +997,7 @@ IMLibPageNavigation = {
 
     isNotExpandingContext: function (contextDef) {
         if (contextDef['navi-control'] && contextDef['navi-control'].match(/step/i)) {
-            return IMLibPageNavigation.stepCurrentContextName !== contextDef['name'];
+            return IMLibPageNavigation.stepCurrentContextName !== contextDef.name;
         }
         return false;
     },
@@ -1020,7 +1020,7 @@ IMLibPageNavigation = {
                 judgeHide = includeHide || (!includeHide && !cDef['navi-control'].match(/hide/i));
                 if (cDef['navi-control'] && cDef['navi-control'].match(/step/i)) {
                     if (judgeHide && !isDetected) {
-                        IMLibPageNavigation.stepCurrentContextName = cDef['name'];
+                        IMLibPageNavigation.stepCurrentContextName = cDef.name;
                         IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName;
                         isDetected = true;
                     }
@@ -1067,10 +1067,10 @@ IMLibPageNavigation = {
             dataSrcs = INTERMediatorOnPage.getDataSources();
             for (key in dataSrcs) {
                 cDef = dataSrcs[key];
-                if (cDef['name'] === contextDef.name) {
+                if (cDef.name === contextDef.name) {
                     isAfterCurrent = true;
                 } else if (isAfterCurrent && cDef['navi-control'].match(/step/i)) {
-                    IMLibPageNavigation.stepCurrentContextName = cDef['name'];
+                    IMLibPageNavigation.stepCurrentContextName = cDef.name;
                     hasNextContext = true;
                     break;
                 }
@@ -1186,14 +1186,14 @@ IMLibPageNavigation = {
             for (i in contextDefs) {
                 if (contextDefs.hasOwnProperty(i) &&
                     contextDefs[i] &&
-                    contextDefs[i]['name'] &&
+                    contextDefs[i].name &&
                     contextDefs[i]['navi-control'] &&
                     contextDefs[i]['navi-control'].match(/detail/i)) {
                     if (Object.keys(masterContext.store).length > 0) {
                         comp = Object.keys(masterContext.store)[0].split('=');
                         if (comp.length > 1) {
-                            INTERMediator.clearCondition(contextDefs[i]['name'], '_imlabel_crosstable');
-                            INTERMediator.addCondition(contextDefs[i]['name'],
+                            INTERMediator.clearCondition(contextDefs[i].name, '_imlabel_crosstable');
+                            INTERMediator.addCondition(contextDefs[i].name,
                                 {field: comp[0], operator: '=', value: comp[1]},
                                 undefined, '_imlabel_crosstable'
                             );
@@ -1231,7 +1231,7 @@ IMLibPageNavigation = {
             || (!naviControlValue.match(/hide/i))) {
             return;
         }
-        isHidePageNavi = (masterContext.getContextDef()['paging'] === true);
+        isHidePageNavi = (masterContext.getContextDef().paging === true);
         isUpdateMaster = currentContextDef['navi-control'].match(/update/i);
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
         isTop = !(currentContextDef['navi-control'].match(/bottom/i));
