@@ -28,7 +28,7 @@ INTERMediatorOnPage.doAfterConstruct = function () {
                 function () {
                     INTERMediator.constructMain(IMLibContextPool.contextFromName("chat"));
                     document.getElementById("message").value = "";
-                    INTERMediator.flushMessage();
+                    INTERMediatorLog.flushMessage();
                 });
         });
 

@@ -8,7 +8,11 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//'use strict';
+// JSHint support
+/* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
+ IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog */
+
 /**
  * @fileoverview INTERMediator class is defined here.
  */
@@ -28,12 +32,6 @@
  * @constructor
  */
 var INTERMediator = {
-    /**
-     * Show the debug messages at the top of the page.
-     * @public
-     * @type {boolean}
-     */
-    debugMode: false,
     /**
      * The separator for target specification.
      * This must be referred as 'INTERMediator.separator'. Don't use 'this.separator'
@@ -67,8 +65,6 @@ var INTERMediator = {
      * @type {Array}
      */
     elementIds: [],
-
-    //radioNameMode: false,
     /**
      * If this property is true, any radio buttuns aren't set the 'check.'
      * The default value of false.
@@ -84,20 +80,6 @@ var INTERMediator = {
      * @type {boolean}
      */
     ignoreOptimisticLocking: false,
-    /**
-     * The debug messages are suppressed if it's true. This can temporally stop messages.
-     * The default value of false.
-     * @public
-     * @type {boolean}
-     */
-    supressDebugMessageOnPage: false,
-    /**
-     * The error messages are suppressed if it's true. This can temporally stop messages.
-     * The default value of false.
-     * @public
-     * @type {boolean}
-     */
-    supressErrorMessageOnPage: false,
     /**
      * The debug messages are suppressed if it's true. This can temporally stop messages.
      * The default value of false.
@@ -181,14 +163,6 @@ var INTERMediator = {
     // Use sessionStorage for the Local Context instead of Cookie.
 
     /**
-     * @type {Array}
-     */
-    errorMessages: [],
-    /**
-     * @type {Array}
-     */
-    debugMessages: [],
-    /**
      * @type {boolean}
      */
     partialConstructing: true,
@@ -220,22 +194,10 @@ var INTERMediator = {
      * @type {boolean}
      */
     dateTimeFunction: false,
-
-    // postOnlyNodes: null,
     /**
      * @type {integer}
      */
     postOnlyNumber: 1,
-
-    /**
-     * @type {boolean}
-     */
-    errorMessageByAlert: false,
-    /**
-     * @type {boolean}
-     */
-    errorMessageOnAlert: null,
-
     /**
      * @type {boolean}
      */
@@ -244,7 +206,6 @@ var INTERMediator = {
      * @type {boolean}
      */
     isMobile: false,
-
     /**
      * @type {integer}
      */
@@ -253,146 +214,9 @@ var INTERMediator = {
     eventListenerPostAdding: null,
     appendingNodesAtLast: null,
 
-//=================================
-// Message for Programmers
-//=================================
-
-    /**
-     * Add a debug message with the specified level.
-     * @param message The message strings.
-     * @param level The level of message.
-     */
-    setDebugMessage: function (message, level) {
-        'use strict';
-        if (level === undefined) {
-            level = 1;
-        }
-        if (INTERMediator.debugMode >= level) {
-            INTERMediator.debugMessages.push(message);
-            if (typeof console !== 'undefined') {
-                console.log('INTER-Mediator[DEBUG:%s]: %s', new Date(), message);
-            }
-        }
-    },
-
-    setErrorMessage: function (ex, moreMessage) {
-        moreMessage = moreMessage === undefined ? '' : (' - ' + moreMessage);
-
-        if (INTERMediator.errorMessageByAlert) {
-            alert(INTERMediator.errorMessageOnAlert === null ?
-                (ex + moreMessage) : INTERMediator.errorMessageOnAlert);
-        }
-
-        if ((typeof ex === 'string' || ex instanceof String)) {
-            INTERMediator.errorMessages.push(ex + moreMessage);
-            if (typeof console !== 'undefined') {
-                console.error('INTER-Mediator[ERROR]: %s', ex + moreMessage);
-            }
-        } else {
-            if (ex.message) {
-                INTERMediator.errorMessages.push(ex.message + moreMessage);
-                if (typeof console !== 'undefined') {
-                    console.error('INTER-Mediator[ERROR]: %s', ex.message + moreMessage);
-                }
-            }
-            if (ex.stack && typeof console !== 'undefined') {
-                console.error(ex.stack);
-            }
-        }
-    },
-
-    flushMessage: function () {
-        var debugNode, title, body, i, j, lines, clearButton, tNode;
-
-        if (INTERMediator.errorMessageByAlert) {
-            INTERMediator.supressErrorMessageOnPage = true;
-        }
-        if (!INTERMediator.supressErrorMessageOnPage &&
-            INTERMediator.errorMessages.length > 0) {
-            debugNode = document.getElementById('_im_error_panel_4873643897897');
-            if (debugNode === null) {
-                debugNode = document.createElement('div');
-                debugNode.setAttribute('id', '_im_error_panel_4873643897897');
-                debugNode.style.backgroundColor = '#FFDDDD';
-                title = document.createElement('h3');
-                title.appendChild(document.createTextNode('Error Info from INTER-Mediator'));
-                title.appendChild(document.createElement('hr'));
-                debugNode.appendChild(title);
-                body = document.getElementsByTagName('body')[0];
-                body.insertBefore(debugNode, body.firstChild);
-            }
-            debugNode.appendChild(document.createTextNode(
-                '============ERROR MESSAGE on ' + new Date() + '============'));
-            debugNode.appendChild(document.createElement('hr'));
-            for (i = 0; i < INTERMediator.errorMessages.length; i++) {
-                lines = INTERMediator.errorMessages[i].split(IMLib.nl_char);
-                for (j = 0; j < lines.length; j++) {
-                    if (j > 0) {
-                        debugNode.appendChild(document.createElement('br'));
-                    }
-                    debugNode.appendChild(document.createTextNode(lines[j]));
-                }
-                debugNode.appendChild(document.createElement('hr'));
-            }
-        }
-        if (!INTERMediator.supressDebugMessageOnPage &&
-            INTERMediator.debugMode &&
-            INTERMediator.debugMessages.length > 0) {
-            debugNode = document.getElementById('_im_debug_panel_4873643897897');
-            if (debugNode === null) {
-                debugNode = document.createElement('div');
-                debugNode.setAttribute('id', '_im_debug_panel_4873643897897');
-                debugNode.style.backgroundColor = '#DDDDDD';
-                clearButton = document.createElement('button');
-                clearButton.setAttribute('title', 'clear');
-                clearButton.id = '_im_debug_panel_4873643897897_button';
-                IMLibMouseEventDispatch.setExecute(clearButton.id, function () {
-                    var target;
-                    target = document.getElementById('_im_debug_panel_4873643897897');
-                    target.parentNode.removeChild(target);
-                });
-                tNode = document.createTextNode('clear');
-                clearButton.appendChild(tNode);
-                title = document.createElement('h3');
-                title.appendChild(document.createTextNode('Debug Info from INTER-Mediator'));
-                title.appendChild(clearButton);
-                title.appendChild(document.createElement('hr'));
-                debugNode.appendChild(title);
-                body = document.getElementsByTagName('body')[0];
-                if (body) {
-                    if (body.firstChild) {
-                        body.insertBefore(debugNode, body.firstChild);
-                    } else {
-                        body.appendChild(debugNode);
-                    }
-                }
-            }
-            debugNode.appendChild(document.createTextNode(
-                '============DEBUG INFO on ' + new Date() + '============ '));
-            if (INTERMediatorOnPage.getEditorPath()) {
-                var aLink = document.createElement('a');
-                aLink.setAttribute('href', INTERMediatorOnPage.getEditorPath());
-                aLink.appendChild(document.createTextNode('Definition File Editor'));
-                debugNode.appendChild(aLink);
-            }
-            debugNode.appendChild(document.createElement('hr'));
-            for (i = 0; i < INTERMediator.debugMessages.length; i++) {
-                lines = INTERMediator.debugMessages[i].split(IMLib.nl_char);
-                for (j = 0; j < lines.length; j++) {
-                    if (j > 0) {
-                        debugNode.appendChild(document.createElement('br'));
-                    }
-                    debugNode.appendChild(document.createTextNode(lines[j]));
-                }
-                debugNode.appendChild(document.createElement('hr'));
-            }
-        }
-        INTERMediator.errorMessages = [];
-        INTERMediator.debugMessages = [];
-    },
-
 // Detect Internet Explorer and its version.
     propertyIETridentSetup: function () {
+        'use strict';
         var ua, position, c, i;
         ua = navigator.userAgent;
         position = ua.toLocaleUpperCase().indexOf('MSIE');
@@ -432,6 +256,7 @@ var INTERMediator = {
 
 // Referred from https://w3g.jp/blog/js_browser_sniffing2015
     propertyW3CUserAgentSetup: function () {
+        'use strict';
         var u = window.navigator.userAgent.toLowerCase();
         INTERMediator.isTablet =
             (u.indexOf('windows') > -1 && u.indexOf('touch') > -1 && u.indexOf('tablet pc') === -1) ||
@@ -451,6 +276,7 @@ var INTERMediator = {
     },
 
     initialize: function () {
+        'use strict';
         INTERMediatorOnPage.removeCookie('_im_localcontext');
         //INTERMediatorOnPage.removeCookie('_im_username');
         //INTERMediatorOnPage.removeCookie('_im_credential');
@@ -472,6 +298,7 @@ var INTERMediator = {
      *    INTER-Mediator is going to generate a part of page which relies on just its context.
      */
     construct: function (indexOfKeyFieldObject) {
+        'use strict';
         var timerTask;
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
             if (INTERMediatorOnPage.isFinishToConstruct) {
@@ -512,6 +339,7 @@ var INTERMediator = {
      *    This parameter is set to newly created record.
      */
     constructMain: function (updateRequiredContext, recordset) {
+        'use strict';
         var i, theNode, postSetFields = [], radioName = {}, nameSerial = 1,
             isInsidePostOnly, nameAttrCounter = 1, imPartsShouldFinished = [],
             isAcceptNotify = false, originalNodes, parentNode, sybilingNode;
@@ -533,7 +361,7 @@ var INTERMediator = {
             if (Pusher.VERSION) {
                 INTERMediator.pusherAvailable = true;
                 if (!INTERMediatorOnPage.clientNotificationKey) {
-                    INTERMediator.setErrorMessage(
+                    INTERMediatorLog.setErrorMessage(
                         Error('Pusher Configuration Error'), INTERMediatorOnPage.getMessages()[1039]);
                     INTERMediator.pusherAvailable = false;
                 }
@@ -541,7 +369,7 @@ var INTERMediator = {
         } catch (ex) {
             INTERMediator.pusherAvailable = false;
             if (INTERMediatorOnPage.clientNotificationKey) {
-                INTERMediator.setErrorMessage(
+                INTERMediatorLog.setErrorMessage(
                     Error('Pusher Configuration Error'), INTERMediatorOnPage.getMessages()[1038]);
             }
         }
@@ -579,10 +407,10 @@ var INTERMediator = {
                         );
                     }
                 } catch (ex) {
-                    if (ex == '_im_requath_request_') {
+                    if (ex.message === '_im_requath_request_') {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage(ex, 'EXCEPTION-8');
+                        INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-8');
                     }
                 }
 
@@ -599,7 +427,7 @@ var INTERMediator = {
                  */
             }
         } catch (ex) {
-            if (ex == '_im_requath_request_') {
+            if (ex.message === '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
@@ -614,7 +442,7 @@ var INTERMediator = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-7');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-7');
                 INTERMediator.partialConstructing = true;
             }
         }
@@ -653,7 +481,7 @@ var INTERMediator = {
         INTERMediatorOnPage.isFinishToConstruct = false;
         INTERMediator.partialConstructing = true;
         INTERMediatorOnPage.hideProgress();
-        INTERMediator.flushMessage(); // Show messages
+        INTERMediatorLog.flushMessage(); // Show messages
 
         /* --------------------------------------------------------------------
          This function is called on case of below.
@@ -683,10 +511,10 @@ var INTERMediator = {
             try {
                 seekEnclosureNode(bodyNode, null, null, null);
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex, 'EXCEPTION-9');
+                    INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-9');
                 }
             }
 
@@ -732,7 +560,7 @@ var INTERMediator = {
                             IMLibContextPool.updateOnAnotherClient('delete', data);
                         });
                     } catch (ex) {
-                        INTERMediator.setErrorMessage(ex, 'EXCEPTION-47');
+                        INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-47');
                     }
                 }
             }
@@ -758,7 +586,7 @@ var INTERMediator = {
                                 try {
                                     expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
                                 } catch (ex) {
-                                    if (ex == '_im_requath_request_') {
+                                    if (ex.message === '_im_requath_request_') {
                                         throw ex;
                                     }
                                 }
@@ -777,10 +605,10 @@ var INTERMediator = {
                         }
                     }
                 } catch (ex) {
-                    if (ex == '_im_requath_request_') {
+                    if (ex.message === '_im_requath_request_') {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage(ex, 'EXCEPTION-10');
+                        INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-10');
                     }
                 }
 
@@ -860,10 +688,10 @@ var INTERMediator = {
                             }
                         }
                     } catch (ex) {
-                        if (ex == '_im_requath_request_') {
+                        if (ex.message === '_im_requath_request_') {
                             throw ex;
                         } else {
-                            INTERMediator.setErrorMessage(ex, 'EXCEPTION-11');
+                            INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-11');
                         }
                     }
                 }
@@ -1156,10 +984,10 @@ var INTERMediator = {
                     }
                 }
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex, 'EXCEPTION-101');
+                    INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-101');
                 }
             }
 
@@ -1214,10 +1042,10 @@ var INTERMediator = {
                         }
                     }
                 } catch (ex) {
-                    if (ex == '_im_requath_request_') {
+                    if (ex.message === '_im_requath_request_') {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage(ex, 'EXCEPTION-27');
+                        INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-27');
                     }
                 }
             }
@@ -1276,7 +1104,7 @@ var INTERMediator = {
                 if (targetRecordset[ix] && (targetRecordset[ix][keyField] || targetRecordset[ix][keyField] === 0)) {
                     keyValue = targetRecordset[ix][keyField];
                     if (keyField && !keyValue && keyValue !== 0) {
-                        INTERMediator.setErrorMessage('The value of the key field is null.',
+                        INTERMediatorLog.setErrorMessage('The value of the key field is null.',
                             'This No.[' + ix + '] record should be ignored.');
                         keyValue = ix;
                     }
@@ -1387,10 +1215,10 @@ var INTERMediator = {
                         });
                     }
                 } catch (ex) {
-                    if (ex == '_im_requath_request_') {
+                    if (ex.message === '_im_requath_request_') {
                         throw ex;
                     } else {
-                        INTERMediator.setErrorMessage(ex, 'EXCEPTION-12');
+                        INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-12');
                     }
                 }
             }
@@ -1456,10 +1284,10 @@ var INTERMediator = {
                     return targetRecords;
                 }
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex, 'EXCEPTION-24');
+                    INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-24');
                 }
             }
         }
@@ -1471,22 +1299,22 @@ var INTERMediator = {
             try {
                 if (INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef.name]) {
                     INTERMediatorOnPage.additionalExpandingRecordFinish[currentContextDef.name](node);
-                    INTERMediator.setDebugMessage(
+                    INTERMediatorLog.setDebugMessage(
                         'Call the post enclosure method INTERMediatorOnPage.additionalExpandingRecordFinish['
                         + currentContextDef.name + '] with the context.', 2);
                 }
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex,
+                    INTERMediatorLog.setErrorMessage(ex,
                         'EXCEPTION-33: hint: post-repeater of ' + currentContextDef.name);
                 }
             }
             try {
                 if (INTERMediatorOnPage.expandingRecordFinish != null) {
                     INTERMediatorOnPage.expandingRecordFinish(currentContextDef.name, newlyAddedNodes);
-                    INTERMediator.setDebugMessage(
+                    INTERMediatorLog.setDebugMessage(
                         'Call INTERMediatorOnPage.expandingRecordFinish with the context: '
                         + currentContextDef.name, 2);
                 }
@@ -1494,15 +1322,15 @@ var INTERMediator = {
                 if (currentContextDef['post-repeater']) {
                     INTERMediatorOnPage[currentContextDef['post-repeater']](newlyAddedNodes);
 
-                    INTERMediator.setDebugMessage('Call the post repeater method INTERMediatorOnPage.'
+                    INTERMediatorLog.setDebugMessage('Call the post repeater method INTERMediatorOnPage.'
                         + currentContextDef['post-repeater'] + ' with the context: '
                         + currentContextDef.name, 2);
                 }
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex, 'EXCEPTION-23');
+                    INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-23');
                 }
             }
 
@@ -1515,44 +1343,44 @@ var INTERMediator = {
             try {
                 if (INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef.name]) {
                     INTERMediatorOnPage.additionalExpandingEnclosureFinish[currentContextDef.name](node);
-                    INTERMediator.setDebugMessage(
+                    INTERMediatorLog.setDebugMessage(
                         'Call the post enclosure method INTERMediatorOnPage.additionalExpandingEnclosureFinish['
                         + currentContextDef.name + '] with the context.', 2);
                 }
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex,
+                    INTERMediatorLog.setErrorMessage(ex,
                         'EXCEPTION-32: hint: post-enclosure of ' + currentContextDef.name);
                 }
             }
             try {
                 if (INTERMediatorOnPage.expandingEnclosureFinish != null) {
                     INTERMediatorOnPage.expandingEnclosureFinish(currentContextDef.name, node);
-                    INTERMediator.setDebugMessage(
+                    INTERMediatorLog.setDebugMessage(
                         'Call INTERMediatorOnPage.expandingEnclosureFinish with the context: '
                         + currentContextDef.name, 2);
                 }
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex, 'EXCEPTION-21');
+                    INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-21');
                 }
             }
             try {
                 if (currentContextDef['post-enclosure']) {
                     INTERMediatorOnPage[currentContextDef['post-enclosure']](node);
-                    INTERMediator.setDebugMessage(
+                    INTERMediatorLog.setDebugMessage(
                         'Call the post enclosure method INTERMediatorOnPage.' + currentContextDef['post-enclosure']
                         + ' with the context: ' + currentContextDef.name, 2);
                 }
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex,
+                    INTERMediatorLog.setErrorMessage(ex,
                         'EXCEPTION-22: hint: post-enclosure of ' + currentContextDef.name);
                 }
             }
@@ -1565,15 +1393,15 @@ var INTERMediator = {
             try {
                 if (currentContextDef['post-query-stored']) {
                     INTERMediatorOnPage[currentContextDef['post-query-stored']](context);
-                    INTERMediator.setDebugMessage(
+                    INTERMediatorLog.setDebugMessage(
                         'Call the post query stored method INTERMediatorOnPage.' + currentContextDef['post-enclosure']
                         + ' with the context: ' + currentContextDef.name, 2);
                 }
             } catch (ex) {
-                if (ex == '_im_requath_request_') {
+                if (ex.message === '_im_requath_request_') {
                     throw ex;
                 } else {
-                    INTERMediator.setErrorMessage(ex,
+                    INTERMediatorLog.setErrorMessage(ex,
                         'EXCEPTION-41: hint: post-query-stored of ' + currentContextDef.name);
                 }
             }
@@ -1676,7 +1504,7 @@ var INTERMediator = {
                             ++tableVote[nodeInfoTableIndex];
                         }
                     } else {
-                        INTERMediator.setErrorMessage(
+                        INTERMediatorLog.setErrorMessage(
                             INTERMediatorLib.getInsertedStringFromErrorNumber(1006, [linkDefs[j]]));
                         //   return null;
                     }
@@ -1694,7 +1522,7 @@ var INTERMediator = {
             }
             context = INTERMediatorLib.getNamedObject(INTERMediatorOnPage.getDataSources(), 'name', maxTableName);
             if (linkDefs.length > 0 && !context) {
-                INTERMediator.setErrorMessage(
+                INTERMediatorLog.setErrorMessage(
                     INTERMediatorLib.getInsertedStringFromErrorNumber(1046, [maxTableName]));
             }
             for (j = 0; j < linkDefs.length; j++) {
@@ -1703,7 +1531,7 @@ var INTERMediator = {
                 }
             }
             if (linkDefs.length > 0 && context && restDefs.length > 0) {
-                INTERMediator.setErrorMessage(
+                INTERMediatorLog.setErrorMessage(
                     INTERMediatorLib.getInsertedStringFromErrorNumber(1047, [maxTableName, restDefs.toString()]));
             }
             return {targettable: context, fieldlist: fieldList['_im_index_' + maxTableName]};
@@ -1840,6 +1668,7 @@ var INTERMediator = {
     },
 
     nextIdValue: function () {
+        'use strict';
         INTERMediator.linkedElmCounter++;
         return currentIdValue();
 
@@ -1849,16 +1678,19 @@ var INTERMediator = {
     },
 
     getLocalProperty: function (localKey, defaultValue) {
+        'use strict';
         var value;
         value = IMLibLocalContext.getValue(localKey);
         return value === null ? defaultValue : value;
     },
 
     setLocalProperty: function (localKey, value) {
+        'use strict';
         IMLibLocalContext.setValue(localKey, value, true);
     },
 
     addCondition: function (contextName, condition, notMatching, label) {
+        'use strict';
         var value, i, hasIdentical;
         if (notMatching != undefined) {
             condition.matching = !notMatching;
@@ -1897,15 +1729,13 @@ var INTERMediator = {
     },
 
     clearCondition: function (contextName, label) {
+        'use strict';
         var i, value = INTERMediator.additionalCondition;
         if (label == undefined) {
             if (value[contextName]) {
                 delete value[contextName];
                 INTERMediator.additionalCondition = value;
                 IMLibLocalContext.archive();
-                // } else {
-                //     INTERMediator.additionalCondition = {};
-                //     IMLibLocalContext.archive();
             }
         }
         else {
@@ -1923,6 +1753,7 @@ var INTERMediator = {
     },
 
     addSortKey: function (contextName, sortKey) {
+        'use strict';
         var value = INTERMediator.additionalSortKey;
         if (value[contextName]) {
             value[contextName].push(sortKey);
@@ -1934,12 +1765,25 @@ var INTERMediator = {
     },
 
     clearSortKey: function (contextName) {
+        'use strict';
         var value = INTERMediator.additionalSortKey;
         if (value[contextName]) {
             delete value[contextName];
             INTERMediator.additionalSortKey = value;
             IMLibLocalContext.archive();
         }
+    },
+
+    /* Compatibility for previous version. These methos are defined here ever.
+     * Now these are defined in INTERMediatorLog object. */
+    flushMessage: function () {
+        INTERMediatorLog.flushMessage();
+    },
+    setErrorMessage: function (ex, moreMessage) {
+        INTERMediatorLog.setErrorMessage(ex, moreMessage);
+    },
+    setDebugMessage: function (message, level) {
+        INTERMediatorLog.setDebugMessage(message, level);
     }
 };
 

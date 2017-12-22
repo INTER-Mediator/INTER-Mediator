@@ -299,7 +299,7 @@ IMParts_Catalog.fileupload = {
                                                     INTERMediator.construct(contextObj);
                                                 }
                                             }
-                                            INTERMediator.flushMessage();
+                                            INTERMediatorLog.flushMessage();
                                             if (targetNodeCapt.getAttribute('data-im-widget-reload') === 'true') {
                                                 INTERMediator.construct();
                                             }

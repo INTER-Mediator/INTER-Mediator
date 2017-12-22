@@ -12,7 +12,10 @@
  Database Access Object for Server-based Database
  ==================================================*/
 
-//'use strict';
+// JSHint support
+/* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
+ IMLibChangeEventDispatch, INTERMediatorLib, IMLibQueue, IMLibCalc, IMLibPageNavigation,
+ IMLibEventResponder, IMLibElement, Parser, IMLib, jsSHA, SHA1 */
 
 /**
  * @fileoverview INTERMediator_DBAdapter class is defined here.
@@ -33,6 +36,7 @@ var INTERMediator_DBAdapter = {
     debugMessage: false,
 
     generate_authParams: function () {
+        'use strict';
         var authParams = '', shaObj, hmacValue;
         if (INTERMediatorOnPage.authUser.length > 0) {
             authParams = '&clientid=' + encodeURIComponent(INTERMediatorOnPage.clientId);
@@ -43,9 +47,9 @@ var INTERMediator_DBAdapter = {
                             INTERMediatorOnPage.publickey.biEncryptedString(INTERMediatorOnPage.authCryptedPassword +
                                 IMLib.nl_char + INTERMediatorOnPage.authChallenge));
                     if (INTERMediator_DBAdapter.debugMessage) {
-                        INTERMediator.setDebugMessage('generate_authParams/authCryptedPassword=' +
+                        INTERMediatorLog.setDebugMessage('generate_authParams/authCryptedPassword=' +
                             INTERMediatorOnPage.authCryptedPassword);
-                        INTERMediator.setDebugMessage('generate_authParams/authChallenge=' +
+                        INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' +
                             INTERMediatorOnPage.authChallenge);
                     }
                 } else {
@@ -57,9 +61,9 @@ var INTERMediator_DBAdapter = {
                 hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge, 'ASCII', 'SHA-256', 'HEX');
                 authParams += '&response=' + encodeURIComponent(hmacValue);
                 if (INTERMediator_DBAdapter.debugMessage) {
-                    INTERMediator.setDebugMessage('generate_authParams/authHashedPassword=' +
+                    INTERMediatorLog.setDebugMessage('generate_authParams/authHashedPassword=' +
                         INTERMediatorOnPage.authHashedPassword);
-                    INTERMediator.setDebugMessage('generate_authParams/authChallenge=' +
+                    INTERMediatorLog.setDebugMessage('generate_authParams/authChallenge=' +
                         INTERMediatorOnPage.authChallenge);
                 }
             } else {
@@ -74,6 +78,7 @@ var INTERMediator_DBAdapter = {
     },
 
     store_challenge: function (challenge) {
+        'use strict';
         if (challenge !== null) {
             INTERMediatorOnPage.authChallenge = challenge.substr(0, 24);
             INTERMediatorOnPage.authUserHexSalt = challenge.substr(24, 32);
@@ -83,29 +88,31 @@ var INTERMediator_DBAdapter = {
                 parseInt(challenge.substr(28, 2), 16),
                 parseInt(challenge.substr(30, 2), 16));
             if (INTERMediator_DBAdapter.debugMessage) {
-                INTERMediator.setDebugMessage('store_challenge/authChallenge=' + INTERMediatorOnPage.authChallenge);
-                INTERMediator.setDebugMessage('store_challenge/authUserHexSalt=' + INTERMediatorOnPage.authUserHexSalt);
-                INTERMediator.setDebugMessage('store_challenge/authUserSalt=' + INTERMediatorOnPage.authUserSalt);
+                INTERMediatorLog.setDebugMessage('store_challenge/authChallenge=' + INTERMediatorOnPage.authChallenge);
+                INTERMediatorLog.setDebugMessage('store_challenge/authUserHexSalt=' + INTERMediatorOnPage.authUserHexSalt);
+                INTERMediatorLog.setDebugMessage('store_challenge/authUserSalt=' + INTERMediatorOnPage.authUserSalt);
             }
         }
     },
 
     logging_comAction: function (debugMessageNumber, appPath, accessURL, authParams) {
-        INTERMediator.setDebugMessage(
+        'use strict';
+        INTERMediatorLog.setDebugMessage(
             INTERMediatorOnPage.getMessages()[debugMessageNumber] +
             'Accessing:' + decodeURI(appPath) + ', Parameters:' + decodeURI(accessURL + authParams));
     },
 
     logging_comResult: function (myRequest, resultCount, dbresult, requireAuth, challenge, clientid, newRecordKeyValue, changePasswordResult, mediatoken) {
+        'use strict';
         var responseTextTrancated;
-        if (INTERMediator.debugMode > 1) {
+        if (INTERMediatorLog.debugMode > 1) {
             if (myRequest.responseText.length > 1000) {
                 responseTextTrancated = myRequest.responseText.substr(0, 1000) + ' ...[trancated]';
             } else {
                 responseTextTrancated = myRequest.responseText;
             }
-            INTERMediator.setDebugMessage('myRequest.responseText=' + responseTextTrancated);
-            INTERMediator.setDebugMessage('Return: resultCount=' + resultCount +
+            INTERMediatorLog.setDebugMessage('myRequest.responseText=' + responseTextTrancated);
+            INTERMediatorLog.setDebugMessage('Return: resultCount=' + resultCount +
                 ', dbresult=' + INTERMediatorLib.objectToString(dbresult) + IMLib.nl_char +
                 'Return: requireAuth=' + requireAuth +
                 ', challenge=' + challenge + ', clientid=' + clientid + IMLib.nl_char +
@@ -116,6 +123,7 @@ var INTERMediator_DBAdapter = {
     },
 
     server_access: function (accessURL, debugMessageNumber, errorMessageNumber) {
+        'use strict';
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null, challenge = null,
             clientid = null, requireAuth = false, myRequest = null, changePasswordResult = null,
             mediatoken = null, appPath, authParams, jsonObject, i, notifySupport = false, useNull = false,
@@ -144,10 +152,10 @@ var INTERMediator_DBAdapter = {
             mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
             notifySupport = jsonObject.notifySupport;
             for (i = 0; i < jsonObject.errorMessages.length; i++) {
-                INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
+                INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i]);
             }
             for (i = 0; i < jsonObject.debugMessages.length; i++) {
-                INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
+                INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i]);
             }
             useNull = jsonObject.usenull;
             registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
@@ -164,25 +172,23 @@ var INTERMediator_DBAdapter = {
             }
             // This is forced fail-over for the password was changed in LDAP auth.
             if (INTERMediatorOnPage.isLDAP === true &&
-                INTERMediatorOnPage.authUserHexSalt != INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
-                if (accessURL != 'access=challenge') {
+                INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
+                if (accessURL !== 'access=challenge') {
                     requireAuth = true;
                 }
             }
         } catch (e) {
-            //if (INTERMediatorOnPage.getIMRootPath() !== '[ERROR]') {
-            INTERMediator.setErrorMessage(e,
+            INTERMediatorLog.setErrorMessage(e,
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
-            //}
         }
         if (accessURL.indexOf('access=changepassword&newpass=') === 0) {
             return changePasswordResult;
         }
         if (requireAuth) {
-            INTERMediator.setDebugMessage('Authentication Required, user/password panel should be show.');
+            INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.');
             INTERMediatorOnPage.clearCredentials();
-            throw '_im_requath_request_';
+            throw new Error('_im_requath_request_');
         }
         if (!accessURL.match(/access=challenge/)) {
             INTERMediatorOnPage.authCount = 0;
@@ -202,6 +208,7 @@ var INTERMediator_DBAdapter = {
 
     /* No return values */
     server_access_async: function (accessURL, debugMessageNumber, errorMessageNumber, successProc, failedProc, authAgainProc) {
+        'use strict';
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, totalCount = null,
             challenge = null, clientid = null, requireAuth = false, myRequest = null,
             changePasswordResult = null, mediatoken = null, appPath,
@@ -241,16 +248,16 @@ var INTERMediator_DBAdapter = {
                     mediatoken = jsonObject.mediatoken ? jsonObject.mediatoken : null;
                     notifySupport = jsonObject.notifySupport;
                     for (i = 0; i < jsonObject.errorMessages.length; i++) {
-                        INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
+                        INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i]);
                     }
                     for (i = 0; i < jsonObject.debugMessages.length; i++) {
-                        INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
+                        INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i]);
                     }
                     useNull = jsonObject.usenull;
                     registeredID = jsonObject.hasOwnProperty('registeredid') ? jsonObject.registeredid : '';
 
                     if (jsonObject.errorMessages.length > 0) {
-                        INTERMediator.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
+                        INTERMediatorLog.setErrorMessage('Communication Error: ' + jsonObject.errorMessages);
                         if (failedProc) {
                             failedProc();
                         }
@@ -268,8 +275,8 @@ var INTERMediator_DBAdapter = {
                     }
                     // This is forced fail-over for the password was changed in LDAP auth.
                     if (INTERMediatorOnPage.isLDAP === true &&
-                        INTERMediatorOnPage.authUserHexSalt != INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
-                        if (accessURL != 'access=challenge') {
+                        INTERMediatorOnPage.authUserHexSalt !== INTERMediatorOnPage.authHashedPassword.substr(-8, 8)) {
+                        if (accessURL !== 'access=challenge') {
                             requireAuth = true;
                         }
                     }
@@ -288,7 +295,7 @@ var INTERMediator_DBAdapter = {
                         return;
                     }
                     if (requireAuth) {
-                        INTERMediator.setDebugMessage('Authentication Required, user/password panel should be show.');
+                        INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.');
                         INTERMediatorOnPage.clearCredentials();
                         if (authAgainProc) {
                             authAgainProc(myRequest);
@@ -316,7 +323,7 @@ var INTERMediator_DBAdapter = {
             };
             myRequest.send(accessURL + authParams);
         } catch (e) {
-            INTERMediator.setErrorMessage(e,
+            INTERMediatorLog.setErrorMessage(e,
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[errorMessageNumber], [e, myRequest.responseText]));
             if (failedProc) {
@@ -326,6 +333,7 @@ var INTERMediator_DBAdapter = {
     },
 
     changePassword: function (username, oldpassword, newpassword) {
+        'use strict';
         var challengeResult, params, result, messageNode;
 
         if (username && oldpassword) {
@@ -342,9 +350,9 @@ var INTERMediator_DBAdapter = {
                             document.createTextNode(
                                 INTERMediatorLib.getInsertedStringFromErrorNumber(2008)));
                     } else {
-                        alert(INTERMediatorLib.getInsertedStringFromErrorNumber(2008));
+                        window.alert(INTERMediatorLib.getInsertedStringFromErrorNumber(2008));
                     }
-                    INTERMediator.flushMessage();
+                    INTERMediatorLog.flushMessage();
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
@@ -361,8 +369,7 @@ var INTERMediator_DBAdapter = {
                 INTERMediatorOnPage.authCryptedPassword =
                     INTERMediatorOnPage.publickey.biEncryptedString(newpassword);
                 INTERMediatorOnPage.authHashedPassword =
-                    SHA1(newpassword + INTERMediatorOnPage.authUserSalt)
-                    + INTERMediatorOnPage.authUserHexSalt;
+                    SHA1(newpassword + INTERMediatorOnPage.authUserSalt) + INTERMediatorOnPage.authUserHexSalt;
                 INTERMediatorOnPage.storeCredentialsToCookieOrStorage();
             }
         } catch (e) {
@@ -372,13 +379,14 @@ var INTERMediator_DBAdapter = {
     },
 
     getChallenge: function () {
+        'use strict';
         try {
             this.server_access('access=challenge', 1027, 1028);
         } catch (ex) {
-            if (ex == '_im_requath_request_') {
+            if (ex.message === '_im_requath_request_') {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-19');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-19');
             }
         }
         if (INTERMediatorOnPage.authChallenge === null) {
@@ -388,6 +396,7 @@ var INTERMediator_DBAdapter = {
     },
 
     uploadFile: function (parameters, uploadingFile, doItOnFinish, exceptionProc) {
+        'use strict';
         var myRequest = null, appPath, authParams, accessURL, i;
         //           var result = this.server_access('access=uploadfile' + parameters, 1031, 1032, uploadingFile);
         appPath = INTERMediatorOnPage.getEntryPath();
@@ -416,7 +425,7 @@ var INTERMediator_DBAdapter = {
             };
             myRequest.send(fd);
         } catch (e) {
-            INTERMediator.setErrorMessage(e,
+            INTERMediatorLog.setErrorMessage(e,
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1032], [e, myRequest.responseText]));
             exceptionProc();
@@ -424,16 +433,17 @@ var INTERMediator_DBAdapter = {
     },
 
     uploadFileAfterSucceed: function (myRequest, doItOnFinish, exceptionProc, isErrorDialog) {
+        'use strict';
         var newRecordKeyValue = '', dbresult = '', resultCount = 0, challenge = null,
             clientid = null, requireAuth = false, changePasswordResult = null,
             mediatoken = null, jsonObject, i, returnValue = true;
         try {
             jsonObject = JSON.parse(myRequest.responseText);
         } catch (ex) {
-            INTERMediator.setErrorMessage(ex,
+            INTERMediatorLog.setErrorMessage(ex,
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1032], ['', '']));
-            INTERMediator.flushMessage();
+            INTERMediatorLog.flushMessage();
             exceptionProc();
             return false;
         }
@@ -449,12 +459,12 @@ var INTERMediator_DBAdapter = {
             if (isErrorDialog) {
                 window.alert(jsonObject.errorMessages[i]);
             } else {
-                INTERMediator.setErrorMessage(jsonObject.errorMessages[i]);
+                INTERMediatorLog.setErrorMessage(jsonObject.errorMessages[i]);
             }
             returnValue = false;
         }
         for (i = 0; i < jsonObject.debugMessages.length; i++) {
-            INTERMediator.setDebugMessage(jsonObject.debugMessages[i]);
+            INTERMediatorLog.setDebugMessage(jsonObject.debugMessages[i]);
         }
 
         INTERMediator_DBAdapter.logging_comResult(myRequest, resultCount, dbresult, requireAuth,
@@ -467,9 +477,9 @@ var INTERMediator_DBAdapter = {
             INTERMediatorOnPage.mediaToken = mediatoken;
         }
         if (requireAuth) {
-            INTERMediator.setDebugMessage('Authentication Required, user/password panel should be show.');
+            INTERMediatorLog.setDebugMessage('Authentication Required, user/password panel should be show.');
             INTERMediatorOnPage.clearCredentials();
-            //throw '_im_requath_request_';
+            //throw new Error('_im_requath_request_');
             exceptionProc();
         }
         INTERMediatorOnPage.authCount = 0;
@@ -496,6 +506,7 @@ var INTERMediator_DBAdapter = {
      This function returns recordset of retrieved.
      */
     db_query: function (args) {
+        'use strict';
         var params, returnValue, result, contextDef;
 
         if (!INTERMediator_DBAdapter.db_queryChecking(args)) {
@@ -538,10 +549,10 @@ var INTERMediator_DBAdapter = {
                 }
             }
         } catch (ex) {
-            if (ex == '_im_requath_request_') {
+            if (ex.message === '_im_requath_request_') {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-17');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-17');
             }
             returnValue.recordset = null;
             returnValue.totalCount = 0;
@@ -553,12 +564,13 @@ var INTERMediator_DBAdapter = {
     },
 
     db_queryWithAuth: function (args, completion) {
+        'use strict';
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
             returnValue = INTERMediator_DBAdapter.db_query(args);
         } catch (ex) {
-            if (ex == '_im_requath_request_') {
+            if (ex.message === '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
@@ -570,20 +582,20 @@ var INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-16');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-16');
             }
         }
         completion(returnValue);
     },
 
     db_query_async: function (args, successProc, failedProc) {
+        'use strict';
         var params;
 
         if (!INTERMediator_DBAdapter.db_queryChecking(args)) {
             return;
         }
         params = INTERMediator_DBAdapter.db_queryParameters(args);
-        // INTERMediator_DBAdapter.eliminateDuplicatedConditions = false;
         try {
             this.server_access_async(
                 params,
@@ -596,10 +608,6 @@ var INTERMediator_DBAdapter = {
                     var succesProcCapt = successProc;
                     return function (result) {
                         result.count = result.dbresult ? Object.keys(result.dbresult).length : 0;
-                        // for (var ix in result.dbresult) {
-                        //     result.count++;
-                        // }
-
                         contextDef = IMLibContextPool.getContextDef(contextName);
                         if (!contextDef.relation &&
                             args.paging && Boolean(args.paging) === true) {
@@ -634,20 +642,22 @@ var INTERMediator_DBAdapter = {
                 )
             );
         } catch (ex) {
-            INTERMediator.setErrorMessage(ex, 'EXCEPTION-17');
+            INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-17');
         }
     },
 
     db_queryChecking: function (args) {
+        'use strict';
         var noError = true;
         if (args.name === null || args.name === '') {
-            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
+            INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1005));
             noError = false;
         }
         return noError;
     },
 
     db_queryParameters: function (args) {
+        'use strict';
         var i, index, params, counter, extCount, criteriaObject, sortkeyObject,
             extCountSort, recordLimit = 10000000, conditions, conditionSign, modifyConditions,
             orderFields, key, keyParams, value, fields, operator, orderedKeys, removeIndice = [];
@@ -655,8 +665,8 @@ var INTERMediator_DBAdapter = {
             params = 'access=read&name=' + encodeURIComponent(args.name);
         } else {
             if (parseInt(args.records, 10) === 0 &&
-                (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX'
-                || INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI')) {
+                (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX' ||
+                INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI')) {
                 params = 'access=describe&name=' + encodeURIComponent(args.name);
             } else {
                 params = 'access=read&name=' + encodeURIComponent(args.name);
@@ -719,7 +729,7 @@ var INTERMediator_DBAdapter = {
             }
             for (index = 0; index < criteriaObject.length; index++) {
                 if (criteriaObject[index] && criteriaObject[index].field) {
-                    if (criteriaObject[index].value || criteriaObject[index].field == '__operation__') {
+                    if (criteriaObject[index].value || criteriaObject[index].field === '__operation__') {
                         conditionSign =
                             criteriaObject[index].field + '#' +
                             ((criteriaObject[index].operator !== undefined) ? criteriaObject[index].operator : '') + '#' +
@@ -739,10 +749,8 @@ var INTERMediator_DBAdapter = {
                                 }
                                 params += 'value=' + encodeURIComponent(value);
                             }
-                            if (criteriaObject[index].field != '__operation__') {
+                            if (criteriaObject[index].field !== '__operation__') {
                                 conditions.push(conditionSign);
-                            } else {
-                                //conditions = [];
                             }
                         }
                         extCount++;
@@ -784,8 +792,8 @@ var INTERMediator_DBAdapter = {
             if (IMLibLocalContext.store.hasOwnProperty(key)) {
                 value = String(IMLibLocalContext.store[key]);
                 keyParams = key.split(':');
-                if (keyParams && keyParams.length > 1 && keyParams[1].trim() == args.name && value.length > 0) {
-                    if (keyParams[0].trim() == 'condition' && keyParams.length >= 4) {
+                if (keyParams && keyParams.length > 1 && keyParams[1].trim() === args.name && value.length > 0) {
+                    if (keyParams[0].trim() === 'condition' && keyParams.length >= 4) {
                         fields = keyParams[2].split(',');
                         operator = keyParams[3].trim();
                         if (fields.length > 1) {
@@ -804,9 +812,9 @@ var INTERMediator_DBAdapter = {
                             }
                             extCount++;
                         }
-                    } else if (keyParams[0].trim() == 'valueofaddorder' && keyParams.length >= 4) {
+                    } else if (keyParams[0].trim() === 'valueofaddorder' && keyParams.length >= 4) {
                         orderFields[parseInt(value)] = [keyParams[2].trim(), keyParams[3].trim()];
-                    } else if (keyParams[0].trim() == 'limitnumber' && keyParams.length >= 4) {
+                    } else if (keyParams[0].trim() === 'limitnumber' && keyParams.length >= 4) {
                         recordLimit = parseInt(value);
                     }
                 }
@@ -831,6 +839,7 @@ var INTERMediator_DBAdapter = {
      dataset:<the array of the object {field:xx,value:xx}. each value will be set to the field.> }
      */
     db_update: function (args) {
+        'use strict';
         var params, result;
         if (!INTERMediator_DBAdapter.db_updateChecking(args)) {
             return;
@@ -841,12 +850,13 @@ var INTERMediator_DBAdapter = {
     },
 
     db_updateWithAuth: function (args, completion) {
+        'use strict';
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
             returnValue = INTERMediator_DBAdapter.db_update(args);
         } catch (ex) {
-            if (ex == '_im_requath_request_') {
+            if (ex.message === '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
@@ -858,38 +868,40 @@ var INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-15');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-15');
             }
         }
         completion(returnValue);
     },
 
     db_updateChecking: function (args) {
+        'use strict';
         var noError = true, contextDef;
 
         if (args.name === null) {
-            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
+            INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1007));
             noError = false;
         }
         contextDef = IMLibContextPool.getContextDef(args.name);
         if (!contextDef.key) {
-            INTERMediator.setErrorMessage(
+            INTERMediatorLog.setErrorMessage(
                 INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]));
             noError = false;
         }
         if (args.dataset === null) {
-            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1011));
+            INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1011));
             noError = false;
         }
         return noError;
     },
 
     db_updateParameters: function (args) {
+        'use strict';
         var params, extCount, counter, index, addedObject;
         params = 'access=update&name=' + encodeURIComponent(args.name);
         counter = 0;
-        if (INTERMediator.additionalFieldValueOnUpdate
-            && INTERMediator.additionalFieldValueOnUpdate[args.name]) {
+        if (INTERMediator.additionalFieldValueOnUpdate &&
+            INTERMediator.additionalFieldValueOnUpdate[args.name]) {
             addedObject = INTERMediator.additionalFieldValueOnUpdate[args.name];
             if (addedObject.field) {
                 addedObject = [addedObject];
@@ -904,7 +916,7 @@ var INTERMediator_DBAdapter = {
             }
         }
 
-        if (args.conditions != null) {
+        if (args.conditions) {
             for (extCount = 0; extCount < args.conditions.length; extCount++) {
                 params += '&condition' + extCount + 'field=';
                 params += encodeURIComponent(args.conditions[extCount].field);
@@ -918,7 +930,7 @@ var INTERMediator_DBAdapter = {
         }
         for (extCount = 0; extCount < args.dataset.length; extCount++) {
             params += '&field_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].field);
-            if (INTERMediator.isTrident && INTERMediator.ieVersion == 8) {
+            if (INTERMediator.isTrident && INTERMediator.ieVersion === 8) {
                 params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value.replace(/\n/g, ''));
             } else {
                 params += '&value_' + (counter + extCount) + '=' + encodeURIComponent(args.dataset[extCount].value);
@@ -928,6 +940,7 @@ var INTERMediator_DBAdapter = {
     },
 
     db_update_async: function (args, successProc, failedProc) {
+        'use strict';
         var params;
         if (!INTERMediator_DBAdapter.db_updateChecking(args)) {
             return;
@@ -965,23 +978,25 @@ var INTERMediator_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
     db_delete: function (args) {
+        'use strict';
         var params, result;
         if (!INTERMediator_DBAdapter.db_deleteChecking(args)) {
             return;
         }
         params = INTERMediator_DBAdapter.db_deleteParameters(args);
         result = this.server_access(params, 1017, 1015);
-        INTERMediator.flushMessage();
+        INTERMediatorLog.flushMessage();
         return result;
     },
 
     db_deleteWithAuth: function (args, completion) {
+        'use strict';
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
             returnValue = INTERMediator_DBAdapter.db_delete(args);
         } catch (ex) {
-            if (ex == '_im_requath_request_') {
+            if (ex.message === '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
@@ -993,38 +1008,40 @@ var INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-14');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-14');
             }
         }
         completion(returnValue);
     },
 
     db_deleteChecking: function (args) {
+        'use strict';
         var noError = true, contextDef;
 
         if (args.name === null) {
-            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
+            INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
             noError = false;
         }
         contextDef = IMLibContextPool.getContextDef(args.name);
         if (!contextDef.key) {
-            INTERMediator.setErrorMessage(
+            INTERMediatorLog.setErrorMessage(
                 INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]));
             noError = false;
         }
         if (args.conditions === null) {
-            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
+            INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
             noError = false;
         }
         return noError;
     },
 
     db_deleteParameters: function (args) {
+        'use strict';
         var params, i, counter, index, addedObject;
         params = 'access=delete&name=' + encodeURIComponent(args.name);
         counter = 0;
-        if (INTERMediator.additionalFieldValueOnDelete
-            && INTERMediator.additionalFieldValueOnDelete[args.name]) {
+        if (INTERMediator.additionalFieldValueOnDelete &&
+            INTERMediator.additionalFieldValueOnDelete[args.name]) {
             addedObject = INTERMediator.additionalFieldValueOnDelete[args.name];
             if (addedObject.field) {
                 addedObject = [addedObject];
@@ -1048,6 +1065,7 @@ var INTERMediator_DBAdapter = {
     },
 
     db_delete_async: function (args, successProc, failedProc) {
+        'use strict';
         var params;
         if (!INTERMediator_DBAdapter.db_deleteChecking(args)) {
             return;
@@ -1087,11 +1105,12 @@ var INTERMediator_DBAdapter = {
      This function returns the value of the key field of the new record.
      */
     db_createRecord: function (args) {
+        'use strict';
         var params, result;
         params = INTERMediator_DBAdapter.db_createParameters(args);
         if (params) {
             result = INTERMediator_DBAdapter.server_access(params, 1018, 1016);
-            INTERMediator.flushMessage();
+            INTERMediatorLog.flushMessage();
             return {
                 newKeyValue: result.newRecordKeyValue,
                 recordset: result.dbresult
@@ -1101,12 +1120,13 @@ var INTERMediator_DBAdapter = {
     },
 
     db_createRecordWithAuth: function (args, completion) {
+        'use strict';
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
             returnValue = INTERMediator_DBAdapter.db_createRecord(args);
         } catch (ex) {
-            if (ex == '_im_requath_request_') {
+            if (ex.message === '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
@@ -1118,7 +1138,7 @@ var INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-13');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-13');
             }
         }
         if (completion) {
@@ -1127,6 +1147,7 @@ var INTERMediator_DBAdapter = {
     },
 
     db_createRecord_async: function (args, successProc, failedProc) {
+        'use strict';
         var params = INTERMediator_DBAdapter.db_createParameters(args);
         if (params) {
             INTERMediatorOnPage.retrieveAuthInfo();
@@ -1153,34 +1174,35 @@ var INTERMediator_DBAdapter = {
     },
 
     db_createParameters: function (args) {
+        'use strict';
         var params, i, index, addedObject, counter, targetKey, ds, key, contextDef;
 
         if (args.name === null) {
-            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
+            INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1021));
             return false;
         }
         contextDef = IMLibContextPool.getContextDef(args.name);
         if (!contextDef.key) {
-            INTERMediator.setErrorMessage(
+            INTERMediatorLog.setErrorMessage(
                 INTERMediatorLib.getInsertedStringFromErrorNumber(1045, [args.name]));
             return false;
         }
         ds = INTERMediatorOnPage.getDataSources(); // Get DataSource parameters
         targetKey = null;
         for (key in ds) { // Search this table from DataSource
-            if (ds.hasOwnProperty(key) && ds[key].name == args.name) {
+            if (ds.hasOwnProperty(key) && ds[key].name === args.name) {
                 targetKey = key;
                 break;
             }
         }
         if (targetKey === null) {
-            INTERMediator.setErrorMessage('no targetname :' + args.name);
+            INTERMediatorLog.setErrorMessage('no targetname :' + args.name);
             return false;
         }
         params = 'access=create&name=' + encodeURIComponent(args.name);
         counter = 0;
-        if (INTERMediator.additionalFieldValueOnNewRecord
-            && INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
+        if (INTERMediator.additionalFieldValueOnNewRecord &&
+            INTERMediator.additionalFieldValueOnNewRecord[args.name]) {
             addedObject = INTERMediator.additionalFieldValueOnNewRecord[args.name];
             if (addedObject.field) {
                 addedObject = [addedObject];
@@ -1218,11 +1240,12 @@ var INTERMediator_DBAdapter = {
      conditions:<the array of the object {field:xx,operator:xx,value:xx} to search records, could be null>}
      */
     db_copy: function (args) {
+        'use strict';
         var params, result;
         params = INTERMediator_DBAdapter.db_copyParameters(args);
         if (params) {
             result = INTERMediator_DBAdapter.server_access(params, 1017, 1015);
-            INTERMediator.flushMessage();
+            INTERMediatorLog.flushMessage();
             return {
                 newKeyValue: result.newRecordKeyValue,
                 recordset: result.dbresult
@@ -1232,12 +1255,13 @@ var INTERMediator_DBAdapter = {
     },
 
     db_copyWithAuth: function (args, completion) {
+        'use strict';
         var returnValue = false;
         INTERMediatorOnPage.retrieveAuthInfo();
         try {
             returnValue = INTERMediator_DBAdapter.db_copy(args);
         } catch (ex) {
-            if (ex == '_im_requath_request_') {
+            if (ex.message === '_im_requath_request_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
@@ -1249,13 +1273,14 @@ var INTERMediator_DBAdapter = {
                     }
                 }
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-14');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-14');
             }
         }
         completion(returnValue);
     },
 
     db_copy_async: function (args, successProc, failedProc) {
+        'use strict';
         var params = INTERMediator_DBAdapter.db_copyParameters(args);
         if (params) {
             INTERMediatorOnPage.retrieveAuthInfo();
@@ -1282,14 +1307,15 @@ var INTERMediator_DBAdapter = {
     },
 
     db_copyParameters: function (args) {
+        'use strict';
         var noError = true, params, i;
 
         if (args.name === null) {
-            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
+            INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1019));
             noError = false;
         }
         if (args.conditions === null) {
-            INTERMediator.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
+            INTERMediatorLog.setErrorMessage(INTERMediatorLib.getInsertedStringFromErrorNumber(1020));
             noError = false;
         }
         if (!noError) {
@@ -1313,6 +1339,7 @@ var INTERMediator_DBAdapter = {
     },
 
     createExceptionFunc: function (errMessageNumber, AuthProc) {
+        'use strict';
         var errorNumCapt = errMessageNumber;
         return function (myRequest) {
             if (INTERMediatorOnPage.requireAuthentication) {
@@ -1321,7 +1348,7 @@ var INTERMediator_DBAdapter = {
                     INTERMediatorOnPage.authenticating(AuthProc);
                 }
             } else {
-                INTERMediator.setErrorMessage('Communication Error',
+                INTERMediatorLog.setErrorMessage('Communication Error',
                     INTERMediatorLib.getInsertedString(
                         INTERMediatorOnPage.getMessages()[errorNumCapt],
                         ['Communication Error', myRequest.responseText]));
@@ -1330,10 +1357,11 @@ var INTERMediator_DBAdapter = {
     },
 
     unregister: function (entityPkInfo) {
+        'use strict';
         var result = null, params;
         if (INTERMediatorOnPage.clientNotificationKey) {
             var appKey = INTERMediatorOnPage.clientNotificationKey();
-            if (appKey && appKey != '_im_key_isnt_supplied') {
+            if (appKey && appKey !== '_im_key_isnt_supplied') {
                 params = 'access=unregister';
                 if (entityPkInfo) {
                     params += '&pks=' + encodeURIComponent(JSON.stringify(entityPkInfo));

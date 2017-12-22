@@ -169,7 +169,7 @@ var INTERMediatorOnPage = {
             }
             if (INTERMediatorOnPage.authUser.length > 0) {
                 if (!INTERMediator_DBAdapter.getChallenge()) {
-                    INTERMediator.flushMessage();
+                    INTERMediatorLog.flushMessage();
                 }
             }
         }
@@ -375,7 +375,7 @@ var INTERMediatorOnPage = {
         if (INTERMediatorOnPage.authCount > INTERMediatorOnPage.authCountLimit) {
             INTERMediatorOnPage.authenticationError();
             INTERMediatorOnPage.logout();
-            INTERMediator.flushMessage();
+            INTERMediatorLog.flushMessage();
             return;
         }
 
@@ -576,7 +576,7 @@ var INTERMediatorOnPage = {
                 INTERMediatorOnPage.authHashedPassword = 'need-hash-pls';   // Dummy Hash for getting a challenge
                 challengeResult = INTERMediator_DBAdapter.getChallenge();
                 if (!challengeResult) {
-                    INTERMediator.flushMessage();
+                    INTERMediatorLog.flushMessage();
                     return; // If it's failed to get a challenge, finish everything.
                 }
             }
@@ -591,7 +591,7 @@ var INTERMediatorOnPage = {
             }
 
             doAfterAuth();  // Retry.
-            INTERMediator.flushMessage();
+            INTERMediatorLog.flushMessage();
         };
         if (chgpwButton) {
             var checkPolicyMethod = this.checkPasswordPolicy;
@@ -626,7 +626,7 @@ var INTERMediatorOnPage = {
                     document.createTextNode(
                         INTERMediatorLib.getInsertedStringFromErrorNumber(result ? 2009 : 2010)));
 
-                INTERMediator.flushMessage();
+                INTERMediatorLog.flushMessage();
             };
         }
         if (this.isOAuthAvailable && oAuthButton) {

@@ -18,13 +18,15 @@ require_once(dirname(__FILE__) . '/../../INTER-Mediator.php');
 IM_Entry(
     array(
         array(
-            'records' => 10,
+            'records' => 3,
             'name' => 'productlist',
             'view' => 'product',
             'key' => 'id',
-            'sort' => array(array('field' => 'name', 'direction' => 'ASC'),),
-            'navi-control' => 'master-hide',
             'paging' => true,
+            'sort' => array(array('field' => 'unitprice', 'direction' => 'ASC'),),
+            'navi-control' => 'master',
+//            'repeat-control' => 'insert delete',
+//            'paging' => true,
         ),
         array(
             'records' => 1,
@@ -33,6 +35,7 @@ IM_Entry(
             'table' => 'product',
             'key' => 'id',
             'navi-control' => 'detail-top',
+//            'paging' => true,
         ),
     ),
     array(

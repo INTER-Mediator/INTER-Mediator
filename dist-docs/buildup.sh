@@ -80,6 +80,7 @@ cat "${originalPath}/INTER-Mediator-Calc.js"                  >> "${buildPath}/t
 cat "${originalPath}/INTER-Mediator-Parts.js"                 >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-Navi.js"                  >> "${buildPath}/temp.js"
 cat "${originalPath}/INTER-Mediator-UI.js"                    >> "${buildPath}/temp.js"
+cat "${originalPath}/INTER-Mediator-Log.js"                   >> "${buildPath}/temp.js"
 if [ ! -e "${minifyjsDir}" ]; then
     cat "${originalPath}/lib/js_lib/tinySHA1.js"              >> "${buildPath}/temp.js"
     echo ';'                                                  >> "${buildPath}/temp.js"

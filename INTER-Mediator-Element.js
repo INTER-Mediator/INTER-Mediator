@@ -194,7 +194,7 @@ var IMLibElement = {
         formattedValue = IMLibElement.getFormattedValue(element, curVal);
         if (element.getAttribute('data-im-format')) {
             if (formattedValue === null) {
-                INTERMediator.setErrorMessage(
+                INTERMediatorLog.setErrorMessage(
                     'The \'data-im-format\' attribute is not valid: ' + formatSpec);
             } else {
                 curVal = formattedValue;

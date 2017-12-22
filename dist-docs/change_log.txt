@@ -56,9 +56,23 @@ Ver.5.7-dev (in development)
 - Japanese new era name is going to start on May 1, 2019. The entry for era name tables are added.
 - Create Samples/debug.html file and separate test-only pages from the index.html.
 - Step navigation is introduced. The 'nav-control' key can have values 'step' and 'step-hide'.
-- "data" and "appeinding-data" keys can be described in context definition. The "data" alternates
+- "data" and "appending-data" keys can be described in context definition. The "data" alternates
   database access and it doesn't happen to call server. The "appending-data" adds some records to
   the record set from database.
+- If the detail context definition has the 'paging' key, the db accessing for the datail affects
+  the pagenation for master context and it shows just one record. In this case error message shows.
+- INTERMediatorLog object is added. Some methods and properties in INTERMediator object is moved here. 3 methos
+  originally exist on INTERMediator are still defined for compatibility.
+    [Method] INTERMediatorLog.flushMessage <- INTERMediator.flushMessage()
+             INTERMediatorLog.setErrorMessage <- INTERMediatorLog.setErrorMessage(...)
+             INTERMediatorLog.setDebugMessage <- INTERMediatorLog.setDebugMessage(...)
+    [Property] INTERMediatorLog.debugMode
+               INTERMediatorLog.supressDebugMessageOnPage
+               INTERMediatorLog.supressErrorMessageOnPage
+               INTERMediatorLog.errorMessages
+               INTERMediatorLog.debugMessages
+               INTERMediatorLog.errorMessageByAlert
+               INTERMediatorLog.errorMessageOnAlert
 - [BUG FIX] Fix to add multiple times for target node which has "#" started target description.
 - [BUG FIX] Replace the dataset property to set/get attribute methods for IE10.
 - [BUG FIX] Justify the next line handling in TEXTAREA tagged element for IE9.
@@ -67,6 +81,7 @@ Ver.5.7-dev (in development)
 - [BUG FIX] Master/Detail interface in mobile phone didn't return the master page from the detail page.
 - [BUG FIX] Record create method under authentication prevented the 'target' setting, and it is fiexed.
 - [BUG FIX] Sometimes validation wasn't work, for example, blank text field.
+- [BUG FIX] The master-hide/detail contexts didn't hide the pagenation on showed the detail.
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".
