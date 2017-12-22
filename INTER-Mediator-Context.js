@@ -113,7 +113,7 @@ var IMLibContextPool = {
         }
         nodeInfo = INTERMediatorLib.getNodeInfoArray(linkInfo[0]);
 
-        targetName = target === '' ? '_im_no_target' : target;
+        targetName = target ? target : '_im_no_target';
         if (this.poolingContexts === null) {
             return null;
         }
@@ -1374,10 +1374,10 @@ IMLibContext.prototype.setValue = function (recKey, key, value, nodeId, target, 
                 if (this.contextInfo[nodeId] === undefined) {
                     this.contextInfo[nodeId] = {};
                 }
-                this.contextInfo[nodeId][target ? '_im_no_target' : target] =
+                this.contextInfo[nodeId][target ? target : '_im_no_target'] =
                     {context: this, record: recKey, field: key};
                 if (portal) {
-                    this.contextInfo[nodeId][target ? '_im_no_target' : target].portal = portal;
+                    this.contextInfo[nodeId][target ? target : '_im_no_target'].portal = portal;
                 }
             } else {
                 if (INTERMediator.partialConstructing) {
@@ -1427,7 +1427,7 @@ IMLibContext.prototype.isValueUndefined = function (recKey, key, portal) {
 IMLibContext.prototype.getContextInfo = function (nodeId, target) {
     'use strict';
     try {
-        var info = this.contextInfo[nodeId][target ? '_im_no_target' : target];
+        var info = this.contextInfo[nodeId][target ? target : '_im_no_target'];
         return info === undefined ? null : info;
     } catch (ex) {
         return null;
@@ -1437,7 +1437,7 @@ IMLibContext.prototype.getContextInfo = function (nodeId, target) {
 IMLibContext.prototype.getContextValue = function (nodeId, target) {
     'use strict';
     try {
-        var info = this.contextInfo[nodeId][target ? '_im_no_target' : target];
+        var info = this.contextInfo[nodeId][target ? target : '_im_no_target'];
         var value = info.context.getValue(info.record, info.field);
         return value === undefined ? null : value;
     } catch (ex) {

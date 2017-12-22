@@ -374,6 +374,7 @@ class GenerateJSCode
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Format.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');

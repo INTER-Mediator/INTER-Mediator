@@ -48,7 +48,7 @@ buster.testCase("INTERMediatorLib.generatePasswordHash() Test", {
     }
 });
 
-buster.testCase("INTERMediatorLib.numberFormat() Test", {
+buster.testCase("IMLibFormat.numberFormat() Test", {
     setUp: function () {
         INTERMediatorOnPage.localeInfo = {
             'decimal_point': '.',
@@ -78,29 +78,29 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
         };
     },
     "small integer should not be converted.": function () {
-        assert.equals(INTERMediatorLib.numberFormat(45, 0), "45");
-        assert.equals(INTERMediatorLib.numberFormat(45.678, 1), "45.7");
-        assert.equals(INTERMediatorLib.numberFormat(45.678, 2), "45.68");
-        assert.equals(INTERMediatorLib.numberFormat(45.678, 3), "45.678");
-        assert.equals(INTERMediatorLib.numberFormat(45.123, 1), "45.1");
-        assert.equals(INTERMediatorLib.numberFormat(45.123, 2), "45.12");
-        assert.equals(INTERMediatorLib.numberFormat(45.123, 3), "45.123");
+        assert.equals(IMLibFormat.numberFormat(45, 0), "45");
+        assert.equals(IMLibFormat.numberFormat(45.678, 1), "45.7");
+        assert.equals(IMLibFormat.numberFormat(45.678, 2), "45.68");
+        assert.equals(IMLibFormat.numberFormat(45.678, 3), "45.678");
+        assert.equals(IMLibFormat.numberFormat(45.123, 1), "45.1");
+        assert.equals(IMLibFormat.numberFormat(45.123, 2), "45.12");
+        assert.equals(IMLibFormat.numberFormat(45.123, 3), "45.123");
     },
     "each 3-digits should be devided.": function () {
-        assert.equals(INTERMediatorLib.numberFormat(999, 0), "999");
-        assert.equals(INTERMediatorLib.numberFormat(1000, 0), "1,000");
-        assert.equals(INTERMediatorLib.numberFormat(999999, 0), "999,999");
-        assert.equals(INTERMediatorLib.numberFormat(1000000, 0), "1,000,000");
-        assert.equals(INTERMediatorLib.numberFormat(1000000.678, 1), "1,000,000.7");
-        assert.equals(INTERMediatorLib.numberFormat(1000000.678, 2), "1,000,000.68");
-        assert.equals(INTERMediatorLib.numberFormat(1000000.678, 3), "1,000,000.678");
-        assert.equals(INTERMediatorLib.numberFormat(1000000.678, 4), "1,000,000.6780");
-        assert.equals(INTERMediatorLib.numberFormat(-1000000.678, 1), "-1,000,000.7");
-        assert.equals(INTERMediatorLib.numberFormat(-1000000.678, 2), "-1,000,000.68");
-        assert.equals(INTERMediatorLib.numberFormat(-1000000.678, 3), "-1,000,000.678");
-        assert.equals(INTERMediatorLib.numberFormat(999999, -1), "1,000,000");
-        assert.equals(INTERMediatorLib.numberFormat(999999, -2), "1,000,000");
-        assert.equals(INTERMediatorLib.numberFormat(999999, -3), "1,000,000");
+        assert.equals(IMLibFormat.numberFormat(999, 0), "999");
+        assert.equals(IMLibFormat.numberFormat(1000, 0), "1,000");
+        assert.equals(IMLibFormat.numberFormat(999999, 0), "999,999");
+        assert.equals(IMLibFormat.numberFormat(1000000, 0), "1,000,000");
+        assert.equals(IMLibFormat.numberFormat(1000000.678, 1), "1,000,000.7");
+        assert.equals(IMLibFormat.numberFormat(1000000.678, 2), "1,000,000.68");
+        assert.equals(IMLibFormat.numberFormat(1000000.678, 3), "1,000,000.678");
+        assert.equals(IMLibFormat.numberFormat(1000000.678, 4), "1,000,000.6780");
+        assert.equals(IMLibFormat.numberFormat(-1000000.678, 1), "-1,000,000.7");
+        assert.equals(IMLibFormat.numberFormat(-1000000.678, 2), "-1,000,000.68");
+        assert.equals(IMLibFormat.numberFormat(-1000000.678, 3), "-1,000,000.678");
+        assert.equals(IMLibFormat.numberFormat(999999, -1), "1,000,000");
+        assert.equals(IMLibFormat.numberFormat(999999, -2), "1,000,000");
+        assert.equals(IMLibFormat.numberFormat(999999, -3), "1,000,000");
         // A negative second parameter doesn't support so far.
     },
     "format string detection": function () {
@@ -110,7 +110,7 @@ buster.testCase("INTERMediatorLib.numberFormat() Test", {
     }
 });
 
-buster.testCase("INTERMediatorLib.decimalFormat() Test", {
+buster.testCase("IMLibFormat.decimalFormat() Test", {
     setUp: function () {
         INTERMediatorOnPage.localeInfo = {
             'decimal_point': '.',
@@ -140,141 +140,141 @@ buster.testCase("INTERMediatorLib.decimalFormat() Test", {
         };
     },
     "small integer should not be converted.": function () {
-        assert.equals(INTERMediatorLib.decimalFormat(45, 0), "45");
-        assert.equals(INTERMediatorLib.decimalFormat(45.678, 1), "45.7");
-        assert.equals(INTERMediatorLib.decimalFormat(45.678, 2), "45.68");
-        assert.equals(INTERMediatorLib.decimalFormat(45.678, 3), "45.678");
-        assert.equals(INTERMediatorLib.decimalFormat(45.123, 1), "45.1");
-        assert.equals(INTERMediatorLib.decimalFormat(45.123, 2), "45.12");
-        assert.equals(INTERMediatorLib.decimalFormat(45.123, 3), "45.123");
+        assert.equals(IMLibFormat.decimalFormat(45, 0), "45");
+        assert.equals(IMLibFormat.decimalFormat(45.678, 1), "45.7");
+        assert.equals(IMLibFormat.decimalFormat(45.678, 2), "45.68");
+        assert.equals(IMLibFormat.decimalFormat(45.678, 3), "45.678");
+        assert.equals(IMLibFormat.decimalFormat(45.123, 1), "45.1");
+        assert.equals(IMLibFormat.decimalFormat(45.123, 2), "45.12");
+        assert.equals(IMLibFormat.decimalFormat(45.123, 3), "45.123");
     },
     "each 3-digits should not be devided.": function () {
-        assert.equals(INTERMediatorLib.decimalFormat(999, 0), "999");
-        assert.equals(INTERMediatorLib.decimalFormat(1000, 0), "1000");
-        assert.equals(INTERMediatorLib.decimalFormat(999999, 0), "999999");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000, 0), "1000000");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 1), "1000000.7");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 2), "1000000.68");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 3), "1000000.678");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 4), "1000000.6780");
-        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 1), "-1000000.7");
-        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 2), "-1000000.68");
-        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 3), "-1000000.678");
-        assert.equals(INTERMediatorLib.decimalFormat(999999, -1), "1000000");
-        assert.equals(INTERMediatorLib.decimalFormat(999999, -2), "1000000");
-        assert.equals(INTERMediatorLib.decimalFormat(999999, -3), "1000000");
+        assert.equals(IMLibFormat.decimalFormat(999, 0), "999");
+        assert.equals(IMLibFormat.decimalFormat(1000, 0), "1000");
+        assert.equals(IMLibFormat.decimalFormat(999999, 0), "999999");
+        assert.equals(IMLibFormat.decimalFormat(1000000, 0), "1000000");
+        assert.equals(IMLibFormat.decimalFormat(1000000.678, 1), "1000000.7");
+        assert.equals(IMLibFormat.decimalFormat(1000000.678, 2), "1000000.68");
+        assert.equals(IMLibFormat.decimalFormat(1000000.678, 3), "1000000.678");
+        assert.equals(IMLibFormat.decimalFormat(1000000.678, 4), "1000000.6780");
+        assert.equals(IMLibFormat.decimalFormat(-1000000.678, 1), "-1000000.7");
+        assert.equals(IMLibFormat.decimalFormat(-1000000.678, 2), "-1000000.68");
+        assert.equals(IMLibFormat.decimalFormat(-1000000.678, 3), "-1000000.678");
+        assert.equals(IMLibFormat.decimalFormat(999999, -1), "1000000");
+        assert.equals(IMLibFormat.decimalFormat(999999, -2), "1000000");
+        assert.equals(IMLibFormat.decimalFormat(999999, -3), "1000000");
     },
     "each 3-digits should be devided \"\" if useseperator is enabled.": function () {
         var flags = {useSeparator: true};
-        assert.equals(INTERMediatorLib.decimalFormat(999, 0, flags), "999");
-        assert.equals(INTERMediatorLib.decimalFormat(1000, 0, flags), "1,000");
-        assert.equals(INTERMediatorLib.decimalFormat(999999, 0, flags), "999,999");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000, 0, flags), "1,000,000");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 1, flags), "1,000,000.7");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 2, flags), "1,000,000.68");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 3, flags), "1,000,000.678");
-        assert.equals(INTERMediatorLib.decimalFormat(1000000.678, 4, flags), "1,000,000.6780");
-        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 1, flags), "-1,000,000.7");
-        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 2, flags), "-1,000,000.68");
-        assert.equals(INTERMediatorLib.decimalFormat(-1000000.678, 3, flags), "-1,000,000.678");
-        assert.equals(INTERMediatorLib.decimalFormat(999999, -1, flags), "1,000,000");
-        assert.equals(INTERMediatorLib.decimalFormat(999999, -2, flags), "1,000,000");
-        assert.equals(INTERMediatorLib.decimalFormat(999999, -3, flags), "1,000,000");
+        assert.equals(IMLibFormat.decimalFormat(999, 0, flags), "999");
+        assert.equals(IMLibFormat.decimalFormat(1000, 0, flags), "1,000");
+        assert.equals(IMLibFormat.decimalFormat(999999, 0, flags), "999,999");
+        assert.equals(IMLibFormat.decimalFormat(1000000, 0, flags), "1,000,000");
+        assert.equals(IMLibFormat.decimalFormat(1000000.678, 1, flags), "1,000,000.7");
+        assert.equals(IMLibFormat.decimalFormat(1000000.678, 2, flags), "1,000,000.68");
+        assert.equals(IMLibFormat.decimalFormat(1000000.678, 3, flags), "1,000,000.678");
+        assert.equals(IMLibFormat.decimalFormat(1000000.678, 4, flags), "1,000,000.6780");
+        assert.equals(IMLibFormat.decimalFormat(-1000000.678, 1, flags), "-1,000,000.7");
+        assert.equals(IMLibFormat.decimalFormat(-1000000.678, 2, flags), "-1,000,000.68");
+        assert.equals(IMLibFormat.decimalFormat(-1000000.678, 3, flags), "-1,000,000.678");
+        assert.equals(IMLibFormat.decimalFormat(999999, -1, flags), "1,000,000");
+        assert.equals(IMLibFormat.decimalFormat(999999, -2, flags), "1,000,000");
+        assert.equals(IMLibFormat.decimalFormat(999999, -3, flags), "1,000,000");
     },
-    "INTERMediatorLib.decimalFormat(0) should return \"\" if blankifzero is enabled.": function () {
+    "IMLibFormat.decimalFormat(0) should return \"\" if blankifzero is enabled.": function () {
         var flags = {blankIfZero: true};
-        assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "");
-        assert.equals(INTERMediatorLib.decimalFormat("０", 0, flags), "");
-        assert.equals(INTERMediatorLib.decimalFormat("0.", 0, flags), "");
+        assert.equals(IMLibFormat.decimalFormat("0", 0, flags), "");
+        assert.equals(IMLibFormat.decimalFormat("０", 0, flags), "");
+        assert.equals(IMLibFormat.decimalFormat("0.", 0, flags), "");
     },
-    "INTERMediatorLib.decimalFormat(1) should return \"1\" if blankifzero is enabled.": function () {
+    "IMLibFormat.decimalFormat(1) should return \"1\" if blankifzero is enabled.": function () {
         var flags = {blankIfZero: true};
-        assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "1");
+        assert.equals(IMLibFormat.decimalFormat("1", 0, flags), "1");
     },
-    "INTERMediatorLib.decimalFormat(\"１\", 0, flags) should return \"1\" if charStyle is 0.": function () {
+    "IMLibFormat.decimalFormat(\"１\", 0, flags) should return \"1\" if charStyle is 0.": function () {
         var flags = {charStyle: 0};
-        assert.equals(INTERMediatorLib.decimalFormat("１", 0, flags), "1");
-        assert.equals(INTERMediatorLib.decimalFormat("２", 0, flags), "2");
-        assert.equals(INTERMediatorLib.decimalFormat("３", 0, flags), "3");
-        assert.equals(INTERMediatorLib.decimalFormat("４", 0, flags), "4");
-        assert.equals(INTERMediatorLib.decimalFormat("５", 0, flags), "5");
-        assert.equals(INTERMediatorLib.decimalFormat("６", 0, flags), "6");
-        assert.equals(INTERMediatorLib.decimalFormat("７", 0, flags), "7");
-        assert.equals(INTERMediatorLib.decimalFormat("８", 0, flags), "8");
-        assert.equals(INTERMediatorLib.decimalFormat("９", 0, flags), "9");
-        assert.equals(INTERMediatorLib.decimalFormat("０", 0, flags), "0");
+        assert.equals(IMLibFormat.decimalFormat("１", 0, flags), "1");
+        assert.equals(IMLibFormat.decimalFormat("２", 0, flags), "2");
+        assert.equals(IMLibFormat.decimalFormat("３", 0, flags), "3");
+        assert.equals(IMLibFormat.decimalFormat("４", 0, flags), "4");
+        assert.equals(IMLibFormat.decimalFormat("５", 0, flags), "5");
+        assert.equals(IMLibFormat.decimalFormat("６", 0, flags), "6");
+        assert.equals(IMLibFormat.decimalFormat("７", 0, flags), "7");
+        assert.equals(IMLibFormat.decimalFormat("８", 0, flags), "8");
+        assert.equals(IMLibFormat.decimalFormat("９", 0, flags), "9");
+        assert.equals(IMLibFormat.decimalFormat("０", 0, flags), "0");
     },
-    "INTERMediatorLib.decimalFormat(1, 0, flags) should return \"１\" if charStyle is 1.": function () {
+    "IMLibFormat.decimalFormat(1, 0, flags) should return \"１\" if charStyle is 1.": function () {
         var flags = {charStyle: 1};
-        assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "１");
-        assert.equals(INTERMediatorLib.decimalFormat("2", 0, flags), "２");
-        assert.equals(INTERMediatorLib.decimalFormat("3", 0, flags), "３");
-        assert.equals(INTERMediatorLib.decimalFormat("4", 0, flags), "４");
-        assert.equals(INTERMediatorLib.decimalFormat("5", 0, flags), "５");
-        assert.equals(INTERMediatorLib.decimalFormat("6", 0, flags), "６");
-        assert.equals(INTERMediatorLib.decimalFormat("7", 0, flags), "７");
-        assert.equals(INTERMediatorLib.decimalFormat("8", 0, flags), "８");
-        assert.equals(INTERMediatorLib.decimalFormat("9", 0, flags), "９");
-        assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "０");
+        assert.equals(IMLibFormat.decimalFormat("1", 0, flags), "１");
+        assert.equals(IMLibFormat.decimalFormat("2", 0, flags), "２");
+        assert.equals(IMLibFormat.decimalFormat("3", 0, flags), "３");
+        assert.equals(IMLibFormat.decimalFormat("4", 0, flags), "４");
+        assert.equals(IMLibFormat.decimalFormat("5", 0, flags), "５");
+        assert.equals(IMLibFormat.decimalFormat("6", 0, flags), "６");
+        assert.equals(IMLibFormat.decimalFormat("7", 0, flags), "７");
+        assert.equals(IMLibFormat.decimalFormat("8", 0, flags), "８");
+        assert.equals(IMLibFormat.decimalFormat("9", 0, flags), "９");
+        assert.equals(IMLibFormat.decimalFormat("0", 0, flags), "０");
     },
-    "INTERMediatorLib.decimalFormat(1, 0, flags) should return \"一\" if charStyle is 2.": function () {
+    "IMLibFormat.decimalFormat(1, 0, flags) should return \"一\" if charStyle is 2.": function () {
         var flags = {charStyle: 2};
-        assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "一");
-        assert.equals(INTERMediatorLib.decimalFormat("2", 0, flags), "二");
-        assert.equals(INTERMediatorLib.decimalFormat("3", 0, flags), "三");
-        assert.equals(INTERMediatorLib.decimalFormat("4", 0, flags), "四");
-        assert.equals(INTERMediatorLib.decimalFormat("5", 0, flags), "五");
-        assert.equals(INTERMediatorLib.decimalFormat("6", 0, flags), "六");
-        assert.equals(INTERMediatorLib.decimalFormat("7", 0, flags), "七");
-        assert.equals(INTERMediatorLib.decimalFormat("8", 0, flags), "八");
-        assert.equals(INTERMediatorLib.decimalFormat("9", 0, flags), "九");
-        assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "〇");
+        assert.equals(IMLibFormat.decimalFormat("1", 0, flags), "一");
+        assert.equals(IMLibFormat.decimalFormat("2", 0, flags), "二");
+        assert.equals(IMLibFormat.decimalFormat("3", 0, flags), "三");
+        assert.equals(IMLibFormat.decimalFormat("4", 0, flags), "四");
+        assert.equals(IMLibFormat.decimalFormat("5", 0, flags), "五");
+        assert.equals(IMLibFormat.decimalFormat("6", 0, flags), "六");
+        assert.equals(IMLibFormat.decimalFormat("7", 0, flags), "七");
+        assert.equals(IMLibFormat.decimalFormat("8", 0, flags), "八");
+        assert.equals(IMLibFormat.decimalFormat("9", 0, flags), "九");
+        assert.equals(IMLibFormat.decimalFormat("0", 0, flags), "〇");
     },
-    "INTERMediatorLib.decimalFormat(1, 0, flags) should return \"壱\" if charStyle is 3.": function () {
+    "IMLibFormat.decimalFormat(1, 0, flags) should return \"壱\" if charStyle is 3.": function () {
         var flags = {charStyle: 3};
-        assert.equals(INTERMediatorLib.decimalFormat("1", 0, flags), "壱");
-        assert.equals(INTERMediatorLib.decimalFormat("2", 0, flags), "弐");
-        assert.equals(INTERMediatorLib.decimalFormat("3", 0, flags), "参");
-        assert.equals(INTERMediatorLib.decimalFormat("4", 0, flags), "四");
-        assert.equals(INTERMediatorLib.decimalFormat("5", 0, flags), "伍");
-        assert.equals(INTERMediatorLib.decimalFormat("6", 0, flags), "六");
-        assert.equals(INTERMediatorLib.decimalFormat("7", 0, flags), "七");
-        assert.equals(INTERMediatorLib.decimalFormat("8", 0, flags), "八");
-        assert.equals(INTERMediatorLib.decimalFormat("9", 0, flags), "九");
-        assert.equals(INTERMediatorLib.decimalFormat("0", 0, flags), "〇");
+        assert.equals(IMLibFormat.decimalFormat("1", 0, flags), "壱");
+        assert.equals(IMLibFormat.decimalFormat("2", 0, flags), "弐");
+        assert.equals(IMLibFormat.decimalFormat("3", 0, flags), "参");
+        assert.equals(IMLibFormat.decimalFormat("4", 0, flags), "四");
+        assert.equals(IMLibFormat.decimalFormat("5", 0, flags), "伍");
+        assert.equals(IMLibFormat.decimalFormat("6", 0, flags), "六");
+        assert.equals(IMLibFormat.decimalFormat("7", 0, flags), "七");
+        assert.equals(IMLibFormat.decimalFormat("8", 0, flags), "八");
+        assert.equals(IMLibFormat.decimalFormat("9", 0, flags), "九");
+        assert.equals(IMLibFormat.decimalFormat("0", 0, flags), "〇");
     },
-    "INTERMediatorLib.decimalFormat(12345, 0, flags) should return \"1万2345\" if kanjiSeparator is 1.": function () {
+    "IMLibFormat.decimalFormat(12345, 0, flags) should return \"1万2345\" if kanjiSeparator is 1.": function () {
         var flags = {useSeparator: true, kanjiSeparator: 1};
-        assert.equals(INTERMediatorLib.decimalFormat("12345", 0, flags), "1万2345");
-        assert.equals(INTERMediatorLib.decimalFormat("1234567800000000", 0, flags), "1234兆5678億");
-        assert.equals(INTERMediatorLib.decimalFormat("1234567800000009", 0, flags), "1234兆5678億9");
-        assert.equals(INTERMediatorLib.decimalFormat("1234567800010009", 0, flags), "1234兆5678億1万9");
+        assert.equals(IMLibFormat.decimalFormat("12345", 0, flags), "1万2345");
+        assert.equals(IMLibFormat.decimalFormat("1234567800000000", 0, flags), "1234兆5678億");
+        assert.equals(IMLibFormat.decimalFormat("1234567800000009", 0, flags), "1234兆5678億9");
+        assert.equals(IMLibFormat.decimalFormat("1234567800010009", 0, flags), "1234兆5678億1万9");
     },
-    "INTERMediatorLib.decimalFormat(12345, 0, flags) should return \"1万2千3百4十5\" if kanjiSeparator is 2.": function () {
+    "IMLibFormat.decimalFormat(12345, 0, flags) should return \"1万2千3百4十5\" if kanjiSeparator is 2.": function () {
         var flags = {useSeparator: true, kanjiSeparator: 2};
-        assert.equals(INTERMediatorLib.decimalFormat("12345", 0, flags), "1万2千3百4十5");
-        assert.equals(INTERMediatorLib.decimalFormat("1234567800000000", 0, flags), "千2百3十4兆5千6百7十8億");
-        assert.equals(INTERMediatorLib.decimalFormat("1234567800000009", 0, flags), "千2百3十4兆5千6百7十8億9");
-        assert.equals(INTERMediatorLib.decimalFormat("1234567800010009", 0, flags), "千2百3十4兆5千6百7十8億1万9");
+        assert.equals(IMLibFormat.decimalFormat("12345", 0, flags), "1万2千3百4十5");
+        assert.equals(IMLibFormat.decimalFormat("1234567800000000", 0, flags), "千2百3十4兆5千6百7十8億");
+        assert.equals(IMLibFormat.decimalFormat("1234567800000009", 0, flags), "千2百3十4兆5千6百7十8億9");
+        assert.equals(IMLibFormat.decimalFormat("1234567800010009", 0, flags), "千2百3十4兆5千6百7十8億1万9");
     }
 });
 
-buster.testCase("INTERMediatorLib.booleanFormat() Test", {
+buster.testCase("IMLibFormat.booleanFormat() Test", {
     "should return \"\" if the first parameter is \"\"": function () {
-        assert.equals(INTERMediatorLib.booleanFormat("", "non-zeros, zeros", null), "");
+        assert.equals(IMLibFormat.booleanFormat("", "non-zeros, zeros", null), "");
     },
     "should return \"\" if the first parameter is null": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(null, "non-zeros, zeros", null), "");
+        assert.equals(IMLibFormat.booleanFormat(null, "non-zeros, zeros", null), "");
     },
     "should return \"non-zeros\" if the first parameter is 1": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(1, "non-zeros, zeros", null), "non-zeros");
+        assert.equals(IMLibFormat.booleanFormat(1, "non-zeros, zeros", null), "non-zeros");
     },
     "should return \"zeros\" if the first parameter is 0": function () {
-        assert.equals(INTERMediatorLib.booleanFormat(0, "non-zeros, zeros", null), "zeros");
+        assert.equals(IMLibFormat.booleanFormat(0, "non-zeros, zeros", null), "zeros");
     }
 });
 
-buster.testCase("INTERMediatorLib.percentFormat() Test", {
+buster.testCase("IMLibFormat.percentFormat() Test", {
     setUp: function () {
         INTERMediatorOnPage.localeInfo = {
             'decimal_point': '.',
@@ -316,37 +316,37 @@ buster.testCase("INTERMediatorLib.percentFormat() Test", {
         };
     },
     "should return \"\" if the parameter is \"\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat(""), "");
+        assert.equals(IMLibFormat.percentFormat(""), "");
     },
     "should return \"\" if the parameter is null": function () {
-        assert.equals(INTERMediatorLib.percentFormat(null), "");
+        assert.equals(IMLibFormat.percentFormat(null), "");
     },
     "should return \"\" if the parameter is \"1\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("1"), "100%");
+        assert.equals(IMLibFormat.percentFormat("1"), "100%");
     },
     "should return \"\" if the parameter is \"-2\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("-2"), "-200%");
+        assert.equals(IMLibFormat.percentFormat("-2"), "-200%");
     },
     "should return \"\" if the parameter is \"10\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("10"), "1000%");
+        assert.equals(IMLibFormat.percentFormat("10"), "1000%");
     },
     "should return \"\" if the parameter is \"test\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("test"), "");
+        assert.equals(IMLibFormat.percentFormat("test"), "");
     },
     "should return \"\" if the parameter is \"3A\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("3A"), "300%");
+        assert.equals(IMLibFormat.percentFormat("3A"), "300%");
     },
     "should return \"\" if the parameter is \"4-0\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("4-0"), "4000%");
+        assert.equals(IMLibFormat.percentFormat("4-0"), "4000%");
     },
     "should return \"\" if the parameter is \"-50-0\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("-50-0"), "-50000%");
+        assert.equals(IMLibFormat.percentFormat("-50-0"), "-50000%");
     },
     "should return \"\" if the parameter is \"６７-0\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("６７-0"), "67000%");
+        assert.equals(IMLibFormat.percentFormat("６７-0"), "67000%");
     },
     "should return \"\" if the parameter is \"0.1\"": function () {
-        assert.equals(INTERMediatorLib.percentFormat("0.1"), "10%");
+        assert.equals(IMLibFormat.percentFormat("0.1"), "10%");
     }
 });
 
@@ -398,21 +398,21 @@ buster.testCase("IMLib Date/Time String Test", {
     }
 });
 
-buster.testCase("INTERMediatorLib.getLocalYear() Test", {
+buster.testCase("IMLibFormat.getLocalYear() Test", {
     "should return the gengo year.": function () {
-        assert.equals(INTERMediatorLib.getLocalYear(new Date("2017/3/3")), "平成29年");
-        assert.equals(INTERMediatorLib.getLocalYear(new Date("1989/1/9")), "平成元年");
-        assert.equals(INTERMediatorLib.getLocalYear(new Date("1989/1/8")), "昭和64年");
-        assert.equals(INTERMediatorLib.getLocalYear(new Date("1926/12/26")), "昭和元年");
+        assert.equals(IMLibFormat.getLocalYear(new Date("2017/3/3")), "平成29年");
+        assert.equals(IMLibFormat.getLocalYear(new Date("1989/1/9")), "平成元年");
+        assert.equals(IMLibFormat.getLocalYear(new Date("1989/1/8")), "昭和64年");
+        assert.equals(IMLibFormat.getLocalYear(new Date("1926/12/26")), "昭和元年");
     }
 });
 
-buster.testCase("INTERMediatorLib.getKanjiNumber() Test", {
+buster.testCase("IMLibFormat.getKanjiNumber() Test", {
     "should return the kanji numbers.": function () {
-        assert.equals(INTERMediatorLib.getKanjiNumber(0), "〇");
-        assert.equals(INTERMediatorLib.getKanjiNumber(3), "三");
-        assert.equals(INTERMediatorLib.getKanjiNumber(45), "四十五");
-        assert.equals(INTERMediatorLib.getKanjiNumber(2345), "二千三百四十五");
+        assert.equals(IMLibFormat.getKanjiNumber(0), "〇");
+        assert.equals(IMLibFormat.getKanjiNumber(3), "三");
+        assert.equals(IMLibFormat.getKanjiNumber(45), "四十五");
+        assert.equals(IMLibFormat.getKanjiNumber(2345), "二千三百四十五");
     }
 });
 

@@ -378,7 +378,7 @@ buster.testCase("INTER-Mediator Element Test", {
         assert.equals(tempElement.value, "14:39");
 
         tempElement.setAttribute("data-im-format", "time(short)");
-        IMLibElement.setValueToIMNode(tempElement, "", "2017-07-23 00:00:00", true);
+        IMLibElement.setValueToIMNode(tempElement, "", "2017-07-23", true);
         assert.equals(tempElement.value, "00:00");
 
         tempElement.setAttribute("data-im-format", "time(Short)");

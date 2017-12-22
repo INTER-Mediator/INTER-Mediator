@@ -9,6 +9,7 @@ config['My tests'] = {
         'INTER-Mediator-Page.js',
         'INTER-Mediator-Context.js',
         'INTER-Mediator-Lib.js',
+        'INTER-Mediator-Format.js',
         'INTER-Mediator-Element.js',
         'lib/js_lib/js-expression-eval-parser.js',
         'INTER-Mediator-Calc.js',

@@ -19,23 +19,23 @@
 var IMLibElement = {
 
     formatters: {
-        number: INTERMediatorLib.decimalFormat,
-        currency: INTERMediatorLib.currencyFormat,
-        boolean: INTERMediatorLib.booleanFormat,
-        percent: INTERMediatorLib.percentFormat,
-        date: INTERMediatorLib.dateFormat,
-        datetime: INTERMediatorLib.datetimeFormat,
-        time: INTERMediatorLib.timeFormat
+        number: IMLibFormat.decimalFormat,
+        currency: IMLibFormat.currencyFormat,
+        boolean: IMLibFormat.booleanFormat,
+        percent: IMLibFormat.percentFormat,
+        date: IMLibFormat.dateFormat,
+        datetime: IMLibFormat.datetimeFormat,
+        time: IMLibFormat.timeFormat
     },
 
     unformatters: {
-        number: INTERMediatorLib.convertNumeric,
-        currency: INTERMediatorLib.convertNumeric,
-        boolean: INTERMediatorLib.convertBoolean,
-        percent: INTERMediatorLib.convertPercent,
-        date: INTERMediatorLib.convertDate,
-        datetime: INTERMediatorLib.convertDateTime,
-        time: INTERMediatorLib.convertTime
+        number: IMLibFormat.convertNumeric,
+        currency: IMLibFormat.convertNumeric,
+        boolean: IMLibFormat.convertBoolean,
+        percent: IMLibFormat.convertPercent,
+        date: IMLibFormat.convertDate,
+        datetime: IMLibFormat.convertDateTime,
+        time: IMLibFormat.convertTime
     },
 
     formatOptions: {
