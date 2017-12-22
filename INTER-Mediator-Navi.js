@@ -1059,17 +1059,19 @@ var IMLibPageNavigation = {
         IMLibPageNavigation.stepCurrentContextName = null;
         IMLibPageNavigation.stepStartContextName = null;
         IMLibPageNavigation.setupStepReturnButton('none');
-        dataSrcs = INTERMediatorOnPage.getDataSources();
-        for (key in dataSrcs) {
-            if (dataSrcs.hasOwnProperty(key)) {
-                cDef = dataSrcs[key];
-                if (cDef['navi-control']) {
-                    judgeHide = includeHide || (!includeHide && !cDef['navi-control'].match(/hide/i));
-                    if (cDef['navi-control'] && cDef['navi-control'].match(/step/i)) {
-                        if (judgeHide && !isDetected) {
-                            IMLibPageNavigation.stepCurrentContextName = cDef.name;
-                            IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName;
-                            isDetected = true;
+        if(INTERMediatorOnPage.getDataSources) { // Avoid processing on unit test
+            dataSrcs = INTERMediatorOnPage.getDataSources();
+            for (key in dataSrcs) {
+                if (dataSrcs.hasOwnProperty(key)) {
+                    cDef = dataSrcs[key];
+                    if (cDef['navi-control']) {
+                        judgeHide = includeHide || (!includeHide && !cDef['navi-control'].match(/hide/i));
+                        if (cDef['navi-control'] && cDef['navi-control'].match(/step/i)) {
+                            if (judgeHide && !isDetected) {
+                                IMLibPageNavigation.stepCurrentContextName = cDef.name;
+                                IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName;
+                                isDetected = true;
+                            }
                         }
                     }
                 }

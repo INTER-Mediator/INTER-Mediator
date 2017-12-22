@@ -15,6 +15,7 @@ config['My tests'] = {
         'INTER-Mediator-Parts.js',
         'INTER-Mediator-Navi.js',
         'INTER-Mediator-UI.js',
+        'INTER-Mediator-Log.js',
         'lib/js_lib/tinySHA1.js',
         'lib/js_lib/sha256.js',
         'lib/bi2php/biBigInt.js',
