@@ -134,7 +134,7 @@ var IMLibElement = {
 
     getUnformattedValue: function (element, value) {
         'use strict';
-        var formatSpec, unformatFunc, parsed, params, convertedValue, flags;
+        var formatSpec, unformatFunc, parsed, params, convertedValue, flags, firstParen, lastParen;
         formatSpec = element.getAttribute('data-im-format');
         if (!formatSpec) {
             return null;
@@ -142,12 +142,11 @@ var IMLibElement = {
         flags = IMLibElement.initilaizeFlags(element);
         unformatFunc = IMLibElement.unformatters[formatSpec.trim().toLocaleLowerCase()];  // in case of no parameters in attribute
         if (!unformatFunc) {
-            parsed = formatSpec.match(/[^a-zA-Z]*([a-zA-Z]+).*[\(]([^\(]*)[\)]/);
+            firstParen = formatSpec.indexOf('(');
+            lastParen = formatSpec.lastIndexOf(')');
+            parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/);
             unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()];
-            params = parsed[2];
-            if (parsed[2].length === 0) { // in case of parameter is just ().
-                params = 0;
-            }
+            params = formatSpec.substring(firstParen + 1, lastParen);
         }
         if (unformatFunc) {
             convertedValue = unformatFunc(value, params, flags);

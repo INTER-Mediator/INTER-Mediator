@@ -1,3 +1,6 @@
+// JSHint support
+/* global INTERMediator,buster,INTERMediatorLib,INTERMediatorOnPage,IMLibElement, biRSAKeyPair */
+
 /**
  * Created by msyk on 15/09/13.
  */
@@ -41,8 +44,9 @@
  */
 var assert = buster.referee.assert;
 
-buster.testCase("RSA-JS Test:", {
-    "Check the collect encription with RSA key.": function () {
+buster.testCase('RSA-JS Test:', {
+    'Check the collect encription with RSA key.': function () {
+        'use strict';
         var modulus =
             '00c47efefb28872541c40d4df0330f850dfae580e1cd3feca208599840f2' +
             '341bba23e6e4f2b4f32fdd856b12d6f663adb8e760ba59970b4b0381a969' +
@@ -65,13 +69,14 @@ buster.testCase("RSA-JS Test:", {
             'a6e76621d4d3f3e715f9ee48ac649a01';
 
         var publickey = new biRSAKeyPair('010001', '0', modulus);
-        var originalString="1234OhmyGOD#";
+        var originalString = '1234OhmyGOD#';
         var enc = publickey.biEncryptedString(originalString);
         var privatekey = new biRSAKeyPair('0', privateEx, modulus);
         var decrypted = privatekey.biDecryptedString(enc);
         assert.equals(originalString, decrypted);
     },
-    "Check the collect decription from the PHP class encripted.": function () {
+    'Check the collect decription from the PHP class encripted.': function () {
+        'use strict';
         var modulus =
             '00c47efefb28872541c40d4df0330f850dfae580e1cd3feca208599840f2' +
             '341bba23e6e4f2b4f32fdd856b12d6f663adb8e760ba59970b4b0381a969' +
@@ -104,7 +109,7 @@ buster.testCase("RSA-JS Test:", {
             '172354d33aab53fdd5d252c84f1f6611';
         var privatekey = new biRSAKeyPair('0', privateEx, modulus);
         var decrypted = privatekey.biDecryptedString(enc);
-        var originalString = "happySAD200333#$#$#$#";
+        var originalString = 'happySAD200333#$#$#$#';
         assert.equals(originalString, decrypted);
     }
 });

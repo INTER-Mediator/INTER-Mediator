@@ -85,6 +85,8 @@ Ver.5.7-dev (in development)
 - [BUG FIX] Record create method under authentication prevented the 'target' setting, and it is fiexed.
 - [BUG FIX] Sometimes validation wasn't work, for example, blank text field.
 - [BUG FIX] The master-hide/detail contexts didn't hide the pagenation on showed the detail.
+- [BUG FIX] The stringfy method for object (INTERMediatorLib.objectToString) returned 'undefined' instead of quotes.
+- [BUG FIX] The method to convert number from string (INTERMediatorLib.normalizeNumerics) returned wrong result.
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".

@@ -39,9 +39,9 @@ IM_Entry(
         ),
     ),
     array(
-        'formatter' => array(
-            array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
-        ),
+//        'formatter' => array(
+//            array('field' => 'product@unitprice', 'converter-class' => 'Number', 'parameter' => '0'),
+//        ),
     ),
     array('db-class' => 'PDO'),
     false

@@ -707,23 +707,36 @@ var INTERMediatorLib = {
     normalizeNumerics: function (value) {
         'use strict';
         var i;
-        for (i = 0; i < 10; i++) {
-            value = String(value).split(String.fromCharCode(65296 + i)).join(String(i));
-            // Full-width numeric characters start from 0xFF10(65296). This is convert to Full to ASCII char for numeric.
+        var punc = INTERMediatorOnPage.localeInfo.decimal_point;
+        var mpunc = INTERMediatorOnPage.localeInfo.mon_decimal_point;
+        var rule = '0123456789';
+        if (punc) {
+            rule += '\\' + punc;
         }
-        return value;
+        if (mpunc && mpunc !== punc) {
+            rule += '\\' + mpunc;
+        }
+        rule = '[^' + rule + ']';
+        value = String(value);
+        if (value && value.match(/[０１２３４５６７８９]/)) {
+            for (i = 0; i < 10; i++) {
+                value = value.split(String.fromCharCode(65296 + i)).join(String(i));
+                // Full-width numeric characters start from 0xFF10(65296). This is convert to Full to ASCII char for numeric.
+            }
+            value = value.replace('．', '.');
+        }
+        return value ? parseFloat(value.replace(new RegExp(rule, 'g'), '')) : '';
     },
 
     objectToString: function (obj) {
         'use strict';
-        var str, i, key, sq;
+        var str, i, key, sq = String.fromCharCode(39);
 
         if (obj === null) {
             return 'null';
         }
         if (typeof obj === 'object') {
             str = '';
-            sq = String.fromCharCode(39);
             if (obj.constructor === Array) {
                 for (i = 0; i < obj.length; i++) {
                     str += INTERMediatorLib.objectToString(obj[i]) + ', ';
@@ -731,7 +744,9 @@ var INTERMediatorLib = {
                 return '[' + str + ']';
             } else {
                 for (key in obj) {
-                    str += sq + key + sq + ':' + INTERMediatorLib.objectToString(obj[key]) + ', ';
+                    if (obj.hasOwnProperty(key)) {
+                        str += sq + key + sq + ':' + INTERMediatorLib.objectToString(obj[key]) + ', ';
+                    }
                 }
                 return '{' + str + '}';
             }
@@ -1106,9 +1121,9 @@ var INTERMediatorLib = {
     timeString: function (dt) {
         'use strict';
         dt = (!dt) ? new Date() : dt;
-        return ('0' + dt.getHours()).substr(-2, 2) + ':'+
-             ('0' + dt.getMinutes()).substr(-2, 2) + ':'+
-             ('0' + dt.getSeconds()).substr(-2, 2);
+        return ('0' + dt.getHours()).substr(-2, 2) + ':' +
+            ('0' + dt.getMinutes()).substr(-2, 2) + ':' +
+            ('0' + dt.getSeconds()).substr(-2, 2);
     }
 };
 
