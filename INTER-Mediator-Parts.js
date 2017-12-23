@@ -8,7 +8,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//'use strict';
+// JSHint support
+/* global IMLibContextPool, INTERMediator, IMLibMouseEventDispatch, IMLibLocalContext,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibUI,
+ IMLibEventResponder, INTERMediatorLog, SHA1, jsSHA, IMLib, INTERMediatorOnPage */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview IMParts_Catalog class is defined here.
  */
@@ -28,6 +33,7 @@ IMParts_Catalog.fileupload = {
     uploadId: 'sign' + Math.random(),
 
     instanciate: function (parentNode) {
+        'use strict';
         var inputNode, formNode, buttonNode, hasTapEvent;
         var newId = parentNode.getAttribute('id') + '-e';
         var newNode = document.createElement('DIV');
@@ -39,9 +45,9 @@ IMParts_Catalog.fileupload = {
             this.html5DDSuported = false;
         } else {
             this.html5DDSuported = true;
-            try {
-                var x = new FileReader();
-                var y = new FormData();
+            try { // Checking to exists both of classes.
+                FileReader();
+                FormData();
             } catch (ex) {
                 this.html5DDSuported = false;
             }
@@ -50,8 +56,8 @@ IMParts_Catalog.fileupload = {
         if (hasTapEvent) {
             this.html5DDSuported = false;
         }
-        var autoReload = (parentNode.getAttribute('data-im-widget-reload') !== null)
-            ? parentNode.getAttribute('data-im-widget-reload') : false;
+        var autoReload = (parentNode.getAttribute('data-im-widget-reload') !== null) ?
+            parentNode.getAttribute('data-im-widget-reload') : false;
         newNode.setAttribute('data-im-widget-reload', autoReload);
         if (this.html5DDSuported) {
             newNode.dropzone = 'copy';
@@ -139,7 +145,7 @@ IMParts_Catalog.fileupload = {
             if (!newNode.id) {
                 newNode.id = INTERMediator.nextIdValue();
             }
-            IMLibMouseEventDispatch.setExecute(newNode.id, function (event) {
+            IMLibMouseEventDispatch.setExecute(newNode.id, function () {
                 var node = document.getElementById(newNode.id);
                 if (node !== null && node.children.length > 0) {
                     if (node.children[0].style.display === 'none' || node.children[0].style.display === '') {
@@ -151,7 +157,7 @@ IMParts_Catalog.fileupload = {
             if (!cancelButtonWrapper.id) {
                 cancelButtonWrapper.id = INTERMediator.nextIdValue();
             }
-            IMLibMouseEventDispatch.setExecute(cancelButtonWrapper.id, function (c) {
+            IMLibMouseEventDispatch.setExecute(cancelButtonWrapper.id, function () {
                 this.parentNode.style.display = 'none';
             });
             divNode.appendChild(cancelButtonWrapper);
@@ -179,16 +185,17 @@ IMParts_Catalog.fileupload = {
             return theId;
         };
 
-        parentNode._im_setValue = function (str) {
-            var targetNode = newNode;
-            if (this.html5DDSuported) {
-                //    targetNode.innerHTML = str;
-            }
-        };
+        // parentNode._im_setValue = function (str) {
+        //     var targetNode = newNode;
+        //     if (this.html5DDSuported) {
+        //         //    targetNode.innerHTML = str;
+        //     }
+        // };
     },
     ids: [],
     formFromId: {},
     finish: function () {
+        'use strict';
         var shaObj, hmacValue, targetNode, formNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
 
         if (this.html5DDSuported) {
@@ -214,11 +221,11 @@ IMParts_Catalog.fileupload = {
                         var uploadId = uploadIdLocal;
                         var tagetId = tagetIdLocal;
                         return function (event) {
-                            var file, fileNameNode;
+                            var file, fileNameNode, i, updateInfo, infoFrame;
                             event.preventDefault();
                             var eventTarget = event.currentTarget;
                             if (isProgressing) {
-                                var infoFrame = document.createElement('iframe');
+                                infoFrame = document.createElement('iframe');
                                 infoFrame.setAttribute('id', 'upload_frame' + serialId);
                                 infoFrame.setAttribute('name', 'upload_frame');
                                 infoFrame.setAttribute('frameborder', '0');
@@ -229,7 +236,7 @@ IMParts_Catalog.fileupload = {
                                 infoFrame.style.height = '24px';
                                 eventTarget.appendChild(infoFrame);
                             }
-                            for (var i = 0; i < event.dataTransfer.files.length; i++) {
+                            for (i = 0; i < event.dataTransfer.files.length; i++) {
                                 file = event.dataTransfer.files[i];
                                 fileNameNode = document.createElement('DIV');
                                 fileNameNode.appendChild(document.createTextNode(
@@ -239,13 +246,18 @@ IMParts_Catalog.fileupload = {
                                 fileNameNode.style.textAlign = 'center';
                                 event.target.appendChild(fileNameNode);
                             }
-                            var updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), '');
+                            updateInfo = IMLibContextPool.getContextInfoFromId(eventTarget.getAttribute('id'), '');
                             if (isProgressing) {
                                 infoFrame.style.display = 'block';
-                                setTimeout(function () {
-                                    infoFrame.setAttribute('src',
-                                        'upload_frame.php?up_id=' + uploadId + iframeId);
-                                });
+                                setTimeout((function () {
+                                    var frameNode = infoFrame;
+                                    var param = uploadId + iframeId;
+                                    return function () {
+                                        frameNode.setAttribute('src',
+                                            'upload_frame.php?up_id=' + param);
+                                    };
+                                })());
+
                             }
                             IMLibQueue.setTask((function () {
                                 var uploadData = '&_im_contextname=' + encodeURIComponent(updateInfo.context.contextName) +
@@ -280,7 +292,7 @@ IMParts_Catalog.fileupload = {
                                             context = IMLibContextPool.getContextDef(contextName);
                                             if (context['file-upload']) {
                                                 for (index in context['file-upload']) {
-                                                    if (context['file-upload'][index].field == updateField) {
+                                                    if (context['file-upload'][index].field === updateField) {
                                                         relatedContextName = context['file-upload'][index].context;
                                                         break;
                                                     }
@@ -402,12 +414,11 @@ IMParts_Catalog.fileupload = {
 
                         INTERMediatorLib.addEvent(formNode, 'submit', (function () {
                             var iframeId = i;
-                            return function (event) {
+                            return function () {
                                 var iframeNode = document.getElementById('upload_frame' + iframeId);
                                 iframeNode.style.display = 'block';
                                 setTimeout(function () {
-                                    var infoURL = selfURL() + '?uploadprocess=' +
-                                        this.uploadId + iframeId;
+                                    var infoURL = selfURL() + '?uploadprocess=' + this.uploadId + iframeId;
                                     iframeNode.setAttribute('src', infoURL);
                                 });
                                 return true;
@@ -435,6 +446,7 @@ IMParts_Catalog.fileupload = {
 
 IMParts_Catalog.jsonformat = {
     instanciate: function (parentNode) {
+        'use strict';
         var newId = parentNode.getAttribute('id') + '-jsonf';
         var newNode = document.createElement('pre');
         newNode.setAttribute('id', newId);
@@ -451,8 +463,8 @@ IMParts_Catalog.jsonformat = {
         parentNode._im_setValue = (function () {
             var theId = newId;
             return function (str) {
-                IMParts_Catalog.jsonformat.initialValues[theId]
-                    = str ? JSON.stringify(JSON.parse(str), null, '    ') : '';
+                IMParts_Catalog.jsonformat.initialValues[theId] =
+                    str ? JSON.stringify(JSON.parse(str), null, '    ') : '';
             };
         })();
     },
@@ -461,6 +473,7 @@ IMParts_Catalog.jsonformat = {
     initialValues: {},
 
     finish: function () {
+        'use strict';
         for (var i = 0; i < IMParts_Catalog.jsonformat.ids.length; i++) {
             var targetId = IMParts_Catalog.jsonformat.ids[i];
             var targetNode = document.getElementById(targetId);
@@ -475,6 +488,7 @@ IMParts_Catalog.jsonformat = {
 
 IMParts_Catalog.popupselector = {
     instanciate: function (parentNode) {
+        'use strict';
         var widgetId, node, inNode, valueNode;
         if (parentNode.getAttribute('class') !== '_im_widget_popup') {
             parentNode.setAttribute('class', '_im_widget_popup');
@@ -493,10 +507,9 @@ IMParts_Catalog.popupselector = {
             inNode.appendChild(document.createTextNode('×'));
             node.appendChild(inNode);
             INTERMediatorLib.addEvent(inNode, 'click', (function () {
-                var selRoot = node;
                 return function () {
                     IMParts_Catalog.popupselector.clearSelection();
-                }
+                };
             })());
             widgetId = parentNode.getAttribute('id');
             IMParts_Catalog.popupselector.ids.push(widgetId);
@@ -534,6 +547,7 @@ IMParts_Catalog.popupselector = {
     zIndex: 9000,
 
     finish: function () {
+        'use strict';
         var i, targetId, targetNode, j, nodes, selectionRoot, nodeValue, displayValue, innodes, k;
         for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i++) {
             targetId = IMParts_Catalog.popupselector.ids[i];
@@ -545,10 +559,10 @@ IMParts_Catalog.popupselector = {
                 nodes = selectionRoot.childNodes;
                 for (j = 0; j < nodes.length; j++) {
                     if (nodes[j] &&
-                        nodes[j].nodeType == 1 &&
-                        nodes[j].getAttribute('data-im-control') == 'repeater') {
+                        nodes[j].nodeType === 1 &&
+                        nodes[j].getAttribute('data-im-control') === 'repeater') {
                         nodes[j].setAttribute('class', '_im_widget_popup_selection');
-                        if (nodeValue == nodes[j].getAttribute('data-im-value')) {
+                        if (nodeValue === nodes[j].getAttribute('data-im-value')) {
                             displayValue = nodes[j].innerHTML;
                             nodes[j].setAttribute('class', '_im_widget_popup_selection _im_widget_popup_selected');
                         }
@@ -565,7 +579,7 @@ IMParts_Catalog.popupselector = {
                 if (targetNode) {
                     innodes = targetNode.getElementsByClassName('_im_widget_popup_value');
                     for (k = 0; k < innodes.length; k++) {
-                        innodes[k].innerHTML = displayValue ? displayValue : "[Not selected]";
+                        innodes[k].innerHTML = displayValue ? displayValue : '[Not selected]';
                     }
                 }
             }
@@ -573,10 +587,11 @@ IMParts_Catalog.popupselector = {
     },
 
     clickValue: function (selectionRoot) {
+        'use strict';
         var body, panelBack;
-        selectionRoot.style.display = "block";
+        selectionRoot.style.display = 'block';
         body = document.getElementsByTagName('BODY')[0];
-        panelBack = document.createElement("DIV");
+        panelBack = document.createElement('DIV');
         body.appendChild(panelBack);
         panelBack.setAttribute('class', '_im_widget_popup_panelback');
         panelBack.setAttribute('id', '_im_widget_popup_panelback');
@@ -588,6 +603,7 @@ IMParts_Catalog.popupselector = {
     },
 
     clearSelection: function () {
+        'use strict';
         var i, body, targetNode, selectionRoot;
         body = document.getElementsByTagName('BODY')[0];
         targetNode = document.getElementById('_im_widget_popup_panelback');
@@ -597,12 +613,13 @@ IMParts_Catalog.popupselector = {
         for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i++) {
             selectionRoot = IMParts_Catalog.popupselector.selectionRoots[i];
             if (selectionRoot) {
-                selectionRoot.style.display = "none";
+                selectionRoot.style.display = 'none';
             }
         }
     },
 
     setData: function (node) {
+        'use strict';
         var i, selectedData, target, targetField, bindingId, keyRec, nodes, contextInfo;
         selectedData = node.getAttribute('data-im-value');
         target = node.parentNode.parentNode.getAttribute('data-im').split(' ')[0].split('@');
@@ -617,7 +634,7 @@ IMParts_Catalog.popupselector = {
         }
         nodes = node.parentNode.getElementsByClassName('_im_widget_popup_selection');
         for (i = 0; i < nodes.length; i++) {
-            if (node.getAttribute('data-im-value') == nodes[i].getAttribute('data-im-value')) {
+            if (node.getAttribute('data-im-value') === nodes[i].getAttribute('data-im-value')) {
                 nodes[i].setAttribute('class', '_im_widget_popup_selection _im_widget_popup_selected');
             } else {
                 nodes[i].setAttribute('class', '_im_widget_popup_selection');

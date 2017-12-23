@@ -8,20 +8,69 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+// JSHint support
+/* global INTERMediator, INTERMediatorOnPage, IMLibUI, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue,
+   IMLibCalc, IMLibPageNavigation, IMLib, IMLibLocalContext, IMLibElement */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview IMLibEventResponder class is defined here.
  */
+var IMLibChangeEventDispatch;
+var IMLibKeyDownEventDispatch;
+var IMLibKeyUpEventDispatch;
+var IMLibInputEventDispatch;
+var IMLibMouseEventDispatch;
+var IMLibBlurEventDispatch;
+
+function IMLibEventDispatch() {
+    'use strict';
+    this.dispatchTable = {};
+    this.dispatchTableTarget = {};
+}
+
+IMLibEventDispatch.prototype.clearAll = function () {
+    'use strict';
+    this.dispatchTable = {};
+    this.dispatchTableTarget = {};
+};
+
+IMLibEventDispatch.prototype.setExecute = function (idValue, exec) {
+    'use strict';
+    if (idValue && exec) {
+        this.dispatchTable[idValue] = exec;
+    }
+};
+
+IMLibEventDispatch.prototype.setTargetExecute = function (targetValue, exec) {
+    'use strict';
+    if (targetValue && exec) {
+        this.dispatchTableTarget[targetValue] = exec;
+    }
+};
+
+IMLibEventDispatch.prototype.setExecuteByCode = function (idValue, keyCode, exec) {
+    'use strict';
+    if (idValue && keyCode) {
+        if (!this.dispatchTable[idValue]) {
+            this.dispatchTable[idValue] = {};
+        }
+        this.dispatchTable[idValue][keyCode] = exec;
+    }
+};
+
 /**
  *
  * Usually you don't have to instanciate this class with new operator.
  * @constructor
  */
-IMLibEventResponder = {
+var IMLibEventResponder = {
     touchEventCancel: false,
 
     isSetup: false,
 
     setup: function () {
+        'use strict';
         var body;
 
         if (IMLibEventResponder.isSetup) {
@@ -203,43 +252,6 @@ IMLibEventResponder = {
     }
 };
 
-var IMLibChangeEventDispatch;
-var IMLibKeyDownEventDispatch;
-var IMLibKeyUpEventDispatch;
-var IMLibInputEventDispatch;
-var IMLibMouseEventDispatch;
-var IMLibBlurEventDispatch;
-
-function IMLibEventDispatch() {
-    this.dispatchTable = {};
-    this.dispatchTableTarget = {};
-}
-
-IMLibEventDispatch.prototype.clearAll = function () {
-    this.dispatchTable = {};
-    this.dispatchTableTarget = {};
-};
-
-IMLibEventDispatch.prototype.setExecute = function (idValue, exec) {
-    if (idValue && exec) {
-        this.dispatchTable[idValue] = exec;
-    }
-};
-
-IMLibEventDispatch.prototype.setTargetExecute = function (targetValue, exec) {
-    if (targetValue && exec) {
-        this.dispatchTableTarget[targetValue] = exec;
-    }
-};
-
-IMLibEventDispatch.prototype.setExecuteByCode = function (idValue, keyCode, exec) {
-    if (idValue && keyCode) {
-        if (!this.dispatchTable[idValue]) {
-            this.dispatchTable[idValue] = {};
-        }
-        this.dispatchTable[idValue][keyCode] = exec;
-    }
-};
 
 
 

@@ -11,7 +11,7 @@
 // JSHint support
 /* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
- IMLibEventResponder, IMLibElement, Parser, IMLib */
+ IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog */
 /* jshint -W083 */ // Function within a loop
 
 /**

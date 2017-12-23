@@ -8,7 +8,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//'use strict';
+// JSHint support
+/* global IMLibContextPool, INTERMediator, IMLibMouseEventDispatch, IMLibLocalContext,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibUI,
+ IMLibEventResponder, INTERMediatorLog, SHA1, IMLib */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview INTERMediatorOnPage class is defined here.
  */
@@ -188,6 +193,7 @@ var INTERMediatorOnPage = {
     },
 
     storeSessionStorageWithFallDown: function (key, value) {
+        'use strict';
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
@@ -202,6 +208,7 @@ var INTERMediatorOnPage = {
     },
 
     getSessionStorageWithFallDown: function (key) {
+        'use strict';
         var value;
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
@@ -219,6 +226,7 @@ var INTERMediatorOnPage = {
     },
 
     removeFromSessionStorageWithFallDown: function (key) {
+        'use strict';
         if (INTERMediator.useSessionStorage === true &&
             typeof sessionStorage !== 'undefined' &&
             sessionStorage !== null) {
@@ -311,7 +319,7 @@ var INTERMediatorOnPage = {
             messageNode, oAuthButton;
 
         this.checkPasswordPolicy = function (newPassword, userName, policyString) {
-            var terms, i, policyCheck, message = [], minLen;
+            var terms, i, message = [], minLen;
             if (!policyString) {
                 return message;
             }
@@ -320,37 +328,31 @@ var INTERMediatorOnPage = {
                 switch (terms[i].toUpperCase()) {
                 case 'USEALPHABET':
                     if (!newPassword.match(/[A-Za-z]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2015));
                     }
                     break;
                 case 'USENUMBER':
                     if (!newPassword.match(/[0-9]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2016));
                     }
                     break;
                 case 'USEUPPER':
                     if (!newPassword.match(/[A-Z]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2017));
                     }
                     break;
                 case 'USELOWER':
                     if (!newPassword.match(/[a-z]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2018));
                     }
                     break;
                 case 'USEPUNCTUATION':
                     if (!newPassword.match(/[^A-Za-z0-9]/)) {
-                        policyCheck = false;
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2019));
                     }
                     break;
                 case 'NOTUSERNAME':
-                    if (newPassword == userName) {
-                        policyCheck = false;
+                    if (newPassword === userName) {
                         message.push(INTERMediatorLib.getInsertedStringFromErrorNumber(2020));
                     }
                     break;
@@ -358,7 +360,6 @@ var INTERMediatorOnPage = {
                     if (terms[i].toUpperCase().indexOf('LENGTH') === 0) {
                         minLen = terms[i].match(/[0-9]+/)[0];
                         if (newPassword.length < minLen) {
-                            policyCheck = false;
                             message.push(
                                 INTERMediatorLib.getInsertedStringFromErrorNumber(2021, [minLen]));
                         }
@@ -386,8 +387,8 @@ var INTERMediatorOnPage = {
         if (INTERMediatorOnPage.isSetDefaultStyle) {
             backBox.style.height = '100%';
             backBox.style.width = '100%';
-            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
-                + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background.gif)';
+            backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath() +
+                '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background.gif)';
             backBox.style.position = 'absolute';
             backBox.style.padding = ' 50px 0 0 0';
             backBox.style.top = '0';
@@ -666,15 +667,15 @@ var INTERMediatorOnPage = {
 
         bodyNode = document.getElementsByTagName('BODY')[0];
         backBox = document.createElement('div');
-        backBox.id = "_im_autherrorback";
+        backBox.id = '_im_autherrorback';
         bodyNode.insertBefore(backBox, bodyNode.childNodes[0]);
         if (INTERMediatorOnPage.isSetDefaultStyle) {
             backBox.style.height = '100%';
             backBox.style.width = '100%';
             //backBox.style.backgroundColor = '#BBBBBB';
             if (INTERMediatorOnPage.isSetDefaultStyle) {
-                backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath()
-                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background-error.gif)';
+                backBox.style.backgroundImage = 'url(' + INTERMediatorOnPage.getEntryPath() +
+                    '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=background-error.gif)';
             }
             backBox.style.position = 'absolute';
             backBox.style.padding = ' 50px 0 0 0';
@@ -683,7 +684,7 @@ var INTERMediatorOnPage = {
             backBox.style.zIndex = '999999';
         }
         frontPanel = document.createElement('div');
-        frontPanel.id = "_im_autherrormessage";
+        frontPanel.id = '_im_autherrormessage';
         if (INTERMediatorOnPage.isSetDefaultStyle) {
             frontPanel.style.width = '240px';
             frontPanel.style.backgroundColor = '#333333';
@@ -802,9 +803,9 @@ var INTERMediatorOnPage = {
                     judge = (specifiedVersion <= document.documentMode);
                 }
             } else {
-                judge = (specifiedVersion == versionNum);
+                judge = (specifiedVersion === versionNum);
                 if (document.documentMode) {
-                    judge = (specifiedVersion == document.documentMode);
+                    judge = (specifiedVersion === document.documentMode);
                 }
             }
         }
@@ -850,13 +851,13 @@ var INTERMediatorOnPage = {
 
         function seekNode(node, imDefinition) {
             var children, i, nodeDefs, returnValue;
-            if (node.nodeType != 1) {
+            if (node.nodeType !== 1) {
                 return null;
             }
             children = node.childNodes;
             if (children) {
                 for (i = 0; i < children.length; i++) {
-                    if (children[i].nodeType == 1) {
+                    if (children[i].nodeType === 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                             if (nodeDefs.indexOf(imDefinition) > -1) {
@@ -883,13 +884,13 @@ var INTERMediatorOnPage = {
 
         function seekNode(node, imDefinition) {
             var children, i, nodeDefs, returnValue;
-            if (node.nodeType != 1) {
+            if (node.nodeType !== 1) {
                 return null;
             }
             children = node.childNodes;
             if (children) {
                 for (i = 0; i < children.length; i++) {
-                    if (children[i].nodeType == 1) {
+                    if (children[i].nodeType === 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                             if (nodeDefs.indexOf(imDefinition) > -1 && children[i].getAttribute) {
@@ -933,13 +934,13 @@ var INTERMediatorOnPage = {
 
         function seekNode(node, imDefinition) {
             var children, i, nodeDefs;
-            if (node.nodeType != 1) {
+            if (node.nodeType !== 1) {
                 return;
             }
             children = node.childNodes;
             if (children) {
                 for (i = 0; i < children.length; i++) {
-                    if (children[i].nodeType == 1) {
+                    if (children[i].nodeType === 1) {
                         nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                         if (nodeDefs && nodeDefs.indexOf(imDefinition) > -1) {
                             if (children[i].getAttribute('id')) {
@@ -1018,7 +1019,7 @@ var INTERMediatorOnPage = {
         if (expired > 0) {
             cookieString += 'max-age=' + expired + ';expires=' + d.toUTCString() + ';';
         }
-        if (document.URL.substring(0, 8) == 'https://') {
+        if (document.URL.substring(0, 8) === 'https://') {
             cookieString += 'secure;';
         }
         document.cookie = cookieString;
@@ -1041,10 +1042,10 @@ var INTERMediatorOnPage = {
         frontPanel = document.getElementById('_im_progress');
         if (frontPanel) {
             themeName = INTERMediatorOnPage.getTheme().toLowerCase();
-            if (themeName === "least" || themeName === "thosedays") {
-                frontPanel.style.display = "none";
+            if (themeName === 'least' || themeName === 'thosedays') {
+                frontPanel.style.display = 'none';
             } else {
-                frontPanel.style.transitionDuration = "0.3s";
+                frontPanel.style.transitionDuration = '0.3s';
                 frontPanel.style.opacity = 0;
                 frontPanel.style.zIndex = -9999;
             }
@@ -1073,34 +1074,32 @@ var INTERMediatorOnPage = {
             } else {
                 bodyNode.appendChild(frontPanel);
             }
-            if (themeName === "least" || themeName === "thosedays") {
+            if (themeName === 'least' || themeName === 'thosedays') {
                 imageIM = document.createElement('img');
                 imageIM.setAttribute('id', '_im_logo');
-                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
-                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=logo.gif');
+                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
+                    '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=logo.gif');
                 frontPanel.appendChild(imageIM);
                 imageProgress = document.createElement('img');
                 imageProgress.setAttribute('id', '_im_animatedimage');
-                imageProgress.setAttribute('src', INTERMediatorOnPage.getEntryPath()
-                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif');
+                imageProgress.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
+                    '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=inprogress.gif');
                 frontPanel.appendChild(imageProgress);
                 brNode = document.createElement('BR');
                 brNode.setAttribute('clear', 'all');
                 frontPanel.appendChild(brNode);
                 frontPanel.appendChild(document.createTextNode('INTER-Mediator working'));
             } else {
-                imageIM = document.createElement("img");
-                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath()
-                    + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=gears.svg');
+                imageIM = document.createElement('img');
+                imageIM.setAttribute('src', INTERMediatorOnPage.getEntryPath() +
+                    '?theme=' + INTERMediatorOnPage.getTheme() + '&type=images&name=gears.svg');
                 frontPanel.appendChild(imageIM);
             }
         }
-        if (themeName === "least" || themeName === "thosedays") {
-
-        } else {
-            frontPanel.style.transitionDuration = "0";
+        if (themeName !== 'least' && themeName !== 'thosedays') {
+            frontPanel.style.transitionDuration = '0';
             frontPanel.style.opacity = 1.0;
-            frontPanel.style.display = "flex";
+            frontPanel.style.display = 'flex';
             frontPanel.style.zIndex = 9999;
         }
     },
@@ -1108,11 +1107,12 @@ var INTERMediatorOnPage = {
     // Gear SVG was generated on http://loading.io/.
 
     setReferenceToTheme: function () {
+        'use strict';
         var headNode, linkElement, i, styleIndex = -1;
         headNode = document.getElementsByTagName('HEAD')[0];
         linkElement = document.createElement('link');
-        linkElement.setAttribute('href', INTERMediatorOnPage.getEntryPath()
-            + '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
+        linkElement.setAttribute('href', INTERMediatorOnPage.getEntryPath() +
+            '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
         linkElement.setAttribute('rel', 'stylesheet');
         linkElement.setAttribute('type', 'text/css');
         for (i = 0; i < headNode.childNodes.length; i++) {

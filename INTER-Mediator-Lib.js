@@ -8,7 +8,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
-//'use strict';
+// JSHint support
+/* global INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibUI, IMLibKeyDownEventDispatch,
+ IMLibChangeEventDispatch, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
+ IMLibEventResponder, Parser, IMLibLocalContext, IMLibFormat, IMLibInputEventDispatch */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview IMLib and INTERMediatorLib classes are defined here.
  */
@@ -26,6 +31,7 @@ var IMLib = {
     backSlash_char: '\\',
 
     get zerolength_str() {
+        'use strict';
         return '';
     },
     set zerolength_str(value) {
@@ -33,6 +39,7 @@ var IMLib = {
     },
 
     get crlf_str() {
+        'use strict';
         return '\r\n';
     },
     set crlf_str(value) {
@@ -59,11 +66,13 @@ var INTERMediatorLib = {
     roleAsNoResultDataControlName: 'noresult',
 
     initialize: function () {
+        'use strict';
         IMLibLocalContext.unarchive();
         return null;
     },
 
     setup: function () {
+        'use strict';
         if (window.addEventListener) {
             window.addEventListener('load', this.initialize, false);
         } else if (window.attachEvent) { // for IE
@@ -76,14 +85,17 @@ var INTERMediatorLib = {
     },
 
     markProcessed: function (node) {
+        'use strict';
         node.setAttribute('data-im-element', 'processed');
     },
 
     isProcessed: function (node) {
+        'use strict';
         return node.getAttribute('data-im-element') === 'processed'
     },
 
     generatePasswordHash: function (password) {
+        'use strict';
         var numToHex, salt, saltHex, code, lowCode, highCode, i;
         numToHex = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
         salt = '';
@@ -99,6 +111,7 @@ var INTERMediatorLib = {
     },
 
     getParentRepeater: function (node) {
+        'use strict';
         var currentNode = node;
         while (currentNode !== null) {
             if (INTERMediatorLib.isRepeater(currentNode, true)) {
@@ -110,6 +123,7 @@ var INTERMediatorLib = {
     },
 
     getParentEnclosure: function (node) {
+        'use strict';
         var currentNode = node;
         while (currentNode !== null) {
             if (INTERMediatorLib.isEnclosure(currentNode, true)) {
@@ -121,6 +135,7 @@ var INTERMediatorLib = {
     },
 
     isEnclosure: function (node, nodeOnly) {
+        'use strict';
         var tagName, className, children, k, controlAttr;
 
         if (!node || node.nodeType !== 1) {
@@ -159,6 +174,7 @@ var INTERMediatorLib = {
     },
 
     isRepeater: function (node, nodeOnly) {
+        'use strict';
         var tagName, className, children, k, controlAttr;
 
         if (!node || node.nodeType !== 1) {
@@ -213,6 +229,7 @@ var INTERMediatorLib = {
      */
 
     isLinkedElement: function (node) {
+        'use strict';
         var classInfo, matched, attr;
 
         if (node !== null && node.getAttribute) {
@@ -242,6 +259,7 @@ var INTERMediatorLib = {
     },
 
     isWidgetElement: function (node) {
+        'use strict';
         var classInfo, matched, attr, parentNode;
 
         if (!node) {
@@ -279,6 +297,7 @@ var INTERMediatorLib = {
     },
 
     isNamedElement: function (node) {
+        'use strict';
         var nameInfo, matched;
 
         if (node !== null) {
@@ -298,6 +317,7 @@ var INTERMediatorLib = {
     },
 
     getEnclosureSimple: function (node) {
+        'use strict';
         if (INTERMediatorLib.isEnclosure(node, true)) {
             return node;
         }
@@ -305,6 +325,7 @@ var INTERMediatorLib = {
     },
 
     getEnclosure: function (node) {
+        'use strict';
         var currentNode, detectedRepeater;
 
         currentNode = node;
@@ -370,6 +391,7 @@ var INTERMediatorLib = {
      */
 
     getLinkedElementInfo: function (node) {
+        'use strict';
         var result = INTERMediatorLib.getLinkedElementInfoImpl(node)
         if (result !== false) {
             return result;
@@ -381,6 +403,7 @@ var INTERMediatorLib = {
     },
 
     getLinkedElementInfoImpl: function (node) {
+        'use strict';
         var defs = [], eachDefs, reg, i, attr, matched;
         if (INTERMediatorLib.isLinkedElement(node)) {
             attr = node.getAttribute('data-im');
@@ -417,7 +440,7 @@ var INTERMediatorLib = {
 
         function resolveAlias(def) {
             var aliases = INTERMediatorOnPage.getOptionsAliases();
-            if (aliases != null && aliases[def] != null) {
+            if (aliases && aliases[def]) {
                 return aliases[def];
             }
             return def;
@@ -425,6 +448,7 @@ var INTERMediatorLib = {
     },
 
     getWidgetInfo: function (node) {
+        'use strict';
         var defs = [], eachDefs, i, classAttr, matched, reg;
         if (INTERMediatorLib.isWidgetElement(node)) {
             classAttr = node.getAttribute('data-im-widget');
@@ -452,6 +476,7 @@ var INTERMediatorLib = {
     },
 
     getNamedInfo: function (node) {
+        'use strict';
         var defs = [], eachDefs, i, nameAttr, matched, reg;
         if (INTERMediatorLib.isNamedElement(node)) {
             nameAttr = node.getAttribute('data-im-group');
@@ -483,6 +508,7 @@ var INTERMediatorLib = {
      */
 
     repeaterTagFromEncTag: function (tag) {
+        'use strict';
         if (tag === 'TBODY') {
             return 'TR';
         }
@@ -501,6 +527,7 @@ var INTERMediatorLib = {
     },
 
     getNodeInfoArray: function (nodeInfo) {
+        'use strict';
         var comps, tableName, fieldName, targetName;
 
         if (!nodeInfo || !nodeInfo.split) {
@@ -549,6 +576,7 @@ var INTERMediatorLib = {
      * @returns {IMType_NodeInfo}
      */
     getCalcNodeInfoArray: function (idValue) {
+        'use strict';
         var comps, tableName, fieldName, targetName, node, attribute;
 
         if (!idValue) {
@@ -587,6 +615,7 @@ var INTERMediatorLib = {
     /* As for IE7, DOM element can't have any prototype. */
 
     getClassAttributeFromNode: function (node) {
+        'use strict';
         var str = '';
         if (node === null) {
             return '';
@@ -600,6 +629,7 @@ var INTERMediatorLib = {
     },
 
     setClassAttributeToNode: function (node, className) {
+        'use strict';
         if (node === null) {
             return;
         }
@@ -617,6 +647,7 @@ var INTERMediatorLib = {
     eventInfos: [],
 
     addEvent: function (node, evt, func) {
+        'use strict';
         if (node.addEventListener) {
             node.addEventListener(evt, func, false);
             this.eventInfos.push({'node': node, 'event': evt, 'function': func});
@@ -630,6 +661,7 @@ var INTERMediatorLib = {
     },
 
     removeEvent: function (serialId) {
+        'use strict';
         if (this.eventInfos[serialId].node.removeEventListener) {
             this.eventInfos[serialId].node.removeEventListener(this.eventInfos[serialId].evt, this.eventInfos[serialId].func, false);
         } else if (this.eventInfos[serialId].node.detachEvent) {
@@ -656,6 +688,7 @@ var INTERMediatorLib = {
     },
 
     RoundHalfToEven: function (value, digit) {
+        'use strict';
         throw 'RoundHalfToEven method is NOT implemented.';
     },
 
@@ -666,11 +699,13 @@ var INTERMediatorLib = {
      * @returns {number}
      */
     Round: function (value, digit) {
+        'use strict';
         var powers = Math.pow(10, digit);
         return Math.round(value * powers) / powers;
     },
 
     normalizeNumerics: function (value) {
+        'use strict';
         var i;
         for (i = 0; i < 10; i++) {
             value = String(value).split(String.fromCharCode(65296 + i)).join(String(i));
@@ -680,6 +715,7 @@ var INTERMediatorLib = {
     },
 
     objectToString: function (obj) {
+        'use strict';
         var str, i, key, sq;
 
         if (obj === null) {
@@ -705,10 +741,12 @@ var INTERMediatorLib = {
     },
 
     numberFormat: function (str, digit, flags) {
+        'use strict';
         return IMLibFormat.numberFormat(str, digit, flags);
     },
 
     getTargetTableForRetrieve: function (element) {
+        'use strict';
         if (element.view !== null) {
             return element.view;
         }
@@ -716,6 +754,7 @@ var INTERMediatorLib = {
     },
 
     getTargetTableForUpdate: function (element) {
+        'use strict';
         if (element.table !== null) {
             return element.table;
         }
@@ -723,6 +762,7 @@ var INTERMediatorLib = {
     },
 
     getInsertedString: function (tmpStr, dataArray) {
+        'use strict';
         var resultStr, counter;
 
         resultStr = tmpStr;
@@ -735,6 +775,7 @@ var INTERMediatorLib = {
     },
 
     getInsertedStringFromErrorNumber: function (errNum, dataArray) {
+        'use strict';
         var resultStr, counter, messageArray;
 
         messageArray = INTERMediatorOnPage.getMessages();
@@ -748,6 +789,7 @@ var INTERMediatorLib = {
     },
 
     getNamedObject: function (obj, key, named) {
+        'use strict';
         var index;
         for (index in obj) {
             if (obj[index][key] === named) {
@@ -758,6 +800,7 @@ var INTERMediatorLib = {
     },
 
     getNamedObjectInObjectArray: function (ar, key, named) {
+        'use strict';
         var i;
         for (i = 0; i < ar.length; i++) {
             if (ar[i][key] === named) {
@@ -784,14 +827,16 @@ var INTERMediatorLib = {
     },
 
     is_array: function (target) {
-        return target
-            && typeof target === 'object'
-            && typeof target.length === 'number'
-            && typeof target.splice === 'function'
-            && !(target.propertyIsEnumerable('length'));
+        'use strict';
+        return target &&
+            typeof target === 'object' &&
+            typeof target.length === 'number' &&
+            typeof target.splice === 'function' &&
+            !(target.propertyIsEnumerable('length'));
     },
 
     getNamedValuesInObject: function (ar, key1, named1, key2, named2, retrieveKey) {
+        'use strict';
         var result = [], index;
         for (index in ar) {
             if (ar.hasOwnProperty(index) && ar[index][key1] === named1 && ar[index][key2] === named2) {
@@ -808,6 +853,7 @@ var INTERMediatorLib = {
     },
 
     getRecordsetFromFieldValueObject: function (obj) {
+        'use strict';
         var recordset = {}, index;
         for (index in obj) {
             if (obj.hasOwnProperty(index)) {
@@ -818,6 +864,7 @@ var INTERMediatorLib = {
     },
 
     getNodePath: function (node) {
+        'use strict';
         if (node.tagName === null) {
             return '';
         } else {
@@ -826,10 +873,11 @@ var INTERMediatorLib = {
     },
 
     isPopupMenu: function (element) {
+        'use strict';
         if (!element || !element.tagName) {
             return false;
         }
-        if (element.tagName == 'SELECT') {
+        if (element.tagName === 'SELECT') {
             return true;
         }
         return false;
@@ -839,6 +887,7 @@ var INTERMediatorLib = {
      If the cNode parameter is like '_im_post', this function will search data-im-control='post' elements.
      */
     getElementsByClassNameOrDataAttr: function (node, cName) {
+        'use strict';
         var nodes = [], attrValue;
 
         attrValue = (cName.match(/^_im_/)) ? cName.substr(4) : cName;
@@ -856,7 +905,7 @@ var INTERMediatorLib = {
             if (value) {
                 items = value.split('|');
                 for (i = 0; i < items.length; i++) {
-                    if (items[i] == attrValue) {
+                    if (items[i] === attrValue) {
                         nodes.push(target);
                     }
                 }
@@ -865,7 +914,7 @@ var INTERMediatorLib = {
             if (value) {
                 items = value.split(/[| ]/);
                 for (i = 0; i < items.length; i++) {
-                    if (items[i] == attrValue) {
+                    if (items[i] === attrValue) {
                         nodes.push(target);
                     }
                 }
@@ -874,7 +923,7 @@ var INTERMediatorLib = {
             if (value) {
                 items = value.split(/[| ]/);
                 for (i = 0; i < items.length; i++) {
-                    if (items[i] == attrValue) {
+                    if (items[i] === attrValue) {
                         nodes.push(target);
                     }
                 }
@@ -886,6 +935,7 @@ var INTERMediatorLib = {
     },
 
     getElementsByAttributeValue: function (node, attribute, value) {
+        'use strict';
         var nodes = [];
         var reg = new RegExp(value);
         checkNode(node);
@@ -907,6 +957,7 @@ var INTERMediatorLib = {
     },
 
     getElementsByClassName: function (node, cName) {
+        'use strict';
         var nodes = [];
         var reg = new RegExp(cName);
         checkNode(node);
@@ -928,6 +979,7 @@ var INTERMediatorLib = {
     },
 
     getElementsByIMManaged: function (node) {
+        'use strict';
         var nodes = [];
         var reg = new RegExp(/^IM/);
         checkNode(node);
@@ -949,6 +1001,7 @@ var INTERMediatorLib = {
     },
 
     seekLinkedAndWidgetNodes: function (nodes, ignoreEnclosureCheck) {
+        'use strict';
         var linkedNodesCollection = []; // Collecting linked elements to this array.;
         var widgetNodesCollection = [];
         var i, doEncCheck = ignoreEnclosureCheck;
@@ -992,6 +1045,7 @@ var INTERMediatorLib = {
     },
 
     createErrorMessageNode: function (tag, message) {
+        'use strict';
         var messageNode;
         messageNode = document.createElement(tag);
         INTERMediatorLib.setClassAttributeToNode(messageNode, '_im_alertmessage');
@@ -1000,6 +1054,7 @@ var INTERMediatorLib = {
     },
 
     removeChildNodes: function (node) {
+        'use strict';
         if (node) {
             while (node.childNodes.length > 0) {
                 node.removeChild(node.childNodes[0]);
@@ -1008,6 +1063,7 @@ var INTERMediatorLib = {
     },
 
     clearErrorMessage: function (node) {
+        'use strict';
         var errorMsgs, j;
         if (node) {
             errorMsgs = INTERMediatorLib.getElementsByClassName(node.parentNode, '_im_alertmessage');
@@ -1018,44 +1074,41 @@ var INTERMediatorLib = {
     },
 
     dateTimeStringISO: function (dt) {
+        'use strict';
         dt = (!dt) ? new Date() : dt;
-        return dt.getFullYear() + '-'
-            + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '-'
-            + ('0' + dt.getDate()).substr(-2, 2) + ' '
-            + ('0' + dt.getHours()).substr(-2, 2) + ':'
-            + ('0' + dt.getMinutes()).substr(-2, 2) + ':'
-            + ('0' + dt.getSeconds()).substr(-2, 2);
+        return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '-' +
+            ('0' + dt.getDate()).substr(-2, 2) + ' ' + ('0' + dt.getHours()).substr(-2, 2) + ':' +
+            ('0' + dt.getMinutes()).substr(-2, 2) + ':' + ('0' + dt.getSeconds()).substr(-2, 2);
     },
 
     dateTimeStringFileMaker: function (dt) {
+        'use strict';
         dt = (!dt) ? new Date() : dt;
-        return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/'
-            + ('0' + dt.getDate()).substr(-2, 2) + '/'
-            + dt.getFullYear() + ' '
-            + ('0' + dt.getHours()).substr(-2, 2) + ':'
-            + ('0' + dt.getMinutes()).substr(-2, 2) + ':'
-            + ('0' + dt.getSeconds()).substr(-2, 2);
+        return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/' + ('0' + dt.getDate()).substr(-2, 2) + '/' +
+            dt.getFullYear() + ' ' + ('0' + dt.getHours()).substr(-2, 2) + ':' +
+            ('0' + dt.getMinutes()).substr(-2, 2) + ':' + ('0' + dt.getSeconds()).substr(-2, 2);
     },
 
     dateStringISO: function (dt) {
+        'use strict';
         dt = (!dt) ? new Date() : dt;
-        return dt.getFullYear() + '-'
-            + ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '-'
-            + ('0' + dt.getDate()).substr(-2, 2);
+        return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).substr(-2, 2) +
+            '-' + ('0' + dt.getDate()).substr(-2, 2);
     },
 
     dateStringFileMaker: function (dt) {
+        'use strict';
         dt = (!dt) ? new Date() : dt;
-        return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/'
-            + ('0' + dt.getDate()).substr(-2, 2) + '/'
-            + dt.getFullYear();
+        return ('0' + (dt.getMonth() + 1)).substr(-2, 2) + '/' +
+            ('0' + dt.getDate()).substr(-2, 2) + '/' + dt.getFullYear();
     },
 
     timeString: function (dt) {
+        'use strict';
         dt = (!dt) ? new Date() : dt;
-        return ('0' + dt.getHours()).substr(-2, 2) + ':'
-            + ('0' + dt.getMinutes()).substr(-2, 2) + ':'
-            + ('0' + dt.getSeconds()).substr(-2, 2);
+        return ('0' + dt.getHours()).substr(-2, 2) + ':'+
+             ('0' + dt.getMinutes()).substr(-2, 2) + ':'+
+             ('0' + dt.getSeconds()).substr(-2, 2);
     }
 };
 
@@ -1100,15 +1153,18 @@ var IMLibNodeGraph = {
     nodes: [],
     edges: [],
     clear: function () {
+        'use strict';
         this.nodes = [];
         this.edges = [];
     },
     addNode: function (node) {
+        'use strict';
         if (this.nodes.indexOf(node) < 0) {
             this.nodes.push(node);
         }
     },
     addEdge: function (fromNode, toNode) {
+        'use strict';
         if (this.nodes.indexOf(fromNode) < 0) {
             this.addNode(fromNode);
         }
@@ -1118,6 +1174,7 @@ var IMLibNodeGraph = {
         this.edges.push({from: fromNode, to: toNode});
     },
     getAllNodesInEdge: function () {
+        'use strict';
         var i, nodes = [];
         for (i = 0; i < this.edges.length; i++) {
             if (nodes.indexOf(this.edges[i].from) < 0) {
@@ -1130,6 +1187,7 @@ var IMLibNodeGraph = {
         return nodes;
     },
     getLeafNodes: function () {
+        'use strict';
         var i, srcs = [], dests = [], srcAndDests = this.getAllNodesInEdge();
         for (i = 0; i < this.edges.length; i++) {
             srcs.push(this.edges[i].from);
@@ -1147,6 +1205,7 @@ var IMLibNodeGraph = {
         return dests;
     },
     getLeafNodesWithRemoving: function () {
+        'use strict';
         var i, newEdges = [], dests = this.getLeafNodes();
         for (i = 0; i < this.edges.length; i++) {
             if (dests.indexOf(this.edges[i].to) < 0) {
@@ -1160,6 +1219,7 @@ var IMLibNodeGraph = {
         return dests;
     },
     removeNode: function (node) {
+        'use strict';
         var i, newEdges = [];
         for (i = 0; i < this.edges.length; i++) {
             if (this.edges[i].to != node) {
@@ -1170,20 +1230,11 @@ var IMLibNodeGraph = {
         this.nodes.splice(this.nodes.indexOf(node), 1);
     },
     applyToAllNodes: function (f) {
+        'use strict';
         var i;
         for (i = 0; i < this.nodes.length; i++) {
             f(this.nodes[i]);
         }
 
     },
-    //
-    // decodeOpenIDToken: function ($token) {
-    //     var header, payload, cert, components = $token.split('.');
-    //     if (components.length != 3) {
-    //         return false;
-    //     }
-    //     header = Base64.decode(components[0]);
-    //     payload = Base64.decode(components[1]);
-    //     cert = Base64.decode(components[2]);
-    // }
 };

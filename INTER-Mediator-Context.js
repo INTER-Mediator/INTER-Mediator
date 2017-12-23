@@ -12,6 +12,7 @@
 /* global INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibUI, IMLibKeyDownEventDispatch,
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
  IMLibEventResponder, IMLibElement, Parser, IMLib */
+/* jshint -W083 */ // Function within a loop
 
 /**
  * @fileoverview IMLibContextPool, IMLibContext and IMLibLocalContext classes are defined here.
