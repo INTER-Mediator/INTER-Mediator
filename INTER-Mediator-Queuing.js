@@ -25,11 +25,13 @@ var IMLibQueue = {
     readyTo: false,
 
     getNewLabel: function () {
+        'use strict';
         IMLibQueue.dsLabel++;
         return IMLibQueue.dsLabel;
     },
 
     getDataStore: function (label, key) {
+        'use strict';
         if (!IMLibQueue.dataStore[label]) {
             IMLibQueue.dataStore[label] = {};
         }
@@ -37,13 +39,15 @@ var IMLibQueue = {
     },
 
     setDataStore: function (label, key, value) {
+        'use strict';
         if (!IMLibQueue.dataStore[label]) {
             IMLibQueue.dataStore[label] = {};
         }
-        return IMLibQueue.dataStore[label][key] = value;
+        IMLibQueue.dataStore[label][key] = value;
     },
 
     setTask: function (aTask, startHere) {
+        'use strict';
         if (startHere) {
             IMLibQueue.isExecute = true;
             aTask(function () {
@@ -59,6 +63,7 @@ var IMLibQueue = {
     },
 
     setPriorTask: function (aTask) {
+        'use strict';
         IMLibQueue.tasks.unshift(aTask);
         if (!IMLibQueue.readyTo) {
             setTimeout(IMLibQueue.startNextTask, 0);
@@ -67,6 +72,7 @@ var IMLibQueue = {
     },
 
     setSequentialTasks: function (tasksArray) {
+        'use strict';
         Array.prototype.push.apply(IMLibQueue.tasks, tasksArray);
         if (!IMLibQueue.readyTo) {
             setTimeout(IMLibQueue.startNextTask, 0);
@@ -75,6 +81,7 @@ var IMLibQueue = {
     },
 
     setSequentialPriorTasks: function (tasksArray) {
+        'use strict';
         Array.prototype.push.apply(tasksArray, IMLibQueue.tasks);
         IMLibQueue.tasks = tasksArray;
         if (!IMLibQueue.readyTo) {
@@ -84,6 +91,7 @@ var IMLibQueue = {
     },
 
     startNextTask: function () {
+        'use strict';
         if (IMLibQueue.isExecute) {
             if (IMLibQueue.tasks.length > 0) {
                 setTimeout(IMLibQueue.startNextTask, 0);

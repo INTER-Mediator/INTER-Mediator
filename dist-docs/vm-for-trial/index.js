@@ -8,6 +8,6 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 window.onload = function () {
-    INTERMediator.supressErrorMessageOnPage = true;
+    INTERMediatorLog.supressErrorMessageOnPage = true;
     INTERMediator.construct(true);
 };

@@ -19,7 +19,7 @@ class pageedit_Test extends PHPUnit_Framework_TestCase
         ob_start();
         require_once(dirname(__FILE__) . '/../INTER-Mediator-Support/pageedit.php');
         $output = ob_get_contents();
-        $this->assertNotContains('INTERMediator.debugMode=', $output);
+        $this->assertNotContains('INTERMediatorLog.debugMode=', $output);
         ob_clean();
     }
 }

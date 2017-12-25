@@ -32,14 +32,14 @@ class GenerateJSCode
     public function generateDebugMessageJS($message)
     {
         $q = '"';
-        echo "INTERMediator.setDebugMessage({$q}"
+        echo "INTERMediatorLog.setDebugMessage({$q}"
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
     public function generateErrorMessageJS($message)
     {
         $q = '"';
-        echo "INTERMediator.setErrorMessage({$q}"
+        echo "INTERMediatorLog.setErrorMessage({$q}"
             . str_replace("\n", " ", addslashes($message)) . "{$q});";
     }
 
@@ -249,10 +249,10 @@ class GenerateJSCode
             "{version:{$q}{$metadata->version}{$q},releasedate:{$q}{$metadata->releasedate}{$q}}");
 
         if (isset($prohibitDebugMode) && $prohibitDebugMode) {
-            $this->generateAssignJS("INTERMediator.debugMode", "false");
+            $this->generateAssignJS("INTERMediatorLog.debugMode", "false");
         } else {
             $this->generateAssignJS(
-                "INTERMediator.debugMode", ($debug === false) ? "false" : $debug);
+                "INTERMediatorLog.debugMode", ($debug === false) ? "false" : $debug);
         }
 
         if (!is_null($appLocale)) {
@@ -374,12 +374,14 @@ class GenerateJSCode
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Page.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Context.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Lib.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Format.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Element.js');
         $content .= file_get_contents($jsLibDir . 'js-expression-eval-parser.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Calc.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Parts.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-Navi.js');
         $content .= file_get_contents($currentDir . 'INTER-Mediator-UI.js');
+        $content .= file_get_contents($currentDir . 'INTER-Mediator-Log.js');
         $content .= ';' . file_get_contents($jsLibDir . 'tinySHA1.js');
         $content .= file_get_contents($jsLibDir . 'sha256.js');
         $content .= file_get_contents($bi2phpDir . 'biBigInt.js');

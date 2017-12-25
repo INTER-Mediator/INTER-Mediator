@@ -8,6 +8,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+// JSHint support
+/* global INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibUI, IMLibKeyDownEventDispatch,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
+ IMLibEventResponder, IMLibElement, Parser, IMLib, IMLibLocalContext */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview This source file should be described statements to execute
  * on the loading time of header's script tag.
@@ -26,46 +32,57 @@ if (INTERMediator.isIE && INTERMediator.ieVersion < 9) {
 } else {
     Object.defineProperty(INTERMediator, 'startFrom', {
         get: function () {
+            'use strict';
             return INTERMediator.getLocalProperty('_im_startFrom', 0);
         },
         set: function (value) {
+            'use strict';
             INTERMediator.setLocalProperty('_im_startFrom', value);
         }
     });
     Object.defineProperty(INTERMediator, 'pagedSize', {
         get: function () {
+            'use strict';
             return INTERMediator.getLocalProperty('_im_pagedSize', 0);
         },
         set: function (value) {
+            'use strict';
             INTERMediator.setLocalProperty('_im_pagedSize', value);
         }
     });
     Object.defineProperty(INTERMediator, 'pagination', {
         get: function () {
+            'use strict';
             return INTERMediator.getLocalProperty('_im_pagination', 0);
         },
         set: function (value) {
+            'use strict';
             INTERMediator.setLocalProperty('_im_pagination', value);
         }
     });
     Object.defineProperty(INTERMediator, 'additionalCondition', {
         get: function () {
+            'use strict';
             return INTERMediator.getLocalProperty('_im_additionalCondition', {});
         },
         set: function (value) {
+            'use strict';
             INTERMediator.setLocalProperty('_im_additionalCondition', value);
         }
     });
     Object.defineProperty(INTERMediator, 'additionalSortKey', {
         get: function () {
+            'use strict';
             return INTERMediator.getLocalProperty('_im_additionalSortKey', {});
         },
         set: function (value) {
+            'use strict';
             INTERMediator.setLocalProperty('_im_additionalSortKey', value);
         }
     });
     Object.defineProperty(IMLibCalc, 'regexpForSeparator', {
         get: function () {
+            'use strict';
             if (INTERMediator) {
                 return new RegExp(INTERMediator.separator);
             }
@@ -82,7 +99,7 @@ if (!INTERMediator.additionalSortKey) {
     INTERMediator.additionalSortKey = {};
 }
 
-INTERMediatorLib.addEvent(window, 'beforeunload', function (e) {
+INTERMediatorLib.addEvent(window, 'beforeunload', function () {
 //    var confirmationMessage = '';
 
 //    (e || window.event).returnValue = confirmationMessage;     //Gecko + IE
@@ -91,10 +108,12 @@ INTERMediatorLib.addEvent(window, 'beforeunload', function (e) {
 });
 
 INTERMediatorLib.addEvent(window, 'unload', function () {
+    'use strict';
     INTERMediator_DBAdapter.unregister();
 });
 
 INTERMediatorLib.addEvent(window, 'load', function () {
+    'use strict';
     var key, errorNode;
     if (INTERMediatorOnPage.initLocalContext)   {
         for (key in INTERMediatorOnPage.initLocalContext) {

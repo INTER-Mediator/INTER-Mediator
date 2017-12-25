@@ -136,6 +136,9 @@ class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
                         'aggregation-select' => getValueFromArray($context, 'aggregation-select'),
                         'aggregation-from' => getValueFromArray($context, 'aggregation-from'),
                         'aggregation-group-by' => getValueFromArray($context, 'aggregation-group-by'),
+                        'post-query-stored' => getValueFromArray($context, 'post-query-stored'),
+                        'post-query-stored' => getValueFromArray($context, 'post-query-stored'),
+                        'before-move-nextstep' => getValueFromArray($context, 'before-move-nextstep'),
                         'buttonnames-insert' => getValueFromArray($context, 'button-names', 'insert'),
                         'buttonnames-delete' => getValueFromArray($context, 'button-names', 'delete'),
                         'buttonnames-copy' => getValueFromArray($context, 'button-names', 'copy'),
@@ -348,6 +351,9 @@ class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
                     'transaction' => getValueFromArray($globalOptions, 'transaction'),
                     'media-root-dir' => getValueFromArray($globalOptions, 'media-root-dir'),
                     'media-context' => getValueFromArray($globalOptions, 'media-context'),
+                    'credit-including' => getValueFromArray($globalOptions, 'credit-including'),
+                    'app-locale' => getValueFromArray($globalOptions, 'app-locale'),
+                    'app-currency' => getValueFromArray($globalOptions, 'app-currency'),
                     'authentication-user-table' => getValueFromArray(
                         $globalOptions, 'authentication', 'user-table'),
                     'authentication-group-table' => getValueFromArray(

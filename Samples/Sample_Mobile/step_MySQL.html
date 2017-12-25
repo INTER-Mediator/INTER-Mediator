@@ -15,7 +15,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1"/>
     <title>Step Operation Sample - INTER-Mediator</title>
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css"/>
     <script type="text/javascript" src="step_MySQL.php"></script>
     <script type="text/javascript">
         INTERMediatorOnPage.doAfterConstruct = function () {
@@ -28,14 +27,11 @@
         });
 
         function adjastObjects() {
-            IMLibQueue.setTask(function (completeHandler) {
-                var headerNode = document.getElementById('header');
-                var footerNode = document.getElementById('IM_CREDIT');
-                var wHeight = screen.availHeight;
-                var stepBoxHeight = wHeight - headerNode.clientHeight - footerNode.clientHeight;
-                document.getElementById('content').style.height = stepBoxHeight + "px";
-                completeHandler();
-            });
+            var headerNode = document.getElementById('header');
+            var footerNode = document.getElementById('IM_CREDIT');
+            var wHeight = screen.availHeight;
+            var stepBoxHeight = wHeight - headerNode.clientHeight - footerNode.clientHeight;
+            document.getElementById('content').style.height = stepBoxHeight + "px";
         }
 
         INTERMediatorOnPage.doAfterPrefSelection = function () {
@@ -55,6 +51,7 @@
         };
         INTERMediatorOnPage.doAfterLastSelection = function () {
             console.log(IMLibPageNavigation.stepNavigation);
+            return false;
         };
     </script>
     <style>
@@ -101,14 +98,14 @@
             white-space: nowrap;
         }
 
-         .IM_Button_StepBack {
+        .IM_Button_StepBack {
             position: absolute;
             top: 8px;
             left: 4px;
             width: 40px;
             cursor: pointer;
             color: #9393ee;
-         }
+        }
     </style>
 </head>
 <body>

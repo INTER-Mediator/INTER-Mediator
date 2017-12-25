@@ -23,5 +23,5 @@ function test() {
             {field: "startdate", value: document.getElementById('startdate').value}
         ]
     });
-    INTERMediator.flushMessage();
+    INTERMediatorLog.flushMessage();
 }

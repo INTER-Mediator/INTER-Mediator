@@ -23,6 +23,7 @@
 <div id="wrapper">
     <h1>The Master/Detail UI Navigation with hiding Master area</h1>
     <!-- Table for the list view -->
+    <div id="IM_NAVIGATOR"></div>
     <div id="listarea" style="float:left; margin-right: 24px;">
         <table>
             <thead>
@@ -36,7 +37,8 @@
             <tr>
                 <td></td>
                 <td data-im="productlist@name"></td>
-                <td class="price" data-im="productlist@unitprice"></td>
+                <td style="text-align: right" data-im="productlist@unitprice"
+                    data-im-format="number(0)" data-im-format-options="useseparator"></td>
             </tr>
             </tbody>
         </table>
@@ -55,7 +57,8 @@
             </tr>
             <tr>
                 <th>unitprice</th>
-                <td><input type="text" size="60" data-im="productdetail@unitprice"></td>
+                <td><input type="text" size="60" data-im="productdetail@unitprice"
+                           data-im-format="currency()" data-im-format-options="useseparator"></td>
             </tr>
             <tr>
                 <th>photofile</th>

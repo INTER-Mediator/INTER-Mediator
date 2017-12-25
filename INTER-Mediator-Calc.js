@@ -8,6 +8,11 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+// JSHint support
+/* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibPageNavigation,
+ IMLibEventResponder, IMLibElement, Parser, IMLib */
+
 /**
  * @fileoverview IMLibCalc class is defined here.
  */
@@ -48,6 +53,7 @@ var IMLibCalc = {
      * @param currentRecord
      */
     updateCalculationInfo: function (contextObj, keyingValue, currentContext, nodeId, nInfo, currentRecord) {
+        'use strict';
         var calcDef, exp, field, elements, i, index, objectKey, itemIndex, values, referes,
             calcDefField, atPos, fieldLength;
 
@@ -65,7 +71,7 @@ var IMLibCalc = {
                     objectKey = nodeId +
                         (nInfo.target.length > 0 ? (INTERMediator.separator + nInfo.target) : '');
                 } catch (ex) {
-                    INTERMediator.setErrorMessage(ex,
+                    INTERMediatorLog.setErrorMessage(ex,
                         INTERMediatorLib.getInsertedString(
                             INTERMediatorOnPage.getMessages()[1036], [field, exp]));
                 }
@@ -97,6 +103,7 @@ var IMLibCalc = {
      *
      */
     updateCalculationFields: function () {
+        'use strict';
         var nodeId, exp, nInfo, valuesArray, leafNodes, calcObject, ix, refersArray, calcFieldInfo;
         var targetNode, field, valueSeries, targetElement, i, hasReferes, contextInfo, idValue, record;
 
@@ -156,7 +163,7 @@ var IMLibCalc = {
             }
         } while (leafNodes.length > 0);
         if (IMLibNodeGraph.nodes.length > 0) {
-            INTERMediator.setErrorMessage(new Exception(),
+            INTERMediatorLog.setErrorMessage(new Exception(),
                 INTERMediatorLib.getInsertedString(
                     INTERMediatorOnPage.getMessages()[1037], []));
         }
@@ -167,6 +174,7 @@ var IMLibCalc = {
      * @param updatedNodeId
      */
     recalculation: function (updatedNodeId) {
+        'use strict';
         var nodeId, newValueAdded, leafNodes, calcObject, ix, updatedValue, isRecalcAll = false;
         var newValue, field, i, updatedNodeIds, updateNodeValues, cachedIndex, exp, nInfo, valuesArray;
         var refersArray, valueSeries, targetElement, contextInfo, record, idValue;
@@ -263,6 +271,7 @@ var IMLibCalc = {
      *
      */
     setUndefinedToAllValues: function () {
+        'use strict';
         var nodeId, calcObject, ix, targetNode, field, targetExp, targetIds, isRemoved, idValue, repeaterTop;
 
         do {

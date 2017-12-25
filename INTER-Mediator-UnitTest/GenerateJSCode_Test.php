@@ -28,7 +28,7 @@ class GenerateJSCode_Test extends PHPUnit_Framework_TestCase
      */
     function test_generateErrorMessageJS()
     {
-        $this->expectOutputString('INTERMediator.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");');
+        $this->expectOutputString('INTERMediatorLog.setErrorMessage("PHP extension \"mbstring\" is required for running INTER-Mediator. ");');
         $this->generater->generateErrorMessageJS('PHP extension "mbstring" is required for running INTER-Mediator.' . "\n");
     }
 

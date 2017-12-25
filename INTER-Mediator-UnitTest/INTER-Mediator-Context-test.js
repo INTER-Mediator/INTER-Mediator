@@ -1,7 +1,11 @@
+// JSHint support
+/* global INTERMediator,buster,IMLibLocalContext,IMLibContext,IMLibContextPool */
+
 var assert = buster.referee.assert;
 
-buster.testCase("Local Context Test", {
-    "Local-Context-Test1": function () {
+buster.testCase('Local Context Test', {
+    'Local-Context-Test1': function () {
+        'use strict';
         IMLibLocalContext.setValue('test', 'value');
         assert.equals(IMLibLocalContext.getValue('test'), 'value');
         assert.equals(IMLibLocalContext.getValue('unexist-key'), null);
@@ -23,9 +27,10 @@ buster.testCase("Local Context Test", {
     }
 });
 
-buster.testCase("Remote Context Test", {
-    "Remote-Context-Test1": function () {
-        var context1 = new IMLibContext("test");
+buster.testCase('Remote Context Test', {
+    'Remote-Context-Test1': function () {
+        'use strict';
+        var context1 = new IMLibContext('test');
         context1.setValue('1', 'test', 'value');
         assert.equals(context1.getValue('1', 'test'), 'value');
         assert.equals(context1.getValue('2', 'test'), null);
@@ -42,21 +47,22 @@ buster.testCase("Remote Context Test", {
         assert.equals(context1.getValue('1', 'test4'), 'value4');
 
     },
-    "Remote-Context-Test2": function () {
+    'Remote-Context-Test2': function () {
+        'use strict';
         var i, j;
         IMLibContextPool.clearAll();
-        var context1 = new IMLibContext("context1");
+        var context1 = new IMLibContext('context1');
         assert.equals(IMLibContextPool.poolingContexts.length, 1);
-        var context2 = new IMLibContext("context2");
+        var context2 = new IMLibContext('context2');
         assert.equals(IMLibContextPool.poolingContexts.length, 2);
-        var context3 = new IMLibContext("context3");
+        var context3 = new IMLibContext('context3');
         assert.equals(IMLibContextPool.poolingContexts.length, 3);
         var context = [context1, context2, context3];
 
         var counter = 1;
         for (j = 0; j < 3; j++) {
-            context[j].setTableName("table");
-            context[j].setViewName("table");
+            context[j].setTableName('table');
+            context[j].setViewName('table');
             for (i = 1; i < 4; i++) {
                 context[j].setValue(i, 'test1', 'value1', 'node-' + (counter++));
                 context[j].setValue(i, 'test2', 'value2', 'node-' + (counter++));
@@ -73,58 +79,59 @@ buster.testCase("Remote Context Test", {
 
         for (j = 0; j < 3; j++) {
             for (i = 1; i < 4; i++) {
-                assert.equals(context[j].getValue(i, 'test1'), i == 1 ? 'change1' : 'value1');
-                assert.equals(context[j].getValue(i, 'test2'), i == 2 ? 'change2' : 'value2');
+                assert.equals(context[j].getValue(i, 'test1'), i === 1 ? 'change1' : 'value1');
+                assert.equals(context[j].getValue(i, 'test2'), i === 2 ? 'change2' : 'value2');
                 assert.equals(context[j].getValue(i, 'test3'), 'value3');
                 assert.equals(context[j].getValue(i, 'test4'), 'value4');
             }
         }
     },
-    "Remote-Context-Test3": function () {
+    'Remote-Context-Test3': function () {
+        'use strict';
         /*
-        Object.defineProperty(INTERMediator, 'startFrom', {
-            get: function () {
-                return INTERMediator.getLocalProperty("_im_startFrom", 0);
-            },
-            set: function (value) {
-                INTERMediator.setLocalProperty("_im_startFrom", value);
-            }
-        });
-        Object.defineProperty(INTERMediator, 'pagedSize', {
-            get: function () {
-                return INTERMediator.getLocalProperty("_im_pagedSize", 0);
-            },
-            set: function (value) {
-                INTERMediator.setLocalProperty("_im_pagedSize", value);
-            }
-        });
-        Object.defineProperty(INTERMediator, 'additionalCondition', {
-            get: function () {
-                return INTERMediator.getLocalProperty("_im_additionalCondition", {});
-            },
-            set: function (value) {
-                INTERMediator.setLocalProperty("_im_additionalCondition", value);
-            }
-        });
-        Object.defineProperty(INTERMediator, 'additionalSortKey', {
-            get: function () {
-                return INTERMediator.getLocalProperty("_im_additionalSortKey", {});
-            },
-            set: function (value) {
-                INTERMediator.setLocalProperty("_im_additionalSortKey", value);
-            }
-        });
+         Object.defineProperty(INTERMediator, 'startFrom', {
+         get: function () {'use strict';
+         return INTERMediator.getLocalProperty('_im_startFrom', 0);
+         },
+         set: function (value) {
+         INTERMediator.setLocalProperty('_im_startFrom', value);
+         }
+         });
+         Object.defineProperty(INTERMediator, 'pagedSize', {
+         get: function () {'use strict';
+         return INTERMediator.getLocalProperty('_im_pagedSize', 0);
+         },
+         set: function (value) {
+         INTERMediator.setLocalProperty('_im_pagedSize', value);
+         }
+         });
+         Object.defineProperty(INTERMediator, 'additionalCondition', {
+         get: function () {'use strict';
+         return INTERMediator.getLocalProperty('_im_additionalCondition', {});
+         },
+         set: function (value) {
+         INTERMediator.setLocalProperty('_im_additionalCondition', value);
+         }
+         });
+         Object.defineProperty(INTERMediator, 'additionalSortKey', {
+         get: function () {'use strict';
+         return INTERMediator.getLocalProperty('_im_additionalSortKey', {});
+         },
+         set: function (value) {
+         INTERMediator.setLocalProperty('_im_additionalSortKey', value);
+         }
+         });
 
-        if (!INTERMediator.additionalCondition) {
-            INTERMediator.additionalCondition = {};
-        }
+         if (!INTERMediator.additionalCondition) {
+         INTERMediator.additionalCondition = {};
+         }
 
-        if (!INTERMediator.additionalSortKey) {
-            INTERMediator.additionalSortKey = {};
-        }
-*/
+         if (!INTERMediator.additionalSortKey) {
+         INTERMediator.additionalSortKey = {};
+         }
+         */
 
-        var context1 = new IMLibContext("test");
+        var context1 = new IMLibContext('test');
         context1.sequencing = true;
         context1.setValue('id=1', 'field1', 10);
         context1.setValue('id=1', 'field2', '500');
@@ -152,9 +159,9 @@ buster.testCase("Remote Context Test", {
         context1.setValue('id=15', 'field2', 555);
         assert.equals(context1.recordOrder.length, 8);
         assert.equals(context1.pendingOrder.length, 7);
-        assert.equals(context1.recordOrder[0], "id=1");
-        assert.equals(context1.recordOrder[5], "id=6");
-        INTERMediator.additionalSortKey["test"] = [{field: "test", direction: "ASC"}];
+        assert.equals(context1.recordOrder[0], 'id=1');
+        assert.equals(context1.recordOrder[5], 'id=6');
+        INTERMediator.additionalSortKey.test = [{field: 'test', direction: 'ASC'}];
         assert.equals(context1.checkOrder({field1: 45}, true), 3);
         assert.equals(context1.checkOrder({field1: 50}, true), 4);
         assert.equals(context1.checkOrder({field1: 55}, true), 4);
@@ -164,26 +171,26 @@ buster.testCase("Remote Context Test", {
         assert.equals(context1.checkOrder({field1: 60, field2: 999}, true), 7);
         assert.equals(context1.checkOrder({field1: -1}, true), -1);
         assert.equals(context1.checkOrder({field1: 550}, true), 7);
-        //console.log("context1.recordOrder="+context1.recordOrder.toString());
+        //console.log('context1.recordOrder='+context1.recordOrder.toString());
         context1.rearrangePendingOrder(true);
         assert.equals(context1.recordOrder.length, 15);
         assert.equals(Object.keys(context1.store).length, 15);
         assert.equals(context1.pendingOrder.length, 0);
-        //console.log("context1.recordOrder="+context1.recordOrder.toString());
-        assert.equals(context1.recordOrder[0], "id=12");
-        assert.equals(context1.recordOrder[1], "id=1");
-        assert.equals(context1.recordOrder[2], "id=2");
-        assert.equals(context1.recordOrder[3], "id=9");
-        assert.equals(context1.recordOrder[4], "id=3");
-        assert.equals(context1.recordOrder[5], "id=4");
-        assert.equals(context1.recordOrder[6], "id=10");
-        assert.equals(context1.recordOrder[7], "id=5");
-        assert.equals(context1.recordOrder[8], "id=13");
-        assert.equals(context1.recordOrder[9], "id=6");
-        assert.equals(context1.recordOrder[10], "id=7");
-        assert.equals(context1.recordOrder[11], "id=14");
-        assert.equals(context1.recordOrder[12], "id=8");
-        assert.equals(context1.recordOrder[13], "id=15");
-        assert.equals(context1.recordOrder[14], "id=11");
+        //console.log('context1.recordOrder='+context1.recordOrder.toString());
+        assert.equals(context1.recordOrder[0], 'id=12');
+        assert.equals(context1.recordOrder[1], 'id=1');
+        assert.equals(context1.recordOrder[2], 'id=2');
+        assert.equals(context1.recordOrder[3], 'id=9');
+        assert.equals(context1.recordOrder[4], 'id=3');
+        assert.equals(context1.recordOrder[5], 'id=4');
+        assert.equals(context1.recordOrder[6], 'id=10');
+        assert.equals(context1.recordOrder[7], 'id=5');
+        assert.equals(context1.recordOrder[8], 'id=13');
+        assert.equals(context1.recordOrder[9], 'id=6');
+        assert.equals(context1.recordOrder[10], 'id=7');
+        assert.equals(context1.recordOrder[11], 'id=14');
+        assert.equals(context1.recordOrder[12], 'id=8');
+        assert.equals(context1.recordOrder[13], 'id=15');
+        assert.equals(context1.recordOrder[14], 'id=11');
     }
 });

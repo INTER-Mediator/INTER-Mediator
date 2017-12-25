@@ -8,6 +8,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+// JSHint support
+/* global INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibUI, IMLibKeyDownEventDispatch,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
+ IMLibEventResponder, Parser, IMLib, IMLibLocalContext, IMLibFormat, INTERMediatorLog, IMLibInputEventDispatch */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview IMLibElement class is defined here.
  */
@@ -19,23 +25,23 @@
 var IMLibElement = {
 
     formatters: {
-        number: INTERMediatorLib.decimalFormat,
-        currency: INTERMediatorLib.currencyFormat,
-        boolean: INTERMediatorLib.booleanFormat,
-        percent: INTERMediatorLib.percentFormat,
-        date: INTERMediatorLib.dateFormat,
-        datetime: INTERMediatorLib.datetimeFormat,
-        time: INTERMediatorLib.timeFormat
+        number: IMLibFormat.decimalFormat,
+        currency: IMLibFormat.currencyFormat,
+        boolean: IMLibFormat.booleanFormat,
+        percent: IMLibFormat.percentFormat,
+        date: IMLibFormat.dateFormat,
+        datetime: IMLibFormat.datetimeFormat,
+        time: IMLibFormat.timeFormat
     },
 
     unformatters: {
-        number: INTERMediatorLib.convertNumeric,
-        currency: INTERMediatorLib.convertNumeric,
-        boolean: INTERMediatorLib.convertBoolean,
-        percent: INTERMediatorLib.convertPercent,
-        date: INTERMediatorLib.convertDate,
-        datetime: INTERMediatorLib.convertDateTime,
-        time: INTERMediatorLib.convertTime
+        number: IMLibFormat.convertNumeric,
+        currency: IMLibFormat.convertNumeric,
+        boolean: IMLibFormat.convertBoolean,
+        percent: IMLibFormat.convertPercent,
+        date: IMLibFormat.convertDate,
+        datetime: IMLibFormat.convertDateTime,
+        time: IMLibFormat.convertTime
     },
 
     formatOptions: {
@@ -64,6 +70,7 @@ var IMLibElement = {
     },
 
     appendObject: function (obj, adding) {
+        'use strict';
         var result = obj;
         if (adding) {
             for (var key in adding) {
@@ -78,6 +85,7 @@ var IMLibElement = {
 // Formatting values
 //
     initilaizeFlags: function (element) {
+        'use strict';
         var flags, formatOption, negativeStyle, charStyle, kanjiSeparator;
         flags = {
             useSeparator: false,
@@ -98,6 +106,7 @@ var IMLibElement = {
     },
 
     getFormattedValue: function (element, curVal) {
+        'use strict';
         var flags, formatSpec, parsed, formattedValue = null, params, formatFunc, firstParen, lastParen;
 
         formatSpec = element.getAttribute('data-im-format');
@@ -112,7 +121,7 @@ var IMLibElement = {
             lastParen = formatSpec.lastIndexOf(')');
             parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/);
             formatFunc = IMLibElement.formatters[parsed[1].toLocaleLowerCase()];
-            params = formatSpec.substring(firstParen+1, lastParen);
+            params = formatSpec.substring(firstParen + 1, lastParen);
             if (params.length === 0) { // in case of parameter is just ().
                 params = 0;
             }
@@ -124,7 +133,8 @@ var IMLibElement = {
     },
 
     getUnformattedValue: function (element, value) {
-        var formatSpec, unformatFunc, parsed, params, convertedValue, flags;
+        'use strict';
+        var formatSpec, unformatFunc, parsed, params, convertedValue, flags, firstParen, lastParen;
         formatSpec = element.getAttribute('data-im-format');
         if (!formatSpec) {
             return null;
@@ -132,12 +142,11 @@ var IMLibElement = {
         flags = IMLibElement.initilaizeFlags(element);
         unformatFunc = IMLibElement.unformatters[formatSpec.trim().toLocaleLowerCase()];  // in case of no parameters in attribute
         if (!unformatFunc) {
-            parsed = formatSpec.match(/[^a-zA-Z]*([a-zA-Z]+).*[\(]([^\(]*)[\)]/);
+            firstParen = formatSpec.indexOf('(');
+            lastParen = formatSpec.lastIndexOf(')');
+            parsed = formatSpec.substr(0, firstParen).match(/[^a-zA-Z]*([a-zA-Z]+).*/);
             unformatFunc = IMLibElement.unformatters[parsed[1].toLocaleLowerCase()];
-            params = parsed[2];
-            if (parsed[2].length === 0) { // in case of parameter is just ().
-                params = 0;
-            }
+            params = formatSpec.substring(firstParen + 1, lastParen);
         }
         if (unformatFunc) {
             convertedValue = unformatFunc(value, params, flags);
@@ -147,6 +156,7 @@ var IMLibElement = {
     },
 
     setValueToIMNode: function (element, curTarget, curVal, clearField) {
+        'use strict';
         var styleName, currentValue, scriptNode, typeAttr, valueAttr, textNode, formatSpec, formattedValue,
             needPostValueSet = false, curValues, i, isReplaceOrAppend = false, imControl, negativeColor,
             originalValue, negativeSign, negativeTailSign, flags;
@@ -194,7 +204,7 @@ var IMLibElement = {
         formattedValue = IMLibElement.getFormattedValue(element, curVal);
         if (element.getAttribute('data-im-format')) {
             if (formattedValue === null) {
-                INTERMediator.setErrorMessage(
+                INTERMediatorLog.setErrorMessage(
                     'The \'data-im-format\' attribute is not valid: ' + formatSpec);
             } else {
                 curVal = formattedValue;
@@ -306,7 +316,7 @@ var IMLibElement = {
                     curValues = curVal.split(IMLib.nl_char);
                     if (typeAttr === 'checkbox' && curValues.length > 1) {
                         for (i = 0; i < curValues.length; i++) {
-                            if (valueAttr == curValues[i] && !INTERMediator.dontSelectRadioCheck) {
+                            if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                                 // The above operator shuold be '==' not '==='
                                 if (INTERMediator.isIE) {
                                     element.setAttribute('checked', 'checked');
@@ -316,7 +326,7 @@ var IMLibElement = {
                             }
                         }
                     } else {
-                        if (valueAttr == curVal && !INTERMediator.dontSelectRadioCheck) {
+                        if (valueAttr === curVal && !INTERMediator.dontSelectRadioCheck) {
                             // The above operator shuold be '==' not '==='
                             if (INTERMediator.isIE) {
                                 element.setAttribute('checked', 'checked');
@@ -386,11 +396,11 @@ var IMLibElement = {
                 }
             }
         }
-        if ((element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA')
-            && !isReplaceOrAppend
-            && (!imControl || imControl.indexOf('unbind') > 0 )) {
+        if ((element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'TEXTAREA') &&
+            !isReplaceOrAppend &&
+            (!imControl || imControl.indexOf('unbind') > 0 )) {
             if (!element.getAttribute('data-imbluradded')) {
-                INTERMediatorLib.addEvent(element, 'blur', (function (event) {
+                INTERMediatorLib.addEvent(element, 'blur', (function () {
                     var idValue = element.id;
                     var elementCapt = element;
                     return function () {
@@ -406,29 +416,19 @@ var IMLibElement = {
                 IMLibChangeEventDispatch.setExecute(element.id, (function () {
                     var idValue = element.id;
                     var elementCapt = element;
-                    return function (event) {
+                    return function () {
                         if (!IMLibUI.valueChange(idValue, false)) {
                             elementCapt.focus();
                         }
                     };
                 })());
-                // IMLibChangeEventDispatch.setExecute(element.id, (function () {
-                //     var idValue = element.id;
-                //     return function (event) {
-                //         IMLibQueue.setTask(function (completeTask) {
-                //             console.log("start:",idValue);
-                //             IMLibUI.valueChange(idValue, false, completeTask);
-                //             //completeTask();
-                //         }, false);
-                //     };
-                // })());
                 element.setAttribute('data-imchangeadded', 'set');
             }
             if ((INTERMediator.isTrident || INTERMediator.isEdge) && !element.getAttribute('data-iminputadded')) {
                 IMLibInputEventDispatch.setExecute(element.id, (function () {
                     var idValue = element.id;
                     var elementCapt = element;
-                    return function (event) {
+                    return function () {
                         if (document.getElementById(idValue).value === '') {
                             if (!IMLibUI.valueChange(idValue, false)) {
                                 elementCapt.focus();
@@ -444,7 +444,8 @@ var IMLibElement = {
     },
 
     getValueFromIMNode: function (element) {
-        var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr, formatSpec, convertedValue;
+        'use strict';
+        var nodeTag, typeAttr, newValue, mergedValues, targetNodes, k, valueAttr, convertedValue;
 
         if (element) {
             nodeTag = element.tagName;
@@ -458,8 +459,8 @@ var IMLibElement = {
             newValue = element._im_getValue();
         } else if (nodeTag === 'INPUT') {
             if (typeAttr === 'checkbox') {
-                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX'
-                    || INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
+                if (INTERMediatorOnPage.dbClassName === 'DB_FileMaker_FX' ||
+                    INTERMediatorOnPage.dbClassName === 'DB_FileMaker_DataAPI') {
                     mergedValues = [];
                     targetNodes = element.parentNode.getElementsByTagName('INPUT');
                     for (k = 0; k < targetNodes.length; k++) {
@@ -494,14 +495,6 @@ var IMLibElement = {
         }
         convertedValue = IMLibElement.getUnformattedValue(element, newValue);
         newValue = convertedValue ? convertedValue : newValue;
-        // formatSpec = element.getAttribute('data-im-format');
-        // if (formatSpec) {
-        //     newValue = newValue.replace(new RegExp(INTERMediatorOnPage.localeInfo.mon_thousands_sep, 'g'), '');
-        //     newValue = INTERMediatorLib.normalizeNumerics(newValue);
-        //     if (newValue !== '') {
-        //         newValue = parseFloat(newValue);
-        //     }
-        // }
         return newValue;
     },
 
@@ -521,6 +514,7 @@ var IMLibElement = {
      */
 
     deleteNodes: function (removeNodes) {
+        'use strict';
         var removeNode, removingNodes, i, j, k, removeNodeId, nodeId, calcObject, referes, values, key;
 
         for (key = 0; key < removeNodes.length; key++) {

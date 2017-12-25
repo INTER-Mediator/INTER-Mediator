@@ -8,6 +8,12 @@
  * https://github.com/INTER-Mediator/INTER-Mediator/blob/master/dist-docs/License.txt
  */
 
+// JSHint support
+/* global IMLibContextPool, INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibLocalContext,
+ IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
+ IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog */
+/* jshint -W083 */ // Function within a loop
+
 /**
  * @fileoverview IMLibUI class is defined here.
  */
@@ -28,6 +34,7 @@ var IMLibUI = {
      if validation is succeed or not.
      */
     valueChange: function (idValue, validationOnly) {
+        'use strict';
         var changedObj, contextInfo, linkInfo, nodeInfo, returnValue = true;
 
         changedObj = document.getElementById(idValue);
@@ -77,7 +84,7 @@ var IMLibUI = {
                 if (!contextInfo) { // In case of local context
                     targetNode = document.getElementById(idValue);
                     targetSpec = targetNode.getAttribute('data-im');
-                    if (targetSpec && targetSpec.split(INTERMediator.separator)[0] == IMLibLocalContext.contextName) {
+                    if (targetSpec && targetSpec.split(INTERMediator.separator)[0] === IMLibLocalContext.contextName) {
                         IMLibLocalContext.updateFromNodeValue(idValue);
                         IMLibCalc.recalculation();
                         completeTask();
@@ -104,7 +111,7 @@ var IMLibUI = {
                     result = contextInfo.context.isValueUndefined(contextInfo.record, contextInfo.field, false);
                 }
                 if (result) {
-                    INTERMediator.setErrorMessage('Error in updating.',
+                    INTERMediatorLog.setErrorMessage('Error in updating.',
                         INTERMediatorLib.getInsertedString(
                             INTERMediatorOnPage.getMessages()[1040],
                             [contextInfo.context.contextName, contextInfo.field]));
@@ -125,15 +132,18 @@ var IMLibUI = {
                         var newValueCapt = newValue;
                         var completeTaskCapt = completeTask;
                         return function (result) {
-                            var updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes;
+                            var updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
+                                recordObj, keepProp;
                             var keyField = contextInfoCapt.context.getKeyField();
                             if (result && result.dbresult) {
-                                var recordObj = result.dbresult[0];
-                                var keepProp = INTERMediator.partialConstructing;
+                                recordObj = result.dbresult[0];
+                                keepProp = INTERMediator.partialConstructing;
                                 INTERMediator.partialConstructing = false;
                                 for (field in recordObj) {
-                                    contextInfoCapt.context.setValue(
-                                        keyField + '=' + recordObj[keyField], field, recordObj[field]);
+                                    if (recordObj.hasOwnProperty(field)) {
+                                        contextInfoCapt.context.setValue(
+                                            keyField + '=' + recordObj[keyField], field, recordObj[field]);
+                                    }
                                 }
                             }
                             INTERMediator.partialConstructing = keepProp;
@@ -166,8 +176,7 @@ var IMLibUI = {
                             }
                             IMLibCalc.recalculation();//IMLibCalc.recalculation(idValueCapt2); // Optimization Required
                             INTERMediatorOnPage.hideProgress();
-                            INTERMediator.flushMessage();
-                            // IMLibUI.unlockUIElement(idValueCapt2);
+                            INTERMediatorLog.flushMessage();
                             if (completeTaskCapt) {
                                 completeTaskCapt();
                             }
@@ -177,7 +186,7 @@ var IMLibUI = {
                         var targetFieldCapt = targetField;
                         var completeTaskCapt = completeTask;
                         return function () {
-                            alert(INTERMediatorLib.getInsertedString(
+                            window.alert(INTERMediatorLib.getInsertedString(
                                 INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]));
                             INTERMediatorOnPage.hideProgress();
                             IMLibUI.clearLockInfo();
@@ -187,7 +196,7 @@ var IMLibUI = {
                         };
                     })(),
                     function () {
-                        var response = confirm(INTERMediatorOnPage.getMessages()[1024]);
+                        var response = window.confirm(INTERMediatorOnPage.getMessages()[1024]);
                         if (!response) {
                             INTERMediatorOnPage.hideProgress();
                             IMLibUI.clearLockInfo();
@@ -204,7 +213,7 @@ var IMLibUI = {
                             if (completeTaskCapt) {
                                 completeTaskCapt();
                             }
-                            if (!confirm(INTERMediatorLib.getInsertedString(
+                            if (!window.confirm(INTERMediatorLib.getInsertedString(
                                     INTERMediatorOnPage.getMessages()[1001], [initialvalue, newValue, currentFieldVal]))) {
                                 window.setTimeout(function () {
                                     changedObjectCapt.focus();
@@ -223,16 +232,13 @@ var IMLibUI = {
                     completeTask();
                 }
                 returnValue = false;
-            } finally {
-                // if (!isKeepLock) {
-                //     IMLibUI.unlockUIElement(idValue);
-                // }
             }
             return returnValue;
         }
     },
 
     validation: function (changedObj) {
+        'use strict';
         var linkInfo, matched, context, i, index, didValidate, contextInfo,
             result, messageNodes = [], messageNode;
         if (messageNodes) {
@@ -253,7 +259,7 @@ var IMLibUI = {
                 if (matched[1] !== IMLibLocalContext.contextName) {
                     context = INTERMediatorLib.getNamedObject(
                         INTERMediatorOnPage.getDataSources(), 'name', matched[1]);
-                    if (context != null && context.validation != null) {
+                    if (context && context.validation) {
                         for (i = 0; i < linkInfo.length; i++) {
                             matched = linkInfo[i].match(/([^@]+)@([^@]+)/);
                             for (index in context.validation) {
@@ -281,7 +287,7 @@ var IMLibUI = {
                                             break;
                                         default:
                                             if (changedObj.getAttribute('data-im-validation-notification') !== 'alert') {
-                                                alert(context.validation[index].message);
+                                                window.alert(context.validation[index].message);
                                                 changedObj.setAttribute('data-im-validation-notification', 'alert');
                                             }
                                             break;
@@ -312,7 +318,7 @@ var IMLibUI = {
                     }
                 }
                 if (didValidate) {
-                    if (INTERMediatorOnPage.doAfterValidationSucceed != null) {
+                    if (INTERMediatorOnPage.doAfterValidationSucceed) {
                         result = INTERMediatorOnPage.doAfterValidationSucceed(changedObj, linkInfo[i]);
                     }
                 }
@@ -322,16 +328,17 @@ var IMLibUI = {
             if (ex === '_im_requath_request_') {
                 throw ex;
             } else {
-                INTERMediator.setErrorMessage(ex, 'EXCEPTION-32: on the validation process.');
+                INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-32: on the validation process.');
             }
             return false;
         }
     },
 
     copyButton: function (contextObj, keyValue) {
+        'use strict';
         var contextDef = contextObj.getContextDef();
         if (contextDef['repeat-control'].match(/confirm-copy/)) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1041])) {
+            if (!window.confirm(INTERMediatorOnPage.getMessages()[1041])) {
                 return;
             }
         }
@@ -339,13 +346,13 @@ var IMLibUI = {
             var contextObjCapt = contextObj;
             var keyValueCapt = keyValue;
             return function (completeTask) {
-                var contextDef, assocDef, i, index, def, assocContexts, pStart, copyTerm, idValue;
+                var contextDef, assocDef, i, index, def, assocContexts, pStart, copyTerm;
                 contextDef = contextObjCapt.getContextDef();
                 INTERMediatorOnPage.showProgress();
                 try {
                     if (contextDef.relation) {
                         for (index in contextDef.relation) {
-                            if (contextDef.relation[index].portal == true) {
+                            if (contextDef.relation[index].portal === true) {
                                 contextDef.portal = true;
                             }
                         }
@@ -406,13 +413,13 @@ var IMLibUI = {
                                 INTERMediatorOnPage.hideProgress();
                                 // IMLibUI.unlockUIElement(contextDefCapt.name);
                                 completeTaskCapt();
-                                INTERMediator.flushMessage();
+                                INTERMediatorLog.flushMessage();
                             };
                         })(),
                         completeTask
                     );
                 } catch (ex) {
-                    INTERMediator.setErrorMessage(ex, 'EXCEPTION-43');
+                    INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-43');
                     // IMLibUI.unlockUIElement(idValue);
                 }
             };
@@ -420,6 +427,7 @@ var IMLibUI = {
     },
 
     deleteButton: function (currentContext, keyField, keyValue, isConfirm) {
+        'use strict';
         var dialogMessage;
         if (isConfirm) {
             dialogMessage = INTERMediatorOnPage.getMessages()[1025];
@@ -432,22 +440,7 @@ var IMLibUI = {
             var keyFieldCapt = keyField;
             var keyValueCapt = keyValue;
             return function (completeTask) {
-                var i, parentKeyValue, deleteSuccessProc, targetRepeaters, contextDef, idValue;
-
-                contextDef = currentContextCapt.getContextDef();
-                idValue = contextDef.name;
-                // Locking.
-                // if (IMLibUI.isLockAnyUIElements()) {
-                //     setTimeout((function () {
-                //         var a = currentContext, b = keyField, c = keyValue, d = isConfirm;
-                //         return function () {
-                //             IMLibUI.deleteButton(a, b, c, d);
-                //         };
-                //     })(), 100);
-                //     return true;
-                // }
-                // IMLibUI.lockUIElement(idValue);
-
+                var i, parentKeyValue, deleteSuccessProc, targetRepeaters;
                 INTERMediatorOnPage.showProgress();
                 try {
                     INTERMediatorOnPage.retrieveAuthInfo();
@@ -455,7 +448,6 @@ var IMLibUI = {
                         var currentContextCapt2 = currentContextCapt;
                         var completeTaskCapt = completeTask;
                         var keying = keyFieldCapt + '=' + keyValueCapt;
-                        // var idCapt = idValue;
                         return function () {
                             if (currentContextCapt2.relation === true) {
                                 INTERMediator.pagedAllCount--;
@@ -470,21 +462,21 @@ var IMLibUI = {
                                 }
                             }
                             IMLibPageNavigation.navigationSetup();
-                            targetRepeaters = currentContextCapt2.binding[keying]['_im_repeater'];
+                            targetRepeaters = currentContextCapt2.binding[keying]._im_repeater;
                             for (i = 0; i < targetRepeaters.length; i++) {
                                 IMLibContextPool.removeRecordFromPool(targetRepeaters[i].id);
                             }
                             IMLibCalc.recalculation();
-                            // IMLibUI.unlockUIElement(idCapt);
                             INTERMediatorOnPage.hideProgress();
                             completeTaskCapt();
-                            INTERMediator.flushMessage();
+                            INTERMediatorLog.flushMessage();
                         };
                     })();
 
                     if (currentContextCapt.isPortal) {
                         parentKeyValue = currentContextCapt.potalContainingRecordKV.split('=');
-                        INTERMediator_DBAdapter.db_update_async({
+                        INTERMediator_DBAdapter.db_update_async(
+                            {
                                 name: currentContextCapt.parentContext.contextName,
                                 conditions: [
                                     {field: parentKeyValue[0], operator: '=', value: parentKeyValue[1]}
@@ -500,22 +492,22 @@ var IMLibUI = {
                             deleteSuccessProc,
                             completeTask);
                     } else {
-                        INTERMediator_DBAdapter.db_delete_async({
+                        INTERMediator_DBAdapter.db_delete_async(
+                            {
                                 name: currentContextCapt.contextName,
                                 conditions: [{field: keyFieldCapt, operator: '=', value: keyValueCapt}]
                             },
                             deleteSuccessProc,
                             function () {
-                                INTERMediator.setErrorMessage('Delete Error', 'EXCEPTION-46');
+                                INTERMediatorLog.setErrorMessage('Delete Error', 'EXCEPTION-46');
                                 completeTask();
                             }
                         );
                     }
 
                 } catch (ex) {
-                    if (ex == '_im_requath_request_') {
+                    if (ex.message === '_im_requath_request_') {
                         if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
-                            // IMLibUI.unlockUIElement(idValue);
                             INTERMediatorOnPage.clearCredentials();
                             INTERMediatorOnPage.authenticating(
                                 function () {
@@ -526,18 +518,18 @@ var IMLibUI = {
                             return;
                         }
                     } else {
-                        INTERMediator.setErrorMessage(ex, 'EXCEPTION-3');
+                        INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-3');
                     }
                     completeTask();
-                    // IMLibUI.unlockUIElement(idValue);
                 }
             };
         })());
     },
 
     insertButton: function (currentObj, keyValue, foreignValues, updateNodes, isConfirm) {
+        'use strict';
         if (isConfirm) {
-            if (!confirm(INTERMediatorOnPage.getMessages()[1026])) {
+            if (!window.confirm(INTERMediatorOnPage.getMessages()[1026])) {
                 return;
             }
         }
@@ -551,18 +543,6 @@ var IMLibUI = {
             currentContext = currentObj.getContextDef();
             isPortal = currentObj.isPortal;
             parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null;
-// idValue = currentContext.name;
-            // Locking.
-            // if (IMLibUI.isLockAnyUIElements()) {
-            //     setTimeout((function () {
-            //         var a = currentContext, b = keyField, c = keyValue, d = isConfirm;
-            //         return function () {
-            //             IMLibUI.deleteButton(a, b, c, d);
-            //         };
-            //     })(), 100);
-            //     return true;
-            // }
-            // IMLibUI.lockUIElement(idValue);
             return function (completeTask) {
                 var targetRecord, portalField, recordSet, index, targetPortalField, targetPortalValue,
                     existRelated = false,
@@ -616,8 +596,8 @@ var IMLibUI = {
                                     targetPortalValue = recordSet[0].value;
                                     break;
                                 }
-                                if (portalField !== targetName + '::id'
-                                    && portalField !== targetName + '::' + recordSet[0].field) {
+                                if (portalField !== targetName + '::id' &&
+                                    portalField !== targetName + '::' + recordSet[0].field) {
                                     break;
                                 }
                             }
@@ -644,8 +624,8 @@ var IMLibUI = {
                                         targetPortalValue = recordSet[0].value;
                                         break;
                                     }
-                                    if (portalField !== targetName + '::id'
-                                        && portalField !== targetName + '::' + recordSet[0].field) {
+                                    if (portalField !== targetName + '::id' &&
+                                        portalField !== targetName + '::' + recordSet[0].field) {
                                         break;
                                     }
                                 }
@@ -669,7 +649,7 @@ var IMLibUI = {
                         });
                         INTERMediator.constructMain();
                     } else {
-                        INTERMediator.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4');
+                        INTERMediatorLog.setErrorMessage('Insert Error (Portal Access Mode)', 'EXCEPTION-4');
                     }
                 } else {
                     INTERMediator_DBAdapter.db_createRecord_async(
@@ -681,14 +661,12 @@ var IMLibUI = {
                             var foreignValuesCapt2 = foreignValuesCapt;
                             var existRelatedCapt = existRelated;
                             var keyValueCapt2 = keyValueCapt;
-                            //var idCapt = idValue;
                             return function (result) {
                                 var keyField, newRecordId, associatedContext, conditions, createdRecord,
                                     i, sameOriginContexts;
                                 newRecordId = result.newRecordKeyValue;
                                 keyField = currentContextCapt.key ? currentContextCapt.key : INTERMediatorOnPage.defaultKeyName;
                                 associatedContext = IMLibContextPool.contextFromEnclosureId(updateNodesCapt2);
-                                //IMLibUI.unlockUIElement(idCapt);
                                 completeTask();
                                 if (associatedContext) {
                                     associatedContext.foreignValue = foreignValuesCapt2;
@@ -711,11 +689,11 @@ var IMLibUI = {
                                 }
                                 IMLibCalc.recalculation();
                                 INTERMediatorOnPage.hideProgress();
-                                INTERMediator.flushMessage();
+                                INTERMediatorLog.flushMessage();
                             };
                         })(),
                         function () {
-                            INTERMediator.setErrorMessage('Insert Error', 'EXCEPTION-4');
+                            INTERMediatorLog.setErrorMessage('Insert Error', 'EXCEPTION-4');
                             completeTask();
                         }
                     );
@@ -725,6 +703,7 @@ var IMLibUI = {
     },
 
     clickPostOnlyButton: function (node) {
+        'use strict';
         var i, j, fieldData, elementInfo, comp, contextCount, selectedContext, contextInfo, validationInfo;
         var mergedValues, inputNodes, typeAttr, k, messageNode, result, alertmessage;
         var linkedNodes, namedNodes, index, hasInvalid, isMerged, contextNodes;
@@ -779,48 +758,52 @@ var IMLibUI = {
             elementInfo = INTERMediatorLib.getLinkedElementInfo(linkedNodes[i]);
             for (j = 0; j < elementInfo.length; j++) {
                 comp = elementInfo[j].split(INTERMediator.separator);
-                if (comp[0] == selectedContext) {
+                if (comp[0] === selectedContext) {
                     if (contextInfo.validation) {
                         for (index in contextInfo.validation) {
-                            validationInfo = contextInfo.validation[index];
-                            if (validationInfo && validationInfo.field == comp[1]) {
-                                switch (validationInfo.notify) {
-                                case 'inline':
-                                case 'end-of-sibling':
-                                    INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
-                                    break;
+                            if(contextInfo.validation.has.hasOwnProperty(index)) {
+                                validationInfo = contextInfo.validation[index];
+                                if (validationInfo && validationInfo.field === comp[1]) {
+                                    switch (validationInfo.notify) {
+                                    case 'inline':
+                                    case 'end-of-sibling':
+                                        INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
+                                        break;
+                                    }
                                 }
                             }
                         }
                         for (index in contextInfo.validation) {
-                            validationInfo = contextInfo.validation[index];
-                            if (validationInfo.field == comp[1]) {
-                                if (validationInfo) {
-                                    result = Parser.evaluate(
-                                        validationInfo.rule,
-                                        {'value': linkedNodes[i].value, 'target': linkedNodes[i]}
-                                    );
-                                    if (!result) {
-                                        hasInvalid = true;
-                                        switch (validationInfo.notify) {
-                                        case 'inline':
-                                            INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
-                                            messageNode = INTERMediatorLib.createErrorMessageNode(
-                                                'SPAN', validationInfo.message);
-                                            linkedNodes[i].parentNode.insertBefore(
-                                                messageNode, linkedNodes[i].nextSibling);
-                                            break;
-                                        case 'end-of-sibling':
-                                            INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
-                                            messageNode = INTERMediatorLib.createErrorMessageNode(
-                                                'DIV', validationInfo.message);
-                                            linkedNodes[i].parentNode.appendChild(messageNode);
-                                            break;
-                                        default:
-                                            alertmessage += validationInfo.message + IMLib.nl_char;
-                                        }
-                                        if (INTERMediatorOnPage.doAfterValidationFailure != null) {
-                                            INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i]);
+                            if (contextInfo.validation.hasOwnProperty(index)) {
+                                validationInfo = contextInfo.validation[index];
+                                if (validationInfo.field === comp[1]) {
+                                    if (validationInfo) {
+                                        result = Parser.evaluate(
+                                            validationInfo.rule,
+                                            {'value': linkedNodes[i].value, 'target': linkedNodes[i]}
+                                        );
+                                        if (!result) {
+                                            hasInvalid = true;
+                                            switch (validationInfo.notify) {
+                                            case 'inline':
+                                                INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
+                                                messageNode = INTERMediatorLib.createErrorMessageNode(
+                                                    'SPAN', validationInfo.message);
+                                                linkedNodes[i].parentNode.insertBefore(
+                                                    messageNode, linkedNodes[i].nextSibling);
+                                                break;
+                                            case 'end-of-sibling':
+                                                INTERMediatorLib.clearErrorMessage(linkedNodes[i]);
+                                                messageNode = INTERMediatorLib.createErrorMessageNode(
+                                                    'DIV', validationInfo.message);
+                                                linkedNodes[i].parentNode.appendChild(messageNode);
+                                                break;
+                                            default:
+                                                alertmessage += validationInfo.message + IMLib.nl_char;
+                                            }
+                                            if (INTERMediatorOnPage.doAfterValidationFailure) {
+                                                INTERMediatorOnPage.doAfterValidationFailure(linkedNodes[i]);
+                                            }
                                         }
                                     }
                                 }
@@ -829,13 +812,13 @@ var IMLibUI = {
                     }
                     if (INTERMediatorLib.isWidgetElement(linkedNodes[i])) {
                         fieldData.push({field: comp[1], value: linkedNodes[i]._im_getValue()});
-                    } else if (linkedNodes[i].tagName == 'SELECT') {
+                    } else if (linkedNodes[i].tagName === 'SELECT') {
                         fieldData.push({field: comp[1], value: linkedNodes[i].value});
-                    } else if (linkedNodes[i].tagName == 'TEXTAREA') {
+                    } else if (linkedNodes[i].tagName === 'TEXTAREA') {
                         fieldData.push({field: comp[1], value: linkedNodes[i].value});
-                    } else if (linkedNodes[i].tagName == 'INPUT') {
-                        if (( linkedNodes[i].getAttribute('type') == 'radio' )
-                            || ( linkedNodes[i].getAttribute('type') == 'checkbox' )) {
+                    } else if (linkedNodes[i].tagName === 'INPUT') {
+                        if (( linkedNodes[i].getAttribute('type') === 'radio' ) ||
+                            ( linkedNodes[i].getAttribute('type') === 'checkbox' )) {
                             if (linkedNodes[i].checked) {
                                 fieldData.push({field: comp[1], value: linkedNodes[i].value});
                             }
@@ -850,16 +833,16 @@ var IMLibUI = {
             elementInfo = INTERMediatorLib.getNamedInfo(namedNodes[i]);
             for (j = 0; j < elementInfo.length; j++) {
                 comp = elementInfo[j].split(INTERMediator.separator);
-                if (comp[0] == selectedContext) {
+                if (comp[0] === selectedContext) {
                     mergedValues = [];
-                    if (namedNodes[i].tagName == 'INPUT') {
+                    if (namedNodes[i].tagName === 'INPUT') {
                         inputNodes = [namedNodes[i]];
                     } else {
                         inputNodes = namedNodes[i].getElementsByTagName('INPUT');
                     }
                     for (k = 0; k < inputNodes.length; k++) {
                         typeAttr = inputNodes[k].getAttribute('type');
-                        if (typeAttr == 'radio' || typeAttr == 'checkbox') {
+                        if (typeAttr === 'radio' || typeAttr === 'checkbox') {
                             if (inputNodes[k].checked) {
                                 mergedValues.push(inputNodes[k].value);
                             }
@@ -870,7 +853,7 @@ var IMLibUI = {
                     if (mergedValues.length > 0) {
                         isMerged = false;
                         for (index = 0; index < fieldData.length; index++) {
-                            if (fieldData[index].field == comp[1]) {
+                            if (fieldData[index].field === comp[1]) {
                                 fieldData[index].value += IMLibUI.mergedFieldSeparator;
                                 fieldData[index].value += mergedValues.join(IMLibUI.mergedFieldSeparator);
                                 isMerged = true;
@@ -904,7 +887,7 @@ var IMLibUI = {
             function (result) {
                 var newNode, parentOfTarget, targetNode = node, thisContext = contextInfo,
                     isSetMsg = false;
-                INTERMediator.flushMessage();
+                INTERMediatorLog.flushMessage();
                 if (INTERMediatorOnPage.processingAfterPostOnlyContext) {
                     INTERMediatorOnPage.processingAfterPostOnlyContext(targetNode, result.newRecordKeyValue);
                 }
@@ -968,12 +951,14 @@ var IMLibUI = {
     },
 
     eventUpdateHandler: function (contextName) {
+        'use strict';
         IMLibLocalContext.updateAll();
         var context = IMLibContextPool.getContextFromName(contextName);
         INTERMediator.constructMain(context[0]);
     },
 
     eventAddOrderHandler: function (e) {    // e is mouse event
+        'use strict';
         var targetKey, targetSplit, key, itemSplit, extValue;
         if (e.target) {
             targetKey = e.target.getAttribute('data-im');
@@ -981,15 +966,17 @@ var IMLibUI = {
             targetKey = e.srcElement.getAttribute('data-im');
         }
         targetSplit = targetKey.split(':');
-        if (targetSplit[0] != '_@addorder' || targetSplit.length < 3) {
+        if (targetSplit[0] !== '_@addorder' || targetSplit.length < 3) {
             return;
         }
         for (key in IMLibLocalContext.store) {
-            itemSplit = key.split(':');
-            if (itemSplit.length > 3 && itemSplit[0] == 'valueofaddorder' && itemSplit[1] == targetSplit[1]) {
-                extValue = IMLibLocalContext.getValue(key);
-                if (extValue) {
-                    IMLibLocalContext.store[key]++;
+            if(IMLibLocalContext.store.hasOwnProperty(key)) {
+                itemSplit = key.split(':');
+                if (itemSplit.length > 3 && itemSplit[0] === 'valueofaddorder' && itemSplit[1] === targetSplit[1]) {
+                    extValue = IMLibLocalContext.getValue(key);
+                    if (extValue) {
+                        IMLibLocalContext.store[key]++;
+                    }
                 }
             }
         }
