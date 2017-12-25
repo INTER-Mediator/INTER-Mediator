@@ -11,7 +11,7 @@
 // JSHint support
 /* global INTERMediator, INTERMediatorOnPage, IMLibMouseEventDispatch, IMLibUI, IMLibKeyDownEventDispatch,
  IMLibChangeEventDispatch, INTERMediatorLib, INTERMediator_DBAdapter, IMLibQueue, IMLibCalc, IMLibPageNavigation,
- IMLibEventResponder, IMLibElement, Parser, IMLib */
+ IMLibEventResponder, IMLibElement, Parser, IMLib, INTERMediatorLog */
 /* jshint -W083 */ // Function within a loop
 
 /**
@@ -1897,13 +1897,19 @@ var IMLibLocalContext = {
         }
     },
 
+    checkedBinding: [],
+
     bindingDescendant: function (rootNode) {
         'use strict';
         var self = this;
         seek(rootNode);
+        IMLibLocalContext.checkedBinding.push(rootNode);
 
         function seek(node) {
             var children, i;
+            if (node !== rootNode && IMLibLocalContext.checkedBinding.indexOf(node) > -1) {
+                return; // Stop on already checked enclosure nodes.
+            }
             if (node.nodeType === 1) { // Work for an element
                 try {
                     self.bindingNode(node);

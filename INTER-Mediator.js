@@ -517,7 +517,6 @@ var INTERMediator = {
                 }
             }
 
-
             // After work to set up popup menus.
             for (i = 0; i < postSetFields.length; i++) {
                 if (postSetFields[i].value === '' &&
@@ -716,6 +715,7 @@ var INTERMediator = {
                 repeatersOriginal = collectRepeatersOriginal(node, repNodeTag); // Collecting repeaters to this array.
                 enclosureProcessing(node, repeatersOriginal, currentRecord, parentObjectInfo, currentContextObj);
             }
+            IMLibLocalContext.bindingDescendant(node);
             /** --------------------------------------------------------------------
              * Expanding enclosure as usual (means not 'cross tabole').
              */
