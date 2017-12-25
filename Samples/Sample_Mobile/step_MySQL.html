@@ -27,14 +27,11 @@
         });
 
         function adjastObjects() {
-            IMLibQueue.setTask(function (completeHandler) {
-                var headerNode = document.getElementById('header');
-                var footerNode = document.getElementById('IM_CREDIT');
-                var wHeight = screen.availHeight;
-                var stepBoxHeight = wHeight - headerNode.clientHeight - footerNode.clientHeight;
-                document.getElementById('content').style.height = stepBoxHeight + "px";
-                completeHandler();
-            });
+            var headerNode = document.getElementById('header');
+            var footerNode = document.getElementById('IM_CREDIT');
+            var wHeight = screen.availHeight;
+            var stepBoxHeight = wHeight - headerNode.clientHeight - footerNode.clientHeight;
+            document.getElementById('content').style.height = stepBoxHeight + "px";
         }
 
         INTERMediatorOnPage.doAfterPrefSelection = function () {
@@ -101,14 +98,14 @@
             white-space: nowrap;
         }
 
-         .IM_Button_StepBack {
+        .IM_Button_StepBack {
             position: absolute;
             top: 8px;
             left: 4px;
             width: 40px;
             cursor: pointer;
             color: #9393ee;
-         }
+        }
     </style>
 </head>
 <body>
