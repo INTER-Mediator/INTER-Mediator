@@ -15,7 +15,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="initial-scale=1"/>
     <title>Step Operation Sample - INTER-Mediator</title>
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css"/>
     <script type="text/javascript" src="step_MySQL.php"></script>
     <script type="text/javascript">
         INTERMediatorOnPage.doAfterConstruct = function () {
@@ -55,6 +54,7 @@
         };
         INTERMediatorOnPage.doAfterLastSelection = function () {
             console.log(IMLibPageNavigation.stepNavigation);
+            return false;
         };
     </script>
     <style>
