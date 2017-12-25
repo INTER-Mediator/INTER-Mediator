@@ -352,6 +352,7 @@ class DefinitionChecker
             'aggregation-from' => 'string',
             'aggregation-group-by' => 'string',
             'data' => 'array',
+            'appending-data' => 'array',
             'file-upload' => array(
                 '*' => array(
                     'field' => 'string',
