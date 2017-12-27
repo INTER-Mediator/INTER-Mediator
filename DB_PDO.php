@@ -271,8 +271,8 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
                         . "(" . implode(' OR ', $groupCriteria) . ")";
                 }
             } else {
-                $authorizedUsers = $this->getAuthorizedUsers($keywordAuth);
-                $authorizedGroups = $this->getAuthorizedGroups($keywordAuth);
+                $authorizedUsers = $this->authHandler->getAuthorizedUsers($keywordAuth);
+                $authorizedGroups = $this->authHandler->getAuthorizedGroups($keywordAuth);
                 $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($signedUser);
                 if (count($authorizedUsers) > 0 || count($authorizedGroups) > 0) {
                     if (!in_array($signedUser, $authorizedUsers)
