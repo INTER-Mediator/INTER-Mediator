@@ -414,8 +414,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 || isset($context['authentication']["load"])))
         ) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization("read");
-            $authInfoTarget = $this->getTargetForAuthorization("read");
+            $authInfoField = $this->authHandler->getFieldForAuthorization("read");
+            $authInfoTarget = $this->authHandler->getTargetForAuthorization("read");
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
@@ -776,8 +776,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 || isset($tableInfo['authentication']['update']))
         ) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization("update");
-            $authInfoTarget = $this->getTargetForAuthorization("update");
+            $authInfoField = $this->authHandler->getFieldForAuthorization("update");
+            $authInfoTarget = $this->authHandler->getTargetForAuthorization("update");
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
@@ -799,8 +799,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             } else {
                 if ($this->dbSettings->isDBNative()) {
                 } else {
-                    $authorizedUsers = $this->getAuthorizedUsers("update");
-                    $authorizedGroups = $this->getAuthorizedGroups("update");
+                    $authorizedUsers = $this->authHandler->getAuthorizedUsers("update");
+                    $authorizedGroups = $this->authHandler->getAuthorizedGroups("update");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                     if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
                         && array_intersect($belongGroups, $authorizedGroups)
@@ -982,8 +982,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 || isset($context['authentication']['new'])
                 || isset($context['authentication']['create']))
         ) {
-            $authInfoField = $this->getFieldForAuthorization("create");
-            $authInfoTarget = $this->getTargetForAuthorization("create");
+            $authInfoField = $this->authHandler->getFieldForAuthorization("create");
+            $authInfoTarget = $this->authHandler->getTargetForAuthorization("create");
             if ($authInfoTarget == 'field-user') {
                 $signedUser = $this->authHandler->authSupportUnifyUsernameAndEmail($this->dbSettings->getCurrentUser());
                 $this->fmData->AddDBParam($authInfoField,
@@ -995,8 +995,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             } else {
                 if ($this->dbSettings->isDBNative()) {
                 } else {
-                    $authorizedUsers = $this->getAuthorizedUsers("create");
-                    $authorizedGroups = $this->getAuthorizedGroups("create");
+                    $authorizedUsers = $this->authHandler->getAuthorizedUsers("create");
+                    $authorizedGroups = $this->authHandler->getAuthorizedGroups("create");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                     if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
                         && array_intersect($belongGroups, $authorizedGroups)
@@ -1090,8 +1090,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
                 || isset($context['authentication']['delete']))
         ) {
             $authFailure = FALSE;
-            $authInfoField = $this->getFieldForAuthorization("delete");
-            $authInfoTarget = $this->getTargetForAuthorization("delete");
+            $authInfoField = $this->authHandler->getFieldForAuthorization("delete");
+            $authInfoTarget = $this->authHandler->getTargetForAuthorization("delete");
             if ($authInfoTarget == 'field-user') {
                 if (strlen($this->dbSettings->getCurrentUser()) == 0) {
                     $authFailure = true;
@@ -1112,8 +1112,8 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
             } else {
                 if ($this->dbSettings->isDBNative()) {
                 } else {
-                    $authorizedUsers = $this->getAuthorizedUsers("delete");
-                    $authorizedGroups = $this->getAuthorizedGroups("delete");
+                    $authorizedUsers = $this->authHandler->getAuthorizedUsers("delete");
+                    $authorizedGroups = $this->authHandler->getAuthorizedGroups("delete");
                     $belongGroups = $this->authHandler->authSupportGetGroupsOfUser($this->dbSettings->getCurrentUser());
                     if (!in_array($this->dbSettings->getCurrentUser(), $authorizedUsers)
                         && array_intersect($belongGroups, $authorizedGroups)
