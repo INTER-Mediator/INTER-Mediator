@@ -11,8 +11,8 @@
 // https://github.com/blueimp/jQuery-File-Upload
 // https://blueimp.github.io/jQuery-File-Upload/index.html
 
-IMParts_Catalog['jquery_fileupload'] = {
-    panelWidth:  '200px',
+IMParts_Catalog.jquery_fileupload = {
+    panelWidth: '200px',
 
     instanciate: function (targetNode) {
         var container, node, pNode = targetNode;
@@ -120,37 +120,11 @@ IMParts_Catalog['jquery_fileupload'] = {
             keyValue = cInfo.record.split('=');
             targetNode = $('#' + targetId + '-fileupload');
             if (targetNode) {
-                formData = [
-                    {name: 'access', value: 'uploadfile'},
-                    {name: '_im_contextnewrecord', value: 'uploadfile'},
-                    {name: '_im_contextname', value: cInfo.context.contextName},
-                    {name: '_im_field', value: cInfo.field},
-                    {name: '_im_keyfield', value: keyValue[0]},
-                    {name: '_im_keyvalue', value: keyValue[1]},
-                    {name: 'authuser', value: INTERMediatorOnPage.authUser}
-                ];
-                if (INTERMediatorOnPage.authUser.length > 0) {
-                    formData.push({name: 'clientid', value: INTERMediatorOnPage.clientId});
-                    if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
-                        shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, 'ASCII');
-                        hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
-                            'ASCII', 'SHA-256', 'HEX');
-                        formData.push({name: 'response', value: hmacValue});
-                    } else {
-                        formData.push({name: 'response', value: 'dummydummy'});
-                    }
-                    formData.push({
-                        name: 'cresponse',
-                        value: INTERMediatorOnPage.publickey.biEncryptedString(
-                            INTERMediatorOnPage.authCryptedPassword + '\n' +
-                            INTERMediatorOnPage.authChallenge)
-                    });
-                }
                 targetNode.fileupload({
                     dataType: 'json',
                     url: INTERMediatorOnPage.getEntryPath() + '?access=uploadfile',
                     limitConcurrentUploads: 1,
-                    formData: formData,
+                    //formData: formData,
                     add: (function () {
                         var idValue = targetId;
                         return function (e, data) {
@@ -162,7 +136,39 @@ IMParts_Catalog['jquery_fileupload'] = {
                             });
                         };
                     })(),
-                    done:(function () {
+                    submit: (function () {
+                        var cName = cInfo.context.contextName, cField = cInfo.field,
+                            keyField = keyValue[0], kv = keyValue[1];
+                        return function (e, data) {
+                            var fdata = [];
+                            fdata.push({name: 'access', value: 'uploadfile'});
+                            fdata.push({name: '_im_contextnewrecord', value: 'uploadfile'});
+                            fdata.push({name: '_im_contextname', value: cName});
+                            fdata.push({name: '_im_field', value: cField});
+                            fdata.push({name: '_im_keyfield', value: keyField});
+                            fdata.push({name: '_im_keyvalue', value: kv});
+                            fdata.push({name: 'authuser', value: INTERMediatorOnPage.authUser});
+                            if (INTERMediatorOnPage.authUser.length > 0) {
+                                fdata.push({name: 'clientid', value: INTERMediatorOnPage.clientId});
+                                if (INTERMediatorOnPage.authHashedPassword && INTERMediatorOnPage.authChallenge) {
+                                    shaObj = new jsSHA(INTERMediatorOnPage.authHashedPassword, 'ASCII');
+                                    hmacValue = shaObj.getHMAC(INTERMediatorOnPage.authChallenge,
+                                        'ASCII', 'SHA-256', 'HEX');
+                                    fdata.push({name: 'response', value: hmacValue});
+                                } else {
+                                    fdata.push({name: 'response', value: 'dummydummy'});
+                                }
+                                fdata.push({
+                                    name: 'cresponse',
+                                    value: INTERMediatorOnPage.publickey.biEncryptedString(
+                                        INTERMediatorOnPage.authCryptedPassword + '\n' +
+                                        INTERMediatorOnPage.authChallenge)
+                                });
+                            }
+                            data.formData = fdata;
+                        };
+                    })(),
+                    done: (function () {
                         var cName = cInfo.context.contextName;
                         return function (e, data) {
                             var result = INTERMediator_DBAdapter.uploadFileAfterSucceed(
@@ -173,6 +179,7 @@ IMParts_Catalog['jquery_fileupload'] = {
                             );
                             data.jqXHR.abort();
                             if (result) {
+                                INTERMediatorLog.flushMessage();
                                 INTERMediator.construct(IMLibContextPool.contextFromName(cName));
                             }
                         };

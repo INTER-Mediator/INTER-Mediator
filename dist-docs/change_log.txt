@@ -88,6 +88,7 @@ Ver.5.7-dev (in development)
 - [BUG FIX] The stringfy method for object (INTERMediatorLib.objectToString) returned 'undefined' instead of quotes.
 - [BUG FIX] The method to convert number from string (INTERMediatorLib.normalizeNumerics) returned wrong result.
 - [BUG FIX] IMLibLocalContext.bindingDescendant() didn't detect nodes that generated after page construct.
+- [BUG FIX] jQuery-File-Upload plug-in was improved in case of multiple rows presentation.
 
 Ver.5.6.1 (September 16, 2017)
 - Fix loading the page of the Practice "search (using JavaScript)".
