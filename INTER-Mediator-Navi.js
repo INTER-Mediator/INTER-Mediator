@@ -574,7 +574,7 @@ var IMLibPageNavigation = {
                             primaryKeyOnly: true
                         };
                         try {
-                            currentVal = INTERMediator_DBAdapter.db_query(checkQueryParameter);
+                            currentVal = INTERMediator_DBAdapter.db_query_async(checkQueryParameter);
                         } catch (ex) {
                             if (ex.message === '_im_requath_request_') {
                                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
@@ -583,7 +583,7 @@ var IMLibPageNavigation = {
                                         (function () {
                                             var qParam = checkQueryParameter;
                                             return function () {
-                                                INTERMediator.db_query(qParam);
+                                                INTERMediator.db_query_async(qParam);
                                             };
                                         })()
                                     );
@@ -594,8 +594,8 @@ var IMLibPageNavigation = {
                             }
                         }
 
-                        if (currentVal.recordset === null ||
-                            currentVal.recordset[0] === null) {
+                        if (currentVal.dbresult === null ||
+                            currentVal.dbresult[0] === null) {
                             window.alert(INTERMediatorLib.getInsertedString(
                                 INTERMediatorOnPage.getMessages()[1003], [fieldArray.join(',')]));
                             return;
@@ -611,11 +611,11 @@ var IMLibPageNavigation = {
                         for (field in updateData[keying]) {
                             if (updateData[keying].hasOwnProperty(field)) {
                                 initialValue = context.getValue(keying, field);
-                                if (initialValue !== currentVal.recordset[0][field]) {
+                                if (initialValue !== currentVal.dbresult[0][field]) {
                                     difference += INTERMediatorLib.getInsertedString(
                                         INTERMediatorOnPage.getMessages()[1035], [
                                             field,
-                                            currentVal.recordset[0][field],
+                                            currentVal.dbresult[0][field],
                                             updateData[keying][field]
                                         ]);
                                 }

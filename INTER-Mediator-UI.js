@@ -575,7 +575,7 @@ var IMLibUI = {
 
                     if (relatedRecordSet.length === 0) {
                         targetPortalValue = '';
-                        targetRecord = INTERMediator_DBAdapter.db_query(
+                        targetRecord = INTERMediator_DBAdapter.db_query_async(
                             {
                                 name: targetName,
                                 records: 1,
@@ -588,7 +588,7 @@ var IMLibUI = {
                                 ]
                             }
                         );
-                        for (portalField in targetRecord.recordset[0][0]) {
+                        for (portalField in targetRecord.dbresult[0][0]) {
                             if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
                                 existRelated = true;
                                 targetPortalField = portalField;
@@ -604,7 +604,7 @@ var IMLibUI = {
                         }
 
                         if (existRelated === false) {
-                            targetRecord = INTERMediator_DBAdapter.db_query(
+                            targetRecord = INTERMediator_DBAdapter.db_query_async(
                                 {
                                     name: targetName,
                                     records: 0,
@@ -617,7 +617,7 @@ var IMLibUI = {
                                     ]
                                 }
                             );
-                            for (portalField in targetRecord.recordset) {
+                            for (portalField in targetRecord.dbresult) {
                                 if (portalField.indexOf(targetName + '::') > -1 && portalField !== targetName + '::' + INTERMediatorOnPage.defaultKeyName) {
                                     targetPortalField = portalField;
                                     if (portalField === targetName + '::' + recordSet[0].field) {

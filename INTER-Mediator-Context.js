@@ -838,7 +838,7 @@ IMLibContext.prototype.getPortalRecords = function () {
     if (!this.isPortal) {
         return null;
     }
-    targetRecords.recordset = this.getPortalRecordsetImpl(
+    targetRecords.dbresult = this.getPortalRecordsetImpl(
         this.parentContext.store[this.potalContainingRecordKV], this.contextName);
     return targetRecords;
 };
@@ -1249,9 +1249,9 @@ IMLibContext.prototype.storeRecords = function (records) {
     var contextDef = INTERMediatorLib.getNamedObject(
         INTERMediatorOnPage.getDataSources(), 'name', this.contextName);
     keyField = contextDef.key ? contextDef.key : 'id';
-    if (records.recordset) {
-        for (ix = 0; ix < records.recordset.length; ix++) {
-            record = records.recordset[ix];
+    if (records.dbresult) {
+        for (ix = 0; ix < records.dbresult.length; ix++) {
+            record = records.dbresult[ix];
             for (field in record) {
                 if (record.hasOwnProperty(field)) {
                     keyValue = record[keyField] ? record[keyField] : ix;
