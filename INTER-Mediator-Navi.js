@@ -188,12 +188,6 @@ var IMLibPageNavigation = {
                         }
                         node.appendChild(document.createTextNode(buttonLabel));
                         node.setAttribute('class', 'IM_NAV_button');
-                        // onNaviInsertFunction = function (a, b, c) {
-                        //     var contextName = a, keyValue = b, confirming = c;
-                        //     return function () {
-                        //         IMLibPageNavigation.insertRecordFromNavi(contextName, keyValue, confirming);
-                        //     };
-                        // };
                         if (!node.id) {
                             node.id = INTERMediator.nextIdValue();
                         }
@@ -207,10 +201,6 @@ var IMLibPageNavigation = {
                                     IMLibPageNavigation.insertRecordFromNavi(contextName, keyValue, confirming);
                                 };
                             })()
-                            // onNaviInsertFunction(
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].name,
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].key,
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].confirm)
                         );
                         break;
                     case 'DELETE':
@@ -225,12 +215,6 @@ var IMLibPageNavigation = {
                         }
                         node.appendChild(document.createTextNode(buttonLabel));
                         node.setAttribute('class', 'IM_NAV_button');
-                        // onNaviDeleteFunction = function (a, b, c, d) {
-                        //     var contextName = a, keyName = b, keyValue = c, confirming = d;
-                        //     return function () {
-                        //         IMLibPageNavigation.deleteRecordFromNavi(contextName, keyName, keyValue, confirming);
-                        //     };
-                        // };
                         INTERMediatorLib.addEvent(
                             node,
                             'click',
@@ -244,11 +228,6 @@ var IMLibPageNavigation = {
                                     IMLibPageNavigation.deleteRecordFromNavi(contextName, keyName, keyValue, confirming);
                                 };
                             })()
-                            // onNaviDeleteFunction(
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].name,
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].key,
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].value,
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].confirm)
                         );
                         break;
                     case 'COPY':
@@ -263,12 +242,6 @@ var IMLibPageNavigation = {
                         }
                         node.appendChild(document.createTextNode(buttonLabel));
                         node.setAttribute('class', 'IM_NAV_button');
-                        // onNaviCopyFunction = function (a, b) {
-                        //     var contextDef = a, record = b;
-                        //     return function () {
-                        //         IMLibPageNavigation.copyRecordFromNavi(contextDef, record);
-                        //     };
-                        // };
                         if (!node.id) {
                             node.id = INTERMediator.nextIdValue();
                         }
@@ -281,9 +254,6 @@ var IMLibPageNavigation = {
                                     IMLibPageNavigation.copyRecordFromNavi(contextDef, record);
                                 };
                             })()
-                            // onNaviCopyFunction(
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].contextDef,
-                            //     IMLibPageNavigation.deleteInsertOnNavi[i].keyValue)
                         );
                         break;
                     }

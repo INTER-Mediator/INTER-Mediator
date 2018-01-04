@@ -73,7 +73,7 @@ var IMLibUI = {
         return returnValue;
 
         // After validating, update nodes and database.
-        function valueChangeImpl(idValue, completeTask) {
+        async function valueChangeImpl(idValue, completeTask) {
             var changedObj, objType, i, newValue, result, linkInfo, nodeInfo, contextInfo, parentContext,
                 targetField, targetNode, targetSpec, returnValue = true;
             try {
@@ -124,7 +124,7 @@ var IMLibUI = {
                     throw 'unfinished';
                 }
                 INTERMediatorOnPage.showProgress();
-                contextInfo.context.updateFieldValue(
+                await contextInfo.context.updateFieldValue(
                     idValue,
                     (function () {
                         var idValueCapt2 = idValue;
@@ -543,7 +543,7 @@ var IMLibUI = {
             currentContext = currentObj.getContextDef();
             isPortal = currentObj.isPortal;
             parentContextName = currentObj.parentContext ? currentObj.parentContext.contextName : null;
-            return function (completeTask) {
+            return async function (completeTask) {
                 var targetRecord, portalField, recordSet, index, targetPortalField, targetPortalValue,
                     existRelated = false,
                     relatedRecordSet;
@@ -575,7 +575,7 @@ var IMLibUI = {
 
                     if (relatedRecordSet.length === 0) {
                         targetPortalValue = '';
-                        targetRecord = INTERMediator_DBAdapter.db_query_async(
+                        targetRecord = await INTERMediator_DBAdapter.db_query_async(
                             {
                                 name: targetName,
                                 records: 1,
@@ -604,7 +604,7 @@ var IMLibUI = {
                         }
 
                         if (existRelated === false) {
-                            targetRecord = INTERMediator_DBAdapter.db_query_async(
+                            targetRecord = await INTERMediator_DBAdapter.db_query_async(
                                 {
                                     name: targetName,
                                     records: 0,

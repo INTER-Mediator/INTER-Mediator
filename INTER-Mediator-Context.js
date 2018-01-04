@@ -603,7 +603,7 @@ var IMLibContext = function (contextName) {
     this.setTable(this);
 };
 
-IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorProc, warnMultipleRecProc, warnOthersModifyProc) {
+IMLibContext.prototype.updateFieldValue = async function (idValue, succeedProc, errorProc, warnMultipleRecProc, warnOthersModifyProc) {
     'use strict';
     var nodeInfo, contextInfo, linkInfo, changedObj, criteria, newValue;
 
@@ -657,7 +657,7 @@ IMLibContext.prototype.updateFieldValue = function (idValue, succeedProc, errorP
         var keyingField = keyingComp[0];
         keyingComp.shift();
         var keyingValue = keyingComp.join('=');
-        INTERMediator_DBAdapter.db_query_async(
+        await INTERMediator_DBAdapter.db_query_async(
             {
                 name: targetContext.isPortal ? parentContext.contextName : targetContext.contextName,
                 records: 1,

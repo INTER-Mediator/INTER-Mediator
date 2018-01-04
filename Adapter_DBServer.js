@@ -528,9 +528,6 @@ var INTERMediator_DBAdapter = {
                 returnValue.registeredId = result.registeredId;
                 returnValue.nullAcceptable = result.nullAcceptable;
                 returnValue.count = result.dbresult ? Object.keys(result.dbresult).length : 0;
-                // for (var ix in result.dbresult) {
-                //     returnValue.count++;
-                // }
 
                 contextDef = INTERMediatorLib.getNamedObject(
                     INTERMediatorOnPage.getDataSources(), 'name', args.name);

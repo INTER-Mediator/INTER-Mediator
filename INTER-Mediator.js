@@ -300,7 +300,6 @@ const INTERMediator = {
      */
     construct: (indexOfKeyFieldObject) => {
         'use strict';
-        let timerTask;
         if (indexOfKeyFieldObject === true || indexOfKeyFieldObject === undefined) {
             if (INTERMediatorOnPage.isFinishToConstruct) {
                 return;
@@ -375,8 +374,7 @@ const INTERMediator = {
                 INTERMediator.partialConstructing = false;
                 INTERMediator.buttonIdNum = 1;
                 IMLibContextPool.clearAll();
-                await
-                    pageConstruct();
+                await pageConstruct();
             } else {
                 IMLibPageNavigation.deleteInsertOnNavi = [];
                 INTERMediator.partialConstructing = true;
@@ -592,7 +590,7 @@ const INTERMediator = {
                         if (children) {
                             for (i = 0; i < children.length; i++) {
                                 if (children[i].nodeType === 1) {
-                                    seekEnclosureNode(children[i], currentRecord, parentObjectInfo, currentContextObj);
+                                    await seekEnclosureNode(children[i], currentRecord, parentObjectInfo, currentContextObj);
                                 }
                             }
                         }
