@@ -60,5 +60,5 @@ function doSearch() {
     }
     INTERMediator.startFrom = 0;
     //IMLibLocalContext.archive();    // This isn't required other than IE8.
-    INTERMediator.construct(IMLibContextPool.contextFromName("postalcode"));
+    INTERMediator.constructMain(IMLibContextPool.contextFromName("postalcode"));
 }

@@ -141,7 +141,7 @@ var IMLibCalc = {
                     for (field in valuesArray) {
                         valueSeries = [];
                         for (ix = 0; ix < valuesArray[field].length; ix++) {
-                            if (valuesArray[field][ix] == undefined) {
+                            if (valuesArray[field][ix] === undefined) {
                                 if (refersArray[field][ix]) {
                                     targetElement = document.getElementById(refersArray[field][ix]);
                                     valueSeries.push(IMLibElement.getValueFromIMNode(targetElement));

@@ -386,14 +386,14 @@ const INTERMediator = {
                         for (i = 0; i < originalNodes.length; i++) {
                             updateRequiredContext.enclosureNode.appendChild(originalNodes[i].cloneNode(true));
                         }
-                        seekEnclosureNode(
+                        await seekEnclosureNode(
                             updateRequiredContext.enclosureNode,
                             updateRequiredContext.foreignValue,
                             updateRequiredContext.dependingParentObjectInfo,
                             updateRequiredContext);
                     }
                     else {
-                        expandRepeaters(
+                        await expandRepeaters(
                             updateRequiredContext,
                             updateRequiredContext.enclosureNode,
                             {recordset: recordset, targetTotalCount: 1, targetCount: 1}
@@ -413,7 +413,7 @@ const INTERMediator = {
                     }
                 }
                 IMLibCalc.updateCalculationFields();
-                //IMLibPageNavigation.navigationSetup();
+                IMLibPageNavigation.navigationSetup();
                 /*
                  If the pagination control should be setup, the property IMLibPageNavigation.deleteInsertOnNavi
                  to maintain to be a valid data.
@@ -744,7 +744,7 @@ const INTERMediator = {
                         if (selectedNode !== undefined) {
                             selectedNode.selected = true;
                         }
-                        seekEnclosureNode(newNode, null, enclosureNode, currentContextObj);
+                        await seekEnclosureNode(newNode, null, enclosureNode, currentContextObj);
                     }
                 } else {
                     isExpanding = !IMLibPageNavigation.isNotExpandingContext(currentContextDef);
@@ -782,7 +782,7 @@ const INTERMediator = {
                         contextObj.registeredId = targetRecords.registeredId;
                         contextObj.nullAcceptable = targetRecords.nullAcceptable;
                         isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false);
-                        expandRepeaters(contextObj, enclosureNode, targetRecords);
+                        await expandRepeaters(contextObj, enclosureNode, targetRecords);
                         IMLibPageNavigation.setupInsertButton(contextObj, keyValue, enclosureNode, contextObj.foreignValue);
                         IMLibPageNavigation.setupBackNaviButton(contextObj, enclosureNode);
                         callbackForEnclosure(currentContextDef, enclosureNode);
@@ -1040,7 +1040,7 @@ const INTERMediator = {
         /** --------------------------------------------------------------------
          * Expanding an repeater.
          */
-        function expandRepeaters(contextObj, node, targetRecords) {
+        async function expandRepeaters(contextObj, node, targetRecords) {
             let newNode, nodeClass, dataAttr, repeatersOneRec, newlyAddedNodes, encNodeTag, repNodeTag, ix,
                 repeatersOriginal, targetRecordset, targetTotalCount, i, currentContextDef, indexContext,
                 insertNode, countRecord, linkedElements, keyingValue, keyField, keyValue,
@@ -1128,7 +1128,7 @@ const INTERMediator = {
                                 INTERMediator.setIdValue(newNode);
                             }
                             contextObj.setValue(keyingValue, '_im_repeater', '', newNode.id, '', currentContextDef.portal);
-                            seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj);
+                            await seekEnclosureNode(newNode, targetRecordset[ix], idValuesForFieldName, contextObj);
                         }
                     }
                     if ((ix + 1) !== countRecord) {

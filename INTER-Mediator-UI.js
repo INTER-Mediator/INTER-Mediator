@@ -131,7 +131,7 @@ var IMLibUI = {
                         var contextInfoCapt = contextInfo;
                         var newValueCapt = newValue;
                         var completeTaskCapt = completeTask;
-                        return function (result) {
+                        return async function (result) {
                             var updateRequiredContext, currentValue, associatedNode, field, node, children, delNodes,
                                 recordObj, keepProp;
                             var keyField = contextInfoCapt.context.getKeyField();
@@ -152,7 +152,7 @@ var IMLibUI = {
                                 updateRequiredContext[i].foreignValue = {};
                                 updateRequiredContext[i].foreignValue[contextInfoCapt.field] = newValueCapt;
                                 if (updateRequiredContext[i]) {
-                                    INTERMediator.constructMain(updateRequiredContext[i]);
+                                    await INTERMediator.constructMain(updateRequiredContext[i]);
                                     associatedNode = updateRequiredContext[i].enclosureNode;
                                     if (INTERMediatorLib.isPopupMenu(associatedNode)) {
                                         currentValue = contextInfo.context.getContextValue(associatedNode.id, '');
@@ -389,7 +389,7 @@ var IMLibUI = {
                             var contextDefCapt = contextDef;
                             var contextObjCapt2 = contextObjCapt;
                             var completeTaskCapt = completeTask;
-                            return function (result) {
+                            return async function (result) {
                                 var restore, conditions, sameOriginContexts;
                                 var newId = result.newRecordKeyValue;
                                 if (newId > -1) {
@@ -402,10 +402,10 @@ var IMLibUI = {
                                         IMLibLocalContext.archive();
                                     }
                                     INTERMediator_DBAdapter.unregister();
-                                    INTERMediator.constructMain(contextObjCapt2);
+                                    await INTERMediator.constructMain(contextObjCapt2);
                                     sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(contextObjCapt2);
                                     for (i = 0; i < sameOriginContexts.length; i++) {
-                                        INTERMediator.constructMain(sameOriginContexts[i], null);
+                                        await INTERMediator.constructMain(sameOriginContexts[i], null);
                                     }
                                     INTERMediator.additionalCondition = restore;
                                 }
@@ -661,7 +661,7 @@ var IMLibUI = {
                             var foreignValuesCapt2 = foreignValuesCapt;
                             var existRelatedCapt = existRelated;
                             var keyValueCapt2 = keyValueCapt;
-                            return function (result) {
+                            return async function (result) {
                                 var keyField, newRecordId, associatedContext, conditions, createdRecord,
                                     i, sameOriginContexts;
                                 newRecordId = result.newRecordKeyValue;
@@ -681,10 +681,10 @@ var IMLibUI = {
                                     }
                                     createdRecord = [{}];
                                     createdRecord[0][keyField] = newRecordId;
-                                    INTERMediator.constructMain(associatedContext, result.dbresult);
+                                    await INTERMediator.constructMain(associatedContext, result.dbresult);
                                     sameOriginContexts = IMLibContextPool.getContextsWithSameOrigin(associatedContext);
                                     for (i = 0; i < sameOriginContexts.length; i++) {
-                                        INTERMediator.constructMain(sameOriginContexts[i], null);
+                                        await INTERMediator.constructMain(sameOriginContexts[i], null);
                                     }
                                 }
                                 IMLibCalc.recalculation();
@@ -950,11 +950,11 @@ var IMLibUI = {
         }
     },
 
-    eventUpdateHandler: function (contextName) {
+    eventUpdateHandler: async function (contextName) {
         'use strict';
         IMLibLocalContext.updateAll();
         var context = IMLibContextPool.getContextFromName(contextName);
-        INTERMediator.constructMain(context[0]);
+        await INTERMediator.constructMain(context[0]);
     },
 
     eventAddOrderHandler: function (e) {    // e is mouse event

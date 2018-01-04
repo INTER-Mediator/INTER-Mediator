@@ -25,8 +25,8 @@ INTERMediatorOnPage.doAfterConstruct = function () {
                             value: document.getElementById("message").value
                         }
                     ]},
-                function () {
-                    INTERMediator.constructMain(IMLibContextPool.contextFromName("chat"));
+                async function () {
+                    await INTERMediator.constructMain(IMLibContextPool.contextFromName("chat"));
                     document.getElementById("message").value = "";
                     INTERMediatorLog.flushMessage();
                 });

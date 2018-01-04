@@ -395,7 +395,7 @@ var IMLibContextPool = {
         return contexts;
     },
 
-    updateOnAnotherClient: function (eventName, info) {
+    updateOnAnotherClient: async function (eventName, info) {
         'use strict';
         var i, j, k, entityName = info.entity, contextDef, contextView, keyField, recKey;
 
@@ -415,7 +415,7 @@ var IMLibContextPool = {
                             updateRequiredContext[k].foreignValue = {};
                             updateRequiredContext[k].foreignValue[info.field[0]] = info.value[0];
                             if (updateRequiredContext[k]) {
-                                INTERMediator.constructMain(updateRequiredContext[k]);
+                                await INTERMediator.constructMain(updateRequiredContext[k]);
                             }
                         }
                     }
@@ -428,7 +428,7 @@ var IMLibContextPool = {
                 contextView = contextDef.view ? contextDef.view : contextDef.name;
                 if (contextView === entityName) {
                     if (this.poolingContexts[i].isContaining(info.value[0])) {
-                        INTERMediator.constructMain(this.poolingContexts[i], info.value);
+                        await INTERMediator.constructMain(this.poolingContexts[i], info.value);
                     }
                 }
             }
@@ -782,9 +782,8 @@ IMLibContext.prototype.updateFieldValue = async function (idValue, succeedProc, 
         );
     }
 
-    var handleAsNullValue = ['0000-00-00', '0000-00-00 00:00:00'];
-
     function checkSameValue(initialValue, currentFieldVal) {
+        var handleAsNullValue = ['0000-00-00', '0000-00-00 00:00:00'];
         if (handleAsNullValue.indexOf(initialValue) >= 0) {
             initialValue = '';
         }
@@ -1782,9 +1781,9 @@ var IMLibLocalContext = {
                 case 'update':
                     IMLibMouseEventDispatch.setExecute(idValue, (function () {
                         var contextName = params[1];
-                        return function () {
+                        return async function () {
                             INTERMediator.startFrom = 0;
-                            IMLibUI.eventUpdateHandler(contextName);
+                            await IMLibUI.eventUpdateHandler(contextName);
                             IMLibPageNavigation.navigationSetup();
                         };
                     })());
@@ -1794,18 +1793,18 @@ var IMLibLocalContext = {
                     if (attrType && attrType === 'text') {
                         IMLibKeyDownEventDispatch.setExecuteByCode(idValue, 13, (function () {
                             var contextName = params[1];
-                            return function () {
+                            return async function () {
                                 INTERMediator.startFrom = 0;
-                                IMLibUI.eventUpdateHandler(contextName);
+                                await IMLibUI.eventUpdateHandler(contextName);
                                 IMLibPageNavigation.navigationSetup();
                             };
                         })());
                     } else if (attrType && (attrType === 'checkbox' || attrType === 'radio')) {
                         IMLibChangeEventDispatch.setExecute(idValue, (function () {
                             var contextName = params[1];
-                            return function () {
+                            return async function () {
                                 INTERMediator.startFrom = 0;
-                                IMLibUI.eventUpdateHandler(contextName);
+                                await IMLibUI.eventUpdateHandler(contextName);
                                 IMLibPageNavigation.navigationSetup();
                             };
                         })());
@@ -1814,9 +1813,9 @@ var IMLibLocalContext = {
                 case 'limitnumber':
                     IMLibChangeEventDispatch.setExecute(idValue, (function () {
                         var contextName = params[1], idValueCapt = idValue;
-                        return function () {
+                        return async function () {
                             INTERMediator.pagedSize = document.getElementById(idValueCapt).value;
-                            IMLibUI.eventUpdateHandler(contextName);
+                            await IMLibUI.eventUpdateHandler(contextName);
                             IMLibPageNavigation.navigationSetup();
                         };
                     })());

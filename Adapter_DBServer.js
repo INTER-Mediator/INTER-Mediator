@@ -616,7 +616,7 @@ var INTERMediator_DBAdapter = {
                                         INTERMediator.pagedSize = parseInt(recordsNumber, 10);
                                     }
                                 }
-                                successProc ? successProc() : false;
+                                successProc ? successProc(result) : false;
                                 resolveCapt(result);
                             };
                         })(),

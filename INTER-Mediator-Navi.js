@@ -333,7 +333,7 @@ var IMLibPageNavigation = {
                     INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_createRecord_async(
                         {name: targetNameCapt, dataset: []},
-                        function (response) {
+                        async function (response) {
                             var newId = response.newRecordKeyValue;
                             if (newId > -1) {
                                 restore = INTERMediator.additionalCondition;
@@ -349,7 +349,7 @@ var IMLibPageNavigation = {
                                 }
                                 completeTask();
                                 INTERMediator_DBAdapter.unregister();
-                                INTERMediator.constructMain(true);
+                                await INTERMediator.constructMain(true);
                                 INTERMediator.additionalCondition = restore;
                                 IMLibPageNavigation.navigationSetup();
                             }
@@ -399,22 +399,20 @@ var IMLibPageNavigation = {
                     INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_delete_async(
                         deleteArgs,
-                        (function () {
-                            return function () {
-                                INTERMediator.pagedAllCount--;
-                                INTERMediator.totalRecordCount--;
-                                if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
-                                    INTERMediator.startFrom--;
-                                    if (INTERMediator.startFrom < 0) {
-                                        INTERMediator.startFrom = 0;
-                                    }
+                        async function () {
+                            INTERMediator.pagedAllCount--;
+                            INTERMediator.totalRecordCount--;
+                            if (INTERMediator.pagedAllCount - INTERMediator.startFrom < 1) {
+                                INTERMediator.startFrom--;
+                                if (INTERMediator.startFrom < 0) {
+                                    INTERMediator.startFrom = 0;
                                 }
-                                completeTask();
-                                INTERMediator.constructMain(true);
-                                INTERMediatorOnPage.hideProgress();
-                                INTERMediatorLog.flushMessage();
-                            };
-                        })(),
+                            }
+                            completeTask();
+                            await INTERMediator.constructMain(true);
+                            INTERMediatorOnPage.hideProgress();
+                            INTERMediatorLog.flushMessage();
+                        },
                         completeTask()
                     );
                 } catch (ex) {
@@ -474,7 +472,7 @@ var IMLibPageNavigation = {
                         },
                         (function () {
                             var contextDefCapt2 = contextDefCapt;
-                            return function (result) {
+                            return async function (result) {
                                 var restore, conditions;
                                 var newId = result.newRecordKeyValue;
                                 completeTask();
@@ -488,7 +486,7 @@ var IMLibPageNavigation = {
                                         IMLibLocalContext.archive();
                                     }
                                     INTERMediator_DBAdapter.unregister();
-                                    INTERMediator.constructMain(true);
+                                    await INTERMediator.constructMain(true);
                                     INTERMediator.additionalCondition = restore;
                                 }
                                 IMLibCalc.recalculation();
@@ -506,7 +504,7 @@ var IMLibPageNavigation = {
         })());
     },
 
-    saveRecordFromNavi: function (dontUpdate) {
+    saveRecordFromNavi: async function (dontUpdate) {
         'use strict';
         var keying, field, keyingComp, keyingField, keyingValue, checkQueryParameter, i, initialValue,
             currentVal, fieldArray, valueArray, difference, needUpdate = true, context, updateData, response;
@@ -629,7 +627,7 @@ var IMLibPageNavigation = {
             }
         }
         if (needUpdate && (dontUpdate !== true)) {
-            INTERMediator.constructMain(true);
+            await INTERMediator.constructMain(true);
         }
         INTERMediatorOnPage.hideProgress();
         INTERMediatorLog.flushMessage();
@@ -1029,7 +1027,7 @@ var IMLibPageNavigation = {
         IMLibPageNavigation.stepCurrentContextName = null;
         IMLibPageNavigation.stepStartContextName = null;
         IMLibPageNavigation.setupStepReturnButton('none');
-        if(INTERMediatorOnPage.getDataSources) { // Avoid processing on unit test
+        if (INTERMediatorOnPage.getDataSources) { // Avoid processing on unit test
             dataSrcs = INTERMediatorOnPage.getDataSources();
             for (key in dataSrcs) {
                 if (dataSrcs.hasOwnProperty(key)) {
@@ -1072,7 +1070,7 @@ var IMLibPageNavigation = {
         };
     },
 
-    moveToNextSteplImpl: function (contextObj, keying) {
+    moveToNextSteplImpl: async function (contextObj, keying) {
         'use strict';
         var key, cDef, dataSrcs, contextDef, isAfterCurrent = false, control = null, hasNextContext = false,
             nextContext;
@@ -1115,11 +1113,11 @@ var IMLibPageNavigation = {
         } else {
             nextContext.enclosureNode.style.display = '';
         }
-        INTERMediator.constructMain(nextContext);
+        await INTERMediator.constructMain(nextContext);
         IMLibPageNavigation.setupStepReturnButton('');
     },
 
-    backToPreviousStep: function () {
+    backToPreviousStep: async function () {
         'use strict';
         var currentContext, prevInfo;
         currentContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName);
@@ -1134,8 +1132,8 @@ var IMLibPageNavigation = {
             IMLibPageNavigation.setupStepReturnButton('none');
 
         }
-        INTERMediator.constructMain(currentContext);
-        INTERMediator.constructMain(prevInfo.context);
+        await INTERMediator.constructMain(currentContext);
+        await INTERMediator.constructMain(prevInfo.context);
     },
 
     moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
@@ -1147,7 +1145,7 @@ var IMLibPageNavigation = {
         };
     },
 
-    moveToDetailImpl: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+    moveToDetailImpl: async function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
         'use strict';
         var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node, contextDef;
 
@@ -1173,7 +1171,7 @@ var IMLibPageNavigation = {
                 operator: '=',
                 value: keyValue
             }, undefined, '_imlabel_crosstable');
-            INTERMediator.constructMain(detailContext);
+            await INTERMediator.constructMain(detailContext);
             INTERMediator.clearCondition(contextName);
             if (isHide) {
                 INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY};
@@ -1417,7 +1415,7 @@ var IMLibPageNavigation = {
 
         function moveToMaster(a, b, c, d) {
             var masterContextCL = a, detailContextCL = b, pageNaviShow = c, masterUpdate = d, node;
-            return function () {
+            return async function () {
                 var showingNode;
                 if (INTERMediatorOnPage.naviBeforeMoveToMaster) {
                     INTERMediatorOnPage.naviBeforeMoveToMaster(masterContextCL, detailContextCL);
@@ -1438,7 +1436,7 @@ var IMLibPageNavigation = {
                     document.getElementById('IM_NAVIGATOR').style.display = 'block';
                 }
                 if (masterUpdate) {
-                    INTERMediator.constructMain(masterContextCL);
+                    await INTERMediator.constructMain(masterContextCL);
                 }
                 if (IMLibUI.mobileNaviBackButtonId) {
                     node = document.getElementById(IMLibUI.mobileNaviBackButtonId);
