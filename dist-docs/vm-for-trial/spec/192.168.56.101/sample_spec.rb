@@ -606,7 +606,7 @@ describe command('sqlite3 /var/db/im/sample.sq3 ".tables"') do
   its(:stdout) { should match /cor_way_kind/ }
 end
 
-describe command('getfacl ' + WEBROOT), :if => os[:family] == 'ubuntu' || os[:family] == 'redhat' do
+describe command('getfacl ' + WEBROOT), :if => os[:family] == 'alpine' || os[:family] == 'redhat' do
   its(:stdout) { should match /^group:im-developer:rwx$/ }
   its(:stdout) { should match /^default:group:im-developer:rwx$/ }
 end
