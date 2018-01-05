@@ -189,7 +189,6 @@ var IMLibUI = {
                             window.alert(INTERMediatorLib.getInsertedString(
                                 INTERMediatorOnPage.getMessages()[1003], [targetFieldCapt]));
                             INTERMediatorOnPage.hideProgress();
-                            IMLibUI.clearLockInfo();
                             if (completeTaskCapt) {
                                 completeTaskCapt();
                             }
@@ -199,7 +198,6 @@ var IMLibUI = {
                         var response = window.confirm(INTERMediatorOnPage.getMessages()[1024]);
                         if (!response) {
                             INTERMediatorOnPage.hideProgress();
-                            IMLibUI.clearLockInfo();
                         }
                         if (completeTask) {
                             completeTask();
@@ -220,7 +218,6 @@ var IMLibUI = {
                                 }, 0);
 
                                 INTERMediatorOnPage.hideProgress();
-                                IMLibUI.clearLockInfo();
                                 return false;
                             }
                             return true;
@@ -761,7 +758,7 @@ var IMLibUI = {
                 if (comp[0] === selectedContext) {
                     if (contextInfo.validation) {
                         for (index in contextInfo.validation) {
-                            if(contextInfo.validation.has.hasOwnProperty(index)) {
+                            if(contextInfo.validation.hasOwnProperty(index)) {
                                 validationInfo = contextInfo.validation[index];
                                 if (validationInfo && validationInfo.field === comp[1]) {
                                     switch (validationInfo.notify) {

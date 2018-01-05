@@ -236,7 +236,15 @@ var INTERMediator_DBAdapter = {
                     case 3: // Loading
                         break;
                     case 4:
-                        jsonObject = JSON.parse(myRequest.responseText);
+                        try {
+                            jsonObject = JSON.parse(myRequest.responseText);
+                        } catch (ex) {
+                            INTERMediatorLog.setErrorMessage('Communication Error: ' + myRequest.responseText);
+                            if (failedProc) {
+                                failedProc();
+                            }
+                            throw ex;
+                        }
                         resultCount = jsonObject.resultCount ? jsonObject.resultCount : 0;
                         totalCount = jsonObject.totalCount ? jsonObject.totalCount : null;
                         dbresult = jsonObject.dbresult ? jsonObject.dbresult : null;

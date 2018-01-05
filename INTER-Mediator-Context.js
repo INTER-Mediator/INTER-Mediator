@@ -777,7 +777,6 @@ IMLibContext.prototype.updateFieldValue = async function (idValue, succeedProc, 
             function () {
                 INTERMediatorOnPage.hideProgress();
                 INTERMediatorLog.setErrorMessage('Error in valueChange method.', 'EXCEPTION-1');
-                IMLibUI.clearLockInfo();
             }
         );
     }
