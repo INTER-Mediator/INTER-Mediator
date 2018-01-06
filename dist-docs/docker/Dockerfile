@@ -1,3 +1,3 @@
-FROM ubuntu:16.04
-
-RUN apt-get update && apt-get -y install ruby git && git clone https://github.com/matsuo/INTER-Mediator && cd /INTER-Mediator && git checkout ubuntu1604 && gem install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb
+FROM ubuntu:14.04
+ 
+RUN apt-get update && apt-get -y install ruby2.0 git && git clone https://github.com/INTER-Mediator/INTER-Mediator && cd /INTER-Mediator && git checkout master && gem2.0 install itamae --no-doc && itamae local dist-docs/vm-for-trial/recipe.rb

@@ -64,6 +64,9 @@ if node[:platform] == 'alpine'
     command 'echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
   end
 elsif node[:platform] == 'ubuntu'
+  package 'sudo' do
+    action :install
+  end
   file '/etc/sudoers.d/developer' do
     owner 'root'
     group 'root'
@@ -132,39 +135,6 @@ end
 if node[:platform] == 'alpine'
   package 'curl' do
     action :install
-  end
-end
-if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
-  package 'apache2' do
-    action :install
-  end
-  if node[:platform] == 'alpine'
-    package 'apache2-proxy' do
-      action :install
-    end
-  end
-  service 'apache2' do
-    action [ :enable, :start ]
-  end
-elsif node[:platform] == 'redhat'
-  package 'httpd' do
-    action :install
-  end
-  service 'httpd' do
-    action [ :enable, :start ]
-  end
-end
-if node[:platform] == 'alpine'
-  execute 'usermod -a -G im-developer apache' do
-    command 'usermod -a -G im-developer apache'
-  end
-elsif node[:platform] == 'redhat'
-  execute 'usermod -a -G im-developer apache' do
-    command 'usermod -a -G im-developer apache'
-  end
-elsif node[:platform] == 'ubuntu'
-  execute 'usermod -a -G im-developer www-data' do
-    command 'usermod -a -G im-developer www-data'
   end
 end
 
@@ -423,10 +393,19 @@ elsif node[:platform] == 'ubuntu'
     action :install
   end
   if node[:platform_version].to_f >= 16
-    package 'php5.0-mbstring' do
+    package 'php7.0' do
       action :install
     end
-    package 'php5.0-bcmath' do
+    package 'php7.0-cli' do
+      action :install
+    end
+    package 'libapache2-mod-php7.0' do
+      action :install
+    end
+    package 'php7.0-mbstring' do
+      action :install
+    end
+    package 'php7.0-bcmath' do
       action :install
     end
   end
@@ -570,6 +549,40 @@ if node[:platform] == 'ubuntu'
   end
 end
 
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  package 'apache2' do
+    action :install
+  end
+  if node[:platform] == 'alpine'
+    package 'apache2-proxy' do
+      action :install
+    end
+  end
+  service 'apache2' do
+    action [ :enable, :start ]
+  end
+elsif node[:platform] == 'redhat'
+  package 'httpd' do
+    action :install
+  end
+  service 'httpd' do
+    action [ :enable, :start ]
+  end
+end
+if node[:platform] == 'alpine'
+  execute 'usermod -a -G im-developer apache' do
+    command 'usermod -a -G im-developer apache'
+  end
+elsif node[:platform] == 'redhat'
+  execute 'usermod -a -G im-developer apache' do
+    command 'usermod -a -G im-developer apache'
+  end
+elsif node[:platform] == 'ubuntu'
+  execute 'usermod -a -G im-developer www-data' do
+    command 'usermod -a -G im-developer www-data'
+  end
+end
+
 if node[:platform] == 'redhat'
   package 'epel-release' do
     action :install
@@ -647,8 +660,14 @@ package 'samba' do
   action :install
 end
 
-service 'samba' do
-  action [ :enable, :start ]
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+  service 'smbd' do
+    action [ :enable, :start ]
+  end
+else
+  service 'samba' do
+    action [ :enable, :start ]
+  end
 end
 
 if node[:platform] == 'ubuntu'
@@ -1586,8 +1605,10 @@ EOF
     command 'chmod u+s /usr/bin/fbterm'
   end
 
-  execute 'dpkg-reconfigure -f noninteractive keyboard-configuration' do
-    command 'dpkg-reconfigure -f noninteractive keyboard-configuration'
+  if node[:platform_version].to_f < 16
+    execute 'dpkg-reconfigure -f noninteractive keyboard-configuration' do
+      command 'dpkg-reconfigure -f noninteractive keyboard-configuration'
+    end
   end
 end
 
