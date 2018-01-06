@@ -1127,8 +1127,10 @@ execute "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\"" do
   command "echo \"y\" | bash \"#{IMVMROOT}/dbupdate.sh\""
 end
 
-execute "setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx \"#{WEBROOT}\"" do
-  command "setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx \"#{WEBROOT}\""
+if node[:platform] == 'alpine' || node[:platform] == 'redhat'
+  execute "setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx \"#{WEBROOT}\"" do
+    command "setfacl --recursive --modify g:im-developer:rwx,d:g:im-developer:rwx \"#{WEBROOT}\""
+  end
 end
 
 execute "chown -R developer:im-developer \"#{WEBROOT}\"" do
