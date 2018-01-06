@@ -753,7 +753,7 @@ var IMLibPageNavigation = {
                 var currentContextCapt = currentContext,
                     keyFieldCapt = keyField,
                     keyValueCapt = keyValue,
-                    confirmingCapt = currentContextDef['repeat-control'].match(/confirm-delete/i);
+                    confirmingCapt = !!currentContextDef['repeat-control'].match(/confirm-delete/i);
                 return function () {
                     IMLibUI.deleteButton(currentContextCapt, keyFieldCapt, keyValueCapt, confirmingCapt);
                 };
@@ -881,7 +881,7 @@ var IMLibPageNavigation = {
                         keyValueCapt = keyValue,
                         relationValueCapt = relationValue,
                         nodeId = node.getAttribute('id'),
-                        confirming = currentContextDef['repeat-control'].match(/confirm-insert/i);
+                        confirming = !!currentContextDef['repeat-control'].match(/confirm-insert/i);
                     return function () {
                         IMLibUI.insertButton(context, keyValueCapt, relationValueCapt, nodeId, confirming);
                     };
@@ -920,10 +920,10 @@ var IMLibPageNavigation = {
         }
 
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
-        isHide = currentContextDef['navi-control'].match(/hide/i);
+        isHide = !!currentContextDef['navi-control'].match(/hide/i);
         isHidePageNavi = isHide && !!currentContextDef.paging;
-        isMasterDetail = currentContextDef['navi-control'].match(/master/i);
-        isStep = currentContextDef['navi-control'].match(/step/i);
+        isMasterDetail = !!currentContextDef['navi-control'].match(/master/i);
+        isStep = !!currentContextDef['navi-control'].match(/step/i);
 
         if (isMasterDetail && INTERMediator.detailNodeOriginalDisplay) {
             detailContext = IMLibContextPool.getDetailContext();
@@ -1297,7 +1297,7 @@ var IMLibPageNavigation = {
         if (!naviControlValue || (!naviControlValue.match(/hide/i))) {
             return;
         }
-        isUpdateMaster = currentContextDef['navi-control'].match(/update/i);
+        isUpdateMaster = !!currentContextDef['navi-control'].match(/update/i);
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
         isTop = !(currentContextDef['navi-control'].match(/bottom/i));
 
