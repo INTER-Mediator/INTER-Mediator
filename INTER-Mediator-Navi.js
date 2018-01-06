@@ -951,8 +951,7 @@ var IMLibPageNavigation = {
             masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId);
         }
         if (isMasterDetail) {
-            moveToDetailFunc = IMLibPageNavigation.moveToDetail(
-                encNodeTag, keyField, keyValue, isHide, isHidePageNavi);
+            moveToDetailFunc = IMLibPageNavigation.moveToDetail(keyField, keyValue, isHide, isHidePageNavi);
         }
         if (isStep) {
             moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue);
@@ -1168,21 +1167,20 @@ var IMLibPageNavigation = {
         INTERMediator.constructMain(prevInfo.context);
     },
 
-    moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+    moveToDetail: function (keyField, keyValue, isHide, isHidePageNavi) {
         'use strict';
-        var f = keyField, v = keyValue, etag = encNodeTag, mh = isHide, pnh = isHidePageNavi;
+        var f = keyField, v = keyValue, mh = isHide, pnh = isHidePageNavi;
 
         return function () {
-            return IMLibPageNavigation.moveToDetailImpl(etag, f, v, mh, pnh);
+            return IMLibPageNavigation.moveToDetailImpl(f, v, mh, pnh);
         };
     },
 
-    moveToDetailImpl: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+    moveToDetailImpl: function (keyField, keyValue, isHide, isHidePageNavi) {
         'use strict';
         var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node, contextDef;
 
         IMLibPageNavigation.previousModeDetail = {
-            encNodeTag: encNodeTag,
             keyField: keyField,
             keyValue: keyValue,
             isHide: isHide,
@@ -1209,7 +1207,7 @@ var IMLibPageNavigation = {
                 INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY};
                 window.scrollTo(0, 0);
                 masterEnclosure = masterContext.enclosureNode;
-                if (encNodeTag === 'TBODY') {
+                if (masterEnclosure.tagName === 'TBODY') {
                     masterEnclosure = masterEnclosure.parentNode;
                 }
                 INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display;
@@ -1266,8 +1264,7 @@ var IMLibPageNavigation = {
     moveDetailOnceAgain: function () {
         'use strict';
         var p = IMLibPageNavigation.previousModeDetail;
-        IMLibPageNavigation.moveToDetailImpl(
-            p.encNodeTag, p.keyField, p.keyValue, p.isHide, p.isHidePageNavi);
+        IMLibPageNavigation.moveToDetailImpl(p.keyField, p.keyValue, p.isHide, p.isHidePageNavi);
     },
 
 
