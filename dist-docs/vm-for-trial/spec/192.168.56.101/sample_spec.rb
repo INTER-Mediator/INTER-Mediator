@@ -18,16 +18,11 @@ end
 #  it { should be_installed }
 #end
 
+describe package('sudo') do
+  it { should be_installed }
+end
+
 describe package('curl'), :if => os[:family] == 'alpine' do
-  it { should be_installed }
-end
-describe package('apache2'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
-  it { should be_installed }
-end
-describe package('apache2-proxy'), :if => os[:family] == 'alpine' do
-  it { should be_installed }
-end
-describe package('httpd'), :if => os[:family] == 'redhat' do
   it { should be_installed }
 end
 
@@ -196,7 +191,16 @@ end
 describe package('php7'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
+describe package('php7.0-cli'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
 describe package('php7-apache2'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('libapache2-mod-php7.0'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
 end
 describe package('php7-curl'), :if => os[:family] == 'alpine' do
@@ -340,6 +344,16 @@ describe package('php7.0-intl'), :if => os[:family] == 'ubuntu' && os[:release].
   it { should be_installed }
 end
 
+describe package('apache2'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' do
+  it { should be_installed }
+end
+describe package('apache2-proxy'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('httpd'), :if => os[:family] == 'redhat' do
+  it { should be_installed }
+end
+
 describe package('git'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do
   it { should be_installed }
 end
@@ -412,7 +426,10 @@ end
 describe package('samba') do
   it { should be_installed }
 end
-describe service('samba') do
+describe service('smbd'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_running }
+end
+describe service('samba'), :if => os[:family] == 'alpine' || os[:family] == 'redhat' || (os[:family] == 'ubuntu' && os[:release].to_f < 16) do
   it { should be_running }
 end
 

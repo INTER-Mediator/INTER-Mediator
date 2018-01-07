@@ -7,18 +7,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: uname -a
-      - run: pwd
-      - run: ls -al
-      - run: ls -al /usr/bin/
-      - run:
-          command: docker build -t ubuntu ./dist-docs/docker
-          no_output_timeout: 1800
-      - run: docker image list
-      - run: docker run -d --name ubuntu -it ubuntu /bin/bash
-      - run: docker ps -a
-      - run: docker run -it ubuntu php -v
-      - run: docker run -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -i ubuntu sh -c "/etc/rc.local; /etc/init.d/apache2 start; rm -rf /var/lib/mysql; mkdir /var/lib/mysql; chown mysql:mysql /var/lib/mysql; apt-get -y autoremove; apt-get remove -y mysql-server; apt-get install -y mysql-server; mysql_install_db --datadir=/var/lib/mysql; /usr/bin/mysqladmin -u root password 'im4135dev'; /etc/init.d/mysql start; mysql -e \"GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' identified by 'im4135dev';\" -u root; rm -rf /var/lib/postgresql/9.3/main; mkdir /var/lib/postgresql/9.3/main; chown postgres:postgres /var/lib/postgresql/9.3/main; chmod 700 /var/lib/postgresql/9.3/main; apt-get remove -y postgresql; apt-get install -y postgresql; export PGDATA=/var/lib/postgresql/9.3/main; sudo su - postgres -c '/usr/lib/postgresql/9.3/bin/initdb -D /var/lib/postgresql/9.3/main'; /etc/init.d/postgresql start && echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh; phpunit --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; /usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js; bundle; rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
-      #- run: rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec /var/www/html/INTER-Mediator/dist-docs/docker/spec/container/container_spec.rb -f doc -c
+      - run: docker run --privileged -e "container=docker" --tmpfs /run -v /sys/fs/cgroup:/sys/fs/cgroup:ro -d --name ubuntu ubuntu:latest /sbin/init
+      - run: docker exec -e BUNDLE_GEMFILE=/var/www/html/INTER-Mediator/dist-docs/docker/Gemfile -e DISPLAY=:99.0 -it ubuntu sh -c "apt-get update && apt-get -y install ruby git; git clone https://github.com/matsuo/INTER-Mediator; cd INTER-Mediator; git checkout ubuntu1604; gem install itamae --no-doc; itamae local dist-docs/vm-for-trial/recipe.rb; echo y | sh /var/www/html/INTER-Mediator/dist-docs/vm-for-trial/dbupdate.sh; /etc/rc.local; bundle; phpunit --configuration /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/phpunit.xml /var/www/html/INTER-Mediator/INTER-Mediator-UnitTest/INTERMediator_AllTests.php; /usr/local/bin/buster-test -r specification -c /var/www/html/INTER-Mediator/spec/buster.js; rspec --default-path=/var/www/html/INTER-Mediator/dist-docs/docker/spec -f doc -c /var/www/html/INTER-Mediator/dist-docs/docker/spec/samples/samples_spec.rb"
       - run: docker stop ubuntu
       - run: docker rm ubuntu
