@@ -322,7 +322,7 @@ var IMLibUI = {
             }
             return result;
         } catch (ex) {
-            if (ex === '_im_requath_request_') {
+            if (ex.message === '_im_auth_required_') {
                 throw ex;
             } else {
                 INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-32: on the validation process.');
@@ -375,7 +375,7 @@ var IMLibUI = {
                         }
                     }
 
-                    INTERMediatorOnPage.retrieveAuthInfo();
+                    //INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_copy_async(
                         {
                             name: contextDef.name,
@@ -440,7 +440,7 @@ var IMLibUI = {
                 var i, parentKeyValue, deleteSuccessProc, targetRepeaters;
                 INTERMediatorOnPage.showProgress();
                 try {
-                    INTERMediatorOnPage.retrieveAuthInfo();
+                    //INTERMediatorOnPage.retrieveAuthInfo();
                     deleteSuccessProc = (function () {
                         var currentContextCapt2 = currentContextCapt;
                         var completeTaskCapt = completeTask;
@@ -503,7 +503,7 @@ var IMLibUI = {
                     }
 
                 } catch (ex) {
-                    if (ex.message === '_im_requath_request_') {
+                    if (ex.message === '_im_auth_required_') {
                         if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                             INTERMediatorOnPage.clearCredentials();
                             INTERMediatorOnPage.authenticating(
@@ -558,7 +558,7 @@ var IMLibUI = {
                         }
                     }
                 }
-                INTERMediatorOnPage.retrieveAuthInfo();
+                await INTERMediatorOnPage.retrieveAuthInfo();
                 if (isPortal) {
                     relatedRecordSet = [];
                     for (index in currentContext['default-values']) {

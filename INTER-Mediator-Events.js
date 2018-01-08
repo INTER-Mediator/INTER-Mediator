@@ -235,7 +235,7 @@ var IMLibEventResponder = {
                 return;
             }
             targetDefs = INTERMediatorLib.getLinkedElementInfo(target);
-            for (i = 0; i < targetDefs.length; i++) {
+            for (i = 0; i < targetDefs.length; i+=1) {
                 executable = IMLibMouseEventDispatch.dispatchTableTarget[targetDefs[i]];
                 if (executable) {
                     nodeInfo = INTERMediatorLib.getNodeInfoArray(targetDefs[i]);

@@ -106,7 +106,7 @@ var INTERMediatorOnPage = {
         var i, params, eqPos, result, key, value;
         result = {};
         params = location.search.substring(1).split('&');
-        for (i = 0; i < params.length; i++) {
+        for (i = 0; i < params.length; i+=1) {
             eqPos = params[i].indexOf('=');
             if (eqPos > 0) {
                 key = params[i].substring(0, eqPos);
@@ -137,7 +137,7 @@ var INTERMediatorOnPage = {
             INTERMediatorOnPage.authChallenge !== null && INTERMediatorOnPage.authChallenge.length > 0;
     },
 
-    retrieveAuthInfo: function () {
+    retrieveAuthInfo: async function () {
         'use strict';
         if (INTERMediatorOnPage.requireAuthentication) {
             if (INTERMediatorOnPage.isOnceAtStarting) {
@@ -173,9 +173,8 @@ var INTERMediatorOnPage = {
                 INTERMediatorOnPage.isOnceAtStarting = false;
             }
             if (INTERMediatorOnPage.authUser.length > 0) {
-                if (!INTERMediator_DBAdapter.getChallenge()) {
-                    INTERMediatorLog.flushMessage();
-                }
+                await INTERMediator_DBAdapter.getChallenge();
+                //INTERMediatorLog.flushMessage();
             }
         }
     },
@@ -324,7 +323,7 @@ var INTERMediatorOnPage = {
                 return message;
             }
             terms = policyString.split(/[\s,]/);
-            for (i = 0; i < terms.length; i++) {
+            for (i = 0; i < terms.length; i+=1) {
                 switch (terms[i].toUpperCase()) {
                 case 'USEALPHABET':
                     if (!newPassword.match(/[A-Za-z]/)) {
@@ -551,7 +550,7 @@ var INTERMediatorOnPage = {
                 passwordBox.focus();
             }
         };
-        authButton.onclick = function () {
+        authButton.onclick = async function () {
             var inputUsername, inputPassword, challengeResult, messageNode;
 
             messageNode = document.getElementById('_im_newpass_message');
@@ -575,7 +574,7 @@ var INTERMediatorOnPage = {
             if (inputUsername !== '' &&  // No usename and no challenge, get a challenge.
                 (INTERMediatorOnPage.authChallenge === null || INTERMediatorOnPage.authChallenge.length < 24 )) {
                 INTERMediatorOnPage.authHashedPassword = 'need-hash-pls';   // Dummy Hash for getting a challenge
-                challengeResult = INTERMediator_DBAdapter.getChallenge();
+                challengeResult = await INTERMediator_DBAdapter.getChallenge();
                 if (!challengeResult) {
                     INTERMediatorLog.flushMessage();
                     return; // If it's failed to get a challenge, finish everything.
@@ -596,8 +595,8 @@ var INTERMediatorOnPage = {
         };
         if (chgpwButton) {
             var checkPolicyMethod = this.checkPasswordPolicy;
-            chgpwButton.onclick = function () {
-                var inputUsername, inputPassword, inputNewPassword, result, messageNode, message;
+            chgpwButton.onclick = async function () {
+                var inputUsername, inputPassword, inputNewPassword, result, messageNode, message, msgNum;
 
                 messageNode = document.getElementById('_im_login_message');
                 INTERMediatorLib.removeChildNodes(messageNode);
@@ -622,11 +621,21 @@ var INTERMediatorOnPage = {
                     return;
                 }
 
-                result = INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword);
+                try {
+                    result = await INTERMediator_DBAdapter.changePassword(inputUsername, inputPassword, inputNewPassword);
+                    msgNum = 2009;
+                } catch(er){
+                    if(er.message==='_im_changepw_noparams'){
+                        msgNum = 2007;
+                    }else if(er.message==='_im_changepw_notchange'){
+                        msgNum = 2010;
+                    }else {
+                        msgNum = 2008;
+                    }
+                }
                 messageNode.appendChild(
                     document.createTextNode(
-                        INTERMediatorLib.getInsertedStringFromErrorNumber(result ? 2009 : 2010)));
-
+                        INTERMediatorLib.getInsertedStringFromErrorNumber(msgNum)));
                 INTERMediatorLog.flushMessage();
             };
         }
@@ -856,7 +865,7 @@ var INTERMediatorOnPage = {
             }
             children = node.childNodes;
             if (children) {
-                for (i = 0; i < children.length; i++) {
+                for (i = 0; i < children.length; i+=1) {
                     if (children[i].nodeType === 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
@@ -889,7 +898,7 @@ var INTERMediatorOnPage = {
             }
             children = node.childNodes;
             if (children) {
-                for (i = 0; i < children.length; i++) {
+                for (i = 0; i < children.length; i+=1) {
                     if (children[i].nodeType === 1) {
                         if (INTERMediatorLib.isLinkedElement(children[i])) {
                             nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
@@ -923,7 +932,7 @@ var INTERMediatorOnPage = {
         if (enclosureNode !== null) {
             nodeIds = [];
             if (Array.isArray(enclosureNode)) {
-                for (i = 0; i < enclosureNode.length; i++) {
+                for (i = 0; i < enclosureNode.length; i+=1) {
                     seekNode(enclosureNode[i], imDefinition);
                 }
             } else {
@@ -939,7 +948,7 @@ var INTERMediatorOnPage = {
             }
             children = node.childNodes;
             if (children) {
-                for (i = 0; i < children.length; i++) {
+                for (i = 0; i < children.length; i+=1) {
                     if (children[i].nodeType === 1) {
                         nodeDefs = INTERMediatorLib.getLinkedElementInfo(children[i]);
                         if (nodeDefs && nodeDefs.indexOf(imDefinition) > -1) {
@@ -985,7 +994,7 @@ var INTERMediatorOnPage = {
         var s, i, targetKey;
         s = document.cookie.split('; ');
         targetKey = this.getKeyWithRealm(key);
-        for (i = 0; i < s.length; i++) {
+        for (i = 0; i < s.length; i+=1) {
             if (s[i].indexOf(targetKey + '=') === 0) {
                 return decodeURIComponent(s[i].substring(s[i].indexOf('=') + 1));
             }
@@ -1115,7 +1124,7 @@ var INTERMediatorOnPage = {
             '?theme=' + INTERMediatorOnPage.getTheme() + '&type=css');
         linkElement.setAttribute('rel', 'stylesheet');
         linkElement.setAttribute('type', 'text/css');
-        for (i = 0; i < headNode.childNodes.length; i++) {
+        for (i = 0; i < headNode.childNodes.length; i+=1) {
             if (headNode.childNodes[i] &&
                 headNode.childNodes[i].nodeType === 1 &&
                 headNode.childNodes[i].tagName === 'LINK' &&

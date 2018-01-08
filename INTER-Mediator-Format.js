@@ -158,7 +158,7 @@ var IMLibFormat = {
                                 }
                             }
                         }
-                        i++;
+                        i+=1;
                     }
                     formatted = formatted +
                         (underNumStr === '' ? '' : decimalPoint + underNumStr);
@@ -231,7 +231,7 @@ var IMLibFormat = {
 
         if (flags.charStyle) {
             if (flags.charStyle === 1) {
-                for (i = 0; i < 10; i++) {
+                for (i = 0; i < 10; i+=1) {
                     formatted = String(formatted).split(String(i)).join(String.fromCharCode(65296 + i));
                 }
             } else if (flags.charStyle === 2) {
@@ -239,7 +239,7 @@ var IMLibFormat = {
                     0: '〇', 1: '一', 2: '二', 3: '三', 4: '四',
                     5: '五', 6: '六', 7: '七', 8: '八', 9: '九'
                 };
-                for (i = 0; i < 10; i++) {
+                for (i = 0; i < 10; i+=1) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
                 }
             } else if (flags.charStyle === 3) {
@@ -247,7 +247,7 @@ var IMLibFormat = {
                     0: '〇', 1: '壱', 2: '弐', 3: '参', 4: '四',
                     5: '伍', 6: '六', 7: '七', 8: '八', 9: '九'
                 };
-                for (i = 0; i < 10; i++) {
+                for (i = 0; i < 10; i+=1) {
                     formatted = String(formatted).split(String(i)).join(String(numbers[i]));
                 }
             }

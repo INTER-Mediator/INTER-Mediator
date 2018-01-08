@@ -45,7 +45,7 @@ var IMLibPageNavigation = {
                 return;
             }
             insideNav = navigation.childNodes;
-            for (i = 0; i < insideNav.length; i++) {
+            for (i = 0; i < insideNav.length; i+=1) {
                 navigation.removeChild(insideNav[i]);
             }
             navigation.innerHTML = '';
@@ -174,7 +174,7 @@ var IMLibPageNavigation = {
             }
 
             if (navLabel === null || navLabel[9] !== false) {
-                for (i = 0; i < IMLibPageNavigation.deleteInsertOnNavi.length; i++) {
+                for (i = 0; i < IMLibPageNavigation.deleteInsertOnNavi.length; i+=1) {
                     switch (IMLibPageNavigation.deleteInsertOnNavi[i].kind) {
                     case 'INSERT':
                         node = document.createElement('SPAN');
@@ -330,7 +330,7 @@ var IMLibPageNavigation = {
             var isConfirmCapt = isConfirm;
             return function (completeTask) {
                 try {
-                    INTERMediatorOnPage.retrieveAuthInfo();
+                    //INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_createRecord_async(
                         {name: targetNameCapt, dataset: []},
                         async function (response) {
@@ -362,7 +362,7 @@ var IMLibPageNavigation = {
                     );
                 } catch (ex) {
                     completeTask();
-                    if (ex.message === '_im_requath_request_') {
+                    if (ex.message === '_im_auth_required_') {
                         if (INTERMediatorOnPage.requireAuthentication) {
                             if (!INTERMediatorOnPage.isComplementAuthData()) {
                                 INTERMediatorOnPage.clearCredentials();
@@ -396,7 +396,7 @@ var IMLibPageNavigation = {
             return function (completeTask) {
                 INTERMediatorOnPage.showProgress();
                 try {
-                    INTERMediatorOnPage.retrieveAuthInfo();
+                    //INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_delete_async(
                         deleteArgs,
                         async function () {
@@ -452,7 +452,7 @@ var IMLibPageNavigation = {
                             copyTerm = copyTerm.substr(0, pStart);
                         }
                         assocContexts = copyTerm.split(',');
-                        for (i = 0; i < assocContexts.length; i++) {
+                        for (i = 0; i < assocContexts.length; i+=1) {
                             def = IMLibContextPool.getContextDef(assocContexts[i]);
                             if (def.relation[0]['foreign-key']) {
                                 assocDef.push({
@@ -463,7 +463,7 @@ var IMLibPageNavigation = {
                             }
                         }
                     }
-                    INTERMediatorOnPage.retrieveAuthInfo();
+                    //INTERMediatorOnPage.retrieveAuthInfo();
                     INTERMediator_DBAdapter.db_copy_async(
                         {
                             name: contextDefCapt.name,
@@ -510,8 +510,8 @@ var IMLibPageNavigation = {
             currentVal, fieldArray, valueArray, difference, needUpdate = true, context, updateData, response;
 
         INTERMediatorOnPage.showProgress();
-        INTERMediatorOnPage.retrieveAuthInfo();
-        for (i = 0; i < IMLibContextPool.poolingContexts.length; i++) {
+        //INTERMediatorOnPage.retrieveAuthInfo();
+        for (i = 0; i < IMLibContextPool.poolingContexts.length; i+=1) {
             context = IMLibContextPool.poolingContexts[i];
             updateData = context.getModified();
             for (keying in updateData) {
@@ -544,7 +544,7 @@ var IMLibPageNavigation = {
                         try {
                             currentVal = INTERMediator_DBAdapter.db_query_async(checkQueryParameter);
                         } catch (ex) {
-                            if (ex.message === '_im_requath_request_') {
+                            if (ex.message === '_im_auth_required_') {
                                 if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                                     INTERMediatorOnPage.clearCredentials();
                                     INTERMediatorOnPage.authenticating(
@@ -594,7 +594,7 @@ var IMLibPageNavigation = {
                                     INTERMediatorOnPage.getMessages()[1034], [difference]))) {
                                 return;
                             }
-                            INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
+                            //INTERMediatorOnPage.retrieveAuthInfo(); // This is required. Why?
                         }
                     }
 
@@ -608,7 +608,7 @@ var IMLibPageNavigation = {
                         });
 
                     } catch (ex) {
-                        if (ex.message === '_im_requath_request_') {
+                        if (ex.message === '_im_auth_required_') {
                             if (INTERMediatorOnPage.requireAuthentication && !INTERMediatorOnPage.isComplementAuthData()) {
                                 INTERMediatorOnPage.clearCredentials();
                                 INTERMediatorOnPage.authenticating(
@@ -788,7 +788,7 @@ var IMLibPageNavigation = {
                     enclosedNode = node.parentNode;
                     firstLevelNodes = enclosedNode.childNodes;
                     footNode = null;
-                    for (i = 0; i < firstLevelNodes.length; i++) {
+                    for (i = 0; i < firstLevelNodes.length; i+=1) {
                         if (firstLevelNodes[i].tagName === targetNodeTag) {
                             footNode = firstLevelNodes[i];
                             break;
@@ -926,7 +926,7 @@ var IMLibPageNavigation = {
             moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue);
         }
         if (isTouchRepeater) {
-            for (i = 0; i < repeaters.length; i++) {
+            for (i = 0; i < repeaters.length; i+=1) {
                 var originalColor = repeaters[i].style.backgroundColor;
                 INTERMediator.eventListenerPostAdding.push({
                     'id': repeaters[i].id,
@@ -1051,7 +1051,7 @@ var IMLibPageNavigation = {
         'use strict';
         var nodes, i;
         nodes = document.getElementsByClassName('IM_Button_StepBack');
-        for (i = 0; i < nodes.length; i++) {
+        for (i = 0; i < nodes.length; i+=1) {
             nodes[i].style.display = style;
             if (!INTERMediatorLib.isProcessed(nodes[i])) {
                 INTERMediatorLib.addEvent(nodes[i], 'click', function () {
@@ -1371,7 +1371,7 @@ var IMLibPageNavigation = {
             enclosedNode = node.parentNode;
             firstLevelNodes = enclosedNode.childNodes;
             targetNode = null;
-            for (i = 0; i < firstLevelNodes.length; i++) {
+            for (i = 0; i < firstLevelNodes.length; i+=1) {
                 if (firstLevelNodes[i].tagName === targetNodeTag) {
                     targetNode = firstLevelNodes[i];
                     break;

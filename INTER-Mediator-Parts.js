@@ -71,7 +71,7 @@ IMParts_Catalog.fileupload = {
                 newNode.style.textAlign = 'center';
                 newNode.style.fontSize = '75%';
                 var eachLine = INTERMediatorOnPage.getMessages()[3101].split(/\n/);
-                for (var i = 0; i < eachLine.length; i++) {
+                for (var i = 0; i < eachLine.length; i+=1) {
                     if (i > 0) {
                         newNode.appendChild(document.createElement('BR'));
                     }
@@ -199,7 +199,7 @@ IMParts_Catalog.fileupload = {
         var shaObj, hmacValue, targetNode, formNode, i, tagetIdLocal, isProgressingLocal, serialIdLocal, uploadIdLocal;
 
         if (this.html5DDSuported) {
-            for (i = 0; i < this.ids.length; i++) {
+            for (i = 0; i < this.ids.length; i+=1) {
                 tagetIdLocal = this.ids[i];
                 targetNode = document.getElementById(tagetIdLocal);
                 if (targetNode) {
@@ -236,7 +236,7 @@ IMParts_Catalog.fileupload = {
                                 infoFrame.style.height = '24px';
                                 eventTarget.appendChild(infoFrame);
                             }
-                            for (i = 0; i < event.dataTransfer.files.length; i++) {
+                            for (i = 0; i < event.dataTransfer.files.length; i+=1) {
                                 file = event.dataTransfer.files[i];
                                 fileNameNode = document.createElement('DIV');
                                 fileNameNode.appendChild(document.createTextNode(
@@ -306,7 +306,7 @@ IMParts_Catalog.fileupload = {
                                             contextInfo = IMLibContextPool.getContextInfoFromId(targetIdCapt, '');
                                             contextInfo.context.setValue(contextInfo.record, contextInfo.field, dbresult);
                                             if (contextObjects) {
-                                                for (i = 0; i < contextObjects.length; i++) {
+                                                for (i = 0; i < contextObjects.length; i+=1) {
                                                     contextObj = contextObjects[i];
                                                     INTERMediator.construct(contextObj);
                                                 }
@@ -332,7 +332,7 @@ IMParts_Catalog.fileupload = {
             }
 
         } else {
-            for (i = 0; i < this.ids.length; i++) {
+            for (i = 0; i < this.ids.length; i+=1) {
                 targetNode = document.getElementById(this.ids[i]);
                 formNode = targetNode.getElementsByTagName('FORM')[0];
                 if (targetNode && formNode) {
@@ -433,7 +433,7 @@ IMParts_Catalog.fileupload = {
 
         function selfURL() {
             var nodes = document.getElementsByTagName('SCRIPT');
-            for (var i = 0; i < nodes.length; i++) {
+            for (var i = 0; i < nodes.length; i+=1) {
                 var srcAttr = nodes[i].getAttribute('src');
                 if (srcAttr.match(/\.php/)) {
                     return srcAttr;
@@ -474,7 +474,7 @@ IMParts_Catalog.jsonformat = {
 
     finish: function () {
         'use strict';
-        for (var i = 0; i < IMParts_Catalog.jsonformat.ids.length; i++) {
+        for (var i = 0; i < IMParts_Catalog.jsonformat.ids.length; i+=1) {
             var targetId = IMParts_Catalog.jsonformat.ids[i];
             var targetNode = document.getElementById(targetId);
             if (targetNode) {
@@ -549,7 +549,7 @@ IMParts_Catalog.popupselector = {
     finish: function () {
         'use strict';
         var i, targetId, targetNode, j, nodes, selectionRoot, nodeValue, displayValue, innodes, k;
-        for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i++) {
+        for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i+=1) {
             targetId = IMParts_Catalog.popupselector.ids[i];
             targetNode = document.getElementById(targetId);
             selectionRoot = IMParts_Catalog.popupselector.selectionRoots[i];
@@ -610,7 +610,7 @@ IMParts_Catalog.popupselector = {
         if (targetNode) {
             body.removeChild(targetNode);
         }
-        for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i++) {
+        for (i = 0; i < IMParts_Catalog.popupselector.ids.length; i+=1) {
             selectionRoot = IMParts_Catalog.popupselector.selectionRoots[i];
             if (selectionRoot) {
                 selectionRoot.style.display = 'none';
@@ -629,11 +629,11 @@ IMParts_Catalog.popupselector = {
         keyRec = contextInfo.record.split('=');
         contextInfo.context.setDataWithKey(keyRec[1], targetField, selectedData);
         nodes = node.parentNode.parentNode.getElementsByClassName('_im_widget_popup_value');
-        for (i = 0; i < nodes.length; i++) {
+        for (i = 0; i < nodes.length; i+=1) {
             nodes[i].innerHTML = node.innerHTML;
         }
         nodes = node.parentNode.getElementsByClassName('_im_widget_popup_selection');
-        for (i = 0; i < nodes.length; i++) {
+        for (i = 0; i < nodes.length; i+=1) {
             if (node.getAttribute('data-im-value') === nodes[i].getAttribute('data-im-value')) {
                 nodes[i].setAttribute('class', '_im_widget_popup_selection _im_widget_popup_selected');
             } else {

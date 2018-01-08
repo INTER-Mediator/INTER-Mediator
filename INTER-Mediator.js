@@ -350,7 +350,7 @@ const INTERMediator = {
         INTERMediator.crossTableStage = 0;
         INTERMediator.appendingNodesAtLast = [];
         IMLibEventResponder.setup();
-        INTERMediatorOnPage.retrieveAuthInfo();
+        await INTERMediatorOnPage.retrieveAuthInfo();
         try {
             if (Pusher.VERSION) {
                 INTERMediator.pusherAvailable = true;
@@ -400,7 +400,7 @@ const INTERMediator = {
                         );
                     }
                 } catch (ex) {
-                    if (ex.message === '_im_requath_request_') {
+                    if (ex.message === '_im_auth_required_') {
                         throw ex;
                     } else {
                         INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-8');
@@ -420,7 +420,7 @@ const INTERMediator = {
                  */
             }
         } catch (ex) {
-            if (ex.message === '_im_requath_request_') {
+            if (ex.message === '_im_auth_required_') {
                 if (INTERMediatorOnPage.requireAuthentication) {
                     if (!INTERMediatorOnPage.isComplementAuthData()) {
                         INTERMediatorOnPage.clearCredentials();
@@ -503,7 +503,7 @@ const INTERMediator = {
             try {
                 await seekEnclosureNode(bodyNode, null, null, null);
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-9');
@@ -577,7 +577,7 @@ const INTERMediator = {
                                 try {
                                     await expandEnclosure(node, currentRecord, parentObjectInfo, currentContextObj);
                                 } catch (ex) {
-                                    if (ex.message === '_im_requath_request_') {
+                                    if (ex.message === '_im_auth_required_') {
                                         throw ex;
                                     }
                                 }
@@ -596,7 +596,7 @@ const INTERMediator = {
                         }
                     }
                 } catch (ex) {
-                    if (ex.message === '_im_requath_request_') {
+                    if (ex.message === '_im_auth_required_') {
                         throw ex;
                     } else {
                         INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-10');
@@ -675,7 +675,7 @@ const INTERMediator = {
                             }
                         }
                     } catch (ex) {
-                        if (ex.message === '_im_requath_request_') {
+                        if (ex.message === '_im_auth_required_') {
                             throw ex;
                         } else {
                             INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-11');
@@ -722,76 +722,80 @@ const INTERMediator = {
                 let linkedNodes, repeaters, linkDefs, voteResult, currentContextDef, fieldList, i, targetRecords,
                     newNode, keyValue, selectedNode, isExpanding, calcFields, contextObj = null;
 
-                repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
-                linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
-                linkDefs = collectLinkDefinitions(linkedNodes);
-                voteResult = tableVoting(linkDefs);
-                currentContextDef = voteResult.targettable;
-                INTERMediator.currentEncNumber++;
+                try {
+                    repeaters = collectRepeaters(repeatersOriginal);  // Collecting repeaters to this array.
+                    linkedNodes = INTERMediatorLib.seekLinkedAndWidgetNodes(repeaters, true).linkedNode;
+                    linkDefs = collectLinkDefinitions(linkedNodes);
+                    voteResult = tableVoting(linkDefs);
+                    currentContextDef = voteResult.targettable;
+                    INTERMediator.currentEncNumber++;
 
-                if (!enclosureNode.getAttribute('id')) {
-                    enclosureNode.setAttribute('id', INTERMediator.nextIdValue());
-                }
+                    if (!enclosureNode.getAttribute('id')) {
+                        enclosureNode.setAttribute('id', INTERMediator.nextIdValue());
+                    }
 
-                if (!currentContextDef) {
-                    for (i = 0; i < repeatersOriginal.length; i++) {
-                        newNode = enclosureNode.appendChild(repeatersOriginal[i]);
+                    if (!currentContextDef) {
+                        for (i = 0; i < repeatersOriginal.length; i++) {
+                            newNode = enclosureNode.appendChild(repeatersOriginal[i]);
 
-                        // for compatibility with Firefox
-                        if (repeatersOriginal[i].getAttribute('selected')) {
-                            selectedNode = newNode;
+                            // for compatibility with Firefox
+                            if (repeatersOriginal[i].getAttribute('selected')) {
+                                selectedNode = newNode;
+                            }
+                            if (selectedNode !== undefined) {
+                                selectedNode.selected = true;
+                            }
+                            await seekEnclosureNode(newNode, null, enclosureNode, currentContextObj);
                         }
-                        if (selectedNode !== undefined) {
-                            selectedNode.selected = true;
-                        }
-                        await seekEnclosureNode(newNode, null, enclosureNode, currentContextObj);
-                    }
-                } else {
-                    isExpanding = !IMLibPageNavigation.isNotExpandingContext(currentContextDef);
-                    contextObj = IMLibContextPool.generateContextObject(
-                        currentContextDef, enclosureNode, repeaters, repeatersOriginal);
-                    calcFields = contextObj.getCalculationFields();
-                    fieldList = voteResult.fieldlist.map(function (elm) {
-                        if (!calcFields[elm]) {
-                            calcFields.push(elm);
-                        }
-                        return elm;
-                    });
-                    contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
-                    if (currentContextDef.relation && currentContextDef.relation[0] &&
-                        Boolean(currentContextDef.relation[0].portal) === true) {
-                        currentContextDef.currentrecord = currentRecord;
-                        keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName];
-                    }
-                    if (procBeforeRetrieve) {
-                        procBeforeRetrieve(contextObj);
-                    }
-                    if (isExpanding) {
-                        targetRecords = await retrieveDataForEnclosure(contextObj, fieldList, contextObj.foreignValue);
                     } else {
-                        targetRecords = [];
-                        if (enclosureNode.tagName === 'TBODY') {
-                            enclosureNode.parentNode.style.display = 'none';
+                        isExpanding = !IMLibPageNavigation.isNotExpandingContext(currentContextDef);
+                        contextObj = IMLibContextPool.generateContextObject(
+                            currentContextDef, enclosureNode, repeaters, repeatersOriginal);
+                        calcFields = contextObj.getCalculationFields();
+                        fieldList = voteResult.fieldlist.map(function (elm) {
+                            if (!calcFields[elm]) {
+                                calcFields.push(elm);
+                            }
+                            return elm;
+                        });
+                        contextObj.setRelationWithParent(currentRecord, parentObjectInfo, currentContextObj);
+                        if (currentContextDef.relation && currentContextDef.relation[0] &&
+                            Boolean(currentContextDef.relation[0].portal) === true) {
+                            currentContextDef.currentrecord = currentRecord;
+                            keyValue = currentRecord[INTERMediatorOnPage.defaultKeyName];
+                        }
+                        if (procBeforeRetrieve) {
+                            procBeforeRetrieve(contextObj);
+                        }
+                        if (isExpanding) {
+                            targetRecords = await retrieveDataForEnclosure(contextObj, fieldList, contextObj.foreignValue);
                         } else {
-                            enclosureNode.style.display = 'none';
+                            targetRecords = [];
+                            if (enclosureNode.tagName === 'TBODY') {
+                                enclosureNode.parentNode.style.display = 'none';
+                            } else {
+                                enclosureNode.style.display = 'none';
+                            }
                         }
+                        contextObj.storeRecords(targetRecords);
+                        callbackForAfterQueryStored(currentContextDef, contextObj);
+                        if (customExpandRepeater === undefined) {
+                            contextObj.registeredId = targetRecords.registeredId;
+                            contextObj.nullAcceptable = targetRecords.nullAcceptable;
+                            isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false);
+                            await expandRepeaters(contextObj, enclosureNode, targetRecords);
+                            IMLibPageNavigation.setupInsertButton(contextObj, keyValue, enclosureNode, contextObj.foreignValue);
+                            IMLibPageNavigation.setupBackNaviButton(contextObj, enclosureNode);
+                            callbackForEnclosure(currentContextDef, enclosureNode);
+                        } else {
+                            customExpandRepeater(contextObj, targetRecords);
+                        }
+                        contextObj.sequencing = false;
                     }
-                    contextObj.storeRecords(targetRecords);
-                    callbackForAfterQueryStored(currentContextDef, contextObj);
-                    if (customExpandRepeater === undefined) {
-                        contextObj.registeredId = targetRecords.registeredId;
-                        contextObj.nullAcceptable = targetRecords.nullAcceptable;
-                        isAcceptNotify |= !(INTERMediatorOnPage.notifySupport === false);
-                        await expandRepeaters(contextObj, enclosureNode, targetRecords);
-                        IMLibPageNavigation.setupInsertButton(contextObj, keyValue, enclosureNode, contextObj.foreignValue);
-                        IMLibPageNavigation.setupBackNaviButton(contextObj, enclosureNode);
-                        callbackForEnclosure(currentContextDef, enclosureNode);
-                    } else {
-                        customExpandRepeater(contextObj, targetRecords);
-                    }
-                    contextObj.sequencing = false;
+                    return contextObj;
+                } catch(ex){
+                    throw ex;
                 }
-                return contextObj;
             }
 
             /** --------------------------------------------------------------------
@@ -972,7 +976,7 @@ const INTERMediator = {
                     }
                 }
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-101');
@@ -1027,7 +1031,7 @@ const INTERMediator = {
                         }
                     }
                 } catch (ex) {
-                    if (ex.message === '_im_requath_request_') {
+                    if (ex.message === '_im_auth_required_') {
                         throw ex;
                     } else {
                         INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-27');
@@ -1202,7 +1206,7 @@ const INTERMediator = {
                         });
                     }
                 } catch (ex) {
-                    if (ex.message === '_im_requath_request_') {
+                    if (ex.message === '_im_auth_required_') {
                         throw ex;
                     } else {
                         INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-12');
@@ -1276,7 +1280,7 @@ const INTERMediator = {
                     return targetRecords;
                 }
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-24');
@@ -1296,7 +1300,7 @@ const INTERMediator = {
                         currentContextDef.name + '] with the context.', 2);
                 }
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex,
@@ -1319,7 +1323,7 @@ const INTERMediator = {
                         currentContextDef.name, 2);
                 }
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-23');
@@ -1340,7 +1344,7 @@ const INTERMediator = {
                         currentContextDef.name + '] with the context.', 2);
                 }
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex,
@@ -1355,7 +1359,7 @@ const INTERMediator = {
                         currentContextDef.name, 2);
                 }
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex, 'EXCEPTION-21');
@@ -1369,7 +1373,7 @@ const INTERMediator = {
                         ' with the context: ' + currentContextDef.name, 2);
                 }
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex,
@@ -1390,7 +1394,7 @@ const INTERMediator = {
                         currentContextDef['post-enclosure'] + ' with the context: ' + currentContextDef.name, 2);
                 }
             } catch (ex) {
-                if (ex.message === '_im_requath_request_') {
+                if (ex.message === '_im_auth_required_') {
                     throw ex;
                 } else {
                     INTERMediatorLog.setErrorMessage(ex,

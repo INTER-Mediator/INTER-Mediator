@@ -78,7 +78,7 @@ var IMLibCalc = {
                 if (elements && objectKey) {
                     values = {};
                     referes = {};
-                    for (i = 0; i < elements.length; i++) {
+                    for (i = 0; i < elements.length; i+=1) {
                         itemIndex = elements[i];
                         if (itemIndex) {
                             values[itemIndex] = [currentRecord[itemIndex]];
@@ -127,7 +127,7 @@ var IMLibCalc = {
 
         do {
             leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
-            for (i = 0; i < leafNodes.length; i++) {
+            for (i = 0; i < leafNodes.length; i+=1) {
                 calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
                 calcFieldInfo = INTERMediatorLib.getCalcNodeInfoArray(leafNodes[i]);
                 if (calcObject) {
@@ -204,7 +204,7 @@ var IMLibCalc = {
 
         do {
             leafNodes = IMLibNodeGraph.getLeafNodesWithRemoving();
-            for (i = 0; i < leafNodes.length; i++) {
+            for (i = 0; i < leafNodes.length; i+=1) {
                 calcObject = IMLibCalc.calculateRequiredObject[leafNodes[i]];
                 if (calcObject) {
                     idValue = leafNodes[i].match(IMLibCalc.regexpForSeparator) ?

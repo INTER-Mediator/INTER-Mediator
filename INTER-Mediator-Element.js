@@ -315,7 +315,7 @@ var IMLibElement = {
                     valueAttr = element.value;
                     curValues = curVal.split(IMLib.nl_char);
                     if (typeAttr === 'checkbox' && curValues.length > 1) {
-                        for (i = 0; i < curValues.length; i++) {
+                        for (i = 0; i < curValues.length; i+=1) {
                             if (valueAttr === curValues[i] && !INTERMediator.dontSelectRadioCheck) {
                                 // The above operator shuold be '==' not '==='
                                 if (INTERMediator.isIE) {
@@ -522,13 +522,13 @@ var IMLibElement = {
             if (removeNode) {
                 removingNodes = INTERMediatorLib.getElementsByIMManaged(removeNode);
                 if (removingNodes) {
-                    for (i = 0; i < removingNodes.length; i++) {
+                    for (i = 0; i < removingNodes.length; i+=1) {
                         removeNodeId = removingNodes[i].id;
                         if (removeNodeId in IMLibCalc.calculateRequiredObject) {
                             delete IMLibCalc.calculateRequiredObject[removeNodeId];
                         }
                     }
-                    for (i = 0; i < removingNodes.length; i++) {
+                    for (i = 0; i < removingNodes.length; i+=1) {
                         removeNodeId = removingNodes[i].id;
                         for (nodeId in IMLibCalc.calculateRequiredObject) {
                             if (IMLibCalc.calculateRequiredObject.hasOwnProperty(nodeId)) {
