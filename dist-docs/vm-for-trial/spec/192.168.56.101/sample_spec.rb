@@ -22,7 +22,7 @@ describe package('sudo') do
   it { should be_installed }
 end
 
-describe package('curl'), :if => os[:family] == 'alpine' do
+describe package('curl'), :if => os[:family] == 'alpine' || (os[:family] == 'ubuntu' && os[:release].to_f >= 16) do
   it { should be_installed }
 end
 
@@ -182,6 +182,20 @@ describe package('sqlite'), :if => os[:family] == 'alpine' || (os[:family] == 'u
 end
 describe package('sqlite3'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
   it { should be_installed }
+end
+
+describe package('software-properties-common'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
+describe package('apt-transport-https'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
+describe package('mssql-server'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_installed }
+end
+describe service('mssql-server'), :if => os[:family] == 'ubuntu' && os[:release].to_f >= 16 do
+  it { should be_enabled }
+  it { should be_running }
 end
 
 describe package('acl'), :if => os[:family] == 'alpine' || os[:family] == 'ubuntu' || os[:family] == 'redhat' do

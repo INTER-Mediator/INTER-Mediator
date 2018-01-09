@@ -132,7 +132,7 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'alpine'
+if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16)
   package 'curl' do
     action :install
   end
@@ -317,6 +317,36 @@ if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
 else
   package 'sqlite' do
     action :install
+  end
+end
+
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+  execute 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -' do
+    command 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -'
+  end
+  package 'software-properties-common' do
+    action :install
+  end
+  package 'apt-transport-https' do
+    action :install
+  end
+  execute 'sudo add-apt-repository "$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"' do
+    command 'sudo add-apt-repository "$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"'
+  end
+  execute 'sudo apt-get update' do
+    command 'sudo apt-get update'
+  end
+  package 'mssql-server' do
+    action :install
+  end
+  execute 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false' do
+    command 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false'
+  end
+  execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="IM4135dev" /opt/mssql/bin/mssql-conf setup' do
+    command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="IM4135dev" /opt/mssql/bin/mssql-conf setup'
+  end
+  service 'mssql-server' do
+    action [ :enable, :start ]
   end
 end
 
