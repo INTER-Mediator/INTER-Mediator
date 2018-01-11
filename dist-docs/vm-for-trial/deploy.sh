@@ -82,6 +82,8 @@ if [ $OS = 'alpine' ] ; then
     apk add --no-cache php7-mbstring
     apk add --no-cache php7-xml
     apk add --no-cache php7-simplexml
+    apk add --no-cache php7-session
+    apk add --no-cache php7-mysqli
     apk add --no-cache git
     apk add --no-cache nodejs
     apk add --no-cache nodejs-npm

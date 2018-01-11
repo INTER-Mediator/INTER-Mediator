@@ -274,6 +274,12 @@ end
 describe package('php7-simplexml'), :if => os[:family] == 'alpine' do
   it { should be_installed }
 end
+describe package('php7-session'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
+describe package('php7-mysqli'), :if => os[:family] == 'alpine' do
+  it { should be_installed }
+end
 describe package('php-pear'), :if => os[:family] == 'redhat' && os[:release].to_f < 6 do
   it { should be_installed }
 end
