@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.5/3.6, Ubuntu Server 14.04/16.04, CentOS 6.6/7
+# Recipe file of Itamae for Alpine Linux 3.5/3.6, Ubuntu Server 14.04/16.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -398,6 +398,12 @@ if node[:platform] == 'alpine'
     action :install
   end
   package 'php7-simplexml' do
+    action :install
+  end
+  package 'php7-session' do
+    action :install
+  end
+  package 'php7-mysqli' do
     action :install
   end
   package 'ca-certificates' do
