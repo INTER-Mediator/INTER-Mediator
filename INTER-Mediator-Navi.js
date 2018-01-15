@@ -753,7 +753,7 @@ var IMLibPageNavigation = {
                 var currentContextCapt = currentContext,
                     keyFieldCapt = keyField,
                     keyValueCapt = keyValue,
-                    confirmingCapt = currentContextDef['repeat-control'].match(/confirm-delete/i);
+                    confirmingCapt = !!currentContextDef['repeat-control'].match(/confirm-delete/i);
                 return function () {
                     IMLibUI.deleteButton(currentContextCapt, keyFieldCapt, keyValueCapt, confirmingCapt);
                 };
@@ -881,7 +881,7 @@ var IMLibPageNavigation = {
                         keyValueCapt = keyValue,
                         relationValueCapt = relationValue,
                         nodeId = node.getAttribute('id'),
-                        confirming = currentContextDef['repeat-control'].match(/confirm-insert/i);
+                        confirming = !!currentContextDef['repeat-control'].match(/confirm-insert/i);
                     return function () {
                         IMLibUI.insertButton(context, keyValueCapt, relationValueCapt, nodeId, confirming);
                     };
@@ -920,10 +920,10 @@ var IMLibPageNavigation = {
         }
 
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
-        isHide = currentContextDef['navi-control'].match(/hide/i);
+        isHide = !!currentContextDef['navi-control'].match(/hide/i);
         isHidePageNavi = isHide && !!currentContextDef.paging;
-        isMasterDetail = currentContextDef['navi-control'].match(/master/i);
-        isStep = currentContextDef['navi-control'].match(/step/i);
+        isMasterDetail = !!currentContextDef['navi-control'].match(/master/i);
+        isStep = !!currentContextDef['navi-control'].match(/step/i);
 
         if (isMasterDetail && INTERMediator.detailNodeOriginalDisplay) {
             detailContext = IMLibContextPool.getDetailContext();
@@ -951,8 +951,7 @@ var IMLibPageNavigation = {
             masterContext.setValue(keyField + '=' + keyValue, '_im_button_master_id', thisId, thisId);
         }
         if (isMasterDetail) {
-            moveToDetailFunc = IMLibPageNavigation.moveToDetail(
-                encNodeTag, keyField, keyValue, isHide, isHidePageNavi);
+            moveToDetailFunc = IMLibPageNavigation.moveToDetail(keyField, keyValue, isHide, isHidePageNavi);
         }
         if (isStep) {
             moveToDetailFunc = IMLibPageNavigation.moveToNextStep(contextObj, keyField, keyValue);
@@ -1168,21 +1167,20 @@ var IMLibPageNavigation = {
         INTERMediator.constructMain(prevInfo.context);
     },
 
-    moveToDetail: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+    moveToDetail: function (keyField, keyValue, isHide, isHidePageNavi) {
         'use strict';
-        var f = keyField, v = keyValue, etag = encNodeTag, mh = isHide, pnh = isHidePageNavi;
+        var f = keyField, v = keyValue, mh = isHide, pnh = isHidePageNavi;
 
         return function () {
-            return IMLibPageNavigation.moveToDetailImpl(etag, f, v, mh, pnh);
+            return IMLibPageNavigation.moveToDetailImpl(f, v, mh, pnh);
         };
     },
 
-    moveToDetailImpl: function (encNodeTag, keyField, keyValue, isHide, isHidePageNavi) {
+    moveToDetailImpl: function (keyField, keyValue, isHide, isHidePageNavi) {
         'use strict';
         var masterContext, detailContext, contextName, masterEnclosure, detailEnclosure, node, contextDef;
 
         IMLibPageNavigation.previousModeDetail = {
-            encNodeTag: encNodeTag,
             keyField: keyField,
             keyValue: keyValue,
             isHide: isHide,
@@ -1209,7 +1207,7 @@ var IMLibPageNavigation = {
                 INTERMediatorOnPage.masterScrollPosition = {x: window.scrollX, y: window.scrollY};
                 window.scrollTo(0, 0);
                 masterEnclosure = masterContext.enclosureNode;
-                if (encNodeTag === 'TBODY') {
+                if (masterEnclosure.tagName === 'TBODY') {
                     masterEnclosure = masterEnclosure.parentNode;
                 }
                 INTERMediator.masterNodeOriginalDisplay = masterEnclosure.style.display;
@@ -1266,8 +1264,7 @@ var IMLibPageNavigation = {
     moveDetailOnceAgain: function () {
         'use strict';
         var p = IMLibPageNavigation.previousModeDetail;
-        IMLibPageNavigation.moveToDetailImpl(
-            p.encNodeTag, p.keyField, p.keyValue, p.isHide, p.isHidePageNavi);
+        IMLibPageNavigation.moveToDetailImpl(p.keyField, p.keyValue, p.isHide, p.isHidePageNavi);
     },
 
 
@@ -1300,7 +1297,7 @@ var IMLibPageNavigation = {
         if (!naviControlValue || (!naviControlValue.match(/hide/i))) {
             return;
         }
-        isUpdateMaster = currentContextDef['navi-control'].match(/update/i);
+        isUpdateMaster = !!currentContextDef['navi-control'].match(/update/i);
         isTouchRepeater = INTERMediator.isMobile || INTERMediator.isTablet;
         isTop = !(currentContextDef['navi-control'].match(/bottom/i));
 

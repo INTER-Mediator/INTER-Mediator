@@ -596,6 +596,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
             $this->authDbClass = new DB_PDO();
             $this->authDbClass->setUpSharedObjects($this);
             $this->authDbClass->setupWithDSN($challengeDSN);
+            $this->authDbClass->setupHandlers($challengeDSN);
             $this->logger->setDebugMessage(
                 "The class 'DB_PDO' was instanciated for issuedhash with {$challengeDSN}.", 2);
         } else {
@@ -965,39 +966,38 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         $this->logger->setDebugMessage(
             "[finishCommunication]getRequireAuthorization={$this->dbSettings->getRequireAuthorization()}", 2);
 
-        $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
-        $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
         $this->outputOfProcessing['usenull'] = false;
         if ($this->dbClass->specHandler) {
             $this->outputOfProcessing['usenull'] = $this->dbClass->specHandler->isNullAcceptable();
         }
         $this->outputOfProcessing['notifySupport']
             = is_null($this->dbSettings->notifyServer) ? false : $this->dbSettings->pusherKey;
-        if ($notFinish || !$this->dbSettings->getRequireAuthorization()) {
-            return;
-        }
-        $generatedChallenge = $this->generateChallenge();
-        $generatedUID = $this->generateClientId('');
-        $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
-        $userSalt = $this->saveChallenge(
-            $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
-
-        $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
-        $this->previousClientid = "{$generatedUID}";
-        $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
-        $this->outputOfProcessing['clientid'] = $generatedUID;
-        if ($this->dbSettings->getRequireAuthentication()) {
-            $this->outputOfProcessing['requireAuth'] = true;
-        }
-        $tableInfo = $this->dbSettings->getDataSourceTargetArray();
-        if (isset($tableInfo['authentication'])
-            && isset($tableInfo['authentication']['media-handling'])
-            && $tableInfo['authentication']['media-handling'] === true
-        ) {
+        if (!$notFinish && $this->dbSettings->getRequireAuthorization()) {
             $generatedChallenge = $this->generateChallenge();
-            $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
-            $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
+            $generatedUID = $this->generateClientId('');
+            $this->logger->setDebugMessage("generatedChallenge = $generatedChallenge", 2);
+            $userSalt = $this->saveChallenge(
+                $this->dbSettings->isDBNative() ? 0 : $this->paramAuthUser, $generatedChallenge, $generatedUID);
+
+            $this->previousChallenge = "{$generatedChallenge}{$userSalt}";
+            $this->previousClientid = "{$generatedUID}";
+            $this->outputOfProcessing['challenge'] = "{$generatedChallenge}{$userSalt}";
+            $this->outputOfProcessing['clientid'] = $generatedUID;
+            if ($this->dbSettings->getRequireAuthentication()) {
+                $this->outputOfProcessing['requireAuth'] = true;
+            }
+            $tableInfo = $this->dbSettings->getDataSourceTargetArray();
+            if (isset($tableInfo['authentication'])
+                && isset($tableInfo['authentication']['media-handling'])
+                && $tableInfo['authentication']['media-handling'] === true
+            ) {
+                $generatedChallenge = $this->generateChallenge();
+                $this->saveChallenge($this->paramAuthUser, $generatedChallenge, "_im_media");
+                $this->outputOfProcessing['mediatoken'] = $generatedChallenge;
+            }
         }
+        $this->outputOfProcessing['errorMessages'] = $this->logger->getErrorMessages();
+        $this->outputOfProcessing['debugMessages'] = $this->logger->getDebugMessages();
     }
 
     public function getDatabaseResult()
