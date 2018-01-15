@@ -1,4 +1,4 @@
-# Recipe file of Itamae for Alpine Linux 3.5/3.6, Ubuntu Server 14.04/16.04, CentOS 6.6/7
+# Recipe file of Itamae for Alpine Linux 3.5/3.6, Ubuntu Server 14.04/16.04, CentOS 6/7
 #   How to test using Serverspec 2 after provisioning ("vargrant up"):
 #   - Install Ruby on the host of VM (You don't need installing Ruby on macOS usually)
 #   - Install Serverspec 2 on the host of VM ("gem install serverspec")
@@ -64,6 +64,9 @@ if node[:platform] == 'alpine'
     command 'echo "developer ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers'
   end
 elsif node[:platform] == 'ubuntu'
+  package 'sudo' do
+    action :install
+  end
   file '/etc/sudoers.d/developer' do
     owner 'root'
     group 'root'
@@ -129,42 +132,9 @@ if node[:platform] == 'ubuntu'
   end
 end
 
-if node[:platform] == 'alpine'
+if node[:platform] == 'alpine' || (node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16)
   package 'curl' do
     action :install
-  end
-end
-if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
-  package 'apache2' do
-    action :install
-  end
-  if node[:platform] == 'alpine'
-    package 'apache2-proxy' do
-      action :install
-    end
-  end
-  service 'apache2' do
-    action [ :enable, :start ]
-  end
-elsif node[:platform] == 'redhat'
-  package 'httpd' do
-    action :install
-  end
-  service 'httpd' do
-    action [ :enable, :start ]
-  end
-end
-if node[:platform] == 'alpine'
-  execute 'usermod -a -G im-developer apache' do
-    command 'usermod -a -G im-developer apache'
-  end
-elsif node[:platform] == 'redhat'
-  execute 'usermod -a -G im-developer apache' do
-    command 'usermod -a -G im-developer apache'
-  end
-elsif node[:platform] == 'ubuntu'
-  execute 'usermod -a -G im-developer www-data' do
-    command 'usermod -a -G im-developer www-data'
   end
 end
 
@@ -350,6 +320,36 @@ else
   end
 end
 
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+  execute 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -' do
+    command 'curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -'
+  end
+  package 'software-properties-common' do
+    action :install
+  end
+  package 'apt-transport-https' do
+    action :install
+  end
+  execute 'sudo add-apt-repository "$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"' do
+    command 'sudo add-apt-repository "$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"'
+  end
+  execute 'sudo apt-get update' do
+    command 'sudo apt-get update'
+  end
+  package 'mssql-server' do
+    action :install
+  end
+  execute 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false' do
+    command 'sudo /opt/mssql/bin/mssql-conf set telemetry.customerfeedback false'
+  end
+  execute 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="IM4135dev" /opt/mssql/bin/mssql-conf setup' do
+    command 'sudo ACCEPT_EULA="Y" MSSQL_PID="Developer" MSSQL_SA_PASSWORD="IM4135dev" /opt/mssql/bin/mssql-conf setup'
+  end
+  service 'mssql-server' do
+    action [ :enable, :start ]
+  end
+end
+
 package 'acl' do
   action :install
 end
@@ -400,6 +400,12 @@ if node[:platform] == 'alpine'
   package 'php7-simplexml' do
     action :install
   end
+  package 'php7-session' do
+    action :install
+  end
+  package 'php7-mysqli' do
+    action :install
+  end
   package 'ca-certificates' do
     action :install
   end
@@ -423,10 +429,19 @@ elsif node[:platform] == 'ubuntu'
     action :install
   end
   if node[:platform_version].to_f >= 16
-    package 'php5.0-mbstring' do
+    package 'php7.0' do
       action :install
     end
-    package 'php5.0-bcmath' do
+    package 'php7.0-cli' do
+      action :install
+    end
+    package 'libapache2-mod-php7.0' do
+      action :install
+    end
+    package 'php7.0-mbstring' do
+      action :install
+    end
+    package 'php7.0-bcmath' do
       action :install
     end
   end
@@ -570,6 +585,40 @@ if node[:platform] == 'ubuntu'
   end
 end
 
+if node[:platform] == 'alpine' || node[:platform] == 'ubuntu'
+  package 'apache2' do
+    action :install
+  end
+  if node[:platform] == 'alpine'
+    package 'apache2-proxy' do
+      action :install
+    end
+  end
+  service 'apache2' do
+    action [ :enable, :start ]
+  end
+elsif node[:platform] == 'redhat'
+  package 'httpd' do
+    action :install
+  end
+  service 'httpd' do
+    action [ :enable, :start ]
+  end
+end
+if node[:platform] == 'alpine'
+  execute 'usermod -a -G im-developer apache' do
+    command 'usermod -a -G im-developer apache'
+  end
+elsif node[:platform] == 'redhat'
+  execute 'usermod -a -G im-developer apache' do
+    command 'usermod -a -G im-developer apache'
+  end
+elsif node[:platform] == 'ubuntu'
+  execute 'usermod -a -G im-developer www-data' do
+    command 'usermod -a -G im-developer www-data'
+  end
+end
+
 if node[:platform] == 'redhat'
   package 'epel-release' do
     action :install
@@ -647,8 +696,14 @@ package 'samba' do
   action :install
 end
 
-service 'samba' do
-  action [ :enable, :start ]
+if node[:platform] == 'ubuntu' && node[:platform_version].to_f >= 16
+  service 'smbd' do
+    action [ :enable, :start ]
+  end
+else
+  service 'samba' do
+    action [ :enable, :start ]
+  end
 end
 
 if node[:platform] == 'ubuntu'
@@ -1586,8 +1641,10 @@ EOF
     command 'chmod u+s /usr/bin/fbterm'
   end
 
-  execute 'dpkg-reconfigure -f noninteractive keyboard-configuration' do
-    command 'dpkg-reconfigure -f noninteractive keyboard-configuration'
+  if node[:platform_version].to_f < 16
+    execute 'dpkg-reconfigure -f noninteractive keyboard-configuration' do
+      command 'dpkg-reconfigure -f noninteractive keyboard-configuration'
+    end
   end
 end
 
