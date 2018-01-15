@@ -1070,6 +1070,12 @@ var IMLibPageNavigation = {
                                 IMLibPageNavigation.stepCurrentContextName = cDef.name;
                                 IMLibPageNavigation.stepStartContextName = IMLibPageNavigation.stepCurrentContextName;
                                 isDetected = true;
+                                if (cDef['navi-title']) {
+                                    IMLibLocalContext.setValue('navi_title', cDef['navi-title'], true);
+                                }
+                                if (INTERMediatorOnPage[cDef['just-move-thisstep']]) {
+                                    INTERMediatorOnPage[cDef['just-move-thisstep']]();
+                                }
                             }
                         }
                     }
@@ -1133,12 +1139,16 @@ var IMLibPageNavigation = {
                 return; // Do nothing on the last step context
             }
         }
+        if (INTERMediatorOnPage[contextDef['just-leave-thisstep']]) {
+            INTERMediatorOnPage[contextDef['just-leave-thisstep']]();
+        }
         if (contextObj.enclosureNode.tagName === 'TBODY') {
             contextObj.enclosureNode.parentNode.style.display = 'none';
         } else {
             contextObj.enclosureNode.style.display = 'none';
         }
         nextContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName);
+        contextDef = nextContext.getContextDef();
         if (nextContext.enclosureNode.tagName === 'TBODY') {
             nextContext.enclosureNode.parentNode.style.display = '';
         } else {
@@ -1146,12 +1156,22 @@ var IMLibPageNavigation = {
         }
         INTERMediator.constructMain(nextContext);
         IMLibPageNavigation.setupStepReturnButton('');
+        if (contextDef['navi-title']) {
+            IMLibLocalContext.setValue('navi_title', contextDef['navi-title'], true);
+        }
+        if (INTERMediatorOnPage[contextDef['just-move-thisstep']]) {
+            INTERMediatorOnPage[contextDef['just-move-thisstep']]();
+        }
     },
 
     backToPreviousStep: function () {
         'use strict';
-        var currentContext, prevInfo;
+        var currentContext, prevInfo, contextDef;
         currentContext = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName);
+        contextDef = currentContext.getContextDef();
+        if (INTERMediatorOnPage[contextDef['just-leave-thisstep']]) {
+            INTERMediatorOnPage[contextDef['just-leave-thisstep']]();
+        }
         prevInfo = IMLibPageNavigation.stepNavigation.pop();
         IMLibPageNavigation.stepCurrentContextName = prevInfo.context.contextName;
         if (prevInfo.context.enclosureNode.tagName === 'TBODY') {
@@ -1161,10 +1181,16 @@ var IMLibPageNavigation = {
         }
         if (IMLibPageNavigation.stepStartContextName === IMLibPageNavigation.stepCurrentContextName) {
             IMLibPageNavigation.setupStepReturnButton('none');
-
         }
         INTERMediator.constructMain(currentContext);
         INTERMediator.constructMain(prevInfo.context);
+        contextDef = prevInfo.context.getContextDef();
+        if (contextDef['navi-title']) {
+            IMLibLocalContext.setValue('navi_title', contextDef['navi-title'], true);
+        }
+        if (INTERMediatorOnPage[contextDef['just-move-thisstep']]) {
+            INTERMediatorOnPage[contextDef['just-move-thisstep']]();
+        }
     },
 
     moveToDetail: function (keyField, keyValue, isHide, isHidePageNavi) {
