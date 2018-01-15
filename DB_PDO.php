@@ -85,12 +85,15 @@ class DB_PDO extends DB_UseSharedObjects implements DB_Interface
         return true;
     }
 
-    public function setupHandlers()
+    public function setupHandlers($dsn = false)
     {
+        if ($dsn === false){
+            $dsn = $this->dbSettings->getDbSpecDSN();
+        }
         if (!is_null($this->dbSettings)) {
-            $this->handler = DB_PDO_Handler::generateHandler($this, $this->dbSettings->getDbSpecDSN());
+            $this->handler = DB_PDO_Handler::generateHandler($this, $dsn);
             $this->handler->optionalOperationInSetup();
-            $this->specHandler = DB_Spec_Handler_PDO::generateHandler($this, $this->dbSettings->getDbSpecDSN());
+            $this->specHandler = DB_Spec_Handler_PDO::generateHandler($this, $dsn);
        }
         $this->authHandler = new DB_Auth_Handler_PDO($this);
         $this->notifyHandler = new DB_Notification_Handler_PDO($this);
