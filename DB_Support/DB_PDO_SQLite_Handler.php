@@ -42,7 +42,7 @@ class DB_PDO_SQLite_Handler extends DB_PDO_Handler
 
     public function sqlINSERTCommand()
     {
-        return "INSERT ";
+        return "INSERT INTO ";
     }
 
     public function sqlSETClause($setColumnNames, $keyField, $setValues)
