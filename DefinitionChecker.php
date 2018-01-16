@@ -258,6 +258,7 @@ class DefinitionChecker
             ),
             'repeat-control' => 'string(insert|delete|confirm-insert|confirm-delete|copy|copy-*)',
             'navi-control' => 'string(master|detail|master-hide|detail-top|detail-bottom|detail-update|detail-top-update|detail-bottom-update|step|step-hide)',
+            'navi-title' => 'string',
             'validation' => array(
                 '*' => array(
                     'field' => 'string',
@@ -270,6 +271,7 @@ class DefinitionChecker
             'post-enclosure' => 'string',
             'post-query-stored' => 'string',
             'before-move-nextstep' => 'string',
+            'just-move-thisstep' => 'string',
             'script' => array(
                 '*' => array(
                     'db-operation' => 'string(load|read|update|new|create|delete)',
