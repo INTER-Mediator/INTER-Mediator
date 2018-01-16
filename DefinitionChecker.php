@@ -272,6 +272,7 @@ class DefinitionChecker
             'post-query-stored' => 'string',
             'before-move-nextstep' => 'string',
             'just-move-thisstep' => 'string',
+            'just-leave-thisstep' => 'string',
             'script' => array(
                 '*' => array(
                     'db-operation' => 'string(load|read|update|new|create|delete)',
