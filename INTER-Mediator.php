@@ -75,25 +75,9 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
         }
     }
 
-    if ($debug) {
-        $dc = new DefinitionChecker();
-        $defErrorMessage = $dc->checkDefinitions($datasource, $options, $dbspecification);
-        if (strlen($defErrorMessage) > 0) {
-            $generator = new GenerateJSCode();
-            $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
-            $generator->generateErrorMessageJS($defErrorMessage);
-            return;
-        }
-    }
-
     if (isset($_GET['theme'])) {
         $themeManager = new Theme();
         $themeManager->processing();
-//    } else if (isset($g_serverSideCall) && $g_serverSideCall) {
-//        $dbInstance = new DB_Proxy();
-//        $dbInstance->initialize($datasource, $options, $dbspecification, $debug);
-//        $dbInstance->processingRequest("NON");
-//        $g_dbInstance = $dbInstance;
     } else if (!isset($_POST['access']) && isset($_GET['uploadprocess'])) {
         $fileUploader = new FileUploader();
         $fileUploader->processInfo();
@@ -115,6 +99,17 @@ function IM_Entry($datasource, $options, $dbspecification, $debug = false)
             $fileUploader->processing($datasource, $options, $dbspecification, $debug);
         }
     } else if (!isset($_POST['access']) && !isset($_GET['media'])) {
+        if ($debug) {
+            $dc = new DefinitionChecker();
+            $defErrorMessage = $dc->checkDefinitions($datasource, $options, $dbspecification);
+            if (strlen($defErrorMessage) > 0) {
+                $generator = new GenerateJSCode();
+                $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
+                $generator->generateErrorMessageJS($defErrorMessage);
+                return;
+            }
+        }
+
         $generator = new GenerateJSCode();
         $generator->generateInitialJSCode($datasource, $options, $dbspecification, $debug);
     } else {

@@ -1103,11 +1103,16 @@ var IMLibPageNavigation = {
         'use strict';
         var context = contextObj, keying = keyField + '=' + keyValue;
         return function () {
-            return IMLibPageNavigation.moveToNextSteplImpl(context, keying);
+            IMLibPageNavigation.moveToNextStepImpl(context, keying);
         };
     },
 
-    moveToNextSteplImpl: function (contextObj, keying) {
+    moveNextStep: function (keying) {
+        var context = IMLibContextPool.contextFromName(IMLibPageNavigation.stepCurrentContextName);
+        IMLibPageNavigation.moveToNextStepImpl(context, keying);
+    },
+
+    moveToNextStepImpl: function (contextObj, keying) {
         'use strict';
         var key, cDef, dataSrcs, contextDef, isAfterCurrent = false, control = null, hasNextContext = false,
             nextContext;

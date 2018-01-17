@@ -58,10 +58,10 @@ class DefinitionChecker
         foreach ($this->path as $value) {
             $nextEndPoint = isset($endPoint[$value]) ? $endPoint[$value] : null;
             if ($nextEndPoint === null && is_integer($value)) {
-                $nextEndPoint = $endPoint['*'];
+                $nextEndPoint = isset($endPoint['*']) ? $endPoint['*'] : null;
             }
             if ($nextEndPoint === null && is_string($value)) {
-                $nextEndPoint = $endPoint['#'];
+                $nextEndPoint = isset($endPoint['#']) ? $endPoint['#'] : null;
             }
             $endPoint = $nextEndPoint;
             $currentPath .= "[{$value}]";
@@ -272,6 +272,7 @@ class DefinitionChecker
             'post-query-stored' => 'string',
             'before-move-nextstep' => 'string',
             'just-move-thisstep' => 'string',
+            'just-leave-thisstep' => 'string',
             'script' => array(
                 '*' => array(
                     'db-operation' => 'string(load|read|update|new|create|delete)',

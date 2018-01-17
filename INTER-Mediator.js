@@ -1081,6 +1081,7 @@ var INTERMediator = {
                         (dataAttr && dataAttr.indexOf(INTERMediatorLib.roleAsNoResultDataControlName) > -1)) {
                         node.appendChild(newNode);
                         INTERMediator.setIdValue(newNode);
+                        seekEnclosureNode(newNode, null, null, null);
                     }
                 }
             }

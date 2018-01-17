@@ -105,7 +105,7 @@ class DB_FileMaker_DataAPI extends DB_UseSharedObjects implements DB_Interface
         return $fmDataObj;
     }
 
-    public function setupHandlers()
+    public function setupHandlers($dsn = false)
     {
         $this->authHandler = new DB_Auth_Handler_FileMaker_DataAPI($this);
         $this->notifyHandler = new DB_Notification_Handler_FileMaker_DataAPI($this);

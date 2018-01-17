@@ -805,7 +805,8 @@ var INTERMediator_DBAdapter = {
                         for (index = 0; index < fields.length; index++) {
                             conditionSign = fields[index].trim() + '#' + operator + '#' + value;
                             if (!INTERMediator_DBAdapter.eliminateDuplicatedConditions || conditions.indexOf(conditionSign) < 0) {
-                                params += '&condition' + extCount + 'field=' + encodeURIComponent(fields[index].trim());
+                                params += '&condition' + extCount +
+                                    'field=' + encodeURIComponent(fields[index].replace(';;','::').trim());
                                 params += '&condition' + extCount + 'operator=' + encodeURIComponent(operator);
                                 params += '&condition' + extCount + 'value=' + encodeURIComponent(value);
                                 conditions.push(conditionSign);
