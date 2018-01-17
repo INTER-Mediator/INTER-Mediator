@@ -1331,7 +1331,7 @@ class DB_Proxy extends DB_UseSharedObjects implements DB_Proxy_Interface
         // TODO: Implement setupConnection() method.
     }
 
-    public function setupHandlers()
+    public function setupHandlers($dsn)
     {
         // TODO: Implement setupHandlers() method.
     }

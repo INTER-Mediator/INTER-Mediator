@@ -109,7 +109,7 @@ class DB_PageEditor extends DB_UseSharedObjects implements DB_Interface
         return false;
     }
 
-    public function setupHandlers()
+    public function setupHandlers($dsn)
     {
         // TODO: Implement setupHandlers() method.
     }
