@@ -16,7 +16,7 @@
 interface DB_Interface
 {
     public function setupConnection();
-    public function setupHandlers();
+    public function setupHandlers($dsn = false);
     public function readFromDB();         // former getFromDB
     public function countQueryResult();
     public function getTotalCount();

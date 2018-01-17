@@ -60,7 +60,7 @@ class GenerateJSCode
             "generatedPrivateKey", "passPhrase", "browserCompatibility",
             "scriptPathPrefix", "scriptPathSuffix",
             "oAuthProvider", "oAuthClientID", "oAuthRedirect",
-            "passwordPolicy", "documentRootPrefix", "dbClass",
+            "passwordPolicy", "documentRootPrefix", "dbClass", "dbDSN",
             "nonSupportMessageId", "valuesForLocalContext", "themeName",
             "appLocale", "appCurrency",
         ), true);
@@ -74,14 +74,16 @@ class GenerateJSCode
         $oAuthRedirect = $params["oAuthRedirect"];
         $passwordPolicy = $params["passwordPolicy"];
         $dbClass = $params["dbClass"];
+        $dbDSN = isset($options['dsn']) ? $options['dsn']
+            : (isset($params['dbDSN']) ? $params["dbDSN"] : '');
         $nonSupportMessageId = $params["nonSupportMessageId"];
         $documentRootPrefix = is_null($params["documentRootPrefix"]) ? "" : $params["documentRootPrefix"];
         $valuesForLocalContext = $params["valuesForLocalContext"];
         $themeName = is_null($params["themeName"]) ? $themeName : $params["themeName"];
         $appLocale = isset($options['app-locale']) ? $options['app-locale']
-            : (isset($params['app-locale']) ? $params["appLocale"] : 'ja_JP');
+            : (isset($params['appLocale']) ? $params["appLocale"] : 'ja_JP');
         $appCurrency = isset($options['app-currency']) ? $options['app-currency']
-            : (isset($params['app-currency']) ? $params["appCurrency"] : 'JP');
+            : (isset($params['appCurrency']) ? $params["appCurrency"] : 'JP');
 
         /*
          * Read the JS programs regarding by the developing or deployed.
@@ -128,7 +130,7 @@ class GenerateJSCode
             require_once(dirname(__FILE__) . "/INTER-Mediator-Support/{$dbClassName}.php");
         }
         $dbInstance = new $dbClassName();
-        $dbInstance->setupHandlers();
+        $dbInstance->setupHandlers($dbDSN);
         if ($dbInstance != null && $dbInstance->specHandler != null) {
             $defaultKey = $dbInstance->specHandler->getDefaultKey();
         }
