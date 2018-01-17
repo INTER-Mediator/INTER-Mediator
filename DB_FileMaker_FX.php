@@ -117,7 +117,7 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
         return $fxObj;
     }
 
-    public function setupHandlers($dsn)
+    public function setupHandlers($dsn = false)
     {
         $this->authHandler = new DB_Auth_Handler_FileMaker_FX($this);
         $this->notifyHandler = new DB_Notification_Handler_FileMaker_FX($this);

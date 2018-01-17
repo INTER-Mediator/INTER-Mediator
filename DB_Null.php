@@ -78,7 +78,7 @@ class DB_Null extends DB_UseSharedObjects implements DB_Interface
         return false;
     }
 
-    public function setupHandlers($dsn)
+    public function setupHandlers($dsn = false)
     {
 
     }

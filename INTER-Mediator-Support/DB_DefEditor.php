@@ -1223,7 +1223,7 @@ class DB_DefEditor extends DB_UseSharedObjects implements DB_Interface
         return true;
     }
 
-    public function setupHandlers($dsn)
+    public function setupHandlers($dsn = false)
     {
         // TODO: Implement setupHandlers() method.
     }
