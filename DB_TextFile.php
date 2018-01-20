@@ -278,7 +278,7 @@ class DB_TextFile extends DB_UseSharedObjects implements DB_Interface
         // TODO: Implement getTotalCount() method.
     }
 
-    public function setupHandlers()
+    public function setupHandlers($dsn = false)
     {
         // TODO: Implement setupHandlers() method.
     }
