@@ -165,6 +165,8 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
             return array($field, '<' . $value);
         } else if ($operator === 'lte') {
             return array($field, '<=' . $value);
+        } else {
+            return array($field, $value);
         }
     }
 
@@ -767,9 +769,11 @@ class DB_FileMaker_FX extends DB_UseSharedObjects implements DB_Interface
                             }
                         }
                         if (!$usePortal) {
-                            $dataArray = $dataArray + array(
-                                    $fieldName => $fieldValue
-                                );
+                            if (is_array($fieldValue) && count($fieldValue)===0){
+                                $dataArray += array($fieldName => '');
+                            } else {
+                                $dataArray += array($fieldName => $fieldValue);
+                            }
                         }
                         if ($multiFields === false) {
                             break;

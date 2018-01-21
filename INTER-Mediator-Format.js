@@ -510,6 +510,7 @@ var IMLibFormat = {
     datetimeFormatImpl: function (str, params, flags) {
         'use strict';
         var dt, c, result = '', replaced, hasColon, hasSlash, hasDash;
+        str = (Object.prototype.toString.call(str) === '[object Array]')?str.join():str;
         var paramStr = params.trim().toUpperCase();
         var kind = flags.trim().toUpperCase();
         var key = kind.substr(0, 1) + '_FMT_' + paramStr;
