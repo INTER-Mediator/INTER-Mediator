@@ -28,7 +28,7 @@ class DB_Spec_Handler_FileMaker_FX implements DB_Spec_Behavior
     public function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
-                'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR','ASIS',
+                'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR', 'ASIS',
             )));
     }
 
