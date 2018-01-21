@@ -13,7 +13,6 @@
  * @link          https://inter-mediator.com/
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
 class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
 {
     public static function defaultKey()
@@ -59,7 +58,7 @@ class DB_Spec_Handler_FileMaker_DataAPI implements DB_Spec_Behavior
     public function isPossibleOperator($operator)
     {
         return !(FALSE === array_search(strtoupper($operator), array(
-                'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR',
+                'EQ', 'CN', 'BW', 'EW', 'GT', 'GTE', 'LT', 'LTE', 'NEQ', 'AND', 'OR', 'ASIS',
             )));
     }
 
